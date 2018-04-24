@@ -312,9 +312,9 @@ lemma promela_language_sub_iff:
 
 
 (* from PromelaDatastructures *)
-hide_const (open) abort abort' abortv 
-                  err err' errv
-                  usc usc'
+hide_const (open) abort abortv 
+                  err errv
+                  usc
                   warn the_warn with_warn
 
 hide_const (open) idx idx'

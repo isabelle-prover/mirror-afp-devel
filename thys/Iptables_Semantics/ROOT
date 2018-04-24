@@ -11,7 +11,6 @@ session Iptables_Semantics (AFP) = Routing +
     Native_Word.Code_Target_Bits_Int
     "HOL-Library.Code_Target_Nat"
     "HOL-Library.Code_Target_Int"
-    "HOL-Library.Code_Char"
     Automatic_Refinement.Misc (* mergesort *)
     "Common/List_Misc"
     "Common/WordInterval_Lists"

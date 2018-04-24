@@ -2150,32 +2150,42 @@ lemma proper_interval_natural_simps [code]:
   "proper_interval (Some x) (Some y) \<longleftrightarrow> y - x > 1"
 by(transfer, simp)+
 
-lemma char_less_iff_nat_of_char: "x < y \<longleftrightarrow> nat_of_char x < nat_of_char y"
+lemma char_less_iff_nat_of_char: "x < y \<longleftrightarrow> of_char x < (of_char y :: nat)"
   by (fact less_char_def)
 
-lemma nat_of_char_inject [simp]: "nat_of_char x = nat_of_char y \<longleftrightarrow> x = y"
-  by (fact nat_of_char_eq_iff)
+lemma nat_of_char_inject [simp]: "of_char x = (of_char y :: nat) \<longleftrightarrow> x = y"
+  by (fact of_char_eq_iff)
 
-lemma char_le_iff_nat_of_char: "x \<le> y \<longleftrightarrow> nat_of_char x \<le> nat_of_char y"
+lemma char_le_iff_nat_of_char: "x \<le> y \<longleftrightarrow> of_char x \<le> (of_char y :: nat)"
   by (fact less_eq_char_def)
 
-instantiation char :: proper_interval begin
+instantiation char :: proper_interval
+begin
+
 fun proper_interval_char :: "char proper_interval" where
   "proper_interval_char None None \<longleftrightarrow> True"
-| "proper_interval_char None (Some x) \<longleftrightarrow> x \<noteq> 0"
+| "proper_interval_char None (Some x) \<longleftrightarrow> x \<noteq> CHR 0x00"
 | "proper_interval_char (Some x) None \<longleftrightarrow> x \<noteq> CHR 0xFF"
-| "proper_interval_char (Some x) (Some y) \<longleftrightarrow> nat_of_char y - nat_of_char x > 1"
-instance
-proof intro_classes
+| "proper_interval_char (Some x) (Some y) \<longleftrightarrow> of_char y - of_char x > (1 :: nat)"
+
+instance proof
   fix y :: char
-  { assume "y \<noteq> 0"
-    hence "0 < y" 
-      by (simp add: char_less_iff_nat_of_char nat_of_char_eq_iff [symmetric]) }
+  { assume "y \<noteq> CHR 0x00"
+    have "CHR 0x00 < y" 
+    proof (rule ccontr)
+      assume "\<not> CHR 0x00 < y"
+      then have "of_char y = (of_char CHR 0x00 :: nat)"
+        by (simp add: not_less char_le_iff_nat_of_char)
+      then have "y = CHR 0x00"
+        using nat_of_char_inject [of y "CHR 0x00"] by simp
+      with \<open>y \<noteq> CHR 0x00\<close> show False
+        by simp
+    qed }
   moreover
   { fix z :: char
-    assume "z < 0"
+    assume "z < CHR 0x00"
     hence False
-      by (simp add: char_less_iff_nat_of_char nat_of_char_eq_iff [symmetric]) }
+      by (simp add: char_less_iff_nat_of_char of_char_eq_iff [symmetric]) }
   ultimately show "proper_interval None (Some y) = (\<exists>z. z < y)"
     by auto
 
@@ -2193,19 +2203,22 @@ proof intro_classes
         (insert nat_of_char_less_256 [of z], simp) }
   ultimately show "proper_interval (Some x) None = (\<exists>z. x < z)" by auto
 
-  { assume gt: "nat_of_char y - nat_of_char x > 1"
-    let ?z = "char_of_nat (nat_of_char x + 1)"
-    from gt nat_of_char_less_256[of y]
-    have 255: "nat_of_char x < 255" by arith
+  { assume gt: "of_char y - of_char x > (1 :: nat)"
+    let ?z = "char_of (of_char x + (1 :: nat))"
+    from gt nat_of_char_less_256 [of y]
+    have 255: "of_char x < (255 :: nat)" by arith
     with gt have "x < ?z" "?z < y"
       by (simp_all add: char_less_iff_nat_of_char)
     hence "\<exists>z. x < z \<and> z < y" by blast }
   moreover
   { fix z
     assume "x < z" "z < y"
-    hence "1 < nat_of_char y - nat_of_char x" by(simp add: char_less_iff_nat_of_char) }
-  ultimately show "proper_interval (Some x) (Some y) = (\<exists>z>x. z < y)" by auto
+    hence "(1 :: nat) < of_char y - of_char x"
+      by (simp add: char_less_iff_nat_of_char) }
+  ultimately show "proper_interval (Some x) (Some y) = (\<exists>z>x. z < y)"
+    by auto
 qed simp
+
 end
 
 instantiation Enum.finite_1 :: proper_interval begin

@@ -283,8 +283,8 @@ fun test_bit x n =
 end; (*struct Bits_Integer*)
 
 structure Heapmap : sig
-  type num
   type nat
+  type num
   val integer_of_nat : nat -> IntInf.int
   type ('a, 'b) lp
   type ('b, 'a) fingerTree
@@ -294,10 +294,6 @@ structure Heapmap : sig
 end = struct
 
 datatype typerepa = Typerep of string * typerepa list;
-
-datatype num = One | Bit0 of num | Bit1 of num;
-
-datatype char = Zero_char | Char of num;
 
 datatype nat = Nat of IntInf.int;
 
@@ -320,6 +316,8 @@ val typerep_nat = {typerep = typerep_nata} : nat typerep;
 
 val heap_nat = {countable_heap = countable_nat, typerep_heap = typerep_nat} :
   nat heap;
+
+datatype num = One | Bit0 of num | Bit1 of num;
 
 val one_nata : nat = Nat (1 : IntInf.int);
 

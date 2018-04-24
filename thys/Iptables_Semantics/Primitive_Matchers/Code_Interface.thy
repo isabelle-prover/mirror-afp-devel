@@ -13,7 +13,6 @@ imports
   Native_Word.Code_Target_Bits_Int
   "HOL-Library.Code_Target_Nat"
   "HOL-Library.Code_Target_Int"
-  "HOL-Library.Code_Char"
 begin
 
 (*Note: common_primitive_match_expr_ipv4_toString can be really slow*)

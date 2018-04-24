@@ -26,7 +26,7 @@ definition chose_prog :: "String.literal \<Rightarrow> nat \<Rightarrow> String.
 where "chose_prog P n = (case Mapping.lookup progs P of 
                           Some (descr, ndescr, p) \<Rightarrow> (descr, ndescr, p n) 
                         | None \<Rightarrow> let (descr, ndescr, p) = the (Mapping.lookup progs default_prog)
-                                 in (descr@@(STR '' (fallback)''), ndescr, p n))"
+                                 in (descr + STR '' (fallback)'', ndescr, p n))"
 
 definition list_progs :: "(String.literal \<times> String.literal \<times> String.literal) list" where
   "list_progs \<equiv> let keys = keys_of_map progs in

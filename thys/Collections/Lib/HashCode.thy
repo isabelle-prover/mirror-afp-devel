@@ -84,7 +84,7 @@ end
 
 instantiation char :: hashable
 begin
-  definition [simp]: "hashcode (c :: char) == uint32_of_int (int (nat_of_char c))"
+  definition [simp]: "hashcode (c :: char) == uint32_of_int (of_char c)"
   definition "def_hashmap_size = (\<lambda>_ :: char itself. 32)"
   instance by(intro_classes)(simp_all add: def_hashmap_size_char_def)
 end
@@ -144,6 +144,21 @@ lemma bounded_hashcode_option_simps [simp]:
   apply (simp_all add: bounded_hashcode_def, transfer, simp_all add: word_mod_def)
   apply (simp_all add: algebra_simps mod_add_right_eq)
 *)
+
+instantiation String.literal :: hashable
+begin
+
+definition hashcode_literal :: "String.literal \<Rightarrow> uint32" 
+  where "hashcode_literal s = hashcode (String.explode s)"
+
+definition def_hashmap_size_literal  :: "String.literal itself \<Rightarrow> nat"
+  where "def_hashmap_size_literal _ = 10"
+
+instance
+  by standard (simp_all only: def_hashmap_size_literal_def)
+
+end
+
 
 hide_type (open) word
 

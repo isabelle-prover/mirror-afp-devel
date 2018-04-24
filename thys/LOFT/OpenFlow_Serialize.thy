@@ -4,7 +4,6 @@ imports OpenFlow_Matches
         Semantics_OpenFlow
         Simple_Firewall.Primitives_toString
         IP_Addresses.Lib_Word_toString
-        "HOL-Library.Code_Char"
 begin
 
 definition "serialization_test_entry \<equiv> OFEntry 7 {EtherDst 0x1, IPv4Dst (PrefixMatch 0xA000201 32), IngressPort ''s1-lan'', L4Dst 0x50 0, L4Src 0x400 0x3FF, IPv4Proto 6, EtherType 0x800} [ModifyField_l2dst 0xA641F185E862, Forward ''s1-wan'']"

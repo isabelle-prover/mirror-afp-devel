@@ -305,7 +305,7 @@ lemma map_of_fields_init_fields:
   assumes "map_of FDTs (F, D) = \<lfloor>(T, fm)\<rfloor>"
   shows "\<exists>fs' v. tm_\<alpha> (init_fields (map (\<lambda>(FD, (T, fm)). (FD, T)) FDTs)) (String.explode F) = \<lfloor>fs'\<rfloor> \<and> lm_\<alpha> fs' D = \<lfloor>v\<rfloor> \<and> sc.conf P h v T"
 using assms
-by(induct FDTs)(auto simp add: tm.lookup_correct tm.update_correct lm.update_correct init_fields_def explode_inject)
+  by(induct FDTs)(auto simp add: tm.lookup_correct tm.update_correct lm.update_correct init_fields_def String.explode_inject)
 
 lemma sc_oconf_init_fields:
   assumes "P \<turnstile> C has_fields FDTs"
@@ -349,7 +349,7 @@ lemma sc_oconf_fupd [intro?]:
     fs' = (case tm_lookup (String.explode F) fs of None \<Rightarrow> lm_empty () | Some fs' \<Rightarrow> fs') \<rbrakk>
   \<Longrightarrow> P,h \<turnstile>sc (Obj C (tm_update (String.explode F) (lm_update D v fs') fs)) \<surd>"
 unfolding sc_oconf_def has_field_def
-apply(auto dest: has_fields_fun simp add: lm.update_correct tm.update_correct tm.lookup_correct explode_inject)
+apply(auto dest: has_fields_fun simp add: lm.update_correct tm.update_correct tm.lookup_correct String.explode_inject)
 apply(drule (1) has_fields_fun, fastforce)
 apply(drule (1) has_fields_fun, fastforce)
 done

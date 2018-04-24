@@ -139,7 +139,7 @@ interpretation cs: imp_list_append cs_list cs_append
 
 subsubsection {* Pop First Element *}
 fun cs_pop :: "'a::heap cs_list \<Rightarrow> ('a\<times>'a cs_list) Heap" where
-  "cs_pop None = raise ''Pop from empty list''"
+  "cs_pop None = raise STR ''Pop from empty list''"
 | "cs_pop (Some p) = do {
     n1 \<leftarrow> !p;
     if next n1 = Some p then

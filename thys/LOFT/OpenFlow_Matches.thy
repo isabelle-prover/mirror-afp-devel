@@ -3,6 +3,7 @@ imports IP_Addresses.Prefix_Match
         Simple_Firewall.Simple_Packet
         "HOL-Library.Monad_Syntax"
         (*"../Iptables_Semantics/Primitive_Matchers/Simple_Packet" (* I just want those TCP,UDP,\<dots> defs *)*)
+        "HOL-Library.List_lexord"
         "HOL-Library.Char_ord" (* For a linorder on strings. See below. *)
 begin
 
@@ -101,8 +102,9 @@ fun match_sorter :: "of_match_field \<Rightarrow> nat" where
 
 termination prerequisites by(relation "measure (match_sorter \<circ> fst)", simp_all)
 
-definition "less_eq_of_match_field1 (a::of_match_field) (b::of_match_field) \<equiv> (case (a, b) of
-		(IngressPort a, IngressPort b) \<Rightarrow> String.implode a \<le> String.implode b |
+definition less_eq_of_match_field1 :: "of_match_field \<Rightarrow> of_match_field \<Rightarrow> bool"
+  where "less_eq_of_match_field1 (a::of_match_field) (b::of_match_field) \<longleftrightarrow> (case (a, b) of
+		(IngressPort a, IngressPort b) \<Rightarrow> a \<le> b |
 		(VlanId a, VlanId b) \<Rightarrow> a \<le> b |
 		(EtherDst a, EtherDst b) \<Rightarrow> a \<le> b |
 		(EtherSrc a, EtherSrc b) \<Rightarrow> a \<le> b |
@@ -114,12 +116,20 @@ definition "less_eq_of_match_field1 (a::of_match_field) (b::of_match_field) \<eq
 		(L4Src a1 a2, L4Src b1 b2) \<Rightarrow> if a2 = b2 then a1 \<le> b1 else a2 \<le> b2 |
 		(L4Dst a1 a2, L4Dst b1 b2) \<Rightarrow> if a2 = b2 then a1 \<le> b1 else a2 \<le> b2 |
 		(a, b) \<Rightarrow> match_sorter a < match_sorter b)"
+
 (* feel free to move this to OpenFlowSerialize if it gets in the way. *)
 instantiation of_match_field :: linorder
 begin
-	definition "less_eq_of_match_field (a::of_match_field) (b::of_match_field) \<equiv> less_eq_of_match_field1 a b"	
-	definition "less_of_match_field (a::of_match_field) (b::of_match_field) \<equiv> (a \<noteq> b \<and> less_eq_of_match_field1 a b)"
-instance by standard (auto simp: less_eq_of_match_field_def less_eq_of_match_field1_def less_of_match_field_def implode_def split: prod.splits of_match_field.splits if_splits)
+
+definition
+  "less_eq_of_match_field (a::of_match_field) (b::of_match_field) \<longleftrightarrow> less_eq_of_match_field1 a b"	
+
+definition
+  "less_of_match_field (a::of_match_field) (b::of_match_field) \<longleftrightarrow> a \<noteq> b \<and> less_eq_of_match_field1 a b"
+
+instance
+  by standard (auto simp add: less_eq_of_match_field_def less_of_match_field_def less_eq_of_match_field1_def split: prod.splits of_match_field.splits if_splits)
+
 end
 
 fun match_no_prereq :: "of_match_field \<Rightarrow> (32, 'a) simple_packet_ext_scheme \<Rightarrow> bool" where

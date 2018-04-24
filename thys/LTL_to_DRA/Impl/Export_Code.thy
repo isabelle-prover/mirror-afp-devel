@@ -10,7 +10,6 @@ theory Export_Code
     "HOL-Library.AList_Mapping" (* Future, Performance: Replace by LC *) 
     LTL.LTL_Rewrite
     "HOL-Library.Code_Target_Numeral" 
-    "HOL-Library.Code_Char"
 begin
 
 subsection \<open>External Interface\<close>

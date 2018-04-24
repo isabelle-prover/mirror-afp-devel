@@ -43,7 +43,7 @@ lemma maxVnameLen_newname: "length V > maxVnameLen c \<Longrightarrow> newname c
 by (induction c) (auto intro:newname.intros dest:maxVnameLen_aux_newname)
 
 lemma tempname_newname[intro]: "newname c (tempName c)"
-by (rule maxVnameLen_newname) (auto simp:tempName_def String.literal.STR_inverse implode_def)
+  by (rule maxVnameLen_newname) (simp add: tempName_def)
 
 fun transform_aux :: "vname \<Rightarrow> cmd \<Rightarrow> cmd" where
   "transform_aux _ Skip = Skip"

@@ -1586,7 +1586,7 @@ fun assertion_simp_tac ctxt state_kind thms i =
 (* simplify equality test on strings (and datatype-constructors) and propagate result*)
 fun string_eq_simp_tac ctxt =
   simp_tac (put_simpset HOL_basic_ss ctxt
-    addsimps @{thms list.inject list.distinct Char_eq_Char_iff
+    addsimps @{thms list.inject list.distinct char.inject
       cong_exp_iff_simps simp_thms});
    
 
@@ -2961,7 +2961,7 @@ val ss =
   simpset_of
     (put_simpset (simpset_of @{theory_context Fun}) @{context}
       addsimps (@{thm StateFun.lookup_def} :: @{thm StateFun.id_id_cancel}
-      :: @{thms list.inject list.distinct Char_eq_Char_iff
+      :: @{thms list.inject list.distinct char.inject
       cong_exp_iff_simps simp_thms})
     addsimprocs [Record.simproc, StateFun.lazy_conj_simproc]
     |> fold Simplifier.add_cong @{thms block_conj_cong});
@@ -3102,7 +3102,7 @@ local
 val state_fun_update_ss =
   simpset_of (put_simpset HOL_basic_ss @{context}
     addsimps ([@{thm StateFun.update_def}, @{thm id_def}, @{thm fun_upd_apply}, @{thm if_True}, @{thm if_False}]
-      @ @{thms list.inject list.distinct Char_eq_Char_iff
+      @ @{thms list.inject list.distinct char.inject
       cong_exp_iff_simps simp_thms} @ K_fun_convs)
     addsimprocs [DistinctTreeProver.distinct_simproc ["distinct_fields", "distinct_fields_globals"]]
     |> Simplifier.add_cong @{thm imp_cong} (* K_fun_congs  FIXME: Stefan fragen*)

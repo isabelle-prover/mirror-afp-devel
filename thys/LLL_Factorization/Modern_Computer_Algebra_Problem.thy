@@ -10,7 +10,6 @@ section \<open>Mistakes in the textbook Modern Computer Algebra (2nd edition)\<c
 
 theory Modern_Computer_Algebra_Problem
   imports Factorization_Algorithm_16_22
-      "HOL-Library.Code_Char"
 begin
 
 fun max_degree_poly :: "int poly \<Rightarrow> int poly \<Rightarrow> int poly"

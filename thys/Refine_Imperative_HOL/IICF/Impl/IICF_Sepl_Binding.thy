@@ -56,11 +56,11 @@ begin
   (* TODO: Move to Open_List *)  
   definition os_head :: "'a::heap os_list \<Rightarrow> ('a) Heap" where
     "os_head p \<equiv> case p of 
-      None \<Rightarrow> raise ''os_Head: Empty list''
+      None \<Rightarrow> raise STR ''os_Head: Empty list''
     | Some p \<Rightarrow> do { m \<leftarrow>!p; return (val m) }"
 
   primrec os_tl :: "'a::heap os_list \<Rightarrow> ('a os_list) Heap" where
-    "os_tl None = raise ''os_tl: Empty list''"
+    "os_tl None = raise STR ''os_tl: Empty list''"
   | "os_tl (Some p) = do { m \<leftarrow>!p; return (next m) }"  
 
   interpretation os: imp_list_head os_list os_head
@@ -78,7 +78,7 @@ begin
 
   definition cs_head :: "'a::heap cs_list \<Rightarrow> 'a Heap" where
     "cs_head p \<equiv> case p of 
-      None \<Rightarrow> raise ''cs_head: Empty list''
+      None \<Rightarrow> raise STR ''cs_head: Empty list''
     | Some p \<Rightarrow> do { n \<leftarrow> !p; return (val n)}"
   interpretation cs: imp_list_head cs_list cs_head
     by unfold_locales (sep_auto simp: neq_Nil_conv cs_head_def)

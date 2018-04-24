@@ -14,11 +14,11 @@ definition string_of_word_single :: "bool \<Rightarrow> 'a::len word \<Rightarro
     (if
        w < 10
      then
-       [char_of_nat (48 + unat w)]
+       [char_of (48 + unat w)]
      else if
        w < 36
      then
-       [char_of_nat ((if lc then 87 else 55) + unat w)]
+       [char_of ((if lc then 87 else 55) + unat w)]
      else
        undefined)"
 
@@ -86,7 +86,7 @@ lemma "dec_string_of_word0 (3::2 word) = ''11''" by eval
 lemma "dec_string_of_word0 (-1::8 word) = ''255''" by eval
 
 lemma string_of_word_single_atoi:
-  "n < 10 \<Longrightarrow> string_of_word_single True n = [char_of_nat (48 + unat n)]"
+  "n < 10 \<Longrightarrow> string_of_word_single True n = [char_of (48 + unat n)]"
   by(simp add: string_of_word_single_def)
 
 (*TODO: move!*)

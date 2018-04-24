@@ -3,19 +3,11 @@ imports
   Autoref_Misc
 begin
 
-subsection \<open>Setup for literals\<close>
-context begin interpretation autoref_syn .
-lemma [autoref_itype]: "STR x ::\<^sub>i I"
-  and [autoref_op_pat_def]: "STR x \<equiv> OP (STR x) :::\<^sub>i I"
-  and [autoref_rules]: "(STR x, OP (STR x) ::: Id) \<in> Id"
-  by simp_all
-end
-
 subsection \<open>Setup for characters\<close>
 context begin interpretation autoref_syn .
-lemma [autoref_itype]: "Char x ::\<^sub>i I"
-  and [autoref_op_pat_def]: "Char x \<equiv> OP (Char x) :::\<^sub>i I"
-  and [autoref_rules]: "(Char x, OP (Char x) ::: Id) \<in> Id"
+lemma [autoref_itype]: "Char b0 b1 b2 b3 b4 b5 b6 b7 ::\<^sub>i I"
+  and [autoref_op_pat_def]: "Char b0 b1 b2 b3 b4 b5 b6 b7 \<equiv> OP (Char b0 b1 b2 b3 b4 b5 b6 b7) :::\<^sub>i I"
+  and [autoref_rules]: "(Char b0 b1 b2 b3 b4 b5 b6 b7, OP (Char b0 b1 b2 b3 b4 b5 b6 b7) ::: Id) \<in> Id"
   by simp_all
 end
 
@@ -49,5 +41,25 @@ lemma
     "(@) \<equiv> op_str_append"
   by (simp_all add: string_rel_def)
 end
+
+subsection \<open>Setup for literals\<close>
+context begin interpretation autoref_syn .
+lemma [autoref_itype]: "String.empty_literal ::\<^sub>i I"
+  and [autoref_op_pat_def]: "String.empty_literal \<equiv> OP String.empty_literal :::\<^sub>i I"
+  and [autoref_rules]: "(String.empty_literal, OP String.empty_literal ::: Id) \<in> Id"
+  by simp_all
+
+lemma [autoref_itype]: "String.Literal b0 b1 b2 b3 b4 b5 b6 s ::\<^sub>i I"
+  and [autoref_op_pat_def]: "String.Literal b0 b1 b2 b3 b4 b5 b6 s \<equiv>
+    OP (String.Literal b0 b1 b2 b3 b4 b5 b6 s) :::\<^sub>i I"
+  and [autoref_rules]: "(String.Literal b0 b1 b2 b3 b4 b5 b6 s,
+    OP (String.Literal b0 b1 b2 b3 b4 b5 b6 s) ::: Id) \<in> Id"
+  by simp_all
+end
+
+text \<open>A little check\<close>
+
+schematic_goal "(?c::?'c, RETURN (STR '''', STR ''Hello''))\<in>?R"
+  by autoref
 
 end

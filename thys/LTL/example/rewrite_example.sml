@@ -19,6 +19,22 @@ fun eq A_ a b = equal A_ a b;
 
 end; (*struct HOL*)
 
+structure Product_Type : sig
+  val equal_unit : unit HOL.equal
+  val fst : 'a * 'b -> 'a
+  val snd : 'a * 'b -> 'b
+end = struct
+
+fun equal_unita u v = true;
+
+val equal_unit = {equal = equal_unita} : unit HOL.equal;
+
+fun fst (x1, x2) = x1;
+
+fun snd (x1, x2) = x2;
+
+end; (*struct Product_Type*)
+
 structure Orderings : sig
   type 'a ord
   val less_eq : 'a ord -> 'a -> 'a -> bool
@@ -49,6 +65,7 @@ structure Arith : sig
   val zero_nat : nat
   val funpow : nat -> ('a -> 'a) -> 'a -> 'a
   val less_nat : nat -> nat -> bool
+  val bit_cut_integer : IntInf.int -> IntInf.int * bool
   val less_eq_nat : nat -> nat -> bool
 end = struct
 
@@ -84,6 +101,17 @@ fun funpow n f =
     else f o funpow (minus_nat n one_nat) f);
 
 fun less_nat m n = IntInf.< (integer_of_nat m, integer_of_nat n);
+
+fun bit_cut_integer k =
+  (if ((k : IntInf.int) = (0 : IntInf.int)) then ((0 : IntInf.int), false)
+    else let
+           val (r, s) =
+             IntInf.divMod (IntInf.abs k, IntInf.abs (2 : IntInf.int));
+         in
+           ((if IntInf.< ((0 : IntInf.int), k) then r
+              else IntInf.- (IntInf.~ r, s)),
+             ((s : IntInf.int) = (1 : IntInf.int)))
+         end);
 
 fun less_eq_nat m n = IntInf.<= (integer_of_nat m, integer_of_nat n);
 
@@ -296,29 +324,51 @@ fun size_ltln True_ltln = Arith.suc Arith.zero_nat
 
 end; (*struct LTL*)
 
-structure Stringa : sig
+structure List : sig
+  val map : ('a -> 'b) -> 'a list -> 'b list
+  val size_list : 'a list -> Arith.nat
+end = struct
+
+fun map f [] = []
+  | map f (x21 :: x22) = f x21 :: map f x22;
+
+fun gen_length n (x :: xs) = gen_length (Arith.suc n) xs
+  | gen_length n [] = n;
+
+fun size_list x = gen_length Arith.zero_nat x;
+
+end; (*struct List*)
+
+structure String : sig
+  type char
   val size_literal : string -> Arith.nat
 end = struct
 
-fun size_literal s = Arith.zero_nat;
+datatype char = Chara of bool * bool * bool * bool * bool * bool * bool * bool;
 
-end; (*struct Stringa*)
+fun char_of_integer k = let
+                          val (q0, b0) = Arith.bit_cut_integer k;
+                          val (q1, b1) = Arith.bit_cut_integer q0;
+                          val (q2, b2) = Arith.bit_cut_integer q1;
+                          val (q3, b3) = Arith.bit_cut_integer q2;
+                          val (q4, b4) = Arith.bit_cut_integer q3;
+                          val (q5, b5) = Arith.bit_cut_integer q4;
+                          val (q6, b6) = Arith.bit_cut_integer q5;
+                          val a = Arith.bit_cut_integer q6;
+                          val (_, aa) = a;
+                        in
+                          Chara (b0, b1, b2, b3, b4, b5, b6, aa)
+                        end;
 
-structure Product_Type : sig
-  val equal_unit : unit HOL.equal
-  val fst : 'a * 'b -> 'a
-  val snd : 'a * 'b -> 'b
-end = struct
+fun explode s =
+  List.map char_of_integer
+    ((map (fn c => let val k = Char.ord c in if k < 128 then IntInf.fromInt k else raise Fail "Non-ASCII character in literal" end) 
+       o String.explode)
+      s);
 
-fun equal_unita u v = true;
+fun size_literal xa = List.size_list (explode xa);
 
-val equal_unit = {equal = equal_unita} : unit HOL.equal;
-
-fun fst (x1, x2) = x1;
-
-fun snd (x1, x2) = x2;
-
-end; (*struct Product_Type*)
+end; (*struct String*)
 
 structure Predicate : sig
   type 'a seq
@@ -1285,7 +1335,7 @@ end = struct
 
 fun rewrite x =
   (LTL_Rewrite.rewrite_iter_slow Arith.equal_nat o LTL.ltlc_to_ltln o
-    LTL.map_ltlc Stringa.size_literal)
+    LTL.map_ltlc String.size_literal)
     x;
 
 end; (*struct LTL_Example*)

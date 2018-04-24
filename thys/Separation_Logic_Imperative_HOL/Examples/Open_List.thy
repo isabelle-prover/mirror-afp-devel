@@ -83,7 +83,7 @@ text {* To pop the first element out of the list we look up the value and the
   reference of the node and return the pair of those. *}
 
 fun os_pop :: "'a::heap os_list \<Rightarrow> ('a \<times> 'a os_list) Heap" where
-  "os_pop None   = raise ''Empty Os_list''" |
+  "os_pop None   = raise STR ''Empty Os_list''" |
   "os_pop (Some p) = do {m \<leftarrow> !p; return (val m, next m)}"
 
 declare os_pop.simps[simp del]

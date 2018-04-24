@@ -54,7 +54,7 @@ ML {*
           (fn c => fn (accu, l) =>
             (f_char c accu,
                Syntax.const @{const_syntax Cons}
-             $ (Syntax.const @{const_syntax Char} $ HOLogic.mk_numeral c)
+             $ list_comb (Syntax.const @{const_syntax Char}, String_Syntax.mk_bits_syntax 8 c)
              $ l))
           (rev (map Char.ord (String.explode s)))
           accu;

@@ -36,7 +36,7 @@ where
       (STR ''buffer'' := newA (Class Object)\<lfloor>Var (STR ''size'')\<rceil>);;
       (STR ''front'' := Val (Intg 0));;
       (STR ''back'' := Val (Intg (- 1)));;
-      (Var this\<bullet>(STR ''size''){STR []} := Val (Intg 0)))\<rfloor>),
+      (Var this\<bullet>(STR ''size''){STR ''''} := Val (Intg 0)))\<rfloor>),
      (STR ''empty'', [], Boolean, \<lfloor>([], sync(Var this) (Var (STR ''size'') \<guillemotleft>Eq\<guillemotright> Val (Intg 0)))\<rfloor>),
      (STR ''full'', [], Boolean, \<lfloor>([],
       sync(Var this) (Var (STR ''size'') \<guillemotleft>Eq\<guillemotright> ((Var (STR ''buffer''))\<bullet>length)))\<rfloor>),
@@ -79,7 +79,7 @@ where
     [(run, [], Void, \<lfloor>([],
      {STR ''i'':Integer=\<lfloor>Intg 0\<rfloor>;
         while (Var (STR ''i'') \<guillemotleft>NotEq\<guillemotright> Val (Intg (word_of_int n))) (
-          (Var (STR ''buffer''))\<bullet>STR ''put''([{STR ''temp'':Class (STR ''Integer'')=None; (STR ''temp'' := new (STR ''Integer'');; ((FAss (Var (STR ''temp'')) (STR ''value'') (STR []) (Var (STR ''i'')));; Var (STR ''temp'')))} ]);;
+          (Var (STR ''buffer''))\<bullet>STR ''put''([{STR ''temp'':Class (STR ''Integer'')=None; (STR ''temp'' := new (STR ''Integer'');; ((FAss (Var (STR ''temp'')) (STR ''value'') (STR '''') (Var (STR ''i'')));; Var (STR ''temp'')))} ]);;
           STR ''i'' := (Var (STR ''i'') \<guillemotleft>Add\<guillemotright> (Val (Intg 1))))
      })\<rfloor>)])"
 
@@ -118,8 +118,8 @@ where
       {STR ''p'':Class Producer=None; STR ''p'' := new Producer;;
         {STR ''c'':Class Consumer=None; 
            (STR ''c'' := new Consumer);;
-           (Var (STR ''c'')\<bullet>STR ''buffer''{STR []} := Var (STR ''b''));;
-           (Var (STR ''p'')\<bullet>STR ''buffer''{STR []} := Var (STR ''b''));;
+           (Var (STR ''c'')\<bullet>STR ''buffer''{STR ''''} := Var (STR ''b''));;
+           (Var (STR ''p'')\<bullet>STR ''buffer''{STR ''''} := Var (STR ''b''));;
            (Var (STR ''c'')\<bullet>Type.start([]));;(Var (STR ''p'')\<bullet>Type.start([]))
         }
       }
