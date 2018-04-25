@@ -1,0 +1,12 @@
+session BNF_CC = HOL +
+  options [timeout=600]
+  sessions
+    "HOL-Library"
+  theories
+    Preliminaries
+    Operation_Examples
+    Concrete_Examples
+    DDS
+  document_files
+    root.tex
+    root.bib

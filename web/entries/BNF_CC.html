@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Effect polymorphism in higher-order logic - Archive of Formal Proofs
+<title>Bounded Natural Functors with Covariance and Contravariance - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,15 +61,19 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">E</font>ffect
+  <h1>          <font class="first">B</font>ounded
   
-          polymorphism
+          <font class="first">N</font>atural
   
-          in
+          <font class="first">F</font>unctors
   
-          higher-order
+          with
   
-          logic
+          <font class="first">C</font>ovariance
+  
+          and
+  
+          <font class="first">C</font>ontravariance
   
 </h1>
   <p>&nbsp;</p>
@@ -78,15 +82,16 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Effect polymorphism in higher-order logic</td>
+  <td class="data" width="80%">Bounded Natural Functors with Covariance and Contravariance</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="http://www.andreas-lochbihler.de">Andreas Lochbihler</a>
+                    <a href="http://www.andreas-lochbihler.de">Andreas Lochbihler</a> and
+          Joshua Schneider (joshua /dot/ schneider /at/ inf /dot/ ethz /dot/ ch)
       </td>
 </tr>
 
@@ -94,34 +99,43 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-05-05</td>
+  <td class="data">2018-04-24</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-The notion of a monad cannot be expressed within higher-order logic
-(HOL) due to type system restrictions. We show that if a monad is used
-with values of only one type, this notion can be formalised in HOL.
-Based on this idea, we develop a library of effect specifications and
-implementations of monads and monad transformers. Hence, we can
-abstract over the concrete monad in HOL definitions and thus use the
-same definition for different (combinations of) effects. We illustrate
-the usefulness of effect polymorphism with a monadic interpreter for a
-simple language.</td>
+Bounded natural functors (BNFs) provide a modular framework for the
+construction of (co)datatypes in higher-order logic.  Their functorial
+operations, the mapper and relator, are restricted to a subset of the
+parameters, namely those where recursion can take place.  For certain
+applications, such as free theorems, data refinement, quotients, and
+generalised rewriting, it is desirable that these operations do not
+ignore the other parameters.  In this article, we formalise the
+generalisation BNF<sub>CC</sub> that extends the mapper
+and relator to covariant and contravariant parameters.  We show that
+<ol> <li> BNF<sub>CC</sub>s are closed under
+functor composition and least and greatest fixpoints,</li>
+<li> subtypes inherit the BNF<sub>CC</sub> structure
+under conditions that generalise those for the BNF case,
+and</li> <li> BNF<sub>CC</sub>s preserve
+quotients under mild conditions.</li> </ol> These proofs
+are carried out for abstract BNF<sub>CC</sub>s similar to
+the AFP entry BNF Operations.  In addition, we apply the
+BNF<sub>CC</sub> theory to several concrete functors.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Monomorphic_Monad-AFP,
-  author  = {Andreas Lochbihler},
-  title   = {Effect polymorphism in higher-order logic},
+        <pre>@article{BNF_CC-AFP,
+  author  = {Andreas Lochbihler and Joshua Schneider},
+  title   = {Bounded Natural Functors with Covariance and Contravariance},
   journal = {Archive of Formal Proofs},
-  month   = may,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Monomorphic_Monad.html},
+  month   = apr,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/BNF_CC.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -133,9 +147,7 @@ simple language.</td>
 
     
                     
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="CryptHOL.html">CryptHOL</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -147,29 +159,23 @@ simple language.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Monomorphic_Monad/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Monomorphic_Monad/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/BNF_CC/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/BNF_CC/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Monomorphic_Monad/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/BNF_CC/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Monomorphic_Monad-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-BNF_CC-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-Monomorphic_Monad-2017-05-11.tar.gz">
-            afp-Monomorphic_Monad-2017-05-11.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
