@@ -3,32 +3,18 @@
     Maintainer:  Tim Makarios <tjm1983 at gmail.com>
 *)
 
-(* After Isabelle 2012, some of these theorems
-may be moved to the Isabelle repository *)
+(*Some of these theorems were moved to the Isabelle repository *)
 
 section "Miscellaneous results"
 
 theory Miscellany
-imports
-  "HOL-Analysis.Cartesian_Euclidean_Space"
-  Metric
+imports Metric
 begin
 
 lemma unordered_pair_element_equality:
   assumes "{p, q} = {r, s}" and "p = r"
   shows "q = s"
-proof cases
-  assume "p = q"
-  with `{p, q} = {r, s}` have "{r, s} = {q}" by simp
-  thus "q = s" by simp
-next
-  assume "p \<noteq> q"
-  with `{p, q} = {r, s}` have "{r, s} - {p} = {q}" by auto
-  moreover
-    from `p = r` have "{r, s} - {p} \<subseteq> {s}" by auto
-  ultimately have "{q} \<subseteq> {s}" by simp
-  thus "q = s" by simp
-qed
+  using assms by (auto simp: doubleton_eq_iff)
 
 lemma unordered_pair_equality: "{p, q} = {q, p}"
   by auto
@@ -156,7 +142,7 @@ proof -
 qed
 
 lemma dot_left_diff_distrib:
-  fixes u v x :: "real^('n::finite)"
+  fixes u v x :: "real^'n"
   shows "(u - v) \<bullet> x = (u \<bullet> x) - (v \<bullet> x)"
 proof -
   have "(u \<bullet> x) - (v \<bullet> x) = (\<Sum>i\<in>UNIV. u$i * x$i) - (\<Sum>i\<in>UNIV. v$i * x$i)"
@@ -174,7 +160,7 @@ proof -
 qed
 
 lemma dot_right_diff_distrib:
-  fixes u v x :: "real^('n::finite)"
+  fixes u v x :: "real^'n"
   shows "x \<bullet> (u - v) = (x \<bullet> u) - (x \<bullet> v)"
 proof -
   from inner_commute have "x \<bullet> (u - v) = (u - v) \<bullet> x" by auto
@@ -261,99 +247,21 @@ proof -
   show ?thesis by auto
 qed
 
-lemma scalar_vector_matrix_assoc:
-  fixes k :: real and x :: "real^('n::finite)" and A :: "real^('m::finite)^'n"
-  shows "(k *\<^sub>R x) v* A = k *\<^sub>R (x v* A)"
-proof -
-  { fix i
-    from sum_distrib_left [of k "\<lambda>j. x$j * A$j$i" UNIV]
-    have "(\<Sum>j\<in>UNIV. k * (x$j * A$j$i)) = k * (\<Sum>j\<in>UNIV. x$j * A$j$i)" .. }
-  thus "(k *\<^sub>R x) v* A = k *\<^sub>R (x v* A)"
-    unfolding vector_matrix_mult_def
-    by (simp add: vec_eq_iff algebra_simps)
-qed
-
-lemma vector_scalar_matrix_ac:
-  fixes k :: real and x :: "real^('n::finite)" and A :: "real^('m::finite)^'n"
-  shows "x v* (k *\<^sub>R A) = k *\<^sub>R (x v* A)"
-proof -
-  have "x v* (k *\<^sub>R A) = (k *\<^sub>R x) v* A"
-    unfolding vector_matrix_mult_def
-    by (simp add: algebra_simps)
-  with scalar_vector_matrix_assoc
-  show "x v* (k *\<^sub>R A) = k *\<^sub>R (x v* A)"
-    by auto
-qed
-
-lemma vector_matrix_left_distrib:
-  fixes x y :: "real^('n::finite)" and A :: "real^('m::finite)^'n"
-  shows "(x + y) v* A = x v* A + y v* A"
-  unfolding vector_matrix_mult_def
-  by (simp add: algebra_simps sum.distrib vec_eq_iff)
-
-lemma times_zero_vector [simp]: "A *v 0 = 0"
-  unfolding matrix_vector_mult_def
-  by (simp add: vec_eq_iff)
-
 lemma invertible_times_eq_zero:
-  fixes x :: "real^('n::finite)" and A :: "real^'n^'n"
+  fixes x :: "real^'n" and A :: "real^'n^'n"
   assumes "invertible A" and "A *v x = 0"
   shows "x = 0"
-proof -
-  from `invertible A`
-    and someI_ex [of "\<lambda>A'. A ** A' = mat 1 \<and> A' ** A = mat 1"]
-  have "matrix_inv A ** A = mat 1"
-    unfolding invertible_def matrix_inv_def
-    by simp
-  hence "x = (matrix_inv A ** A) *v x" by (simp add: matrix_vector_mul_lid)
-  also have "\<dots> = matrix_inv A *v (A *v x)"
-    by (simp add: matrix_vector_mul_assoc)
-  also from `A *v x = 0` have "\<dots> = 0" by simp
-  finally show "x = 0" .
-qed
-
-lemma vector_transpose_matrix [simp]: "x v* transpose A = A *v x"
-  unfolding transpose_def vector_matrix_mult_def matrix_vector_mult_def
-  by simp
-
-lemma transpose_matrix_vector [simp]: "transpose A *v x = x v* A"
-  unfolding transpose_def vector_matrix_mult_def matrix_vector_mult_def
-  by simp
-
-lemma transpose_invertible:
-  fixes A :: "real^('n::finite)^'n"
-  assumes "invertible A"
-  shows "invertible (transpose A)"
-proof -
-  from `invertible A` obtain A' where "A ** A' = mat 1" and "A' ** A = mat 1"
-    unfolding invertible_def
-    by auto
-  with matrix_transpose_mul [of A A'] and matrix_transpose_mul [of A' A]
-  have "transpose A' ** transpose A = mat 1" and "transpose A ** transpose A' = mat 1"
-    by (simp add: transpose_mat)+
-  thus "invertible (transpose A)"
-    unfolding invertible_def
-    by auto
-qed
+  using assms invertible_def matrix_left_invertible_ker by blast
 
 lemma times_invertible_eq_zero:
-  fixes x :: "real^('n::finite)" and A :: "real^'n^'n"
+  fixes x :: "real^'n" and A :: "real^'n^'n"
   assumes "invertible A" and "x v* A = 0"
   shows "x = 0"
-proof -
-  from transpose_invertible and `invertible A` have "invertible (transpose A)" by auto
-  with invertible_times_eq_zero [of "transpose A" x] and `x v* A = 0`
-  show "x = 0" by simp
-qed
+  using transpose_invertible assms invertible_times_eq_zero by fastforce
 
 lemma matrix_id_invertible:
-  "invertible (mat 1 :: ('a::semiring_1)^('n::finite)^'n)"
-proof -
-  from matrix_mul_lid [of "mat 1 :: 'a^'n^'n"]
-  show "invertible (mat 1 :: 'a^'n^'n)"
-    unfolding invertible_def
-    by auto
-qed
+  "invertible (mat 1 :: ('a::semiring_1)^'n^'n)"
+  by (simp add: invertible_def)
 
 lemma Image_refl_on_nonempty:
   assumes "refl_on A r" and "x \<in> A"
@@ -367,12 +275,7 @@ qed
 lemma quotient_element_nonempty:
   assumes "equiv A r" and "X \<in> A//r"
   shows "\<exists> x. x \<in> X"
-proof -
-  from `X \<in> A//r` obtain x where "x \<in> A" and "X = r``{x}"
-    unfolding quotient_def
-    by auto
-  with equiv_class_self [of A r x] and `equiv A r` show "\<exists> x. x \<in> X" by auto
-qed
+  using assms in_quotient_imp_non_empty by fastforce
 
 lemma zero_3: "(3::3) = 0"
   by simp
@@ -380,13 +283,7 @@ lemma zero_3: "(3::3) = 0"
 lemma card_suc_ge_insert:
   fixes A and x
   shows "card A + 1 \<ge> card (insert x A)"
-proof cases
-  assume "finite A"
-  with card_insert_if [of A x] show "card A + 1 \<ge> card (insert x A)" by simp
-next
-  assume "infinite A"
-  thus "card A + 1 \<ge> card (insert x A)" by simp
-qed
+  using card_insert_le_m1 by fastforce
 
 lemma card_le_UNIV:
   fixes A :: "('n::finite) set"
@@ -396,30 +293,10 @@ lemma card_le_UNIV:
 lemma partition_Image_element:
   assumes "equiv A r" and "X \<in> A//r" and "x \<in> X"
   shows "r``{x} = X"
-proof -
-  from Union_quotient and assms have "x \<in> A" by auto
-  with quotientI [of x A r] have "r``{x} \<in> A//r" by simp
-
-  from equiv_class_self and `equiv A r` and `x \<in> A` have "x \<in> r``{x}" by simp
-
-  from `equiv A r` and `x \<in> A` have "(x, x) \<in> r"
-    unfolding equiv_def and refl_on_def
-    by simp
-
-  with quotient_eqI [of A r X "r``{x}" x x]
-    and assms and `Image r {x} \<in> A//r` and `x \<in> Image r {x}`
-  show "r``{x} = X" by simp
-qed
+  by (metis Image_singleton_iff assms equiv_class_eq_iff quotientE)
 
 lemma card_insert_ge: "card (insert x A) \<ge> card A"
-proof cases
-  assume "finite A"
-  with card_insert_le [of A x] show "card (insert x A) \<ge> card A" by simp
-next
-  assume "infinite A"
-  hence "card A = 0" by simp
-  thus "card (insert x A) \<ge> card A" by simp
-qed
+  by (metis card_infinite card_insert_le zero_le)
 
 lemma choose_1:
   assumes "card S = 1"
@@ -490,75 +367,24 @@ lemma sgn_plus:
   fixes x y :: "'a::linordered_idom"
   assumes "sgn x = sgn y"
   shows "sgn (x + y) = sgn x"
-proof cases
-  assume "x = 0"
-  with `sgn x = sgn y` have "y = 0" by (simp add: sgn_0_0)
-  with `x = 0` show "sgn (x + y) = sgn x" by (simp add: sgn_0_0)
-next
-  assume "x \<noteq> 0"
-  show "sgn (x + y) = sgn x"
-  proof cases
-    assume "x > 0"
-    with `sgn x = sgn y` and sgn_1_pos [where ?'a = 'a] have "y > 0" by simp
-    with `x > 0` and sgn_1_pos [where ?'a = 'a]
-    show "sgn (x + y) = sgn x" by simp
-  next
-    assume "\<not> x > 0"
-    with `x \<noteq> 0` have "x < 0" by simp
-    with `sgn x = sgn y` and sgn_1_neg [where ?'a = 'a] have "y < 0" by auto
-    with `x < 0` and sgn_1_neg [where ?'a = 'a]
-    show "sgn (x + y) = sgn x" by simp
-  qed
-qed
+  by (simp add: assms same_sgn_sgn_add)
 
 lemma sgn_div:
   fixes x y :: "'a::linordered_field"
   assumes "y \<noteq> 0" and "sgn x = sgn y"
   shows "x / y > 0"
-proof cases
-  assume "y > 0"
-  with `sgn x = sgn y` and sgn_1_pos [where ?'a = 'a] have "x > 0" by simp
-  with `y > 0` show "x / y > 0" by (simp add: zero_less_divide_iff)
-next
-  assume "\<not> y > 0"
-  with `y \<noteq> 0` have "y < 0" by simp
-  with `sgn x = sgn y` and sgn_1_neg [where ?'a = 'a] have "x < 0" by simp
-  with `y < 0` show "x / y > 0" by (simp add: zero_less_divide_iff)
-qed
+  using assms sgn_1_pos sgn_eq_0_iff by fastforce
 
 lemma abs_plus:
   fixes x y :: "'a::linordered_idom"
   assumes "sgn x = sgn y"
   shows "\<bar>x + y\<bar> = \<bar>x\<bar> + \<bar>y\<bar>"
-proof -
-  from `sgn x = sgn y` have "sgn (x + y) = sgn x" by (rule sgn_plus)
-  hence "\<bar>x + y\<bar> = (x + y) * sgn x" by (simp add: abs_sgn)
-  also from `sgn x = sgn y`
-  have "\<dots> = x * sgn x + y * sgn y" by (simp add: algebra_simps)
-  finally show "\<bar>x + y\<bar> = \<bar>x\<bar> + \<bar>y\<bar>" by (simp add: abs_sgn)
-qed
+  by (simp add: assms same_sgn_abs_add)
 
 lemma sgn_plus_abs:
   fixes x y :: "'a::linordered_idom"
   assumes "\<bar>x\<bar> > \<bar>y\<bar>"
   shows "sgn (x + y) = sgn x"
-proof cases
-  assume "x > 0"
-  with `\<bar>x\<bar> > \<bar>y\<bar>` have "x + y > 0" by simp
-  with `x > 0` show "sgn (x + y) = sgn x" by simp
-next
-  assume "\<not> x > 0"
-
-  from `\<bar>x\<bar> > \<bar>y\<bar>` have "x \<noteq> 0" by simp
-  with `\<not> x > 0` have "x < 0" by simp
-  with `\<bar>x\<bar> > \<bar>y\<bar>` have "x + y < 0" by simp
-  with `x < 0` show "sgn (x + y) = sgn x" by simp
-qed
-
-lemma sqrt_4 [simp]: "sqrt 4 = 2"
-proof -
-  have "sqrt 4 = sqrt (2 * 2)" by simp
-  thus "sqrt 4 = 2" by (unfold real_sqrt_abs2) simp
-qed
+  by (cases "x > 0") (use assms in auto)
 
 end
