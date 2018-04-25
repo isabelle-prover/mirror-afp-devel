@@ -281,7 +281,8 @@ proof -
     finally show "A *v x = 0"
       by (metis (lifting) power_not_zero norm_eq_0_imp)
   qed
-  then show ?thesis by auto
+  then show ?thesis
+    by (auto simp: vector_matrix_zero)
 qed
 
 
