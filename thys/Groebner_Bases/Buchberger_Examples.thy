@@ -18,9 +18,8 @@ global_interpretation opp_drlex: gd_powerprod drlex_pm drlex_pm_strict
   and tail_drlex = opp_drlex.tail
   and ord_drlex = opp_drlex.ord_p
   and ord_strict_drlex = opp_drlex.ord_strict_p
-  and rd_mult_drlex = opp_drlex.rd_mult
-  and rd_drlex = opp_drlex.rd
-  and rd_list_drlex = opp_drlex.rd_list
+  and find_adds_drlex = opp_drlex.find_adds
+  and trd_aux_drlex = opp_drlex.trd_aux
   and trd_drlex = opp_drlex.trd
   and spoly_drlex = opp_drlex.spoly
   and canon_pair_order_drlex = opp_drlex.canon_pair_order
@@ -70,21 +69,6 @@ lemma
 
 lemma
   "ord_strict_drlex (X\<^sup>2 * Z ^ 4 - 2 * Y ^ 3 * Z\<^sup>2) (X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2)"
-  by eval
-
-lemma
-  "rd_mult_drlex (X\<^sup>2 * Z ^ 4 - 2 * Y ^ 3 * Z\<^sup>2) (Y\<^sup>2 * Z + 2 * Z ^ 3) =
-    Some (1 / 2, sparse\<^sub>0 [(0, 2), (2, 1)])"
-  by eval
-
-lemma
-  "rd_drlex (X\<^sup>2 * Z ^ 4 - 2 * Y ^ 3 * Z\<^sup>2) (Y\<^sup>2 * Z + 2 * Z ^ 3) =
-    (-2 * Y ^ 3 * Z\<^sup>2 - Const\<^sub>0 (1 / 2) * X\<^sup>2 * Y\<^sup>2 * Z\<^sup>2, True)"
-  by eval
-
-lemma
-  "rd_list_drlex [Y\<^sup>2 * Z + 2 * Z ^ 3] (X\<^sup>2 * Z ^ 4 - 2 * Y ^ 3 * Z\<^sup>2) =
-    (-2 * Y ^ 3 * Z\<^sup>2 - Const\<^sub>0 (1 / 2) * X\<^sup>2 * Y\<^sup>2 * Z\<^sup>2, True)"
   by eval
 
 lemma

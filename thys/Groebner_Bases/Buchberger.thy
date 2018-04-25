@@ -64,7 +64,7 @@ text \<open>Actually, @{const gb_red_aux} is only called on singleton lists.\<cl
 
 lemma set_gb_red_aux:
   "set (gb_red_aux bs ps) = (trdsp (map fst bs)) ` set ps - {0}"
-  by (simp add: gb_red_aux_def del: trd.simps, blast)
+  by (simp add: gb_red_aux_def, blast)
 
 lemma in_set_gb_red_auxI:
   assumes "(p, q) \<in> set ps" and "h = trdsp (map fst bs) (p, q)" and "h \<noteq> 0"
