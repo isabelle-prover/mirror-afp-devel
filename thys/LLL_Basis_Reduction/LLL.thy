@@ -1623,7 +1623,7 @@ proof (atomize(full), cases "i = 0")
     (* calculation of new mu-values *)
     { (* no change of mu for lines before line i - 1 *)
       fix jj ii
-      assume ii: "ii < i - 1" "jj < ii" 
+      assume ii: "ii < i - 1"  
       have "?mu2 ii jj = ?mu1 ii jj" using ii i len
         by (subst gs_\<mu>_identical[of _ _ "RAT F1" "RAT F2"], auto simp: F2_def)
     } note mu'_mu_small_i = this
@@ -1736,13 +1736,17 @@ proof (atomize(full), cases "i = 0")
     {
       fix ii j
       assume ii: "ii > i" "ii < m" 
-       and j: "j < ii" "j \<noteq> i" "j \<noteq> i - 1" 
-      have "?mu2 ii j = (?f2 ii \<bullet> ?g2 j) / sq_norm (?g2 j)" 
-        unfolding gs.\<mu>.simps using j by auto
-      also have "?f2 ii = ?f1 ii" using ii len unfolding F2_def by auto
-      also have "?g2 j = ?g1 j" using g2_g1_identical[of j] j ii by auto
-      finally have "?mu2 ii j = ?mu1 ii j" 
-        unfolding gs.\<mu>.simps using j by auto
+       and ji: "j \<noteq> i" "j \<noteq> i - 1" 
+      {
+        assume j: "j < ii" 
+        have "?mu2 ii j = (?f2 ii \<bullet> ?g2 j) / sq_norm (?g2 j)" 
+          unfolding gs.\<mu>.simps using j by auto
+        also have "?f2 ii = ?f1 ii" using ii len unfolding F2_def by auto
+        also have "?g2 j = ?g1 j" using g2_g1_identical[of j] j ii ji by auto
+        finally have "?mu2 ii j = ?mu1 ii j" 
+          unfolding gs.\<mu>.simps using j by auto
+      }
+      hence "?mu2 ii j = ?mu1 ii j" by (cases "j < ii", auto simp: gs.\<mu>.simps)
     } note mu_no_change_large_row = this
 
     { (* the new value of mu i (i - 1) *)
@@ -1826,12 +1830,16 @@ proof (atomize(full), cases "i = 0")
     } note mu'_mu_large_row_i = this
 
     note new_mu_lemmas = 
-        mu'_mu_large_row_i 
+        mu'_mu_large_row_i
         mu'_mu_large_row_im1 
         mu_no_change_large_row
         mu'_mu_i_im1
         mu'_mu_small_i
         mu'_mu_i_im1_j
+    note new_norm_and_g_lemmas = 
+      sq_norm_g2_i
+      sq_norm_g2_im1
+      g2_g1_identical
     text \<open>With @{thm new_mu_lemmas} one has the full information to calculate the new mu-values without
           using the definition of mu.
         So, these theorems permit to change the implementation where the $g$'s are no longer required,
@@ -1844,7 +1852,7 @@ proof (atomize(full), cases "i = 0")
     proof (intro conjI[OF red] allI impI, goal_cases)
       case (1 i' j)
       with sred have "\<bar>?mu1 i' j\<bar> \<le> 1 / 2" unfolding gs.reduced_def by auto
-      thus ?case using mu'_mu_small_i[OF 1] by simp
+      thus ?case using mu'_mu_small_i[OF 1(1)] by simp
     qed
 
     (* implementation is correct *)
