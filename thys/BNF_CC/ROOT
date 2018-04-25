@@ -1,4 +1,6 @@
-session BNF_CC = HOL +
+chapter AFP
+
+session BNF_CC (AFP) = HOL +
   options [timeout=600]
   sessions
     "HOL-Library"
