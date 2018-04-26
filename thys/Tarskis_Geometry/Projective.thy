@@ -1346,7 +1346,7 @@ proof -
 
   from `proj2_rep (proj2_abs x) = k *\<^sub>R x` and `cltn2_rep (cltn2_abs A) = c *\<^sub>R A`
   have "proj2_rep (proj2_abs x) v* cltn2_rep (cltn2_abs A) = (k*c) *\<^sub>R (x v* A)"
-    by (simp add: scalar_vector_matrix_assoc vector_scalar_matrix_ac)
+    by (simp add: scaleR_vector_matrix_assoc vector_scaleR_matrix_ac)
   with `k * c \<noteq> 0` 
   show "apply_cltn2 (proj2_abs x) (cltn2_abs A) = proj2_abs (x v* A)"
     unfolding apply_cltn2_def
@@ -1553,10 +1553,9 @@ lemma apply_cltn2_id [simp]: "apply_cltn2 p cltn2_id = p"
 proof -
   from matrix_id_invertible and apply_cltn2_right_abs
   have "apply_cltn2 p cltn2_id = proj2_abs (proj2_rep p v* mat 1)"
-    unfolding cltn2_id_def
-    by auto
+    unfolding cltn2_id_def by blast
   thus "apply_cltn2 p cltn2_id = p"
-    by (simp add: vector_matrix_mul_rid proj2_abs_rep)
+    by (simp add: proj2_abs_rep)
 qed
 
 lemma apply_cltn2_compose:
@@ -2137,7 +2136,7 @@ lemma apply_cltn2_linear:
   = proj2_abs (j *\<^sub>R (v v* cltn2_rep C) + k *\<^sub>R (w v* cltn2_rep C))"
 proof -
   have "?u = (j *\<^sub>R v + k *\<^sub>R w) v* cltn2_rep C"
-    by (simp only: vector_matrix_left_distrib scalar_vector_matrix_assoc)
+    by (simp only: vector_matrix_left_distrib scaleR_vector_matrix_assoc)
   with `j *\<^sub>R v + k *\<^sub>R w \<noteq> 0` and non_zero_mult_rep_non_zero
   show "?u \<noteq> 0" by simp
 

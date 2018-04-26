@@ -3,8 +3,7 @@
     Maintainer:  Tim Makarios <tjm1983 at gmail.com>
 *)
 
-(* After Isabelle 2012, some of these theorems
-may be moved to the Isabelle repository *)
+(* Some of these theorems previously here have been moved to the Isabelle repository *)
 
 section "Linear algebra"
 
@@ -152,11 +151,6 @@ qed
 
 subsection "Matrices"
     
-    lemma zero_times_left [simp]: "0 ** A = (0::'a::semiring_1^'n^'m)" 
-    and   zero_times_right [simp]: "A ** 0 = (0::'a::semiring_1^'n^'m)"
-      by (simp_all add: matrix_matrix_mult_def zero_vec_def)
-
-
 lemma zero_not_invertible:
   "\<not> (invertible (0::real^'n^'n))"
   using invertible_times_eq_zero matrix_vector_mult_0 by blast
@@ -183,11 +177,6 @@ lemma matrix_inv_invertible:
   using `invertible M` and matrix_inv
   unfolding invertible_def [of "matrix_inv M"]
   by auto
-
-lemma vector_matrix_mul_rid:
-  fixes v :: "('a::semiring_1)^'n"
-  shows "v v* mat 1 = v"
-  by (metis matrix_vector_mul_lid transpose_mat vector_transpose_matrix)
 
 lemma invertible_times_non_zero:
   fixes M :: "real^'n^'n"
@@ -224,11 +213,6 @@ proof -
   then show ?thesis
     by (simp add: matrix_mul_assoc symmatrix_def)
 qed
-
-lemma matrix_vector_right_distrib:
-  fixes v w :: "real^'n" and M :: "real^'n^'m"
-  shows "M *v (v + w) = M *v v + M *v w"
-  by (simp add: matrix_vector_mult_add_distrib)
 
 lemma non_zero_mult_invertible_non_zero:
   fixes M :: "real^'n^'n"

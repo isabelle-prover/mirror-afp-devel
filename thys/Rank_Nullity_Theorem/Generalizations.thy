@@ -1792,10 +1792,7 @@ qed
 (****************** Generalized parts of the file Cartesian_Euclidean_Space.thy ******************)
 
 lemma vector_mul_lcancel[simp]: "a *s x = a *s y \<longleftrightarrow> a = (0::'a::{field}) \<or> x = y"
-  by (metis eq_iff_diff_eq_0 vector_mul_eq_0 vector_ssub_ldistrib)
-
-lemma vector_mul_lcancel_imp: "a \<noteq> (0::'a::{field}) ==>  a *s x = a *s y ==> (x = y)"
-  by (metis vector_mul_lcancel)
+  by auto
 
 lemma linear_componentwise:
   fixes f:: "'a::field ^'m \<Rightarrow> 'a ^ 'n"
@@ -1965,7 +1962,6 @@ qed
 
 end
 
-(*Maybe change de name*)
 lemma sum_constant_scaleR:
   shows "(\<Sum>x\<in>A. y) = of_nat (card A) *s y"
   apply (cases "finite A")
@@ -2431,7 +2427,7 @@ proof -
     have thr0: "- row i A = sum (\<lambda>j. (1/ c i) *s (c j *s row j A)) (?U - {i})"
       unfolding sum.remove[OF fU iU] sum_cmul
       apply -
-      apply (rule vector_mul_lcancel_imp[OF ci])
+      apply (rule vec.scale_left_imp_eq[OF ci])
       apply (auto simp add: field_simps)
       unfolding *
       apply rule

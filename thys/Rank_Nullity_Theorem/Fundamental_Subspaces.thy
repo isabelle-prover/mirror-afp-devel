@@ -147,7 +147,7 @@ lemma null_space_is_preserved:
   assumes P: "invertible P"
   shows "null_space (P**A) = null_space A"
   unfolding null_space_def 
-  using P matrix_inv_left matrix_left_invertible_ker matrix_vector_mul_assoc matrix_vector_zero
+  using P matrix_inv_left matrix_left_invertible_ker matrix_vector_mul_assoc matrix_vector_mult_0_right
   by metis
 
 lemma row_space_is_preserved:
