@@ -607,7 +607,7 @@ proof -
   let ?q' = "proj2_rep q"
   let ?B = "{?p', ?q'}"
   from card_suc_ge_insert [of ?p' "{?q'}"] have "card ?B \<le> 2" by simp
-  with card_ge_dim [of ?B] have "dim ?B < 3" by simp
+  with dim_le_card [of ?B] have "dim ?B < 3" by simp
   with lowdim_subset_hyperplane [of ?B]
   obtain l' where "l' \<noteq> 0" and "span ?B \<subseteq> {x. l' \<bullet> x = 0}" by auto
   let ?l = "proj2_line_abs l'"
@@ -651,13 +651,12 @@ proof -
   from proj2_line_through_incident
   have "proj2_incident p ?m" and "proj2_incident q ?m" by simp_all
   with `proj2_incident p l` and `proj2_incident q l`
-  have "\<forall> w\<in>?A. orthogonal ?m' w" and "\<forall> w\<in>?A. orthogonal ?l' w"
+  have ortho: "\<And>w. w\<in>?A \<Longrightarrow> orthogonal ?m' w" "\<And>w. w\<in>?A \<Longrightarrow> orthogonal ?l' w"
     unfolding proj2_incident_def and orthogonal_def
-    by (simp_all add: inner_commute)
+    by (metis empty_iff inner_commute insert_iff)+
   from proj2_rep_independent and `p \<noteq> q` have "independent ?A" by simp
   from proj2_line_rep_non_zero have "?m' \<noteq> 0" by simp
-  with orthogonal_independent
-    and `independent ?A` and `\<forall> w\<in>?A. orthogonal ?m' w`
+  with orthogonal_independent `independent ?A` ortho
   have "independent ?B" by auto
 
   from proj2_rep_inj and `p \<noteq> q` have "?p' \<noteq> ?q'"
@@ -665,13 +664,7 @@ proof -
     by auto
   hence "card ?A = 2" by simp
   moreover have "?m' \<notin> ?A"
-  proof
-    assume "?m' \<in> ?A"
-    with span_inc [of ?A] have "?m' \<in> span ?A" by auto
-    with orthogonal_in_span_eq_0 and `\<forall> w\<in>?A. orthogonal ?m' w`
-    have "?m' = 0" by auto
-    with `?m' \<noteq> 0` show False ..
-  qed
+    using ortho(1) orthogonal_self proj2_line_rep_non_zero by auto
   ultimately have "card ?B = 3" by simp
   with independent_is_basis [of ?B] and `independent ?B`
   have "is_basis ?B" by simp
@@ -679,8 +672,7 @@ proof -
   let ?l'' = "?l' - c ?m' *\<^sub>R ?m'"
   from `?l' = (\<Sum> v\<in>?B. c v *\<^sub>R v)` and `?m' \<notin> ?A`
   have "?l'' = (\<Sum> v\<in>?A. c v *\<^sub>R v)" by simp
-  with orthogonal_sum [of ?A]
-    and `\<forall> w\<in>?A. orthogonal ?l' w` and `\<forall> w\<in>?A. orthogonal ?m' w`
+  with orthogonal_sum [of ?A] ortho
   have "orthogonal ?l' ?l''" and "orthogonal ?m' ?l''"
     by (simp_all add: scalar_equiv)
   from `orthogonal ?m' ?l''`
@@ -1354,7 +1346,7 @@ proof -
 
   from `proj2_rep (proj2_abs x) = k *\<^sub>R x` and `cltn2_rep (cltn2_abs A) = c *\<^sub>R A`
   have "proj2_rep (proj2_abs x) v* cltn2_rep (cltn2_abs A) = (k*c) *\<^sub>R (x v* A)"
-    by (simp add: scalar_vector_matrix_assoc vector_scalar_matrix_ac)
+    by (simp add: scaleR_vector_matrix_assoc vector_scaleR_matrix_ac)
   with `k * c \<noteq> 0` 
   show "apply_cltn2 (proj2_abs x) (cltn2_abs A) = proj2_abs (x v* A)"
     unfolding apply_cltn2_def
@@ -1561,10 +1553,9 @@ lemma apply_cltn2_id [simp]: "apply_cltn2 p cltn2_id = p"
 proof -
   from matrix_id_invertible and apply_cltn2_right_abs
   have "apply_cltn2 p cltn2_id = proj2_abs (proj2_rep p v* mat 1)"
-    unfolding cltn2_id_def
-    by auto
+    unfolding cltn2_id_def by blast
   thus "apply_cltn2 p cltn2_id = p"
-    by (simp add: vector_matrix_mul_rid proj2_abs_rep)
+    by (simp add: proj2_abs_rep)
 qed
 
 lemma apply_cltn2_compose:
@@ -1943,11 +1934,11 @@ proof -
       and `card ?B = 3`
     have "card ?Bi = 2" by (simp add: card_gt_0_diff_singleton)
     hence "finite ?Bi" by simp
-    with `card ?Bi = 2` and card_ge_dim [of ?Bi] have "dim ?Bi \<le> 2" by simp
+    with `card ?Bi = 2` and dim_le_card [of ?Bi] have "dim ?Bi \<le> 2" by simp
     hence "dim (span ?Bi) \<le> 2" by (subst dim_span)
     then have "span ?Bi \<noteq> UNIV"
       by clarify (auto simp: dim_UNIV)
-    with `span (insert ?v ?Bi) = UNIV` and in_span_eq
+    with `span (insert ?v ?Bi) = UNIV` and span_redundant
     have "?v \<notin> span ?Bi" by auto
 
     { assume "c (proj2_rep (a$i)) = 0"
@@ -2145,7 +2136,7 @@ lemma apply_cltn2_linear:
   = proj2_abs (j *\<^sub>R (v v* cltn2_rep C) + k *\<^sub>R (w v* cltn2_rep C))"
 proof -
   have "?u = (j *\<^sub>R v + k *\<^sub>R w) v* cltn2_rep C"
-    by (simp only: vector_matrix_left_distrib scalar_vector_matrix_assoc)
+    by (simp only: vector_matrix_left_distrib scaleR_vector_matrix_assoc)
   with `j *\<^sub>R v + k *\<^sub>R w \<noteq> 0` and non_zero_mult_rep_non_zero
   show "?u \<noteq> 0" by simp
 
