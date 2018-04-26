@@ -43,7 +43,7 @@ function (sequential,domintros)  stringFromNatHelper  :: " nat \<Rightarrow>(cha
   if n =( 0 :: nat) then
     acc1
   else
-    stringFromNatHelper (n div( 10 :: nat)) (char_of ((n mod( 10 :: nat)) +( 48 :: nat)) # acc1))" 
+    stringFromNatHelper (n div( 10 :: nat)) ((%n. char_of (n::nat)) ((n mod( 10 :: nat)) +( 48 :: nat)) # acc1))" 
 by pat_completeness auto
 
 
@@ -59,7 +59,7 @@ function (sequential,domintros)  stringFromNaturalHelper  :: " nat \<Rightarrow>
   if n =( 0 :: nat) then
     acc1
   else
-    stringFromNaturalHelper (n div( 10 :: nat)) (char_of ( ((n mod( 10 :: nat)) +( 48 :: nat))) # acc1))" 
+    stringFromNaturalHelper (n div( 10 :: nat)) ((%n. char_of (n::nat)) ( ((n mod( 10 :: nat)) +( 48 :: nat))) # acc1))" 
 by pat_completeness auto
 
 

@@ -49,7 +49,7 @@ chapter \<open>Auxiliary Definitions needed by Lem\<close>
 theory "LemExtraDefs"
 
 imports
- 	 Main
+   Main
    "HOL-Library.Permutation"
    "HOL-Library.While_Combinator"
 begin
