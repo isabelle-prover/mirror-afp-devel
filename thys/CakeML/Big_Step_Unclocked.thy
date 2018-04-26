@@ -301,7 +301,7 @@ evaluate env s1 e (s2, Rval v1) \<Longrightarrow>
 evaluate_list env s2 es (s3, Rerr err)
 ==>
 evaluate_list env s1 (e # es) (s3, Rerr err)"
-print_statement evaluate_list_evaluate.inducts
+
 lemma unclocked_sound:
   "evaluate_list v s es bv \<Longrightarrow> BigStep.evaluate_list False v s es bv"
   "evaluate v s e bv' \<Longrightarrow> BigStep.evaluate False v s e bv'"
