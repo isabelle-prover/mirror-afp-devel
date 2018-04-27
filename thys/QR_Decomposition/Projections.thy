@@ -191,7 +191,6 @@ lemma norm_normalize_set_of_vec:
   assumes "x \<noteq> 0"
   and "x \<in> normalize_set_of_vec X"
   shows "norm x = 1" 
-  using assms norm_normalize unfolding normalize_set_of_vec_def image_def
-  using norm_eq_0_imp normalize_0 by auto
+  using assms norm_normalize normalize_0 unfolding normalize_set_of_vec_def  by blast
 
 end
