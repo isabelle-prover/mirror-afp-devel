@@ -295,7 +295,7 @@ proof -
   proof (auto)
     fix x assume x: "x \<in> null_space A"
     show "x \<in> null_space (transpose A ** A)" using x unfolding null_space_def
-      by (metis (lifting, full_types) matrix_vector_mul_assoc matrix_vector_zero mem_Collect_eq)
+      by (metis (lifting, full_types) matrix_vector_mul_assoc matrix_vector_mult_0_right mem_Collect_eq)
   next
     fix x assume x: "x \<in> null_space (transpose A ** A)"
     show "x \<in> null_space A" 
