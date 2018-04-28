@@ -1003,8 +1003,8 @@ proof -
         unfolding vector_def
         by simp
       hence "x \<in> rows ?M"
-        unfolding rows_def and row_def
-        by (auto simp add: vec_lambda_eta) }
+        unfolding rows_def row_def vec_lambda_eta
+        by blast }
     thus "{?u, ?v, ?w} \<subseteq> rows ?M" ..
   qed
   with `S = {p,q,r}`
