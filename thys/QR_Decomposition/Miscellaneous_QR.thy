@@ -279,10 +279,10 @@ proof -
       by (metis eq_0 that dot_lmul_matrix eq inner_zero_right norm_zero)
     also have "... = norm (A *v x)^2" unfolding norm_mult_vec[of "(A *v x)"] power2_eq_square ..
     finally show "A *v x = 0"
-      by (metis (lifting) power_not_zero norm_eq_0_imp)
+      by simp
   qed
   then show ?thesis
-    by (auto simp: vector_matrix_zero)
+    by auto
 qed
 
 
