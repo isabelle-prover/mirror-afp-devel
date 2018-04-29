@@ -871,7 +871,6 @@ proof -
     subgoal using \<open>e > 0\<close> by simp
     subgoal premises prems
     proof -
-      note prems
       have "(x, y) \<in> cball (x, y) r2"
         using r2
         by auto
@@ -882,15 +881,14 @@ proof -
       moreover
       have "cball (x, y) r2 \<subseteq> S"
         using r r2 by auto
-      moreover have "\<forall>y\<in>cball (x, y) r2. G (H y) = y"
+      moreover have "\<And>z. z \<in> cball (x, y) r2 \<Longrightarrow> G (H z) = z"
         using r2 by (auto intro!: GH)
       ultimately have "(G has_derivative Hi) (at (H (x, y)))"
-        apply (rule has_derivative_inverse[where g = G and f = H,
+      proof (rule has_derivative_inverse[where g = G and f = H,
               OF compact_cball _ _ continuous_on_subset[OF cH] _ H' _ _])
-        subgoal by (simp add: S)
-        subgoal by (rule blinfun.bounded_linear_right)
-        subgoal using Hi by transfer auto
-        done
+        show "blinfun_apply Hi \<circ> blinfun_apply (H' (x, y)) = id"
+          using Hi by transfer auto
+      qed (use S blinfun.bounded_linear_right in auto)
       then have g': "(G has_derivative Hi) (at (x, 0))"
         by (auto simp: H_def assms)
       show ?thesis
