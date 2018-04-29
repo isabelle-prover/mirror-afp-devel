@@ -1,3 +1,17 @@
+[WebAssembly]
+title = WebAssembly
+author = Conrad Watt <http://www.cl.cam.ac.uk/~caw77/>
+topic = Computer Science/Programming Languages/Language Definitions
+date = 2018-04-29
+notify = caw77@cam.ac.uk
+abstract = 
+  This is a mechanised specification of the WebAssembly language, drawn
+  mainly from the previously published paper formalisation of Haas et
+  al. Also included is a full proof of soundness of the type system,
+  together with a verified type checker and interpreter. We include only
+  a partial procedure for the extraction of the type checker and
+  interpreter here. For more details, please see our paper in CPP 2018.
+
 [Knuth_Morris_Pratt]
 title = The string search algorithm by Knuth, Morris and Pratt
 author = Fabian Hellauer <mailto:hellauer@in.tum.de>, Peter Lammich <http://www4.in.tum.de/~lammich/>
