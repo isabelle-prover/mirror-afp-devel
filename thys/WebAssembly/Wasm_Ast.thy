@@ -2,20 +2,20 @@ section {* WebAssembly Core AST *}
 
 theory Wasm_Ast imports Main "Native_Word.Uint8" begin
 
-type_synonym --"immediate"
+type_synonym \<comment> \<open>immediate\<close>
   i = nat
-type_synonym --"static offset"
+type_synonym \<comment> \<open>static offset\<close>
   off = nat
-type_synonym --"alignment exponent"
+type_synonym \<comment> \<open>alignment exponent\<close>
   a = nat
 
---"primitive types"
+\<comment> \<open>primitive types\<close>
 typedecl i32
 typedecl i64
 typedecl f32
 typedecl f64
 
---"memory"
+\<comment> \<open>memory\<close>
 type_synonym byte = uint8
 
 typedef bytes = "UNIV :: (byte list) set" ..
@@ -35,24 +35,24 @@ lift_definition read_bytes :: "mem \<Rightarrow> nat \<Rightarrow> nat \<Rightar
 lift_definition write_bytes :: "mem \<Rightarrow> nat \<Rightarrow> bytes \<Rightarrow> mem" is "(\<lambda>m n bs. (take n m) @ bs @ (drop (n + length bs) m))" .
 lift_definition mem_append :: "mem \<Rightarrow> bytes \<Rightarrow> mem" is append .
 
---"host"
+\<comment> \<open>host\<close>
 typedecl host
 typedecl host_state
 
-datatype --"value types"
+datatype \<comment> \<open>value types\<close>
   t = T_i32 | T_i64 | T_f32 | T_f64
 
-datatype --"packed types"
+datatype \<comment> \<open>packed types\<close>
   tp = Tp_i8 | Tp_i16 | Tp_i32
 
-datatype --"mutability"
+datatype \<comment> \<open>mutability\<close>
   mut = T_immut | T_mut
 
-record tg = --"global types"
+record tg = \<comment> \<open>global types\<close>
   tg_mut :: mut
   tg_t :: t
 
-datatype --"function types"
+datatype \<comment> \<open>function types\<close>
   tf = Tf "t list" "t list" ("_ '_> _" 60)
 
 (* TYPING *)
@@ -100,14 +100,14 @@ datatype
 datatype
   cvtop = Convert | Reinterpret
 
-datatype --"values"
+datatype \<comment> \<open>values\<close>
   v =
     ConstInt32 i32
     | ConstInt64 i64
     | ConstFloat32 f32
     | ConstFloat64 f64
 
-datatype --"basic instructions"
+datatype \<comment> \<open>basic instructions\<close>
   b_e =
     Unreachable
     | Nop
@@ -141,11 +141,11 @@ datatype --"basic instructions"
     | Relop_f t relop_f
     | Cvtop t cvtop t "sx option"
 
-datatype cl = --"function closures"
+datatype cl = \<comment> \<open>function closures\<close>
   Func_native i tf "t list" "b_e list"
 | Func_host tf host
 
-record inst = --"instances"
+record inst = \<comment> \<open>instances\<close>
   types :: "tf list"
   funcs :: "i list"
   tab :: "i option"
@@ -158,14 +158,14 @@ record global =
   g_mut :: mut
   g_val :: v
 
-record s = --"store"
+record s = \<comment> \<open>store\<close>
   inst :: "inst list"
   funcs :: "cl list"
   tab :: "tabinst list"
   mem :: "mem list"
   globs :: "global list"
 
-datatype e = --"administrative instruction"
+datatype e = \<comment> \<open>administrative instruction\<close>
   Basic b_e ("$_" 60)
   | Trap
   | Callcl cl
@@ -173,8 +173,8 @@ datatype e = --"administrative instruction"
   | Local nat i "v list" "e list"
 
 datatype Lholed =
-    --"L0 = v* [<hole>] e*"
+    \<comment> \<open>L0 = v* [<hole>] e*\<close>
     LBase "e list" "e list"
-    --"L(i+1) = v* (label n {e* } Li) e*"
+    \<comment> \<open>L(i+1) = v* (label n {e* } Li) e*\<close>
   | LRec "e list" nat "e list" Lholed "e list"
 end
