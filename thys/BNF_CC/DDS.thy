@@ -30,7 +30,7 @@ coinductive rel_dds :: "('a \<Rightarrow> 'a' \<Rightarrow> bool) \<Rightarrow> 
   for A B where
   "rel_dds A B S S'" if "rel_fun A (rel_prod B (rel_dds A B)) (run S) (run S')"
 
-lemma rel_dds'_rel_dds: "rel_dds' B = rel_dds op = B"
+lemma rel_dds'_rel_dds: "rel_dds' B = rel_dds (=) B"
   apply (intro ext iffI)
    apply (erule rel_dds.coinduct)
    apply (erule dds.rel_cases)
@@ -43,7 +43,7 @@ lemma rel_dds'_rel_dds: "rel_dds' B = rel_dds op = B"
   apply (simp)
   done
 
-lemma rel_dds_eq [relator_eq]: "rel_dds op = op = = op ="
+lemma rel_dds_eq [relator_eq]: "rel_dds (=) (=) = (=)"
   apply(rule ext iffI)+
   subgoal by(erule dds.coinduct)(erule rel_dds.cases; simp)
   subgoal by(erule rel_dds.coinduct)(auto simp add: rel_fun_def intro!: prod.rel_refl_strong)
@@ -222,7 +222,7 @@ primcorec compose :: "('a, 'b) dds \<Rightarrow> ('b, 'c) dds \<Rightarrow> ('a,
   "run (S1 \<bullet> S2) = (\<lambda>a. let (b, S1') = run S1 a; (c, S2') = run S2 b in (c, S1' \<bullet> S2'))"
 
 lemma compose_parametric [transfer_rule]:
-  "(rel_dds A B ===> rel_dds B C ===> rel_dds A C) (op \<bullet>) (op \<bullet>)"
+  "(rel_dds A B ===> rel_dds B C ===> rel_dds A C) (\<bullet>) (\<bullet>)"
   unfolding compose_def by transfer_prover
 
 text \<open>
@@ -261,7 +261,7 @@ primcorec parallel :: "('a, 'b) dds \<Rightarrow> ('c, 'd) dds \<Rightarrow> ('a
    | Inr c \<Rightarrow> let (d, S2') = run S2 c in (Inr d, S1 \<parallel> S2'))"
 
 lemma parallel_parametric [transfer_rule]:
-  "(rel_dds A B ===> rel_dds C D ===> rel_dds (rel_sum A C) (rel_sum B D)) (op \<parallel>) (op \<parallel>)"
+  "(rel_dds A B ===> rel_dds C D ===> rel_dds (rel_sum A C) (rel_sum B D)) (\<parallel>) (\<parallel>)"
   unfolding parallel_def by transfer_prover
 
 lemma map_parallel:
@@ -310,7 +310,7 @@ lemma traverse_refinement: \<comment> \<open>This is the refinement lemma.\<clos
   "(list_fset_rel ===> rel_dds list_fset_rel list_fset_rel) traverse_impl traverse"
   unfolding traverse_impl_def traverse_def
   apply(rule rel_funI)
-  apply(rule dds_of_parametric[where S="op =", THEN rel_funD, THEN rel_funD])
+  apply(rule dds_of_parametric[where S="(=)", THEN rel_funD, THEN rel_funD])
    apply(auto simp add: rel_fun_def list_fset_rel_def fset_of_list_elem intro: rev_fimage_eqI)
   done
 
@@ -330,13 +330,13 @@ text \<open>
   of @{const traverse_impl} automatically, together with a polymorphic refinement lemma.
 \<close>
 
-quotient_type 'a fset' = "'a list" / "vimage2p set set op ="
+quotient_type 'a fset' = "'a list" / "vimage2p set set (=)"
   by (auto intro: equivpI reflpI sympI transpI simp add: vimage2p_def)
 
 lift_definition traverse'' :: "('a \<times> 'a) fset' \<Rightarrow> ('a fset', 'a fset') dds"
   is "traverse_impl :: 'a graph' \<Rightarrow> _" parametric traverse_impl_parametric
   unfolding traverse_impl_def
-  apply (rule dds_of_parametric[where S="op =", THEN rel_funD, THEN rel_funD])
+  apply (rule dds_of_parametric[where S="(=)", THEN rel_funD, THEN rel_funD])
    apply (auto simp add: rel_fun_def vimage2p_def fset_of_list_elem)
   done
 
@@ -345,18 +345,18 @@ subsection \<open>Generalised rewriting\<close>
 definition accumulate :: "('a fset, 'a fset) dds" where
   "accumulate = dds_of (\<lambda>A X. (A |\<union>| X, A |\<union>| X)) {||}"
 
-lemma accumulate_mono: "rel_dds op |\<subseteq>| op |\<subseteq>| accumulate accumulate"
+lemma accumulate_mono: "rel_dds (|\<subseteq>|) (|\<subseteq>|) accumulate accumulate"
   unfolding accumulate_def
-  apply (rule dds_of_parametric[THEN rel_funD, THEN rel_funD, of "op |\<subseteq>|"])
+  apply (rule dds_of_parametric[THEN rel_funD, THEN rel_funD, of "(|\<subseteq>|)"])
    apply (intro rel_funI rel_prod.intros)
     apply (erule (1) funion_mono)+
   apply (simp)
   done
 
-lemma traverse_mono: "(op |\<subseteq>| ===> rel_dds op = op |\<subseteq>|) traverse traverse"
+lemma traverse_mono: "((|\<subseteq>|) ===> rel_dds (=) (|\<subseteq>|)) traverse traverse"
   unfolding traverse_def
   apply (rule rel_funI)
-  apply (rule dds_of_parametric[THEN rel_funD, THEN rel_funD, of "op ="])
+  apply (rule dds_of_parametric[THEN rel_funD, THEN rel_funD, of "(=)"])
    apply (intro rel_funI rel_prod.intros)
     apply (simp)
     apply (rule fminus_mono)
@@ -366,7 +366,7 @@ lemma traverse_mono: "(op |\<subseteq>| ===> rel_dds op = op |\<subseteq>|) trav
 
 lemma
   assumes "G |\<subseteq>| H"
-  shows "rel_dds op = op |\<subseteq>| (traverse G \<bullet> accumulate) (traverse H \<bullet> accumulate)"
+  shows "rel_dds (=) (|\<subseteq>|) (traverse G \<bullet> accumulate) (traverse H \<bullet> accumulate)"
   apply (rule compose_parametric[THEN rel_funD, THEN rel_funD])
    apply (rule traverse_mono[THEN rel_funD])
    apply (rule assms)
@@ -376,9 +376,9 @@ lemma
 definition seen :: "('a fset, 'a fset) dds" where
   "seen = dds_of (\<lambda>S X. (S |\<inter>| X, S |\<union>| X)) {||}"
 
-lemma seen_mono: "rel_dds op |\<subseteq>| op |\<subseteq>| seen seen"
+lemma seen_mono: "rel_dds (|\<subseteq>|) (|\<subseteq>|) seen seen"
   unfolding seen_def
-  apply (rule dds_of_parametric[THEN rel_funD, THEN rel_funD, of "op |\<subseteq>|"])
+  apply (rule dds_of_parametric[THEN rel_funD, THEN rel_funD, of "(|\<subseteq>|)"])
    apply (intro rel_funI rel_prod.intros)
     apply (erule (1) finter_mono funion_mono)+
   apply (simp)
@@ -386,7 +386,7 @@ lemma seen_mono: "rel_dds op |\<subseteq>| op |\<subseteq>| seen seen"
 
 lemma
   assumes "G |\<subseteq>| H"
-  shows "rel_dds op = op |\<subseteq>| (traverse G \<bullet> seen) (traverse H \<bullet> seen)"
+  shows "rel_dds (=) (|\<subseteq>|) (traverse G \<bullet> seen) (traverse H \<bullet> seen)"
   apply (rule compose_parametric[THEN rel_funD, THEN rel_funD])
    apply (rule traverse_mono[THEN rel_funD])
    apply (rule assms)

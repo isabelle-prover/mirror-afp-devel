@@ -50,7 +50,7 @@ lemma rel_S_mono:
   apply(simp add: vimage2p_def)
   by(erule rel_G_mono')
 
-lemma rel_S_eq: "rel_S op = op = op = op = op = op = = op ="
+lemma rel_S_eq: "rel_S (=) (=) (=) (=) (=) (=) = (=)"
   unfolding rel_S_def by(clarsimp simp add: vimage2p_def fun_eq_iff rel_G_eq Rep_S_inject)
 
 lemma rel_S_conversep:
@@ -124,7 +124,7 @@ definition rel_S_neg_distr_cond :: "('co1 \<Rightarrow> 'co1' \<Rightarrow> bool
 
 axiomatization where
   rel_S_neg_distr_cond_eq:
-  "\<And>tytok. rel_S_neg_distr_cond op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_S_neg_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok"
 
 
 text \<open>The subtype inherits the conditions for positive subdistributivity.\<close>
@@ -150,7 +150,7 @@ lemma rel_S_pos_distr_imp:
   done
 
 lemma rel_S_pos_distr_cond_eq:
-  "\<And>tytok. rel_S_pos_distr_cond op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_S_pos_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   by (intro rel_S_pos_distr_imp rel_G_pos_distr_cond_eq)
 
 lemmas
@@ -215,13 +215,13 @@ definition set2_S :: "('live1, 'live2, 'co1, 'co2, 'contra1, 'contra2, 'fixed) S
   where "set2_S = set2_G \<circ> Rep_S"
 
 lemma rel_S_alt:
-  "rel_S L1 L2 op = op = op = op = x y \<longleftrightarrow> (\<exists>z. (set1_S z \<subseteq> {(x, y). L1 x y} \<and>
+  "rel_S L1 L2 (=) (=) (=) (=) x y \<longleftrightarrow> (\<exists>z. (set1_S z \<subseteq> {(x, y). L1 x y} \<and>
   set2_S z \<subseteq> {(x, y). L2 x y}) \<and> map_S fst fst id id id id z = x \<and> map_S snd snd id id id id z = y)"
   unfolding set1_S_def set2_S_def o_def
   apply(rule iffI)
   subgoal
     apply(subst (asm) (3 4 5 7) OO_eq[symmetric])
-    apply(rule exI[where x="rel_S_witness L1 L2 op = op = op = op = op = op = op = op = (x, y)"])
+    apply(rule exI[where x="rel_S_witness L1 L2 (=) (=) (=) (=) (=) (=) (=) (=) (x, y)"])
     apply(frule rel_S_witness1[OF rel_S_neg_distr_cond_eq])
     apply(drule rel_S_witness2[OF rel_S_neg_distr_cond_eq])
     apply(auto simp add: rel_S_def vimage2p_def rell_G_def[symmetric])
@@ -273,7 +273,7 @@ bnf "('live1, 'live2, 'co1, 'co2, 'contra1, 'contra2, 'fixed) S"
   map: "\<lambda>l1 l2. map_S l1 l2 id id id id"
   sets: "set1_S" "set2_S"
   bd: "bd_G :: ('co1, 'co2, 'contra1, 'contra2, 'fixed) Gbd rel"
-  rel: "\<lambda>L1 L2. rel_S L1 L2 op = op = op = op ="
+  rel: "\<lambda>L1 L2. rel_S L1 L2 (=) (=) (=) (=)"
   subgoal by (rule map_S_id0)
   subgoal by (simp add: map_S_comp)
   subgoal
@@ -352,7 +352,7 @@ axiomatization where
     rel_G_neg_distr_cond Co1 Co1' Co2 Co2' Contra1 Contra1' Contra2 Contra2' tytok"
   and
   rel_S_neg_distr_cond'_eq:
-  "\<And>tytok. rel_S_neg_distr_cond' op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_S_neg_distr_cond' (=) (=) (=) (=) (=) (=) (=) (=) tytok"
 
 context includes lifting_syntax
 begin
@@ -482,12 +482,12 @@ lemma Q_rel_H_zipping:
   shows "Q z"
 proof -
   have "map_H fst z = x" proof -
-    from related(1) have "rel_H op = x (map_H fst z)"
+    from related(1) have "rel_H (=) x (map_H fst z)"
       by (auto simp add: H.rel_map elim: H.rel_mono_strong)
     then show ?thesis by (simp add: H.rel_eq)
   qed
   moreover have "map_H snd z = y" proof -
-    from related(2) have "rel_H op = (map_H snd z) y"
+    from related(2) have "rel_H (=) (map_H snd z) y"
       by (auto simp add: H.rel_map elim: H.rel_mono_strong)
     then show ?thesis by (simp add: H.rel_eq)
   qed

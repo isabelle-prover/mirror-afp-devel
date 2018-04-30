@@ -17,7 +17,7 @@ subsection \<open>Function space\<close>
 lemma rel_fun_mono: "(A ===> B) \<le> (A' ===> B')" if "A' \<le> A" "B \<le> B'"
   using that by(auto simp add: rel_fun_def)
 
-lemma rel_fun_eq: "(op = ===> op =) = op =" by(fact fun.rel_eq)
+lemma rel_fun_eq: "((=) ===> (=)) = (=)" by(fact fun.rel_eq)
 
 lemma rel_fun_conversep: "(A\<inverse>\<inverse> ===> B\<inverse>\<inverse>) = (A ===> B)\<inverse>\<inverse>" by(auto simp add: rel_fun_def)
 
@@ -25,7 +25,7 @@ lemma map_fun_id0: "(id ---> id) = id" by(fact map_fun.id)
 
 lemma map_fun_comp: "(f ---> g) \<circ> (f' ---> g') = ((f' \<circ> f) ---> (g \<circ> g'))" by(fact map_fun.comp)
 
-lemma map_fun_parametric: "((A ===> A') ===> (B ===> B') ===> (A' ===> B) ===> (A ===> B')) op ---> op --->"
+lemma map_fun_parametric: "((A ===> A') ===> (B ===> B') ===> (A' ===> B) ===> (A ===> B')) (--->) (--->)"
   by(fact map_fun_parametric)
 
 definition rel_fun_pos_distr_cond :: "('a \<Rightarrow> 'a' \<Rightarrow> bool) \<Rightarrow> ('a' \<Rightarrow> 'a'' \<Rightarrow> bool) \<Rightarrow>
@@ -49,10 +49,10 @@ lemma rel_fun_neg_distr_imp: "\<lbrakk> left_unique A; right_total A; right_uniq
   rel_fun_neg_distr_cond A A' tytok"
   unfolding rel_fun_neg_distr_cond_def by (fast elim!: neg_fun_distr1[THEN predicate2D])
 
-lemma rel_fun_pos_distr_cond_eq: "rel_fun_pos_distr_cond op = op = tytok"
+lemma rel_fun_pos_distr_cond_eq: "rel_fun_pos_distr_cond (=) (=) tytok"
   by simp
 
-lemma rel_fun_neg_distr_cond_eq: "rel_fun_neg_distr_cond op = op = tytok"
+lemma rel_fun_neg_distr_cond_eq: "rel_fun_neg_distr_cond (=) (=) tytok"
   by (blast intro: rel_fun_neg_distr_imp left_unique_eq right_unique_eq right_total_eq left_total_eq)
 
 thm fun.set_map fun.map_cong0 fun.rel_mono_strong
@@ -62,7 +62,7 @@ subsection \<open>Covariant powerset\<close>
 
 lemma rel_set_mono: "A \<le> A' \<Longrightarrow> rel_set A \<le> rel_set A'" by(fact rel_set_mono)
 
-lemma rel_set_eq: "rel_set op = = op =" by(fact rel_set_eq)
+lemma rel_set_eq: "rel_set (=) = (=)" by(fact rel_set_eq)
 
 lemma rel_set_conversep: "rel_set A\<inverse>\<inverse> = (rel_set A)\<inverse>\<inverse>" by(fact rel_set_conversep)
 
@@ -90,10 +90,10 @@ lemma rel_set_pos_distr_iff [simp]: "rel_set_pos_distr_cond A A' = True"
 lemma rel_set_neg_distr_iff [simp]: "rel_set_neg_distr_cond A A' = True"
   unfolding rel_set_neg_distr_cond_def by(simp add: rel_set_OO)
 
-lemma rel_set_pos_distr_eq: "rel_set_pos_distr_cond op = op ="
+lemma rel_set_pos_distr_eq: "rel_set_pos_distr_cond (=) (=)"
   by simp
 
-lemma rel_set_neg_distr_eq: "rel_set_neg_distr_cond op = op ="
+lemma rel_set_neg_distr_eq: "rel_set_neg_distr_cond (=) (=)"
   by simp
 
 
@@ -181,7 +181,7 @@ lemma neg_distr_cond_bset_left_unique:
       simp add: rel_set_OO[symmetric])
   done
 
-lemma neg_distr_cond_bset_eq: "neg_distr_cond_bset op = op = tytok"
+lemma neg_distr_cond_bset_eq: "neg_distr_cond_bset (=) (=) tytok"
   by (intro neg_distr_cond_bset_right_unique right_unique_eq)
 
 
@@ -193,16 +193,16 @@ definition map_pred :: "('b \<Rightarrow> 'a) \<Rightarrow> 'a pred \<Rightarrow
   "map_pred f = (f ---> id)"
 
 definition rel_pred :: "('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> 'a pred \<Rightarrow> 'b pred \<Rightarrow> bool" where
-  "rel_pred R = (R ===> op \<longleftrightarrow>)"
+  "rel_pred R = (R ===> (\<longleftrightarrow>))"
 
 lemma rel_pred_mono: "A' \<le> A \<Longrightarrow> rel_pred A \<le> rel_pred A'" unfolding rel_pred_def
   by(auto elim!: rel_fun_mono)
 
-lemma rel_pred_eq: "rel_pred op = = op ="
+lemma rel_pred_eq: "rel_pred (=) = (=)"
   by(simp add: rel_pred_def rel_fun_eq)
 
 lemma rel_pred_conversep: "rel_pred A\<inverse>\<inverse> = (rel_pred A)\<inverse>\<inverse>"
-  using rel_fun_conversep[of _ "op ="] by (simp add: rel_pred_def)
+  using rel_fun_conversep[of _ "(=)"] by (simp add: rel_pred_def)
 
 lemma map_pred_id0: "map_pred id = id"
   by (simp add: map_pred_def map_fun_id)
@@ -226,7 +226,7 @@ lemmas
 lemma rel_pred_pos_distr_iff [simp]: "rel_pred_pos_distr_cond A B = True"
   unfolding rel_pred_pos_distr_cond_def by (auto simp add: rel_pred_def rel_fun_def)
 
-lemma rel_pred_pos_distr_cond_eq: "rel_pred_pos_distr_cond op = op ="
+lemma rel_pred_pos_distr_cond_eq: "rel_pred_pos_distr_cond (=) (=)"
   by simp
 
 lemma neg_fun_distr3:
@@ -258,7 +258,7 @@ lemma rel_pred_neg_distr_imp:
       (simp add: left_unique_eq right_unique_eq left_total_eq right_total_eq)?)
   done
 
-lemma rel_pred_neg_distr_cond_eq: "rel_pred_neg_distr_cond op = op ="
+lemma rel_pred_neg_distr_cond_eq: "rel_pred_neg_distr_cond (=) (=)"
   by(blast intro: rel_pred_neg_distr_imp left_unique_eq right_total_eq)
 
 
@@ -342,7 +342,7 @@ proof -
   finally show "rel_pred (rel_pred (C OO C')) \<le> ..." .
 qed
 
-lemma rel_filter_neg_distr_cond'_eq: "rel_filter_neg_distr_cond' op = op ="
+lemma rel_filter_neg_distr_cond'_eq: "rel_filter_neg_distr_cond' (=) (=)"
   unfolding rel_filter_neg_distr_cond'_def by (simp add: left_total_eq right_unique_eq)
 
 lemma is_filter_rel_witness:
@@ -365,12 +365,12 @@ proof
     using cond unfolding rel_filter_neg_distr_cond'_def
   proof(elim disjE conjE; use nothing in \<open>intro conjI strip\<close>)
     assume "left_total C" "right_unique C"
-    hence "left_unique (C ===> op =)" "right_total (C ===> op =)"
+    hence "left_unique (C ===> (=))" "right_total (C ===> (=))"
       by(blast intro: left_unique_fun left_unique_eq right_total_fun right_total_eq)+
     from functional_converse_relation[OF this] obtain P' Q'
-      where P' [transfer_rule]: "(C ===> op =) P' P" and Q' [transfer_rule]: "(C ===> op =) Q' Q"
+      where P' [transfer_rule]: "(C ===> (=)) P' P" and Q' [transfer_rule]: "(C ===> (=)) Q' Q"
       by fastforce
-    have PQ: "(C ===> op =) (\<lambda>x. P' x \<and> Q' x) (\<lambda>x. P x \<and> Q x)" by transfer_prover
+    have PQ: "(C ===> (=)) (\<lambda>x. P' x \<and> Q' x) (\<lambda>x. P x \<and> Q x)" by transfer_prover
 
     with wit1 P' Q' have P: "?wit P \<longleftrightarrow> F P'" and Q: "?wit Q \<longleftrightarrow> F Q'"
       and PQ: "?wit (\<lambda>x. P x \<and> Q x) \<longleftrightarrow> F (\<lambda>x. P' x \<and> Q' x)"
@@ -384,12 +384,12 @@ proof
     then show "?wit Q" if "?wit P" using P Q that by(simp add: is_filter.mono[OF F])
   next
     assume "right_total C'" "left_unique C'"
-    hence "right_unique (C' ===> op =)" "left_total (C' ===> op =)"
+    hence "right_unique (C' ===> (=))" "left_total (C' ===> (=))"
       by(blast intro: right_unique_fun right_unique_eq left_total_fun left_total_eq)+
     from functional_relation[OF this] obtain P' Q'
-      where P' [transfer_rule]: "(C' ===> op =) P P'" and Q' [transfer_rule]: "(C' ===> op =) Q Q'"
+      where P' [transfer_rule]: "(C' ===> (=)) P P'" and Q' [transfer_rule]: "(C' ===> (=)) Q Q'"
       by fastforce
-    have PQ: "(C' ===> op =) (\<lambda>x. P x \<and> Q x) (\<lambda>x. P' x \<and> Q' x)" by transfer_prover
+    have PQ: "(C' ===> (=)) (\<lambda>x. P x \<and> Q x) (\<lambda>x. P' x \<and> Q' x)" by transfer_prover
 
     with wit2 P' Q' have P: "?wit P \<longleftrightarrow> G P'" and Q: "?wit Q \<longleftrightarrow> G Q'"
       and PQ: "?wit (\<lambda>x. P x \<and> Q x) \<longleftrightarrow> G (\<lambda>x. P' x \<and> Q' x)"
@@ -469,7 +469,7 @@ qed
 
 quotient_type 'a aeseq = "nat \<Rightarrow> 'a" / aeseq_eq by(rule equivp_aeseq_eq)
 
-lift_definition map_aeseq :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a aeseq \<Rightarrow> 'b aeseq" is "op \<circ>"
+lift_definition map_aeseq :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a aeseq \<Rightarrow> 'b aeseq" is "(\<circ>)"
   by(auto simp add: aeseq_eq.simps elim: finite_subset[rotated])
 
 lemma map_aeseq_id: "map_aeseq id x = x"
@@ -498,7 +498,7 @@ qed
 lemma rel_aeseq_mono: "R \<le> S \<Longrightarrow> rel_aeseq R \<le> rel_aeseq S"
   by(rule predicate2I; transfer; auto intro: finite_subset[rotated])
 
-lemma rel_aeseq_eq: "rel_aeseq op = = op ="
+lemma rel_aeseq_eq: "rel_aeseq (=) = (=)"
   by(intro ext; transfer; simp add: aeseq_eq.simps)
 
 lemma rel_aeseq_conversep: "rel_aeseq R\<inverse>\<inverse> = (rel_aeseq R)\<inverse>\<inverse>"

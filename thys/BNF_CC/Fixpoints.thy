@@ -43,7 +43,7 @@ text \<open>
   restricted to live arguments.
 \<close>
 
-lemma rell_T_alt_def: "rell_T L1 = rel_T L1 op = op = op = op ="
+lemma rell_T_alt_def: "rell_T L1 = rel_T L1 (=) (=) (=) (=)"
   apply (intro ext iffI)
    apply (erule T.rel_induct)
    apply (unfold rell_G_def)
@@ -77,7 +77,7 @@ lemma rel_T_mono [mono]:
        apply (auto)
   done
 
-lemma rel_T_eq: "rel_T op = op = op = op = op = = op ="
+lemma rel_T_eq: "rel_T (=) (=) (=) (=) (=) = (=)"
   unfolding rell_T_alt_def[symmetric] T.rel_eq ..
 
 lemma rel_T_conversep:
@@ -294,11 +294,11 @@ proof (intro allI predicate2I relcomppI)
 qed
 
 lemma rel_T_pos_distr_cond_eq:
-  "\<And>tytok. rel_T_pos_distr_cond op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_T_pos_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   by (intro rel_T_pos_distr_imp rel_G_pos_distr_cond_eq)
 
 lemma rel_T_neg_distr_cond_eq:
-  "\<And>tytok. rel_T_neg_distr_cond op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_T_neg_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   by (intro rel_T_neg_distr_imp rel_G_neg_distr_cond_eq)
 
 text \<open>The BNF axioms are proved by the datatype package.\<close>
@@ -367,7 +367,7 @@ primcorec map_U :: "('l1 \<Rightarrow> 'l1') \<Rightarrow> ('co1 \<Rightarrow> '
   "D_U (map_U l1 co1 co2 contra1 contra2 x) =
     mapl_G (map_U l1 co1 co2 contra1 contra2) l1 (map_G id id co1 co2 contra1 contra2 (D_U x))"
 
-lemma rell_U_alt_def: "rell_U L1 = rel_U L1 op = op = op = op ="
+lemma rell_U_alt_def: "rell_U L1 = rel_U L1 (=) (=) (=) (=)"
   apply (intro ext iffI)
    apply (erule rel_U.coinduct)
    apply (erule U.rel_cases)
@@ -401,7 +401,7 @@ lemma rel_U_mono [mono]:
        apply (blast)+
   done
 
-lemma rel_U_eq: "rel_U op = op = op = op = op = = op ="
+lemma rel_U_eq: "rel_U (=) (=) (=) (=) (=) = (=)"
   unfolding rell_U_alt_def[symmetric] U.rel_eq ..
 
 lemma rel_U_conversep:
@@ -601,11 +601,11 @@ proof (intro allI predicate2I relcomppI)
 qed
 
 lemma rel_U_pos_distr_cond_eq:
-  "\<And>tytok. rel_U_pos_distr_cond op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_U_pos_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   by (intro rel_U_pos_distr_imp rel_G_pos_distr_cond_eq)
 
 lemma rel_U_neg_distr_cond_eq:
-  "\<And>tytok. rel_U_neg_distr_cond op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_U_neg_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   by (intro rel_U_neg_distr_imp rel_G_neg_distr_cond_eq)
 
 text \<open>The BNF axioms are proved by the datatype package.\<close>

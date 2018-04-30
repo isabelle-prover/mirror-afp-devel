@@ -43,7 +43,7 @@ axiomatization where
       Contra1' \<le> Contra1; Contra2' \<le> Contra2; Contra3' \<le> Contra3 \<rbrakk> \<Longrightarrow>
     rel_F L1 L2 L3 Co1 Co2 Co3 Contra1 Contra2 Contra3 \<le>
     rel_F L1' L2' L3' Co1' Co2' Co3' Contra1' Contra2' Contra3'" and
-  rel_F_eq: "rel_F op = op = op = op = op = op = op = op = op = = op =" and
+  rel_F_eq: "rel_F (=) (=) (=) (=) (=) (=) (=) (=) (=) = (=)" and
   rel_F_conversep: "\<And>L1 L2 L3 Co1 Co2 Co3 Contra1 Contra2 Contra3.
     rel_F L1\<inverse>\<inverse> L2\<inverse>\<inverse> L3\<inverse>\<inverse> Co1\<inverse>\<inverse> Co2\<inverse>\<inverse> Co3\<inverse>\<inverse> Contra1\<inverse>\<inverse> Contra2\<inverse>\<inverse> Contra3\<inverse>\<inverse> =
     (rel_F L1 L2 L3 Co1 Co2 Co3 Contra1 Contra2 Contra3)\<inverse>\<inverse>" and
@@ -102,14 +102,14 @@ definition rel_F_neg_distr_cond :: "('co1 \<Rightarrow> 'co1' \<Rightarrow> bool
 
 axiomatization where
   rel_F_pos_distr_cond_eq:
-  "\<And>tytok. rel_F_pos_distr_cond op = op = op = op = op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_F_pos_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   and
   rel_F_neg_distr_cond_eq:
-  "\<And>tytok. rel_F_neg_distr_cond op = op = op = op = op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_F_neg_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) tytok"
 
 text \<open>Restrictions to live variables.\<close>
 
-definition "rell_F L1 L2 L3 = rel_F L1 L2 L3 op = op = op = op = op = op ="
+definition "rell_F L1 L2 L3 = rel_F L1 L2 L3 (=) (=) (=) (=) (=) (=)"
 definition "mapl_F l1 l2 l3 = map_F l1 l2 l3 id id id id id id"
 
 typedecl ('co1, 'co2, 'co3, 'contra1, 'contra2, 'contra3, 'f) Fbd
@@ -148,7 +148,7 @@ subsubsection \<open>Derived rules\<close>
 
 lemmas rel_F_mono' = rel_F_mono[THEN predicate2D, rotated -1]
 
-lemma rel_F_eq_refl: "rel_F op = op = op = op = op = op = op = op = op = x x"
+lemma rel_F_eq_refl: "rel_F (=) (=) (=) (=) (=) (=) (=) (=) (=) x x"
   by (simp add: rel_F_eq)
 
 lemma map_F_id: "map_F id id id id id id id id id x = x"
@@ -230,11 +230,11 @@ lemma rell_F_eq_onp: "rell_F (eq_onp P1) (eq_onp P2) (eq_onp P3) =
 proof (intro ext iffI)
   fix x y
   assume rel: "?rel_eq_onp x y"
-  from rel have "rell_F op = op = op = x y"
+  from rel have "rell_F (=) (=) (=) x y"
     unfolding rell_F_def by (auto elim: rel_F_mono' simp add: eq_onp_def)
   then have "y = x" unfolding rell_F_def rel_F_eq ..
   let ?true = "\<lambda>_. True" and ?label = "\<lambda>P x. P x"
-  from rel have "rell_F op = op = op = (mapl_F ?true ?true ?true x)
+  from rel have "rell_F (=) (=) (=) (mapl_F ?true ?true ?true x)
     (mapl_F (?label P1) (?label P2) (?label P3) x)"
     unfolding rell_F_def mapl_F_def \<open>y = x\<close>
     by (auto simp add: eq_onp_def elim: map_F_rel_cong)
@@ -269,7 +269,7 @@ proof (intro ext iffI)
 next
   fix x y
   assume eq_onp: "?eq_onp_pred x y"
-  then have "rell_F op = op = op = x y"
+  then have "rell_F (=) (=) (=) x y"
     by (auto simp add: rell_F_def rel_F_eq eq_onp_def)
   then show "?rel_eq_onp x y"
     using eq_onp by (auto elim!: rell_F_mono_strong simp add: eq_onp_def)
@@ -419,7 +419,7 @@ axiomatization where
   "\<And>L1 L1' L2 L2' Co1 Co1' Co2 Co2' Contra1 Contra1' Contra2 Contra2'.
     \<lbrakk> L1 \<le> L1'; L2 \<le> L2'; Co1 \<le> Co1'; Co2 \<le> Co2'; Contra1' \<le> Contra1; Contra2' \<le> Contra2 \<rbrakk> \<Longrightarrow>
     rel_G L1 L2 Co1 Co2 Contra1 Contra2 \<le> rel_G L1' L2' Co1' Co2' Contra1' Contra2'" and
-  rel_G_eq: "rel_G op = op = op = op = op = op = = op =" and
+  rel_G_eq: "rel_G (=) (=) (=) (=) (=) (=) = (=)" and
   rel_G_conversep: "\<And>L1 L2 Co1 Co2 Contra1 Contra2.
     rel_G L1\<inverse>\<inverse> L2\<inverse>\<inverse> Co1\<inverse>\<inverse> Co2\<inverse>\<inverse> Contra1\<inverse>\<inverse> Contra2\<inverse>\<inverse> = (rel_G L1 L2 Co1 Co2 Contra1 Contra2)\<inverse>\<inverse>" and
   map_G_id0: "map_G id id id id id id = id" and
@@ -464,13 +464,13 @@ definition rel_G_neg_distr_cond :: "('co1 \<Rightarrow> 'co1' \<Rightarrow> bool
 
 axiomatization where
   rel_G_pos_distr_cond_eq:
-  "\<And>tytok. rel_G_pos_distr_cond op = op = op = op = op = op = op = op = tytok" and
+  "\<And>tytok. rel_G_pos_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok" and
   rel_G_neg_distr_cond_eq:
-  "\<And>tytok. rel_G_neg_distr_cond op = op = op = op = op = op = op = op = tytok"
+  "\<And>tytok. rel_G_neg_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok"
 
 text \<open>Restrictions to live variables.\<close>
 
-definition "rell_G L1 L2 = rel_G L1 L2 op = op = op = op ="
+definition "rell_G L1 L2 = rel_G L1 L2 (=) (=) (=) (=)"
 definition "mapl_G l1 l2 = map_G l1 l2 id id id id"
 
 typedecl ('co1, 'co2, 'contra1, 'contra2, 'f) Gbd
@@ -507,7 +507,7 @@ subsubsection \<open>Derived rules\<close>
 
 lemmas rel_G_mono' = rel_G_mono[THEN predicate2D, rotated -1]
 
-lemma rel_G_eq_refl: "rel_G op = op = op = op = op = op = x x"
+lemma rel_G_eq_refl: "rel_G (=) (=) (=) (=) (=) (=) x x"
   by (simp add: rel_G_eq)
 
 lemma map_G_id: "map_G id id id id id id x = x"
@@ -587,11 +587,11 @@ lemma rell_G_eq_onp:
 proof (intro ext iffI)
   fix x y
   assume rel: "?rel_eq_onp x y"
-  from rel have "rell_G op = op = x y"
+  from rel have "rell_G (=) (=) x y"
     unfolding rell_G_def by (auto elim: rel_G_mono' simp add: eq_onp_def)
   then have "y = x" unfolding rell_G_def rel_G_eq ..
   let ?true = "\<lambda>_. True" and ?label = "\<lambda>P x. P x"
-  from rel have "rell_G op = op = (mapl_G ?true ?true x) (mapl_G (?label P1) (?label P2) x)"
+  from rel have "rell_G (=) (=) (mapl_G ?true ?true x) (mapl_G (?label P1) (?label P2) x)"
     unfolding rell_G_def mapl_G_def \<open>y = x\<close>
     by (auto simp add: eq_onp_def elim: map_G_rel_cong)
   then have *: "mapl_G ?true ?true x = mapl_G (?label P1) (?label P2) x"
@@ -617,7 +617,7 @@ proof (intro ext iffI)
 next
   fix x y
   assume eq_onp: "?eq_onp_pred x y"
-  then have "rell_G op = op = x y"
+  then have "rell_G (=) (=) x y"
     by (auto simp add: rell_G_def rel_G_eq eq_onp_def)
   then show "?rel_eq_onp x y"
     using eq_onp by (auto elim!: rell_G_mono_strong simp add: eq_onp_def)

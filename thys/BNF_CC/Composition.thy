@@ -39,7 +39,7 @@ lemma rel_FGl_mono:
                apply (assumption)+
   done
 
-lemma rel_FGl_eq: "rel_FGl op = op = op = op = op = op = op = op = op = op = op = = op ="
+lemma rel_FGl_eq: "rel_FGl (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) = (=)"
   unfolding rel_FGl_def by (simp add: rel_F_eq rel_G_eq)
 
 lemma rel_FGl_conversep:
@@ -175,18 +175,18 @@ lemma rel_FGl_neg_distr_imp:
 lemma rel_FGl_pos_distr_cond_eq:
   fixes tytok :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'l2 \<times> 'l2' \<times> 'l2'' \<times> 'l3 \<times> 'l3' \<times> 'l3'' \<times>
     'f1 \<times> 'f2) itself"
-  shows "rel_FGl_pos_distr_cond op = op = op = op = op = op = op = op =
-    op = op = op = op = op = op = op = op = tytok"
+  shows "rel_FGl_pos_distr_cond (=) (=) (=) (=) (=) (=) (=) (=)
+    (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   by (rule rel_FGl_pos_distr_imp rel_F_pos_distr_cond_eq rel_G_pos_distr_cond_eq)+
 
 lemma rel_FGl_neg_distr_cond_eq:
   fixes tytok :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'l2 \<times> 'l2' \<times> 'l2'' \<times> 'l3 \<times> 'l3' \<times> 'l3'' \<times>
     'f1 \<times> 'f2) itself"
-  shows "rel_FGl_neg_distr_cond op = op = op = op = op = op = op = op =
-    op = op = op = op = op = op = op = op = tytok"
+  shows "rel_FGl_neg_distr_cond (=) (=) (=) (=) (=) (=) (=) (=)
+    (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   by (rule rel_FGl_neg_distr_imp rel_F_neg_distr_cond_eq rel_G_neg_distr_cond_eq)+
 
-definition "rell_FGl L1 L2 L3 = rel_FGl L1 L2 L3 op = op = op = op = op = op = op = op ="
+definition "rell_FGl L1 L2 L3 = rel_FGl L1 L2 L3 (=) (=) (=) (=) (=) (=) (=) (=)"
 definition "mapl_FGl l1 l2 l3 = map_FGl l1 l2 l3 id id id id id id id id"
 
 type_synonym ('co1, 'co2, 'co3, 'co4, 'contra1, 'contra2, 'contra3, 'contra4, 'f1, 'f2) FGlbd =
@@ -310,7 +310,7 @@ lemma rel_FGco_mono:
             apply (assumption)+
   done
 
-lemma rel_FGco_eq: "rel_FGco op = op = op = op = op = op = op = op = op = op = op = = op ="
+lemma rel_FGco_eq: "rel_FGco (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) = (=)"
   unfolding rel_FGco_def by (simp add: rel_F_eq rel_G_eq)
 
 lemma rel_FGco_conversep:
@@ -441,8 +441,8 @@ lemma rel_FGco_neg_distr_imp:
 
 lemma rel_FGco_pos_distr_cond_eq:
   fixes tytok :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'f1 \<times> 'f2) itself"
-  shows "rel_FGco_pos_distr_cond op = op = op = op = op = op = op = op = op = op = op = op =
-    op = op = op = op = op = op = op = op = tytok"
+  shows "rel_FGco_pos_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=)
+    (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   apply (rule rel_FGco_pos_distr_imp)
    apply (simp add: rel_G_eq)
    apply (rule rel_F_pos_distr_cond_eq rel_G_pos_distr_cond_eq)+
@@ -450,14 +450,14 @@ lemma rel_FGco_pos_distr_cond_eq:
 
 lemma rel_FGco_neg_distr_cond_eq:
   fixes tytok :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'f1 \<times> 'f2) itself"
-  shows "rel_FGco_neg_distr_cond op = op = op = op = op = op = op = op = op = op = op = op =
-    op = op = op = op = op = op = op = op = tytok"
+  shows "rel_FGco_neg_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=)
+    (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   apply (rule rel_FGco_neg_distr_imp)
    apply (simp add: rel_G_eq)
    apply (rule rel_F_neg_distr_cond_eq rel_G_neg_distr_cond_eq)+
   done
 
-definition "rell_FGco L1 = rel_FGco L1 op = op = op = op = op = op = op = op = op = op ="
+definition "rell_FGco L1 = rel_FGco L1 (=) (=) (=) (=) (=) (=) (=) (=) (=) (=)"
 definition "mapl_FGco l1 = map_FGco l1 id id id id id id id id id id"
 
 type_synonym ('co1, 'co2, 'co3, 'co4, 'co5, 'co6,
@@ -534,7 +534,7 @@ lemma rel_FGcontra_mono:
          apply (assumption)+
   done
 
-lemma rel_FGcontra_eq: "rel_FGcontra op = op = op = op = op = op = op = op = op = op = op = = op ="
+lemma rel_FGcontra_eq: "rel_FGcontra (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) = (=)"
   unfolding rel_FGcontra_def by (simp add: rel_F_eq rel_G_eq)
 
 lemma rel_FGcontra_conversep:
@@ -673,8 +673,8 @@ lemma rel_FGcontra_neg_distr_imp:
 
 lemma rel_FGcontra_pos_distr_cond_eq:
   fixes tytok :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'f1 \<times> 'f2) itself"
-  shows "rel_FGcontra_pos_distr_cond op = op = op = op = op = op = op = op = op = op =
-    op = op = op = op = op = op = op = op = op = op = tytok"
+  shows "rel_FGcontra_pos_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) (=) (=)
+    (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   apply (rule rel_FGcontra_pos_distr_imp)
    apply (simp add: rel_G_eq)
    apply (rule rel_F_pos_distr_cond_eq rel_G_neg_distr_cond_eq)+
@@ -682,14 +682,14 @@ lemma rel_FGcontra_pos_distr_cond_eq:
 
 lemma rel_FGcontra_neg_distr_cond_eq:
   fixes tytok :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'f1 \<times> 'f2) itself"
-  shows "rel_FGcontra_neg_distr_cond op = op = op = op = op = op = op = op = op = op =
-    op = op = op = op = op = op = op = op = op = op = tytok"
+  shows "rel_FGcontra_neg_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) (=) (=)
+    (=) (=) (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   apply (rule rel_FGcontra_neg_distr_imp)
    apply (simp add: rel_G_eq)
    apply (rule rel_F_neg_distr_cond_eq rel_G_pos_distr_cond_eq)+
   done
 
-definition "rell_FGcontra L1 = rel_FGcontra L1 op = op = op = op = op = op = op = op = op = op ="
+definition "rell_FGcontra L1 = rel_FGcontra L1 (=) (=) (=) (=) (=) (=) (=) (=) (=) (=)"
 definition "mapl_FGcontra l1 = map_FGcontra l1 id id id id id id id id id id"
 
 type_synonym ('co1, 'co2, 'co3, 'co4, 'co5, 'contra1, 'contra2, 'contra3, 'contra4, 'contra5,
@@ -745,7 +745,7 @@ type_synonym ('l1, 'l2, 'co1, 'co2, 'contra1, 'contra2, 'f1, 'f2, 'f3, 'f4, 'f5,
 text \<open>The type variables @{typ 'f2}, @{typ 'f4} and @{typ 'f6} have each been merged.\<close>
 
 definition "rel_FGf L1 L2 Co1 Co2 Contra1 Contra2 =
-  rel_F L1 L2 op = Co1 Co2 op = Contra1 Contra2 op ="
+  rel_F L1 L2 (=) Co1 Co2 (=) Contra1 Contra2 (=)"
 
 definition "map_FGf l1 l2 co1 co2 contra1 contra2 = map_F l1 l2 id co1 co2 id contra1 contra2 id"
 
@@ -754,7 +754,7 @@ lemma rel_FGf_mono:
   rel_FGf L1 L2 Co1 Co2 Contra1 Contra2 \<le> rel_FGf L1' L2' Co1' Co2' Contra1' Contra2'"
   unfolding rel_FGf_def by (rule rel_F_mono) (auto)
 
-lemma rel_FGf_eq: "rel_FGf op = op = op = op = op = op = = op ="
+lemma rel_FGf_eq: "rel_FGf (=) (=) (=) (=) (=) (=) = (=)"
   unfolding rel_FGf_def by (simp add: rel_F_eq)
 
 lemma rel_FGf_conversep:
@@ -820,8 +820,8 @@ lemma rel_FGf_pos_distr_imp:
       ('f1, 'f2, 'f3, 'f4, 'f5, 'f6, 'f7) G) itself"
     and tytok_FGf :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'l2 \<times> 'l2' \<times> 'l2'' \<times>
       'f1 \<times> 'f2 \<times> 'f3 \<times> 'f4 \<times> 'f5 \<times> 'f6 \<times> 'f7) itself"
-  assumes "rel_F_pos_distr_cond Co1 Co1' Co2 Co2' (op = :: 'f4 \<Rightarrow> _) (op = :: 'f4 \<Rightarrow> _)
-      Contra1 Contra1' Contra2 Contra2' (op = :: 'f6 \<Rightarrow> _) (op = :: 'f6 \<Rightarrow> _) tytok_F"
+  assumes "rel_F_pos_distr_cond Co1 Co1' Co2 Co2' ((=) :: 'f4 \<Rightarrow> _) ((=) :: 'f4 \<Rightarrow> _)
+      Contra1 Contra1' Contra2 Contra2' ((=) :: 'f6 \<Rightarrow> _) ((=) :: 'f6 \<Rightarrow> _) tytok_F"
   shows "rel_FGf_pos_distr_cond Co1 Co1' Co2 Co2' Contra1 Contra1' Contra2 Contra2' tytok_FGf"
   unfolding rel_FGf_pos_distr_cond_def rel_FGf_def
   apply (intro allI)
@@ -837,8 +837,8 @@ lemma rel_FGf_neg_distr_imp:
       ('f1, 'f2, 'f3, 'f4, 'f5, 'f6, 'f7) G) itself"
     and tytok_FGf :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'l2 \<times> 'l2' \<times> 'l2'' \<times>
       'f1 \<times> 'f2 \<times> 'f3 \<times> 'f4 \<times> 'f5 \<times> 'f6 \<times> 'f7) itself"
-  assumes "rel_F_neg_distr_cond Co1 Co1' Co2 Co2' (op = :: 'f4 \<Rightarrow> _) (op = :: 'f4 \<Rightarrow> _)
-      Contra1 Contra1' Contra2 Contra2' (op = :: 'f6 \<Rightarrow> _) (op = :: 'f6 \<Rightarrow> _) tytok_F"
+  assumes "rel_F_neg_distr_cond Co1 Co1' Co2 Co2' ((=) :: 'f4 \<Rightarrow> _) ((=) :: 'f4 \<Rightarrow> _)
+      Contra1 Contra1' Contra2 Contra2' ((=) :: 'f6 \<Rightarrow> _) ((=) :: 'f6 \<Rightarrow> _) tytok_F"
   shows "rel_FGf_neg_distr_cond Co1 Co1' Co2 Co2' Contra1 Contra1' Contra2 Contra2' tytok_FGf"
   unfolding rel_FGf_neg_distr_cond_def rel_FGf_def
   apply (intro allI)
@@ -852,16 +852,16 @@ lemma rel_FGf_neg_distr_imp:
 lemma rel_FGf_pos_distr_cond_eq:
   fixes tytok :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'l2 \<times> 'l2' \<times> 'l2'' \<times>
       'f1 \<times> 'f2 \<times> 'f3 \<times> 'f4 \<times> 'f5 \<times> 'f6 \<times> 'f7) itself"
-  shows "rel_FGf_pos_distr_cond op = op = op = op = op = op = op = op = tytok"
+  shows "rel_FGf_pos_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   by (intro rel_FGf_pos_distr_imp rel_F_pos_distr_cond_eq)
 
 lemma rel_FGf_neg_distr_cond_eq:
   fixes tytok :: "('l1 \<times> 'l1' \<times> 'l1'' \<times> 'l2 \<times> 'l2' \<times> 'l2'' \<times>
       'f1 \<times> 'f2 \<times> 'f3 \<times> 'f4 \<times> 'f5 \<times> 'f6 \<times> 'f7) itself"
-  shows "rel_FGf_neg_distr_cond op = op = op = op = op = op = op = op = tytok"
+  shows "rel_FGf_neg_distr_cond (=) (=) (=) (=) (=) (=) (=) (=) tytok"
   by (intro rel_FGf_neg_distr_imp rel_F_neg_distr_cond_eq)
 
-definition "rell_FGf L1 L2 = rel_FGf L1 L2 op = op = op = op ="
+definition "rell_FGf L1 L2 = rel_FGf L1 L2 (=) (=) (=) (=)"
 definition "mapl_FGf l1 l2 = map_FGf l1 l2 id id id id"
 
 type_synonym ('co1, 'co2, 'contra1, 'contra2, 'f1, 'f2, 'f3, 'f4, 'f5, 'f6, 'f7) FGfbd =

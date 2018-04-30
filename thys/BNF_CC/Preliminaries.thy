@@ -37,8 +37,8 @@ lemmas relcompp_witness[of _ _ "(x, y)" for x y, simplified] = relcompp_witness1
 
 hide_fact (open) relcompp_witness1 relcompp_witness2
 
-lemma relcompp_witness_eq [simp]: "relcompp_witness op = op = (x, x) = x"
-  using relcompp_witness(1)[of "op =" "op =" x x] by (simp add: eq_OO)
+lemma relcompp_witness_eq [simp]: "relcompp_witness (=) (=) (x, x) = x"
+  using relcompp_witness(1)[of "(=)" "(=)" x x] by (simp add: eq_OO)
 
 
 lemma Quotient_equiv_abs1: "\<lbrakk> Quotient R Abs Rep T; R x y \<rbrakk> \<Longrightarrow> T x (Abs y)"
