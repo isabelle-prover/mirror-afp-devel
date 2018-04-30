@@ -25,6 +25,20 @@ a partial procedure for the extraction of the type checker and
 interpreter here. For more details, please see our paper in CPP 2018.</description>
     </item>
     <item>
+       <title>VerifyThis 2018 - Polished Isabelle Solutions</title>
+              <link>https://www.isa-afp.org/entries/VerifyThis2018.html</link>
+       <guid>https://www.isa-afp.org/entries/VerifyThis2018.html</guid>
+       <dc:creator> Peter Lammich, Simon Wimmer       </dc:creator>
+       <pubDate>27 Apr 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;a
+href=&#34;http://www.pm.inf.ethz.ch/research/verifythis.html&#34;&gt;VerifyThis
+2018&lt;/a&gt; was a program verification competition associated with
+ETAPS 2018. It was the 7th event in the VerifyThis competition series.
+In this entry, we present polished and completed versions of our
+solutions that we created during the competition.</description>
+    </item>
+    <item>
        <title>Bounded Natural Functors with Covariance and Contravariance</title>
               <link>https://www.isa-afp.org/entries/BNF_CC.html</link>
        <guid>https://www.isa-afp.org/entries/BNF_CC.html</guid>
@@ -543,32 +557,6 @@ Isabelle &amp;ndash; such as formal power series and polynomial
 factorisation algorithms &amp;ndash; to develop a theory of these
 recurrences and derive a fully executable solver for them that can be
 exported to programming languages like Haskell. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Dirichlet Series</title>
-              <link>https://www.isa-afp.org/entries/Dirichlet_Series.html</link>
-       <guid>https://www.isa-afp.org/entries/Dirichlet_Series.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>12 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-This entry is a formalisation of much of Chapters 2, 3, and 11 of
-Apostol&#39;s &amp;ldquo;Introduction to Analytic Number
-Theory&amp;rdquo;. This includes: &lt;ul&gt; &lt;li&gt;Definitions and
-basic properties for several number-theoretic functions (Euler&#39;s
-&amp;phi;, M&amp;ouml;bius &amp;mu;, Liouville&#39;s &amp;lambda;,
-the divisor function &amp;sigma;, von Mangoldt&#39;s
-&amp;Lambda;)&lt;/li&gt; &lt;li&gt;Executable code for most of these
-functions, the most efficient implementations using the factoring
-algorithm by Thiemann &lt;i&gt;et al.&lt;/i&gt;&lt;/li&gt;
-&lt;li&gt;Dirichlet products and formal Dirichlet series&lt;/li&gt;
-&lt;li&gt;Analytic results connecting convergent formal Dirichlet
-series to complex functions&lt;/li&gt; &lt;li&gt;Euler product
-expansions&lt;/li&gt; &lt;li&gt;Asymptotic estimates of
-number-theoretic functions including the density of squarefree
-integers and the average number of divisors of a natural
-number&lt;/li&gt; &lt;/ul&gt; These results are useful as a basis for
-developing more number-theoretic results, such as the Prime Number
-Theorem.</description>
     </item>
   </channel>
 </rss>
