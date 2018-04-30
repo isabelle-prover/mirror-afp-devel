@@ -12,6 +12,20 @@ abstract =
   theory files that adapt the exported code to Isabelle and port proofs
   from the HOL4 formalization, e.g. termination and equivalence proofs.
 
+[WebAssembly]
+title = WebAssembly
+author = Conrad Watt <http://www.cl.cam.ac.uk/~caw77/>
+topic = Computer Science/Programming Languages/Language Definitions
+date = 2018-04-29
+notify = caw77@cam.ac.uk
+abstract = 
+  This is a mechanised specification of the WebAssembly language, drawn
+  mainly from the previously published paper formalisation of Haas et
+  al. Also included is a full proof of soundness of the type system,
+  together with a verified type checker and interpreter. We include only
+  a partial procedure for the extraction of the type checker and
+  interpreter here. For more details, please see our paper in CPP 2018.
+
 [Knuth_Morris_Pratt]
 title = The string search algorithm by Knuth, Morris and Pratt
 author = Fabian Hellauer <mailto:hellauer@in.tum.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
@@ -6774,4 +6788,48 @@ abstract =
   weight-balance. Instead of a general theorem we provide parameterized
   proofs of preservation of the invariant that work for many (all?)
   valid parameters.  
+
+[Fishburn_Impossibility]
+title = The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency
+author = Felix Brandt <http://dss.in.tum.de/staff/brandt.html>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Christian Saile <http://dss.in.tum.de/staff/christian-saile.html>, Christian Stricker <http://dss.in.tum.de/staff/christian-stricker.html>
+topic = Mathematics/Economics
+date = 2018-03-22
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This formalisation contains the proof that there is no
+  anonymous Social Choice Function for at least three agents and
+  alternatives that fulfils both Pareto-Efficiency and
+  Fishburn-Strategyproofness. It was derived from a proof of <a
+  href="http://dss.in.tum.de/files/brandt-research/stratset.pdf">Brandt
+  <em>et al.</em></a>, which relies on an unverified
+  translation of a fixed finite instance of the original problem to SAT.
+  This Isabelle proof contains a machine-checked version of both the
+  statement for exactly three agents and alternatives and the lifting to
+  the general case.</p>
+
+[BNF_CC]
+title = Bounded Natural Functors with Covariance and Contravariance
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>
+topic = Computer Science/Functional Programming, Tools
+date = 2018-04-24
+notify = mail@andreas-lochbihler.de, joshua.schneider@inf.ethz.ch
+abstract = 
+  Bounded natural functors (BNFs) provide a modular framework for the
+  construction of (co)datatypes in higher-order logic.  Their functorial
+  operations, the mapper and relator, are restricted to a subset of the
+  parameters, namely those where recursion can take place.  For certain
+  applications, such as free theorems, data refinement, quotients, and
+  generalised rewriting, it is desirable that these operations do not
+  ignore the other parameters.  In this article, we formalise the
+  generalisation BNF<sub>CC</sub> that extends the mapper
+  and relator to covariant and contravariant parameters.  We show that
+  <ol> <li> BNF<sub>CC</sub>s are closed under
+  functor composition and least and greatest fixpoints,</li>
+  <li> subtypes inherit the BNF<sub>CC</sub> structure
+  under conditions that generalise those for the BNF case,
+  and</li> <li> BNF<sub>CC</sub>s preserve
+  quotients under mild conditions.</li> </ol> These proofs
+  are carried out for abstract BNF<sub>CC</sub>s similar to
+  the AFP entry BNF Operations.  In addition, we apply the
+  BNF<sub>CC</sub> theory to several concrete functors.
 
