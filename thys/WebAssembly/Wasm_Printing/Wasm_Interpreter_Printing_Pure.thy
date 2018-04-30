@@ -25,7 +25,6 @@ lemma bytes_replicate_rep_eq[code abstract]:
   using bytes_replicate.rep_eq Rep_uint8_inverse
   by simp
 
-export_code open run (*in OCaml*)
-  checking OCaml?
+export_code open run in OCaml
 
 end
