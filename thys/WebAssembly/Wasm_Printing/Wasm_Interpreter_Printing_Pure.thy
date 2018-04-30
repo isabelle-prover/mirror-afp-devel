@@ -25,7 +25,9 @@ lemma bytes_replicate_rep_eq[code abstract]:
   using bytes_replicate.rep_eq Rep_uint8_inverse
   by simp
 
+(* FIXME F32Wrapper missing
 export_code open run (*in OCaml*)
   checking OCaml?
+*)
 
 end
