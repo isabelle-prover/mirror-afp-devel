@@ -4,6 +4,7 @@ theory HOLCF_Main
   imports
     HOLCF
     "HOLCF-Library.Int_Discrete"
+    "HOL-Library.Adhoc_Overloading"
 begin
 
 text \<open>
