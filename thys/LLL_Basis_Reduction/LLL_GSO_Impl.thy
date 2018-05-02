@@ -17,9 +17,6 @@ text \<open>We store the $f$, $g$, and $||g||^2$ values.\<close>
 
 type_synonym LLL_gso_state = "(int vec \<times> rat vec \<times> rat) list_repr"
 
-definition scalar_prod_int_rat :: "int vec \<Rightarrow> rat vec \<Rightarrow> rat" (infix "\<bullet>i" 70) where
-  "x \<bullet>i y = (y \<bullet> map_vec rat_of_int x)"
-
 definition fi_state :: "LLL_gso_state \<Rightarrow> int vec" where
   "fi_state state = fst (get_nth_i state)" 
 
@@ -201,7 +198,6 @@ next
   next
     case False
     hence id: "(?c = 0) = False" by auto
-    from i have ii: "i < length (map (fgn fs) [0..<m])" and iii: "i < length [0..<m]" by auto
     define fi' where "fi' = fs ! i - ?c \<cdot>\<^sub>v fs ! j" 
     obtain fs'' where fs'': "fs[i := fs ! i - ?c \<cdot>\<^sub>v fs ! j] = fs''" by auto
     note step = basis_reduction_add_row_main[OF Linv i j refl refl Suc(4), unfolded fs'']
@@ -222,6 +218,7 @@ next
     show ?thesis unfolding step(3)[symmetric] 
     proof (rule Suc(1)[OF _ step(1,2) res])
       note list_repr = to_list_repr[OF impl]
+      from i have ii: "i < length (map (fgn fs) [0..<m])" and iii: "i < length [0..<m]" by auto
       show "LLL_impl_inv (upd_fi_state state (fs ! i - ?c \<cdot>\<^sub>v fs ! j)) i fs''" 
         unfolding fi'_def[symmetric] upd_fi_state_def 
         using update_i[OF list_repr ii, of "(fi', gso fs i, sq_norm (gso fs i))"] i

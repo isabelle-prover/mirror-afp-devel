@@ -14,6 +14,7 @@ theory Gram_Schmidt_2
     Jordan_Normal_Form.Show_Matrix
     Jordan_Normal_Form.Matrix_Impl
     Norms
+    Int_Rat_Operations
 begin
 
 (* TODO: move *)
@@ -2095,26 +2096,6 @@ lemma snd_gram_schmidt_int : "snd (gram_schmidt_int n us) = gram_schmidt n (map 
 
 text \<open>Faster implementation for rational vectors which also avoid recomputations
   of square-norms\<close>
-
-definition square_rat :: "rat \<Rightarrow> rat" where [simp]: "square_rat x = x * x" 
-definition sq_norm_vec_rat :: "rat vec \<Rightarrow> rat" where [simp]: "sq_norm_vec_rat x = sq_norm_vec x" 
-
-lemma quotient_of_square: assumes "quotient_of x = (a,b)"
-  shows "quotient_of (x * x) = (a * a, b * b)"
-proof -
-  have b0: "b > 0" "b \<noteq> 0" using quotient_of_denom_pos[OF assms] by auto
-  hence b: "(b * b > 0) = True" by auto
-  show ?thesis
-    unfolding rat_times_code assms Let_def split Rat.normalize_def fst_conv snd_conv b if_True
-    using quotient_of_coprime[OF assms] b0 by simp
-qed
-
-lemma square_rat_code[code abstract]: "quotient_of (square_rat x) = (case quotient_of x of (n,d)
-  \<Rightarrow> (n * n, d * d))" using quotient_of_square[of x] unfolding square_rat_def 
-  by (cases "quotient_of x", auto)
-
-lemma sq_norm_vec_rat_code[code]: "sq_norm_vec_rat x = (\<Sum>x\<leftarrow>list_of_vec x. square_rat x)" 
-  unfolding sq_norm_vec_rat_def sq_norm_vec_def square_rat_def by auto
 
 fun adjuster_triv :: "nat \<Rightarrow> rat vec \<Rightarrow> (rat vec \<times> rat) list \<Rightarrow> rat vec"
   where "adjuster_triv n w [] = 0\<^sub>v n"
