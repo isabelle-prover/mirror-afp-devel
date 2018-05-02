@@ -14,7 +14,7 @@ text \<open>This theory contains an implementation of a polynomial time factoriz
   two non-trivial factors, or to deduce irreducibility.\<close>
 
 theory LLL_Factorization_Impl
-  imports LLL_Basis_Reduction.LLL
+  imports LLL_Basis_Reduction.LLL_GSO_Impl
     Factor_Bound_2
     Missing_Dvd_Int_Poly
     Berlekamp_Zassenhaus.Berlekamp_Zassenhaus

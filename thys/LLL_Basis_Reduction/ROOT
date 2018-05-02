@@ -6,12 +6,15 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
   sessions 
     Algebraic_Numbers
     Perron_Frobenius
+  theories [document = false]
+    Perron_Frobenius.HMA_Connect
   theories
     List_Representation
     Norms
     Missing_Lemmas
     Gram_Schmidt_2
     LLL    
+    LLL_GSO_Impl    
     LLL_Complexity
     LLL_Number_Bounds
   document_files

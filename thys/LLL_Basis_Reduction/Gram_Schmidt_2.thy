@@ -1947,6 +1947,27 @@ end
 end
 end
 end
+
+lemma gso_cong: assumes "\<And> i. i \<le> x \<Longrightarrow> f1 ! i = f2 ! i"
+  shows "gso f1 x = gso f2 x"
+  using assms
+proof(induct x rule:nat_less_induct[rule_format])
+  case (1 x)
+  hence fg:"(+) (f1 ! x) = (+) (f2 ! x)" by auto
+  show ?case
+    apply(subst (1 2) gso.simps) unfolding \<mu>.simps
+    apply(rule cong[OF fg cong[OF refl[of "sumlist"]]])
+    using 1 by auto
+qed
+
+lemma \<mu>_cong: assumes "\<And> k. j < i \<Longrightarrow> k \<le> j \<Longrightarrow> f1 ! k = f2 ! k"
+  and "j < i \<Longrightarrow> f1 ! i = f2 ! i" 
+  shows "\<mu> f1 i j = \<mu> f2 i j"
+proof -
+  from gso_cong[of j f1 f2] assms have id: "j < i \<Longrightarrow> gso f1 j = gso f2 j" by auto
+  show ?thesis unfolding \<mu>.simps using assms id by auto
+qed
+
 end
 
 lemma prod_list_le_mono: fixes us :: "'a :: {linordered_nonzero_semiring,ordered_ring} list" 
