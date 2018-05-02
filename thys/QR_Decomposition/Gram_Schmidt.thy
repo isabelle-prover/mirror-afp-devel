@@ -88,7 +88,7 @@ next
           apply (rule span_mul)
           apply (rule span_sum)
           apply (rule span_mul)
-          apply (rule span_superset)
+          apply (rule span_base)
           apply assumption
           done
       }
@@ -145,21 +145,6 @@ next
   qed
 qed
 
-lemma hull_eq_hull: "Hull.hull = Linear_Algebra.hull"
-  by (force simp: hull_def Linear_Algebra.hull_def)
-
-lemma euclidean_subspace_eq_subspace: "euclidean_space.subspace = subspace"
-  by (auto simp: euclidean_space.subspace_def subspace_def)
-
-lemma euclidean_span_eq_span: "euclidean_space.span = span"
-  by (auto simp: euclidean_space.span_def span_def euclidean_subspace_eq_subspace hull_eq_hull)
-
-lemma vec_subspace_eq_subspace: "(vec.subspace::(real^'b) set\<Rightarrow>_) = subspace"
-  by (auto simp: vec.subspace_def subspace_def)
-
-lemma vec_span_eq_span: "(vec.span::_\<Rightarrow>(real^'b) set) = span"
-  by (auto simp: vec.span_def span_def vec_subspace_eq_subspace hull_eq_hull)
-
 lemma orthogonal_basis_exists:
   fixes V :: "(real^'b) list"
   assumes B: "is_basis (set V)"
@@ -170,8 +155,7 @@ proof -
   have "(set V) \<subseteq> vec.span (set (Gram_Schmidt V))"
     using basis_orthogonal'[of V]
     using vec.span_superset[where ?'a=real, where ?'b='b]
-    unfolding op_vec_scaleR
-    by (auto simp: euclidean_span_eq_span vec_span_eq_span)
+    by (auto simp: span_vec_eq)
   moreover have "pairwise orthogonal (set (Gram_Schmidt V))"
     using basis_orthogonal'[of V] by blast
   moreover have c: "(card (set (Gram_Schmidt V)) = vec.dim (set V))"
@@ -191,7 +175,7 @@ proof -
     show "set (Gram_Schmidt V) \<subseteq> (UNIV::(real^'b) set)" by simp
     show "UNIV \<subseteq> vec.span (set (Gram_Schmidt V))"
       using basis_orthogonal'[of V] using B unfolding is_basis_def
-      by (simp add: vec_span_eq_span) 
+      by (simp add: span_vec_eq)
     show "finite (set (Gram_Schmidt V))" by simp
     show "card (set (Gram_Schmidt V)) \<le> vec.dim (UNIV::(real^'b) set)"
       by (metis c top_greatest vec.dim_subset)
@@ -208,7 +192,7 @@ corollary orthogonal_basis_exists':
   \<and> distinct (Gram_Schmidt V) \<and> pairwise orthogonal (set (Gram_Schmidt V))"
   using B orthogonal_basis_exists basis_orthogonal' card_distinct d 
     vec.dim_unique distinct_card is_basis_def subset_refl
-  by (metis vec_span_eq_span)
+  by (metis span_vec_eq)
 
 
 subsubsection{*Second way*}
@@ -576,7 +560,7 @@ next
         apply (rule span_mul)
         apply (rule span_sum)
         apply (rule span_mul)
-        apply (rule span_superset)
+        apply (rule span_base)
         apply assumption
         done
     } 
@@ -647,7 +631,7 @@ lemma is_basis_columns_Gram_Schmidt_matrix:
 proof -
   have span_UNIV: "vec.span (columns (Gram_Schmidt_matrix A)) = (UNIV::(real^'m::{mod_type}) set)" 
     using span_Gram_Schmidt_matrix b unfolding is_basis_def
-    by (metis vec_span_eq_span)
+    by (metis span_vec_eq)
   moreover have c_eq: "card (columns (Gram_Schmidt_matrix A)) = ncols A" 
   proof -
     have "card (columns A) \<le> card (columns (Gram_Schmidt_matrix A))"
@@ -864,7 +848,7 @@ lemma independent_columns_Gram_Schmidt_matrix:
   shows "vec.independent (columns (Gram_Schmidt_matrix A)) \<and> card (columns (Gram_Schmidt_matrix A)) = ncols A"
   using  b c card_columns_le_ncols vec.card_eq_dim_span_indep vec.dim_span eq_iff finite_columns 
     vec.independent_span_bound ncols_def span_Gram_Schmidt_matrix
-  by (metis (no_types, lifting) vec.card_ge_dim_independent vec.dim_span_eq_card_independent vec_span_eq_span)
+  by (metis (no_types, lifting) vec.card_ge_dim_independent vec.dim_span_eq_card_independent span_vec_eq)
 
 
 lemma column_eq_Gram_Schmidt_matrix:

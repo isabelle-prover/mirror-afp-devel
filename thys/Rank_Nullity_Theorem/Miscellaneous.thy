@@ -8,11 +8,18 @@ section{*Miscellaneous*}
 
 theory Miscellaneous
   imports
-  Cartesian_Space
+  "HOL-Analysis.Determinants"
   "HOL-Library.Bit"
   Mod_Type
   "HOL-Library.Function_Algebras"
 begin
+
+context Vector_Spaces.linear begin
+sublocale vector_space_pair by unfold_locales\<comment>\<open>TODO: (re)move?\<close>
+end
+
+hide_const (open) Real_Vector_Spaces.linear
+abbreviation "linear \<equiv> Vector_Spaces.linear"
 
 text{*In this file, we present some basic definitions and lemmas about linear algebra and matrices.*}
 
@@ -93,14 +100,14 @@ lemma scalar_vector_matrix_assoc:
   shows "(k *s x) v* A = k *s (x v* A)"
   unfolding vector_matrix_mult_def unfolding vec_eq_iff 
   by (auto simp add: sum_distrib_left, rule sum.cong, simp_all) 
- 
+
 
 lemma vector_scalar_matrix_ac:
   fixes k :: "'a::{field}" and x :: "'a::{field}^'n" and A :: "'a^'m^'n"
   shows "x v* (k *k A) = k *s (x v* A)"
   using scalar_vector_matrix_assoc 
-  unfolding vector_matrix_mult_def matrix_scalar_mult_def vec_eq_iff 
-  by (auto simp add: sum_distrib_left)
+  unfolding vector_matrix_mult_def matrix_scalar_mult_def vec_eq_iff
+  by (auto simp add: sum_distrib_left vector_space_over_itself.scale_scale)
 
 lemma transpose_scalar: "transpose (k *k A) = k *k transpose A"
   unfolding transpose_def 
@@ -231,7 +238,8 @@ qed
 lemma dim_zero_subspace_eq:
   assumes subs_A: "subspace A"
   shows "(dim A = 0) = (A = {0})"
-  using dim_zero_eq dim_zero_eq' local.subspace_0 subs_A by auto
+  using dim_zero_eq dim_zero_eq' local.subspace_0 subs_A
+  by force
 
 lemma span_0_imp_set_empty_or_0:
   assumes "span A = {0}"
@@ -240,12 +248,12 @@ lemma span_0_imp_set_empty_or_0:
 
 end
 
-context linear
+context Vector_Spaces.linear
 begin
 
 lemma linear_injective_ker_0:
   shows "inj f = ({x. f x = 0} = {0})"
-  unfolding linear_injective_0 by auto
+  using inj_iff_eq_0 by auto
 
 end
 
@@ -372,13 +380,6 @@ next
 assume "A *v x = 0" 
 thus "P ** A *v x = 0" by (metis matrix_vector_mul_assoc matrix_vector_zero)
 qed
-
-lemma inj_matrix_vector_mult:
-fixes P::"'a::{field}^'n^'m"
-assumes P: "invertible P"
-shows "inj (( *v) P)"
-unfolding vec.linear_injective_0
-using matrix_left_invertible_ker[of P] P unfolding invertible_def by blast
 
 lemma independent_image_matrix_vector_mult:
   fixes P::"'a::{field}^'n^'m"

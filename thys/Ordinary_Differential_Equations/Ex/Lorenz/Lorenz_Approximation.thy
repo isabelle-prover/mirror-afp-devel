@@ -747,7 +747,7 @@ lemma eq_nth_iff_index:
 lemma cast_in_BasisI: "(cast i::'a) \<in> Basis"
   if "(i::'c) \<in> Basis""DIM('c::executable_euclidean_space) = DIM('a::executable_euclidean_space)"
   using that
-  by (auto simp: cast_def eucl_of_list_nth inner_Basis if_distrib cond_application_beta
+  by (auto simp: cast_def eucl_of_list_nth inner_Basis if_distrib if_distribR
       eq_nth_iff_index
       cong: if_cong)
 

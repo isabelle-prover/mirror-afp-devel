@@ -105,7 +105,7 @@ qed
 
 lemma span_columns_divide_by_norm:
   shows "span (columns A) = span (columns (divide_by_norm A))"
-  unfolding Linear_Algebra.span_eq
+  unfolding real_vector.span_eq
 proof (auto)
   fix x assume x: "x \<in> columns (divide_by_norm A)"
   from this obtain i where x_col_i: "x=column i (divide_by_norm A)" unfolding columns_def by blast
@@ -113,7 +113,7 @@ proof (auto)
     unfolding divide_by_norm_def column_def normalize_def by vector
   finally have x_eq: "x=(1/norm (column i A)) *\<^sub>R (column i A)" .
   show "x \<in> span (columns A)"
-    by (unfold x_eq, rule span_mul, rule span_superset, auto simp add: columns_def)
+    by (unfold x_eq, rule span_mul, rule span_base, auto simp add: columns_def)
 next
   fix x
   assume x: "x \<in> columns A"
@@ -128,7 +128,7 @@ next
       using False unfolding x_col_i columns_def divide_by_norm_def column_def normalize_def by vector
     finally have x_eq: "x = norm (column i A) *\<^sub>R column i (divide_by_norm A)" .
     show "x \<in> span (columns (divide_by_norm A))"
-      by (unfold x_eq, rule span_mul, rule span_superset,
+      by (unfold x_eq, rule span_mul, rule span_base,
         auto simp add: columns_def Let_def)
   qed
 qed
@@ -178,10 +178,10 @@ proof (rule conjI, unfold is_basis_def, rule conjI)
       using zero_not_in unfolding x_col_i columns_def divide_by_norm_def column_def normalize_def by vector
     finally have x_eq: "x = norm (column i (Gram_Schmidt_matrix A)) *\<^sub>R column i (divide_by_norm (Gram_Schmidt_matrix A))" .
     show "x \<in> vec.span (columns (fst (QR_decomposition A)))"
-      unfolding x_eq op_vec_scaleR 
+      unfolding x_eq span_vec_eq
       apply (rule subspace_mul)
-      apply (auto simp add: columns_def QR_decomposition_def Let_def euclidean_span_eq_span intro: span_inc)
-      using span_inc by force
+      apply (auto simp add: columns_def QR_decomposition_def Let_def subspace_span intro: span_superset)
+      using span_superset by force
   qed
   thus s: "vec.span (columns (fst (QR_decomposition A))) = (UNIV::(real^'m::{mod_type}) set)"
     using is_basis_columns_Gram_Schmidt_matrix[OF b c] unfolding is_basis_def by simp
@@ -249,7 +249,7 @@ corollary span_fst_QR_decomposition:
   shows "vec.span (columns A) = vec.span (columns (fst (QR_decomposition A)))"
   unfolding span_Gram_Schmidt_matrix[of A]
   unfolding QR_decomposition_def Let_def fst_conv
-  by (metis \<open>span (columns A) = span (columns (Gram_Schmidt_matrix A))\<close> span_columns_divide_by_norm vec_span_eq_span)
+  by (metis \<open>span (columns A) = span (columns (Gram_Schmidt_matrix A))\<close> span_columns_divide_by_norm span_vec_eq)
 
 corollary col_space_QR_decomposition:
   fixes A::"real^'n::{mod_type}^'m::{mod_type}"
@@ -270,7 +270,8 @@ proof -
     have "rank A = col_rank A" unfolding rank_col_rank ..
     also have "... = vec.dim (col_space A)" unfolding col_rank_def ..
     also have "... = card (columns A)"
-      by (simp add: b col_space_def vec.dim_span_eq_card_independent)
+      unfolding col_space_def using b
+      by (rule vec.dim_span_eq_card_independent)
     also have "... = ncols A" using c .
     finally show ?thesis .
   qed

@@ -2,7 +2,7 @@ theory Planar_Subgraph
 imports
   Graph_Genus
   Permutations_2
-  "HOL-Library.FuncSet"
+  "HOL.FuncSet"
   "HOL-Library.Simps_Case_Conv"
 begin
 

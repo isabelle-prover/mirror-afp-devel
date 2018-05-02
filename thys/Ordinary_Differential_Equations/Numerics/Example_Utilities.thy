@@ -1417,7 +1417,7 @@ proof -
        apply (force simp add: Basis_vec_def Basis_list_real_def)
       apply (rule refl)
      apply (rule refl)
-    apply (auto simp: cond_application_beta if_distrib axis_eq_axis Basis_list_real_def cong: if_cong)
+    apply (auto simp: if_distribR if_distrib axis_eq_axis Basis_list_real_def cong: if_cong)
     done
   also have "\<dots> = f $ enum_class.enum ! (k div CARD('n)) $ enum_class.enum ! (k mod CARD('n))"
     apply (subst if_conn)

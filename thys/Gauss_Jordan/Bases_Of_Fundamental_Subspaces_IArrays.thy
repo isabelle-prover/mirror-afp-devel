@@ -70,13 +70,13 @@ proof (unfold basis_null_space_def basis_null_space_iarrays_eq, auto, unfold ima
 fix i::'cols
 assume rank_le_i: "rank A \<le> to_nat i"
 show "\<exists>x\<in>{rank_iarray (matrix_to_iarray A)..<ncols_iarray (matrix_to_iarray A)}.
-vec_to_iarray (row i (P_Gauss_Jordan (Cartesian_Euclidean_Space.transpose A))) = row_iarray x (fst (Gauss_Jordan_iarrays_PA (transpose_iarray (matrix_to_iarray A))))"
+vec_to_iarray (row i (P_Gauss_Jordan (transpose A))) = row_iarray x (fst (Gauss_Jordan_iarrays_PA (transpose_iarray (matrix_to_iarray A))))"
 proof (rule bexI[of _ "to_nat i"])
 show "to_nat i \<in> {rank_iarray (matrix_to_iarray A)..<ncols_iarray (matrix_to_iarray A)}"
   unfolding matrix_to_iarray_ncols[symmetric]
   using rank_le_i to_nat_less_card[of i]
   unfolding matrix_to_iarray_rank ncols_def by fastforce
-show "vec_to_iarray (row i (P_Gauss_Jordan (Cartesian_Euclidean_Space.transpose A))) 
+show "vec_to_iarray (row i (P_Gauss_Jordan (transpose A))) 
     = row_iarray (to_nat i) (fst (Gauss_Jordan_iarrays_PA (transpose_iarray (matrix_to_iarray A))))"
 unfolding matrix_to_iarray_transpose[symmetric]
 unfolding matrix_to_iarray_fst_Gauss_Jordan_PA[symmetric]
@@ -88,14 +88,14 @@ fix i assume rank_le_i: "rank_iarray (matrix_to_iarray A) \<le> i"
         and i_less_nrows: "i < ncols_iarray (matrix_to_iarray A)"
 hence i_less_card:"i < CARD ('cols)"
   unfolding matrix_to_iarray_ncols[symmetric] ncols_def by simp
-show "\<exists>x. (\<exists>i. x = row i (P_Gauss_Jordan (Cartesian_Euclidean_Space.transpose A)) \<and> rank A \<le> to_nat i) \<and>
+show "\<exists>x. (\<exists>i. x = row i (P_Gauss_Jordan (transpose A)) \<and> rank A \<le> to_nat i) \<and>
             row_iarray i (fst (Gauss_Jordan_iarrays_PA (transpose_iarray (matrix_to_iarray A)))) = vec_to_iarray x"
-proof (rule exI[of _ "row (from_nat i) (P_Gauss_Jordan (Cartesian_Euclidean_Space.transpose A))"], rule conjI)
-show "\<exists>ia. row (from_nat i) (P_Gauss_Jordan (Cartesian_Euclidean_Space.transpose A)) = row ia (P_Gauss_Jordan (Cartesian_Euclidean_Space.transpose A)) \<and>
+proof (rule exI[of _ "row (from_nat i) (P_Gauss_Jordan (transpose A))"], rule conjI)
+show "\<exists>ia. row (from_nat i) (P_Gauss_Jordan (transpose A)) = row ia (P_Gauss_Jordan (transpose A)) \<and>
          rank A \<le> to_nat ia"
          by (rule exI[of _ "from_nat i"],simp add: rank_le_i to_nat_from_nat_id[OF i_less_card] matrix_to_iarray_rank)
 show "row_iarray i (fst (Gauss_Jordan_iarrays_PA (transpose_iarray (matrix_to_iarray A)))) =
-    vec_to_iarray (row (from_nat i) (P_Gauss_Jordan (Cartesian_Euclidean_Space.transpose A)))"
+    vec_to_iarray (row (from_nat i) (P_Gauss_Jordan (transpose A)))"
 unfolding matrix_to_iarray_transpose[symmetric]
 unfolding matrix_to_iarray_fst_Gauss_Jordan_PA[symmetric]
 unfolding P_Gauss_Jordan_def

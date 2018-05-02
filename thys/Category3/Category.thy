@@ -6,7 +6,7 @@
 chapter "Category"
 
 theory Category
-imports Main "HOL-Library.FuncSet"
+imports Main "HOL.FuncSet"
 begin
 
   text {*

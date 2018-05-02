@@ -434,16 +434,9 @@ lemma consistent_homogeneous:
 shows "consistent A 0" unfolding consistent_def is_solution_def using matrix_vector_zero by fast
 
 lemma dim_solution_set_0:
-fixes A::"'a::{field}^'n::{mod_type}^'rows::{mod_type}"
-shows "(vec.dim (solution_set A 0) = 0) = (solution_set A 0 = {0})"
-proof (safe, simp_all)
-show "vec.dim {0::'a^'n::{mod_type}} = 0" using vec.dim_zero_eq'[of "{0::'a^'n::{mod_type}}"] by fast
-fix x assume dim0: "vec.dim (solution_set A 0) = 0" 
-show "0 \<in> solution_set A 0" using zero_is_solution_homogeneous_system .
-assume x: "x \<in> solution_set A 0"
-show "x = 0" 
- using independent_and_consistent_imp_uniqueness_solution[OF dim0 consistent_homogeneous] zero_is_solution_homogeneous_system x unfolding solution_set_def by blast
-qed
+  fixes A::"'a::{field}^'n::{mod_type}^'rows::{mod_type}"
+  shows "(vec.dim (solution_set A 0) = 0) = (solution_set A 0 = {0})"
+  using homogeneous_solution_set_subspace vec.dim_zero_subspace_eq by auto
 
 
 text{*We have to impose the restriction @{text "semiring_char_0"} in the following lemma,
@@ -468,16 +461,10 @@ show ?thesis
 qed
 
 lemma infinite_solutions_homogeneous_imp_dim_solution_set_not_zero:
-fixes A::"'a::{field}^'n::{mod_type}^'rows::{mod_type}"
-assumes i: "infinite (solution_set A 0)"
-shows "vec.dim (solution_set A 0) > 0"
-proof (rule ccontr, simp)
-assume "vec.dim (solution_set A 0) = 0"
-hence "solution_set A 0 = {0}" using dim_solution_set_0 by auto
-hence "finite (solution_set A 0)" by simp
-thus False using i by contradiction
-qed
-
+  fixes A::"'a::{field}^'n::{mod_type}^'rows::{mod_type}"
+  assumes i: "infinite (solution_set A 0)"
+  shows "vec.dim (solution_set A 0) > 0"
+  by (metis dim_solution_set_0 finite.simps gr0I i)
 
 corollary infinite_solution_set_homogeneous_eq:
 fixes A::"'a::{field,semiring_char_0}^'n::{mod_type}^'rows::{mod_type}"
@@ -516,20 +503,11 @@ show ?thesis
   qed
 qed
 
-
 lemma infinite_solutions_no_homogeneous_imp_dim_solution_set_not_zero_imp:
-fixes A::"'a::{field}^'n::{mod_type}^'rows::{mod_type}"
-assumes i: "infinite (solution_set A b)"
-shows "vec.dim (solution_set A 0) > 0"
-proof (rule ccontr, simp)
-from i obtain x where x: "is_solution x A b"
-  by (auto dest: infinite_imp_nonempty simp: solution_set_def)
-assume "vec.dim (solution_set A 0) = 0"
-hence "solution_set A 0 = {0}" using dim_solution_set_0 by auto
-hence "solution_set A b = {x} + {0}"  unfolding solution_set_rel[OF x] by simp
-also have "... = {x}" unfolding set_plus_def by force
-finally show False using i by simp
-qed
+  fixes A::"'a::{field}^'n::{mod_type}^'rows::{mod_type}"
+  assumes i: "infinite (solution_set A b)"
+  shows "vec.dim (solution_set A 0) > 0"
+  using i independent_and_consistent_imp_card_1 infinite_solution_set_imp_consistent by fastforce
 
 corollary infinite_solution_set_no_homogeneous_eq:
 fixes A::"'a::{field, semiring_char_0}^'n::{mod_type}^'rows::{mod_type}"

@@ -117,7 +117,7 @@ next
   have finite_B: "finite B" using independent_bound_general[OF ind_B] ..
   have span_B_eq: "S = span B" using B S span_B span_subspace by blast
   obtain f where f: "(\<Sum>a\<in>B. f a *\<^sub>R a) = x" using span_finite[OF finite_B]
-    using x unfolding span_B_eq by blast
+    using x unfolding span_B_eq by force
   have "v \<bullet> x = v \<bullet> (\<Sum>a\<in>B. f a *\<^sub>R a)" unfolding f ..
   also have "... = (\<Sum>a\<in>B. v \<bullet> (f a *\<^sub>R a))" unfolding inner_sum_right ..
   also have "... = (\<Sum>a\<in>B. f a * (v \<bullet> a))" unfolding inner_scaleR_right ..

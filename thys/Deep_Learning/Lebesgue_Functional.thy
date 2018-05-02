@@ -11,7 +11,7 @@ space dimension to be dependent on a variable. As the Lebesgue measure of higher
 product measure of the one dimensional Lebesgue measure, we can easily define a more flexible version
 of the Lebesgue measure as follows. This version of the Lebesgue measure measures sets of functions
 from nat to real whose values are undefined for arguments higher than n. These "Extensional Function Spaces"
- are defined in HOL/Library/FuncSet. \<close>
+ are defined in HOL/FuncSet. \<close>
 
 definition lborel_f :: "nat \<Rightarrow> (nat \<Rightarrow> real) measure" where
   "lborel_f n = (\<Pi>\<^sub>M b\<in>{..<n}. lborel)"

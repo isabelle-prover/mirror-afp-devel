@@ -7,8 +7,8 @@
 section{*Generalization of the Second Part of the Fundamental Theorem of Linear Algebra*}
 
 theory Generalizations2
-imports   
-  Rank_Nullity_Theorem.Fundamental_Subspaces
+  imports
+    Rank_Nullity_Theorem.Fundamental_Subspaces
 begin
 
 subsection{*Conjugate class*}
@@ -381,8 +381,8 @@ lemma inner_ge_zero [simp]: "0 \<le> real_of (inner x x)"
   by (auto simp add: inner_vec_def real_sum sum_nonneg)
 
 lemma real_scalar_mult2: "real_of (inner x x) *\<^sub>R A = inner x x * A"
-by (auto simp add: inner_vec_def) 
-  (metis (mono_tags, lifting) Cartesian_Euclidean_Space.sum_cong_aux 
+by (auto simp add: inner_vec_def)
+  (metis (mono_tags, lifting) Finite_Cartesian_Product.sum_cong_aux 
   real_scalar_mult2 real_sum scaleR_left.sum scale_sum_left)
 
 lemma i1: "inner x y = cnj (inner y x)"

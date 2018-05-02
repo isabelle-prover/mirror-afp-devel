@@ -13,7 +13,7 @@ begin
 
 context vector_space
 begin
-  
+
 subsection{*Previous results*}
 
 text{*Linear dependency is a monotone property, based on the 
@@ -33,8 +33,8 @@ lemma scalars_zero_if_independent:
   and ind: "independent A"
   and sum: "(\<Sum>x\<in>A. scale (f x) x) = 0"
   shows "\<forall>x \<in> A. f x = 0"
-  using assms unfolding independent_explicit by auto
-  
+  using fin_A ind local.dependent_finite sum by blast
+
 end
 
 context finite_dimensional_vector_space
@@ -76,7 +76,7 @@ context vector_space
 begin
 
 lemma inj_on_extended:
-  assumes lf: "linear scaleB scaleC f"
+  assumes lf: "Vector_Spaces.linear scaleB scaleC f"
   and f: "finite C"
   and ind_C: "independent C"
   and C_eq: "C = B \<union> W"
@@ -85,7 +85,7 @@ lemma inj_on_extended:
   shows "inj_on f W"
   \<comment> \<open>The proof is carried out by reductio ad absurdum\<close>
 proof (unfold inj_on_def, rule+, rule ccontr)
-  interpret lf: linear scaleB scaleC f using lf by simp
+  interpret lf: Vector_Spaces.linear scaleB scaleC f using lf by simp
   \<comment> \<open>Some previous consequences of the premises that are used later:\<close>
   have fin_B: "finite B" using finite_subset [OF _ f] C_eq by simp  
   have ind_B: "independent B" and ind_W: "independent W" 
@@ -142,12 +142,12 @@ context finite_dimensional_vector_space
 begin
 
 theorem rank_nullity_theorem:
-  assumes l: "linear scale scaleC f"
+  assumes l: "Vector_Spaces.linear scale scaleC f"
   shows "dimension = dim {x. f x = 0} + vector_space.dim scaleC (range f)"
 proof -
   \<comment> \<open>For convenience we define abbreviations for the universe set, $V$, 
     and the kernel of $f$\<close>
-  interpret l: linear scale scaleC f by fact
+  interpret l: Vector_Spaces.linear scale scaleC f by fact
   define V :: "'b set" where "V = UNIV"
   define ker_f where "ker_f = {x. f x = 0}"
   \<comment> \<open>The kernel is a proper subspace:\<close>
@@ -303,10 +303,10 @@ text{*The proof of the theorem for matrices
 lemma rank_nullity_theorem_matrices:
   fixes A::"'a::{field}^'cols::{finite, wellorder}^'rows"
   shows "ncols A = vec.dim (null_space A) + vec.dim (col_space A)"
-  using vec.rank_nullity_theorem[OF matrix_vector_mul_linear, of A]
+  using vec.rank_nullity_theorem[OF matrix_vector_mul_linear_gen, of A]
   apply (subst (2 3) matrix_of_matrix_vector_mul [of A, symmetric])
-  unfolding null_space_eq_ker[OF matrix_vector_mul_linear]
-  unfolding col_space_eq_range [OF matrix_vector_mul_linear]
+  unfolding null_space_eq_ker[OF matrix_vector_mul_linear_gen]
+  unfolding col_space_eq_range [OF matrix_vector_mul_linear_gen]
   unfolding vec.dimension_def ncols_def card_cart_basis
   by simp
 

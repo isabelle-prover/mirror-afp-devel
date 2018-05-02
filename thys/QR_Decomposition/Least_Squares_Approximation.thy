@@ -152,13 +152,12 @@ proof -
   qed
 qed
 
-
 lemma norm_least_squares:
   fixes A::"real^'cols::{finite,wellorder}^'rows"
   shows "\<exists>x. \<forall>x'. norm (b - A *v x) \<le> norm (b - A *v x')"
 proof -
   have "\<exists>p\<in>col_space A. \<forall>y\<in>col_space A. norm (b - p) \<le> norm (b - y) \<and> (b-p) \<in> orthogonal_complement (col_space A)"
-    using least_squares_approximation3[OF subspace_col_space[of A, unfolded vec_subspace_eq_subspace]] .
+    using least_squares_approximation3[OF subspace_col_space[of A, unfolded subspace_vec_eq]] .
   from this obtain p where p: "p \<in> col_space A" and least: "\<forall>y\<in>col_space A. norm (b - p) \<le> norm (b - y)"
     and bp_orthogonal: "(b-p) \<in> orthogonal_complement (col_space A)"
     by blast
@@ -320,7 +319,7 @@ proof (unfold set_least_squares_approximation_def, auto)
   fix y 
   show " norm (b - A *v x) \<le> norm (b - A *v y)"
   proof (rule least_squares_approximation7)
-    show "subspace (col_space A)" using subspace_col_space[of A, unfolded vec_subspace_eq_subspace] .
+    show "subspace (col_space A)" using subspace_col_space[of A, unfolded subspace_vec_eq] .
     show "b - A *v x \<in> orthogonal_complement (col_space A)"
       using o subspace_orthogonal_complement[of "(col_space A)"]
       using minus_diff_eq subspace_neg by metis
@@ -337,7 +336,7 @@ proof
   hence a: "\<forall>a. norm (b - A *v x) \<le> norm (b - A *v a)" unfolding set_least_squares_approximation_def by simp
   have "b - A *v x \<in> orthogonal_complement (col_space A)"
   proof (rule least_squares_approximation6)
-    show "subspace (col_space A)" using subspace_col_space[of A, unfolded vec_subspace_eq_subspace] .
+    show "subspace (col_space A)" using subspace_col_space[of A, unfolded subspace_vec_eq] .
     show "A *v x \<in> col_space A" unfolding col_space_eq[of A] by auto
     show "\<forall>y\<in>col_space A. norm (b - A *v x) \<le> norm (b - y)" using a unfolding col_space_eq by auto
   qed

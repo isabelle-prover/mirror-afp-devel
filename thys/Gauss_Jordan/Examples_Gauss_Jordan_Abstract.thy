@@ -67,7 +67,7 @@ value "matrix_to_list_of_list (Gauss_Jordan (list_of_list_to_matrix [[Complex 1 
 value "DIM(real^5)"
 value "vec.dimension (TYPE(bit)) (TYPE(5))"
 value "vec.dimension (TYPE(real)) (TYPE(2))"
-value "complex_over_reals.dimension"
+(*value "complex_over_reals.dimension"*)
 (*value "vector_space_over_itself.dimension (TYPE(real))"*)
 value "DIM(real^5^4)"
 value "row_rank (list_of_list_to_matrix [[1,0,0,7,5],[1,0,4,8,-1],[1,0,0,9,8],[1,2,3,6,5]]::real^5^4)"

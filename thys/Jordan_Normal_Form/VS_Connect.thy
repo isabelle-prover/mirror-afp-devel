@@ -17,6 +17,8 @@ imports
   VectorSpace.VectorSpace
 begin
 
+hide_const (open) Modules.module
+
 named_theorems class_ring_simps
 
 abbreviation class_ring :: "'a :: {times,plus,one,zero} ring" where
@@ -202,7 +204,7 @@ begin
 
 abbreviation V where "V \<equiv> module_vec TYPE('a) n"
 
-sublocale module "class_ring :: 'a ring" V
+sublocale Module.module "class_ring :: 'a ring" V
   rewrites "carrier V = carrier_vec n"
     and "add V = (+)"
     and "zero V = 0\<^sub>v n"

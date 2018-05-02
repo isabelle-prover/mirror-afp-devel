@@ -34,7 +34,7 @@ lemma closure_half_open_segment:
   fixes a b::real
   shows "closure {a --< b} = (if a = b then {} else {a -- b})"
   unfolding closed_segment_eq_real_ivl if_distrib half_open_segment_real
-  unfolding cond_application_beta
+  unfolding if_distribR
   by simp
 
 lemma half_open_segment_subset[intro, simp]:

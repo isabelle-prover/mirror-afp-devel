@@ -270,7 +270,7 @@ proof -
   have "A *v x = 0" if "transpose A *v (A *v x) = 0"
   proof -
     have eq: "(x v* (transpose A)) = (A *v x)"
-      by (metis Cartesian_Euclidean_Space.transpose_transpose transpose_vector)
+      by (metis transpose_transpose transpose_vector)
     have eq_0: "0 = (x v* (transpose A)) * (A *v x)"
       by auto (metis that dot_lmul_matrix inner_eq_zero_iff inner_zero_left mult_not_zero transpose_vector)
     hence "0 = norm ((x v* (transpose A)) * (A *v x))" by auto
@@ -331,7 +331,7 @@ lemma invertible_transpose:
   fixes A::"'a::{field}^'n^'n"
   assumes "invertible A"
   shows "invertible (transpose A)"
-  by (metis Cartesian_Space.invertible_det_nz assms det_transpose)
+  by (metis invertible_det_nz assms det_transpose)
 
 text{*The following lemmas are generalizations of some parts of the library. They should be 
   in the file @{text "Generalizations.thy"} of the Gauss-Jordan AFP entry.*}
@@ -379,7 +379,7 @@ next
       apply (rule span_mul)
       apply (rule span_sum)
       apply (rule span_mul)
-      apply (rule span_superset)
+      apply (rule span_base)
       apply assumption
       done
   }
@@ -410,6 +410,6 @@ next
 qed
 
 lemma op_vec_scaleR: "( *s) = ( *\<^sub>R)"
-  by (force intro: scalar_mult_eq_scaleR)
+  by (force simp: scalar_mult_eq_scaleR)
 
 end

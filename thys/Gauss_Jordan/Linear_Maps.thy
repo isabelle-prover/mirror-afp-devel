@@ -34,7 +34,7 @@ lemma linear_injective_rank_eq_ncols:
   assumes lf: "linear (( *s)) (( *s)) f"
   shows "inj f \<longleftrightarrow> rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = ncols (matrix f)"
 proof (rule)
-  interpret lf: linear "(( *s))" "(( *s))" f using lf by simp
+  interpret lf: Vector_Spaces.linear "(( *s))" "(( *s))" f using lf by simp
   assume inj: "inj f"
   hence "{x. f x = 0} = {0}" using lf.linear_injective_ker_0 by blast
   hence "vec.dim {x. f x = 0} = 0" using vec.dim_zero_eq' by blast
@@ -43,15 +43,15 @@ proof (rule)
     by (metis add.left_neutral lf.linear_axioms vec.dim_UNIV vec.dimension_def vec_dim_card)
 next
   assume eq: "rank (matrix f::'a::{field}^'cols::{mod_type}^'rows::{mod_type}) = ncols (matrix f)"
-  have "vec.dim {x. f x = 0} = 0" 
+  have "vec.dim {x. f x = 0} = 0"
     unfolding ncols_def
-    using rank_matrix_dim_range[OF lf] eq unfolding matrix_vector_mul[OF lf, symmetric]
-    by (metis Collect_cong cancel_comm_monoid_add_class.diff_cancel dim_null_space lf ncols_def
+    using rank_matrix_dim_range[OF lf] eq
+    by (metis cancel_comm_monoid_add_class.diff_cancel dim_null_space lf ncols_def
         null_space_eq_ker vec.dim_UNIV vec.dimension_def vec_dim_card)
   hence "{x. f x = 0} = {0}" using vec.dim_zero_eq
-    by (metis (mono_tags) empty_iff lf linear.linear_injective_0 linear.linear_injective_ker_0 mem_Collect_eq)
+    using lf vec.linear_0 by auto
   thus "inj f" using vec.linear_injective_ker_0[of "matrix f"] 
-    unfolding matrix_vector_mul[OF lf, symmetric] by simp
+    unfolding matrix_vector_mul(1)[OF lf] by simp
 qed
 
 lemma linear_surjective_rank_eq_ncols:
@@ -75,14 +75,14 @@ qed
 lemma linear_bij_rank_eq_ncols:
   fixes f::"('a::{field}^'n::{mod_type})=>('a::{field}^'n::{mod_type})"
   assumes lf: "linear (( *s)) (( *s)) f"
-  shows "bij f \<longleftrightarrow> rank (matrix f) = ncols (matrix f)" 
+  shows "bij f \<longleftrightarrow> rank (matrix f) = ncols (matrix f)"
   unfolding bij_def
-  using lf linear_injective_rank_eq_ncols vec.pairself.linear_injective_imp_surjective by blast
+  using lf linear_injective_rank_eq_ncols vec.linear_inj_imp_surj by auto
 
 
 subsection{*Invertible linear maps*}
 
-locale invertible_lf = linear +
+locale invertible_lf = Vector_Spaces.linear +
   assumes invertible: "(\<exists>g. g \<circ> f = id \<and> f \<circ> g = id)"
 begin
 
@@ -90,7 +90,7 @@ lemma invertible_lf: "(\<exists>g. linear (( *b)) (( *a)) g \<and> (g \<circ> f 
 proof -
   have "inj_on f UNIV"
     using invertible by (auto simp: o_def id_def inj_on_def fun_eq_iff) metis
-  from exists_left_inverse_on[OF vs1.subspace_UNIV this] obtain g where
+  from linear_exists_left_inverse_on[OF linear_axioms vs1.subspace_UNIV this] obtain g where
     g: "linear ( *b) ( *a) g" "g o f = id"
     by (auto simp: fun_eq_iff id_def module_hom_iff_linear)
   then have "f o g = id"
@@ -101,7 +101,7 @@ qed
 
 end
 
-lemma (in linear) invertible_lf_intro[intro]:
+lemma (in Vector_Spaces.linear) invertible_lf_intro[intro]:
   assumes "(g \<circ> f = id)"  and "(f \<circ> g = id)"
   shows "invertible_lf (( *a)) (( *b)) f"
   using assms
@@ -193,7 +193,7 @@ proof -
   define L where "L = (\<lambda>x. P *v x)"
   define C where "C = L`B"
   have finite_B: "finite B" using vec.indep_card_eq_dim_span[OF ind_B] by simp
-  interpret L: linear "( *s)" "( *s)" L  using matrix_vector_mul_linear unfolding L_def .
+  interpret L: Vector_Spaces.linear "( *s)" "( *s)" L  using matrix_vector_mul_linear_gen unfolding L_def .
   have finite_C: "finite C" using vec.indep_card_eq_dim_span[OF ind_B] unfolding C_def by simp
   have inv_TP: "invertible_lf (( *s)) (( *s)) (\<lambda>x. P *v x)" using invertible_matrix_imp_invertible_lf[OF inv_P] .
   have inj_on_LW: "inj_on L W" using invertible_imp_bijective[OF inv_TP] unfolding bij_def L_def unfolding inj_on_def 
@@ -215,7 +215,7 @@ proof -
         (simp add: B_in_W set_rev_mp sub_W vec.subspace_scale)
     hence "(\<Sum>x\<in>B. (f \<circ> L) x *s x)=0"
       using sum rw
-      using vec.linear_injective_on_subspace_0[OF sub_W, of P] using inj_on_LW
+      using vec.linear_inj_on_iff_eq_0[OF L.linear_axioms sub_W] using inj_on_LW
       by (auto simp: L_def)
     hence "(f \<circ> L) y = 0"
       using vec.scalars_zero_if_independent[OF finite_B ind_B, of "(f \<circ> L)"] 
@@ -333,7 +333,7 @@ proof (rule iffD1[OF independent_is_basis], rule conjI)
     by (rule card_image[of f "set_of_vector X"], metis invertible_imp_bijective[OF invertible_lf] bij_def inj_eq inj_on_def)
   also have "... = card (UNIV::'n set)" using basis_X unfolding independent_is_basis[symmetric] by auto
   finally show "card (f ` set_of_vector X) = card (UNIV::'n set)" .
-  interpret linear "( *s)" "( *s)" f using invertible_lf unfolding invertible_lf_def by simp
+  interpret Vector_Spaces.linear "( *s)" "( *s)" f using invertible_lf unfolding invertible_lf_def by simp
   show "vec.independent (f ` set_of_vector X)"
   proof (rule independent_injective_image)
     show "vec.independent (set_of_vector X)" using basis_X unfolding is_basis_def by simp
@@ -737,7 +737,7 @@ lemma coord_matrix':
   shows "coord Y (f v) = (matrix' X Y f) *v (coord X v)"  
 proof (unfold matrix_mult_sum matrix'_def column_def coord_def, vector, auto)
   fix i
-  interpret linear "( *s)" "( *s)" f by fact
+  interpret Vector_Spaces.linear "( *s)" "( *s)" f by fact
   obtain g where g: "(\<Sum>x\<in>UNIV. g x *s Y $ x) = f v" using basis_UNIV[OF basis_Y] by auto
   obtain s where s: "(\<Sum>x\<in>UNIV. s x *s X $ x) = v" using basis_UNIV[OF basis_X] by auto
   have the_g: "(THE fa. \<forall>a. f v $ a = (\<Sum>x\<in>UNIV. fa x * Y $ x $ a)) = g"
@@ -788,9 +788,10 @@ lemma matrix'_compose:
   shows "matrix' X Z (g \<circ> f) = (matrix' Y Z g) ** (matrix' X Y f)"
 proof (unfold matrix_eq, clarify)
   fix a::"('a, 'n) vec"
-  obtain v where v: "a = coord X v" using bij_coord[OF basis_X] unfolding bij_iff by metis
+  obtain v where v: "a = coord X v" using bij_coord[OF basis_X]
+    by (meson bij_pointE)
   have linear_gf: "linear (( *s)) (( *s)) (g \<circ> f)"
-    using linear_compose[OF linear_f linear_g] .
+    using Vector_Spaces.linear_compose[OF linear_f linear_g] .
   have "matrix' X Z (g \<circ> f) *v a = matrix' X Z (g \<circ> f) *v (coord X v)" unfolding v ..
   also have "... = coord Z ((g \<circ> f) v)" unfolding coord_matrix'[OF basis_X basis_Z linear_gf, symmetric] ..
   also have "... = coord Z (g (f v))" unfolding o_def ..
@@ -807,12 +808,11 @@ lemma exists_linear_eq_matrix':
   shows "\<exists>f. matrix' X Y f = A \<and> linear (( *s)) (( *s)) f" 
 proof -
   define f where "f v = sum (\<lambda>j. A $ j $ (THE k. v = X $ k) *s Y $ j) UNIV" for v
-  interpret pair: vector_space_pair "( *s)::_\<Rightarrow>_\<Rightarrow>'a^'m" "( *s)::_\<Rightarrow>_\<Rightarrow>'a^'n" by unfold_locales
   have indep: "vec.independent (set_of_vector X)"
     using basis_X unfolding is_basis_def by auto
-  define g where "g = pair.construct (set_of_vector X) f"
+  define g where "g = vec.construct (set_of_vector X) f"
   have linear_g: "linear (( *s)) (( *s)) g" and f_eq_g: "(\<forall>x \<in> (set_of_vector X). g x = f x)"
-    using pair.module_hom_construct[OF indep] pair.construct_basis[OF indep]
+    using vec.linear_construct[OF indep] vec.construct_basis[OF indep]
     unfolding g_def module_hom_iff_linear
     by auto
   show ?thesis
@@ -946,7 +946,7 @@ lemma matrix'_matrix_change_of_basis:
   shows "matrix' B' C' f = matrix_change_of_basis C C' ** matrix' B C f ** matrix_change_of_basis B' B"
 proof (unfold matrix_eq, clarify)
   fix x
-  obtain v where v: "x=coord B' v" using bij_coord[OF basis_B'] unfolding bij_iff by metis
+  obtain v where v: "x=coord B' v" using bij_coord[OF basis_B'] by (meson bij_pointE)
   have "matrix_change_of_basis C C' ** matrix' B C f** matrix_change_of_basis B' B *v (coord B' v) 
     = matrix_change_of_basis C C' ** matrix' B C f *v (matrix_change_of_basis B' B *v (coord B' v)) " unfolding matrix_vector_mul_assoc .. 
   also have "... = matrix_change_of_basis C C' ** matrix' B C f *v (coord B v)" unfolding matrix_change_of_basis_works[OF basis_B' basis_B] ..
