@@ -2,7 +2,7 @@ chapter AFP
 
 session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
   description {* LLL Algorithm *}
-  options [timeout = 600]
+  options [timeout = 1500]
   sessions 
     Algebraic_Numbers
     Perron_Frobenius
