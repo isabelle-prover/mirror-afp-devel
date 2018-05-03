@@ -718,7 +718,7 @@ next
   show "(\<lambda>xa. \<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (blinfun_apply (ode_d (Suc 0) x i) xa)) = ode_d (Suc 0) x"
     apply (rule ext)
     apply (auto intro!: ext euclidean_eqI[where 'a='a] blinfun_euclidean_eqI
-        simp: blinfun.bilinear_simps inner_sum_left inner_Basis if_distrib cond_application_beta
+        simp: blinfun.bilinear_simps inner_sum_left inner_Basis if_distrib if_distribR
         sum.delta' cong: if_cong)
     apply (rule arg_cong[where f="\<lambda>x. x \<bullet> b" for b])
   proof goal_cases
@@ -2382,7 +2382,8 @@ proof -
     apply auto
     apply (subst matrix_vector_mul_assoc[symmetric])
     apply (subst matrix_works)
-    subgoal by (auto intro!: bounded_linear.linear blinfun.bounded_linear_right)
+    subgoal by (auto simp: linear_matrix_vector_mul_eq
+          intro!: bounded_linear.linear blinfun.bounded_linear_right)
     apply (subst einterpret_mmult_fa[where 'n='n and 'm = 'n and 'l='n])
     subgoal by (simp add: wdD[OF \<open>wd _\<close>])
     subgoal by (simp add: length_concat o_def sum_list_distinct_conv_sum_set wdD[OF \<open>wd _\<close>])
@@ -2594,9 +2595,7 @@ context includes blinfun.lifting begin
 lemma flow1_of_vec1_vec1_of_flow1[simp]:
   "flow1_of_vec1 (vec1_of_flow1 X) = X"
   unfolding vec1_of_flow1_def flow1_of_vec1_def
-  apply (transfer)
-  apply (auto simp: matrix_of_matrix_vector_mul)
-  using linear_conv_bounded_linear matrix_vector_mul by fastforce
+  by (transfer) auto
 end
 
 lemma
