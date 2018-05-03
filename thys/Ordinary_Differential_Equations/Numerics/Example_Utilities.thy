@@ -1013,9 +1013,7 @@ lemma blinfuns_of_lvivl_eq: "blinfuns_of_lvivl x =
 lemma range_blinfun_of_vmatrix[simp]: "range blinfun_of_vmatrix = UNIV"
   apply auto
   apply transfer
-  subgoal for x
-    unfolding linear_linear
-    by (auto intro!: matrix_works[symmetric])
+  subgoal for x by (rule image_eqI[where x="matrix x"]) auto
   done
 
 lemma blinfun_of_vmatrix_image:

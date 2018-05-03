@@ -1612,7 +1612,7 @@ lemma mem_set_find_indices [simp]: "i \<in> set (find_indices x xs) \<longleftri
 lemma distinct_find_indices: "distinct (find_indices x xs)"
   unfolding find_indices_def by simp 
 
-context module begin
+context Module.module begin
 
 definition lincomb_list
 where "lincomb_list c vs = sumlist (map (\<lambda>i. c i \<odot>\<^bsub>M\<^esub> vs ! i) [0..<length vs])"

@@ -25,9 +25,9 @@ begin
 (* TODO: Documentation and add references to computer algebra book *)
 
 hide_const (open) Determinants.det
-hide_const (open) Cartesian_Euclidean_Space.mat
-hide_const (open) Cartesian_Euclidean_Space.row
-hide_const (open) Cartesian_Euclidean_Space.vec
+hide_const (open) Finite_Cartesian_Product.mat
+hide_const (open) Finite_Cartesian_Product.row
+hide_const (open) Finite_Cartesian_Product.vec
 hide_const (open) Path_Connected.outside
 hide_const (open) Linear_Algebra.orthogonal
 hide_type (open) Finite_Cartesian_Product.vec
