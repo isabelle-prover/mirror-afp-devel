@@ -3841,6 +3841,10 @@ qed
 
 end (* context R_scalar_mult *)
 
+
+hide_const real_vector.dim
+hide_const (open) Real_Vector_Spaces.dim
+
 abbreviation (in scalar_mult) "fingen \<equiv> R_scalar_mult.R_fingen UNIV smult"
 abbreviation (in scalar_mult) "dim    \<equiv> R_scalar_mult.dim_R UNIV smult"
 

@@ -1344,9 +1344,8 @@ next
   case (Cos fa)
   then show ?case
     by (auto intro!: derivative_eq_intros ext simp: FDERIV_floatarith_def interpret_floatarith_inner_floatariths 
-        interpret_floatariths_map algebra_simps list_of_eucl_coord_update[symmetric]
-        minus_sin_cos_eq cos_pi_minus[symmetric] mult_minus_left[symmetric]
-        simp del: mult_minus_left)
+        interpret_floatariths_map add.commute minus_sin_cos_eq
+        reorient: mult_minus_left list_of_eucl_coord_update cos_pi_minus)
 next
   case (Arctan fa)
   then show ?case
@@ -1986,6 +1985,14 @@ next
     apply (metis Num_eq_subst_Var dest_Num_fa.simps(1) option.simps(3))
     apply (metis Num_eq_subst_Var dest_Num_fa.simps(1) option.simps(3))
     done
+next
+  case (Min)
+  then show ?case
+    by (auto simp: fold_const_fa.simps split: floatarith.splits)
+next
+  case (Max)
+  then show ?case
+    by (auto simp: fold_const_fa.simps split: floatarith.splits)
 qed (auto simp: fold_const_fa.simps
         split!: floatarith.splits option.splits if_splits
         elim!: dest_Num_fa_Some)

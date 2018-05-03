@@ -122,7 +122,7 @@ proof -
     by auto
   then have f_linear:"linear (FunctionFrechet I id1 ?x)"
     using Deriv.has_derivative_linear by auto
-  then show ?thesis using empty_zero f_linear Linear_Algebra.linear_0 by (auto)
+  then show ?thesis using empty_zero f_linear linear_0 by (auto)
 qed
 
 lemma constant_deriv_zero:"is_interp I \<Longrightarrow> directional_derivative I ($f id1 empty) \<nu> = 0"
