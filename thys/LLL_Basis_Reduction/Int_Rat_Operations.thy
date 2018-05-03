@@ -12,6 +12,8 @@ begin
 
 definition int_times_rat :: "int \<Rightarrow> rat \<Rightarrow> rat" where "int_times_rat i x = of_int i * x" 
 
+declare int_times_rat_def[simp]
+
 lemma int_times_rat_code[code abstract]: "quotient_of (int_times_rat i x) =
   (case quotient_of x of (n,d) \<Rightarrow> Rat.normalize (i * n, d))"  
   unfolding int_times_rat_def rat_times_code by auto
