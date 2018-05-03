@@ -42,19 +42,14 @@ sublocale bounded_distrib_lattice < comp_inf: bounded_kleene_algebra where star 
   by (simp add: inf_assoc)
 
 text {*
-Kleene star and the relational operations are reasonably independent.
-The only additional axiom we need in the generalisation to Stone-Kleene relation algebras is that star distributes over double complement.
+We add the Kleene star operation to each of bounded distributive allegories, pseudocomplemented distributive allegories and Stone relation algebras.
+We start with single-object bounded distributive allegories.
 *}
 
-class stone_kleene_relation_algebra = stone_relation_algebra + kleene_algebra +
-  assumes pp_dist_star: "--(x\<^sup>\<star>) = (--x)\<^sup>\<star>"
+class bounded_distrib_kleene_allegory = bounded_distrib_allegory + kleene_algebra
 begin
 
 subclass bounded_kleene_algebra ..
-
-lemma regular_closed_star:
-  "regular x \<Longrightarrow> regular (x\<^sup>\<star>)"
-  by (simp add: pp_dist_star)
 
 lemma conv_star_conv:
   "x\<^sup>\<star> \<le> x\<^sup>T\<^sup>\<star>\<^sup>T"
@@ -200,74 +195,6 @@ lemma vector_vector_star:
   by (simp add: transitive_star vv_transitive)
 
 text {*
-The following definitions and results concern acyclic graphs and forests.
-*}
-
-abbreviation acyclic :: "'a \<Rightarrow> bool" where "acyclic x \<equiv> x\<^sup>+ \<le> -1"
-
-abbreviation forest :: "'a \<Rightarrow> bool" where "forest x \<equiv> injective x \<and> acyclic x"
-
-lemma forest_bot:
-  "forest bot"
-  by simp
-
-lemma acyclic_star_below_complement:
-  "acyclic w \<longleftrightarrow> w\<^sup>T\<^sup>\<star> \<le> -w"
-  by (simp add: conv_star_commute schroeder_4_p)
-
-lemma acyclic_star_below_complement_1:
-  "acyclic w \<longleftrightarrow> w\<^sup>\<star> \<sqinter> w\<^sup>T = bot"
-  using pseudo_complement schroeder_5_p by force
-
-lemma acyclic_star_inf_conv:
-  assumes "acyclic w"
-  shows "w\<^sup>\<star> \<sqinter> w\<^sup>T\<^sup>\<star> = 1"
-proof -
-  have "w\<^sup>+ \<sqinter> w\<^sup>T\<^sup>\<star> \<le> (w \<sqinter> w\<^sup>T\<^sup>\<star>) * w\<^sup>\<star>"
-    by (metis conv_star_commute dedekind_2 star.circ_transitive_equal)
-  also have "... = bot"
-    by (metis assms conv_star_commute p_antitone_iff pseudo_complement schroeder_4_p semiring.mult_not_zero star.circ_circ_mult star_involutive star_one)
-  finally have "w\<^sup>\<star> \<sqinter> w\<^sup>T\<^sup>\<star> \<le> 1"
-    by (metis eq_iff le_bot mult_left_zero star.circ_plus_one star.circ_zero star_left_unfold_equal sup_inf_distrib1)
-  thus ?thesis
-    by (simp add: inf.antisym star.circ_reflexive)
-qed
-
-lemma acyclic_asymmetric:
-  "acyclic w \<Longrightarrow> w\<^sup>T \<sqinter> w = bot"
-  using acyclic_star_below_complement inf.order_lesseq_imp pseudo_complement star.circ_increasing by blast
-
-lemma forest_separate:
-  assumes "forest x"
-    shows "x\<^sup>\<star> * x\<^sup>T\<^sup>\<star> \<sqinter> x\<^sup>T * x \<le> 1"
-proof -
-  have "x\<^sup>\<star> * 1 \<le> -x\<^sup>T"
-    using assms schroeder_5_p by force
-  hence 1: "x\<^sup>\<star> \<sqinter> x\<^sup>T = bot"
-    by (simp add: pseudo_complement)
-  have "x\<^sup>\<star> \<sqinter> x\<^sup>T * x = (1 \<squnion> x\<^sup>\<star> * x) \<sqinter> x\<^sup>T * x"
-    using star.circ_right_unfold_1 by simp
-  also have "... = (1 \<sqinter> x\<^sup>T * x) \<squnion> (x\<^sup>\<star> * x \<sqinter> x\<^sup>T * x)"
-    by (simp add: inf_sup_distrib2)
-  also have "... \<le> 1 \<squnion> (x\<^sup>\<star> * x \<sqinter> x\<^sup>T * x)"
-    using sup_left_isotone by simp
-  also have "... = 1 \<squnion> (x\<^sup>\<star> \<sqinter> x\<^sup>T) * x"
-    by (simp add: assms injective_comp_right_dist_inf)
-  also have "... = 1"
-    using 1 by simp
-  finally have 2: "x\<^sup>\<star> \<sqinter> x\<^sup>T * x \<le> 1"
-    .
-  hence 3: "x\<^sup>T\<^sup>\<star> \<sqinter> x\<^sup>T * x \<le> 1"
-    by (metis (mono_tags, lifting) conv_star_commute conv_dist_comp conv_dist_inf conv_involutive coreflexive_symmetric)
-  have "x\<^sup>\<star> * x\<^sup>T\<^sup>\<star> \<sqinter> x\<^sup>T * x \<le> (x\<^sup>\<star> \<squnion> x\<^sup>T\<^sup>\<star>) \<sqinter> x\<^sup>T * x"
-    using assms cancel_separate inf.sup_left_isotone by simp
-  also have "... \<le> 1"
-    using 2 3 by (simp add: inf_sup_distrib2)
-  finally show ?thesis
-    .
-qed
-
-text {*
 The following equivalence relation characterises the component trees of a forest.
 This is a special case of undirected reachability in a directed graph.
 *}
@@ -296,47 +223,6 @@ lemma forest_components_idempotent:
 lemma forest_components_star:
   "injective x \<Longrightarrow> (forest_components x)\<^sup>\<star> = forest_components x"
   using forest_components_equivalence forest_components_idempotent star.circ_transitive_equal by simp
-
-text {*
-The following definition captures the components of undirected weighted graphs.
-*}
-
-abbreviation "components g \<equiv> (--g)\<^sup>\<star>"
-
-lemma components_equivalence:
-  "symmetric x \<Longrightarrow> equivalence (components x)"
-  by (simp add: conv_star_commute conv_complement star.circ_reflexive star.circ_transitive_equal)
-
-lemma components_increasing:
-  "x \<le> components x"
-  using order_trans pp_increasing star.circ_increasing by blast
-
-lemma components_isotone:
-  "x \<le> y \<Longrightarrow> components x \<le> components y"
-  by (simp add: pp_isotone star_isotone)
-
-lemma components_idempotent:
-  "components (components x) = components x"
-  using pp_dist_star star_involutive by auto
-
-lemma cut_reachable:
-  assumes "v\<^sup>T = r\<^sup>T * t\<^sup>\<star>"
-      and "t \<le> g"
-    shows "v * -v\<^sup>T \<sqinter> g \<le> (r\<^sup>T * g\<^sup>\<star>)\<^sup>T * (r\<^sup>T * g\<^sup>\<star>)"
-proof -
-  have "v * -v\<^sup>T \<sqinter> g \<le> v * top \<sqinter> g"
-    using inf.sup_left_isotone mult_right_isotone top_greatest by blast
-  also have "... = (r\<^sup>T * t\<^sup>\<star>)\<^sup>T * top \<sqinter> g"
-    by (metis assms(1) conv_involutive)
-  also have "... \<le> (r\<^sup>T * g\<^sup>\<star>)\<^sup>T * top \<sqinter> g"
-    using assms(2) conv_isotone inf.sup_left_isotone mult_left_isotone mult_right_isotone star_isotone by auto
-  also have "... \<le> (r\<^sup>T * g\<^sup>\<star>)\<^sup>T * ((r\<^sup>T * g\<^sup>\<star>) * g)"
-    by (metis conv_involutive dedekind_1 inf_top.left_neutral)
-  also have "... \<le> (r\<^sup>T * g\<^sup>\<star>)\<^sup>T * (r\<^sup>T * g\<^sup>\<star>)"
-    by (simp add: mult_assoc mult_right_isotone star.left_plus_below_circ star_plus)
-  finally show ?thesis
-    .
-qed
 
 text {*
 The following lemma shows that the nodes reachable in the graph can be reached by only using edges between reachable nodes.
@@ -372,6 +258,203 @@ proof -
     using 1 star_right_induct by auto
   thus ?thesis
     by (simp add: inf.eq_iff mult_right_isotone star_isotone)
+qed
+
+lemma kruskal_acyclic_inv_1:
+  assumes "injective f"
+      and "e * forest_components f * e = bot"
+    shows "(f \<sqinter> top * e * f\<^sup>T\<^sup>\<star>)\<^sup>T * f\<^sup>\<star> * e = bot"
+proof -
+  let ?q = "top * e * f\<^sup>T\<^sup>\<star>"
+  let ?F = "forest_components f"
+  have "(f \<sqinter> ?q)\<^sup>T * f\<^sup>\<star> * e = ?q\<^sup>T \<sqinter> f\<^sup>T * f\<^sup>\<star> * e"
+    by (metis (mono_tags) comp_associative conv_dist_inf covector_conv_vector inf_vector_comp vector_top_closed)
+  also have "... \<le> ?q\<^sup>T \<sqinter> ?F * e"
+    using comp_inf.mult_right_isotone mult_left_isotone star.circ_increasing by simp
+  also have "... = f\<^sup>\<star> * e\<^sup>T * top \<sqinter> ?F * e"
+    by (simp add: conv_dist_comp conv_star_commute mult_assoc)
+  also have "... \<le> ?F * e\<^sup>T * top \<sqinter> ?F * e"
+    by (metis conv_dist_comp conv_star_commute conv_top inf.sup_left_isotone star.circ_right_top star_outer_increasing mult_assoc)
+  also have "... = ?F * (e\<^sup>T * top \<sqinter> ?F * e)"
+    by (metis assms(1) forest_components_equivalence equivalence_comp_dist_inf mult_assoc)
+  also have "... = (?F \<sqinter> top * e) * ?F * e"
+    by (simp add: comp_associative comp_inf_vector_1 conv_dist_comp inf_vector_comp)
+  also have "... \<le> top * e * ?F * e"
+    by (simp add: mult_left_isotone)
+  also have "... = bot"
+    using assms(2) mult_assoc by simp
+  finally show ?thesis
+    by (simp add: bot_unique)
+qed
+
+lemma kruskal_forest_components_inf_1:
+  assumes "f \<le> w \<squnion> w\<^sup>T"
+      and "injective w"
+      and "f \<le> forest_components g"
+    shows "f * forest_components (forest_components g \<sqinter> w) \<le> forest_components (forest_components g \<sqinter> w)"
+proof -
+  let ?f = "forest_components g"
+  let ?w = "forest_components (?f \<sqinter> w)"
+  have "f * ?w = (f \<sqinter> (w \<squnion> w\<^sup>T)) * ?w"
+    by (simp add: assms(1) inf.absorb1)
+  also have "... = (f \<sqinter> w) * ?w \<squnion> (f \<sqinter> w\<^sup>T) * ?w"
+    by (simp add: inf_sup_distrib1 semiring.distrib_right)
+  also have "... \<le> (?f \<sqinter> w) * ?w \<squnion> (f \<sqinter> w\<^sup>T) * ?w"
+    using assms(3) inf.sup_left_isotone mult_left_isotone sup_left_isotone by simp
+  also have "... \<le> (?f \<sqinter> w) * ?w \<squnion> (?f \<sqinter> w\<^sup>T) * ?w"
+    using assms(3) inf.sup_left_isotone mult_left_isotone sup_right_isotone by simp
+  also have "... = (?f \<sqinter> w) * ?w \<squnion> (?f \<sqinter> w)\<^sup>T * ?w"
+    by (simp add: conv_dist_comp conv_dist_inf conv_star_commute)
+  also have "... \<le> (?f \<sqinter> w) * ?w \<squnion> ?w"
+    by (metis star.circ_loop_fixpoint sup_ge1 sup_right_isotone)
+  also have "... = ?w \<squnion> (?f \<sqinter> w) * (?f \<sqinter> w)\<^sup>\<star> \<squnion> (?f \<sqinter> w) * (?f \<sqinter> w)\<^sup>T\<^sup>+ * (?f \<sqinter> w)\<^sup>\<star>"
+    by (metis comp_associative mult_left_dist_sup star.circ_loop_fixpoint sup_commute sup_assoc)
+  also have "... \<le> ?w \<squnion> (?f \<sqinter> w)\<^sup>\<star> \<squnion> (?f \<sqinter> w) * (?f \<sqinter> w)\<^sup>T\<^sup>+ * (?f \<sqinter> w)\<^sup>\<star>"
+    using star.left_plus_below_circ sup_left_isotone sup_right_isotone by auto
+  also have "... = ?w \<squnion> (?f \<sqinter> w) * (?f \<sqinter> w)\<^sup>T\<^sup>+ * (?f \<sqinter> w)\<^sup>\<star>"
+    by (metis star.circ_loop_fixpoint sup.right_idem)
+  also have "... \<le> ?w \<squnion> w * w\<^sup>T * ?w"
+    using comp_associative conv_dist_inf mult_isotone sup_right_isotone by simp
+  also have "... = ?w"
+    by (metis assms(2) coreflexive_comp_top_inf inf.cobounded2 sup.orderE)
+  finally show ?thesis
+    by simp
+qed
+
+lemma kruskal_forest_components_inf:
+  assumes "f \<le> w \<squnion> w\<^sup>T"
+      and "injective w"
+    shows "forest_components f \<le> forest_components (forest_components f \<sqinter> w)"
+proof -
+  let ?f = "forest_components f"
+  let ?w = "forest_components (?f \<sqinter> w)"
+  have 1: "1 \<le> ?w"
+    by (simp add: reflexive_mult_closed star.circ_reflexive)
+  have "f * ?w \<le> ?w"
+    using assms forest_components_increasing kruskal_forest_components_inf_1 by simp
+  hence 2: "f\<^sup>\<star> \<le> ?w"
+    using 1 star_left_induct by fastforce
+  have "f\<^sup>T * ?w \<le> ?w"
+    apply (rule kruskal_forest_components_inf_1)
+    apply (metis assms(1) conv_dist_sup conv_involutive conv_isotone sup_commute)
+    apply (simp add: assms(2))
+    by (metis le_supI2 star.circ_back_loop_fixpoint star.circ_increasing)
+  thus "?f \<le> ?w"
+    using 2 star_left_induct by simp
+qed
+
+end
+
+text {*
+We next add the Kleene star to single-object pseudocomplemented distributive allegories.
+*}
+
+class pd_kleene_allegory = pd_allegory + bounded_distrib_kleene_allegory
+begin
+
+text {*
+The following definitions and results concern acyclic graphs and forests.
+*}
+
+abbreviation acyclic :: "'a \<Rightarrow> bool" where "acyclic x \<equiv> x\<^sup>+ \<le> -1"
+
+abbreviation forest :: "'a \<Rightarrow> bool" where "forest x \<equiv> injective x \<and> acyclic x"
+
+lemma forest_bot:
+  "forest bot"
+  by simp
+
+lemma acyclic_star_below_complement:
+  "acyclic w \<longleftrightarrow> w\<^sup>T\<^sup>\<star> \<le> -w"
+  by (simp add: conv_star_commute schroeder_4_p)
+
+lemma acyclic_star_below_complement_1:
+  "acyclic w \<longleftrightarrow> w\<^sup>\<star> \<sqinter> w\<^sup>T = bot"
+  using pseudo_complement schroeder_5_p by force
+
+lemma acyclic_star_inf_conv:
+  assumes "acyclic w"
+  shows "w\<^sup>\<star> \<sqinter> w\<^sup>T\<^sup>\<star> = 1"
+proof -
+  have "w\<^sup>+ \<sqinter> w\<^sup>T\<^sup>\<star> \<le> (w \<sqinter> w\<^sup>T\<^sup>\<star>) * w\<^sup>\<star>"
+    by (metis conv_star_commute dedekind_2 star.circ_transitive_equal)
+  also have "... = bot"
+    by (metis assms conv_star_commute p_antitone_iff pseudo_complement schroeder_4_p semiring.mult_not_zero star.circ_circ_mult star_involutive star_one)
+  finally have "w\<^sup>\<star> \<sqinter> w\<^sup>T\<^sup>\<star> \<le> 1"
+    by (metis eq_iff le_bot mult_left_zero star.circ_plus_one star.circ_zero star_left_unfold_equal sup_inf_distrib1)
+  thus ?thesis
+    by (simp add: inf.antisym star.circ_reflexive)
+qed
+
+lemma acyclic_asymmetric:
+  "acyclic w \<Longrightarrow> asymmetric w"
+  by (simp add: local.dual_order.trans local.pseudo_complement local.schroeder_5_p local.star.circ_increasing)
+
+lemma forest_separate:
+  assumes "forest x"
+    shows "x\<^sup>\<star> * x\<^sup>T\<^sup>\<star> \<sqinter> x\<^sup>T * x \<le> 1"
+proof -
+  have "x\<^sup>\<star> * 1 \<le> -x\<^sup>T"
+    using assms schroeder_5_p by force
+  hence 1: "x\<^sup>\<star> \<sqinter> x\<^sup>T = bot"
+    by (simp add: pseudo_complement)
+  have "x\<^sup>\<star> \<sqinter> x\<^sup>T * x = (1 \<squnion> x\<^sup>\<star> * x) \<sqinter> x\<^sup>T * x"
+    using star.circ_right_unfold_1 by simp
+  also have "... = (1 \<sqinter> x\<^sup>T * x) \<squnion> (x\<^sup>\<star> * x \<sqinter> x\<^sup>T * x)"
+    by (simp add: inf_sup_distrib2)
+  also have "... \<le> 1 \<squnion> (x\<^sup>\<star> * x \<sqinter> x\<^sup>T * x)"
+    using sup_left_isotone by simp
+  also have "... = 1 \<squnion> (x\<^sup>\<star> \<sqinter> x\<^sup>T) * x"
+    by (simp add: assms injective_comp_right_dist_inf)
+  also have "... = 1"
+    using 1 by simp
+  finally have 2: "x\<^sup>\<star> \<sqinter> x\<^sup>T * x \<le> 1"
+    .
+  hence 3: "x\<^sup>T\<^sup>\<star> \<sqinter> x\<^sup>T * x \<le> 1"
+    by (metis (mono_tags, lifting) conv_star_commute conv_dist_comp conv_dist_inf conv_involutive coreflexive_symmetric)
+  have "x\<^sup>\<star> * x\<^sup>T\<^sup>\<star> \<sqinter> x\<^sup>T * x \<le> (x\<^sup>\<star> \<squnion> x\<^sup>T\<^sup>\<star>) \<sqinter> x\<^sup>T * x"
+    using assms cancel_separate inf.sup_left_isotone by simp
+  also have "... \<le> 1"
+    using 2 3 by (simp add: inf_sup_distrib2)
+  finally show ?thesis
+    .
+qed
+
+text {*
+The following definition captures the components of undirected weighted graphs.
+*}
+
+abbreviation "components g \<equiv> (--g)\<^sup>\<star>"
+
+lemma components_equivalence:
+  "symmetric x \<Longrightarrow> equivalence (components x)"
+  by (simp add: conv_star_commute conv_complement star.circ_reflexive star.circ_transitive_equal)
+
+lemma components_increasing:
+  "x \<le> components x"
+  using order_trans pp_increasing star.circ_increasing by blast
+
+lemma components_isotone:
+  "x \<le> y \<Longrightarrow> components x \<le> components y"
+  by (simp add: pp_isotone star_isotone)
+
+lemma cut_reachable:
+  assumes "v\<^sup>T = r\<^sup>T * t\<^sup>\<star>"
+      and "t \<le> g"
+    shows "v * -v\<^sup>T \<sqinter> g \<le> (r\<^sup>T * g\<^sup>\<star>)\<^sup>T * (r\<^sup>T * g\<^sup>\<star>)"
+proof -
+  have "v * -v\<^sup>T \<sqinter> g \<le> v * top \<sqinter> g"
+    using inf.sup_left_isotone mult_right_isotone top_greatest by blast
+  also have "... = (r\<^sup>T * t\<^sup>\<star>)\<^sup>T * top \<sqinter> g"
+    by (metis assms(1) conv_involutive)
+  also have "... \<le> (r\<^sup>T * g\<^sup>\<star>)\<^sup>T * top \<sqinter> g"
+    using assms(2) conv_isotone inf.sup_left_isotone mult_left_isotone mult_right_isotone star_isotone by auto
+  also have "... \<le> (r\<^sup>T * g\<^sup>\<star>)\<^sup>T * ((r\<^sup>T * g\<^sup>\<star>) * g)"
+    by (metis conv_involutive dedekind_1 inf_top.left_neutral)
+  also have "... \<le> (r\<^sup>T * g\<^sup>\<star>)\<^sup>T * (r\<^sup>T * g\<^sup>\<star>)"
+    by (simp add: mult_assoc mult_right_isotone star.left_plus_below_circ star_plus)
+  finally show ?thesis
+    .
 qed
 
 text {*
@@ -606,7 +689,7 @@ qed
 lemma span_inv:
   assumes "e \<le> v * -v\<^sup>T"
       and "vector v"
-      and "atom e"
+      and "arc e"
       and "t \<le> (v * v\<^sup>T) \<sqinter> g"
       and "g\<^sup>T = g"
       and "v\<^sup>T = r\<^sup>T * t\<^sup>\<star>"
@@ -711,7 +794,7 @@ proof -
   have "r\<^sup>T * ?d\<^sup>\<star> * e * (e\<^sup>T * v * v\<^sup>T \<sqinter> g) \<le> r\<^sup>T * ?d\<^sup>\<star> * e * e\<^sup>T * v * v\<^sup>T"
     by (simp add: comp_associative comp_right_isotone)
   also have "... \<le> r\<^sup>T * ?d\<^sup>\<star> * 1 * v * v\<^sup>T"
-    by (metis assms(3) atom_injective comp_associative comp_left_isotone comp_right_isotone)
+    by (metis assms(3) arc_injective comp_associative comp_left_isotone comp_right_isotone)
   also have "... = r\<^sup>T * ?d\<^sup>\<star> * v * v\<^sup>T"
     by simp
   also have "... \<le> r\<^sup>T * ?d\<^sup>\<star> * ?d\<^sup>\<star>"
@@ -723,7 +806,7 @@ proof -
   have "r\<^sup>T * ?d\<^sup>\<star> * e * (e\<^sup>T * e \<sqinter> g) \<le> r\<^sup>T * ?d\<^sup>\<star> * e * e\<^sup>T * e"
     by (simp add: comp_associative comp_right_isotone)
   also have "... \<le> r\<^sup>T * ?d\<^sup>\<star> * 1 * e"
-    by (metis assms(3) atom_injective comp_associative comp_left_isotone comp_right_isotone)
+    by (metis assms(3) arc_injective comp_associative comp_left_isotone comp_right_isotone)
   also have "... = r\<^sup>T * ?d\<^sup>\<star> * e"
     by simp
   finally have 14: "r\<^sup>T * ?d\<^sup>\<star> * e * (e\<^sup>T * e \<sqinter> g) \<le> r\<^sup>T * ?d\<^sup>\<star> * e"
@@ -804,12 +887,12 @@ proof -
 qed
 
 lemma exchange_injective_6:
-  assumes "atom e"
+  assumes "arc e"
       and "forest w"
     shows "(prim_P w v e)\<^sup>T * e\<^sup>T = bot"
 proof -
   have "e\<^sup>T * top * e \<le> --1"
-    using assms(1) point_injective by auto
+    by (simp add: assms(1) local.p_antitone local.p_antitone_iff local.point_injective)
   hence 1: "e * -1 * e\<^sup>T \<le> bot"
     by (metis conv_involutive p_top triple_schroeder_p)
   have "(prim_P w v e)\<^sup>T * e\<^sup>T \<le> (w \<sqinter> top * e * w\<^sup>T\<^sup>\<star>)\<^sup>T * e\<^sup>T"
@@ -839,7 +922,7 @@ The graph after exchanging is injective.
 *}
 
 lemma exchange_injective:
-  assumes "atom e"
+  assumes "arc e"
       and "e \<le> v * -v\<^sup>T"
       and "forest w"
       and "vector v"
@@ -901,7 +984,7 @@ proof -
   have 8: "e * (prim_P w v e)\<^sup>T\<^sup>T \<le> 1"
     using 6 conv_dist_comp coreflexive_symmetric by fastforce
   have 9: "e * e\<^sup>T \<le> 1"
-    by (simp add: assms(1) atom_injective)
+    by (simp add: assms(1) arc_injective)
   have "(prim_W w v e) * (prim_W w v e)\<^sup>T = (w \<sqinter> -(prim_EP w v e)) * (w \<sqinter> -(prim_EP w v e))\<^sup>T \<squnion> (w \<sqinter> -(prim_EP w v e)) * (prim_P w v e)\<^sup>T\<^sup>T \<squnion> (w \<sqinter> -(prim_EP w v e)) * e\<^sup>T \<squnion> (prim_P w v e)\<^sup>T * (w \<sqinter> -(prim_EP w v e))\<^sup>T \<squnion> (prim_P w v e)\<^sup>T * (prim_P w v e)\<^sup>T\<^sup>T \<squnion> (prim_P w v e)\<^sup>T * e\<^sup>T  \<squnion> e * (w \<sqinter> -(prim_EP w v e))\<^sup>T \<squnion> e * (prim_P w v e)\<^sup>T\<^sup>T \<squnion> e * e\<^sup>T"
     using comp_left_dist_sup comp_right_dist_sup conv_dist_sup sup.assoc by simp
   also have "... \<le> 1"
@@ -925,7 +1008,7 @@ proof -
 qed
 
 lemma vector_pred_inv:
-  assumes "atom e"
+  assumes "arc e"
       and "e \<le> v * -v\<^sup>T"
       and "forest w"
       and "vector v"
@@ -995,7 +1078,7 @@ proof -
     also have "... \<le> top * -v * -v\<^sup>T \<sqinter> top * top * e * w\<^sup>T\<^sup>\<star>"
       by (simp add: comp_inf_covector mult_assoc)
     also have "... \<le> top * -v\<^sup>T \<sqinter> top * e * w\<^sup>T\<^sup>\<star>"
-      by (meson comp_inf.comp_isotone mult_left_isotone top.extremum)
+      using mult_left_isotone top.extremum local.inf_mono by presburger
     also have "... = -v\<^sup>T \<sqinter> top * e * w\<^sup>T\<^sup>\<star>"
       by (simp add: assms(1) vector_conv_compl)
     finally have "top * (prim_P w v e) \<le> -(w \<sqinter> -prim_EP w v e)"
@@ -1258,12 +1341,32 @@ proof -
   hence "t \<le> w \<sqinter> -(prim_EP w v e)"
     using assms(1) by simp
   thus ?thesis
-    by (simp add: le_supI2 sup_commute)
+    using local.le_supI1 by blast
 qed
 
 lemma mst_extends_new_tree:
   "t \<le> w \<Longrightarrow> t \<le> v * v\<^sup>T \<Longrightarrow> vector v \<Longrightarrow> t \<squnion> e \<le> prim_W w v e"
   using mst_extends_old_tree by auto
+
+end
+
+text {*
+We finally add the Kleene star to Stone relation algebras.
+Kleene star and the relational operations are reasonably independent.
+The only additional axiom we need in the generalisation to Stone-Kleene relation algebras is that star distributes over double complement.
+*}
+
+class stone_kleene_relation_algebra = stone_relation_algebra + pd_kleene_allegory +
+  assumes pp_dist_star: "--(x\<^sup>\<star>) = (--x)\<^sup>\<star>"
+begin
+
+lemma regular_closed_star:
+  "regular x \<Longrightarrow> regular (x\<^sup>\<star>)"
+  by (simp add: pp_dist_star)
+
+lemma components_idempotent:
+  "components (components x) = components x"
+  using pp_dist_star star_involutive by auto
 
 text {*
 The following lemma shows that the nodes reachable in the tree after exchange contain the nodes reachable in the tree before exchange.
@@ -1393,6 +1496,10 @@ proof -
   thus ?thesis
     by (simp add: star_right_induct)
 qed
+
+text {*
+Some of the following lemmas already hold in pseudocomplemented distributive Kleene allegories.
+*}
 
 subsubsection {* Exchange gives Minimum Spanning Trees *}
 
@@ -1602,10 +1709,10 @@ proof -
 qed
 
 text {*
-The following lemmas show that the relation characterising the edge across the cut is an atom.
+The following lemmas show that the relation characterising the edge across the cut is an arc.
 *}
 
-lemma atom_edge_1:
+lemma arc_edge_1:
   assumes "e \<le> v * -v\<^sup>T \<sqinter> g"
       and "vector v"
       and "v\<^sup>T = r\<^sup>T * t\<^sup>\<star>"
@@ -1633,7 +1740,7 @@ proof -
     .
 qed
 
-lemma atom_edge_2:
+lemma arc_edge_2:
   assumes "e \<le> v * -v\<^sup>T \<sqinter> g"
       and "vector v"
       and "v\<^sup>T = r\<^sup>T * t\<^sup>\<star>"
@@ -1644,7 +1751,7 @@ lemma atom_edge_2:
     shows "top * e * w\<^sup>T\<^sup>\<star> \<le> v\<^sup>T * w\<^sup>\<star>"
 proof -
   have 1: "top * e \<le> v\<^sup>T * w\<^sup>\<star>"
-    using assms(1-5) atom_edge_1 by blast
+    using assms(1-5) arc_edge_1 by blast
   have "v\<^sup>T * w\<^sup>\<star> * w\<^sup>T = v\<^sup>T * w\<^sup>T \<squnion> v\<^sup>T * w\<^sup>+ * w\<^sup>T"
     by (metis mult_assoc mult_left_dist_sup star.circ_loop_fixpoint sup_commute)
   also have "... \<le> v\<^sup>T \<squnion> v\<^sup>T * w\<^sup>+ * w\<^sup>T"
@@ -1659,7 +1766,7 @@ proof -
     using 1 star_right_induct by auto
 qed
 
-lemma atom_edge_3:
+lemma arc_edge_3:
   assumes "e \<le> v * -v\<^sup>T \<sqinter> g"
       and "vector v"
       and "v\<^sup>T = r\<^sup>T * t\<^sup>\<star>"
@@ -1681,7 +1788,7 @@ proof -
   have "w\<^sup>\<star> * e\<^sup>T * top = (top * e * w\<^sup>T\<^sup>\<star>)\<^sup>T"
     by (simp add: conv_star_commute comp_associative conv_dist_comp)
   also have "... \<le> (v\<^sup>T * w\<^sup>\<star>)\<^sup>T"
-    using assms(1-7) atom_edge_2 by (simp add: conv_isotone)
+    using assms(1-7) arc_edge_2 by (simp add: conv_isotone)
   also have "... = w\<^sup>T\<^sup>\<star> * v"
     by (simp add: conv_star_commute conv_dist_comp)
   finally have 2: "w\<^sup>\<star> * e\<^sup>T * top \<le> w\<^sup>T\<^sup>\<star> * v"
@@ -1730,13 +1837,13 @@ proof -
     using conv_bot by fastforce
 qed
 
-lemma atom_edge_4:
+lemma arc_edge_4:
   assumes "e \<le> v * -v\<^sup>T \<sqinter> g"
       and "vector v"
       and "v\<^sup>T = r\<^sup>T * t\<^sup>\<star>"
       and "t \<le> g"
       and "r\<^sup>T * g\<^sup>\<star> \<le> r\<^sup>T * w\<^sup>\<star>"
-      and "atom e"
+      and "arc e"
     shows "top * prim_E w v e * top = top"
 proof -
   have "--v\<^sup>T * w = (--v\<^sup>T * w \<sqinter> -v\<^sup>T) \<squnion> (--v\<^sup>T * w \<sqinter> --v\<^sup>T)"
@@ -1760,7 +1867,7 @@ proof -
   hence 3: "-v\<^sup>T \<sqinter> v\<^sup>T * w\<^sup>\<star> \<le> --v\<^sup>T * (w \<sqinter> -v\<^sup>T) * w\<^sup>\<star>"
     by (metis inf_commute shunting_var_p)
   have "top * e = top * e \<sqinter> v\<^sup>T * w\<^sup>\<star>"
-    by (meson assms(1-5) atom_edge_1 inf.orderE)
+    by (meson assms(1-5) arc_edge_1 inf.orderE)
   also have "... \<le> top * v * -v\<^sup>T \<sqinter> v\<^sup>T * w\<^sup>\<star>"
     using assms(1) inf.sup_left_isotone mult_assoc mult_right_isotone by auto
   also have "... \<le> top * -v\<^sup>T \<sqinter> v\<^sup>T * w\<^sup>\<star>"
@@ -1787,11 +1894,11 @@ proof -
     by (simp add: conv_star_commute top_le)
 qed
 
-lemma atom_edge_5:
+lemma arc_edge_5:
   assumes "vector v"
       and "w * v \<le> v"
       and "injective w"
-      and "atom e"
+      and "arc e"
     shows "(prim_E w v e)\<^sup>T * top * prim_E w v e \<le> 1"
 proof -
   have 1: "e\<^sup>T * top * e \<le> 1"
@@ -1862,11 +1969,11 @@ proof -
     .
 qed
 
-lemma atom_edge_6:
+lemma arc_edge_6:
   assumes "vector v"
       and "w * v \<le> v"
       and "injective w"
-      and "atom e"
+      and "arc e"
     shows "prim_E w v e * top * (prim_E w v e)\<^sup>T \<le> 1"
 proof -
   have "prim_E w v e * 1 * (prim_E w v e)\<^sup>T \<le> w * w\<^sup>T"
@@ -1876,7 +1983,7 @@ proof -
   finally have 1: "prim_E w v e * 1 * (prim_E w v e)\<^sup>T \<le> 1"
     .
   have "(prim_E w v e)\<^sup>T * top * prim_E w v e \<le> 1"
-    by (simp add: assms atom_edge_5)
+    by (simp add: assms arc_edge_5)
   also have "... \<le> --1"
     by (simp add: pp_increasing)
   finally have 2: "prim_E w v e * -1 * (prim_E w v e)\<^sup>T \<le> bot"
@@ -1889,7 +1996,7 @@ proof -
     .
 qed
 
-lemma atom_edge:
+lemma arc_edge:
   assumes "e \<le> v * -v\<^sup>T \<sqinter> g"
       and "vector v"
       and "v\<^sup>T = r\<^sup>T * t\<^sup>\<star>"
@@ -1897,24 +2004,24 @@ lemma atom_edge:
       and "r\<^sup>T * g\<^sup>\<star> \<le> r\<^sup>T * w\<^sup>\<star>"
       and "w * v \<le> v"
       and "injective w"
-      and "atom e"
-    shows "atom (prim_E w v e)"
+      and "arc e"
+    shows "arc (prim_E w v e)"
 proof (intro conjI)
   have "prim_E w v e * top * (prim_E w v e)\<^sup>T \<le> 1"
-    using assms(2,6-8) atom_edge_6 by simp
+    using assms(2,6-8) arc_edge_6 by simp
   thus "injective (prim_E w v e * top)"
     by (metis conv_dist_comp conv_top mult_assoc top_mult_top)
 next
   show "surjective (prim_E w v e * top)"
-    using assms(1-5,8) atom_edge_4 mult_assoc by simp
+    using assms(1-5,8) arc_edge_4 mult_assoc by simp
 next
   have "(prim_E w v e)\<^sup>T * top * prim_E w v e \<le> 1"
-    using assms(2,6-8) atom_edge_5 by simp
+    using assms(2,6-8) arc_edge_5 by simp
   thus "injective ((prim_E w v e)\<^sup>T * top)"
     by (metis conv_dist_comp conv_involutive conv_top mult_assoc top_mult_top)
 next
   have "top * prim_E w v e * top = top"
-    using assms(1-5,8) atom_edge_4 by simp
+    using assms(1-5,8) arc_edge_4 by simp
   thus "surjective ((prim_E w v e)\<^sup>T * top)"
     by (metis mult_assoc conv_dist_comp conv_top)
 qed
@@ -2028,7 +2135,7 @@ proof -
   finally have 7: "w * r \<sqinter> w\<^sup>T\<^sup>+ * r = bot"
     .
   have "-1 * r \<le> -r"
-    using assms(2) schroeder_4_p by force
+    using assms(2) local.dual_order.trans local.pp_increasing local.schroeder_4_p by blast
   hence "-1 * r * top \<le> -r"
     by (simp add: assms(1) comp_associative)
   hence 8: "r\<^sup>T * -1 * r \<le> bot"
@@ -2093,7 +2200,7 @@ The following lemmas show conditions necessary for preserving that @{text f} is 
 *}
 
 lemma kruskal_injective_inv_2:
-  assumes "atom e"
+  assumes "arc e"
       and "acyclic f"
     shows "top * e * f\<^sup>T\<^sup>\<star> * f\<^sup>T \<le> -e"
 proof -
@@ -2108,14 +2215,14 @@ proof -
 qed
 
 lemma kruskal_injective_inv_3:
-  assumes "atom e"
+  assumes "arc e"
       and "forest f"
     shows "(top * e * f\<^sup>T\<^sup>\<star>)\<^sup>T * (top * e * f\<^sup>T\<^sup>\<star>) \<sqinter> f\<^sup>T * f \<le> 1"
 proof -
   have "(top * e * f\<^sup>T\<^sup>\<star>)\<^sup>T * (top * e * f\<^sup>T\<^sup>\<star>) = f\<^sup>\<star> * e\<^sup>T * top * e * f\<^sup>T\<^sup>\<star>"
     by (metis conv_dist_comp conv_involutive conv_star_commute conv_top vector_top_closed mult_assoc)
   also have "... \<le> f\<^sup>\<star> * f\<^sup>T\<^sup>\<star>"
-    by (metis assms(1) atom_expanded mult_left_isotone mult_right_isotone mult_1_left mult_assoc)
+    by (metis assms(1) arc_expanded mult_left_isotone mult_right_isotone mult_1_left mult_assoc)
   finally have "(top * e * f\<^sup>T\<^sup>\<star>)\<^sup>T * (top * e * f\<^sup>T\<^sup>\<star>) \<sqinter> f\<^sup>T * f \<le> f\<^sup>\<star> * f\<^sup>T\<^sup>\<star> \<sqinter> f\<^sup>T * f"
     using inf.sup_left_isotone by simp
   also have "... \<le> 1"
@@ -2188,33 +2295,6 @@ proof -
     using 7 8 9 assms(1) by simp
   finally show ?thesis
     by simp
-qed
-
-lemma kruskal_acyclic_inv_1:
-  assumes "injective f"
-      and "e * forest_components f * e = bot"
-    shows "(f \<sqinter> top * e * f\<^sup>T\<^sup>\<star>)\<^sup>T * f\<^sup>\<star> * e = bot"
-proof -
-  let ?q = "top * e * f\<^sup>T\<^sup>\<star>"
-  let ?F = "forest_components f"
-  have "(f \<sqinter> ?q)\<^sup>T * f\<^sup>\<star> * e = ?q\<^sup>T \<sqinter> f\<^sup>T * f\<^sup>\<star> * e"
-    by (metis (mono_tags) comp_associative conv_dist_inf covector_conv_vector inf_vector_comp vector_top_closed)
-  also have "... \<le> ?q\<^sup>T \<sqinter> ?F * e"
-    using comp_inf.mult_right_isotone mult_left_isotone star.circ_increasing by simp
-  also have "... = f\<^sup>\<star> * e\<^sup>T * top \<sqinter> ?F * e"
-    by (simp add: conv_dist_comp conv_star_commute mult_assoc)
-  also have "... \<le> ?F * e\<^sup>T * top \<sqinter> ?F * e"
-    by (metis conv_dist_comp conv_star_commute conv_top inf.sup_left_isotone star.circ_right_top star_outer_increasing mult_assoc)
-  also have "... = ?F * (e\<^sup>T * top \<sqinter> ?F * e)"
-    by (metis assms(1) forest_components_equivalence equivalence_comp_dist_inf mult_assoc)
-  also have "... = (?F \<sqinter> top * e) * ?F * e"
-    by (simp add: comp_associative comp_inf_vector_1 conv_dist_comp inf_vector_comp)
-  also have "... \<le> top * e * ?F * e"
-    by (simp add: mult_left_isotone)
-  also have "... = bot"
-    using assms(2) mult_assoc by simp
-  finally show ?thesis
-    by (simp add: bot_unique)
 qed
 
 lemma kruskal_exchange_acyclic_inv_1:
@@ -2629,21 +2709,21 @@ subsubsection {* Exchange gives Minimum Spanning Trees *}
 
 text {*
 The lemmas in this section are used to show that the after exchange we obtain a minimum spanning tree.
-The following lemmas show that the relation characterising the edge across the cut is an atom.
+The following lemmas show that the relation characterising the edge across the cut is an arc.
 *}
 
-lemma kruskal_edge_atom:
+lemma kruskal_edge_arc:
   assumes "equivalence F"
       and "forest w"
-      and "atom e"
+      and "arc e"
       and "regular F"
       and "F \<le> forest_components (F \<sqinter> w)"
       and "regular w"
       and "w * e\<^sup>T = bot"
       and "e * F * e = bot"
       and "e\<^sup>T \<le> w\<^sup>\<star>"
-    shows "atom (w \<sqinter> top * e\<^sup>T * w\<^sup>T\<^sup>\<star> \<sqinter> F * e\<^sup>T * top \<sqinter> top * e * -F)"
-proof (unfold atom_expanded, intro conjI)
+    shows "arc (w \<sqinter> top * e\<^sup>T * w\<^sup>T\<^sup>\<star> \<sqinter> F * e\<^sup>T * top \<sqinter> top * e * -F)"
+proof (unfold arc_expanded, intro conjI)
   let ?E = "top * e\<^sup>T * w\<^sup>T\<^sup>\<star>"
   let ?F = "F * e\<^sup>T * top"
   let ?G = "top * e * -F"
@@ -2669,7 +2749,7 @@ proof (unfold atom_expanded, intro conjI)
   also have "... = w * (F \<sqinter> w)\<^sup>T\<^sup>+ * e\<^sup>T * e"
     by (simp add: assms(7))
   also have "... \<le> w * (F \<sqinter> w)\<^sup>T\<^sup>+"
-    by (metis assms(3) atom_univalent mult_assoc mult_1_right mult_right_isotone)
+    by (metis assms(3) arc_univalent mult_assoc mult_1_right mult_right_isotone)
   also have "... \<le> w * w\<^sup>T * (F \<sqinter> w)\<^sup>T\<^sup>\<star>"
     by (simp add: comp_associative conv_isotone mult_left_isotone mult_right_isotone)
   also have "... \<le> (F \<sqinter> w)\<^sup>T\<^sup>\<star>"
@@ -2685,7 +2765,7 @@ proof (unfold atom_expanded, intro conjI)
   also have "... = w\<^sup>T\<^sup>\<star> * e\<^sup>T * e"
     by (metis (no_types) assms(7) comp_associative conv_bot conv_dist_comp conv_involutive conv_star_commute star_absorb)
   also have "... \<le> w\<^sup>T\<^sup>\<star>"
-    by (metis assms(3) atom_univalent mult_assoc mult_1_right mult_right_isotone)
+    by (metis assms(3) arc_univalent mult_assoc mult_1_right mult_right_isotone)
   finally have 2: "F * e\<^sup>T * e \<le> w\<^sup>T\<^sup>\<star>"
     by simp
   have "w * F * e\<^sup>T * e \<le> w * F * e\<^sup>T * e * e\<^sup>T * e"
@@ -2693,7 +2773,7 @@ proof (unfold atom_expanded, intro conjI)
   also have "... = w * (F * e\<^sup>T * e \<sqinter> w\<^sup>T\<^sup>\<star>) * e\<^sup>T * e"
     using 2 by (simp add: comp_associative inf.absorb1)
   also have "... \<le> w * (F \<sqinter> w\<^sup>T\<^sup>\<star>) * e\<^sup>T * e"
-    by (metis assms(3) atom_univalent mult_assoc mult_1_right mult_right_isotone mult_left_isotone inf.sup_left_isotone)
+    by (metis assms(3) arc_univalent mult_assoc mult_1_right mult_right_isotone mult_left_isotone inf.sup_left_isotone)
   also have "... \<le> F"
     using 1 by simp
   finally have 3: "w * F * e\<^sup>T * e \<le> F"
@@ -2709,11 +2789,11 @@ proof (unfold atom_expanded, intro conjI)
   have "(top * e)\<^sup>T * (?F \<sqinter> w\<^sup>T\<^sup>\<star>) = e\<^sup>T * top * e * F * w\<^sup>T\<^sup>\<star>"
     by (metis assms(1) comp_inf.star.circ_decompose_9 comp_inf.star_star_absorb conv_dist_comp conv_involutive conv_top covector_inf_comp_3 vector_top_closed mult_assoc)
   also have "... = e\<^sup>T * e * F * w\<^sup>T\<^sup>\<star>"
-    by (simp add: assms(3) atom_top_edge)
+    by (simp add: assms(3) arc_top_edge)
   also have "... \<le> e\<^sup>T * e * F"
     using 4 star_right_induct_mult by simp
   also have "... \<le> F"
-    by (metis assms(3) atom_injective conv_involutive mult_1_left mult_left_isotone)
+    by (metis assms(3) arc_injective conv_involutive mult_1_left mult_left_isotone)
   finally have 5: "(top * e)\<^sup>T * (?F \<sqinter> w\<^sup>T\<^sup>\<star>) \<le> F"
     by simp
   have "(?F \<sqinter> w) * w\<^sup>T\<^sup>+ = ?F \<sqinter> w * w\<^sup>T\<^sup>+"
@@ -2733,7 +2813,7 @@ proof (unfold atom_expanded, intro conjI)
   have "?FF \<sqinter> w * (w\<^sup>T\<^sup>+ \<sqinter> ?GG) * w\<^sup>T \<le> ?F \<sqinter> w * (w\<^sup>T\<^sup>+ \<sqinter> ?GG) * w\<^sup>T"
     using comp_inf.mult_left_isotone mult_isotone mult_assoc by simp
   also have "... \<le> ?F \<sqinter> w * (w\<^sup>T\<^sup>+ \<sqinter> ?G) * w\<^sup>T"
-    by (metis assms(3) atom_top_edge comp_inf.star.circ_decompose_9 comp_inf_covector inf.sup_right_isotone inf_le2 mult_left_isotone mult_right_isotone vector_top_closed mult_assoc)
+    by (metis assms(3) arc_top_edge comp_inf.star.circ_decompose_9 comp_inf_covector inf.sup_right_isotone inf_le2 mult_left_isotone mult_right_isotone vector_top_closed mult_assoc)
   also have "... = (?F \<sqinter> w) * (w\<^sup>T\<^sup>+ \<sqinter> ?G) * w\<^sup>T"
     by (simp add: vector_export_comp)
   also have "... = (?F \<sqinter> w) * w\<^sup>T\<^sup>+ * (?G\<^sup>T \<sqinter> w\<^sup>T)"
@@ -2759,7 +2839,7 @@ proof (unfold atom_expanded, intro conjI)
   also have "... = ?F * e * F \<sqinter> (w \<sqinter> ?E \<sqinter> ?G) * top * (w \<sqinter> ?E \<sqinter> ?G)\<^sup>T"
     by (metis comp_associative comp_inf_covector inf_top.left_neutral)
   also have "... = ?FF \<sqinter> (w \<sqinter> ?E \<sqinter> ?G) * (top * (w \<sqinter> ?E \<sqinter> ?G)\<^sup>T)"
-    using assms(3) atom_top_edge comp_associative by simp
+    using assms(3) arc_top_edge comp_associative by simp
   also have "... = ?FF \<sqinter> (w \<sqinter> ?E \<sqinter> ?G) * (top * (?G\<^sup>T \<sqinter> (?E\<^sup>T \<sqinter> w\<^sup>T)))"
     by (simp add: conv_dist_inf inf_assoc inf_commute inf_left_commute)
   also have "... = ?FF \<sqinter> (w \<sqinter> ?E \<sqinter> ?G) * (?G * (?E\<^sup>T \<sqinter> w\<^sup>T))"
@@ -2777,13 +2857,13 @@ proof (unfold atom_expanded, intro conjI)
   also have "... = ?FF \<sqinter> w * (?E\<^sup>T \<sqinter> ?E \<sqinter> (-F * e\<^sup>T * ?G)) * w\<^sup>T"
     by (metis comp_associative comp_inf_covector inf_top.left_neutral)
   also have "... = ?FF \<sqinter> w * (?E\<^sup>T \<sqinter> ?E \<sqinter> ?GG) * w\<^sup>T"
-    by (metis assms(3) atom_top_edge comp_associative)
+    by (metis assms(3) arc_top_edge comp_associative)
   also have "... = ?FF \<sqinter> w * (w\<^sup>\<star> * e * top \<sqinter> ?E \<sqinter> ?GG) * w\<^sup>T"
     by (simp add: comp_associative conv_dist_comp conv_star_commute)
   also have "... = ?FF \<sqinter> w * (w\<^sup>\<star> * e * ?E \<sqinter> ?GG) * w\<^sup>T"
     by (metis comp_associative comp_inf_covector inf_top.left_neutral)
   also have "... \<le> ?FF \<sqinter> w * (w\<^sup>\<star> * w\<^sup>T\<^sup>\<star> \<sqinter> ?GG) * w\<^sup>T"
-    by (metis assms(3) mult_assoc mult_1_right mult_left_isotone mult_right_isotone inf.sup_left_isotone inf.sup_right_isotone atom_expanded)
+    by (metis assms(3) mult_assoc mult_1_right mult_left_isotone mult_right_isotone inf.sup_left_isotone inf.sup_right_isotone arc_expanded)
   also have "... = ?FF \<sqinter> w * ((w\<^sup>+ \<squnion> 1 \<squnion> w\<^sup>T\<^sup>\<star>) \<sqinter> ?GG) * w\<^sup>T"
     by (simp add: assms(2) cancel_separate_eq star_left_unfold_equal sup_monoid.add_commute)
   also have "... = ?FF \<sqinter> w * ((w\<^sup>+ \<squnion> 1 \<squnion> w\<^sup>T\<^sup>+) \<sqinter> ?GG) * w\<^sup>T"
@@ -2837,19 +2917,19 @@ proof (unfold atom_expanded, intro conjI)
   also have "... = w\<^sup>\<star> * e * ?E \<sqinter> (?G\<^sup>T \<sqinter> ?G) \<sqinter> w\<^sup>T * (?F \<sqinter> ?F\<^sup>T) * w"
     by (metis comp_associative comp_inf_covector inf_top.left_neutral)
   also have "... \<le> w\<^sup>\<star> * w\<^sup>T\<^sup>\<star> \<sqinter> (?G\<^sup>T \<sqinter> ?G) \<sqinter> w\<^sup>T * (?F \<sqinter> ?F\<^sup>T) * w"
-    by (metis assms(3) mult_assoc mult_1_right mult_left_isotone mult_right_isotone inf.sup_left_isotone atom_expanded)
+    by (metis assms(3) mult_assoc mult_1_right mult_left_isotone mult_right_isotone inf.sup_left_isotone arc_expanded)
   also have "... = w\<^sup>\<star> * w\<^sup>T\<^sup>\<star> \<sqinter> (-F * e\<^sup>T * top \<sqinter> ?G) \<sqinter> w\<^sup>T * (?F \<sqinter> ?F\<^sup>T) * w"
     by (simp add: assms(1) conv_complement conv_dist_comp mult_assoc)
   also have "... = w\<^sup>\<star> * w\<^sup>T\<^sup>\<star> \<sqinter> -F * e\<^sup>T * ?G \<sqinter> w\<^sup>T * (?F \<sqinter> ?F\<^sup>T) * w"
     by (metis comp_associative comp_inf_covector inf_top.left_neutral)
   also have "... = w\<^sup>\<star> * w\<^sup>T\<^sup>\<star> \<sqinter> -F * e\<^sup>T * e * -F \<sqinter> w\<^sup>T * (?F \<sqinter> ?F\<^sup>T) * w"
-    by (metis assms(3) atom_top_edge mult_assoc)
+    by (metis assms(3) arc_top_edge mult_assoc)
   also have "... = w\<^sup>\<star> * w\<^sup>T\<^sup>\<star> \<sqinter> -F * e\<^sup>T * e * -F \<sqinter> w\<^sup>T * (?F \<sqinter> top * e * F) * w"
     by (simp add: assms(1) conv_dist_comp mult_assoc)
   also have "... = w\<^sup>\<star> * w\<^sup>T\<^sup>\<star> \<sqinter> -F * e\<^sup>T * e * -F \<sqinter> w\<^sup>T * (?F * e * F) * w"
     by (metis comp_associative comp_inf_covector inf_top.left_neutral)
   also have "... = w\<^sup>\<star> * w\<^sup>T\<^sup>\<star> \<sqinter> -F * e\<^sup>T * e * -F \<sqinter> w\<^sup>T * F * e\<^sup>T * e * F * w"
-    by (metis assms(3) atom_top_edge mult_assoc)
+    by (metis assms(3) arc_top_edge mult_assoc)
   also have "... = (w\<^sup>+ \<squnion> 1 \<squnion> w\<^sup>T\<^sup>\<star>) \<sqinter> -F * e\<^sup>T * e * -F \<sqinter> w\<^sup>T * F * e\<^sup>T * e * F * w"
     by (simp add: assms(2) cancel_separate_eq star_left_unfold_equal sup_monoid.add_commute)
   also have "... = (w\<^sup>+ \<squnion> 1 \<squnion> w\<^sup>T\<^sup>+) \<sqinter> -F * e\<^sup>T * e * -F \<sqinter> w\<^sup>T * F * e\<^sup>T * e * F * w"
@@ -2933,7 +3013,7 @@ proof (unfold atom_expanded, intro conjI)
   hence 18: "e\<^sup>T \<le> ?G"
     by (metis assms(3) shunt_mapping conv_dist_comp conv_involutive conv_top)
   have "e\<^sup>T \<le> -F"
-    using 17 by (simp add: assms(3) atom_top_atom)
+    using 17 by (simp add: assms(3) arc_top_arc)
   also have "... \<le> -1"
     by (simp add: assms(1) p_antitone)
   finally have "e\<^sup>T \<le> w\<^sup>\<star> \<sqinter> -1"
@@ -2947,7 +3027,7 @@ proof (unfold atom_expanded, intro conjI)
   also have "... = (F * w \<sqinter> ?G) * w\<^sup>\<star>"
     by (simp add: comp_associative comp_inf_covector)
   finally have "e\<^sup>T * top * e\<^sup>T \<le> (F * w \<sqinter> ?G) * w\<^sup>\<star>"
-    by (simp add: assms(3) atom_top_atom)
+    by (simp add: assms(3) arc_top_arc)
   hence "e\<^sup>T * top * (e * top)\<^sup>T \<le> (F * w \<sqinter> ?G) * w\<^sup>\<star>"
     by (metis conv_dist_comp conv_top vector_top_closed mult_assoc)
   hence "e\<^sup>T * top \<le> (F * w \<sqinter> ?G) * w\<^sup>\<star> * e * top"
@@ -2972,7 +3052,7 @@ proof (unfold atom_expanded, intro conjI)
     by (simp add: inf_commute inf_left_commute top_le)
 qed
 
-lemma kruskal_edge_atom_1:
+lemma kruskal_edge_arc_1:
   assumes "e \<le> --h"
       and "h \<le> g"
       and "symmetric h"
@@ -3004,62 +3084,6 @@ proof -
     using 1 inf.sup_monoid.add_commute inf_vector_comp by simp
   finally show ?thesis
     by simp
-qed
-
-lemma kruskal_forest_components_inf_1:
-  assumes "f \<le> w \<squnion> w\<^sup>T"
-      and "injective w"
-      and "f \<le> forest_components g"
-    shows "f * forest_components (forest_components g \<sqinter> w) \<le> forest_components (forest_components g \<sqinter> w)"
-proof -
-  let ?f = "forest_components g"
-  let ?w = "forest_components (?f \<sqinter> w)"
-  have "f * ?w = (f \<sqinter> (w \<squnion> w\<^sup>T)) * ?w"
-    by (simp add: assms(1) inf.absorb1)
-  also have "... = (f \<sqinter> w) * ?w \<squnion> (f \<sqinter> w\<^sup>T) * ?w"
-    by (simp add: inf_sup_distrib1 semiring.distrib_right)
-  also have "... \<le> (?f \<sqinter> w) * ?w \<squnion> (f \<sqinter> w\<^sup>T) * ?w"
-    using assms(3) inf.sup_left_isotone mult_left_isotone sup_left_isotone by simp
-  also have "... \<le> (?f \<sqinter> w) * ?w \<squnion> (?f \<sqinter> w\<^sup>T) * ?w"
-    using assms(3) inf.sup_left_isotone mult_left_isotone sup_right_isotone by simp
-  also have "... = (?f \<sqinter> w) * ?w \<squnion> (?f \<sqinter> w)\<^sup>T * ?w"
-    by (simp add: conv_dist_comp conv_dist_inf conv_star_commute)
-  also have "... \<le> (?f \<sqinter> w) * ?w \<squnion> ?w"
-    by (metis star.circ_loop_fixpoint sup_ge1 sup_right_isotone)
-  also have "... = ?w \<squnion> (?f \<sqinter> w) * (?f \<sqinter> w)\<^sup>\<star> \<squnion> (?f \<sqinter> w) * (?f \<sqinter> w)\<^sup>T\<^sup>+ * (?f \<sqinter> w)\<^sup>\<star>"
-    by (metis comp_associative mult_left_dist_sup star.circ_loop_fixpoint sup_commute sup_assoc)
-  also have "... \<le> ?w \<squnion> (?f \<sqinter> w)\<^sup>\<star> \<squnion> (?f \<sqinter> w) * (?f \<sqinter> w)\<^sup>T\<^sup>+ * (?f \<sqinter> w)\<^sup>\<star>"
-    using star.left_plus_below_circ sup_left_isotone sup_right_isotone by auto
-  also have "... = ?w \<squnion> (?f \<sqinter> w) * (?f \<sqinter> w)\<^sup>T\<^sup>+ * (?f \<sqinter> w)\<^sup>\<star>"
-    by (metis star.circ_loop_fixpoint sup.right_idem)
-  also have "... \<le> ?w \<squnion> w * w\<^sup>T * ?w"
-    using comp_associative conv_dist_inf mult_isotone sup_right_isotone by simp
-  also have "... = ?w"
-    by (metis assms(2) coreflexive_comp_top_inf inf.cobounded2 sup.orderE)
-  finally show ?thesis
-    by simp
-qed
-
-lemma kruskal_forest_components_inf:
-  assumes "f \<le> w \<squnion> w\<^sup>T"
-      and "injective w"
-    shows "forest_components f \<le> forest_components (forest_components f \<sqinter> w)"
-proof -
-  let ?f = "forest_components f"
-  let ?w = "forest_components (?f \<sqinter> w)"
-  have 1: "1 \<le> ?w"
-    by (simp add: reflexive_mult_closed star.circ_reflexive)
-  have "f * ?w \<le> ?w"
-    using assms forest_components_increasing kruskal_forest_components_inf_1 by simp
-  hence 2: "f\<^sup>\<star> \<le> ?w"
-    using 1 star_left_induct by fastforce
-  have "f\<^sup>T * ?w \<le> ?w"
-    apply (rule kruskal_forest_components_inf_1)
-    apply (metis assms(1) conv_dist_sup conv_involutive conv_isotone sup_commute)
-    apply (simp add: assms(2))
-    by (metis le_supI2 star.circ_back_loop_fixpoint star.circ_increasing)
-  thus "?f \<le> ?w"
-    using 2 star_left_induct by simp
 qed
 
 lemma kruskal_edge_between_components_1:
