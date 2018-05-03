@@ -18,7 +18,7 @@ definition iarray_update :: "'a iarray \<Rightarrow> nat \<Rightarrow> 'a \<Righ
 lemma iarray_of_fun_cong: "(\<And> i. i < n \<Longrightarrow> f i = g i) \<Longrightarrow> IArray.of_fun f n = IArray.of_fun g n" 
   unfolding IArray.of_fun_def by auto
 
-lemma iarray_length_fun[simp]: "IArray.length (IArray.of_fun f n) = n" by simp
+lemma iarray_length_of_fun[simp]: "IArray.length (IArray.of_fun f n) = n" by simp
 
 type_synonym LLL_gso_state = "int vec list_repr \<times> rat iarray iarray \<times> rat list_repr"
 
@@ -41,13 +41,13 @@ fun upd_fi_mu_state :: "LLL_gso_state \<Rightarrow> nat \<Rightarrow> int vec \<
   "upd_fi_mu_state (f,mu,n) i fi mu_i = (update_i f fi, iarray_update mu i mu_i,n)" 
 
 fun small_fs_state :: "LLL_gso_state \<Rightarrow> int vec list" where
-  "small_fs_state (f,mu,n) = (fst f)" 
+  "small_fs_state (f,mu,n) = fst f" 
 
 fun small_norms_state :: "LLL_gso_state \<Rightarrow> rat list" where
-  "small_norms_state (f,mu,n) = (fst n)" 
+  "small_norms_state (f,mu,n) = fst n" 
 
 fun mu_ij_state :: "LLL_gso_state \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> rat" where
-  "mu_ij_state (f,mu,n) i j = (mu !! i !! j)" 
+  "mu_ij_state (f,mu,n) i j = IArray.sub (IArray.sub mu i) j" 
 
 fun inc_state :: "LLL_gso_state \<Rightarrow> LLL_gso_state" where
   "inc_state (f,mu,n) = (inc_i f, mu, inc_i n)" 
@@ -98,7 +98,9 @@ declare basis_reduction_add_rows_loop_code_equations[code]
 
 definition basis_reduction_add_rows where
   "basis_reduction_add_rows upw i state = 
-     (if upw then basis_reduction_add_rows_loop state i i (small_fs_state state) (small_norms_state state) else state)" 
+     (if upw 
+        then basis_reduction_add_rows_loop state i i (small_fs_state state) (small_norms_state state) 
+        else state)" 
 
 context
   fixes \<alpha> :: rat and n m :: nat and fs_init :: "int vec list" 
@@ -113,9 +115,9 @@ definition swap_mu :: "rat iarray iarray \<Rightarrow> nat \<Rightarrow> rat \<R
                else if j = im1 then mu_ii_j * mu_ii' + mu_ii i * ndiv 
                else mu_ii_j) ii else 
        if ii = i then let mu_im1 = IArray.sub (IArray.sub mu im1) in 
-           IArray.of_fun (\<lambda> j. if j = im1 then mu_ii' else mu_im1 j) ii else 
-           IArray.of_fun (IArray.sub (IArray.sub mu i)) ii) m)
-            " 
+           IArray.of_fun (\<lambda> j. if j = im1 then mu_ii' else mu_im1 j) ii 
+         else IArray.of_fun (IArray.sub (IArray.sub mu i)) ii) \<comment> \<open>ii = i - 1\<close>
+       m)" 
 
 definition basis_reduction_swap where
   "basis_reduction_swap i state = (let 
@@ -199,7 +201,7 @@ context LLL
 begin
 
 definition mu_repr :: "rat iarray iarray \<Rightarrow> int vec list \<Rightarrow> bool" where
-  "mu_repr mu fs = (mu = IArray.of_fun (\<lambda> i. IArray.of_fun (\<lambda> j. \<mu> fs i j) i) m)" 
+  "mu_repr mu fs = (mu = IArray.of_fun (\<lambda> i. IArray.of_fun (\<mu> fs i) i) m)" 
 
 fun LLL_impl_inv :: "LLL_gso_state \<Rightarrow> nat \<Rightarrow> int vec list \<Rightarrow> bool" where
   "LLL_impl_inv (f,mu,norms) i fs = (list_repr i f (map (\<lambda> j. fs ! j) [0..<m])
@@ -210,7 +212,7 @@ context fixes state i fs f mu norms
   assumes inv: "LLL_impl_inv state i fs"
   and state: "state = (f,mu,norms)" 
 begin
-lemma to_list_repr: "list_repr i f (map (\<lambda> j. fs ! j) [0..<m])"
+lemma to_list_repr: "list_repr i f (map ((!) fs) [0..<m])"
   "list_repr i norms (map (\<lambda> j. sq_norm (gso fs j)) [0..<m])"
   using inv[unfolded state] by auto
 
@@ -257,7 +259,7 @@ lemma basis_reduction_add_rows_loop: assumes
   and inv: "LLL_invariant True i fs" 
   and mu_small: "\<mu>_small_row i fs j"
   and res: "basis_reduction_add_rows_loop state i j 
-    (map (\<lambda> j. fs ! j) (rev [0 ..< j])) (map (\<lambda> j. sq_norm (gso fs j)) (rev [0 ..< j])) = state'" 
+    (map ((!) fs) (rev [0 ..< j])) (map (\<lambda> j. sq_norm (gso fs j)) (rev [0 ..< j])) = state'" 
     (is "basis_reduction_add_rows_loop state i j (?mapf fs j) (?mapn fs j) = _")
   and j: "j \<le> i" 
   and i: "i < m" 
@@ -318,7 +320,7 @@ next
     let ?mu' = "IArray.of_fun
        (\<lambda>jj. if jj < j then mu_ij_state state i jj - ?c' * mu_ij_state state j jj
              else if jj = j then mu_ij_state state i jj - ?c' else mu_ij_state state i jj) i" 
-    have mu': "?mu' = IArray.of_fun (\<lambda> jj. \<mu> fs'' i jj) i" (is "_ = ?mu'i")
+    have mu': "?mu' = IArray.of_fun (\<mu> fs'' i) i" (is "_ = ?mu'i")
     proof (rule iarray_of_fun_cong, goal_cases)
       case (1 jj)
       with j i have jj: "jj \<le> i" and jm: "j < m" by auto
@@ -326,7 +328,7 @@ next
         by (subst step(5)[OF i], insert 1 j i, auto simp: nth_append gs.\<mu>.simps)
     qed
     have repr_id:
-      "map (\<lambda> i. fs ! i) [0..<m][i := (fs'' ! i)] = map (\<lambda> i. fs'' ! i) [0..<m]" (is "?xs = ?ys")
+      "map ((!) fs) [0..<m][i := (fs'' ! i)] = map ((!) fs'') [0..<m]" (is "?xs = ?ys")
     proof (rule nth_equalityI, force, intro allI impI)
       fix j
       assume "j < length ?xs" 
@@ -359,7 +361,7 @@ next
         } note ii = this
         show "mu_repr (iarray_update mu i (IArray.of_fun (\<mu> fs'' i) i)) fs''" 
           unfolding to_mu_repr[OF impl state, unfolded mu_repr_def] iarray_update_def mu_repr_def 
-           iarray_length_fun
+           iarray_length_of_fun
           by (rule iarray_of_fun_cong, insert ii, auto)
       qed
     qed (insert i j, auto)
