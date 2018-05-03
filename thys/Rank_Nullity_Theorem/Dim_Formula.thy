@@ -161,8 +161,8 @@ proof -
   obtain C where B_in_C: "B \<subseteq> C" and C_in_V: "C \<subseteq> V" 
     and independent_C: "independent C"
     and span_C: "V = span C"
-    using maximal_independent_subset_extend [OF _ independent_B, of V]
-    unfolding V_def by auto
+    unfolding V_def
+    by (metis independent_B extend_basis_superset independent_extend_basis span_extend_basis span_superset)
   \<comment> \<open>The basis of $V$, $C$, can be decomposed in the disjoint union of the 
       basis of the kernel, $B$, and its complementary set, $C - B$\<close>
   have C_eq: "C = B \<union> (C - B)" by (rule Diff_partition [OF B_in_C, symmetric])

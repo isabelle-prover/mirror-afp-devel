@@ -88,7 +88,7 @@ lemma scalar_matrix_vector_assoc:
 lemma matrix_scalar_vector_ac:
   fixes A :: "'a::{field}^'m^'n"
   shows "A *v (k *s v) = k *k A *v v"
-  by (simp add: Miscellaneous.scalar_matrix_vector_assoc vec.cmult)
+  by (simp add: Miscellaneous.scalar_matrix_vector_assoc vec.scale)
 
 
 definition
@@ -160,7 +160,7 @@ text{*This theorem is the reciprocal theorem of @{thm "indep_card_eq_dim_span"}*
 lemma card_eq_dim_span_indep:
   assumes "dim (span A) = card A" and "finite A"
   shows "independent A" 
-  by (metis assms card_le_dim_spanning dim_subset equalityE span_inc)
+  by (metis assms card_le_dim_spanning dim_subset equalityE span_superset)
 
 lemma dim_zero_eq:
   assumes dim_A: "dim A = 0"
@@ -179,7 +179,8 @@ lemma dim_zero_subspace_eq:
 
 lemma span_0_imp_set_empty_or_0:
   assumes "span A = {0}"
-  shows "A = {} \<or> A = {0}" by (metis assms span_inc subset_singletonD)
+  shows "A = {} \<or> A = {0}" by (metis assms span_superset subset_singletonD)
+
 end
 
 context Vector_Spaces.linear
