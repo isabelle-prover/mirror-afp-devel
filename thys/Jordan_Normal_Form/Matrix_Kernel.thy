@@ -26,6 +26,11 @@ imports
   Determinant
 begin
 
+hide_const real_vector.span
+hide_const (open) Real_Vector_Spaces.span
+hide_const real_vector.dim
+hide_const (open) Real_Vector_Spaces.dim
+
 definition mat_kernel :: "'a :: comm_ring_1 mat \<Rightarrow> 'a vec set" where
   "mat_kernel A = { v . v \<in> carrier_vec (dim_col A) \<and> A *\<^sub>v v = 0\<^sub>v (dim_row A)}"
 
@@ -90,7 +95,7 @@ proof
   thus "mat_kernel (B * A) \<subseteq> mat_kernel A" by auto
 qed
 
-locale kernel = 
+locale kernel =
   fixes nr :: nat
     and nc :: nat
     and A :: "'a :: field mat"

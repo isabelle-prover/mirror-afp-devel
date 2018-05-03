@@ -19,7 +19,7 @@ imports
   "HOL-Computational_Algebra.Field_as_Ring"
 begin
 
-hide_const (open) up_ring.coeff up_ring.monom
+hide_const (open) up_ring.coeff up_ring.monom Modules.module
 
 subsection \<open>Auxiliary lemmas\<close>
 
