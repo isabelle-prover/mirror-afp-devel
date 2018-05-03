@@ -59,8 +59,8 @@ lemma transpose_row_code [code abstract]:
   "vec_nth (transpose_row A i) = (%j.  A $ j $ i)" by (metis transpose_row_def vec_lambda_beta)
 
 lemma transpose_code[code abstract]:
-  "vec_nth (transpose A) = transpose_row A" unfolding transpose_def
-  by (metis (no_types) Cart_lambda_cong UNIV_I transpose_row_def vec_lambda_inverse)
+  "vec_nth (transpose A) = transpose_row A"
+  by (auto simp: transpose_def transpose_row_def)
 
 lemma [code abstract]: "vec_nth (row i A) =  (($) (A $ i))" unfolding row_def by fastforce
 lemma [code abstract]: "vec_nth (column j A) = (%i. A $ i $ j)" unfolding column_def by fastforce

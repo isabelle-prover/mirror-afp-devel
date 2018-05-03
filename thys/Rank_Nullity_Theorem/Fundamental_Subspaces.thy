@@ -21,7 +21,7 @@ definition left_null_space :: "'a::{semiring_1}^'n^'m => ('a^'m) set"
 
 definition null_space :: "'a::{semiring_1}^'n^'m => ('a^'n) set"
   where "null_space A = {x. A *v x = 0}"
-  
+
 definition row_space :: "'a::{field}^'n^'m=>('a^'n) set"
   where "row_space A = vec.span (rows A)"
 
@@ -47,13 +47,13 @@ lemma col_space_eq_row_space_transpose:
   shows "col_space A = row_space (transpose A)"
   unfolding col_space_def row_space_def unfolding rows_transpose[of A] ..
 
-  
+
 subsection{*Proving that they are subspaces*}
 
 lemma subspace_null_space:
   fixes A::"'a::{field}^'n^'m"
   shows "vec.subspace (null_space A)"
-  by (auto simp: vec.subspace_def null_space_def vec.linear_cmul vec.add)
+  by (auto simp: vec.subspace_def null_space_def vec.scale vec.add)
 
 lemma subspace_left_null_space:
   fixes A::"'a::{field}^'n^'m"
@@ -71,54 +71,54 @@ subsection{*More useful properties and equivalences*}
 lemma col_space_eq:
   fixes A::"'a::{field}^'m::{finite, wellorder}^'n"
   shows "col_space A = {y. \<exists>x. A *v x = y}"
-  proof (unfold col_space_def vec.span_finite[OF finite_columns], auto)
+proof (unfold col_space_def vec.span_finite[OF finite_columns], auto)
   fix x
-  show "\<exists>u. (\<Sum>v\<in>columns A. u v *s v) = A *v x" using matrix_vmult_column_sum[of A x] by auto
-  next
+  show "A *v x \<in> range (\<lambda>u. \<Sum>v\<in>columns A. u v *s v)" using matrix_vmult_column_sum[of A x] by auto
+next
   fix u::"('a, 'n) vec \<Rightarrow> 'a"
   let ?g="\<lambda>y. {i. y=column i A}"
   let ?x="(\<chi> i. if i=(LEAST a. a \<in> ?g (column i A)) then u (column i A) else 0)"
   show "\<exists>x. A *v x = (\<Sum>v\<in>columns A. u v *s v)"
   proof (unfold matrix_mult_sum, rule exI[of _ "?x"], auto)
-      have inj: "inj_on ?g (columns A)" unfolding inj_on_def unfolding columns_def by auto
-      have union_univ: "\<Union>(?g`(columns A)) = UNIV" unfolding columns_def by auto               
-      have "sum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) UNIV 
+    have inj: "inj_on ?g (columns A)" unfolding inj_on_def unfolding columns_def by auto
+    have union_univ: "\<Union>(?g`(columns A)) = UNIV" unfolding columns_def by auto               
+    have "sum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) UNIV 
         = sum (\<lambda>i. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) (\<Union>(?g`(columns A)))"
-        unfolding union_univ ..
+      unfolding union_univ ..
     also have "... = sum (sum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)) (?g`(columns A))" 
-        by (rule sum.Union_disjoint[unfolded o_def], auto)
-      also have "... = sum ((sum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)) \<circ> ?g) 
+      by (rule sum.Union_disjoint[unfolded o_def], auto)
+    also have "... = sum ((sum (\<lambda>i.(if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)) \<circ> ?g) 
         (columns A)" by (rule sum.reindex, simp add: inj)
-      also have "... = sum (\<lambda>y. u y *s y) (columns A)"
-       proof (rule sum.cong, auto)
-        fix x
-        assume x_in_cols: "x \<in> columns A"
-        obtain b where b: "x=column b A" using x_in_cols unfolding columns_def by blast
-        let ?f="(\<lambda>i. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)" 
-        have sum_rw: "sum ?f ({i. x = column i A} - {LEAST a. x = column a A}) = 0"
-          by (rule sum.neutral, auto)
-        have "sum ?f {i. x = column i A} = ?f (LEAST a. x = column a A) + sum ?f ({i. x = column i A} - {LEAST a. x = column a A})" 
-          apply (rule sum.remove, auto, rule LeastI_ex) 
-          using x_in_cols unfolding columns_def by auto
-        also have "... = ?f (LEAST a. x = column a A)" unfolding sum_rw by simp
-        also have "... = u x *s x"
-        proof (auto, rule LeastI2)
-          show "x = column b A" using b .
-          fix xa
-          assume x: "x = column xa A"
-          show "u (column xa A) *s column xa A = u x *s x" unfolding x ..
-          next
-          assume "(LEAST a. x = column a A) \<noteq> (LEAST a. column (LEAST c. x = column c A) A = column a A)"
-          moreover have "(LEAST a. x = column a A) = (LEAST a. column (LEAST c. x = column c A) A = column a A)"
-            by (rule Least_equality[symmetric], rule LeastI2, simp_all add: b, rule Least_le, metis (lifting, full_types) LeastI)
-          ultimately show "u x = 0" by contradiction
-          qed
-       finally show " (\<Sum>i | x = column i A. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) = u x *s x" .
-       qed
-  finally show "(\<Sum>i\<in>UNIV. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) = (\<Sum>y\<in>columns A. u y *s y)" .
+    also have "... = sum (\<lambda>y. u y *s y) (columns A)"
+    proof (rule sum.cong, auto)
+      fix x
+      assume x_in_cols: "x \<in> columns A"
+      obtain b where b: "x=column b A" using x_in_cols unfolding columns_def by blast
+      let ?f="(\<lambda>i. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A)" 
+      have sum_rw: "sum ?f ({i. x = column i A} - {LEAST a. x = column a A}) = 0"
+        by (rule sum.neutral, auto)
+      have "sum ?f {i. x = column i A} = ?f (LEAST a. x = column a A) + sum ?f ({i. x = column i A} - {LEAST a. x = column a A})" 
+        apply (rule sum.remove, auto, rule LeastI_ex) 
+        using x_in_cols unfolding columns_def by auto
+      also have "... = ?f (LEAST a. x = column a A)" unfolding sum_rw by simp
+      also have "... = u x *s x"
+      proof (auto, rule LeastI2)
+        show "x = column b A" using b .
+        fix xa
+        assume x: "x = column xa A"
+        show "u (column xa A) *s column xa A = u x *s x" unfolding x ..
+      next
+        assume "(LEAST a. x = column a A) \<noteq> (LEAST a. column (LEAST c. x = column c A) A = column a A)"
+        moreover have "(LEAST a. x = column a A) = (LEAST a. column (LEAST c. x = column c A) A = column a A)"
+          by (rule Least_equality[symmetric], rule LeastI2, simp_all add: b, rule Least_le, metis (lifting, full_types) LeastI)
+        ultimately show "u x = 0" by contradiction
+      qed
+      finally show " (\<Sum>i | x = column i A. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) = u x *s x" .
+    qed
+    finally show "(\<Sum>i\<in>UNIV. (if i = (LEAST a. column i A = column a A) then u (column i A) else 0) *s column i A) = (\<Sum>y\<in>columns A. u y *s y)" .
+  qed
 qed
-qed
- 
+
 
 corollary col_space_eq':
   fixes A::"'a::{field}^'m::{finite, wellorder}^'n"
@@ -132,13 +132,13 @@ lemma row_space_eq:
 
 lemma null_space_eq_ker:
   fixes f::"('a::field^'n) => ('a^'m)"
-  assumes lf: "linear ( *s) ( *s) f"
+  assumes lf: "Vector_Spaces.linear ( *s) ( *s) f"
   shows "null_space (matrix f) = {x. f x = 0}" 
   unfolding null_space_def using matrix_works [OF lf] by auto
 
 lemma col_space_eq_range:
   fixes f::"('a::field^'n::{finite, wellorder}) \<Rightarrow> ('a^'m)"
-  assumes lf: "linear ( *s) ( *s) f"
+  assumes lf: "Vector_Spaces.linear ( *s) ( *s) f"
   shows "col_space (matrix f) = range f"
   unfolding col_space_eq unfolding matrix_works[OF lf] by blast
 

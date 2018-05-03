@@ -610,7 +610,7 @@ lemma bounded_bilinear_matrix_matrix_mult[bounded_bilinear]:
   by unfold_locales (auto simp: matrix_add_ldistrib matrix_add_rdistrib matrix_scaleR_right matrix_scaleR_left)
 
 lemma norm_axis: "norm (axis ia 1::'a::{real_normed_algebra_1}^'n) = 1"
-  by (auto simp: axis_def norm_vec_def L2_set_def if_distrib cond_application_beta sum.delta
+  by (auto simp: axis_def norm_vec_def L2_set_def if_distrib if_distribR sum.delta
       cong: if_cong)
 
 lemma abs_vec_nth_blinfun_apply_lemma:
@@ -1412,7 +1412,7 @@ next
         interpret_floatariths_map algebra_simps list_of_eucl_coord_update[symmetric] if_distrib)
     apply (subst list_updates_nth)
       apply (auto intro!: derivative_eq_intros ext split: if_splits
-        cong: if_cong simp: cond_application_beta eucl_of_list_if)
+        cong: if_cong simp: if_distribR eucl_of_list_if)
     apply (subst inner_commute)
     apply (rule arg_cong[where f="\<lambda>b. a \<bullet> b" for a])
     apply (auto intro!: euclidean_eqI[where 'a='a] simp: eucl_of_list_inner list_updates_nth index_nth_id)

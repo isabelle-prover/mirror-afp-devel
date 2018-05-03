@@ -2211,7 +2211,7 @@ schematic_goal choose_step_impl:
   assumes [autoref_rules_raw]: "ncc_precond TYPE('a)"
   assumes [autoref_rules]: "(Xi, X) \<in> sappr_rel" "(hi, h) \<in> Id"
   shows "(nres_of (?f::?'r dres), choose_step $ (X::'a set) $ h) \<in> ?R"
-  unfolding choose_step_def autoref_tag_defs cond_application_beta ncc_precond_def
+  unfolding choose_step_def autoref_tag_defs if_distribR ncc_precond_def
   by autoref_monadic
 
 concrete_definition choose_step_impl for Xi hi uses choose_step_impl
@@ -2510,7 +2510,7 @@ next
   then show "(flow0 x 0, matrix (blinfun_apply (Dflow x 0)) ** W) = (x, W)"
     apply (auto )
     apply (vector matrix_def matrix_matrix_mult_def axis_def)
-    by (auto simp:  if_distrib cond_application_beta cong: if_cong)
+    by (auto simp:  if_distrib if_distribR cong: if_cong)
 qed auto
 
 theorem var_existence_ivl0_eq_existence_ivl0:
@@ -3682,7 +3682,7 @@ proof -
   also have "(\<Sum>i\<in>insert \<bar>y\<bar> (Basis - {\<bar>y\<bar>}). \<bar>y \<bullet> i\<bar> *\<^sub>R i) = \<bar>y \<bullet> \<bar>y\<bar>\<bar> *\<^sub>R \<bar>y\<bar>"
     apply (subst sum.insert)
     using assms
-    by (auto simp: abs_inner[symmetric] inner_Basis cond_application_beta if_distrib
+    by (auto simp: abs_inner[symmetric] inner_Basis if_distribR if_distrib
         cong: if_cong)
   finally have "\<bar>y\<bar> = \<bar>y \<bullet> \<bar>y\<bar>\<bar> *\<^sub>R \<bar>y\<bar>" by simp
   moreover have "\<dots> = y \<or> \<dots> = - y"

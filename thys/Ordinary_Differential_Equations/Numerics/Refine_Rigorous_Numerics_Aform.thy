@@ -116,7 +116,7 @@ lemma inner_eq_abs_times_sgn:
 lemma inner_Basis_eq_zero_absI: "x \<in> Basis \<Longrightarrow> abs u \<in> Basis \<Longrightarrow> x \<noteq> \<bar>u\<bar> \<Longrightarrow> x \<noteq> 0 \<Longrightarrow> u \<bullet> x = 0"
   for x::"'a::ordered_euclidean_space"
   apply (subst euclidean_inner)
-  apply (auto simp: inner_Basis cond_application_beta if_distrib cong: if_cong)
+  apply (auto simp: inner_Basis if_distribR if_distrib cong: if_cong)
   apply (subst inner_eq_abs_times_sgn)
   by (auto simp: inner_Basis)
 

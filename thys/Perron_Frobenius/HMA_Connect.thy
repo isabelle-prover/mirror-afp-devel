@@ -19,9 +19,9 @@ hide_const (open) Matrix.mat
 hide_const (open) Matrix.row
 hide_const (open) Determinant.det
 
-lemmas mat_def = Cartesian_Euclidean_Space.mat_def
+lemmas mat_def = Finite_Cartesian_Product.mat_def
 lemmas det_def = Determinants.det_def
-lemmas row_def = Cartesian_Euclidean_Space.row_def
+lemmas row_def = Finite_Cartesian_Product.row_def
 
 notation vec_index (infixl "$v" 90)
 notation vec_nth (infixl "$h" 90)
@@ -234,12 +234,9 @@ lemma HMA_M_diff [transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) (-) (-) "
   unfolding rel_fun_def HMA_M_def
   by (auto simp: from_hma\<^sub>m_diff)
 
-definition hma_scalar_prod :: "'a :: semiring_1 ^ 'n \<Rightarrow> 'a ^ 'n \<Rightarrow> 'a" where
-  "hma_scalar_prod v w = (\<Sum> i \<in> UNIV. v $h i * w $h i)"
-
-lemma hma_scalar_prod: fixes v :: "'a :: semiring_1 ^ 'n "
-  shows "scalar_prod (from_hma\<^sub>v v) (from_hma\<^sub>v w) = hma_scalar_prod v w"
-  unfolding hma_scalar_prod_def scalar_prod_def from_hma\<^sub>v_def dim_vec
+lemma scalar_product: fixes v :: "'a :: semiring_1 ^ 'n "
+  shows "scalar_prod (from_hma\<^sub>v v) (from_hma\<^sub>v w) = scalar_product v w"
+  unfolding scalar_product_def scalar_prod_def from_hma\<^sub>v_def dim_vec
   by (simp add: sum.reindex[OF inj_to_nat, unfolded range_to_nat])
 
 lemma [simp]:
@@ -256,8 +253,8 @@ lemma [simp]:
 declare rel_funI [intro!]
 
 lemma HMA_scalar_prod [transfer_rule]:
-  "(HMA_V ===> HMA_V ===> (=)) scalar_prod hma_scalar_prod"
-  by (auto simp: HMA_V_def hma_scalar_prod)
+  "(HMA_V ===> HMA_V ===> (=)) scalar_prod scalar_product"
+  by (auto simp: HMA_V_def scalar_product)
 
 lemma HMA_row [transfer_rule]: "(HMA_I ===> HMA_M ===> HMA_V) (\<lambda> i a. Matrix.row a i) row"
   unfolding HMA_M_def HMA_I_def HMA_V_def
@@ -304,12 +301,12 @@ proof-
 qed
 
 
-lemma mat_mult_scalar: "A ** B = mk_mat (\<lambda> i j. hma_scalar_prod (row i A) (column j B))"
-  unfolding vec_eq_iff matrix_matrix_mult_def hma_scalar_prod_def mk_mat_def
+lemma mat_mult_scalar: "A ** B = mk_mat (\<lambda> i j. scalar_product (row i A) (column j B))"
+  unfolding vec_eq_iff matrix_matrix_mult_def scalar_product_def mk_mat_def
   by (auto simp: row_def column_def)
 
-lemma mult_mat_vec_scalar: "A *v v = mk_vec (\<lambda> i. hma_scalar_prod (row i A) v)"
-  unfolding vec_eq_iff matrix_vector_mult_def hma_scalar_prod_def mk_mat_def mk_vec_def
+lemma mult_mat_vec_scalar: "A *v v = mk_vec (\<lambda> i. scalar_product (row i A) v)"
+  unfolding vec_eq_iff matrix_vector_mult_def scalar_product_def mk_mat_def mk_vec_def
   by (auto simp: row_def column_def)
 
 lemma dim_row_transfer_rule: 
@@ -463,8 +460,8 @@ proof -
 qed
 
 lemma HMA_mat[transfer_rule]: "((=) ===> HMA_M) (\<lambda> k. k \<cdot>\<^sub>m 1\<^sub>m CARD('n)) 
-  (Cartesian_Euclidean_Space.mat :: 'a::semiring_1 \<Rightarrow> 'a^'n^'n)"
-  unfolding Cartesian_Euclidean_Space.mat_def[abs_def] rel_fun_def HMA_M_def
+  (Finite_Cartesian_Product.mat :: 'a::semiring_1 \<Rightarrow> 'a^'n^'n)"
+  unfolding Finite_Cartesian_Product.mat_def[abs_def] rel_fun_def HMA_M_def
   by (auto simp: from_hma\<^sub>m_def from_nat_inj)
 
 

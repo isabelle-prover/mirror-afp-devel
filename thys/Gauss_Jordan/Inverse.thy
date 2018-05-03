@@ -46,9 +46,9 @@ qed
 
 
 lemma invertible_implies_full_rank:
-fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
-assumes inv_A: "invertible A"
-shows "rank A = nrows A"
+  fixes A::"'a::{field}^'n::{mod_type}^'n::{mod_type}"
+  assumes inv_A: "invertible A"
+  shows "rank A = nrows A"
 proof -
 have "(\<forall>x. A *v x = 0 \<longrightarrow> x = 0)" using inv_A unfolding  invertible_left_inverse[unfolded matrix_left_invertible_ker] .
 hence null_space_eq_0: "(null_space A) = {0}" unfolding null_space_def using matrix_vector_mult_0_right by fast

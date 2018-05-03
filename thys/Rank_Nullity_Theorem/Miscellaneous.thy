@@ -7,12 +7,19 @@
 section{*Miscellaneous*}
 
 theory Miscellaneous
-imports 
-  Generalizations
+  imports
+  "HOL-Analysis.Determinants"
   "HOL-Library.Bit"
   Mod_Type
   "HOL-Library.Function_Algebras"
 begin
+
+context Vector_Spaces.linear begin
+sublocale vector_space_pair by unfold_locales\<comment>\<open>TODO: (re)move?\<close>
+end
+
+hide_const (open) Real_Vector_Spaces.linear
+abbreviation "linear \<equiv> Vector_Spaces.linear"
 
 text{*In this file, we present some basic definitions and lemmas about linear algebra and matrices.*}
 
@@ -66,8 +73,8 @@ lemma vector_scalar_matrix_ac:
   fixes k :: "'a::{field}" and x :: "'a::{field}^'n" and A :: "'a^'m^'n"
   shows "x v* (k *k A) = k *s (x v* A)"
   using scalar_vector_matrix_assoc 
-  unfolding vector_matrix_mult_def matrix_scalar_mult_def vec_eq_iff 
-  by (auto simp add: sum_distrib_left)
+  unfolding vector_matrix_mult_def matrix_scalar_mult_def vec_eq_iff
+  by (auto simp add: sum_distrib_left vector_space_over_itself.scale_scale)
 
 lemma transpose_scalar: "transpose (k *k A) = k *k transpose A"
   unfolding transpose_def 
@@ -175,13 +182,12 @@ lemma span_0_imp_set_empty_or_0:
   shows "A = {} \<or> A = {0}" by (metis assms span_inc subset_singletonD)
 end
 
-context linear
+context Vector_Spaces.linear
 begin
 
 lemma linear_injective_ker_0:
   shows "inj f = ({x. f x = 0} = {0})"
-  unfolding linear_injective_0
-  using linear_0 by blast
+  using inj_iff_eq_0 by auto
 
 end
 
@@ -274,10 +280,10 @@ next
 qed
 
 lemma independent_image_matrix_vector_mult:
-fixes P::"'a::{field}^'n^'m"
-assumes ind_B: "vec.independent B" and inv_P: "invertible P"
-shows "vec.independent ((( *v) P)` B)"
-proof (rule vec.independent_inj_on_image)
+  fixes P::"'a::{field}^'n^'m"
+  assumes ind_B: "vec.independent B" and inv_P: "invertible P"
+  shows "vec.independent ((( *v) P)` B)"
+proof (rule vec.independent_injective_image)
   show "vec.independent B" using ind_B .
   show "inj_on (( *v) P) (vec.span B)" 
     using inj_matrix_vector_mult[OF inv_P] unfolding inj_on_def by simp

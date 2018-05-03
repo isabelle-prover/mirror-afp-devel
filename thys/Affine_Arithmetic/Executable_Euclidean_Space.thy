@@ -822,7 +822,7 @@ proof -
   interpret f': bounded_linear "f' y x" for x
     by (rule bounded_linear_via_derivative) (rule assms)
   have 3: "(\<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (f' y x i)) i = f' y x i" for x i
-    by (auto simp: if_distrib cond_application_beta blinfun.bilinear_simps
+    by (auto simp: if_distrib if_distribR blinfun.bilinear_simps
       f'.scaleR[symmetric] f'.sum[symmetric] euclidean_representation
       intro!: blinfun_euclidean_eqI)
   have 4: "blinfun_apply (Blinfun (f' y x)) = f' y x" for x
@@ -914,7 +914,7 @@ lemma blinfun_apply_eq_sum:
   apply (subst blinfun_apply_componentwise[of B])
   apply (auto intro!: euclidean_eqI[where 'a="(real,'m) vec"]
       simp: blinfun.bilinear_simps eucl_of_list_inner inner_sum_left inner_Basis if_distrib
-        sum_Basis_sum_nth_Basis_list nth_eq_iff_index cond_application_beta
+        sum_Basis_sum_nth_Basis_list nth_eq_iff_index if_distribR
         cong: if_cong)
   apply (subst sum.swap)
   by (auto simp: sum.delta algebra_simps)

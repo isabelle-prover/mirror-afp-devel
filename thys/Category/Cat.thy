@@ -6,7 +6,7 @@
 section {* Categories *}
 
 theory Cat
-imports "HOL-Library.FuncSet"
+imports "HOL.FuncSet"
 begin
 
 subsection {* Definitions *}

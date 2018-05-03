@@ -1,6 +1,6 @@
 theory Funpow
 imports
-  "HOL-Library.FuncSet"
+  "HOL.FuncSet"
   "HOL-Library.Permutations"
 begin
 

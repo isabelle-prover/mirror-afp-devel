@@ -67,7 +67,7 @@ value "matrix_to_list_of_list (Gauss_Jordan (list_of_list_to_matrix [[Complex 1 
 value "DIM(real^5)"
 value "vec.dimension (TYPE(bit)) (TYPE(5))"
 value "vec.dimension (TYPE(real)) (TYPE(2))"
-value "complex_over_reals.dimension"
+(*value "complex_over_reals.dimension"*)
 (*value "vector_space_over_itself.dimension (TYPE(real))"*)
 value "DIM(real^5^4)"
 value "row_rank (list_of_list_to_matrix [[1,0,0,7,5],[1,0,4,8,-1],[1,0,0,9,8],[1,2,3,6,5]]::real^5^4)"
@@ -138,11 +138,11 @@ subsubsection{*Solving systems of linear equations*}
 
 text{*Examples on solving linear systems.*}
 
-definition print_result_solve 
+definition print_result_solve
   where "print_result_solve A = (if A = None then None else Some (vec_to_list (fst (the A)), vec_to_list` (snd (the A))))" 
 
 value "let A = (list_of_list_to_matrix [[4,5,8],[9,8,7],[4,6,1]]::real^3^3);
-                  b=(list_to_vec [4,5,8]::real^3)             
+                  b=(list_to_vec [4,5,8]::real^3)
                   in (print_result_solve (solve A b))"
 
 value "let A = (list_of_list_to_matrix [[0,0,0],[0,0,0],[0,0,1]]::real^3^3);

@@ -7,8 +7,8 @@
 section{*Generalization of the Second Part of the Fundamental Theorem of Linear Algebra*}
 
 theory Generalizations2
-imports   
-  Rank_Nullity_Theorem.Fundamental_Subspaces
+  imports
+    Rank_Nullity_Theorem.Fundamental_Subspaces
 begin
 
 subsection{*Conjugate class*}
@@ -152,7 +152,7 @@ locale inner_product_space = vector_space scale
 
 
 interpretation RV_inner: inner_product_space scaleR inner
-by (unfold_locales, auto simp add: cnj_real_def inner_add_left real_of_real_def, rule inner_commute)
+  by (unfold_locales) (auto simp: cnj_real_def inner_add_left real_of_real_def algebra_simps inner_commute)
 
 interpretation RR_inner: inner_product_space scaleR "( * )"
 by (unfold_locales, auto simp add: cnj_real_def distrib_right real_of_real_def) 
@@ -381,8 +381,8 @@ lemma inner_ge_zero [simp]: "0 \<le> real_of (inner x x)"
   by (auto simp add: inner_vec_def real_sum sum_nonneg)
 
 lemma real_scalar_mult2: "real_of (inner x x) *\<^sub>R A = inner x x * A"
-by (auto simp add: inner_vec_def) 
-  (metis (mono_tags, lifting) Cartesian_Euclidean_Space.sum_cong_aux 
+by (auto simp add: inner_vec_def)
+  (metis (mono_tags, lifting) Finite_Cartesian_Product.sum_cong_aux 
   real_scalar_mult2 real_sum scaleR_left.sum scale_sum_left)
 
 lemma i1: "inner x y = cnj (inner y x)"
@@ -407,8 +407,8 @@ proof (unfold vec_eq_iff, clarify, simp)
   hence "real_of (inner_field (x $ a) (x $ a)) = 0"
     using sum_0_all F.inner_ge_zero 
     by (metis (no_types, lifting) finite iso_tuple_UNIV_I)
-  thus "x $ a = 0" 
-  by (metis (mono_tags, lifting) F.inner_eq_zero_iff F.real_scalar_mult2 real_0 scale_right_imp_eq)
+  then show "x $ a = 0"
+    by (metis F.inner_eq_zero_iff F.inner_gt_zero_iff real_0)
 qed
 
 lemma inner_0_0[simp]: "inner 0 0 = 0"

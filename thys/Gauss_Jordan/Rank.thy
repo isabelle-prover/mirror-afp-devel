@@ -22,8 +22,8 @@ definition row_rank :: "'a::{field}^'n^'m=>nat"
 definition col_rank :: "'a::{field}^'n^'m=>nat"
   where "col_rank A = vec.dim (col_space A)"
 
-definition rank :: "'a::{field}^'n^'m=>nat"
-  where "rank A = row_rank A"
+lemma rank_def: "rank A = row_rank A"
+  by (auto simp: row_rank_def row_rank_def_gen row_space_def)
 
 subsection{*Properties*}
 

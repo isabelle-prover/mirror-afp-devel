@@ -51,8 +51,8 @@ lemma Gram_Schmidt_cons:
 
 lemma basis_orthogonal':
   fixes xs::"('a::{real_inner}^'b) list"
-  shows "length (Gram_Schmidt xs) = length (xs) \<and> 
-        real_vector.span (set (Gram_Schmidt xs)) = real_vector.span (set xs) \<and> 
+  shows "length (Gram_Schmidt xs) = length (xs) \<and>
+        span (set (Gram_Schmidt xs)) = span (set xs) \<and>
         pairwise orthogonal (set (Gram_Schmidt xs))"
 proof (induct xs)
   case Nil
@@ -60,16 +60,16 @@ proof (induct xs)
 next
   case (Cons a xs)
   have l: "length (Gram_Schmidt xs) = length xs"
-    and s: "real_vector.span (set (Gram_Schmidt xs)) = real_vector.span (set xs)"
+    and s: "span (set (Gram_Schmidt xs)) = span (set xs)"
     and p: "pairwise orthogonal (set (Gram_Schmidt xs))" using Cons.hyps by auto
   show "length (Gram_Schmidt (a # xs)) = length (a # xs) \<and>
-    real_vector.span (set (Gram_Schmidt (a # xs))) = real_vector.span (set (a # xs)) 
+    span (set (Gram_Schmidt (a # xs))) = span (set (a # xs))
     \<and> pairwise orthogonal (set (Gram_Schmidt (a # xs)))"
   proof 
     show "length (Gram_Schmidt (a # xs)) = length (a # xs)"
       unfolding Gram_Schmidt_cons unfolding Gram_Schmidt_step_def using l by auto 
-    show "real_vector.span (set (Gram_Schmidt (a # xs))) 
-      = real_vector.span (set (a # xs)) \<and> pairwise orthogonal (set (Gram_Schmidt (a # xs)))"
+    show "span (set (Gram_Schmidt (a # xs))) 
+      = span (set (a # xs)) \<and> pairwise orthogonal (set (Gram_Schmidt (a # xs)))"
     proof
       have set_rw1: "set (a # xs) = insert a (set xs)" by simp
       have set_rw2: "set (Gram_Schmidt (a # xs)) 
@@ -81,20 +81,19 @@ next
         fix x k
         have th0: "!!(a::'a^'b) b c. a - (b - c) = c + (a - b)"
           by (simp add: field_simps)
-        have "x - k *\<^sub>R (a - (\<Sum>x\<in>C. (a \<bullet> x / (x \<bullet>  x)) *\<^sub>R x)) \<in> real_vector.span C 
-          \<longleftrightarrow> x - k *\<^sub>R a \<in> real_vector.span C"
+        have "x - k *\<^sub>R (a - (\<Sum>x\<in>C. (a \<bullet> x / (x \<bullet>  x)) *\<^sub>R x)) \<in> span C 
+          \<longleftrightarrow> x - k *\<^sub>R a \<in> span C"
           apply (simp only: scaleR_right_diff_distrib th0)
-          apply (rule real_vector.span_add_eq)
-          apply (rule real_vector.span_mul)
-          apply (rule real_vector.span_sum[OF finite_C])
-          apply clarify
-          apply (rule real_vector.span_mul)
-          apply (rule real_vector.span_superset)
+          apply (rule span_add_eq)
+          apply (rule span_mul)
+          apply (rule span_sum)
+          apply (rule span_mul)
+          apply (rule span_base)
           apply assumption
           done
       }
-      then show "real_vector.span (set (Gram_Schmidt (a # xs))) = real_vector.span (set (a # xs))"
-        unfolding set_eq_iff set_rw2 set_rw1 real_vector.span_breakdown_eq C_def s[symmetric]
+      then show "span (set (Gram_Schmidt (a # xs))) = span (set (a # xs))"
+        unfolding set_eq_iff set_rw2 set_rw1 span_breakdown_eq C_def s[symmetric]
         by auto
       with p show "pairwise orthogonal (set (Gram_Schmidt (a # xs)))"
         using pairwise_orthogonal_proj_set[OF finite_C]
@@ -146,18 +145,17 @@ next
   qed
 qed
 
-
 lemma orthogonal_basis_exists:
-  fixes V :: "(real^'b) list"                                 
+  fixes V :: "(real^'b) list"
   assumes B: "is_basis (set V)"
   and d: "distinct V"
   shows "vec.independent (set (Gram_Schmidt V)) \<and> (set V) \<subseteq> vec.span (set (Gram_Schmidt V)) 
   \<and> (card (set (Gram_Schmidt V)) = vec.dim (set V)) \<and> pairwise orthogonal (set (Gram_Schmidt V))"
 proof -
   have "(set V) \<subseteq> vec.span (set (Gram_Schmidt V))"
-    using basis_orthogonal'[of V] 
-    using vec.span_inc[where ?'a=real, where ?'b='b]
-    unfolding op_vec_scaleR by auto
+    using basis_orthogonal'[of V]
+    using vec.span_superset[where ?'a=real, where ?'b='b]
+    by (auto simp: span_vec_eq)
   moreover have "pairwise orthogonal (set (Gram_Schmidt V))"
     using basis_orthogonal'[of V] by blast
   moreover have c: "(card (set (Gram_Schmidt V)) = vec.dim (set V))"
@@ -167,7 +165,7 @@ proof -
     have "vec.dim (set V) \<le> (card (set (Gram_Schmidt V)))" using B unfolding is_basis_def
       using vec.independent_span_bound[of "(set (Gram_Schmidt V))" "set V"]
       using basis_orthogonal'[of V]
-      by (metis List.finite_set card_eq_dim op_vec_scaleR top_greatest)
+      by (simp add: calculation(1) local.card_eq_dim)
     moreover have "(card (set (Gram_Schmidt V))) \<le> vec.dim (set V)"
       using card_Gram_Schmidt[OF d] card_eq_dim by auto
     ultimately show ?thesis by auto
@@ -176,8 +174,8 @@ proof -
   proof (rule vec.card_le_dim_spanning[of _ "UNIV::(real^'b) set"])
     show "set (Gram_Schmidt V) \<subseteq> (UNIV::(real^'b) set)" by simp
     show "UNIV \<subseteq> vec.span (set (Gram_Schmidt V))"
-      using basis_orthogonal'[of V] using B unfolding is_basis_def 
-      by (metis op_vec_scaleR top_greatest)
+      using basis_orthogonal'[of V] using B unfolding is_basis_def
+      by (simp add: span_vec_eq)
     show "finite (set (Gram_Schmidt V))" by simp
     show "card (set (Gram_Schmidt V)) \<le> vec.dim (UNIV::(real^'b) set)"
       by (metis c top_greatest vec.dim_subset)
@@ -194,7 +192,8 @@ corollary orthogonal_basis_exists':
   \<and> distinct (Gram_Schmidt V) \<and> pairwise orthogonal (set (Gram_Schmidt V))"
   using B orthogonal_basis_exists basis_orthogonal' card_distinct d 
     vec.dim_unique distinct_card is_basis_def subset_refl
-  by (metis (hide_lams, no_types) op_vec_scaleR)
+  by (metis span_vec_eq)
+
 
 subsubsection{*Second way*}
 
@@ -204,8 +203,8 @@ definition "Gram_Schmidt2 xs = Gram_Schmidt (rev xs)"
 
 lemma basis_orthogonal2:
   fixes xs::"('a::{real_inner}^'b) list"
-  shows "length (Gram_Schmidt2 xs) = length (xs) 
-  \<and> real_vector.span (set (Gram_Schmidt2 xs)) = real_vector.span (set xs) 
+  shows "length (Gram_Schmidt2 xs) = length (xs)
+  \<and> span (set (Gram_Schmidt2 xs)) = span (set xs)
   \<and> pairwise orthogonal (set (Gram_Schmidt2 xs))"
   by (metis Gram_Schmidt2_def basis_orthogonal' length_rev set_rev)
 
@@ -221,9 +220,8 @@ lemma orthogonal_basis_exists2:
   and d: "distinct V"
   shows "vec.independent (set (Gram_Schmidt2 V)) \<and> (set V) \<subseteq> vec.span (set (Gram_Schmidt2 V)) 
   \<and> (card (set (Gram_Schmidt2 V)) = vec.dim (set V)) \<and> pairwise orthogonal (set (Gram_Schmidt2 V))"
-  by (metis (hide_lams, no_types) op_vec_scaleR vec.dim_span B List.finite_set 
-    basis_orthogonal2 card_Gram_Schmidt2 vec.card_le_dim_spanning d dual_order.refl
-    vec.indep_card_eq_dim_span is_basis_def vec.span_inc)
+  by (metis Gram_Schmidt.orthogonal_basis_exists Gram_Schmidt2_def distinct_rev set_rev
+      B basis_orthogonal2 d)
 
 subsubsection{*Third way*}
 
@@ -487,7 +485,7 @@ lemma span_cols_upt_k_Gram_Schmidt_column_k:
   fixes A::"'a::{real_inner}^'n::{mod_type}^'m::{mod_type}"
   assumes "k < ncols A"
   and "j < ncols A"
-  shows "real_vector.span (cols_upt_k A k) = real_vector.span (cols_upt_k (Gram_Schmidt_column_k A j) k)"
+  shows "span (cols_upt_k A k) = span (cols_upt_k (Gram_Schmidt_column_k A j) k)"
   using assms
 proof (induct k)
   case 0
@@ -502,7 +500,7 @@ proof (induct k)
   show ?case unfolding cols_upt_k_def from_nat_0 unfolding set_rw2 set_rw3 unfolding col_0_eq ..
 next
   case (Suc k)
-  have hyp: "real_vector.span (cols_upt_k A k) = real_vector.span (cols_upt_k (Gram_Schmidt_column_k A j) k)" 
+  have hyp: "span (cols_upt_k A k) = span (cols_upt_k (Gram_Schmidt_column_k A j) k)" 
     using Suc.prems Suc.hyps by auto
   have set_rw1: "(cols_upt_k A (Suc k)) = insert (column (from_nat (Suc k)) A) (cols_upt_k A k)"
     using cols_upt_k_insert
@@ -524,8 +522,8 @@ next
     have col_eq: "column (from_nat (Suc k)) (Gram_Schmidt_column_k A j) = ?a_suc_k"
       using column_Gram_Schmidt_column_k'[OF suc_not_k] unfolding tnfnj .
     have k: "k<CARD('n)" using Suc.prems(1)[unfolded ncols_def] by simp
-    show ?thesis unfolding set_rw1 set_rw2 col_eq unfolding real_vector.span_insert unfolding hyp ..
-  next  
+    show ?thesis unfolding set_rw1 set_rw2 col_eq unfolding span_insert unfolding hyp ..
+  next
     case True
     define C where "C = cols_upt_k A k"
     define B where "B = cols_upt_k (Gram_Schmidt_column_k A j) k"
@@ -550,26 +548,25 @@ next
       unfolding column_def vec_lambda_beta
       unfolding proj_onto_def proj_def[abs_def]
       unfolding proj_onto_sum_rw
-      by auto        
+      by auto
     have finite_C: "finite C" unfolding C_def cols_upt_k_def by auto
     {
       fix x b
       have th0: "!!(a::'a^'m::{mod_type}) b c. a - (b - c) = c + (a - b)"
         by (simp add: field_simps)
-      have "x - b *\<^sub>R  (a - (\<Sum>x\<in>C. (x \<bullet> a / (x \<bullet> x))  *\<^sub>R  x)) \<in> real_vector.span C \<longleftrightarrow> x - b  *\<^sub>R  a \<in> real_vector.span C"
+      have "x - b *\<^sub>R  (a - (\<Sum>x\<in>C. (x \<bullet> a / (x \<bullet> x))  *\<^sub>R  x)) \<in> span C \<longleftrightarrow> x - b  *\<^sub>R  a \<in> span C"
         apply (simp only: scaleR_right_diff_distrib th0)
-        apply (rule real_vector.span_add_eq)
-        apply (rule real_vector.span_mul)
-        apply (rule real_vector.span_sum[OF finite_C])
-        apply clarify
-        apply (rule real_vector.span_mul)
-        apply (rule real_vector.span_superset)
+        apply (rule span_add_eq)
+        apply (rule span_mul)
+        apply (rule span_sum)
+        apply (rule span_mul)
+        apply (rule span_base)
         apply assumption
         done
     } 
     thus ?thesis unfolding set_eq_iff
       unfolding C_def B_def unfolding set_rw1 unfolding set_rw2
-      unfolding real_vector.span_breakdown_eq unfolding hyp
+      unfolding span_breakdown_eq unfolding hyp
       by (metis (mono_tags) B_def a_def rw)
   qed
 qed
@@ -578,7 +575,7 @@ qed
 corollary span_Gram_Schmidt_column_k:
   fixes A::"'a::{real_inner}^'n::{mod_type}^'m::{mod_type}"
   assumes "k<ncols A"
-  shows "real_vector.span (columns A) = real_vector.span (columns (Gram_Schmidt_column_k A k))"
+  shows "span (columns A) = span (columns (Gram_Schmidt_column_k A k))"
   unfolding columns_eq_cols_upt_k[symmetric] 
   using span_cols_upt_k_Gram_Schmidt_column_k[of "ncols A - 1" A k]
   using assms unfolding ncols_def by auto
@@ -587,7 +584,7 @@ corollary span_Gram_Schmidt_column_k:
 corollary span_Gram_Schmidt_upt_k:
   fixes A::"'a::{real_inner}^'n::{mod_type}^'m::{mod_type}"
   assumes "k<ncols A"
-  shows "real_vector.span (columns A) = real_vector.span (columns (Gram_Schmidt_upt_k A k))"
+  shows "span (columns A) = span (columns (Gram_Schmidt_upt_k A k))"
   using assms
 proof (induct k)
   case 0
@@ -608,12 +605,12 @@ proof (induct k)
   thus ?case unfolding Gram_Schmidt_upt_k_def by auto
 next
   case (Suc k)
-  have hyp: "real_vector.span (columns A) = real_vector.span (columns (Gram_Schmidt_upt_k A k))" 
+  have hyp: "span (columns A) = span (columns (Gram_Schmidt_upt_k A k))" 
     using Suc.prems Suc.hyps by auto
-  have "real_vector.span (columns (Gram_Schmidt_upt_k A (Suc k))) 
-    =  real_vector.span (columns (Gram_Schmidt_column_k (Gram_Schmidt_upt_k A k) (Suc k)))"
+  have "span (columns (Gram_Schmidt_upt_k A (Suc k))) 
+    = span (columns (Gram_Schmidt_column_k (Gram_Schmidt_upt_k A k) (Suc k)))"
     unfolding Gram_Schmidt_upt_k_suc ..
-  also have "... = real_vector.span (columns (Gram_Schmidt_upt_k A k))"
+  also have "... = span (columns (Gram_Schmidt_upt_k A k))"
     using span_Gram_Schmidt_column_k[of "Suc k" "(Gram_Schmidt_upt_k A k)"]
     using Suc.prems unfolding ncols_def by auto
   finally show ?case using hyp by auto
@@ -621,7 +618,7 @@ qed
 
 corollary span_Gram_Schmidt_matrix:
   fixes A::"'a::{real_inner}^'n::{mod_type}^'m::{mod_type}"
-  shows "real_vector.span (columns A) = real_vector.span (columns (Gram_Schmidt_matrix A))"
+  shows "span (columns A) = span (columns (Gram_Schmidt_matrix A))"
   unfolding Gram_Schmidt_matrix_def
   by (simp add: span_Gram_Schmidt_upt_k ncols_def)
 
@@ -633,9 +630,10 @@ lemma is_basis_columns_Gram_Schmidt_matrix:
   \<and> card (columns (Gram_Schmidt_matrix A)) = ncols A"
 proof -
   have span_UNIV: "vec.span (columns (Gram_Schmidt_matrix A)) = (UNIV::(real^'m::{mod_type}) set)" 
-    using span_Gram_Schmidt_matrix b unfolding is_basis_def by (metis op_vec_scaleR)
+    using span_Gram_Schmidt_matrix b unfolding is_basis_def
+    by (metis span_vec_eq)
   moreover have c_eq: "card (columns (Gram_Schmidt_matrix A)) = ncols A" 
-  proof -    
+  proof -
     have "card (columns A) \<le> card (columns (Gram_Schmidt_matrix A))"
       by (metis b is_basis_def finite_columns vec.independent_span_bound span_UNIV top_greatest)
     thus ?thesis using c using card_columns_le_ncols by (metis le_antisym ncols_def)
@@ -646,7 +644,7 @@ proof -
     show "UNIV \<subseteq> vec.span (columns (Gram_Schmidt_matrix A))" using span_UNIV by auto
     show "finite (columns (Gram_Schmidt_matrix A))" using finite_columns .
     show "card (columns (Gram_Schmidt_matrix A)) \<le> vec.dim (UNIV::(real^'m::{mod_type}) set)"
-      by (metis b c c_eq vec.dim_span vec.independent_bound_general is_basis_def)
+      by (metis b c c_eq eq_iff is_basis_def vec.dim_span_eq_card_independent)
   qed
   ultimately show ?thesis unfolding is_basis_def by simp
 qed
@@ -850,12 +848,12 @@ lemma independent_columns_Gram_Schmidt_matrix:
   shows "vec.independent (columns (Gram_Schmidt_matrix A)) \<and> card (columns (Gram_Schmidt_matrix A)) = ncols A"
   using  b c card_columns_le_ncols vec.card_eq_dim_span_indep vec.dim_span eq_iff finite_columns 
     vec.independent_span_bound ncols_def span_Gram_Schmidt_matrix
-  by (metis (hide_lams, no_types) op_vec_scaleR real_vector.spanning_subset_independent vec.basis_exists)
+  by (metis (no_types, lifting) vec.card_ge_dim_independent vec.dim_span_eq_card_independent span_vec_eq)
 
 
 lemma column_eq_Gram_Schmidt_matrix:
   fixes A::"real^'n::{mod_type}^'m::{mod_type}"
-  assumes r: "rank A = ncols A"                                                                                   
+  assumes r: "rank A = ncols A"
   and c: "column i (Gram_Schmidt_matrix A) = column ia (Gram_Schmidt_matrix A)"
   shows "i = ia"
 proof (rule ccontr)
