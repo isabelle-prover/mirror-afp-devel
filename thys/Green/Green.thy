@@ -1617,7 +1617,7 @@ proof (simp add: two_chain_boundary_def one_chain_line_integral_def two_chain_in
   then have double_sum_eq_sum:
     "(\<Sum>twoCube\<in>(two_chain).(\<Sum>(k,g)\<in> boundary twoCube. k * line_integral F {j} g))
                      =  (\<Sum>twoCube\<in>(two_chain). integral (cubeImage twoCube) (\<lambda>a. ?F_a' a))"
-    using Cartesian_Euclidean_Space.sum_cong_aux by auto
+    using Finite_Cartesian_Product.sum_cong_aux by auto
   have pairwise_disjoint_boundaries: "\<forall>x\<in> (boundary ` two_chain). (\<forall>y\<in> (boundary ` two_chain). (x \<noteq> y \<longrightarrow> (x \<inter> y = {})))"
     using valid_typeII_div by (fastforce simp add:  image_def valid_two_chain_def pairwise_def)
   have finite_boundaries: "\<forall>B \<in> (boundary` two_chain). finite B"
@@ -2236,7 +2236,7 @@ proof (simp add: two_chain_boundary_def one_chain_line_integral_def two_chain_in
   then have double_sum_eq_sum:
     "(\<Sum>twoCube\<in>(two_chain).(\<Sum>(k,g)\<in> boundary twoCube. k * line_integral F {i} g))
                      =  (\<Sum>twoCube\<in>(two_chain). integral (cubeImage twoCube) (\<lambda>a. - ?F_b' a))"
-    using Cartesian_Euclidean_Space.sum_cong_aux by auto
+    using Finite_Cartesian_Product.sum_cong_aux by auto
   have pairwise_disjoint_boundaries: "\<forall>x\<in> (boundary ` two_chain). (\<forall>y\<in> (boundary ` two_chain). (x \<noteq> y \<longrightarrow> (x \<inter> y = {})))"
     using no_shared_edges_have_similar_orientations
     by (force simp add: image_def disjoint_iff_not_equal)

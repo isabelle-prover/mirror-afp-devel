@@ -209,7 +209,7 @@ lemma symmatrix_preserve:
   shows "symmatrix (N ** M ** transpose N)"
 proof -
   have "transpose (N ** M ** transpose N) = N ** (M ** transpose N)"
-    by (metis (no_types) Cartesian_Euclidean_Space.transpose_transpose assms matrix_transpose_mul symmatrix_def)
+    by (metis (no_types) transpose_transpose assms matrix_transpose_mul symmatrix_def)
   then show ?thesis
     by (simp add: matrix_mul_assoc symmatrix_def)
 qed

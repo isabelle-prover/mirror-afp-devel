@@ -22,64 +22,64 @@ begin
   definition non_zero_vectors :: "'b set" where
     "non_zero_vectors \<equiv> {x. x \<noteq> 0}"
 
-  lemma proportionality_refl_on: "refl_on non_zero_vectors proportionality"
+  lemma proportionality_refl_on: "refl_on local.non_zero_vectors local.proportionality"
   proof -
-    have "proportionality \<subseteq> non_zero_vectors \<times> non_zero_vectors"
+    have "local.proportionality \<subseteq> local.non_zero_vectors \<times> local.non_zero_vectors"
       unfolding proportionality_def non_zero_vectors_def
       by auto
-    moreover have "\<forall>x\<in>non_zero_vectors. (x, x) \<in> proportionality"
+    moreover have "\<forall>x\<in>local.non_zero_vectors. (x, x) \<in> local.proportionality"
     proof
       fix x
-      assume "x \<in> non_zero_vectors"
+      assume "x \<in> local.non_zero_vectors"
       hence "x \<noteq> 0" unfolding non_zero_vectors_def ..
       moreover have "x = scale 1 x" by simp
-      ultimately show "(x, x) \<in> proportionality"
+      ultimately show "(x, x) \<in> local.proportionality"
         unfolding proportionality_def
         by blast
     qed
-    ultimately show "refl_on non_zero_vectors proportionality"
+    ultimately show "refl_on local.non_zero_vectors local.proportionality"
       unfolding refl_on_def ..
   qed
 
-  lemma proportionality_sym: "sym proportionality"
+  lemma proportionality_sym: "sym local.proportionality"
   proof -
     { fix x y
-      assume "(x, y) \<in> proportionality"
+      assume "(x, y) \<in> local.proportionality"
       hence "x \<noteq> 0" and "y \<noteq> 0" and "\<exists>k. x = scale k y"
         unfolding proportionality_def
         by simp+
       from `\<exists>k. x = scale k y` obtain k where "x = scale k y" by auto
       with `x \<noteq> 0` have "k \<noteq> 0" by simp
       with `x = scale k y` have "y = scale (1/k) x" by simp
-      with `x \<noteq> 0` and `y \<noteq> 0` have "(y, x) \<in> proportionality"
+      with `x \<noteq> 0` and `y \<noteq> 0` have "(y, x) \<in> local.proportionality"
         unfolding proportionality_def
         by auto
     }
-    thus "sym proportionality"
+    thus "sym local.proportionality"
       unfolding sym_def
       by blast
   qed
 
-  lemma proportionality_trans: "trans proportionality"
+  lemma proportionality_trans: "trans local.proportionality"
   proof -
     { fix x y z
-      assume "(x, y) \<in> proportionality" and "(y, z) \<in> proportionality"
+      assume "(x, y) \<in> local.proportionality" and "(y, z) \<in> local.proportionality"
       hence "x \<noteq> 0" and "z \<noteq> 0" and "\<exists>j. x = scale j y" and "\<exists>k. y = scale k z"
         unfolding proportionality_def
         by simp+
       from `\<exists>j. x = scale j y` and `\<exists>k. y = scale k z`
       obtain j and k where "x = scale j y" and "y = scale k z" by auto+
       hence "x = scale (j * k) z" by simp
-      with `x \<noteq> 0` and `z \<noteq> 0` have "(x, z) \<in> proportionality"
+      with `x \<noteq> 0` and `z \<noteq> 0` have "(x, z) \<in> local.proportionality"
         unfolding proportionality_def
         by auto
     }
-    thus "trans proportionality"
+    thus "trans local.proportionality"
       unfolding trans_def
       by blast
   qed
 
-  theorem proportionality_equiv: "equiv non_zero_vectors proportionality"
+  theorem proportionality_equiv: "equiv local.non_zero_vectors local.proportionality"
     unfolding equiv_def
     by (simp add:
       proportionality_refl_on
@@ -607,7 +607,7 @@ proof -
   let ?q' = "proj2_rep q"
   let ?B = "{?p', ?q'}"
   from card_suc_ge_insert [of ?p' "{?q'}"] have "card ?B \<le> 2" by simp
-  with dim_le_card [of ?B] have "dim ?B < 3" by simp
+  with dim_le_card' [of ?B] have "dim ?B < 3" by simp
   with lowdim_subset_hyperplane [of ?B]
   obtain l' where "l' \<noteq> 0" and "span ?B \<subseteq> {x. l' \<bullet> x = 0}" by auto
   let ?l = "proj2_line_abs l'"
@@ -616,7 +616,7 @@ proof -
   obtain k where "?l'' = k *\<^sub>R l'" by auto
 
   have "?p' \<in> ?B" and "?q' \<in> ?B" by simp_all
-  with span_inc [of ?B] and `span ?B \<subseteq> {x. l' \<bullet> x = 0}`
+  with span_superset [of ?B] and `span ?B \<subseteq> {x. l' \<bullet> x = 0}`
   have "l' \<bullet> ?p' = 0" and "l' \<bullet> ?q' = 0" by auto
   hence "?p' \<bullet> l' = 0" and "?q' \<bullet> l' = 0" by (simp_all add: inner_commute)
   with dot_scaleR_mult(2) [of _ k l'] and `?l'' = k *\<^sub>R l'`
@@ -1159,7 +1159,7 @@ proof -
           assume "t \<noteq> u"
           with `t \<in> {r,p,q}`
           have "proj2_rep t \<in> proj2_rep ` (?S - {u})" by simp
-          with span_inc [of "proj2_rep ` (?S - {u})"]
+          with span_superset [of "proj2_rep ` (?S - {u})"]
           show "proj2_rep t \<in> span (proj2_rep ` (?S - {u}))" by fast
         qed
       qed
@@ -1892,7 +1892,8 @@ proof -
   have "card ?B = 3" by auto
   hence "finite ?B" by simp
   with `span ?B = UNIV` and span_finite [of ?B]
-  obtain c where "(\<Sum> w \<in> ?B. (c w) *\<^sub>R w) = ?v" by (auto simp add: scalar_equiv)
+  obtain c where "(\<Sum> w \<in> ?B. (c w) *\<^sub>R w) = ?v"
+    by (auto simp add: scalar_equiv) (metis (no_types, lifting) UNIV_I rangeE)
   let ?C = "\<chi> i. c (proj2_rep (a$i)) *\<^sub>R (proj2_rep (a$i))"
   let ?A = "cltn2_abs ?C"
 
@@ -1934,7 +1935,7 @@ proof -
       and `card ?B = 3`
     have "card ?Bi = 2" by (simp add: card_gt_0_diff_singleton)
     hence "finite ?Bi" by simp
-    with `card ?Bi = 2` and dim_le_card [of ?Bi] have "dim ?Bi \<le> 2" by simp
+    with `card ?Bi = 2` and dim_le_card' [of ?Bi] have "dim ?Bi \<le> 2" by simp
     hence "dim (span ?Bi) \<le> 2" by (subst dim_span)
     then have "span ?Bi \<noteq> UNIV"
       by clarify (auto simp: dim_UNIV)
@@ -1948,7 +1949,7 @@ proof -
       have "?v = (\<Sum> w \<in> ?Bi. (c w) *\<^sub>R w)"
         by simp
       with span_finite [of ?Bi] and `finite ?Bi`
-      have "?v \<in> span ?Bi" by (simp add: scalar_equiv) auto
+      have "?v \<in> span ?Bi" by (simp add: scalar_equiv)
       with `?v \<notin> span ?Bi` have False .. }
     thus "c (proj2_rep (a$i)) \<noteq> 0" ..
   qed
@@ -1966,12 +1967,13 @@ proof -
   proof
     fix x :: "real^3"
     from `finite ?B` and span_finite [of ?B] and `span ?B = UNIV`
-    obtain ub where "(\<Sum> w\<in>?B. (ub w) *\<^sub>R w) = x" by (auto simp add: scalar_equiv)
+    obtain ub where "(\<Sum> w\<in>?B. (ub w) *\<^sub>R w) = x"
+      by (auto simp add: scalar_equiv) (metis (no_types, lifting) UNIV_I rangeE)
     have "\<forall> w\<in>?B. (ub w) *\<^sub>R w \<in> span (rows ?C)"
     proof
       fix w
       assume "w \<in> ?B"
-      with span_inc [of "rows ?C"] and `rows ?C = image (\<lambda> w. (c w) *\<^sub>R w) ?B`
+      with span_superset [of "rows ?C"] and `rows ?C = image (\<lambda> w. (c w) *\<^sub>R w) ?B`
       have "(c w) *\<^sub>R w \<in> span (rows ?C)" by auto
       with span_mul [of "(c w) *\<^sub>R w" "rows ?C" "(ub w)/(c w)"]
       have "((ub w)/(c w)) *\<^sub>R ((c w) *\<^sub>R w) \<in> span (rows ?C)"
