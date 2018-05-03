@@ -183,7 +183,7 @@ definition "initial_state = (let
    gs = gram_schmidt_triv n (map (map_vec rat_of_int) fs_init)
   in (([], fs_init), 
   IArray.of_fun (\<lambda> i. let fi = of_int_hom.vec_hom (fs_init ! i) in 
-  IArray.of_fun (\<lambda> j. if j = i then 1 else case gs ! j of (gj, nj) \<Rightarrow> fi \<bullet> gj / nj ) i) m, 
+  IArray.of_fun (\<lambda> j. case gs ! j of (gj, nj) \<Rightarrow> fi \<bullet> gj / nj) i) m, 
   ([],map snd gs)) :: LLL_gso_state)" 
 end
 
