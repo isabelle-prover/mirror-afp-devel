@@ -103,7 +103,7 @@ lemma adjugate_eq: "adjugate = to_vec \<circ> Square_Matrix.adjugate \<circ> fro
   apply (simp add: adjugate_def Square_Matrix.adjugate_def fun_eq_iff)
   apply rule
   apply transfer'
-  apply (simp add: Cartesian_Euclidean_Space.transpose_def cofactorM_eq to_vec.rep_eq
+  apply (simp add: transpose_def cofactorM_eq to_vec.rep_eq
     Square_Matrix.cofactor.rep_eq)
   done
 

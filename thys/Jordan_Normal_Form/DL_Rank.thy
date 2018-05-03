@@ -332,7 +332,7 @@ section "Subadditivity of rank"
 
 text \<open>Subadditivity is the property of rank, that rank (A + B) <= rank A + rank B.\<close>
 
-lemma (in module) lincomb_add:
+lemma (in Module.module) lincomb_add:
 assumes "finite (b1 \<union> b2)"
 assumes "b1 \<union> b2 \<subseteq> carrier M"
 assumes "x1 = lincomb a1 b1" "a1\<in> (b1\<rightarrow>carrier R)"
@@ -432,7 +432,7 @@ proof -
   finally show ?thesis by auto
 qed
 
-lemma (in module) nested_submodules:
+lemma (in Module.module) nested_submodules:
 assumes "submodule R W M"
 assumes "submodule R X M"
 assumes "X \<subseteq> W"

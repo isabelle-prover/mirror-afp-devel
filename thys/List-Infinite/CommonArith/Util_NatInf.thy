@@ -6,7 +6,7 @@
 section {* Results for natural arithmetics with infinity *}
 
 theory Util_NatInf
-imports "HOL-Library.Extended_Nat"
+imports "HOL-Library.Extended_Nat" "HOL-Library.Order_Continuity"
 begin
 
 subsection {* Arithmetic operations with @{typ enat} *}
