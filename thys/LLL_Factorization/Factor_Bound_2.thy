@@ -22,12 +22,12 @@ proof (cases "f = 0")
   have cf: "coeffs f = map (\<lambda> i. coeff f i) [0 ..< Suc( degree f)]" unfolding coeffs_def 
     using f0 by auto
   have "real_of_int (sum_list (map abs (coeffs f))) 
-    = sum (\<lambda> i. of_int (abs (coeff f i))) {0 .. degree f}" 
+    = (\<Sum>i\<le>degree f. real_of_int \<bar>poly.coeff f i\<bar>)"
     unfolding cf of_int_hom.hom_sum_list unfolding sum_list_sum_nth 
     by (rule sum.cong, force, auto simp: o_def nth_append)
-  also have "\<dots> \<le> sum (\<lambda> i. (degree f choose i) * mahler_measure f) {0 .. degree f}" 
+  also have "\<dots> \<le> (\<Sum>i\<le>degree f. real (degree f choose i) * mahler_measure f)"
     by (rule sum_mono, rule Mignotte_bound)
-  also have "\<dots> = real (sum (\<lambda> i. (degree f choose i)) {0 .. degree f}) * mahler_measure f" 
+  also have "\<dots> = real (sum (\<lambda> i. (degree f choose i)) {..degree f}) * mahler_measure f" 
     unfolding sum_distrib_right[symmetric] by auto
   also have "\<dots> = 2^(degree f) * mahler_measure f" unfolding choose_row_sum by auto
   finally show ?thesis unfolding norm1_def .

@@ -2651,7 +2651,7 @@ proof -
     then have t_nonneg: "0 \<le> t" using tdev_nonneg[of xs] by arith
     note t_pdevs = abs_pdevs_val_le_tdev[OF e, THEN order_trans, OF t(1)]
   
-    have rewr1: "{0..n} = (insert 0 (insert 1 {2..n}))" using n by auto
+    have rewr1: "{..n} = (insert 0 (insert 1 {2..n}))" using n by auto
     have "x = (pdevs_val e xs + xe') + x0"
       by (simp add: xe'_def aform_val_def)
     also have "\<dots> ^ n = x0 ^ n + n * x0 ^ (n - Suc 0) * pdevs_val e xs +
