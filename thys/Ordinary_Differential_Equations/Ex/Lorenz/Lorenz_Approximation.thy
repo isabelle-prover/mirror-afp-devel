@@ -2784,7 +2784,7 @@ proof (clarsimp simp add: c1i_of_res_mirror, goal_cases)
     from plane have [simp]: "dz = 0" by (auto simp: plane_of_def)
     have "expansion (mirror_result res) * norm (dx, dy, dz) \<le> norm (?D (dx, dy, dz))"
       using D(4) apply (auto simp: )
-      unfolding lorenz_S_on_plane minus
+      unfolding lorenz_S_on_plane neg
       by simp
     moreover have \<open>mirror_result res2 \<in> return_of_res results (mirror_result res)\<close>
       using D(5) by (rule mirror_result_in)
@@ -2792,14 +2792,14 @@ proof (clarsimp simp add: c1i_of_res_mirror, goal_cases)
       using D(6) apply (subst (asm) lorenz_S_poincare_map)
         apply auto apply fact
       apply (auto simp: c1_of_res_def in_source_of_res_mirrorI)
-      unfolding lorenz_S_on_plane minus
+      unfolding lorenz_S_on_plane neg
       apply (subst lorenz_minus_planeI)
        apply (auto simp: conefield_of_res_def conefield_alt_def cone_hull_expl
           in_segment tangent_of_deg_def)
       done
     moreover have "preexpansion (mirror_result res2) * norm (dx, dy, dz) \<le> norm (?D (dx, dy, dz))"
       using D(7) apply (auto simp: )
-      unfolding lorenz_S_on_plane minus
+      unfolding lorenz_S_on_plane neg
       by simp
     ultimately show ?case
       by (force intro!: exI[where x = ?D] bexI[where x="mirror_result res2"])
