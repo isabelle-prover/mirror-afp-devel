@@ -1135,7 +1135,7 @@ proof -
   qed
   have "(x + y)^CARD('a)
     = (\<Sum>k = 0..CARD('a). of_nat (CARD('a) choose k) * x ^ k * y ^ (CARD('a) - k))"
-    unfolding binomial_ring ..
+    unfolding binomial_ring by (rule sum.cong, auto)
   also have "... = sum ?f (insert CARD('a) (insert 0 (?A - {0} - {CARD('a)})))"
     using A_rw by simp
   also have "... = ?f 0 + ?f CARD('a) + sum ?f (?A - {0} - {CARD('a)})" by auto
