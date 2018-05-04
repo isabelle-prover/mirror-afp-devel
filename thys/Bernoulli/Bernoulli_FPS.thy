@@ -206,15 +206,15 @@ theorem Stirling_closed_form:
   "real (Stirling n k) = (\<Sum>j\<le>k. (-1)^(k - j) * real (k choose j) * real j ^ n) / fact k"
 proof -
   have "(fps_exp 1 - 1 :: real fps) = (fps_exp 1 + (-1))" by simp
-  also have "\<dots> ^ k = (\<Sum>j = 0..k. of_nat (k choose j) * fps_exp 1 ^ j * (- 1) ^ (k - j))" 
+  also have "\<dots> ^ k = (\<Sum>j\<le>k. of_nat (k choose j) * fps_exp 1 ^ j * (- 1) ^ (k - j))" 
     unfolding binomial_ring ..
-  also have "\<dots> = (\<Sum>j = 0..k. fps_const ((-1) ^ (k - j) * real (k choose j)) * fps_exp (real j))"
+  also have "\<dots> = (\<Sum>j\<le>k. fps_const ((-1) ^ (k - j) * real (k choose j)) * fps_exp (real j))"
     by (simp add: fps_const_mult [symmetric] fps_const_power [symmetric] 
                   fps_const_neg [symmetric] mult_ac fps_of_nat fps_exp_power_mult
              del: fps_const_mult fps_const_power fps_const_neg)
-  also have "\<dots> $ n = (\<Sum>j = 0..k. (- 1) ^ (k - j) * real (k choose j) * real j ^ n) / fact n" 
+  also have "\<dots> $ n = (\<Sum>j\<le>k. (- 1) ^ (k - j) * real (k choose j) * real j ^ n) / fact n" 
     by (simp add: fps_sum_nth sum_divide_distrib)
-  also have "\<dots> * fact n = (\<Sum>j = 0..k. (- 1) ^ (k - j) * real (k choose j) * real j ^ n)"
+  also have "\<dots> * fact n = (\<Sum>j\<le>k. (- 1) ^ (k - j) * real (k choose j) * real j ^ n)"
     by simp
   also note Stirling_fps_aux[of k n]
   finally show ?thesis by (simp add: atLeast0AtMost field_simps)

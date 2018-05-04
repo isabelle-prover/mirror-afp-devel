@@ -1112,29 +1112,29 @@ lemma add_power_poly_mod_ring:
 fixes x :: "'a mod_ring poly"
 shows "(x + y) ^ CARD('a) = x ^ CARD('a) + y ^ CARD('a)"
 proof -
-  let ?A="{0..CARD('a)}"
+  let ?A="{..CARD('a)}"
   let ?f="\<lambda>k. of_nat (CARD('a) choose k) * x ^ k * y ^ (CARD('a) - k)"
   have A_rw: "?A = insert CARD('a) (insert 0 (?A - {0} - {CARD('a)}))"
     by fastforce
   have sum0: "sum ?f (?A - {0} - {CARD('a)}) = 0"
   proof (rule sum.neutral, rule)
-    fix xa assume xa: "xa \<in> {0..CARD('a)} - {0} - {CARD('a)}"
-    have card_dvd_choose: "CARD('a) dvd  (CARD('a) choose xa)"
+    fix k assume k: "k \<in> {..CARD('a)} - {0} - {CARD('a)}"
+    have card_dvd_choose: "CARD('a) dvd  (CARD('a) choose k)"
     proof (rule dvd_choose_prime)
-      show "xa < CARD('a)" using xa by simp
-      show "xa \<noteq> 0" using xa by simp
+      show "k < CARD('a)" using k by simp
+      show "k \<noteq> 0" using k by simp
       show "CARD('a) \<noteq> 0" by simp
       show "prime CARD('a)" by (rule prime_card)
     qed
-    hence rw0: "of_int (CARD('a) choose xa) = (0 :: 'a mod_ring)"
+    hence rw0: "of_int (CARD('a) choose k) = (0 :: 'a mod_ring)"
       by transfer simp
-    have "of_nat (CARD('a) choose xa) = [:of_int (CARD('a) choose xa) :: 'a mod_ring:]"
+    have "of_nat (CARD('a) choose k) = [:of_int (CARD('a) choose k) :: 'a mod_ring:]"
       by (simp add: of_nat_poly)
     also have "... = [:0:]" using rw0 by simp
-    finally show "of_nat (CARD('a) choose xa) * x ^ xa * y ^ (CARD('a) - xa) = 0" by auto
+    finally show "of_nat (CARD('a) choose k) * x ^ k * y ^ (CARD('a) - k) = 0" by auto
   qed
   have "(x + y)^CARD('a)
-    = (\<Sum>k = 0..CARD('a). of_nat (CARD('a) choose k) * x ^ k * y ^ (CARD('a) - k))"
+    = (\<Sum>k\<le>CARD('a). of_nat (CARD('a) choose k) * x ^ k * y ^ (CARD('a) - k))"
     unfolding binomial_ring ..
   also have "... = sum ?f (insert CARD('a) (insert 0 (?A - {0} - {CARD('a)})))"
     using A_rw by simp
