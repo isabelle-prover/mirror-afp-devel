@@ -180,13 +180,11 @@ partial_function (tailrec) basis_reduction_main where
        basis_reduction_main upw' i' state' else
        state)"
 
-(* TODO: use better gram_schmidt, which already computes mu-values *)
 definition "initial_state = (let
-   gs = gram_schmidt_triv n (map (map_vec rat_of_int) fs_init)
+  (n_gs, mus) = norms_mus_rat n (map (map_vec rat_of_int) fs_init)
   in (([], fs_init), 
-  IArray.of_fun (\<lambda> i. let fi = of_int_hom.vec_hom (fs_init ! i) in 
-  IArray.of_fun (\<lambda> j. case gs ! j of (gj, nj) \<Rightarrow> fi \<bullet> gj / nj) i) m, 
-  ([],map snd gs)) :: LLL_gso_state)" 
+  IArray.of_fun (\<lambda> i. IArray.of_fun (\<lambda> j. if j = i then 1 else mus ! i ! j) i) m,
+  ([],n_gs)) :: LLL_gso_state)" 
 end
 
 definition "basis_reduction \<alpha> n fs = basis_reduction_main \<alpha> (length fs) True 0 (initial_state n (length fs) fs)" 
@@ -620,18 +618,27 @@ proof (atomize(full), insert assms(1-3), induct "LLL_measure i fs" arbitrary: i 
   qed
 qed
 
-lemma initial_state: "LLL_impl_inv (initial_state n m fs_init) 0 fs_init" 
+lemma initial_state: 
+  shows "LLL_impl_inv (initial_state n m fs_init) 0 fs_init"
 proof -
-  have id: "gram_schmidt n (RAT fs_init) = map (gso fs_init) [0..<m]" 
-    using gs.main_connect[OF lin_dep, unfolded length_map, OF len refl] by auto
   have f_repr: "list_repr 0 ([], fs_init) (map ((!) fs_init) [0..<m])" 
     unfolding list_repr_def by (simp, intro nth_equalityI, auto simp: len)
-  have n_repr: "list_repr 0
-     ([], map snd (map (\<lambda>x. (x, \<parallel>x\<parallel>\<^sup>2)) (map (gso fs_init) [0..<m])))
-     (map (\<lambda>j. \<parallel>gso fs_init j\<parallel>\<^sup>2) [0..<m])" 
-    unfolding list_repr_def by simp
-  show ?thesis unfolding initial_state_def Let_def LLL_impl_inv.simps gram_schmidt_triv id
-    by (intro conjI f_repr n_repr, auto simp: mu_repr_def gs.\<mu>.simps len)
+  show ?thesis unfolding case_prod_beta' initial_state_def Let_def LLL_impl_inv.simps gram_schmidt_triv id
+    apply(intro conjI)
+    using f_repr apply(simp)
+    subgoal
+      apply (auto simp add: list_repr_def)
+      apply(subst norms_mus_rat_norms_mus)
+      apply(subst gs.norms_mus_norms_gso)
+      using fs_init apply(auto)[1]
+      using gs.mn lin_dep apply blast
+      by (simp add: len)
+    unfolding mu_repr_def
+    apply(rule iarray_of_fun_cong)
+    apply(auto)
+    apply(subst norms_mus_rat_norms_mus)
+    apply(subst gs.norms_mus_mus)
+    using fs_init len gs.mn lin_dep by (auto simp add: gs.norms_mus_mus)
 qed
 
 lemma basis_reduction: assumes res: "basis_reduction \<alpha> n fs_init = state" 

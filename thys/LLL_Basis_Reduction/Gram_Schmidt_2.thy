@@ -871,7 +871,7 @@ fun adjuster_wit :: "'a list \<Rightarrow> 'a vec \<Rightarrow> 'a vec list \<Ri
 fun sub2_wit where
     "sub2_wit us [] = ([], [])"
   | "sub2_wit us (w # ws) =
-     (case adjuster_wit (1 # replicate (n - length us - 1) 0) w us of (wit,aw) \<Rightarrow> let u = aw + w in
+     (case adjuster_wit [] w us of (wit,aw) \<Rightarrow> let u = aw + w in
       case sub2_wit (u # us) ws of (wits, vvs) \<Rightarrow> (wit # wits, u # vvs))"  
     
 definition main :: "'a vec list \<Rightarrow> 'a list list \<times> 'a vec list" where 
@@ -889,10 +889,10 @@ lemma adjuster_wit: assumes res: "adjuster_wit wits w us = (wits',a)"
   and w: "w \<in> carrier_vec n"
     and us: "\<And> i. i \<le> j \<Longrightarrow> fs ! i \<in> carrier_vec n"
     and us_gs: "us = map gso (rev [0 ..< j])" 
-    and wits: "wits = map (\<mu> i) [j ..< n]" 
+    and wits: "wits = map (\<mu> i) [j ..< i]" 
     and j: "j \<le> n" "j \<le> i" 
     and wi: "w = fs ! i" 
-  shows "adjuster n w us = a \<and> a \<in> carrier_vec n \<and> wits' = map (\<mu> i) [0 ..< n] \<and>
+  shows "adjuster n w us = a \<and> a \<in> carrier_vec n \<and> wits' = map (\<mu> i) [0 ..< i] \<and>
       (a = sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<j]))"
   using res us us_gs wits j
 proof (induct us arbitrary: wits wits' a j)
@@ -903,21 +903,21 @@ proof (induct us arbitrary: wits wits' a j)
   from us_gs obtain jj where j: "j = Suc jj" by (cases j, auto)
   from jn j have jj: "jj \<le> n" "jj < n" "jj \<le> i" "jj < i" by auto
   have zj: "[0 ..< j] = [0 ..< jj] @ [jj]" unfolding j by simp
-  have jjn: "[jj ..< n] = jj # [j ..< n]" using jj(2) unfolding j by (rule upt_conv_Cons)
+  have jjn: "[jj ..< i] = jj # [j ..< i]" using jj unfolding j by (metis upt_conv_Cons)
   from us_gs[unfolded zj] have ugs: "u = gso jj" and us: "us = map gso (rev [0..<jj])" by auto
   let ?w = "w \<bullet> u / (u \<bullet> u)" 
   have muij: "?w = \<mu> i jj" unfolding \<mu>.simps[of i jj] ugs wi sq_norm_vec_as_cscalar_prod using jj by auto
-  have wwits: "?w # wits = map (\<mu> i) [jj..<n]" unfolding jjn wits muij by simp
+  have wwits: "?w # wits = map (\<mu> i) [jj..<i]" unfolding jjn wits muij by simp
   obtain wwits b where rec: "adjuster_wit (?w # wits) w us = (wwits,b)" by force
   from Cons(1)[OF this Cons(3) us wwits jj(1,3),unfolded j] have IH: 
-     "adjuster n w us = b" "wwits = map (\<mu> i) [0..<n]"
+     "adjuster n w us = b" "wwits = map (\<mu> i) [0..<i]"
      "b = sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<jj])"
       and b: "b \<in> carrier_vec n" by auto
   from Cons(2)[simplified, unfolded Let_def rec split sq_norm_vec_as_cscalar_prod 
       cscalar_prod_is_scalar_prod]
   have id: "wits' = wwits" and a: "a = - ?w \<cdot>\<^sub>v u + b" by auto
   have 1: "adjuster n w (u # us) = a" unfolding a IH(1)[symmetric] by auto     
-  from id IH(2) have wits': "wits' =  map (\<mu> i) [0..<n]" by simp
+  from id IH(2) have wits': "wits' =  map (\<mu> i) [0..<i]" by simp
   have carr:"set (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<j]) \<subseteq> carrier_vec n"
             "set (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<jj]) \<subseteq> carrier_vec n" and u:"u \<in> carrier_vec n" 
     using Cons j by (auto intro!:gso_carrier')
@@ -936,10 +936,10 @@ lemma sub2_wit:
     and "us = map gso (rev [0 ..< i])" 
     and us: "\<And> j. j < m \<Longrightarrow> fs ! j \<in> carrier_vec n"
     and mn: "m \<le> n" 
-  shows "snd (sub2_wit us ws) = vvs \<Longrightarrow> gram_schmidt_sub2 n us ws = vvs 
-    \<and> vvs = map gso [i ..< m]"
+  shows "sub2_wit us ws = (wits,vvs) \<Longrightarrow> gram_schmidt_sub2 n us ws = vvs 
+    \<and> vvs = map gso [i ..< m] \<and> wits = map (\<lambda> i. map (\<mu> i) [0..<i]) [i ..< m]"
   using assms(1-6)
-proof (induct ws arbitrary: us vvs i)
+proof (induct ws arbitrary: us vvs i wits)
   case (Cons w ws us vs)  
   note us = Cons(3) note wws = Cons(4)
   note wsf' = Cons(6)
@@ -951,32 +951,28 @@ proof (induct ws arbitrary: us vvs i)
   from wsf' i_m have wsf: "ws = map (\<lambda> i. fs ! i) [Suc i ..< m]" 
     and fiw: "fs !  i = w" by auto
   from wws have w: "w \<in> carrier_vec n" and ws: "set ws \<subseteq> carrier_vec n" by auto
-  let ?list = "1 # replicate (n - Suc (length us)) 0" 
-  have "map (\<mu> i) [Suc i ..< n] = map (\<lambda> i. 0) [Suc i ..< n]" 
-    by (rule map_cong[OF refl], unfold \<mu>.simps[of i], auto)
-  moreover have "\<mu> i i = 1" unfolding \<mu>.simps by simp
-  ultimately have "map (\<mu> i) [i ..< n] = 1 # map (\<lambda> i. 0) [Suc i ..< n]" unfolding i_n by auto
-  also have "\<dots> = ?list" using \<open>i < n\<close> unfolding map_replicate_const by (auto simp: us_gs)
-  finally have list: "?list = map (\<mu> i) [i ..< n]" by auto
-  let ?a = "adjuster_wit ?list w us" 
+  have list: "map (\<mu> i) [i ..< i] = []" by auto
+  let ?a = "adjuster_wit [] w us" 
   obtain wit a where a: "?a = (wit,a)" by force
-  obtain vv where gs: "snd (sub2_wit ((a + w) # us) ws) = vv" by force      
-  from adjuster_wit[OF a w Cons(8) us_gs list \<open>i \<le> n\<close> _ fiw[symmetric]] us wws \<open>i < m\<close>
+  obtain wits' vv where gs: "sub2_wit ((a + w) # us) ws = (wits',vv)" by force      
+  from adjuster_wit[OF a w Cons(8) us_gs list[symmetric] \<open>i \<le> n\<close> _ fiw[symmetric]] us wws \<open>i < m\<close>
   have awus: "set ((a + w) # us) \<subseteq> carrier_vec n"  
      and aa: "adjuster n w us = a" "a \<in> carrier_vec n" 
      and aaa: "a = sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<i])"  
-     and wit: "wit = map (\<mu> i) [0..<n]" 
+     and wit: "wit = map (\<mu> i) [0..<i]" 
     by auto
   have aw_gs: "a + w = gso i" unfolding gso.simps[of i] fiw aaa[symmetric] using aa(2) w by auto
   with us_gs have us_gs': "(a + w) # us = map gso (rev [0..<Suc i])" by auto
   from Cons(1)[OF gs awus ws _ wsf us_gs' Cons(8)] Cons(5) 
   have IH: "gram_schmidt_sub2 n ((a + w) # us) ws = vv"  
-    and vv: "vv = map gso [Suc i..<m]" by auto
+    and vv: "vv = map gso [Suc i..<m]" 
+    and wits': "wits' = map (\<lambda>i. map (\<mu> i) [0..<i]) [Suc i ..< m]" by auto
   from gs a aa IH Cons(5) 
   have gs_vs: "gram_schmidt_sub2 n us (w # ws) = vs" and vs: "vs = (a + w) # vv" using Cons(2)
     by (auto simp add: Let_def snd_def split:prod.splits)
+  from Cons(2)[unfolded sub2_wit.simps a split Let_def gs] have wits: "wits = wit # wits'" by auto
   from vs vv aw_gs have vs: "vs = map gso [i ..< m]" unfolding i_m by auto
-  with gs_vs show ?case by auto
+  with gs_vs show ?case unfolding wits wit wits' by (auto simp: i_m)
 qed auto
   
 lemma inv_in_span:
@@ -1053,8 +1049,13 @@ shows "gram_schmidt n us = vs"
 proof -
   have [simp]: "map ((!) fs) [0..<k] = take k fs" using assms(1,2) by (intro nth_equalityI, auto)
   have carr: "j < m \<Longrightarrow> fs ! j \<in> carrier_vec n" for j using assms by auto
-  from sub2_wit[OF _ assms(4) _ _ _ carr _ assms(5)[unfolded main_def], of k 0] assms
-  show "gram_schmidt n us = vs" "vs = map gso [0..<k]" unfolding gram_schmidt_code by auto
+  note assms(5)[unfolded main_def]
+  have "gram_schmidt_sub2 n [] (take k fs) = vvs \<and> vvs = map gso [0..<k] \<and> wits = map (\<lambda>i. map (\<mu> i) [0..<i]) [0..<k]"
+    if "vvs = snd (sub2_wit [] (take k fs))" "wits = fst (sub2_wit [] (take k fs))" for vvs wits
+    using assms that by (intro sub2_wit) (auto)
+  with assms main_def
+  show "gram_schmidt n us = vs" "vs = map gso [0..<k]" unfolding gram_schmidt_code
+    by (auto simp add: main_def case_prod_beta')
 qed
 
 lemma adjuster_wit_small:
@@ -1133,9 +1134,12 @@ lemma main_connect:
   "gram_schmidt n fs = vs"  
   "vs = map gso [0..<m]"
 proof -
-  have "gram_schmidt_sub2 n [] fs = vs \<and> vs = map gso [0..<m]" 
-    by (rule sub2_wit[OF _ assm(2) _ _ _ _ mn], insert snd_main len_fs, 
-      auto simp: main_def intro!: nth_equalityI)
+  have "gram_schmidt_sub2 n [] fs = snd (sub2_wit [] fs) \<and> snd (sub2_wit [] fs) = map gso [0..<length fs]
+        \<and> wits = map (\<lambda>i. map (\<mu> i) [0..<i]) [0..<length fs]" 
+    if "wits = fst (sub2_wit [] fs)" for wits
+    using len_fs mn that by (intro  sub2_wit) (auto simp add: map_nth) 
+  then have "gram_schmidt_sub2 n [] fs = vs \<and> vs = map gso [0..<m]"
+    using assm snd_main main_def by auto
   thus "gram_schmidt n fs = vs" "vs = map gso [0..<m]" by (auto simp: gram_schmidt_code)
 qed
 
@@ -2119,5 +2123,189 @@ lemma gram_schmidt_sub_triv: "gram_schmidt_sub_triv n ((map (\<lambda> x. (x,sq_
 lemma gram_schmidt_triv[simp]: "gram_schmidt_triv n ws = map (\<lambda> x. (x,sq_norm x)) (gram_schmidt n ws)" 
   unfolding gram_schmidt_def gram_schmidt_triv_def rev_map[symmetric] 
   by (auto simp: gram_schmidt_sub_triv[symmetric])
+
+context gram_schmidt
+begin
+
+fun mus_adjuster :: "'a vec \<Rightarrow> ('a vec \<times> 'a) list \<Rightarrow> 'a list \<Rightarrow> 'a vec \<Rightarrow> 'a list \<times> 'a vec"
+  where
+  "mus_adjuster f []           mus g' = (mus, g')" |
+  "mus_adjuster f ((g, ng)#n_gs) mus g' = (let a = (f \<bullet> g) / ng in
+                                             mus_adjuster f n_gs (a # mus) (-a \<cdot>\<^sub>v g + g'))"
+
+fun norms_mus' where
+  "norms_mus' []       n_gs mus = (map snd n_gs, mus)" |
+  "norms_mus' (f # fs) n_gs mus =
+    (let (mus_row, g') = mus_adjuster f n_gs [] (0\<^sub>v n);
+                     g = g' + f in
+      norms_mus' fs ((g, sq_norm_vec g) # n_gs) (mus_row#mus))"
+
+lemma adjuster_wit_carrier_vec:
+  assumes "f \<in> carrier_vec n" "set gs \<subseteq> carrier_vec n"
+  shows "snd (adjuster_wit mus f gs) \<in> carrier_vec n"
+  using assms
+  by (induction mus f gs rule: adjuster_wit.induct) (auto simp add: Let_def case_prod_beta')
+
+lemma adjuster_wit'':
+  assumes "adjuster_wit mus_acc f gs = (mus, g')" "n_gs = map (\<lambda>x. (x, sq_norm_vec x)) gs"
+ "f \<in> carrier_vec n" "acc \<in> carrier_vec n" "set gs \<subseteq> carrier_vec n"
+  shows "mus_adjuster f n_gs mus_acc acc = (mus, acc + g')"
+  using assms proof(induction f n_gs mus_acc acc arbitrary: g' gs mus rule: mus_adjuster.induct)
+  case (1 mus' f acc g)
+  then show ?case
+    by auto
+next
+  case (2 f g n_g n_gs mus_acc acc g' gs mus)
+  let ?gg = "snd (adjuster_wit (f \<bullet> g / n_g # mus_acc) f (tl gs))"
+  from 2 have l: "gs = g # tl gs"
+    by auto
+  have gg: "?gg \<in> carrier_vec n"
+    using 2 by (auto intro!: adjuster_wit_carrier_vec)
+  then have [simp]: "g' = (- (f \<bullet> g / \<parallel>g\<parallel>\<^sup>2) \<cdot>\<^sub>v g + ?gg)"
+    using 2 by (auto simp add: Let_def case_prod_beta')
+  have "mus_adjuster f ((g, n_g) # n_gs) mus_acc acc =
+        mus_adjuster f n_gs (f \<bullet> g / n_g # mus_acc) (- (f \<bullet> g / n_g) \<cdot>\<^sub>v g + acc)"
+    by (auto simp add: Let_def)
+  also have "\<dots> = (mus, - (f \<bullet> g / n_g) \<cdot>\<^sub>v g + acc + ?gg)"
+  proof -
+    have "adjuster_wit (f \<bullet> g / n_g # mus_acc) f (tl gs) = (mus, ?gg)"
+      using 2 by (subst (asm) l) (auto simp add: Let_def case_prod_beta')
+    then show ?thesis
+      using 2 by (subst 2(1)[of _ "tl gs"]) (auto simp add: Let_def case_prod_beta')
+  qed
+  finally show ?case
+    using 2 gg by auto
+qed
+
+lemma adjuster_wit':
+  assumes "n_gs = map (\<lambda>x. (x, sq_norm_vec x)) gs" "f \<in> carrier_vec n" "set gs \<subseteq> carrier_vec n"
+  shows "mus_adjuster f n_gs mus_acc (0\<^sub>v n) = adjuster_wit mus_acc f gs"
+proof -
+  let ?g = "snd (adjuster_wit mus_acc f gs)"
+  let ?mus = "fst (adjuster_wit mus_acc f gs)"
+  have "?g \<in> carrier_vec n"
+    using assms by (auto intro!: adjuster_wit_carrier_vec)
+  then show ?thesis
+    using assms by (subst adjuster_wit''[of _ _ gs ?mus ?g]) (auto simp add: case_prod_beta')
+qed
+
+lemma sub2_wit_norms_mus':
+  assumes "n_gs' = map (\<lambda>v. (v, sq_norm_vec v)) gs'"
+   "sub2_wit gs' fs = (mus, gs)" "set fs \<subseteq> carrier_vec n" "set gs' \<subseteq> carrier_vec n"
+ shows "norms_mus' fs n_gs' mus_acc = (map sq_norm_vec (rev gs @ gs'), rev mus @ mus_acc)"
+  using assms proof (induction fs n_gs' mus_acc arbitrary: gs' mus gs rule: norms_mus'.induct)
+  case (1 n_gs mus_acc)
+  then show ?case by (auto simp add: rev_map)
+next
+  case (2  f fs n_gs mus_acc)
+  note aw1 = conjunct1[OF conjunct2[OF adjuster_wit]]
+  let ?aw = "mus_adjuster f n_gs [] (0\<^sub>v n)"
+  have aw: "?aw = adjuster_wit [] f gs'"
+    apply(subst adjuster_wit') using 2 by auto
+  have "sub2_wit ((snd ?aw + f) # gs') fs = sub2_wit ((snd (adjuster_wit [] f gs') + f) # gs') fs"
+    apply(subst adjuster_wit') using 2 by auto
+  also have "\<dots> = (tl mus, tl gs)"
+    using 2 by (auto simp add: Let_def case_prod_beta')
+  finally have sub_tl: "sub2_wit ((snd ?aw + f) # gs') fs = (tl mus, tl gs)"
+    by simp
+  have aw_c: "snd ?aw \<in> carrier_vec n"
+    apply(subst adjuster_wit'[of _ gs'])
+     using 2 adjuster_wit_carrier_vec by (auto)
+  have gs: "gs = (snd ?aw + f) # tl gs"
+    apply(subst aw) using 2 by (auto simp add: Let_def case_prod_beta')
+  have mus: "mus = fst ?aw # tl mus"
+    apply(subst aw) using 2 by (auto simp add: Let_def case_prod_beta')
+  show ?case apply(simp add: Let_def case_prod_beta')
+    apply(subst 2(1)[of _ _ _ _ "(snd ?aw + f)#gs'"  "tl mus" "tl gs"]) apply(simp) defer apply(simp)
+         apply (simp add: "2.prems"(1))
+    using sub_tl apply(simp)
+    using 2 apply(simp)
+    subgoal using 2 aw_c by (auto)
+     defer
+     apply(simp)
+    apply(auto)
+    using gs 
+     apply(subst gs) apply(subst (2) gs)
+     apply (metis list.simps(9) rev.simps(2) rev_map)
+    using mus
+    by (metis rev.simps(2))
+qed
+
+lemma sub2_wit_gram_schmidt_sub_triv'':
+  assumes "sub2_wit [] fs = (mus, gs)" "set fs \<subseteq> carrier_vec n"
+  shows "norms_mus' fs [] [] = (map sq_norm_vec (rev gs), rev mus)"
+  using assms by (subst sub2_wit_norms_mus') (simp)+
+
+definition norms_mus where
+  "norms_mus fs = (let (n_gs, mus) = norms_mus' fs [] [] in (rev n_gs, rev mus))"
+
+lemma sub2_wit_gram_schmidt_norm_mus:
+  assumes "sub2_wit [] fs = (mus, gs)" "set fs \<subseteq> carrier_vec n"
+  shows "norms_mus fs = (map sq_norm_vec gs, mus)"
+  unfolding norms_mus_def using assms sub2_wit_gram_schmidt_sub_triv''
+  by (auto simp add: Let_def case_prod_beta' rev_map)
+
+lemma norms_mus_norms_gso:
+  assumes "set fs \<subseteq> carrier_vec n" "length fs \<le> n"
+  shows "fst (norms_mus fs) = map (\<lambda>j. \<parallel>gso fs j\<parallel>\<^sup>2) [0..<length fs]"
+proof -
+  let ?s = "sub2_wit [] fs"
+  have "gram_schmidt_sub2 n [] fs = snd ?s \<and> snd ?s = map (gso fs) [0..<length fs] \<and> fst ?s = map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs]"
+    using assms by (intro sub2_wit) (auto simp add: map_nth)
+  then have 1: "snd ?s = map (gso fs) [0..<length fs]"
+    by auto
+  show ?thesis
+    apply(subst sub2_wit_gram_schmidt_norm_mus[of _ "fst ?s" "snd ?s"])
+      apply(simp)
+     using assms apply(simp)
+    by (simp add: 1)
+qed
+
+lemma norms_mus_mus:
+  assumes "i < length fs" "j < i" "set fs \<subseteq> carrier_vec n" "length fs \<le> n"
+  shows "snd (norms_mus fs) ! i ! j = \<mu> fs i j"
+proof -
+  let ?s = "sub2_wit [] fs"
+  have "gram_schmidt_sub2 n [] fs = snd ?s \<and> snd ?s = map (gso fs) [0..<length fs] \<and> fst ?s = map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs]"
+    using assms by (intro sub2_wit) (auto simp add: map_nth)
+  then have 1: "fst ?s = map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs]"
+    by auto
+  show ?thesis
+    apply(subst sub2_wit_gram_schmidt_norm_mus[of _ "fst ?s" "snd ?s"])
+      apply(simp)
+    using assms apply(simp)
+    using assms by (auto simp add: 1)
+qed 
+end
+
+fun mus_adjuster_rat :: "rat vec \<Rightarrow> (rat vec \<times> rat) list \<Rightarrow> rat list \<Rightarrow> rat vec \<Rightarrow> rat list \<times> rat vec"
+  where
+  "mus_adjuster_rat f []           mus g' = (mus, g')" |
+  "mus_adjuster_rat f ((g, ng)#n_gs) mus g' = (let a = (f \<bullet> g) / ng in
+                                             mus_adjuster_rat f n_gs (a # mus) (-a \<cdot>\<^sub>v g + g'))"
+
+fun norms_mus_rat' where
+  "norms_mus_rat' n []       n_gs mus = (map snd n_gs, mus)" |
+  "norms_mus_rat' n (f # fs) n_gs mus =
+    (let (mus_row, g') = mus_adjuster_rat f n_gs [] (0\<^sub>v n);
+                     g = g' + f in
+      norms_mus_rat' n fs ((g, sq_norm_vec g) # n_gs) (mus_row#mus))"
+
+definition norms_mus_rat where
+  "norms_mus_rat n fs = (let (n_gs, mus) = norms_mus_rat' n fs [] [] in (rev n_gs, rev mus))"
+
+lemma norms_mus_rat_norms_mus:
+  "norms_mus_rat n fs = gram_schmidt.norms_mus n fs"
+proof -
+  have "mus_adjuster_rat f n_gs mus_acc g_acc = gram_schmidt.mus_adjuster f n_gs mus_acc g_acc"
+    for f n_gs mus_acc g_acc
+    by(induction f n_gs mus_acc g_acc rule: mus_adjuster_rat.induct)
+      (auto simp add: gram_schmidt.mus_adjuster.simps)
+  then have "norms_mus_rat' n fs n_gs mus = gram_schmidt.norms_mus' n fs n_gs mus" for n fs n_gs mus
+    by(induction n fs n_gs mus rule: norms_mus_rat'.induct)
+      (auto simp add: gram_schmidt.norms_mus'.simps case_prod_beta')
+  then show ?thesis
+    unfolding norms_mus_rat_def gram_schmidt.norms_mus_def by auto
+qed
 
 end
