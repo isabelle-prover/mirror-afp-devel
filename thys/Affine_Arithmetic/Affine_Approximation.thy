@@ -1498,8 +1498,8 @@ lemma pdevs_mapping_eq[simp]: "pdevs_mapping xs = pdevs_applys xs"
     subgoal
       apply (frule lookup_eq_SomeD)
       apply (auto simp: map_nth)
-      by (metis (mono_tags, lifting) List.finite_set finite_UN finite_pdevs_domain keys_tabulate
-          lookup_eq_SomeD lookup_tabulate option.inject sorted_list_of_set)
+      by (metis (mono_tags, lifting) keys_tabulate
+          lookup_eq_SomeD lookup_tabulate option.inject distinct_sorted_list_of_set)
     done
   done
 

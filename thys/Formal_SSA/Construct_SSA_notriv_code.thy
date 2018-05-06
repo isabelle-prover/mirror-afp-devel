@@ -240,7 +240,7 @@ begin
 
   lemma set_sorted_list_of_set_phis_dom [simp]:
   "set (sorted_list_of_set {x \<in> dom (Mapping.lookup (phis g)). P x}) = {x \<in> dom (Mapping.lookup (phis g)). P x}"
-  apply (subst sorted_list_of_set)
+  apply (subst set_sorted_list_of_set)
   by (rule finite_subset [OF _ ssa.phis_finite [of g]]) auto
 
   lemma phis'_codem_correct:

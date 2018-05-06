@@ -380,8 +380,7 @@ proof (induct xs1 arbitrary: xs2 rule: list_singleton_induct)
   thus ?case
     apply (auto intro!: trans[OF ACI_nPlus_singleton_PLUS] simp del: sorted_list_of_set_insert)
     apply (simp only: insert_absorb)
-    apply (metis List.finite_set finite_sorted_distinct_unique
-      distinct_sorted_list_of_set set_sorted_list_of_set sorted_sorted_list_of_set)
+    apply (metis List.finite_set finite_sorted_distinct_unique sorted_list_of_set)
     apply (rule arg_cong[of _ _ PLUS])
     apply (metis remdups_id_iff_distinct sorted_list_of_set_sort_remdups sorted_sort_id)
     done

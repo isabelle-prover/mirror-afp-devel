@@ -232,9 +232,6 @@ proof -
   qed
 qed
 
-lemma (in linorder) sorted_sorted_list_of_set: "sorted (sorted_list_of_set A)"
-  using sorted_list_of_set by (cases "finite A") auto
-
 lemma sorted_wrt_nth_mono:
   assumes "transp P" and "sorted_wrt P xs" and "i < j" and "j < length xs"
   shows "P (xs ! i) (xs ! j)"

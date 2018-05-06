@@ -1018,7 +1018,7 @@ lemma fut_init: "fut_invariant (\<psi>, [])"
 lemma fut_spec_default: "fut_spec fut_default"
   using satisfies_bounded_fold_rderiv[OF iffD2[OF wf_norm_ACI wf] sym size_zero] 
   unfolding fut_spec_def fut_default_def snd_conv
-    conjunct1[OF sorted_list_of_set[OF finite_fold_rderiv_zeros]]
+    set_sorted_list_of_set[OF finite_fold_rderiv_zeros]
   by (auto simp: satisfies_bounded_norm_ACI wf_fold_rderiv wf wf_norm_ACI simp del: fold_replicate)
 
 lemma fut_invariant: "fut_invariant \<phi>\<Phi> \<Longrightarrow> fut_test \<phi>\<Phi> \<Longrightarrow> fut_invariant (fut_step \<phi>\<Phi>)"

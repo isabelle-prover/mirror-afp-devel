@@ -47,7 +47,7 @@ lemma toplevel_inters_in_lang:
 lemma lang_flatten_INTERSECT_finite[simp]:
   "finite X \<Longrightarrow> w \<in> lang n (flatten INTERSECT X) = 
     (if X = {} then w \<in> lists (\<Sigma> n) else (\<forall>r \<in> X. w \<in> lang n r))"
-  unfolding lang_INTERSECT using sorted_list_of_set[of X] by auto
+  unfolding lang_INTERSECT by auto
 
 end
 
