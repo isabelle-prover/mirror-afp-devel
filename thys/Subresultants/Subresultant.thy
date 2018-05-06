@@ -1514,7 +1514,8 @@ proof -
         case (1 l)
         hence l: "l \<ge> 2" "l \<le> i" and l1: "l - 1 \<ge> 2" "l - 1 \<le> i" by auto
         have l2: "l - 2 = l - 1 - 1" by simp
-        show ?case unfolding even_times_iff unfolding diff(3)[OF l]  l2 diff(3)[OF l1] by simp
+        show ?case using diff(3) [OF l] diff(3) [OF l1] l2
+          by auto
       qed
       also have "even (?m' i) = even ?m1"
       proof -
