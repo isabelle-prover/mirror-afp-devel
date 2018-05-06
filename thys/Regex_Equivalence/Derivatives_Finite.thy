@@ -62,7 +62,7 @@ lemma toplevel_summands_PLUS_strong:
 
 lemma toplevel_summands_flatten:
   "\<lbrakk>X \<noteq> {}; finite X; \<forall>x \<in> X. \<not>(\<exists>r s. x = Plus r s)\<rbrakk> \<Longrightarrow> toplevel_summands (flatten PLUS X) = X"
-  using toplevel_summands_PLUS_strong[of "sorted_list_of_set X"] sorted_list_of_set[of X]
+  using toplevel_summands_PLUS_strong[of "sorted_list_of_set X"]
   unfolding list_all_iff by fastforce
 
 lemma ACI_norm_Plus: "\<guillemotleft>r\<guillemotright> = Plus s t \<Longrightarrow> \<exists>s t. r = Plus s t"
@@ -113,7 +113,7 @@ by (induct xs rule: list_singleton_induct) auto
 
 lemma atoms_flatten_PLUS:
   "finite X \<Longrightarrow> atoms (flatten PLUS X) = (\<Union>r \<in> X. atoms r)"
-using wf_PLUS[of "sorted_list_of_set X"] sorted_list_of_set[of X] by auto
+using wf_PLUS[of "sorted_list_of_set X"] by auto
 
 theorem atoms_ACI_norm: "atoms \<guillemotleft>r\<guillemotright> = atoms r"
 proof (induct r)
@@ -145,7 +145,7 @@ by (induct xs rule: list_singleton_induct) auto
 
 lemma lang_flatten_PLUS[simp]:
   "finite X \<Longrightarrow> lang (flatten PLUS X) = (\<Union>r \<in> X. lang r)"
-using lang_PLUS[of "sorted_list_of_set X"] sorted_list_of_set[of X] by fastforce
+using lang_PLUS[of "sorted_list_of_set X"] by fastforce
 
 theorem lang_ACI_norm[simp]: "lang \<guillemotleft>r\<guillemotright> = lang r"
 proof (induct r)
@@ -380,7 +380,8 @@ proof (induct xs1 arbitrary: xs2 rule: list_singleton_induct)
   thus ?case
     apply (auto intro!: trans[OF ACI_nPlus_singleton_PLUS] simp del: sorted_list_of_set_insert)
     apply (simp only: insert_absorb)
-    apply (metis List.finite_set finite_sorted_distinct_unique sorted_list_of_set)
+    apply (metis List.finite_set finite_sorted_distinct_unique
+      distinct_sorted_list_of_set set_sorted_list_of_set sorted_sorted_list_of_set)
     apply (rule arg_cong[of _ _ PLUS])
     apply (metis remdups_id_iff_distinct sorted_list_of_set_sort_remdups sorted_sort_id)
     done

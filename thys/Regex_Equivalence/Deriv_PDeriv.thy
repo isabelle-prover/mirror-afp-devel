@@ -44,14 +44,14 @@ next
         apply (cases "sorted_list_of_set R" "sorted_list_of_set S" rule: list.exhaust[case_product list.exhaust])
         apply (auto split: if_splits simp add: not_le)
         using insort_not_Nil apply metis
-        using insert.prems(1) sorted_list_of_set apply fastforce
-        using insert.prems(1) sorted_list_of_set apply fastforce
-        using insert.prems(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
+        using insert.prems(1) set_sorted_list_of_set apply fastforce
+        using insert.prems(1) set_sorted_list_of_set apply fastforce
+        using insert.prems(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
         done
       with insert show "insert a R = insert b S" by auto
     next
@@ -188,7 +188,8 @@ proof (induct xs1 arbitrary: xs2 rule: list_singleton_induct)
   thus ?case
     apply (auto intro!: trans[OF pnPlus_singleton_PLUS]
       simp: insert_absorb simp del: sorted_list_of_set_insert)
-    apply (metis List.finite_set finite_sorted_distinct_unique sorted_list_of_set)
+    apply (metis List.finite_set finite_sorted_distinct_unique
+      set_sorted_list_of_set distinct_sorted_list_of_set sorted_sorted_list_of_set)
     apply (rule arg_cong[of _ _ PLUS])
     apply (metis remdups_id_iff_distinct sorted_list_of_set_sort_remdups sorted_sort_id)
     done
