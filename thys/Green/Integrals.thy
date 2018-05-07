@@ -870,7 +870,7 @@ proof -
         by (smt Diff_subset Un_Diff Un_commute Un_upper2 inj_on_image_set_diff subset_trans sup.order_iff)
       then show "((\<lambda>x. integral {c..x} f) has_vector_derivative ?g'3 x) (at (g x) within g ` ({a..b} - s))"
         (*sledgehammer*)
-        by (smt Diff_subset Interval_Integral.has_vector_derivative_weaken Un_upper1 Un_upper2 \<open>finite (g ` s)\<close> ass comp_def continuous_on_eq_continuous_within f(1) f(2) g(2) image_diff_subset image_subset_iff inj_on_image_set_diff integral_has_vector_derivative_continuous_at' subset_trans)
+        by (smt Diff_subset has_vector_derivative_weaken Un_upper1 Un_upper2 \<open>finite (g ` s)\<close> ass comp_def continuous_on_eq_continuous_within f(1) f(2) g(2) image_diff_subset image_subset_iff inj_on_image_set_diff integral_has_vector_derivative_continuous_at' subset_trans)
     qed
     show "\<And>x. x \<in> {a..b} - s \<Longrightarrow> g' x *\<^sub>R ?g'3 x = g' x *\<^sub>R f (g x)" by auto
   qed
