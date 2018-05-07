@@ -7,7 +7,7 @@ lemma field_simp_has_vector_derivative [derivative_intros]:
   by (simp add: has_field_derivative_iff_has_vector_derivative)
 
 lemma continuous_on_cases_empty [continuous_intros]:
-  "\<lbrakk>closed S; continuous_on S f; \<And>x. \<lbrakk>x \<in> S; \<not> P x\<rbrakk> \<Longrightarrow> f x = g x\<rbrakk> \<Longrightarrow> 
+  "\<lbrakk>closed S; continuous_on S f; \<And>x. \<lbrakk>x \<in> S; \<not> P x\<rbrakk> \<Longrightarrow> f x = g x\<rbrakk> \<Longrightarrow>
     continuous_on S (\<lambda>x. if P x then f x else g x)"
   using continuous_on_cases [of _ "{}"] by force
 
@@ -42,7 +42,7 @@ lemma piecewise_C1_differentiable_const:
   using continuous_on_const
   by (auto simp add: piecewise_C1_differentiable_on_def)
 
-declare piecewise_C1_differentiable_const [simp, derivative_intros] 
+declare piecewise_C1_differentiable_const [simp, derivative_intros]
 declare piecewise_C1_differentiable_neg [simp, derivative_intros]
 declare piecewise_C1_differentiable_add [simp, derivative_intros]
 declare piecewise_C1_differentiable_diff [simp, derivative_intros]
@@ -98,9 +98,9 @@ lemma sqrt_piecewise_C1_differentiable [simp, derivative_intros]:
   unfolding piecewise_C1_differentiable_on_def
   by (fastforce intro!: continuous_intros derivative_intros)
 
-lemma  
+lemma
   fixes f :: "real \<Rightarrow> 'a::{banach,real_normed_field}"
-  assumes f: "f C1_differentiable_on S" 
+  assumes f: "f C1_differentiable_on S"
   shows sin_C1_differentiable [simp, derivative_intros]: "(\<lambda>x. sin (f x)) C1_differentiable_on S"
   and   cos_C1_differentiable [simp, derivative_intros]: "(\<lambda>x. cos (f x)) C1_differentiable_on S"
 proof -
@@ -134,7 +134,7 @@ lemma abs_C1_differentiable [simp, derivative_intros]:
 proof -
   have contf: "continuous_on S f"
     by (simp add: C1_differentiable_imp_continuous_on f)
-  note df = DERIV_chain [where f=abs and g=f, unfolded o_def] 
+  note df = DERIV_chain [where f=abs and g=f, unfolded o_def]
   show ?thesis
     using assms
     unfolding C1_differentiable_on_def has_field_derivative_iff_has_vector_derivative [symmetric]
@@ -153,7 +153,7 @@ lemma C1_differentiable_on_pair [simp, derivative_intros]:
   apply (rename_tac A B)
   apply (intro exI ballI conjI)
    apply (rule_tac f'="A x" and g'="B x" in has_vector_derivative_pair_within)
-  using  has_vector_derivative_componentwise_within 
+  using  has_vector_derivative_componentwise_within
   by (blast intro: continuous_on_Pair)+
 
 lemma piecewise_C1_differentiable_on_pair [simp, derivative_intros]:
@@ -166,7 +166,7 @@ by (blast intro!: continuous_intros C1_differentiable_on_pair intro: C1_differen
 
 lemma test2:
   assumes s: "\<And>x. x \<in> {0..1} - s \<Longrightarrow> g differentiable at x"
-    and fs: "finite s" and uv: "u \<in> {0..1}" "v \<in> {0..1}" "u \<le> v" 
+    and fs: "finite s" and uv: "u \<in> {0..1}" "v \<in> {0..1}" "u \<le> v"
     and "x \<in> {0..1}" "x \<notin> (\<lambda>t. (v-u) *\<^sub>R t + u) -` s"
   shows "vector_derivative (\<lambda>x. g ((v-u) * x + u)) (at x within {0..1}) = (v-u) *\<^sub>R vector_derivative g (at ((v-u) * x + u) within{0..1})"
 proof -
@@ -599,7 +599,7 @@ proof (simp add: piecewise_C1_differentiable_on_def)
   obtain t where t: "finite t \<and> f C1_differentiable_on s - t"
     using assms by (auto simp add: piecewise_C1_differentiable_on_def)
   then have "g C1_differentiable_on s - t" using assms eq_smooth by blast
-  then show "continuous_on s g \<and> (\<exists>t. finite t \<and> g C1_differentiable_on s - t)" 
+  then show "continuous_on s g \<and> (\<exists>t. finite t \<and> g C1_differentiable_on s - t)"
     using t g_cont by metis
 qed
 
@@ -620,7 +620,7 @@ lemma eq_smooth_gen:
     "\<forall>x. f x = g x"
   shows "g C1_differentiable_on s"
   using assms unfolding C1_differentiable_on_def
-  by (metis (no_types, lifting) Interval_Integral.has_vector_derivative_weaken UNIV_I top_greatest)
+  by (metis (no_types, lifting) has_vector_derivative_weaken UNIV_I top_greatest)
 
 lemma subpath_compose:
   shows "(subpath a b \<gamma>) = \<gamma> o (\<lambda>x.  (b - a) * x + a)"
