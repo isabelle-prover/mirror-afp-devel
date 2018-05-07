@@ -94,18 +94,18 @@ where "program = Program \<circ> fst \<circ> impl_of"
 code_datatype program
 
 lemma prog_impl_eq_iff:
-  "Pi = Pi' \<longleftrightarrow> program Pi = program Pi'"
+  "Pi = Pi' \<longleftrightarrow> program Pi = program Pi'" for Pi Pi'
 apply(cases Pi)
 apply(cases Pi')
 apply(auto simp add: ProgRefine_inverse program_def ProgRefine_inject)
 done
 
 lemma wf_prog_impl'_impl_of [simp, intro!]:
-  "wf_prog_impl' (impl_of Pi)"
+  "wf_prog_impl' (impl_of Pi)" for Pi
 using impl_of[of Pi] by simp
 
 lemma ProgImpl_impl_of [simp, code abstype]:
-  "ProgRefine (impl_of Pi) = Pi"
+  "ProgRefine (impl_of Pi) = Pi" for Pi
 by(rule impl_of_inverse)
 
 lemma program_ProgRefine [simp]: "wf_prog_impl' Psfm \<Longrightarrow> program (ProgRefine Psfm) = Program (fst Psfm)"
@@ -114,7 +114,7 @@ by(simp add: program_def)
 lemma classes_program [code]: "classes (program P) = fst (impl_of P)"
 by(simp add: program_def)
 
-lemma class_program [code]: "class (program Pi) = Mapping.lookup (fst (snd (impl_of Pi)))"
+lemma class_program [code]: "class (program Pi) = Mapping.lookup (fst (snd (impl_of Pi)))" for Pi
 by(cases Pi)(clarsimp simp add: tabulate_class_def lookup.rep_eq Mapping_inverse)
 
 subsection {* Refining sub class and lookup functions to use precomputed mappings *}
@@ -125,7 +125,7 @@ lemma subcls'_program [code]:
   "subcls' (program Pi) C D \<longleftrightarrow> 
   C = D \<or>
   (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> False
-   | Some m \<Rightarrow> D \<in> m)"
+   | Some m \<Rightarrow> D \<in> m)" for Pi
 apply(cases Pi)
 apply(clarsimp simp add: subcls'_def tabulate_subcls_def lookup.rep_eq Mapping_inverse)
 apply(auto elim!: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
@@ -137,7 +137,7 @@ by(rule pred_eqI)(auto elim: subcls'_i_i_iE intro: subcls'_i_i_iI)
 
 lemma subcls'_i_i_o_program [code]:
   "subcls'_i_i_o (program Pi) C = 
-  sup (Predicate.single C) (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> bot | Some m \<Rightarrow> pred_of_set m)"
+  sup (Predicate.single C) (case Mapping.lookup (fst (snd (snd (impl_of Pi)))) C of None \<Rightarrow> bot | Some m \<Rightarrow> pred_of_set m)" for Pi
 by(cases Pi)(fastforce simp add: subcls'_i_i_o_def subcls'_def tabulate_subcls_def lookup.rep_eq Mapping_inverse intro!: pred_eqI split: if_split_asm elim: rtranclp_tranclpE dest: subcls_is_class intro: tranclp_into_rtranclp)
 
 lemma rtranclp_FioB_i_i_subcls1_i_i_o_code [code_unfold]:
@@ -152,7 +152,7 @@ lemma Method_program [code]:
   | Some m \<Rightarrow> 
     (case Mapping.lookup m M of 
        None \<Rightarrow> False
-     | Some (D', Ts', T', meth') \<Rightarrow> Ts = Ts' \<and> T = T' \<and> meth = meth' \<and> D = D'))"
+     | Some (D', Ts', T', meth') \<Rightarrow> Ts = Ts' \<and> T = T' \<and> meth = meth' \<and> D = D'))" for Pi
 by(cases Pi)(auto split: if_split_asm dest: sees_method_is_class simp add: tabulate_Method_def lookup.rep_eq Mapping_inverse)
 
 lemma Method_i_i_i_o_o_o_o_program [code]:
@@ -162,7 +162,7 @@ lemma Method_i_i_i_o_o_o_o_program [code]:
   | Some m \<Rightarrow>
     (case Mapping.lookup m M of
       None \<Rightarrow> bot
-    | Some (D, Ts, T, meth) \<Rightarrow> Predicate.single (Ts, T, meth, D)))"
+    | Some (D, Ts, T, meth) \<Rightarrow> Predicate.single (Ts, T, meth, D)))" for Pi
 by(auto simp add: Method_i_i_i_o_o_o_o_def Method_program intro!: pred_eqI)
 
 lemma Method_i_i_i_o_o_o_i_program [code]:
@@ -172,7 +172,7 @@ lemma Method_i_i_i_o_o_o_i_program [code]:
   | Some m \<Rightarrow>
     (case Mapping.lookup m M of
       None \<Rightarrow> bot
-    | Some (D', Ts, T, meth) \<Rightarrow> if D = D' then Predicate.single (Ts, T, meth) else bot))"
+    | Some (D', Ts, T, meth) \<Rightarrow> if D = D' then Predicate.single (Ts, T, meth) else bot))" for Pi
 by(auto simp add: Method_i_i_i_o_o_o_i_def Method_program intro!: pred_eqI)
 
 declare sees_field.equation[code del]
@@ -184,7 +184,7 @@ lemma sees_field_program [code]:
   | Some m \<Rightarrow> 
     (case Mapping.lookup m F of 
        None \<Rightarrow> False
-     | Some (D', T', fd') \<Rightarrow> T = T' \<and> fd = fd' \<and> D = D'))"
+     | Some (D', T', fd') \<Rightarrow> T = T' \<and> fd = fd' \<and> D = D'))" for Pi
 by(cases Pi)(auto split: if_split_asm dest: has_visible_field[THEN has_field_is_class] simp add: tabulate_sees_field_def lookup.rep_eq Mapping_inverse)
 
 lemma sees_field_i_i_i_o_o_o_program [code]:
@@ -194,7 +194,7 @@ lemma sees_field_i_i_i_o_o_o_program [code]:
   | Some m \<Rightarrow>
     (case Mapping.lookup m F of
        None \<Rightarrow> bot
-    | Some (D, T, fd) \<Rightarrow> Predicate.single(T, fd, D)))"
+    | Some (D, T, fd) \<Rightarrow> Predicate.single(T, fd, D)))" for Pi
 by(auto simp add: sees_field_program sees_field_i_i_i_o_o_o_def intro: pred_eqI)
 
 lemma sees_field_i_i_i_o_o_i_program [code]:
@@ -204,7 +204,7 @@ lemma sees_field_i_i_i_o_o_i_program [code]:
   | Some m \<Rightarrow>
     (case Mapping.lookup m F of
        None \<Rightarrow> bot
-    | Some (D', T, fd) \<Rightarrow> if D = D' then Predicate.single(T, fd) else bot))"
+    | Some (D', T, fd) \<Rightarrow> if D = D' then Predicate.single(T, fd) else bot))" for Pi
 by(auto simp add: sees_field_program sees_field_i_i_i_o_o_i_def intro: pred_eqI)
 
 lemma field_program [code]:
@@ -214,7 +214,7 @@ lemma field_program [code]:
   | Some m \<Rightarrow> 
     (case Mapping.lookup m F of
        None \<Rightarrow> Code.abort (STR ''not_unique'') (\<lambda>_. Predicate.the bot)
-     | Some (D', T, fd) \<Rightarrow> (D', T, fd)))"
+     | Some (D', T, fd) \<Rightarrow> (D', T, fd)))" for Pi
 unfolding field_def
 by(cases Pi)(fastforce simp add: Predicate.the_def tabulate_sees_field_def lookup.rep_eq Mapping_inverse split: if_split_asm intro: arg_cong[where f=The] dest: has_visible_field[THEN has_field_is_class] sees_field_fun)
 
