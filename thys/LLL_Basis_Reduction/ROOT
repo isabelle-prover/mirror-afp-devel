@@ -15,6 +15,8 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
     Gram_Schmidt_2
     LLL    
     LLL_GSO_Impl    
+    LLL_Mu_Impl    
+    LLL_Mu_Integer_Impl    
     LLL_Complexity
     LLL_Number_Bounds
   document_files

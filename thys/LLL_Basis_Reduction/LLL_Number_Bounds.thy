@@ -405,6 +405,21 @@ lemma vec_hom_Ints:
 context LLL
 begin
 
+lemma LLL_mu_d_Z: assumes inv: "LLL_invariant upw i fs" 
+  and j: "j < ii" and ii: "ii < m" 
+shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
+proof -
+  interpret gram_schmidt_rat n .
+  note * = LLL_invD[OF inv]
+  have id: "gs.Gramian_determinant (RAT fs) (Suc j) = of_int (d fs (Suc j))" 
+    unfolding d_def
+    by (rule of_int_Gramian_determinant, insert j ii *(5,7), auto)
+  show ?thesis
+    by (rule Gramian_determinant_mu_ints[OF *(1-3) _ j ii, unfolded id], insert *(5,7), force)
+qed
+
+
+
 text \<open>maximum absolute value in initial basis\<close>
 definition "M = Max ({abs (fs_init ! i $ j) | i j. i < m \<and> j < n} \<union> {0})" 
 
@@ -719,20 +734,15 @@ proof (rule bound_invI)
   show "g_bound fs" by fact 
 qed
 
-lemma basic_basis_reduction_add_rows_loop_bound: assumes
-  binv: "LLL_bound_invariant False True i fs" 
-  and mu_small: "\<mu>_small_row i fs j"
-  and mu_bnd: "\<mu>_bound_row_inner fs i j" 
-  and res: "basic_basis_reduction_add_rows_loop i fs j = fs'" 
+lemma basis_basis_reduction_add_rows_loop_leave:
+  assumes binv: "LLL_bound_invariant False True i fs" 
+  and mu_small: "\<mu>_small_row i fs 0"
+  and mu_bnd: "\<mu>_bound_row_inner fs i 0" 
   and i: "i < m" 
-  and j: "j \<le> i" 
-shows "LLL_bound_invariant True False i fs'" 
-  using assms
-proof (induct j arbitrary: fs)
-  case (0 fs)
-  note binv = 0(1)
+shows "LLL_bound_invariant True False i fs" 
+proof -
   note Linv = bound_invD(1)[OF binv]
-  from 0 have mu_small: "\<mu>_small fs i" unfolding \<mu>_small_row_def \<mu>_small_def by auto
+  from mu_small have mu_small: "\<mu>_small fs i" unfolding \<mu>_small_row_def \<mu>_small_def by auto
   note inv = LLL_invD[OF Linv]
   note fbnd = bound_invD(2)[OF binv]
   note gbnd = bound_invD(3)[OF binv]
@@ -764,7 +774,25 @@ proof (induct j arbitrary: fs)
     qed
   }
   hence f_bound: "f_bound True i fs" unfolding f_bound_def by auto
-  with 0 show ?case using basis_reduction_add_row_done[of i fs] by (auto simp: LLL_bound_invariant_def)
+  with binv show ?thesis using basis_reduction_add_row_done[OF Linv i assms(2)] 
+    by (auto simp: LLL_bound_invariant_def)
+qed
+
+
+lemma basic_basis_reduction_add_rows_loop_bound: assumes
+  binv: "LLL_bound_invariant False True i fs" 
+  and mu_small: "\<mu>_small_row i fs j"
+  and mu_bnd: "\<mu>_bound_row_inner fs i j" 
+  and res: "basic_basis_reduction_add_rows_loop i fs j = fs'" 
+  and i: "i < m" 
+  and j: "j \<le> i" 
+shows "LLL_bound_invariant True False i fs'" 
+  using assms
+proof (induct j arbitrary: fs)
+  case (0 fs)
+  note binv = 0(1)
+  from basis_basis_reduction_add_rows_loop_leave[OF 0(1-3) i] 0(4)
+  show ?case by auto
 next
   case (Suc j fs)
   note binv = Suc(2)

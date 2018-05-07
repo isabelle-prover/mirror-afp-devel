@@ -183,7 +183,7 @@ partial_function (tailrec) basis_reduction_main where
 definition "initial_state = (let
   (n_gs, mus) = norms_mus_rat n (map (map_vec rat_of_int) fs_init)
   in (([], fs_init), 
-  IArray.of_fun (\<lambda> i. IArray.of_fun (\<lambda> j. if j = i then 1 else mus ! i ! j) i) m,
+  IArray.of_fun (\<lambda> i. IArray.of_fun (\<lambda> j. mus ! i ! j) i) m,
   ([],n_gs)) :: LLL_gso_state)" 
 end
 
@@ -623,22 +623,12 @@ lemma initial_state:
 proof -
   have f_repr: "list_repr 0 ([], fs_init) (map ((!) fs_init) [0..<m])" 
     unfolding list_repr_def by (simp, intro nth_equalityI, auto simp: len)
+  from fs_init have Rn: "set (RAT fs_init) \<subseteq> Rn" by auto
   show ?thesis unfolding case_prod_beta' initial_state_def Let_def LLL_impl_inv.simps gram_schmidt_triv id
-    apply(intro conjI)
-    using f_repr apply(simp)
-    subgoal
-      apply (auto simp add: list_repr_def)
-      apply(subst norms_mus_rat_norms_mus)
-      apply(subst gs.norms_mus_norms_gso)
-      using fs_init apply(auto)[1]
-      using gs.mn lin_dep apply blast
-      by (simp add: len)
-    unfolding mu_repr_def
-    apply(rule iarray_of_fun_cong)
-    apply(auto)
-    apply(subst norms_mus_rat_norms_mus)
-    apply(subst gs.norms_mus_mus)
-    using fs_init len gs.mn lin_dep by (auto simp add: gs.norms_mus_mus)
+    norms_mus_rat_norms_mus 
+    gs.norms_mus[OF Rn, unfolded length_map len, OF gs.mn[OF lin_dep, unfolded length_map, OF len refl]]
+    fst_conv snd_conv
+    by (intro conjI f_repr, auto simp: list_repr_def mu_repr_def)
 qed
 
 lemma basis_reduction: assumes res: "basis_reduction \<alpha> n fs_init = state" 

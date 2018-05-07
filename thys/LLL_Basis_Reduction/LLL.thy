@@ -176,6 +176,16 @@ lemma LLL_d_pos [intro]: assumes inv: "LLL_invariant upw i fs"
 shows "d fs k > 0"
   unfolding d_def using Gramian_determinant[OF inv k] by auto
 
+lemma LLL_d_Suc: assumes "LLL_invariant upw i fs" 
+  and k: "k < m" 
+shows "of_int (d fs (Suc k)) = sq_norm (gso fs k) * of_int (d fs k)" 
+proof -
+  note det = Gramian_determinant(1)[OF assms(1)]
+  from k have k: "k \<le> m" "Suc k \<le> m" by auto
+  show ?thesis unfolding det[OF k(1)] det[OF k(2)] d_def
+    by (subst prod.remove[of _ k], force+, rule arg_cong[of _ _ "\<lambda> x. _ * x"], rule prod.cong, auto)
+qed
+
 lemma LLL_D_pos: assumes inv: "LLL_invariant upw i fs" 
 shows "D fs > 0"
 proof -
@@ -225,6 +235,8 @@ shows "LLL_invariant True i fs'"
   (* new values of mu *)
   "\<And> i' j'. i' < m \<Longrightarrow> j' < m \<Longrightarrow>       
      \<mu> fs' i' j' = (if i' = i \<and> j' \<le> j then \<mu> fs i j' - of_int c * \<mu> fs j j' else \<mu> fs i' j')"
+  (* new values of d *)
+  "\<And> ii. ii \<le> m \<Longrightarrow> d fs' ii = d fs ii" 
 proof -
   define bnd :: rat where bnd: "bnd = 4 ^ (m - 1 - Suc j) * of_nat (A ^ (m - 1) * m)" 
   define M where "M = map (\<lambda>i. map (\<mu> fs i) [0..<m]) [0..<m]"
@@ -485,16 +497,17 @@ proof -
 
   show Linv': "LLL_invariant True i fs'" 
     by (intro LLL_invI[OF F1 lattice \<open>i \<le> m\<close> conn2(1) sred], auto)
-  have D: "D fs' = D fs" 
-    unfolding D_def
-  proof (rule arg_cong[of _ _ nat], rule prod.cong[OF refl])
+  {
     fix i
-    assume ii: "i \<in> {..<m}" hence i: "i \<le> m" by auto
+    assume i: "i \<le> m"
     have "rat_of_int (d fs' i) = of_int (d fs i)" 
       unfolding d_def Gramian_determinant(1)[OF Linv i] Gramian_determinant(1)[OF Linv' i]
-      by (rule prod.cong[OF refl], subst eq_fs, insert ii, auto)
+      by (rule prod.cong[OF refl], subst eq_fs, insert i, auto)
     thus "d fs' i = d fs i" by simp
-  qed
+  } note d = this 
+  have D: "D fs' = D fs" 
+    unfolding D_def
+    by (rule arg_cong[of _ _ nat], rule prod.cong[OF refl], auto simp: d)
   show "LLL_measure i fs' = LLL_measure i fs" 
     unfolding LLL_measure_def logD_def D ..
 qed
@@ -642,6 +655,10 @@ shows "LLL_invariant False (i - 1) fs'"
         else if ii > i \<and> j = i - 1 then 
            \<mu> fs ii (i - 1) * \<mu> fs' i (i - 1) + \<mu> fs ii i * sq_norm (gso fs i) / sq_norm (gso fs' (i - 1))
         else \<mu> fs ii j)" (is "\<And> ii j. _ \<Longrightarrow> _ \<Longrightarrow> _ = ?new_mu ii j")
+  (* new d-values *)
+  and "\<And> ii. ii \<le> m \<Longrightarrow> of_int (d fs' ii) = (if ii = i then 
+       sq_norm (gso fs' (i - 1)) / sq_norm (gso fs (i - 1)) * of_int (d fs i)
+       else of_int (d fs ii))" 
 proof -
   note inv = LLL_invD[OF Linv]
   let ?mu1 = "\<mu> fs" 
@@ -1108,28 +1125,34 @@ proof -
 
   (* show decrease in measure *)
   { (* 16.16 (ii), the decreasing case *)
-    fix k
-    assume k: "k = i" 
-    hence kn: "k \<le> m" using i by auto
-    from Gd[OF newInv, folded d_def, OF kn] k
-    have "?R (d fs' k) = (\<Prod>j<i. ?n2 j )" by auto
+    have ile: "i \<le> m" using i by auto
+    from Gd[OF newInv, folded d_def, OF ile] 
+    have "?R (d fs' i) = (\<Prod>j<i. ?n2 j )" by auto
     also have "\<dots> = prod ?n2 ({0 ..< i-1} \<union> {i - 1})" 
       by (rule sym, rule prod.cong, (insert i0, auto)[1], insert i, auto)
     also have "\<dots> = ?n2 (i - 1) * prod ?n2 ({0 ..< i-1})" 
       by simp
-    also have "\<dots> < (reduction * ?n1 (i - 1)) * prod ?n2 ({0 ..< i-1})"
-      by (rule mult_strict_right_mono[OF g_reduction prod_pos], insert norm_pos2 i, auto)
     also have "prod ?n2 ({0 ..< i-1}) = prod ?n1 ({0 ..< i-1})" 
       by (rule prod.cong[OF refl], subst g2_g1_identical, insert i, auto)
-    also have "(reduction * ?n1 (i - 1)) * prod ?n1 ({0 ..< i-1})
-      = reduction * prod ?n1 ({0 ..< i-1} \<union> {i - 1})" by simp
-    also have "prod ?n1 ({0 ..< i-1} \<union> {i - 1}) = (\<Prod>j<i. ?n1 j)"
+    also have "\<dots> = (prod ?n1 ({0 ..< i-1} \<union> {i - 1})) / ?n1 (i - 1)" 
+      by (subst prod.union_disjoint, insert norm_pos1[OF im1], auto)
+    also have "prod ?n1 ({0 ..< i-1} \<union> {i - 1}) = prod ?n1 {0..<i}"
+      by (rule arg_cong[of _ _ "prod ?n1"], insert i0, auto)
+    also have "\<dots> = (\<Prod>j<i. ?n1 j)"
       by (rule prod.cong, insert i0, auto)
-    also have "\<dots> = ?R (d fs k)" unfolding d_def Gd[OF Linv kn] unfolding k
+    also have "\<dots> = ?R (d fs i)" unfolding d_def Gd[OF Linv ile]
       by (rule prod.cong[OF refl], insert i, auto)
-    finally have "d fs' k < real_of_rat reduction * d fs k"
+    finally have new_di: "?R (d fs' i) = ?n2 (i - 1) / ?n1 (i - 1) * ?R (d fs i)" by simp
+    also have "\<dots> < (reduction * ?n1 (i - 1)) / ?n1 (i - 1) * ?R (d fs i)"
+      by (rule mult_strict_right_mono[OF divide_strict_right_mono[OF g_reduction norm_pos1[OF im1]]],
+        insert LLL_d_pos[OF Linv] i, auto)  
+    also have "\<dots> = reduction * ?R (d fs i)" using norm_pos1[OF im1] by auto
+    finally have "d fs' i < real_of_rat reduction * d fs i" 
       using of_rat_less of_rat_mult of_rat_of_int_eq by metis
-  } note d_i = this[OF refl]
+    note this new_di
+  } note d_i = this
+  show "ii \<le> m \<Longrightarrow> ?R (d fs' ii) = (if ii = i then ?n2 (i - 1) / ?n1 (i - 1) * ?R (d fs i) else ?R (d fs ii))" 
+    for ii using d_i d by auto
   have pos: "k < m \<Longrightarrow> 0 < d fs' k" "k < m \<Longrightarrow> 0 \<le> d fs' k" for k 
     using LLL_d_pos[OF newInv, of k] by auto
   have prodpos:"0< (\<Prod>i<m. d fs' i)" apply (rule prod_pos)
@@ -1146,7 +1169,7 @@ proof -
   also have "real_of_int \<dots> = real_of_int (\<Prod> j \<in> {0 ..< m} - {i}. d fs' j) * real_of_int (d fs' i)" 
     by (subst prod.union_disjoint, auto)
   also have "\<dots> < (\<Prod> j \<in> {0 ..< m} - {i}. d fs' j) * (of_rat reduction * d fs i)"
-    by(rule mult_strict_left_mono[OF d_i],insert prod_pos',auto)
+    by(rule mult_strict_left_mono[OF d_i(1)],insert prod_pos',auto)
   also have "(\<Prod> j \<in> {0 ..< m} - {i}. d fs' j) = (\<Prod> j \<in> {0 ..< m} - {i}. d fs j)"
     by (rule prod.cong, insert d, auto)
   also have "\<dots> * (of_rat reduction * d fs i) 

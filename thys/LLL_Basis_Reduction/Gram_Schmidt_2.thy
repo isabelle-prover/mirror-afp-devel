@@ -2245,37 +2245,19 @@ lemma sub2_wit_gram_schmidt_norm_mus:
   unfolding norms_mus_def using assms sub2_wit_gram_schmidt_sub_triv''
   by (auto simp add: Let_def case_prod_beta' rev_map)
 
-lemma norms_mus_norms_gso:
-  assumes "set fs \<subseteq> carrier_vec n" "length fs \<le> n"
-  shows "fst (norms_mus fs) = map (\<lambda>j. \<parallel>gso fs j\<parallel>\<^sup>2) [0..<length fs]"
+lemma norms_mus: assumes "set fs \<subseteq> carrier_vec n" "length fs \<le> n"
+  shows "norms_mus fs = (map (\<lambda>j. \<parallel>gso fs j\<parallel>\<^sup>2) [0..<length fs], map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs])" 
 proof -
   let ?s = "sub2_wit [] fs"
   have "gram_schmidt_sub2 n [] fs = snd ?s \<and> snd ?s = map (gso fs) [0..<length fs] \<and> fst ?s = map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs]"
     using assms by (intro sub2_wit) (auto simp add: map_nth)
-  then have 1: "snd ?s = map (gso fs) [0..<length fs]"
+  then have 1: "snd ?s = map (gso fs) [0..<length fs]" and 2: "fst ?s = map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs]" 
     by auto
+  have s: "?s = (fst ?s, snd ?s)" by auto
   show ?thesis
-    apply(subst sub2_wit_gram_schmidt_norm_mus[of _ "fst ?s" "snd ?s"])
-      apply(simp)
-     using assms apply(simp)
-    by (simp add: 1)
+    unfolding sub2_wit_gram_schmidt_norm_mus[OF s assms(1)]
+    unfolding 1 2 o_def map_map by auto
 qed
-
-lemma norms_mus_mus:
-  assumes "i < length fs" "j < i" "set fs \<subseteq> carrier_vec n" "length fs \<le> n"
-  shows "snd (norms_mus fs) ! i ! j = \<mu> fs i j"
-proof -
-  let ?s = "sub2_wit [] fs"
-  have "gram_schmidt_sub2 n [] fs = snd ?s \<and> snd ?s = map (gso fs) [0..<length fs] \<and> fst ?s = map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs]"
-    using assms by (intro sub2_wit) (auto simp add: map_nth)
-  then have 1: "fst ?s = map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs]"
-    by auto
-  show ?thesis
-    apply(subst sub2_wit_gram_schmidt_norm_mus[of _ "fst ?s" "snd ?s"])
-      apply(simp)
-    using assms apply(simp)
-    using assms by (auto simp add: 1)
-qed 
 end
 
 fun mus_adjuster_rat :: "rat vec \<Rightarrow> (rat vec \<times> rat) list \<Rightarrow> rat list \<Rightarrow> rat vec \<Rightarrow> rat list \<times> rat vec"
