@@ -340,7 +340,7 @@ lemma distinct_sortet_list_app:
   "\<lbrakk>sorted xs; distinct xs; xs = as @ b # cs\<rbrakk>
   \<Longrightarrow> \<forall> x\<in> set cs. b < x"
   by (metis distinct.simps(2) distinct_append 
-    linorder_antisym_conv2 sorted_Cons sorted_append)
+    linorder_antisym_conv2 sorted.simps(2) sorted_append)
 
 lemma distinct_sorted_list_lem1:
   assumes 
@@ -358,11 +358,11 @@ proof -
   have "\<forall>x\<in>set xs. \<forall>y\<in>set ys. x \<le> y" by force
   thus "sorted (xs @ e # ys)"
     using assms
-    by (auto simp add: sorted_append sorted_Cons)
+    by (auto simp add: sorted_append)
   have "set xs \<inter> set ys = {}" using assms (5,6) by force
   thus "distinct (xs @ e # ys)"
     using assms
-    by (auto simp add: distinct_append)
+    by (auto)
 qed
 
 lemma distinct_sorted_list_lem2:
@@ -382,7 +382,7 @@ proof -
     "distinct (e' # ys)"
     "\<forall> y \<in> set (e' # ys). e < y"
     using assms(2,4,5,7)
-    by (auto simp add: sorted_Cons)
+    by (auto)
   thus "sorted (xs @ e # e' # ys)"
   "distinct (xs @ e # e' # ys)"
     using assms(1,3,6) distinct_sorted_list_lem1[of xs "e' # ys" e]  
@@ -621,7 +621,7 @@ proof -
         "sorted (map fst (map p_unwrap (map snd (\<alpha> r))))"
         "distinct (map fst (map p_unwrap (map snd (\<alpha> l))))"
         using g1asms v8
-        by (auto simp add: sorted_append sorted_Cons)
+        by (auto simp add: sorted_append)
       
       from l_lp_r T1 g1asms show ?thesis        
       proof (fold aluprio_insert_def, cases "e < fst (p_unwrap lp)")
@@ -650,7 +650,7 @@ proof -
           "distinct (map fst (map p_unwrap 
              (map snd (\<alpha> l @ ((),(LP e a)) # ((), lp) # \<alpha> r))))"              
           using v10(1,3) v7 True v9 v4(1) g1asms distinct_sorted_list_lem2
-          by (auto simp add: sorted_append sorted_Cons)              
+          by (auto simp add: sorted_append)              
         thus "invar (aluprio_insert splits annot isEmpty app consr s e a) \<and>
           (\<forall>x\<in>set (\<alpha> (aluprio_insert splits annot isEmpty app consr s e a)). 
              snd x \<noteq> Infty) \<and>
@@ -684,7 +684,7 @@ proof -
             (map snd (\<alpha> l @ ((),(LP e a)) # \<alpha> r))))"              
           using v16 v15 v10(1,3) v7 True v9 v4(1) 
             g1asms distinct_sorted_list_lem1
-          by (auto simp add: sorted_append sorted_Cons)              
+          by (auto simp add: sorted_append)              
         thus "invar (aluprio_insert splits annot isEmpty app consr s e a) \<and>
           (\<forall>x\<in>set (\<alpha> (aluprio_insert splits annot isEmpty app consr s e a)). 
             snd x \<noteq> Infty) \<and>
@@ -718,7 +718,7 @@ proof -
       qed
     next
       case True note T1 = this
-      obtain l uu lp r where 
+      obtain l lp r where 
         l_lp_r: "(splits (e_less_eq e) Infty s) = (l, ((), lp), r) "
         by (cases "splits (e_less_eq e) Infty s", auto)
       note v2 = splits_correct[of s "e_less_eq e" Infty l "()" lp r]
@@ -1064,7 +1064,7 @@ proof -
     have ziel4: "aluprio_invar \<alpha> invar s'"
       using v16 v8(1) invs(2,3,4)
       unfolding aluprio_defs
-      by (auto simp add: sorted_Cons sorted_append)
+      by (auto simp add: sorted_append)
     
     show "aluprio_invar \<alpha> invar s' \<and>
           aluprio_\<alpha> \<alpha> s' = (aluprio_\<alpha> \<alpha> s)(e := None) \<and>

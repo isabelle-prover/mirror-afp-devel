@@ -26,7 +26,7 @@ next
   from x1_l1_props have l1_props: "distinct l1 \<and> sorted l1"
                     and x1_nin_l1: "x1 \<notin> set l1"
                     and x1_le: "\<And>x. x \<in> set l1 \<Longrightarrow> x1 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
   note ind_hyp_l1 = Cons(1)[OF l1_props]
 
@@ -40,7 +40,7 @@ next
     from x2_l2_props have l2_props: "distinct l2 \<and> sorted l2"
                     and x2_nin_l2: "x2 \<notin> set l2"
                     and x2_le: "\<And>x. x \<in> set l2 \<Longrightarrow> x2 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
     note ind_hyp_l2 = Cons(1)[OF l2_props]
     show ?case
@@ -49,7 +49,7 @@ next
 
       from ind_hyp_l1[OF x2_l2_props] x1_less_x2 x1_nin_l1 x1_le x2_le
       show ?thesis
-        apply (auto simp add: sorted_Cons Ball_def)
+        apply (auto simp add: Ball_def)
         apply (metis linorder_not_le)
       done
     next
@@ -60,14 +60,14 @@ next
         case True note x1_eq_x2 = this
 
         from ind_hyp_l1[OF l2_props] x1_le x2_le x2_nin_l2 x1_eq_x2 x1_nin_l1
-        show ?thesis by (simp add: x1_eq_x2 sorted_Cons Ball_def)
+        show ?thesis by (simp add: x1_eq_x2 Ball_def)
       next
         case False note x1_neq_x2 = this
         with x2_le_x1 have x2_less_x1 : "x2 < x1" by auto
 
         from ind_hyp_l2 x2_le_x1 x1_neq_x2 x2_le x2_nin_l2 x1_le
         show ?thesis 
-          apply (auto simp add: x2_less_x1 sorted_Cons Ball_def)
+          apply (auto simp add: x2_less_x1 Ball_def)
           apply (metis linorder_not_le x2_less_x1)
         done
       qed
@@ -98,7 +98,7 @@ next
   from x1_l1_props have l1_props: "distinct l1 \<and> sorted l1"
                     and x1_nin_l1: "x1 \<notin> set l1"
                     and x1_le: "\<And>x. x \<in> set l1 \<Longrightarrow> x1 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
   note ind_hyp_l1 = Cons(1)[OF l1_props]
 
@@ -112,7 +112,7 @@ next
     from x2_l2_props have l2_props: "distinct l2 \<and> sorted l2"
                     and x2_nin_l2: "x2 \<notin> set l2"
                     and x2_le: "\<And>x. x \<in> set l2 \<Longrightarrow> x2 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
     note ind_hyp_l2 = Cons(1)[OF l2_props]
     show ?case
@@ -122,7 +122,7 @@ next
       from ind_hyp_l1[OF x2_l2_props] x1_less_x2 x1_nin_l1 x1_le x2_le
       show ?thesis
         apply simp
-        apply (simp add: sorted_Cons Ball_def set_eq_iff)
+        apply (simp add: Ball_def set_eq_iff)
         apply (metis linorder_not_le order_less_imp_not_eq2)
       done
     next
@@ -133,7 +133,7 @@ next
         case True note x1_eq_x2 = this
 
         from ind_hyp_l1[OF l2_props] x1_le x2_le x2_nin_l2 x1_eq_x2 x1_nin_l1
-        show ?thesis by (simp add: x1_eq_x2 sorted_Cons Ball_def)
+        show ?thesis by (simp add: x1_eq_x2 Ball_def)
       next
         case False note x1_neq_x2 = this
         with x2_le_x1 have x2_less_x1 : "x2 < x1" by auto
@@ -143,7 +143,7 @@ next
 
         from ind_hyp_l2 x1_le x2_nin_l1
         show ?thesis 
-          apply (simp add: x2_less_x1 x1_neq_x2 x2_le_x1 x1_nin_l1 sorted_Cons Ball_def set_eq_iff)
+          apply (simp add: x2_less_x1 x1_neq_x2 x2_le_x1 x1_nin_l1 Ball_def set_eq_iff)
           apply (metis x1_neq_x2)
         done
       qed
@@ -173,7 +173,7 @@ next
   from x1_l1_props have l1_props: "distinct l1 \<and> sorted l1"
                     and x1_nin_l1: "x1 \<notin> set l1"
                     and x1_le: "\<And>x. x \<in> set l1 \<Longrightarrow> x1 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
   note ind_hyp_l1 = Cons(1)[OF l1_props]
 
@@ -187,7 +187,7 @@ next
     from x2_l2_props have l2_props: "distinct l2 \<and> sorted l2"
                     and x2_nin_l2: "x2 \<notin> set l2"
                     and x2_le: "\<And>x. x \<in> set l2 \<Longrightarrow> x2 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
     note ind_hyp_l2 = Cons(1)[OF l2_props]
     show ?case
@@ -196,7 +196,7 @@ next
 
       from ind_hyp_l1[OF x2_l2_props] x1_less_x2 x1_nin_l1 x1_le x2_le
       show ?thesis
-        apply (auto simp add: sorted_Cons Ball_def)
+        apply (auto simp add: Ball_def)
         apply (metis linorder_not_le)
       done
     next
@@ -208,7 +208,7 @@ next
 
         from ind_hyp_l1[OF l2_props] x1_le x2_le x2_nin_l2 x1_eq_x2 x1_nin_l1
         show ?thesis 
-          apply (simp add: subset_iff x1_eq_x2 sorted_Cons Ball_def)
+          apply (simp add: subset_iff x1_eq_x2 Ball_def)
           apply metis
         done
       next
@@ -217,7 +217,7 @@ next
 
         from ind_hyp_l2 x2_le_x1 x1_neq_x2 x2_le x2_nin_l2 x1_le
         show ?thesis 
-          apply (simp add: subset_iff x2_less_x1 sorted_Cons Ball_def)
+          apply (simp add: subset_iff x2_less_x1 Ball_def)
           apply (metis linorder_not_le x2_less_x1)
         done
       qed
@@ -260,7 +260,7 @@ fun memb_sorted where
 
 lemma memb_sorted_correct :
   "sorted xs \<Longrightarrow> memb_sorted xs x \<longleftrightarrow> x \<in> set xs"
-by (induct xs) (auto simp add: sorted_Cons Ball_def)
+by (induct xs) (auto simp add: Ball_def)
 
 
 fun insertion_sort where
@@ -274,7 +274,7 @@ lemma insertion_sort_correct :
    distinct (insertion_sort x xs) \<and> 
    sorted (insertion_sort x xs) \<and>
    set (insertion_sort x xs) = set (x # xs)"
-by (induct xs) (auto simp add: sorted_Cons Ball_def)
+by (induct xs) (auto simp add: Ball_def)
 
 fun delete_sorted where
    "delete_sorted x [] = []"
@@ -289,7 +289,7 @@ lemma delete_sorted_correct :
    set (delete_sorted x xs) = set xs - {x}"
 apply (induct xs) 
 apply simp
-apply (simp add: sorted_Cons Ball_def set_eq_iff)
+apply (simp add: Ball_def set_eq_iff)
 apply (metis order_less_le)
 done
 
