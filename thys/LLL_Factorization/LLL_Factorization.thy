@@ -19,6 +19,7 @@ theory LLL_Factorization
 begin
 
 subsection \<open>Basic facts about the auxiliary functions\<close>
+hide_const (open) Finite_Cartesian_Product.rows
 
 lemma nth_factorization_lattice:
   fixes u and d
@@ -69,7 +70,7 @@ proof (cases "f = 0")
   case True
   thus ?thesis
     by (auto simp add: sylvester_mat_def row_def sq_norm_vec_def o_def
-        interv_sum_list_conv_sum_set_nat i)
+        interv_sum_list_conv_sum_set_nat i intro!: sum_list_zero)
 next
   case False note f = False         
   let ?f = "\<lambda>j. if i \<le> j \<and> j - i \<le> degree f then coeff f (degree f + i - j) else 0"
@@ -216,7 +217,7 @@ proof -
   also have "... \<le> sqrt (of_int (prod_list (map sq_norm (rows ?S))))"
     by (rule Hadamard's_inequality_int, auto)
   also have "map sq_norm (rows ?S) = map ?f [0..<degree f + degree g]"
-    unfolding rows_def by auto
+    unfolding Matrix.rows_def by auto
   also have "... =  map ?f ([0..<degree g] @ [degree g..<degree f + degree g])"
     by (simp add: list_rw)
   also have "prod_list ... = prod_list (map ?f [0..<degree g])
@@ -608,7 +609,7 @@ proof -
           next
             case False
             hence "(\<Sum>i = n - d..<n. if n - Suc i = j then coeff r (n - Suc i) else 0) = 0"
-              by (auto intro!: sum.neutral)
+              by (intro sum.neutral ballI, insert False, simp, linarith) 
             also have "... = coeff r j" 
               by (rule coeff_eq_0[symmetric], insert False deg_r'' r d_def, auto)
             finally show ?thesis ..
