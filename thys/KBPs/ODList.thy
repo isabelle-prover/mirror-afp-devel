@@ -52,7 +52,7 @@ lemma set_merge[simp]:
 lemma distinct_sorted_merge[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> distinct (merge xs ys) \<and> sorted (merge xs ys)"
-  by (induct xs ys rule: merge.induct) (auto iff: sorted_Cons)
+  by (induct xs ys rule: merge.induct) (auto)
 
 lemma mset_merge [simp]:
   "\<lbrakk> distinct (xs @ ys) \<rbrakk> \<Longrightarrow> mset (merge xs ys) = mset xs + mset ys"
@@ -373,7 +373,7 @@ using `distinct xs` `sorted xs` proof (induct xs)
   case Nil from `P []` show ?case .
 next
   case (Cons x xs)
-  then have "distinct (x # xs)" and "sorted (x # xs)" and "P xs" by (simp_all add: sorted_Cons)
+  then have "distinct (x # xs)" and "sorted (x # xs)" and "P xs" by (simp_all)
   with step show "P (x # xs)" .
 qed
 
@@ -393,7 +393,7 @@ proof (cases dxs)
     case (insert x xs) thus ?case
       apply -
       apply (rule insrt)
-      apply (auto iff: sorted_Cons fromList_def)
+      apply (auto simp: fromList_def)
       done
   qed
   with dxs show "P dxs" by simp
@@ -595,7 +595,7 @@ lemma sorted_mono_map:
   "\<lbrakk> sorted xs; mono_on f (set xs) \<rbrakk> \<Longrightarrow> sorted (List.map f xs)"
   apply (induct xs)
    apply simp
-  apply (simp add: sorted_Cons)
+  apply (simp)
   apply (cut_tac X="insert a (set xs)" and Y="set xs" in mono_on_subset)
   apply (auto dest: mono_onD)
   done
@@ -627,13 +627,13 @@ next
   case (insert dxs x xs)
   from insert have "map_of (List.map (\<lambda>k. (k, f k)) xs) = map_of (msort (List.map (\<lambda>k. (k, f k)) xs))"
     apply (subst msort_map)
-    apply (auto intro: inj_onI simp: sorted_Cons)
+    apply (auto intro: inj_onI)
     apply (rule mono_onI)
     apply (simp add: less_eq_prod_def less_le)
     done
   also from insert have "... = lookup (tabulate (fromList xs) f)"
     unfolding tabulate_def lookup_def
-    by (simp add: toList_ODList toList_fromList sorted_Cons)
+    by (simp add: toList_ODList toList_fromList)
   also from insert have "... = (Some \<circ> f) |` toSet (fromList xs)"
     by (simp only: toSet_fromList_set)
   finally have IH: "map_of (List.map (\<lambda>k. (k, f k)) xs) = (Some \<circ> f) |` toSet (fromList xs)" .

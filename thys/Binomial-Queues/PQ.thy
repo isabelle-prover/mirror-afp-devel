@@ -139,7 +139,7 @@ proof -
   with assms have p: "snd (hd (alist_of q)) = p" by (auto simp add: hd_map)
   have "sorted (map snd (alist_of q))" by simp
   with q have "sorted (p # ps)" by simp
-  then have "\<forall>p'\<in>set ps. p' \<ge> p" by (simp add: sorted_Cons)
+  then have "\<forall>p'\<in>set ps. p' \<ge> p" by (simp)
   then have "Min (set (p # ps)) = p" by (auto intro: Min_eqI)
   with p q have "Min (set (map snd (alist_of q))) = snd (hd (alist_of q))"
     by simp

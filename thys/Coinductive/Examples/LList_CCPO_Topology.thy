@@ -501,7 +501,7 @@ lemma mono_up: "xs \<le> ys \<Longrightarrow> up a xs \<le> up a ys"
   unfolding less_eq_list_def by (subst (asm) prefix_def) (auto intro!: prefix_up)
 
 lemma sorted_up: "sorted (up a xs)"
-  by (induction xs arbitrary: a) (auto dest: set_upD intro: less_imp_le simp: sorted_Cons)
+  by (induction xs arbitrary: a) (auto dest: set_upD intro: less_imp_le)
 
 
 subsection {* Define more functions on lazy lists as continuous extensions *}

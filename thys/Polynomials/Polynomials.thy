@@ -95,7 +95,7 @@ proof -
   from assms[unfolded monom_inv_def] 
   have "distinct (x # map fst m)" "sorted (x # map fst m)"  by auto
   with assms(2) have "y \<notin> set (map fst m)" unfolding M_def[symmetric]
-    by (induct M, auto simp: sorted_Cons)
+    by (induct M, auto)
   thus ?thesis by auto
 qed
 
@@ -115,14 +115,14 @@ next
   case (Cons xp m)
   obtain x p where xp: "xp = (x,p)" by (cases xp, auto)
   with Cons(2) have p: "0 < p" and x: "x \<notin> fst ` set m" and m: "monom_inv m" unfolding monom_inv_def 
-    by (auto simp: sorted_Cons)
+    by (auto)
   show ?case 
   proof (cases n)
     case Nil
     thus ?thesis by (auto simp: xp sum_var_list_def p intro!: exI[of _ x])
   next
     case n: (Cons yq n')
-    from Cons(3)[unfolded n] have n': "monom_inv n'" by (auto simp: monom_inv_def sorted_Cons)
+    from Cons(3)[unfolded n] have n': "monom_inv n'" by (auto simp: monom_inv_def)
     show ?thesis
     proof (cases "yq = xp")
       case True
@@ -263,10 +263,10 @@ proof (induct m1 m2 rule: monom_mult_list.induct)
     then obtain y q where id: "n' = ((y,q) # n)" by (cases yq, auto)
     from xpm have m: "monom_inv m" and p: "p > 0" and x: "x \<notin> fst ` set m" 
       and xm: "\<And> z. z \<in> fst ` set m \<Longrightarrow> x \<le> z" 
-      unfolding monom_inv_def by (auto simp: sorted_Cons)
+      unfolding monom_inv_def by (auto)
     from n'[unfolded id] have n: "monom_inv n" and q: "q > 0" and y: "y \<notin> fst ` set n" 
       and yn: "\<And> z. z \<in> fst ` set n \<Longrightarrow> y \<le> z" 
-      unfolding monom_inv_def by (auto simp: sorted_Cons)
+      unfolding monom_inv_def by (auto)
     show ?thesis
     proof (cases "x = y")
       case True
@@ -274,7 +274,7 @@ proof (induct m1 m2 rule: monom_mult_list.induct)
         by (simp add: id)
       from IH(1)[OF id refl True m n] have inv: "monom_inv (monom_mult_list m n)" by simp
       show ?thesis unfolding res using inv p x y True xm yn
-        by (fastforce simp add: monom_inv_def sorted_Cons monom_list_mult_list_vars)
+        by (fastforce simp add: monom_inv_def monom_list_mult_list_vars)
     next
       case False
       show ?thesis
@@ -284,7 +284,7 @@ proof (induct m1 m2 rule: monom_mult_list.induct)
           by (auto simp add: id)
         from IH(2)[OF id refl False True m n'] have inv: "monom_inv (monom_mult_list m n')" .
         show ?thesis unfolding res using inv p x y True xm yn unfolding id
-          by (fastforce simp add: monom_inv_def sorted_Cons monom_list_mult_list_vars)
+          by (fastforce simp add: monom_inv_def monom_list_mult_list_vars)
       next
         case gt: False
         with False have lt: "y < x" by auto        
@@ -297,14 +297,14 @@ proof (induct m1 m2 rule: monom_mult_list.induct)
         define xpm where "xpm = ((x,p) # m)" 
         have xpm': "fst ` set xpm = insert x (fst ` set m)" unfolding xpm_def by auto
         show ?thesis unfolding res using inv p q x y False gt ym lt xm yn' zm xpm' unfolding id xpm_def[symmetric]
-          by (auto simp add: monom_inv_def sorted_Cons monom_list_mult_list_vars)
+          by (auto simp add: monom_inv_def monom_list_mult_list_vars)
       qed
     qed
   qed
 qed auto
 
 lemma monom_inv_ConsD: "monom_inv (x # xs) \<Longrightarrow> monom_inv xs" 
-  by (auto simp: monom_inv_def sorted_Cons)
+  by (auto simp: monom_inv_def)
 
 lemma sum_var_list_monom_mult_list:  "sum_var_list (monom_mult_list m n) x = sum_var_list m x + sum_var_list n x"
 proof (induct m n rule: monom_mult_list.induct)

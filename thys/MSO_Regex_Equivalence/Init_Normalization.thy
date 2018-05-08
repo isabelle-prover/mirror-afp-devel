@@ -63,11 +63,11 @@ lemma set_merge_distinct[simp]: "set (merge_distinct xs ys) = set xs \<union> se
   by (induct xs ys rule: merge_distinct.induct) auto
 
 lemma sorted_merge_distinct[simp]: "\<lbrakk>sorted xs; sorted ys\<rbrakk> \<Longrightarrow> sorted (merge_distinct xs ys)"
-  by (induct xs ys rule: merge_distinct.induct) (auto simp: sorted_Cons)
+  by (induct xs ys rule: merge_distinct.induct) (auto)
 
 lemma distinct_merge_distinct[simp]: "\<lbrakk>sorted xs; distinct xs; sorted ys; distinct ys\<rbrakk> \<Longrightarrow>
   distinct (merge_distinct xs ys)"
-  by (induct xs ys rule: merge_distinct.induct) (auto simp: sorted_Cons)
+  by (induct xs ys rule: merge_distinct.induct) (auto)
 
 lemma sorted_list_of_set_merge_distinct[simp]: "\<lbrakk>sorted xs; distinct xs; sorted ys; distinct ys\<rbrakk> \<Longrightarrow>
   merge_distinct xs ys = sorted_list_of_set (set xs \<union> set ys)"

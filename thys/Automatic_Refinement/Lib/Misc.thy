@@ -1652,11 +1652,11 @@ qed
 
 lemma sorted_hd_last:
   "\<lbrakk>sorted l; l\<noteq>[]\<rbrakk> \<Longrightarrow> hd l \<le> last l"
-by (metis eq_iff hd_Cons_tl last_in_set not_hd_in_tl sorted_Cons)
+by (metis eq_iff hd_Cons_tl last_in_set not_hd_in_tl sorted.simps(2))
 
 lemma (in linorder) sorted_hd_min:
   "\<lbrakk>xs \<noteq> []; sorted xs\<rbrakk> \<Longrightarrow> \<forall>x \<in> set xs. hd xs \<le> x"
-by (induct xs, auto simp add: sorted_Cons)
+by (induct xs, auto)
 
 lemma sorted_append_bigger:
   "\<lbrakk>sorted xs; \<forall>x \<in> set xs. x \<le> y\<rbrakk> \<Longrightarrow> sorted (xs @ [y])"
@@ -1989,21 +1989,21 @@ by (induct l0) (simp_all)
 
 lemma (in linorder) sorted_by_rel_linord[simp]:
   "sorted_by_rel (\<le>) l \<longleftrightarrow> sorted l"
-  by (induct l) (auto simp: sorted_Cons)
+  by (induct l) (auto)
 
 lemma (in linorder) sorted_by_rel_rev_linord [simp] :
   "sorted_by_rel (\<ge>) l \<longleftrightarrow> sorted (rev l)"
-  by (induct l) (auto simp add: sorted_Cons sorted_append)
+  by (induct l) (auto simp add: sorted_append)
 
 lemma (in linorder) sorted_by_rel_map_linord [simp] :
   "sorted_by_rel (\<lambda>(x::'a \<times> 'b) y. fst x \<le> fst y) l
   \<longleftrightarrow> sorted (map fst l)"
-  by (induct l) (auto simp add: sorted_Cons sorted_append)
+  by (induct l) (auto simp add: sorted_append)
 
 lemma (in linorder) sorted_by_rel_map_rev_linord [simp] :
   "sorted_by_rel (\<lambda>(x::'a \<times> 'b) y. fst x \<ge> fst y) l
   \<longleftrightarrow> sorted (rev (map fst l))"
-  by (induct l) (auto simp add: sorted_Cons sorted_append)
+  by (induct l) (auto simp add: sorted_append)
 
     
 subsubsection {* Take and Drop *}
@@ -2413,7 +2413,7 @@ proof
   also have "\<dots> \<ge> i"
   proof -
     have "sorted (i#[k\<leftarrow>[Suc i..<length l] . P (l!k)])" (is "sorted ?l")
-      by (simp add: sorted_Cons sorted_filter[where f=id, simplified])
+      by (simp add: sorted_filter[where f=id, simplified])
     hence "hd ?l \<le> last ?l"
       by (rule sorted_hd_last) simp
     thus ?thesis by simp
@@ -2956,7 +2956,7 @@ next
   from x1_l1_props have l1_props: "distinct l1 \<and> sorted l1"
                     and x1_nin_l1: "x1 \<notin> set l1"
                     and x1_le: "\<And>x. x \<in> set l1 \<Longrightarrow> x1 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
   note ind_hyp_l1 = Cons(1)[OF l1_props]
 
@@ -2970,7 +2970,7 @@ next
     from x2_l2_props have l2_props: "distinct l2 \<and> sorted l2"
                     and x2_nin_l2: "x2 \<notin> set l2"
                     and x2_le: "\<And>x. x \<in> set l2 \<Longrightarrow> x2 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
     note ind_hyp_l2 = Cons(1)[OF l2_props]
     show ?case
@@ -2979,7 +2979,7 @@ next
 
       from ind_hyp_l1[OF x2_l2_props] x1_less_x2 x1_nin_l1 x1_le x2_le
       show ?thesis
-        apply (auto simp add: sorted_Cons Ball_def)
+        apply (auto simp add: Ball_def)
         apply (metis linorder_not_le)
         apply (metis linorder_not_less xt1(6) xt1(9))
       done
@@ -2991,14 +2991,14 @@ next
         case True note x1_eq_x2 = this
 
         from ind_hyp_l1[OF l2_props] x1_le x2_le x2_nin_l2 x1_eq_x2 x1_nin_l1
-        show ?thesis by (simp add: x1_eq_x2 sorted_Cons Ball_def)
+        show ?thesis by (simp add: x1_eq_x2 Ball_def)
       next
         case False note x1_neq_x2 = this
         with x2_le_x1 have x2_less_x1 : "x2 < x1" by auto
 
         from ind_hyp_l2 x2_le_x1 x1_neq_x2 x2_le x2_nin_l2 x1_le
         show ?thesis
-          apply (simp add: x2_less_x1 sorted_Cons Ball_def)
+          apply (simp add: x2_less_x1 Ball_def)
           apply (metis linorder_not_le x2_less_x1 xt1(7))
         done
       qed

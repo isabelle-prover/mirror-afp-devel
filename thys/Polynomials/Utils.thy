@@ -164,7 +164,7 @@ proof (induct xs)
 next
   case (Cons x xs)
   from Cons(2) have "sorted_wrt rel xs" and *: "\<forall>y\<in>set xs. rel x y"
-    by (simp_all add: sorted_wrt_Cons[OF assms(2)])
+    by (simp_all)
   from this(1) have "distinct xs" by (rule Cons(1))
   show ?case
   proof (simp add: \<open>distinct xs\<close>, rule)
@@ -192,17 +192,17 @@ next
     from step(2) have "x \<noteq> y" and 1: "distinct (y # zs)" by (simp_all add: Cons)
     from step(3) have "rel x y" and 2: "sorted_wrt rel (y # zs)" by (simp_all add: Cons)
     from 1 2 have "sorted_wrt (\<lambda>x y. rel x y \<and> x \<noteq> y) (y # zs)" by (rule step(1)[simplified Cons])
-    with \<open>x \<noteq> y\<close> \<open>rel x y\<close> show ?thesis by (simp add: Cons)
+    with \<open>x \<noteq> y\<close> \<open>rel x y\<close> show ?thesis using step.prems by (auto simp: Cons)
   qed
 qed
 
 lemma sorted_wrt_distinct_set_unique:
-  assumes "transp rel" and "antisymp rel"
+  assumes "antisymp rel"
   assumes "sorted_wrt rel xs" "distinct xs" "sorted_wrt rel ys" "distinct ys" "set xs = set ys"
   shows "xs = ys"
 proof -
   from assms have 1: "length xs = length ys" by (auto dest!: distinct_card)
-  from assms(3, 4, 5, 6, 7) show ?thesis
+  from assms(2-6) show ?thesis
   proof(induct rule:list_induct2[OF 1])
     case 1
     show ?case by simp
@@ -213,18 +213,18 @@ proof -
     have "x = y"
     proof (rule ccontr)
       assume "x \<noteq> y"
-      from 2(3) have "\<forall>z\<in>set xs. rel x z" by (simp add: sorted_wrt_Cons[OF assms(1)])
+      from 2(3) have "\<forall>z\<in>set xs. rel x z" by (simp)
       moreover from \<open>x \<noteq> y\<close> have "y \<in> set xs" using 2(7) by auto
       ultimately have *: "rel x y" ..
-      from 2(5) have "\<forall>z\<in>set ys. rel y z" by (simp add: sorted_wrt_Cons[OF assms(1)])
+      from 2(5) have "\<forall>z\<in>set ys. rel y z" by (simp)
       moreover from \<open>x \<noteq> y\<close> have "x \<in> set ys" using 2(7) by auto
       ultimately have "rel y x" ..
-      with assms(2) * have "x = y" by (rule antisympD)
+      with assms(1) * have "x = y" by (rule antisympD)
       with \<open>x \<noteq> y\<close> show False ..
     qed
-    from 2(3) have "sorted_wrt rel xs" by (simp add: sorted_wrt_Cons[OF assms(1)])
+    from 2(3) have "sorted_wrt rel xs" by (simp)
     moreover note \<open>distinct xs\<close>
-    moreover from 2(5) have "sorted_wrt rel ys" by (simp add: sorted_wrt_Cons[OF assms(1)])
+    moreover from 2(5) have "sorted_wrt rel ys" by (simp)
     moreover note \<open>distinct ys\<close>
     moreover from 2(7) \<open>x \<notin> set xs\<close> \<open>y \<notin> set ys\<close> have "set xs = set ys" by (auto simp add: \<open>x = y\<close>)
     ultimately have "xs = ys" by (rule 2(2))
@@ -241,7 +241,7 @@ proof (induct xs arbitrary: i j)
   from Nil(3) show ?case by simp
 next
   case (Cons x xs)
-  from assms(1) Cons(2) have "(\<forall>y\<in>set xs. P x y) \<and> sorted_wrt P xs" by (simp add: sorted_wrt_Cons)
+  from assms(1) Cons(2) have "(\<forall>y\<in>set xs. P x y) \<and> sorted_wrt P xs" by (simp)
   hence *: "\<And>y. y \<in> set xs \<Longrightarrow> P x y" and "sorted_wrt P xs" by auto
   from \<open>i < j\<close> have "0 < j" by simp
   then obtain j' where "j = Suc j'" using gr0_conv_Suc by blast
@@ -328,22 +328,22 @@ next
   proof (cases "x = y")
     case True
     show ?thesis
-    proof (simp add: True, rule sorted_wrt_ConsI)
+    proof (auto simp add: True)
       fix z
       assume "z \<in> set (merge_wrt rel xs ys)"
       hence "z \<in> set xs \<union> set ys" by (simp only: set_merge_wrt)
       thus "rel y z"
       proof
         assume "z \<in> set xs"
-        with 3(6) show ?thesis by (simp add: True sorted_wrt_Cons[OF 3(4)])
+        with 3(6) show ?thesis by (simp add: True)
       next
         assume "z \<in> set ys"
-        with 3(7) show ?thesis by (simp add: sorted_wrt_Cons[OF 3(4)])
+        with 3(7) show ?thesis by (simp)
       qed
     next
       note True 3(4, 5)
-      moreover from 3(6) have "sorted_wrt rel xs" by (simp add: sorted_wrt_Cons[OF 3(4)])
-      moreover from 3(7) have "sorted_wrt rel ys" by (simp add: sorted_wrt_Cons[OF 3(4)])
+      moreover from 3(6) have "sorted_wrt rel xs" by (simp)
+      moreover from 3(7) have "sorted_wrt rel ys" by (simp)
       ultimately show "sorted_wrt rel (merge_wrt rel xs ys)" by (rule 3(1))
     qed
   next
@@ -352,7 +352,7 @@ next
     proof (cases "rel x y")
       case True
       show ?thesis
-      proof (simp add: False True, rule sorted_wrt_ConsI)
+      proof (auto simp add: False True)
         fix z
         assume "z \<in> set (merge_wrt rel xs (y # ys))"
         hence "z \<in> insert y (set xs \<union> set ys)" by (simp add: set_merge_wrt)
@@ -365,16 +365,16 @@ next
           thus ?thesis
           proof
             assume "z \<in> set xs"
-            with 3(6) show ?thesis by (simp add: sorted_wrt_Cons[OF 3(4)])
+            with 3(6) show ?thesis by (simp)
           next
             assume "z \<in> set ys"
-            with 3(7) have "rel y z" by (simp add: sorted_wrt_Cons[OF 3(4)])
+            with 3(7) have "rel y z" by (simp)
             with 3(4) True show ?thesis by (rule transpD)
           qed
         qed
       next
         note False True 3(4, 5)
-        moreover from 3(6) have "sorted_wrt rel xs" by (simp add: sorted_wrt_Cons[OF 3(4)])
+        moreover from 3(6) have "sorted_wrt rel xs" by (simp)
         ultimately show "sorted_wrt rel (merge_wrt rel xs (y # ys))" using 3(7) by (rule 3(2))
       qed
     next
@@ -382,7 +382,7 @@ next
       from \<open>x \<noteq> y\<close> have "rel x y \<or> rel y x" by (rule 3(5))
       with \<open>\<not> rel x y\<close> have *: "rel y x" by simp
       show ?thesis
-      proof (simp add: False \<open>\<not> rel x y\<close>, rule sorted_wrt_ConsI)
+      proof (auto simp add: False \<open>\<not> rel x y\<close>)
         fix z
         assume "z \<in> set (merge_wrt rel (x # xs) ys)"
         hence "z \<in> insert x (set xs \<union> set ys)" by (simp add: set_merge_wrt)
@@ -395,16 +395,16 @@ next
           thus ?thesis
           proof
             assume "z \<in> set xs"
-            with 3(6) have "rel x z" by (simp add: sorted_wrt_Cons[OF 3(4)])
+            with 3(6) have "rel x z" by (simp)
             with 3(4) * show ?thesis by (rule transpD)
           next
             assume "z \<in> set ys"
-            with 3(7) show ?thesis by (simp add: sorted_wrt_Cons[OF 3(4)])
+            with 3(7) show ?thesis by (simp)
           qed
         qed
       next
         note False \<open>\<not> rel x y\<close> 3(4, 5, 6)
-        moreover from 3(7) have "sorted_wrt rel ys" by (simp add: sorted_wrt_Cons[OF 3(4)])
+        moreover from 3(7) have "sorted_wrt rel ys" by (simp)
         ultimately show "sorted_wrt rel (merge_wrt rel (x # xs) ys)" by (rule 3(3))
       qed
     qed

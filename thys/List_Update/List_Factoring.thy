@@ -2216,14 +2216,14 @@ subsection "Factoring Lemma"
 lemma cardofpairs: "S \<noteq> [] \<Longrightarrow> sorted S \<Longrightarrow> distinct S \<Longrightarrow> card {(x,y). x \<in> set S \<and> y\<in>set S \<and> x<y} = ((length S)*(length S-1)) / 2"
 proof (induct S rule: list_nonempty_induct)
   case (cons s ss)
-  then have "sorted ss" "distinct ss" using sorted_Cons by auto
+  then have "sorted ss" "distinct ss" by auto
   from cons(2)[OF this(1) this(2)] have iH: "card {(x, y) . x \<in> set ss \<and> y \<in> set ss \<and> x < y}
     = (length ss * (length ss-1)) / 2"
     by auto
 
   from cons have sss: "s \<notin> set ss" by auto
 
-  from cons  sorted_Cons have tt: "(\<forall>y\<in>set (s#ss). s \<le> y)" by auto
+  from cons have tt: "(\<forall>y\<in>set (s#ss). s \<le> y)" by auto
   with cons  have tt': "(\<forall>y\<in>set ss. s < y)"
   proof -
     from sss have "(\<forall>y\<in>set ss. s \<noteq> y)" by auto

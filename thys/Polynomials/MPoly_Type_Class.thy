@@ -3445,10 +3445,8 @@ proof -
 qed
 
 lemma Keys_to_list_eq_pps_to_list: "Keys_to_list ps = pps_to_list (Keys (set ps))"
-  using _ _ Keys_to_list_sorted_wrt distinct_Keys_to_list pps_to_list_sorted_wrt distinct_pps_to_list
+  using _ Keys_to_list_sorted_wrt distinct_Keys_to_list pps_to_list_sorted_wrt distinct_pps_to_list
 proof (rule sorted_wrt_distinct_set_unique)
-  show "transp (\<succ>)" unfolding transp_def by fastforce
-next
   show "antisymp (\<succ>)" unfolding antisymp_def by fastforce
 next
   from finite_set have fin: "finite (Keys (set ps))" by (rule finite_Keys)
