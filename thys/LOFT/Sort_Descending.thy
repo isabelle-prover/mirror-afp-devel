@@ -25,7 +25,7 @@ section\<open>sorting descending\<close>
   lemma sorted_descending: "sorted_descending (rev xs) \<longleftrightarrow> sorted xs"
   apply(induction xs)
    apply(simp)
-  apply(simp add: sorted_Cons sorted_descending_tail)
+  apply(auto simp add: sorted_descending_tail)
   done
   lemma sorted_descending_alt: "sorted_descending xs \<longleftrightarrow> sorted (rev xs)"
     using sorted_descending[of "rev xs"] unfolding rev_rev_ident .
