@@ -3661,7 +3661,7 @@ qed
 end
 
 lemma lsorted_llist_of[simp]: "lsorted (llist_of xs) \<longleftrightarrow> sorted xs"
-by(induct xs)(auto simp: lsorted_LCons sorted_Cons)
+by(induct xs)(auto simp: lsorted_LCons)
 
 subsection {* Lexicographic order on lazy lists: @{term "llexord"} *}
 

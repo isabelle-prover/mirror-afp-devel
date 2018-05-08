@@ -54,14 +54,14 @@ proof (induction xs arbitrary: i rule: list.induct)
   show ?case
   proof (cases i)
     case 0
-    thus ?thesis using Cons.prems by (auto simp: sorted_Cons filter_mset_is_empty_iff)
+    thus ?thesis using Cons.prems by (auto simp: filter_mset_is_empty_iff)
   next
     case (Suc i')
     have "{#y \<in># mset (x # xs). y < (x # xs) ! i#} \<subseteq># add_mset x {#y \<in># mset xs. y < xs ! i'#}"
-      using Suc Cons.prems by (auto simp: sorted_Cons)
+      using Suc Cons.prems by (auto)
     also have "\<dots> \<subseteq># add_mset x (mset (take i' xs))"
       unfolding mset_subset_eq_add_mset_cancel using Cons.prems Suc
-      by (intro Cons.IH) (auto simp: sorted_Cons)
+      by (intro Cons.IH) (auto)
     also have "\<dots> = mset (take i (x # xs))" by (simp add: Suc)
     finally show ?thesis .
   qed
@@ -80,9 +80,9 @@ proof (induction xs arbitrary: i rule: list.induct)
   next
     case (Suc i')
     have "{#y \<in># mset (x # xs). y > (x # xs) ! i#} \<subseteq># {#y \<in># mset xs. y > xs ! i'#}"
-      using Suc Cons.prems by (auto simp: sorted_Cons set_conv_nth)
+      using Suc Cons.prems by (auto simp: set_conv_nth)
     also have "\<dots> \<subseteq># mset (drop (Suc i') xs)"
-      using Cons.prems Suc by (intro Cons.IH) (auto simp: sorted_Cons)
+      using Cons.prems Suc by (intro Cons.IH) (auto)
     also have "\<dots> = mset (drop (Suc i) (x # xs))" by (simp add: Suc)
     finally show ?thesis .
   qed

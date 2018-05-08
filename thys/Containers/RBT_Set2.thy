@@ -113,7 +113,7 @@ lemma sorted_fst_foldr_Cons:
   "sorted (map f as) \<Longrightarrow> sorted (map f (foldr (\<lambda>x xs. if P x xs then x # xs else xs) as []))"
 proof(induct as)
   case (Cons a as)
-  with set_foldr_Cons[of P as] show ?case by(auto simp add: sorted_Cons)
+  with set_foldr_Cons[of P as] show ?case by(auto)
 qed simp
 
 lemma is_rbt_rbt_minus:

@@ -427,14 +427,14 @@ proof (induct pxs arbitrary: xs i p b)
       case (snoc pb' pxs)
       then obtain p' b' where "pb' = (p', b')" by auto
       with snoc.prems have "\<forall>p \<in> fst ` set pxs. p < p'" "p' \<le> Suc (length xs + length pxs)"
-        by (auto simp: image_iff sorted_Cons sorted_append le_eq_less_or_eq)
-      with snoc.prems show ?case by (intro snoc(1)) (auto simp: sorted_Cons sorted_append)
+        by (auto simp: image_iff sorted_append le_eq_less_or_eq)
+      with snoc.prems show ?case by (intro snoc(1)) (auto simp: sorted_append)
     qed auto
     with 0 Cons.prems show ?thesis unfolding fold.simps o_apply
-    by (intro invar_fold_insert_nth) (auto simp: sorted_Cons image_iff le_eq_less_or_eq nth_append)
+    by (intro invar_fold_insert_nth) (auto simp: image_iff le_eq_less_or_eq nth_append)
   next
     case (Suc n) with Cons.prems show ?thesis unfolding fold.simps
-      by (auto intro!: Cons(1) simp: sorted_Cons)
+      by (auto intro!: Cons(1))
   qed
 qed simp
 

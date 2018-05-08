@@ -103,11 +103,11 @@ proof
   proof (induct xs)
     case (Cons x xs) thus ?case by (cases xs) simp_all
   qed simp
-qed (induct xs rule: linked.induct, simp_all)
+qed (induct xs rule: linked.induct, auto)
 
 lemma (in linorder) linked_less_imp_sorted:
   "linked (<) xs \<Longrightarrow> sorted xs"
-  by (induct xs rule: linked.induct) simp_all
+  by (induct xs rule: linked.induct) auto
 
 abbreviation (in linorder) (input) lt :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b \<Rightarrow> bool" where
   "lt key x y \<equiv> key x < key y"
@@ -226,7 +226,7 @@ lemma set_merge_all[simp]:
 lemma sorted_merge[simp]:
   assumes "sorted (map key xs)" and "sorted (map key ys)"
   shows "sorted (map key (merge key xs ys))"
-  using assms by (induct xs ys rule: merge.induct) (auto simp: sorted_Cons)
+  using assms by (induct xs ys rule: merge.induct) (auto)
 
 lemma sorted_merge_pairs[simp]:
   assumes "\<forall>x\<in>set xs. sorted (map key x)"
@@ -286,7 +286,7 @@ lemma sorted_sequences:
 proof (induct key xs rule: sequences_induct)
   case (many key a b xs)
   thus ?case using sorted_rev_take_chain_gt_append[of key b "[a]" xs]
-    by (cases "le key a b") auto
+    by (cases "le key a b") (auto simp del: sorted.simps(2) simp add: sorted2_simps)
 qed simp_all
 
 lemma mset_sequences[simp]:
@@ -321,7 +321,7 @@ lemma merge_simp[simp]:
   assumes "sorted (map key xs)"
   shows "merge key xs (y#ys)
     = takeWhile (ge key y) xs @ y # merge key (dropWhile (ge key y) xs) ys"
-  using assms by (induct xs arbitrary: y ys) (auto simp: sorted_Cons)
+  using assms by (induct xs arbitrary: y ys) (auto)
 
 lemma sorted_map_dropWhile[simp]:
   assumes "sorted (map key xs)"

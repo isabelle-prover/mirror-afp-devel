@@ -198,7 +198,7 @@ lemma norm_ACI_if_nf_ACI: "nf_ACI \<phi> \<Longrightarrow> \<langle>\<phi>\<rang
   by (induct \<phi>)
     (auto simp: juncts_list_singleton juncts_eq_set_juncts_list nonempty_juncts_list
       NFOR_def NFAND_def nFOR_Cons nFAND_Cons nFOR_disjuncts nFAND_conjuncts
-      sorted_Cons sorted_list_of_set_sort_remdups distinct_remdups_id sorted_sort_id insort_is_Cons)
+      sorted_list_of_set_sort_remdups distinct_remdups_id sorted_sort_id insort_is_Cons)
 
 lemma norm_ACI_idem: "\<langle>\<langle>\<phi>\<rangle>\<rangle> = \<langle>\<phi>\<rangle>"
   by (metis nf_ACI_norm_ACI norm_ACI_if_nf_ACI)

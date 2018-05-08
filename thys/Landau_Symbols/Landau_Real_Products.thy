@@ -793,7 +793,7 @@ proof (standard, goal_cases)
     thus ?case by (simp add: smallomega_iff_smallo)
   next
     case (3 f g gs)
-    thus ?case by (auto simp: primfun_dominates sorted_Cons)
+    thus ?case by (auto simp: primfun_dominates)
   qed simp
 qed (auto simp: eval_primfun'_at_top)
 

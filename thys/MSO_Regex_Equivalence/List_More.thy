@@ -30,7 +30,7 @@ declare set_insort_key[simp]
 
 lemma insort_remdups[simp]: "\<lbrakk>sorted xs; a \<notin> set xs\<rbrakk> \<Longrightarrow> insort a (remdups xs) = remdups (insort a xs)"
 proof (induct xs)
-  case (Cons x xs) thus ?case by (cases xs) (auto simp: sorted_Cons)
+  case (Cons x xs) thus ?case by (cases xs) (auto)
 qed simp
 
 lemma remdups_insort[simp]: "a \<in> set xs \<Longrightarrow> remdups (insort a xs) = remdups xs"
@@ -40,7 +40,7 @@ lemma sort_remdups[simp]: "sort (remdups xs) = remdups (sort xs)"
   by (induct xs) auto
 
 lemma sort_map_insort[simp]: "sorted xs \<Longrightarrow> sort (map f (insort a xs)) = insort (f a) (sort (map f xs))"
-  by (induct xs) (auto simp: sorted_Cons insort_left_comm)
+  by (induct xs) (auto simp: insort_left_comm)
 
 lemma sort_map_sort[simp]: "sort (map f (sort xs)) = sort (map f xs)"
   by (induct xs) auto

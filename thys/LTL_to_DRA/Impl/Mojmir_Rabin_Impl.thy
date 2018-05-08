@@ -440,7 +440,7 @@ next
   have 1: "the (oldest_token q' n) \<le> the (oldest_token q n)"
     using nxt_run_sorted[of n, unfolded r_def[symmetric]] assms
     unfolding r_alt_def map_append list.map
-    unfolding sorted_append sorted_Cons by (simp del: oldest_token.simps)
+    unfolding sorted_append by (simp del: oldest_token.simps)
   have "q \<noteq> q'"
     using `distinct (r n)` r_alt_def by auto 
   moreover

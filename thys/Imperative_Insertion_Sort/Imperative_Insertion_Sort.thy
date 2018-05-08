@@ -251,7 +251,7 @@ next
         have "sorted (take j (drop 1 (Array.get h\<^sub>2 a)))"
         and "\<forall>x \<in> set (take j (drop 1 (Array.get h\<^sub>2 a))). key < x" by simp_all
       then have "sorted (key # take j (drop 1 (Array.get h\<^sub>2 a)))"
-        by (metis less_imp_le sorted_Cons)
+        by (metis less_imp_le sorted.simps(2))
       then show ?thesis by (simp add: *)
     next
       assume "0 < i' \<and> key \<ge> Array.get h\<^sub>2 a ! (i' - 1)"
@@ -263,7 +263,7 @@ next
         using sorted_take_nth [OF _ \<open>i' < length (Array.get h\<^sub>2 a)\<close>, of key]
         by (simp add: sorted_append)
       then show ?thesis
-        using shiftr by (auto simp: take_Suc_j sorted_append less_imp_le sorted_Cons)
+        using shiftr by (auto simp: take_Suc_j sorted_append less_imp_le)
     qed
   qed
   ultimately
@@ -428,7 +428,7 @@ next
         have "sorted (take j (drop 1 (Array.get h\<^sub>2 a)))"
         and "\<forall>x \<in> set (take j (drop 1 (Array.get h\<^sub>2 a))). key < x" by simp_all
       then have "sorted (key # take j (drop 1 (Array.get h\<^sub>2 a)))"
-        by (metis less_imp_le sorted_Cons)
+        by (metis less_imp_le sorted.simps(2))
       then show ?thesis by (simp add: *)
     next
       assume "0 < i' \<and> key \<ge> Array.get h\<^sub>2 a ! (i' - 1)"
@@ -440,7 +440,7 @@ next
         using sorted_take_nth [OF _ \<open>i' < length (Array.get h\<^sub>2 a)\<close>, of key]
         by (simp add: sorted_append)
       then show ?thesis
-        using shiftr by (auto simp: take_Suc_j sorted_append less_imp_le sorted_Cons)
+        using shiftr by (auto simp: take_Suc_j sorted_append less_imp_le)
     qed
   qed
   ultimately
