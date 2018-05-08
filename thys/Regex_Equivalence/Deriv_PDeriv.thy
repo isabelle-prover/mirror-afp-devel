@@ -160,7 +160,7 @@ proof (induct xs rule: list_singleton_induct)
     apply (auto simp: less_rexp_def less_eq_rexp_def)
     done
 next
-  case (cons y1 y2 ys) thus ?case unfolding is_Zero_def is_Plus_def sorted_Cons
+  case (cons y1 y2 ys) thus ?case unfolding is_Zero_def is_Plus_def
     apply (cases x)
     apply (metis UnCI insertI1)
     apply simp apply (metis antisym less_eq_rexp_def)

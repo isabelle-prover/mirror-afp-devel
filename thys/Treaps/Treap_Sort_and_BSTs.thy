@@ -75,7 +75,7 @@ proof -
       using arg_min_least assms by force
     ultimately have "linorder_class.sorted
         (p (arg_min_on p (set zs)) # map p (sort_key p (remove1 (arg_min_on p (set zs)) zs)))"
-      by (auto simp: sorted_Cons)
+      by (auto)
     then show ?thesis
       by (simp add: Let_def)
   qed
@@ -142,7 +142,7 @@ next
     have "linorder_class.sorted (map p (z#zs))"
       using assms by simp
     then have "linorder_class.sorted (map p zs)"
-      using sorted_Cons by auto
+      by auto
     then show ?thesis
       using h1 h2 sort_key_inj_key_eq by blast
   qed

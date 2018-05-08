@@ -130,7 +130,7 @@ definition "unambiguous_routing rtbl \<equiv> (\<forall>rt1 rt2 rr ra. rtbl = rt
 lemma unambiguous_routing_Cons: "unambiguous_routing (r # rtbl) \<Longrightarrow> unambiguous_routing rtbl"
   unfolding unambiguous_routing_def by(clarsimp) (metis append_Cons in_set_conv_decomp)
 lemma "unambiguous_routing (rr # rtbl) \<Longrightarrow> is_longest_prefix_routing (rr # rtbl) \<Longrightarrow> ra \<in> set rtbl \<Longrightarrow> routing_match rr = routing_match ra \<Longrightarrow> routing_rule_sort_key rr < routing_rule_sort_key ra"
-  unfolding is_longest_prefix_routing_def unambiguous_routing_def by(fastforce simp add: sorted_Cons)
+  unfolding is_longest_prefix_routing_def unambiguous_routing_def by(fastforce)
 primrec unambiguous_routing_code where
 "unambiguous_routing_code [] = True" |
 "unambiguous_routing_code (rr#rtbl) = (list_all (\<lambda>ra. routing_match rr \<noteq> routing_match ra \<or> routing_rule_sort_key rr \<noteq> routing_rule_sort_key ra) rtbl \<and> unambiguous_routing_code rtbl)"
@@ -168,7 +168,7 @@ lemma unambigous_prefix_routing_weak_mono:
   assumes lpfx: "is_longest_prefix_routing (rr#rtbl)"
   assumes e:"rr' \<in> set rtbl"
   shows "routing_rule_sort_key rr' \<ge> routing_rule_sort_key rr"
-using assms  by(simp add: linorder_class.sorted_Cons is_longest_prefix_routing_def)
+using assms  by(simp add: is_longest_prefix_routing_def)
 lemma unambigous_prefix_routing_strong_mono:
   assumes lpfx: "is_longest_prefix_routing (rr#rtbl)" 
   assumes uam: "unambiguous_routing (rr#rtbl)" 
@@ -202,7 +202,7 @@ next
     next
       case False
       with Cons.prems have mprems: "valid_prefixes rtbl" "is_longest_prefix_routing rtbl" "has_default_route rtbl" "unambiguous_routing rtbl" 
-        by(simp_all add: valid_prefixes_split unambiguous_routing_Cons is_longest_prefix_routing_def sorted_Cons)
+        by(simp_all add: valid_prefixes_split unambiguous_routing_Cons is_longest_prefix_routing_def)
       show ?thesis using Cons.IH[OF mprems] False \<open>\<not> prefix_match_semantics (routing_match rr) addr\<close> by simp
     qed
   next
@@ -212,7 +212,7 @@ next
       assume ?l
       hence [simp]: "act = routing_action rr" by(simp add: True)
       have *: "(\<forall>ra\<in>set (rr # rtbl). routing_rule_sort_key rr \<le> routing_rule_sort_key ra)"
-        using \<open>is_longest_prefix_routing (rr # rtbl)\<close>  by(clarsimp simp: is_longest_prefix_routing_def sorted_Cons)
+        using \<open>is_longest_prefix_routing (rr # rtbl)\<close>  by(clarsimp simp: is_longest_prefix_routing_def)
       thus ?r by(fastforce simp add: True)
     next
       assume ?r
