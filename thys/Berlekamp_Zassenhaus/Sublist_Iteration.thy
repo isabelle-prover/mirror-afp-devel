@@ -53,14 +53,10 @@ lemma Cons_mem_set_subseqs_Cons:
 
 lemma sorted_subseqs_sorted:
   "sorted xs \<Longrightarrow> ys \<in> set (subseqs xs) \<Longrightarrow> sorted ys"
-proof(induct xs arbitrary: ys rule: sorted.induct)
-  case 1 thus ?case by simp
+proof(induct xs arbitrary: ys)
+  case Nil thus ?case by simp
 next
-  case 2 thus ?case by auto
-next
-  case 3
-  thus ?case
-    apply (auto) by (meson order.trans image_eqI sorted_Cons)
+  case Cons thus ?case using subseqs_subset by fastforce
 qed
 
 
@@ -105,7 +101,7 @@ qed
 
 lemma Cons_mem_set_subseqs_sorted:
   "sorted xs \<Longrightarrow> y#ys \<in> set (subseqs xs) \<Longrightarrow> y#ys \<in> set (subseqs (filter (\<lambda>x. y \<le> x) xs))"
-by (induct xs) (auto simp: sorted_Cons Let_def)
+by (induct xs) (auto simp: Let_def)
 
 lemma subseqs_map[simp]: "subseqs (map f xs) = map (map f) (subseqs xs)" by (induct xs, auto)
 

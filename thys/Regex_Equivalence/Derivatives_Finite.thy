@@ -369,7 +369,7 @@ proof (induct xs rule: list_singleton_induct)
   thus ?case
     by (cases x y rule: linorder_cases) (induct x y rule: ACI_nPlus.induct, auto)+
 next
-  case (cons y1 y2 ys) thus ?case by (cases x) (auto simp: sorted_Cons)
+  case (cons y1 y2 ys) thus ?case by (cases x) (auto)
 qed simp
 
 lemma ACI_nPlus_PLUS:
