@@ -1323,6 +1323,10 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma Gramian_determinant_bound: assumes i: "ii < m" 
+  shows "gs.Gramian_determinant fs ii \<le> A^ii" 
+  using d_approx[OF assms] unfolding d_def by linarith
+
 
 lemma D_approx: "D fs \<le> A ^ (m * m)" 
 proof - 
