@@ -15,7 +15,7 @@ definition [simp]: "op_set_filter P s \<equiv> {x\<in>s. P x}"
 definition [simp]: "op_set_sel P s \<equiv> SPEC (\<lambda>x. x\<in>s \<and> P x)"
 definition [simp]: "op_set_pick s \<equiv> SPEC (\<lambda>x. x\<in>s)"
 definition [simp]: "op_set_to_sorted_list ordR s 
-  \<equiv> SPEC (\<lambda>l. set l = s \<and> distinct l \<and> sorted_by_rel ordR l)"
+  \<equiv> SPEC (\<lambda>l. set l = s \<and> distinct l \<and> sorted_wrt ordR l)"
 definition [simp]: "op_set_to_list s \<equiv> SPEC (\<lambda>l. set l = s \<and> distinct l)"
 definition [simp]: "op_set_cart x y \<equiv> x \<times> y"
 
@@ -58,30 +58,30 @@ lemma [autoref_op_pat]:
   by (auto intro!: eq_reflection)
 
   lemma [autoref_op_pat]:
-    "SPEC (\<lambda>l. set l = s \<and> distinct l \<and> sorted_by_rel ordR l) 
+    "SPEC (\<lambda>l. set l = s \<and> distinct l \<and> sorted_wrt ordR l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. set l = s \<and> sorted_by_rel ordR l \<and> distinct l) 
+    "SPEC (\<lambda>l. set l = s \<and> sorted_wrt ordR l \<and> distinct l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. distinct l \<and> set l = s \<and> sorted_by_rel ordR l) 
+    "SPEC (\<lambda>l. distinct l \<and> set l = s \<and> sorted_wrt ordR l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. distinct l \<and> sorted_by_rel ordR l \<and> set l = s) 
+    "SPEC (\<lambda>l. distinct l \<and> sorted_wrt ordR l \<and> set l = s) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. sorted_by_rel ordR l \<and> distinct l \<and> set l = s) 
+    "SPEC (\<lambda>l. sorted_wrt ordR l \<and> distinct l \<and> set l = s) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. sorted_by_rel ordR l \<and> set l = s \<and> distinct l) 
+    "SPEC (\<lambda>l. sorted_wrt ordR l \<and> set l = s \<and> distinct l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
 
-    "SPEC (\<lambda>l. s = set l \<and> distinct l \<and> sorted_by_rel ordR l) 
+    "SPEC (\<lambda>l. s = set l \<and> distinct l \<and> sorted_wrt ordR l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. s = set l \<and> sorted_by_rel ordR l \<and> distinct l) 
+    "SPEC (\<lambda>l. s = set l \<and> sorted_wrt ordR l \<and> distinct l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. distinct l \<and> s = set l \<and> sorted_by_rel ordR l) 
+    "SPEC (\<lambda>l. distinct l \<and> s = set l \<and> sorted_wrt ordR l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. distinct l \<and> sorted_by_rel ordR l \<and> s = set l) 
+    "SPEC (\<lambda>l. distinct l \<and> sorted_wrt ordR l \<and> s = set l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. sorted_by_rel ordR l \<and> distinct l \<and> s = set l) 
+    "SPEC (\<lambda>l. sorted_wrt ordR l \<and> distinct l \<and> s = set l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
-    "SPEC (\<lambda>l. sorted_by_rel ordR l \<and> s = set l \<and> distinct l) 
+    "SPEC (\<lambda>l. sorted_wrt ordR l \<and> s = set l \<and> distinct l) 
     \<equiv> OP (op_set_to_sorted_list ordR)$s"
 
     "SPEC (\<lambda>l. set l = s \<and> distinct l) \<equiv> op_set_to_list$s"

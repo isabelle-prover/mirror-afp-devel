@@ -644,7 +644,7 @@ proof -
     from M show "map_to_set m' = set (it_to_list iterateoi m)"
       by (simp add: M' map_of_map_to_set[OF D])
 
-    from S show "sorted_by_rel (key_rel (\<le>)) (it_to_list iterateoi m)"
+    from S show "sorted_wrt (key_rel (\<le>)) (it_to_list iterateoi m)"
       by (simp add: key_rel_def[abs_def])
 
   qed
@@ -688,15 +688,10 @@ proof -
     from M show "map_to_set m' = set (it_to_list rev_iterateoi m)"
       by (simp add: M' map_of_map_to_set[OF D])
 
-    from S show "sorted_by_rel (key_rel (\<ge>)) (it_to_list rev_iterateoi m)"
+    from S show "sorted_wrt (key_rel (\<ge>)) (it_to_list rev_iterateoi m)"
       by (simp add: key_rel_def[abs_def])
 
   qed
 qed
-
-
-
-
-
 
 end

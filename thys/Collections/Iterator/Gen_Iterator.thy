@@ -73,7 +73,7 @@ end
   lemma it_to_sorted_list_weaken: 
     "R\<le>R' \<Longrightarrow> it_to_sorted_list R s \<le> it_to_sorted_list R' s"
     unfolding it_to_sorted_list_def
-    by (auto intro!: sorted_by_rel_weaken[where R=R])
+    by (auto intro!: sorted_wrt_weaken[where R=R])
 
   lemma set_to_list_by_set_to_sorted_list[autoref_ga_rules]:
     assumes "GEN_ALGO_tag (is_set_to_sorted_list ordR Rk Rs tsl)"
@@ -90,10 +90,10 @@ end
 
 
   definition "det_fold_set R c f \<sigma> result \<equiv> 
-    \<forall>l. distinct l \<and> sorted_by_rel R l \<longrightarrow> foldli l c f \<sigma> = result (set l)"
+    \<forall>l. distinct l \<and> sorted_wrt R l \<longrightarrow> foldli l c f \<sigma> = result (set l)"
 
   lemma det_fold_setI[intro?]:
-    assumes "\<And>l. \<lbrakk>distinct l; sorted_by_rel R l\<rbrakk> 
+    assumes "\<And>l. \<lbrakk>distinct l; sorted_wrt R l\<rbrakk> 
       \<Longrightarrow> foldli l c f \<sigma> = result (set l)"
     shows "det_fold_set R c f \<sigma> result"
     using assms unfolding det_fold_set_def by auto
@@ -174,23 +174,23 @@ end
     by blast
 
   definition "det_fold_map R c f \<sigma> result \<equiv> 
-    \<forall>l. distinct (map fst l) \<and> sorted_by_rel (key_rel R) l 
+    \<forall>l. distinct (map fst l) \<and> sorted_wrt (key_rel R) l 
       \<longrightarrow> foldli l c f \<sigma> = result (map_of l)"
 
   lemma det_fold_mapI[intro?]:
-    assumes "\<And>l. \<lbrakk>distinct (map fst l); sorted_by_rel (key_rel R) l\<rbrakk> 
+    assumes "\<And>l. \<lbrakk>distinct (map fst l); sorted_wrt (key_rel R) l\<rbrakk> 
       \<Longrightarrow> foldli l c f \<sigma> = result (map_of l)"
     shows "det_fold_map R c f \<sigma> result"
     using assms unfolding det_fold_map_def by auto
 
   lemma det_fold_map_aux:
-    assumes 1: "\<lbrakk>distinct (map fst l); sorted_by_rel (key_rel R) l \<rbrakk>
+    assumes 1: "\<lbrakk>distinct (map fst l); sorted_wrt (key_rel R) l \<rbrakk>
       \<Longrightarrow> foldli l c f \<sigma> = result (map_of l)"
     assumes 2: "RETURN l \<le> it_to_sorted_list (key_rel R) (map_to_set m)"
     shows "foldli l c f \<sigma> = result m"
   proof -
     from 2 have "distinct l" and "set l = map_to_set m" 
-      and SORTED: "sorted_by_rel (key_rel R) l"
+      and SORTED: "sorted_wrt (key_rel R) l"
       unfolding it_to_sorted_list_def by simp_all
     hence "\<forall>(k,v)\<in>set l. \<forall>(k',v')\<in>set l. k=k' \<longrightarrow> v=v'"
       apply simp
