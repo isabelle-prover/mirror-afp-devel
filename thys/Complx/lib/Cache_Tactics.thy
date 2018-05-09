@@ -105,7 +105,7 @@ fun PARALLEL_GOALS_CACHE cache_id tac = if cache_id < 0 then
   (Synchronized.change pcaches (AList.map_default (op =) (~cache_id,Termtab.empty) (K Termtab.empty));PARALLEL_GOALS tac) else
   Thm.adjust_maxidx_thm ~1 #>
   (fn st =>
-    if not (Multithreading.enabled ()) orelse Thm.maxidx_of st >= 0 orelse Thm.nprems_of st <= 1
+    if not (Future.enabled ()) orelse Thm.maxidx_of st >= 0 orelse Thm.nprems_of st <= 1
     then DETERM tac st
     else
       let
