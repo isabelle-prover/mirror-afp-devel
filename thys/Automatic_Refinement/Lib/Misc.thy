@@ -1955,16 +1955,7 @@ lemma list_collect_set_as_map: "list_collect_set f l = \<Union>set (map f l)"
   by (unfold list_collect_set_def) auto
 
 subsubsection {* Sorted List with arbitrary Relations *}
-(*
-inductive sorted_wrt :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool" where
-  Nil [iff]: "sorted_wrt R []"
-| Cons: "\<forall>y\<in>set xs. R x y \<Longrightarrow> sorted_wrt R xs \<Longrightarrow> sorted_wrt R (x # xs)"
 
-inductive_simps sorted_wrt_Cons[iff] : "sorted_wrt R (x # xs)"
-
-lemma sorted_wrt_single [iff]:
-  "sorted_wrt R [x]" by simp
-*)
 lemma sorted_wrt_weaken :
 assumes R_weaken: "\<And>x y. \<lbrakk>x \<in> set l0; y \<in> set l0; R x y\<rbrakk> \<Longrightarrow> R' x y"
     and sort: "sorted_wrt R l0"
@@ -1972,25 +1963,14 @@ shows "sorted_wrt R' l0"
 using assms
 by (induct l0) (simp_all)
 
-
 lemma sorted_wrt_map :
   "sorted_wrt R (map f xs) = sorted_wrt (\<lambda>x y. R (f x) (f y)) xs"
 by (induct xs) auto
-(*
-lemma sorted_wrt_append :
-  "sorted_wrt R (xs @ ys) =
-   (sorted_wrt R xs \<and> sorted_wrt R ys \<and>
-    (\<forall>x \<in> set xs. \<forall>y\<in> set ys. R x y))"
-by (induct xs) auto
-*)
+
 lemma sorted_wrt_true [simp] :
   "sorted_wrt (\<lambda>_ _. True) l0"
 by (induct l0) (simp_all)
-(*
-lemma (in linorder) sorted_wrt_linord[simp]:
-  "sorted_wrt (\<le>) l \<longleftrightarrow> sorted l"
-  by (induct l) (auto)
-*)
+
 lemma (in linorder) sorted_wrt_rev_linord [simp] :
   "sorted_wrt (\<ge>) l \<longleftrightarrow> sorted (rev l)"
 by (simp add: sorted_sorted_wrt sorted_wrt_rev)
