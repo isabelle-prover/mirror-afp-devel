@@ -423,13 +423,13 @@ begin
   theorem fair:
     assumes RUN: "A.is_run s"
     assumes ACQ: "t<N" "tts (s i) t=INIT" "is_WAIT (tts (s (Suc i)) t)" 
-      -- \<open>Thread \<open>t\<close> calls \<open>acquire\<close> in step \<open>i\<close>\<close>
+      \<comment> \<open>Thread \<open>t\<close> calls \<open>acquire\<close> in step \<open>i\<close>\<close>
     assumes HOLD: "i<j" "is_HOLD (tts (s j) t)" 
-      -- \<open>Thread \<open>t\<close> holds lock in step \<open>j\<close>\<close>
+      \<comment> \<open>Thread \<open>t\<close> holds lock in step \<open>j\<close>\<close>
     assumes WAIT: "t'<N" "is_WAIT (tts (s i) t')" 
-      -- \<open>Thread \<open>t'\<close> waits for lock at step \<open>i\<close>\<close>
+      \<comment> \<open>Thread \<open>t'\<close> waits for lock at step \<open>i\<close>\<close>
     obtains l where "i<l" "l<j" "is_HOLD (tts (s l) t')" 
-      -- \<open>Then, \<open>t'\<close> gets lock earlier\<close>
+      \<comment> \<open>Then, \<open>t'\<close> gets lock earlier\<close>
   proof -  
     obtain k where Wk: "tts (s (Suc i)) t = WAIT k" using ACQ
       by (cases "tts (s (Suc i)) t") auto
@@ -581,7 +581,7 @@ begin
         
         have "A.can_step tt (s i)" by (simp add: never_blocked)
         hence ?case proof (cases rule: A.rstep_cases)
-          case (other t') -- \<open>Another thread than \<open>tt\<close> makes a step.\<close>
+          case (other t') \<comment> \<open>Another thread than \<open>tt\<close> makes a step.\<close>
           
           text \<open>The current ticket and \<open>tt\<close>'s state remain the same\<close>
           hence [simp]: "c' = c \<and> ts' tt = ts tt"
@@ -602,11 +602,11 @@ begin
           with less.IH[of "Suc i"] \<open>t<N\<close> show ?thesis
             apply (auto) using Suc_lessD by blast
         next
-          case THIS: this -- \<open>The thread \<open>tt\<close> that uses the current ticket makes a step\<close>
+          case THIS: this \<comment> \<open>The thread \<open>tt\<close> that uses the current ticket makes a step\<close>
 
           show ?thesis 
           proof (cases "\<exists>k'. ts tt = REL k'")
-            case True -- \<open>\<open>tt\<close> has finished releasing the lock \<close>
+            case True \<comment> \<open>\<open>tt\<close> has finished releasing the lock \<close>
             then have [simp]: "ts tt = REL c"
               using UTT by auto
             
@@ -629,7 +629,7 @@ begin
             with less.IH[of "Suc i"] \<open>t<N\<close> show ?thesis
               apply (auto) using Suc_lessD by blast
           next
-            case False -- \<open>\<open>tt\<close> has acquired the lock, or started releasing it\<close>
+            case False \<comment> \<open>\<open>tt\<close> has acquired the lock, or started releasing it\<close>
             
             text \<open>Hence, current remains the same, but the weight of \<open>tt\<close> decreases\<close>
             hence [simp]: "
@@ -1266,13 +1266,13 @@ subsection \<open>Main Theorems\<close> text_raw \<open>\label{sec:main_theorems
   theorem final_fair:
     assumes RUN: "C.is_run s"
     assumes ACQ: "t<N" and "tts (s i) t=INIT" and "is_WAIT (tts (s (Suc i)) t)" 
-      -- \<open>Thread \<open>t\<close> draws ticket in step \<open>i\<close>\<close>
+      \<comment> \<open>Thread \<open>t\<close> draws ticket in step \<open>i\<close>\<close>
     assumes HOLD: "i<j" and "is_HOLD (tts (s j) t)" 
-      -- \<open>Thread \<open>t\<close> holds lock in step \<open>j\<close>\<close>
+      \<comment> \<open>Thread \<open>t\<close> holds lock in step \<open>j\<close>\<close>
     assumes WAIT: "t'<N" and "is_WAIT (tts (s i) t')" 
-      -- \<open>Thread \<open>t'\<close> waits for lock at step \<open>i\<close>\<close>
+      \<comment> \<open>Thread \<open>t'\<close> waits for lock at step \<open>i\<close>\<close>
     obtains l where "i<l" and "l<j" and "is_HOLD (tts (s l) t')" 
-      -- \<open>Then, \<open>t'\<close> gets lock earlier\<close>
+      \<comment> \<open>Then, \<open>t'\<close> gets lock earlier\<close>
     using RUN
   proof (rule sim.xfer_run)
     fix as

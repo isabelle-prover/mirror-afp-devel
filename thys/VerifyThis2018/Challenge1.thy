@@ -146,7 +146,7 @@ begin
     "insert x (BUF a b) = BUF (a@[x]) b"
   primrec delete :: "'a textbuffer \<Rightarrow> 'a textbuffer" where
     "delete (BUF a b) = BUF (butlast a) b" 
-    -- \<open>Note that @{lemma \<open>butlast [] = []\<close> by simp} in Isabelle\<close>
+   \<comment> \<open>Note that @{lemma \<open>butlast [] = []\<close> by simp} in Isabelle\<close>
 
   text \<open>We can also assign them a meaning wrt position and text\<close>  
   
@@ -155,7 +155,7 @@ begin
   lemma empty_text[simp]: "get_text empty = []"
     unfolding empty_def by auto
   lemma move_left_pos[simp]: "get_pos (move_left b) = get_pos b - 1" 
-    -- \<open>Note that @{lemma \<open>0-(1::nat)=0\<close> by simp} in Isabelle\<close>
+    \<comment> \<open>Note that @{lemma \<open>0-(1::nat)=0\<close> by simp} in Isabelle\<close>
     by (cases b) auto
   lemma move_left_text[simp]: "get_text (move_left b) = get_text b"  
     by (cases b) auto
@@ -354,7 +354,7 @@ subsection \<open>Imperative Arrays and Executable Code\<close>
     sepref_definition insert_impl 
       is "uncurry insert1" :: "id_assn\<^sup>k*\<^sub>agap_impl_assn\<^sup>d\<rightarrow>\<^sub>agap_impl_assn"
       unfolding insert1_def grow1_def by sepref 
-      -- \<open>We inline @{const grow1} here\<close>
+      \<comment> \<open>We inline @{const grow1} here\<close>
     sepref_decl_impl insert_impl: insert_impl.refine[FCOMP insert1_correct] .
     
     sepref_definition delete_impl 

@@ -201,7 +201,7 @@ begin
           " (is "?A = ?B \<union> ?D \<union> ?C")
       using \<open>n > 3\<close> by (subst valid_split) auto
   
-    let ?B1 = "(op # B) ` {l. length l = n - Suc 0 \<and> valid l}"
+    let ?B1 = "((#) B) ` {l. length l = n - Suc 0 \<and> valid l}"
     from \<open>n > 3\<close> have "?B = ?B1"
       apply safe
       subgoal for l

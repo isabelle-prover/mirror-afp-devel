@@ -11,7 +11,7 @@ text \<open>Small specification of textbuffer ADT,
 subsection \<open>Abstract Specification\<close>
 
   datatype 'a textbuffer = BUF ("pos": "nat") ("text": "'a list")
-  -- \<open>Note that we do not model the abstract invariant --- pos in range --- here,
+  \<comment> \<open>Note that we do not model the abstract invariant --- pos in range --- here,
     as it is not strictly required for the challenge spec.\<close>
 
   text \<open>These are the operations that were specified in the challenge.
@@ -93,7 +93,7 @@ subsection \<open>Refinement 1: List with Gap\<close>
     b \<leftarrow> mop_list_blit buf r b (r+K) (length buf - r);
     RETURN (l,r+K,b)
   }"
-  -- \<open>Note: Most operations have also a variant prefixed with \<open>mop\<close>.
+  \<comment> \<open>Note: Most operations have also a variant prefixed with \<open>mop\<close>.
     These are defined in the refinement monad and already contain the assertion 
     of their precondition. The backside is that they cannot be easily used in as part
     of expressions, e.g., in @{term "buf[l:=buf!r]"}, we would have to explicitly bind
@@ -101,7 +101,7 @@ subsection \<open>Refinement 1: List with Gap\<close>
   \<close>
   
   lemma grow1_correct[THEN SPEC_trans, refine_vcg]: 
-    -- \<open>Declares this as a rule to be used by the VCG\<close>
+    \<comment> \<open>Declares this as a rule to be used by the VCG\<close>
     assumes "gap_invar gb"
     shows "grow1 K gb \<le> (SPEC (\<lambda>gb'. 
         gap_invar gb' 
@@ -126,7 +126,7 @@ subsection \<open>Refinement 1: List with Gap\<close>
     "(insert1,RETURN oo insert) \<in> Id \<rightarrow> gap_rel \<rightarrow> \<langle>gap_rel\<rangle>nres_rel"
     apply clarsimp
     unfolding insert1_def
-    apply refine_vcg -- \<open>VCG knows the rule for grow1 already\<close>
+    apply refine_vcg \<comment> \<open>VCG knows the rule for grow1 already\<close>
     unfolding insert_def gap_\<alpha>_def gap_invar_def can_insert_def
     apply (auto simp: in_br_conv take_update_last split: prod.split)
     done
@@ -161,7 +161,7 @@ subsection \<open>Imperative Arrays\<close>
   sepref_definition insert_impl 
     is "uncurry insert1" :: "id_assn\<^sup>k*\<^sub>agap_impl_assn\<^sup>d\<rightarrow>\<^sub>agap_impl_assn"
     unfolding insert1_def grow1_def by sepref 
-    -- \<open>We inline @{const grow1} here\<close>
+    \<comment> \<open>We inline @{const grow1} here\<close>
     
   sepref_definition delete_impl 
     is delete1 :: "gap_impl_assn\<^sup>d\<rightarrow>\<^sub>agap_impl_assn"
@@ -170,7 +170,7 @@ subsection \<open>Imperative Arrays\<close>
   
   text \<open>Finally, we combine the two refinement steps, to get overall correctness theorems\<close>  
   definition "gap_assn \<equiv> hr_comp gap_impl_assn gap_rel" 
-    -- \<open>@{const hr_comp} is composition of refinement relations\<close>
+    \<comment> \<open>@{const hr_comp} is composition of refinement relations\<close>
   context notes gap_assn_def[symmetric,fcomp_norm_unfold] begin
     lemmas move_left_impl_correct = move_left_impl.refine[FCOMP move_left1_correct]
        and move_right_impl_correct = move_right_impl.refine[FCOMP move_right1_correct]
