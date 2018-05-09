@@ -1955,55 +1955,55 @@ lemma list_collect_set_as_map: "list_collect_set f l = \<Union>set (map f l)"
   by (unfold list_collect_set_def) auto
 
 subsubsection {* Sorted List with arbitrary Relations *}
+(*
+inductive sorted_wrt :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool" where
+  Nil [iff]: "sorted_wrt R []"
+| Cons: "\<forall>y\<in>set xs. R x y \<Longrightarrow> sorted_wrt R xs \<Longrightarrow> sorted_wrt R (x # xs)"
 
-inductive sorted_by_rel :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool" where
-  Nil [iff]: "sorted_by_rel R []"
-| Cons: "\<forall>y\<in>set xs. R x y \<Longrightarrow> sorted_by_rel R xs \<Longrightarrow> sorted_by_rel R (x # xs)"
+inductive_simps sorted_wrt_Cons[iff] : "sorted_wrt R (x # xs)"
 
-inductive_simps sorted_by_rel_Cons[iff] : "sorted_by_rel R (x # xs)"
-
-lemma sorted_by_rel_single [iff]:
-  "sorted_by_rel R [x]" by simp
-
-lemma sorted_by_rel_weaken :
+lemma sorted_wrt_single [iff]:
+  "sorted_wrt R [x]" by simp
+*)
+lemma sorted_wrt_weaken :
 assumes R_weaken: "\<And>x y. \<lbrakk>x \<in> set l0; y \<in> set l0; R x y\<rbrakk> \<Longrightarrow> R' x y"
-    and sort: "sorted_by_rel R l0"
-shows "sorted_by_rel R' l0"
+    and sort: "sorted_wrt R l0"
+shows "sorted_wrt R' l0"
 using assms
 by (induct l0) (simp_all)
 
 
-lemma sorted_by_rel_map :
-  "sorted_by_rel R (map f xs) = sorted_by_rel (\<lambda>x y. R (f x) (f y)) xs"
+lemma sorted_wrt_map :
+  "sorted_wrt R (map f xs) = sorted_wrt (\<lambda>x y. R (f x) (f y)) xs"
 by (induct xs) auto
-
-lemma sorted_by_rel_append :
-  "sorted_by_rel R (xs @ ys) =
-   (sorted_by_rel R xs \<and> sorted_by_rel R ys \<and>
+(*
+lemma sorted_wrt_append :
+  "sorted_wrt R (xs @ ys) =
+   (sorted_wrt R xs \<and> sorted_wrt R ys \<and>
     (\<forall>x \<in> set xs. \<forall>y\<in> set ys. R x y))"
 by (induct xs) auto
-
-lemma sorted_by_rel_true [simp] :
-  "sorted_by_rel (\<lambda>_ _. True) l0"
+*)
+lemma sorted_wrt_true [simp] :
+  "sorted_wrt (\<lambda>_ _. True) l0"
 by (induct l0) (simp_all)
-
-lemma (in linorder) sorted_by_rel_linord[simp]:
-  "sorted_by_rel (\<le>) l \<longleftrightarrow> sorted l"
+(*
+lemma (in linorder) sorted_wrt_linord[simp]:
+  "sorted_wrt (\<le>) l \<longleftrightarrow> sorted l"
   by (induct l) (auto)
+*)
+lemma (in linorder) sorted_wrt_rev_linord [simp] :
+  "sorted_wrt (\<ge>) l \<longleftrightarrow> sorted (rev l)"
+by (simp add: sorted_sorted_wrt sorted_wrt_rev)
 
-lemma (in linorder) sorted_by_rel_rev_linord [simp] :
-  "sorted_by_rel (\<ge>) l \<longleftrightarrow> sorted (rev l)"
-  by (induct l) (auto simp add: sorted_append)
-
-lemma (in linorder) sorted_by_rel_map_linord [simp] :
-  "sorted_by_rel (\<lambda>(x::'a \<times> 'b) y. fst x \<le> fst y) l
+lemma (in linorder) sorted_wrt_map_linord [simp] :
+  "sorted_wrt (\<lambda>(x::'a \<times> 'b) y. fst x \<le> fst y) l
   \<longleftrightarrow> sorted (map fst l)"
-  by (induct l) (auto simp add: sorted_append)
+by (simp add: sorted_sorted_wrt sorted_wrt_map)
 
-lemma (in linorder) sorted_by_rel_map_rev_linord [simp] :
-  "sorted_by_rel (\<lambda>(x::'a \<times> 'b) y. fst x \<ge> fst y) l
+lemma (in linorder) sorted_wrt_map_rev_linord [simp] :
+  "sorted_wrt (\<lambda>(x::'a \<times> 'b) y. fst x \<ge> fst y) l
   \<longleftrightarrow> sorted (rev (map fst l))"
-  by (induct l) (auto simp add: sorted_append)
+by (induct l) (auto simp add: sorted_append)
 
     
 subsubsection {* Take and Drop *}
@@ -2664,11 +2664,11 @@ qed
 lemma set_quicksort_by_rel [simp]: "set (quicksort_by_rel R sl xs) = set (xs @ sl)"
   unfolding set_mset_comp_mset [symmetric] o_apply by simp
 
-lemma sorted_by_rel_quicksort_by_rel:
+lemma sorted_wrt_quicksort_by_rel:
   fixes R:: "'x \<Rightarrow> 'x \<Rightarrow> bool"
   assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
       and trans_R: "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
-  shows "sorted_by_rel R (quicksort_by_rel R [] xs)"
+  shows "sorted_wrt R (quicksort_by_rel R [] xs)"
 proof (induct xs rule: measure_induct_rule[of "length"])
   case (less xs)
   note ind_hyp = this
@@ -2698,15 +2698,15 @@ proof (induct xs rule: measure_induct_rule[of "length"])
 
     note ind_hyps = ind_hyp[OF length_le(1)] ind_hyp[OF length_le(2)]
     thus ?thesis
-      by (simp add: quicksort_by_rel_remove_acc_guared sorted_by_rel_append Ball_def
+      by (simp add: quicksort_by_rel_remove_acc_guared sorted_wrt_append Ball_def
                     xs1_props xs2_props' xs1_props')
   qed
 qed
 
 lemma sorted_quicksort_by_rel:
   "sorted (quicksort_by_rel (\<le>) [] xs)"
-unfolding sorted_by_rel_linord[symmetric]
-by (rule sorted_by_rel_quicksort_by_rel) auto
+unfolding sorted_sorted_wrt
+by (rule sorted_wrt_quicksort_by_rel) auto
 
 lemma sort_quicksort_by_rel:
   "sort = quicksort_by_rel (\<le>) []"
@@ -2811,11 +2811,11 @@ lemma set_mergesort_by_rel_merge [simp]:
   "set (mergesort_by_rel_merge R xs ys) = set xs \<union> set ys"
   by (induct R xs ys rule: mergesort_by_rel_merge.induct) auto
 
-lemma sorted_by_rel_mergesort_by_rel_merge [simp]:
+lemma sorted_wrt_mergesort_by_rel_merge [simp]:
   assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
       and trans_R: "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
-  shows  "sorted_by_rel R (mergesort_by_rel_merge R xs ys) \<longleftrightarrow>
-          sorted_by_rel R xs \<and> sorted_by_rel R ys"
+  shows  "sorted_wrt R (mergesort_by_rel_merge R xs ys) \<longleftrightarrow>
+          sorted_wrt R xs \<and> sorted_wrt R ys"
 proof (induct xs ys rule: mergesort_by_rel_merge_induct[where R = R])
   case Nil1 thus ?case by simp
 next
@@ -2885,11 +2885,11 @@ qed
 lemma set_mergesort_by_rel [simp]: "set (mergesort_by_rel R xs) = set xs"
   unfolding set_mset_comp_mset [symmetric] o_apply by simp
 
-lemma sorted_by_rel_mergesort_by_rel:
+lemma sorted_wrt_mergesort_by_rel:
   fixes R:: "'x \<Rightarrow> 'x \<Rightarrow> bool"
   assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
       and trans_R: "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
-  shows "sorted_by_rel R (mergesort_by_rel R xs)"
+  shows "sorted_wrt R (mergesort_by_rel R xs)"
 proof (induct xs rule: measure_induct_rule[of "length"])
   case (less xs)
   note ind_hyp = this
@@ -2910,15 +2910,15 @@ proof (induct xs rule: measure_induct_rule[of "length"])
         by (simp_all add: mergesort_by_rel_split_length)
       with ind_hyp show ?thesis
         unfolding mergesort_by_rel.simps[of _ xs]
-        by (simp add: sorted_by_rel_mergesort_by_rel_merge[OF lin trans_R])
+        by (simp add: sorted_wrt_mergesort_by_rel_merge[OF lin trans_R])
     qed
   qed
 qed
 
 lemma sorted_mergesort_by_rel:
   "sorted (mergesort_by_rel (\<le>) xs)"
-unfolding sorted_by_rel_linord[symmetric]
-by (rule sorted_by_rel_mergesort_by_rel) auto
+unfolding sorted_sorted_wrt
+by (rule sorted_wrt_mergesort_by_rel) auto
 
 lemma sort_mergesort_by_rel:
   "sort = mergesort_by_rel (\<le>)"

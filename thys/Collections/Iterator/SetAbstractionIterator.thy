@@ -21,7 +21,7 @@ locale set_iterator_abs_genord =
   assumes foldli_transform:
     "\<exists>lc. (\<forall>xc \<in> set lc. invar xc) \<and> 
           distinct (map \<alpha> lc) \<and> S0 = set (map \<alpha> lc) \<and> 
-          sorted_by_rel R (map \<alpha> lc) \<and> iti = foldli lc"
+          sorted_wrt R (map \<alpha> lc) \<and> iti = foldli lc"
 begin
   text {* In the simplest case, the function used for iteration does not depend on
     the representation, but just the abstract values. In this case, the \emph{normal} iterators
@@ -34,7 +34,7 @@ begin
     from foldli_transform obtain lc where 
           lc_invar: "\<And>xc. xc \<in> set lc \<Longrightarrow> invar xc" 
       and \<alpha>_props: "distinct (map \<alpha> lc)" "S0 = set (map \<alpha> lc)" 
-                   "sorted_by_rel R (map \<alpha> lc)" 
+                   "sorted_wrt R (map \<alpha> lc)" 
       and iti_eq: "iti = foldli lc" by blast
 
     from \<alpha>_props have "set_iterator_genord (foldli (map \<alpha> lc)) S0 R"
@@ -57,11 +57,11 @@ begin
     from foldli_transform obtain lc where 
           lc_invar: "\<And>xc. xc \<in> set lc \<Longrightarrow> invar xc" 
       and \<alpha>_props: "distinct (map \<alpha> lc)" "S0 = set (map \<alpha> lc)" 
-                   "sorted_by_rel R (map \<alpha> lc)" 
+                   "sorted_wrt R (map \<alpha> lc)" 
       and iti_eq: "iti = foldli lc" by blast
     from \<alpha>_props have it': "set_iterator_genord iti (set lc) (\<lambda>x y. R (\<alpha> x) (\<alpha> y))"
       apply (rule_tac set_iterator_genord_I [of lc])  
-      apply (simp_all add: distinct_map sorted_by_rel_map iti_eq)
+      apply (simp_all add: distinct_map sorted_wrt_map iti_eq)
     done
 
     from \<alpha>_props show ?thesis
@@ -226,18 +226,18 @@ lemma set_iterator_abs_genord_I2 :
   proof -
     from it_OK obtain l0 where dist_l0: "distinct l0" and 
           S0_eq: "S0 = set l0" and 
-          sort_Rc: "sorted_by_rel Rc l0"  and iti_eq: "iti = foldli l0" 
+          sort_Rc: "sorted_wrt Rc l0"  and iti_eq: "iti = foldli l0" 
       unfolding set_iterator_genord_def by auto
 
     have "set l0 \<subseteq> S0" unfolding S0_eq by simp
     with dist_l0 sort_Rc 
-    have map_props: "distinct (map \<alpha> l0) \<and> sorted_by_rel Ra (map \<alpha> l0)"
+    have map_props: "distinct (map \<alpha> l0) \<and> sorted_wrt Ra (map \<alpha> l0)"
     proof (induct l0) 
       case Nil thus ?case by simp
     next
       case (Cons x l0)
       hence "distinct l0" and "x \<notin> set l0" and "x \<in> S0" and "set l0 \<subseteq> S0" and
-            "distinct (map \<alpha> l0)" "sorted_by_rel Ra (map \<alpha> l0)" "\<And>x'. x' \<in> set l0 \<Longrightarrow> Rc x x'"
+            "distinct (map \<alpha> l0)" "sorted_wrt Ra (map \<alpha> l0)" "\<And>x'. x' \<in> set l0 \<Longrightarrow> Rc x x'"
         by (simp_all)
       thus ?case using dist[of x] R_OK[of x] invar 
         apply (simp add: image_iff Ball_def subset_iff)
@@ -301,7 +301,7 @@ lemma map_iterator_abs_genord_remove_abs2 :
     from set_iterator_abs_genord.foldli_transform [OF iti[unfolded map_iterator_abs_genord_def]]
     obtain lc where lc_invar: "\<And>k v. (k, v) \<in> set lc \<Longrightarrow> invar v" 
       and \<alpha>_props: "distinct (map ?\<alpha>' lc)" "map_to_set m = set (map ?\<alpha>' lc)" 
-                   "sorted_by_rel R (map ?\<alpha>' lc)" 
+                   "sorted_wrt R (map ?\<alpha>' lc)" 
       and iti_eq: "iti = foldli lc" by blast
 
     from \<alpha>_props(2)[symmetric] have in_lc: "\<And>k v. (k, v) \<in> set lc \<Longrightarrow> m k = Some (\<alpha> v)" 
@@ -318,7 +318,7 @@ lemma map_iterator_abs_genord_remove_abs2 :
 
     from \<alpha>_props have it': "map_iterator_genord iti ?m' (\<lambda>x y. R (?\<alpha>' x) (?\<alpha>' y))"
       apply (rule_tac set_iterator_genord_I [of lc])  
-      apply (simp_all add: distinct_map sorted_by_rel_map iti_eq map_to_set_map_of inj_on_fst)
+      apply (simp_all add: distinct_map sorted_wrt_map iti_eq map_to_set_map_of inj_on_fst)
     done
 
     from inj_on_fst \<alpha>_props(1)
