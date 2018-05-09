@@ -714,9 +714,9 @@ subsubsection \<open>Simulation\<close>
     by (meson dvd_eq_mod_eq_0 mod_mod_cancel mod_mult_self2_is_0)
 
   lemma mod_eq_imp_eq_aux: "b mod N = (a::nat) mod N \<Longrightarrow> a\<le>b \<Longrightarrow> b<a+N \<Longrightarrow> b=a"  
-    by (metis Divides.mod_less Groups.add_ac(2) add_0_right 
+    by (metis Groups.add_ac add_0_right 
       le_add_diff_inverse less_diff_conv2 nat_minus_mod 
-      nat_minus_mod_plus_right)
+      nat_minus_mod_plus_right mod_if)
     
   lemma mod_eq_imp_eq: 
     "\<lbrakk>b \<le> x; x < b + N; b \<le> y; y < b + N; x mod N = y mod N \<rbrakk> \<Longrightarrow> x=y"
