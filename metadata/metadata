@@ -6722,3 +6722,18 @@ abstract =
   the AFP entry BNF Operations.  In addition, we apply the
   BNF<sub>CC</sub> theory to several concrete functors.
 
+[Modular_Assembly_Kit_Security]
+title = An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties
+author = Oliver Bračevac <mailto:bracevac@st.informatik.tu-darmstadt.de>, Richard Gay <mailto:gay@mais.informatik.tu-darmstadt.de>, Sylvia Grewe <mailto:grewe@st.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Henning Sudbrock <mailto:sudbrock@mais.informatik.tu-darmstadt.de>, Markus Tasch <mailto:tasch@mais.informatik.tu-darmstadt.de>
+topic = Computer Science/Security
+date = 2018-05-07
+notify = tasch@mais.informatik.tu-darmstadt.de
+abstract = 
+  The "Modular Assembly Kit for Security Properties" (MAKS) is
+  a framework for both the definition and verification of possibilistic
+  information-flow security properties at the specification-level. MAKS
+  supports the uniform representation of a wide range of possibilistic
+  information-flow properties and provides support for the verification
+  of such properties via unwinding results and compositionality results.
+  We provide a formalization of this framework in Isabelle/HOL.  
+

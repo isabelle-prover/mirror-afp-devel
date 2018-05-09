@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>29 Apr 2018 00:00:00 +0000</pubDate>
+    <pubDate>07 May 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</title>
+              <link>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</link>
+       <guid>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</guid>
+       <dc:creator> Oliver Bračevac, Richard Gay, Sylvia Grewe, Heiko Mantel, Henning Sudbrock, Markus Tasch       </dc:creator>
+       <pubDate>07 May 2018 00:00:00 +0000</pubDate>
+       <description>
+The &#34;Modular Assembly Kit for Security Properties&#34; (MAKS) is
+a framework for both the definition and verification of possibilistic
+information-flow security properties at the specification-level. MAKS
+supports the uniform representation of a wide range of possibilistic
+information-flow properties and provides support for the verification
+of such properties via unwinding results and compositionality results.
+We provide a formalization of this framework in Isabelle/HOL.</description>
+    </item>
     <item>
        <title>WebAssembly</title>
               <link>https://www.isa-afp.org/entries/WebAssembly.html</link>
@@ -532,31 +547,6 @@ Lastly, the entry also contains Euler&#39;s analytic proof of the
 infinitude of primes, based on the fact that
 &amp;zeta;(&lt;i&gt;s&lt;/i&gt;) has a pole at &lt;i&gt;s&lt;/i&gt; =
 1. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Linear Recurrences</title>
-              <link>https://www.isa-afp.org/entries/Linear_Recurrences.html</link>
-       <guid>https://www.isa-afp.org/entries/Linear_Recurrences.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>12 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt; Linear recurrences with constant coefficients are an
-interesting class of recurrence equations that can be solved
-explicitly. The most famous example are certainly the Fibonacci
-numbers with the equation &lt;i&gt;f&lt;/i&gt;(&lt;i&gt;n&lt;/i&gt;) =
-&lt;i&gt;f&lt;/i&gt;(&lt;i&gt;n&lt;/i&gt;-1) +
-&lt;i&gt;f&lt;/i&gt;(&lt;i&gt;n&lt;/i&gt; - 2) and the quite
-non-obvious closed form
-(&lt;i&gt;&amp;phi;&lt;/i&gt;&lt;sup&gt;&lt;i&gt;n&lt;/i&gt;&lt;/sup&gt;
--
-(-&lt;i&gt;&amp;phi;&lt;/i&gt;)&lt;sup&gt;-&lt;i&gt;n&lt;/i&gt;&lt;/sup&gt;)
-/ &amp;radic;&lt;span style=&#34;text-decoration:
-overline&#34;&gt;5&lt;/span&gt; where &amp;phi; is the golden ratio.
-&lt;/p&gt; &lt;p&gt; In this work, I build on existing tools in
-Isabelle &amp;ndash; such as formal power series and polynomial
-factorisation algorithms &amp;ndash; to develop a theory of these
-recurrences and derive a fully executable solver for them that can be
-exported to programming languages like Haskell. &lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
