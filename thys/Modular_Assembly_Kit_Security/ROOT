@@ -1,6 +1,6 @@
 chapter AFP
 
-session "MAKS" (AFP) = HOL +
+session Modular_Assembly_Kit_Security (AFP) = HOL + 
   description {*
     An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties
 	
@@ -11,7 +11,7 @@ session "MAKS" (AFP) = HOL +
 	Author: Henning Sudbrock, TU Darmstadt
 	Author: Markus Tasch, TU Darmstadt
   *}
-  options [timeout = 1200]
+  options [timeout = 600]
 
   theories 
 	"Basics/Projection"
