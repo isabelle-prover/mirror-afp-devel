@@ -31,7 +31,7 @@ begin
   lemma set_iterator_weaken_R :
     "(\<And>x y. \<lbrakk>x \<in> S0; y \<in> S0; R x y\<rbrakk> \<Longrightarrow> R' x y) \<Longrightarrow> 
              set_iterator_genord iti S0 R'"
-    by (metis set_iterator_genord.intro foldli_transform sorted_wrt_weaken)
+    by (metis set_iterator_genord.intro foldli_transform sorted_wrt_mono_rel)
 
   lemma finite_S0 :
     shows "finite S0"

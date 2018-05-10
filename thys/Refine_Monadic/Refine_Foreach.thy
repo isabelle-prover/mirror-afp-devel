@@ -229,7 +229,7 @@ lemma FOREACHoci_refine_genR:
   using INJ RR_OK 
   apply (auto 
     simp add: distinct_map sorted_wrt_map 
-    intro: sorted_wrt_weaken[of _ RR]) []
+    intro: sorted_wrt_mono_rel[of _ RR]) []
   using REF0 apply auto []
 
   apply simp apply (rule conjI)

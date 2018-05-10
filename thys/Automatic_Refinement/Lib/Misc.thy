@@ -1956,21 +1956,6 @@ lemma list_collect_set_as_map: "list_collect_set f l = \<Union>set (map f l)"
 
 subsubsection {* Sorted List with arbitrary Relations *}
 
-lemma sorted_wrt_weaken :
-assumes R_weaken: "\<And>x y. \<lbrakk>x \<in> set l0; y \<in> set l0; R x y\<rbrakk> \<Longrightarrow> R' x y"
-    and sort: "sorted_wrt R l0"
-shows "sorted_wrt R' l0"
-using assms
-by (induct l0) (simp_all)
-
-lemma sorted_wrt_map :
-  "sorted_wrt R (map f xs) = sorted_wrt (\<lambda>x y. R (f x) (f y)) xs"
-by (induct xs) auto
-
-lemma sorted_wrt_true [simp] :
-  "sorted_wrt (\<lambda>_ _. True) l0"
-by (induct l0) (simp_all)
-
 lemma (in linorder) sorted_wrt_rev_linord [simp] :
   "sorted_wrt (\<ge>) l \<longleftrightarrow> sorted (rev l)"
 by (simp add: sorted_sorted_wrt sorted_wrt_rev)

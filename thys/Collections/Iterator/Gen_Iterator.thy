@@ -73,7 +73,7 @@ end
   lemma it_to_sorted_list_weaken: 
     "R\<le>R' \<Longrightarrow> it_to_sorted_list R s \<le> it_to_sorted_list R' s"
     unfolding it_to_sorted_list_def
-    by (auto intro!: sorted_wrt_weaken[where R=R])
+    by (auto intro!: sorted_wrt_mono_rel[where P=R])
 
   lemma set_to_list_by_set_to_sorted_list[autoref_ga_rules]:
     assumes "GEN_ALGO_tag (is_set_to_sorted_list ordR Rk Rs tsl)"
