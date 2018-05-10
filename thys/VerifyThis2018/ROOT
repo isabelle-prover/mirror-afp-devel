@@ -1,14 +1,11 @@
 chapter AFP
 
-session VTcomp_Lib = Sepref_IICF +
-  options [document=false]
-  theories
+session VerifyThis2018 = Sepref_IICF +
+  options [timeout = 600]
+  theories [document = false]
     "lib/VTcomp"
     "lib/DF_System"
     Snippets
-
-session VerifyThis2018 (AFP) = VTcomp_Lib +
-  options [timeout = 600]
   theories
     Challenge1
     Challenge1_short
