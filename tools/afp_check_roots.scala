@@ -12,7 +12,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
   def print_bad(string: String): Unit =
     println(Console.BOLD + Console.RED + string + Console.RESET)
 
-  def check_timeout(tree: Sessions.T, selected: List[String]): Boolean =
+  def check_timeout(tree: Sessions.Structure, selected: List[String]): Boolean =
     selected.flatMap { name =>
       val info = tree(name)
       val entry = info.dir.base.implode
@@ -32,7 +32,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
         false
     }
 
-  def check_paths(tree: Sessions.T, selected: List[String]): Boolean =
+  def check_paths(tree: Sessions.Structure, selected: List[String]): Boolean =
     selected.flatMap { name =>
       val info = tree(name)
       val dir = info.dir
@@ -52,7 +52,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
         false
     }
 
-  def check_chapter(tree: Sessions.T, selected: List[String]): Boolean =
+  def check_chapter(tree: Sessions.Structure, selected: List[String]): Boolean =
     selected.flatMap { name =>
       val info = tree(name)
       val entry = info.dir.base.implode
@@ -70,7 +70,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
         false
     }
 
-  def check_groups(tree: Sessions.T, selected: List[String]): Boolean =
+  def check_groups(tree: Sessions.Structure, selected: List[String]): Boolean =
     selected.flatMap { name =>
       val info = tree(name)
       if (!info.groups.toSet.subsetOf(Set("AFP", "slow", "very_slow")) ||
@@ -93,8 +93,8 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
 
   def apply(args: List[String]): Unit =
   {
-    val full_tree = Sessions.load(Options.init(), Nil, List(afp_dir))
-    val (selected, _) = full_tree.selection(Sessions.Selection.empty)
+    val full_tree = Sessions.load_structure(Options.init(), Nil, List(afp_dir))
+    val selected = full_tree.build_selection(Sessions.Selection.empty)
 
     val checks = List(
       check_timeout(full_tree, selected),

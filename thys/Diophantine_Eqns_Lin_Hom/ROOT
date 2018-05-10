@@ -14,7 +14,7 @@ session Diophantine_Eqns_Lin_Hom (AFP) = HOL +
     "root.bib"
     "root.tex"
 
-session HLDE = Diophantine_Eqns_Lin_Hom +
+session HLDE (AFP) = Diophantine_Eqns_Lin_Hom +
   options [timeout = 600]
   theories [condition = ISABELLE_GHC]
     Solver_Code
