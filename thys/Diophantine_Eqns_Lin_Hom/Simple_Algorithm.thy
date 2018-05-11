@@ -60,8 +60,9 @@ abbreviation "gen2 A B m n \<equiv> [(x, y) . y \<leftarrow> gen B n, x \<leftar
 
 lemma sorted_wrt_gen:
   "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x) (gen B n)"
-  by (induct n) (auto simp: rlex_Cons sorted_wrt_append
-    intro!: sorted_wrt_concat_map [where h = id, simplified] sorted_wrt_map_mono [of "(<)"])
+by (induction n)
+   (auto simp: rlex_Cons sorted_wrt_append sorted_wrt_map rlex_irrefl
+    intro!: sorted_wrt_concat_map [where h = id, simplified])
 
 lemma sorted_wrt_gen2: "sorted_wrt (<\<^sub>r\<^sub>l\<^sub>e\<^sub>x\<^sub>2) (gen2 A B m n)"
   by (intro sorted_wrt_concat_map_map [where Q = "(<\<^sub>r\<^sub>l\<^sub>e\<^sub>x)"] sorted_wrt_gen)
