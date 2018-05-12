@@ -43,29 +43,4 @@ lemma sorted_wrt_tl:
   "xs \<noteq> [] \<Longrightarrow> sorted_wrt P xs \<Longrightarrow> sorted_wrt P (tl xs)"
   by (cases xs) (auto)
 
-lemma trans_sorted_wrtI:
-  assumes trans: "\<And>x y z. P x y \<Longrightarrow> P y z \<Longrightarrow> P x z"
-    and "\<forall>i. Suc i < length xs \<longrightarrow> P (xs ! i) (xs ! Suc i)"
-  shows "sorted_wrt P xs"
-  using assms(2)
-proof (induct xs)
-  case (Cons a xs)
-  then show ?case
-  by (metis (no_types, lifting) append.simps(1) assms(1) id_take_nth_drop length_pos_if_in_set
-    nth_Cons_0 nth_Cons_Suc sorted_wrt.simps(2) sorted_wrt2 take_0 transp_def Suc_less_eq
-    length_Cons)
-qed auto
-
-lemma sorted_wrt_imp_distinct:
-  assumes "sorted_wrt P xs" and "\<And>x. \<not> P x x"
-  shows "distinct xs"
-  using assms by (induct xs) (auto)
-
-lemma sorted_wrt_nth_less:
-  assumes "sorted_wrt P xs"
-    and "i < length xs" and "j < length xs"
-    and "i < j"
-  shows "P (xs ! i) (xs ! j)"
-  using assms by (induct xs arbitrary: i j) (auto simp: nth_Cons')
-
 end

@@ -95,9 +95,8 @@ lemma set_gen2:
   by (auto simp: set_gen)
 
 lemma gen2_unique:
-  assumes "i < length (gen2 A B m n)"
+  assumes "i < j"
     and "j < length (gen2 A B m n)"
-    and "i < j"
   shows "gen2 A B m n ! i \<noteq> gen2 A B m n ! j"
   using sorted_wrt_nth_less [OF sorted_wrt_gen2 assms]
   by (auto simp: rlex2_irrefl)
@@ -106,8 +105,8 @@ lemma zeroes_ni_tl_gen2:
   "(zeroes m, zeroes n) \<notin> set (tl (gen2 A B m n))"
 proof -
   have "gen2 A B m n ! 0 = (zeroes m, zeroes n)" by (auto simp: generate_def)
-  with gen2_unique [of 0 A m B n] show ?thesis
-    by (metis (no_types, lifting) Suc_eq_plus1 gr0I gr_implies_not0 in_set_conv_nth length_tl lessI less_diff_conv nth_tl)
+  with gen2_unique[of 0 _ A m B n] show ?thesis
+    by (metis (no_types, lifting) Suc_eq_plus1 in_set_conv_nth length_tl less_diff_conv nth_tl zero_less_Suc)
 qed
 
 lemma set_generate:
