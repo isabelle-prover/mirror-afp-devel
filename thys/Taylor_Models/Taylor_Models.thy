@@ -429,7 +429,7 @@ proof-
          interpret_floatarith (deriv_rec (Cos (Var 0)) (Suc n)) (xs[0:=t]))
          (at t within S)"
     using n_mod_4_cases assms
-    by (auto simp add: mod_Suc_eq_Suc_mod[of n 4] Sin_sin field_differentiable_minus
+    by (auto simp add: mod_Suc Sin_sin field_differentiable_minus
         intro!: derivative_eq_intros)
 next
   assume f_def: "f = Inverse (Var 0)" and "isDERIV 0 f (xs[0:=t])"

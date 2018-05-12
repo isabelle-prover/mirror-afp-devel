@@ -513,7 +513,7 @@ lemma list_succ_funpow_conv:
 proof -
   have "xs \<noteq> []" using assms by auto
   then show ?thesis
-    by (induct n) (auto simp: hd_conv_nth A index_nth_id list_succ_def mod_Suc_eq_Suc_mod[symmetric])
+    by (induct n) (auto simp: hd_conv_nth A index_nth_id list_succ_def mod_simps)
 qed
 
 lemma orbit_list_succ:

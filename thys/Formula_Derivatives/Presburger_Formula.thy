@@ -14,7 +14,7 @@ declare [[coercion int]]
 declare [[coercion_map map]]
 declare [[coercion_enabled]]
 
-fun len :: "nat \<Rightarrow> nat" where
+fun len :: "nat \<Rightarrow> nat" where \<comment> \<open>FIXME yet another logarithm\<close>
   "len 0 = 0"
 | "len (Suc 0) = 1"
 | "len n = Suc (len (n div 2))"
@@ -26,6 +26,9 @@ lemma len_mult2[simp]: "len (2 * x) = (if x = 0 then 0 else Suc (len x))"
 proof (induct x rule: len.induct)
   show "len (2 * Suc 0) = (if Suc 0 = 0 then 0 else Suc (len (Suc 0)))" by (simp add: numeral_eq_Suc)
 qed auto
+
+lemma len_mult2'[simp]: "len (x * 2) = (if x = 0 then 0 else Suc (len x))"
+  using len_mult2 [of x] by (simp add: ac_simps)
 
 lemma len_Suc_mult2[simp]: "len (Suc (2 * x)) = Suc (len x)"
 proof (induct x rule: len.induct)
@@ -219,8 +222,8 @@ lemma Extend_SNOC[Presb_simps]: "\<lbrakk>#\<^sub>V \<AA> = length x; len P \<le
   apply transfer
   apply (auto simp: cut_bits_def extend_def test_bit_def nth_Cons' max_absorb1 len_le_iff
     split: if_splits cong del: if_weak_cong)
-   apply (metis mod_less mod_mult2_eq One_nat_def add.commute mult.commute mult.left_neutral power_Suc2)
-  apply (metis (no_types) mod_less mod_mult2_eq One_nat_def mult_div_mod_eq mod_div_trivial mod_mod_trivial mult.commute parity_cases)
+   apply (metis add.commute mod_less mod_mult2_eq mult_numeral_1_right numeral_1_eq_Suc_0 power_commuting_commutes)
+  apply (metis div_mult_mod_eq less_mult_imp_div_less mod_div_trivial mod_less mod_mod_trivial mod_mult_self1_is_0)
   done
 
 lemma odd_neq_even:
@@ -254,12 +257,8 @@ lemma [Presb_simps]:
   "len P \<le> n \<Longrightarrow> cut_bits n P = P"
   "len (upshift P) = (case len P of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> Suc (Suc n))"
   "len (downshift P) = (case len P of 0 \<Rightarrow> 0 | Suc n \<Rightarrow> n)"
-  apply (auto simp: extend_def set_bit_def cut_bits_def upshift_def downshift_def test_bit_def
-    len_le_iff len_eq0_iff mult.commute[of _ 2] split: nat.splits)
-   apply presburger (* FIXME Cleanup this mess *)
-   apply (metis One_nat_def Suc_eq_plus1_left add.commute div_add_self2 len.simps(1) 
-         len_pow2 mod_Suc_eq_Suc_mod nat.distinct(1) not_mod_2_eq_0_eq_1 one_mod_two_eq_one)
-  done
+  by (auto simp: extend_def set_bit_def cut_bits_def upshift_def downshift_def test_bit_def
+    len_le_iff len_eq0_iff div_add_self2 split: nat.split)
 
 lemma Suc0_div_pow2_eq: "Suc 0 div 2 ^ i = (if i = 0 then 1 else 0)"
   by (induct i) (auto simp: div_mult2_eq)

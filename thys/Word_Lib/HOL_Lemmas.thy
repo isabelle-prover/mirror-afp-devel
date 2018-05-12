@@ -81,8 +81,7 @@ next
       by (rule  div_mult_mod_eq [symmetric])
 
     moreover have "a ^ m mod a ^ n = 0"
-      by (subst mod_eq_0_iff, rule exI [where x = "a ^ q"],
-      (subst power_add [symmetric] mv)+, rule refl)
+      by (simp add: mv [symmetric] power_add)
 
     ultimately show "(a ^ m div a ^ n) * a ^ n = a ^ m" by simp
   qed

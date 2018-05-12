@@ -1066,7 +1066,7 @@ begin
     from R have "(r j, r (Suc j)) \<in> degen.E T m" 
       by (auto simp: degen.is_run_def is_run_def ipath_def)
     with RJ A obtain q2 where RSJ: "r (Suc j) = (q2,(n+Suc ofs) mod num_acc)" 
-      by (auto simp: degeneralize_ext_def mod_Suc_eq_Suc_mod[symmetric])
+      by (auto simp: degeneralize_ext_def mod_simps)
 
     have aux: "\<And>j'. i\<le>j \<Longrightarrow> Suc j \<le> j' \<Longrightarrow> i\<le>j'" by auto
     from degen_acc_run_complete_aux1'[OF NN0 R ACC RSJ] `j\<ge>i` 
