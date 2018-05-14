@@ -880,7 +880,7 @@ by(induction rs arbitrary: s n)(auto simp: t_def step_def)
 
 lemma sorted_asc: "j\<le>i \<Longrightarrow> i<size ss \<Longrightarrow> \<forall>x \<in> set ss. \<forall>y \<in> set ss. k(x) \<le> k(y) \<longrightarrow> f y \<le> f x
   \<Longrightarrow> sorted (map k ss) \<Longrightarrow> f (ss ! i) \<le> f (ss ! j)"
-by (auto simp: sorted_iff_nth_mono le_eq_less_or_eq)
+by (auto simp: sorted_iff_nth_mono)
 
 
 lemma sorted_weighted_gauss_Ico_div2:
