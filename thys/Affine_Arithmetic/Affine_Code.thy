@@ -306,8 +306,7 @@ proof (safe, goal_cases)
 next
   case prems: (2 n l1 l2)
   hence "sorted (map ((\<lambda>na. na + n) \<circ> fst) (rev l2))"
-    unfolding rev_map
-    by (intro sorted_nth_monoI) (auto dest!: sorted_nth_mono)
+    by(simp add: sorted_iff_nth_mono rev_map)
   with prems show ?case
     by (auto simp: sorted_append dropWhile_rsorted_eq_filter rev_map rev_filter sorted_filter)
 qed

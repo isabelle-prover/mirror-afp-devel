@@ -126,7 +126,7 @@ lemma distinct_sorted_mono:
   shows "l!i < l!j"
 proof -
   from S B have "l!i \<le> l!j"
-    by (simp add: sorted_equals_nth_mono)
+    by (simp add: sorted_iff_nth_mono)
   also from nth_eq_iff_index_eq[OF D] B have "l!i \<noteq> l!j"
     by auto
   finally show ?thesis .
