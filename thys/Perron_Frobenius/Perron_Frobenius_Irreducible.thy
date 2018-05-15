@@ -1153,7 +1153,7 @@ proof -
   also have "\<dots> = 2 * pi / ?k" unfolding sum ..
   finally have Min: "Min \<le> 2 * pi / ?k" unfolding Min_def by auto
   have lt: "i < ?k \<Longrightarrow> args ! i < args ! (Suc i)" for i 
-    using sorted[unfolded sorted_equals_nth_mono, rule_format, of "Suc i" i]
+    using sorted[unfolded sorted_iff_nth_mono, rule_format, of i "Suc i"]
     dist[unfolded distinct_conv_nth, rule_format, of "Suc i" i] by (auto simp: args_def)
   let ?c = "\<lambda> i. rcis sr (args ! i)" 
   have hda[simp]: "hd a = aa" unfolding a_split by simp  
