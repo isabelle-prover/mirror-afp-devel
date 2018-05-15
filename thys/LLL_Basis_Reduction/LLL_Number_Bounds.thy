@@ -418,8 +418,6 @@ proof -
     by (rule Gramian_determinant_mu_ints[OF *(1-3) _ j ii, unfolded id], insert *(5,7), force)
 qed
 
-
-
 text \<open>maximum absolute value in initial basis\<close>
 definition "M = Max ({abs (fs_init ! i $ j) | i j. i < m \<and> j < n} \<union> {0})" 
 
