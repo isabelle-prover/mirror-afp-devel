@@ -37,7 +37,7 @@ begin
       (succi A\<^sub>1, succ A\<^sub>2) \<in> L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> list_set_rel \<and>
       (acceptingi A\<^sub>1, accepting A\<^sub>2) \<in> S \<rightarrow> bool_rel}"
 
-  lemma nbai_nba_param[param]:
+  lemma nbai_nba_param[param, autoref_rules]:
     "(nbai, nba) \<in> \<langle>L\<rangle> list_set_rel \<rightarrow> \<langle>S\<rangle> list_set_rel \<rightarrow> (L \<rightarrow> S \<rightarrow> \<langle>S\<rangle> list_set_rel) \<rightarrow>
       (S \<rightarrow> bool_rel) \<rightarrow> \<langle>L, S\<rangle> nbai_nba_rel"
     "(alphabeti, alphabet) \<in> \<langle>L, S\<rangle> nbai_nba_rel \<rightarrow> \<langle>L\<rangle> list_set_rel"
@@ -78,8 +78,5 @@ begin
       show ?thesis using 1 2 unfolding in_br_conv by auto
     qed
   qed
-
-  (* TODO: take a look at Digraph_Impl setup to make synthesizing whole nbai/bae possible *)
-  lemmas [autoref_rules] = nbai_nba_param(2-5)
 
 end

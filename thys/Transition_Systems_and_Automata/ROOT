@@ -19,5 +19,6 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
     "Automata/NBA_Implement"
     "Automata/NBA_Explicit"
     "Automata/NBA_Translate"
+    "Automata/DBA"
   document_files
     "root.tex"
