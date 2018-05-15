@@ -122,8 +122,8 @@ definition swap_mu :: "int iarray iarray \<Rightarrow> nat \<Rightarrow> int \<R
        IArray.of_fun (\<lambda> ii. if ii < im1 then IArray.sub dmu ii else 
        if ii > i then let dmu_ii = IArray.sub (IArray.sub dmu ii) in 
            IArray.of_fun (\<lambda> j. let dmu_ii_j = dmu_ii j in 
-               if j = i then (dsi * dmu_ii im1 - dmu_i_im1 * dmu_ii i) div di
-               else if j = im1 then (dmu_i_im1 * dmu_ii j + dmu_ii i * dim1) div di
+               if j = i then (dsi * dmu_ii im1 - dmu_i_im1 * dmu_ii_j) div di
+               else if j = im1 then (dmu_i_im1 * dmu_ii_j + dmu_ii i * dim1) div di
                else dmu_ii_j) ii else 
        if ii = i then let mu_im1 = IArray.sub (IArray.sub dmu im1) in 
            IArray.of_fun (\<lambda> j. if j = im1 then dmu_i_im1 else mu_im1 j) ii 

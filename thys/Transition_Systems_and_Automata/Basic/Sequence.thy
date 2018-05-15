@@ -192,6 +192,17 @@ begin
     by (intro rel_funI, coinduction) (force dest: rel_funD)
 
   lemma split_stream_first:
+    assumes "A \<inter> sset xs \<noteq> {}"
+    obtains ys a zs
+    where "xs = ys @- a ## zs" "A \<inter> set ys = {}" "a \<in> A"
+  proof
+    let ?n = "LEAST n. xs !! n \<in> A"
+    have 1: "xs !! n \<notin> A" if "n < ?n" for n using that by (metis (full_types) not_less_Least)
+    show "xs = stake ?n xs @- (xs !! ?n) ## sdrop (Suc ?n) xs" using id_stake_snth_sdrop by blast
+    show "A \<inter> set (stake ?n xs) = {}" using 1 by (metis (no_types, lifting) disjoint_iff_not_equal set_stake_snth)
+    show "xs !! ?n \<in> A" using assms unfolding sset_range by (auto intro: LeastI)
+  qed
+  lemma split_stream_first':
     assumes "x \<in> sset xs"
     obtains ys zs
     where "xs = ys @- x ## zs" "x \<notin> set ys"
