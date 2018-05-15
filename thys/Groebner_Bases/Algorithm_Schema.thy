@@ -2165,6 +2165,75 @@ lemma gb_schema_aux_Nil [simp, code]: "gb_schema_aux data bs [] = gs @ bs"
 
 lemmas gb_schema_aux_simps = gb_schema_aux.psimps[OF gb_schema_aux_domI2]
 
+lemma gb_schema_aux_induct [consumes 1, case_names base rec1 rec2]:
+  assumes "struct_spec sel ap ab compl"
+  assumes base: "\<And>bs data. P data bs [] (gs @ bs)"
+    and rec1: "\<And>bs ps sps data h. ps \<noteq> [] \<Longrightarrow> sps = sel gs bs ps data \<Longrightarrow>
+                h \<in> set (fst (add_indices (compl gs bs (ps -- sps) sps data) data)) \<Longrightarrow>
+                is_nonzero_const_monomial (fst h) \<Longrightarrow>  P data bs ps [(1, 0, default)]"
+    and rec2: "\<And>bs ps sps aux hs data data'. ps \<noteq> [] \<Longrightarrow> sps = sel gs bs ps data \<Longrightarrow>
+                aux = compl gs bs (ps -- sps) sps data \<Longrightarrow> (hs, data') = add_indices aux data \<Longrightarrow>
+                (\<And>h. h \<in> set hs \<Longrightarrow> \<not> is_nonzero_const_monomial (fst h)) \<Longrightarrow>
+                P data' (ab gs bs hs data') (ap gs bs (ps -- sps) hs data')
+                  (gb_schema_aux data' (ab gs bs hs data') (ap gs bs (ps -- sps) hs data')) \<Longrightarrow>
+                P data bs ps (gb_schema_aux data' (ab gs bs hs data') (ap gs bs (ps -- sps) hs data'))"
+  shows "P data bs ps (gb_schema_aux data bs ps)"
+proof -
+  from assms(1) have "gb_schema_aux_dom (data, bs, ps)" by (rule gb_schema_aux_domI2)
+  thus ?thesis
+  proof (induct data bs ps rule: gb_schema_aux.pinduct)
+    case (1 data bs ps)
+    show ?case
+    proof (cases "ps = []")
+      case True
+      show ?thesis by (simp add: True, rule base)
+    next
+      case False
+      show ?thesis
+      proof (simp add: gb_schema_aux_simps[OF assms(1), of data bs ps] False Let_def split: if_split,
+            intro conjI impI)
+        define sps where "sps = sel gs bs ps data"
+        assume "\<exists>h\<in>set (fst (compl gs bs (ps -- sps) sps data)). is_nonzero_const_monomial (fst h)"
+        then obtain h where "h \<in> set (fst (compl gs bs (ps -- sps) sps data))"
+          and "is_nonzero_const_monomial (fst h)" ..
+        from this(1) have "fst h \<in> fst ` set (fst (compl gs bs (ps -- sps) sps data))" by simp
+        also have "... = fst ` set (fst (add_indices (compl gs bs (ps -- sps) sps data) data))"
+          by (simp only: fst_set_add_indices)
+        finally obtain h' where "h' \<in> set (fst (add_indices (compl gs bs (ps -- sps) sps data) data))"
+          and "fst h = fst h'" ..
+        from False sps_def this(1) \<open>is_nonzero_const_monomial (fst h)\<close>
+        show "P data bs ps [(1, 0, default)]" unfolding \<open>fst h = fst h'\<close> by (rule rec1)
+      next
+        define sps where "sps = sel gs bs ps data"
+        define aux where "aux = compl gs bs (ps -- sps) sps data"
+        define hs where "hs = fst (add_indices aux data)"
+        define data' where "data' = snd (add_indices aux data)"
+        have eq: "add_indices aux data = (hs, data')" by (simp add: hs_def data'_def)
+        assume 2: "\<forall>h\<in>set (fst aux). \<not> is_nonzero_const_monomial (fst h)"
+        show "P data bs ps
+           (case add_indices aux data of
+            (hs, data') \<Rightarrow> gb_schema_aux data' (ab gs bs hs data') (ap gs bs (ps -- sps) hs data'))"
+          unfolding eq prod.case using False sps_def aux_def eq[symmetric]
+        proof (rule rec2)
+          fix h
+          assume "h \<in> set hs"
+          hence "fst h \<in> fst ` set hs" by simp
+          also have "... = fst ` set (fst aux)" by (simp add: hs_def fst_set_add_indices)
+          finally obtain h' where "h' \<in> set (fst aux)" and "fst h = fst h'" by blast
+          from 2 this(1) have "\<not> is_nonzero_const_monomial (fst h')" ..
+          thus "\<not> is_nonzero_const_monomial (fst h)" by (simp add: \<open>fst h = fst h'\<close>)
+        next
+          from 2 have "\<not> (\<exists>h\<in>set (fst aux). is_nonzero_const_monomial (fst h))" by simp
+          with False sps_def refl aux_def
+          show "P data' (ab gs bs hs data') (ap gs bs (ps -- sps) hs data')
+                  (gb_schema_aux data' (ab gs bs hs data') (ap gs bs (ps -- sps) hs data'))"
+            using eq[symmetric] refl by (rule 1)
+        qed
+      qed
+    qed
+  qed
+qed
+
 lemma gb_schema_dummy_eq_gb_schema_aux:
   assumes "struct_spec sel ap ab compl"
   shows "fst (gb_schema_dummy data D bs ps) = gb_schema_aux data bs ps"
