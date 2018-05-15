@@ -6,7 +6,7 @@ theory Preliminaries
 imports
   Main
   "HOL-Library.Multiset"
-  "HOL.FuncSet"
+  "HOL-Library.FuncSet"
   "HOL-Library.Permutations"
   "HOL-ex.Birthday_Paradox"
   Card_Partitions.Card_Partitions

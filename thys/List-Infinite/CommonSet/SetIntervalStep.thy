@@ -1178,8 +1178,6 @@ done
 
 subsection {* @{text inext_nth} and @{text iprev_nth} -- nth element of a natural set *}
 
-no_notation funcset (infixr "\<rightarrow>" 60)
-
 primrec inext_nth :: "nat set \<Rightarrow> nat \<Rightarrow> nat"   ("(_ \<rightarrow> _)" [100, 100] 60)
 where
   "I \<rightarrow> 0 = iMin I"

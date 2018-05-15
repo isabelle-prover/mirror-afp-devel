@@ -5,7 +5,7 @@ section \<open>Set Partitions\<close>
 theory Set_Partition
 imports
   "HOL-Library.Disjoint_Sets"
-  "HOL.FuncSet"
+  "HOL-Library.FuncSet"
 begin
 
 subsection \<open>Useful Additions to Main Theories\<close>
