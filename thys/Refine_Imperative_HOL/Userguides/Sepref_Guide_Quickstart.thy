@@ -339,8 +339,7 @@ private lemma isl1_aux1:
   assumes "xs!i < x"
   shows "x\<notin>set (take i xs)"
   using assms
-  apply (auto simp: take_set)
-  by (simp add: leD sorted_nth_mono)
+  by (auto simp: take_set leD sorted_nth_mono)
 
 private lemma isl1_aux2: 
   assumes "x \<notin> set (take n xs)"
