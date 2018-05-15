@@ -4,7 +4,7 @@ section \<open>Bell Numbers and Spivey's Generalized Recurrence\<close>
 
 theory Bell_Numbers
 imports
-  "HOL.FuncSet"
+  "HOL-Library.FuncSet"
   "HOL-Library.Monad_Syntax"
   "HOL-Library.Stirling"
   Card_Partitions.Injectivity_Solver

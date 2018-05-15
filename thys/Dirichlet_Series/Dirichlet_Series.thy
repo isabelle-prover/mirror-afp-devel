@@ -10,7 +10,7 @@ imports
   Multiplicative_Function
   "HOL-Computational_Algebra.Computational_Algebra"
   "HOL-Number_Theory.Number_Theory"
-  "HOL.FuncSet"
+  "HOL-Library.FuncSet"
 begin
 
 text \<open>

@@ -3,7 +3,7 @@
 section{* Logic *}
 
 theory Logic
-imports Main "HOL.FuncSet"
+imports Main "HOL-Library.FuncSet"
 begin
 
 text{* \noindent

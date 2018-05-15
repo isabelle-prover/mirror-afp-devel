@@ -7,7 +7,7 @@
 section {* A bit of general topology *}
 
 theory Topology
-imports "HOL.FuncSet"
+imports "HOL-Library.FuncSet"
 begin
 
 text{*

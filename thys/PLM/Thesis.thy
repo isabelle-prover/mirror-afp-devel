@@ -4,7 +4,6 @@ imports TAO_9_PLM TAO_98_ArtificialTheorems TAO_99_SanityTests TAO_99_Paradox TA
     "HOL-Library.LaTeXsugar"
     "HOL-Library.OptionalSugar"
 begin
-no_syntax "_Pi" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'b) set"  ("(3\<Pi> _\<in>_./ _)"   10)
 (*>*)
 
 (*<*)

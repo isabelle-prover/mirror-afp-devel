@@ -11,8 +11,6 @@ imports
   CAVA_Automata.Automata
 begin
 
-no_notation funcset (infixr "\<rightarrow>" 60)
-
 subsection \<open>Statistics\<close>
 code_printing
   code_module Gerth_Statistics \<rightharpoonup> (SML) \<open>
