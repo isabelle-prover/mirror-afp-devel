@@ -2,15 +2,13 @@
     Authors:    René Thiemann
     License:    BSD
 *)
-subsection \<open>LLL Implementation which Stores Multiples of the $\mu$-values and the Norms of the GSO as Integers\<close>
+subsubsection \<open>Implementation via Arrays\<close>
 
 theory LLL_Mu_Integer_Impl
   imports LLL
    List_Representation
-   LLL_Number_Bounds
+   LLL_Integer_Equations
 begin
-
-text \<open>We store the $f$, $\mu$, and $||g||^2$ values.\<close>
 
 definition iarray_update :: "'a iarray \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a iarray" where
   "iarray_update a i x = IArray.of_fun (\<lambda> j. if j = i then x else IArray.sub a j) (IArray.length a)" 
@@ -20,45 +18,31 @@ lemma iarray_of_fun_cong: "(\<And> i. i < n \<Longrightarrow> f i = g i) \<Longr
 
 lemma iarray_length_of_fun[simp]: "IArray.length (IArray.of_fun f n) = n" by simp
 
-lemma division_to_div: "rat_of_int x = of_int y / of_int z \<Longrightarrow> x = y div z" 
-  by (metis floor_divide_of_int_eq floor_of_int)
+type_synonym LLL_dmu_d_state = "int vec list_repr \<times> int iarray iarray \<times> int iarray"
 
-hide_fact Word.inc_i
-
-type_synonym LLL_gso_state = "int vec list_repr \<times> int iarray iarray \<times> int iarray"
-
-fun fi_state :: "LLL_gso_state \<Rightarrow> int vec" where
+fun fi_state :: "LLL_dmu_d_state \<Rightarrow> int vec" where
   "fi_state (f,mu,d) = get_nth_i f" 
 
-fun fim1_state :: "LLL_gso_state \<Rightarrow> int vec" where
+fun fim1_state :: "LLL_dmu_d_state \<Rightarrow> int vec" where
   "fim1_state (f,mu,d) = get_nth_im1 f" 
 
-fun d_state :: "LLL_gso_state \<Rightarrow> nat \<Rightarrow> int" where
+fun d_state :: "LLL_dmu_d_state \<Rightarrow> nat \<Rightarrow> int" where
   "d_state (f,mu,d) i = IArray.sub d i" 
 
-fun fs_state :: "LLL_gso_state \<Rightarrow> int vec list" where
+fun fs_state :: "LLL_dmu_d_state \<Rightarrow> int vec list" where
   "fs_state (f,mu,d) = of_list_repr f" 
 
-fun upd_fi_mu_state :: "LLL_gso_state \<Rightarrow> nat \<Rightarrow> int vec \<Rightarrow> int iarray \<Rightarrow> LLL_gso_state" where
+fun upd_fi_mu_state :: "LLL_dmu_d_state \<Rightarrow> nat \<Rightarrow> int vec \<Rightarrow> int iarray \<Rightarrow> LLL_dmu_d_state" where
   "upd_fi_mu_state (f,mu,d) i fi mu_i = (update_i f fi, iarray_update mu i mu_i,d)" 
 
-fun small_fs_state :: "LLL_gso_state \<Rightarrow> int vec list" where
+fun small_fs_state :: "LLL_dmu_d_state \<Rightarrow> int vec list" where
   "small_fs_state (f,_) = fst f" 
 
-fun dmu_ij_state :: "LLL_gso_state \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> int" where
+fun dmu_ij_state :: "LLL_dmu_d_state \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> int" where
   "dmu_ij_state (f,mu,_) i j = IArray.sub (IArray.sub mu i) j" 
 
-fun inc_state :: "LLL_gso_state \<Rightarrow> LLL_gso_state" where
+fun inc_state :: "LLL_dmu_d_state \<Rightarrow> LLL_dmu_d_state" where
   "inc_state (f,mu,d) = (inc_i f, mu, d)" 
-
-definition floor_ceil_num_denom :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "floor_ceil_num_denom n d = ((2 * n + d) div (2 * d))" 
-
-lemma floor_ceil_num_denom: "denom > 0 \<Longrightarrow> floor_ceil_num_denom num denom = 
-  floor_ceil (of_int num / rat_of_int denom)" 
-  unfolding floor_ceil_def floor_ceil_num_denom_def
-  unfolding floor_divide_of_int_eq[where ?'a = rat, symmetric]
-  by (rule arg_cong[of _ _ floor], simp add: add_divide_distrib)
 
 fun basis_reduction_add_rows_loop where
   "basis_reduction_add_rows_loop state i j [] = state" 
@@ -197,7 +181,7 @@ definition "initial_state = (let
   ds = (IArray (norms_to_ds 1 n_gs) :: int iarray)
   in (([], fs_init), 
     IArray.of_fun (\<lambda> i. IArray.of_fun (\<lambda> j. int_of_rat (int_times_rat (IArray.sub ds (Suc j)) (mus ! i ! j))) i) m, 
-    ds) :: LLL_gso_state)" 
+    ds) :: LLL_dmu_d_state)" 
 
 end
 
@@ -212,22 +196,16 @@ lemma map_rev_Suc: "map f (rev [0..<Suc j]) = f j # map f (rev [0..< j])" by sim
 context LLL
 begin
 
-definition "d\<mu> fs i j = int_of_rat (of_int (d fs (Suc j)) * \<mu> fs i j)" 
-
 definition mu_repr :: "int iarray iarray \<Rightarrow> int vec list \<Rightarrow> bool" where
   "mu_repr mu fs = (mu = IArray.of_fun (\<lambda> i. IArray.of_fun (d\<mu> fs i) i) m)" 
 
 definition d_repr :: "int iarray \<Rightarrow> int vec list \<Rightarrow> bool" where
   "d_repr ds fs = (ds = IArray.of_fun (d fs) (Suc m))" 
 
-fun LLL_impl_inv :: "LLL_gso_state \<Rightarrow> nat \<Rightarrow> int vec list \<Rightarrow> bool" where
+fun LLL_impl_inv :: "LLL_dmu_d_state \<Rightarrow> nat \<Rightarrow> int vec list \<Rightarrow> bool" where
   "LLL_impl_inv (f,mu,ds) i fs = (list_repr i f (map (\<lambda> j. fs ! j) [0..<m])
     \<and> d_repr ds fs
     \<and> mu_repr mu fs)" 
-
-lemma d\<mu>: assumes inv: "LLL_invariant upw i fs" "j < ii" "ii < m" 
-  shows "of_int (d\<mu> fs ii j) = of_int (d fs (Suc j)) * \<mu> fs ii j" 
-  unfolding d\<mu>_def using LLL_mu_d_Z[OF inv] by auto
 
 context fixes state i fs upw f mu ds
   assumes impl: "LLL_impl_inv state i fs"
@@ -242,8 +220,8 @@ lemma to_d_repr: "d_repr ds fs" using impl[unfolded state] by auto
 
 lemma dmu_ij_state: assumes j: "j < ii" 
   and ii: "ii < m" 
-shows "of_int (dmu_ij_state state ii j) = of_int (d fs (Suc j)) * \<mu> fs ii j" 
-  unfolding to_mu_repr[unfolded mu_repr_def] state using d\<mu>[OF inv assms] ii j by auto
+shows "dmu_ij_state state ii j = d\<mu> fs ii j" 
+  unfolding to_mu_repr[unfolded mu_repr_def] state using ii j by auto
 
 lemma fi_state: "i < m \<Longrightarrow> fi_state state = fs ! i"
   using get_nth_i[OF to_list_repr(1)] unfolding state by auto
@@ -271,8 +249,6 @@ proof -
 qed
 end
 end
-
-lemma int_via_rat_eqI: "rat_of_int x = rat_of_int y \<Longrightarrow> x = y" by auto
 
 context LLL_with_assms
 begin
@@ -306,12 +282,12 @@ next
   have id: "Suc j - 1 = j" by simp
   note mu = dmu_ij_state[OF impl Linv state j i]
   let ?c = "floor_ceil (\<mu> fs i j)" 
+  note floor = floor_ceil_num_denom_d\<mu>_d[OF Linv j i]
   from LLL_d_pos[OF Linv] j i have dj: "d fs (Suc j) > 0" by auto
-  have fl_ceil: "floor_ceil_num_denom (dmu_ij_state state i j) (d fs (Suc j)) = ?c" 
-    by (subst floor_ceil_num_denom, unfold mu, insert dj, auto)
+  note updates = d_d\<mu>_add_row[OF Linv i j refl refl Suc(4)]
   note d_state = d_state[OF impl Linv state]
   from d_state[of "Suc j"] j i have djs: "d_state state (Suc j) = d fs (Suc j)" by auto
-  note res = Suc(5)[unfolded fl_ceil map_rev_Suc djs append.simps basis_reduction_add_rows_loop.simps 
+  note res = Suc(5)[unfolded floor map_rev_Suc djs append.simps basis_reduction_add_rows_loop.simps 
       fi Let_def mu id int_times_rat_def]
   show ?case
   proof (cases "?c = 0")
@@ -326,22 +302,14 @@ next
     hence id: "(?c = 0) = False" by auto
     define fi' where "fi' = fs ! i - ?c \<cdot>\<^sub>v fs ! j" 
     obtain fs'' where fs'': "fs[i := fs ! i - ?c \<cdot>\<^sub>v fs ! j] = fs''" by auto
-    note step = basis_reduction_add_row_main[OF Linv i j refl refl Suc(4), unfolded fs'']
+    note step = basis_reduction_add_row_main[OF Linv i j refl fs''[symmetric] Suc(4)]
+    note updates = updates[unfolded fs'']
     have map_id_f: "?mapf fs j = ?mapf fs'' j"  
-      by (rule nth_equalityI, insert j step(4) i, auto simp: rev_nth fs''[symmetric])
+      by (rule nth_equalityI, insert j i, auto simp: rev_nth fs''[symmetric])
     have nth_id: "[0..<m] ! i = i" using i by auto
     note res = res[unfolded False map_id_f id if_False]
     have fi: "fi' = fs'' ! i" unfolding fs''[symmetric] fi'_def using inv(7) i by auto
     let ?fn = "\<lambda> fs i. (fs ! i, sq_norm (gso fs i))" 
-    have repr_id: "(map (?fn fs) [0..<m] [i := (fs'' ! i, \<parallel>gso fs'' i\<parallel>\<^sup>2)])
-      = (map (?fn fs'') [0..<m])" (is "?xs = ?ys") 
-    proof (rule nth_equalityI, force, intro allI impI)
-      fix j
-      assume "j < length ?xs" 
-      thus "?xs ! j = ?ys ! j" 
-        using step(4) unfolding fs''[symmetric] i 
-        by (cases "j = i", auto)
-    qed
     let ?d = "\<lambda> fs i. d fs (Suc i)" 
     let ?mu' = "IArray.of_fun
        (\<lambda>jj. if jj < j then dmu_ij_state state i jj - ?c * dmu_ij_state state j jj
@@ -349,36 +317,30 @@ next
     have mu': "?mu' = IArray.of_fun (d\<mu> fs'' i) i" (is "_ = ?mu'i")
     proof (rule iarray_of_fun_cong, goal_cases)
       case (1 jj)
-      let ?muu = "of_int (d fs'' (Suc jj)) * \<mu> fs'' i jj" 
-      from 1 j i have jj: "jj \<le> i" and jm: "j < m" and jjm: "jj < m" by auto
-      have id': "d fs'' (Suc jj) = d fs (Suc jj)" by (rule step(6), insert jjm, auto)
-      define c where "c = ?c" 
-      show ?case 
-        by (rule int_via_rat_eqI, unfold if_distrib[of rat_of_int] of_int_diff of_int_mult
-          d\<mu>[OF step(1) 1 i] dmu_ij_state[OF impl Linv state 1 i] step(5)[OF i jjm] id' c_def[symmetric]
-          if_distrib[of "( * ) (rat_of_int (d fs (Suc jj)))"] ring_distribs,
-          insert dmu_ij_state[OF impl Linv state _ jm], auto simp: gs.\<mu>.simps)
+      from 1 j i have jm: "j < m" by auto
+      show ?case unfolding dmu_ij_state[OF impl Linv state 1 i] using dmu_ij_state[OF impl Linv state _ jm]
+        by (subst updates(2)[OF i 1], auto)
     qed
     {
       fix ii
       assume ii: "ii < m" "ii \<noteq> i" 
-      hence "IArray.sub (IArray.of_fun (\<lambda>i. IArray.of_fun (d\<mu> fs i) (Suc i)) m) ii
-        = IArray.of_fun (d\<mu> fs ii) (Suc ii)" by auto
-      also have "\<dots> = IArray.of_fun (d\<mu> fs'' ii) (Suc ii)" 
+      hence "IArray.sub (IArray.of_fun (\<lambda>i. IArray.of_fun (d\<mu> fs i) i) m) ii
+        = IArray.of_fun (d\<mu> fs ii) ii" by auto
+      also have "\<dots> = IArray.of_fun (d\<mu> fs'' ii) ii" 
       proof (rule iarray_of_fun_cong, goal_cases)
         case (1 j)
         with ii have j: "Suc j \<le> m" by auto
-        show ?case unfolding d\<mu>_def by (subst step(6)[OF j], subst step(5), insert 1 ii, auto)
+        show ?case unfolding updates(2)[OF ii(1) 1] using ii by auto
       qed
-      finally have "IArray.sub (IArray.of_fun (\<lambda>i. IArray.of_fun (d\<mu> fs i) (Suc i)) m) ii 
-         = IArray.of_fun (d\<mu> fs'' ii) (Suc ii)" by auto
+      finally have "IArray.sub (IArray.of_fun (\<lambda>i. IArray.of_fun (d\<mu> fs i) i) m) ii 
+         = IArray.of_fun (d\<mu> fs'' ii) ii" by auto
     } note ii = this
     let ?mu'' = "iarray_update mu i (IArray.of_fun (d\<mu> fs'' i) i)" 
     have new_array: "?mu'' = IArray.of_fun (\<lambda> i. IArray.of_fun (d\<mu> fs'' i) i) m" 
       unfolding iarray_update_def iarray_length_of_fun to_mu_repr[OF impl Linv state, unfolded mu_repr_def]
       by (rule iarray_of_fun_cong, insert ii, auto)
     have d': "(map (?d fs) (rev [0..<j])) = (map (?d fs'') (rev [0..<j]))" 
-      by (rule nth_equalityI, force, intro allI impI, simp, subst step(6), insert j i, auto
+      by (rule nth_equalityI, force, intro allI impI, simp, subst updates(1), insert j i, auto
         simp: nth_rev)
     have repr_id:
       "map ((!) fs) [0..<m][i := (fs'' ! i)] = map ((!) fs'') [0..<m]" (is "?xs = ?ys")
@@ -468,41 +430,20 @@ proof -
   from fs_state[OF impl inv state len] have fs: "fs_state state = fs" by auto
   obtain fs'' where fs'': "fs[i := fs ! (i - 1), i - 1 := fs ! i] = fs''" by auto
   let ?r = rat_of_int
-  let ?n = "\<lambda> i. sq_norm (gso fs i)" 
-  let ?n' = "\<lambda> i. sq_norm (gso fs'' i)" 
   let ?d = "d fs" 
   let ?d' = "d fs''" 
-  let ?dn = "\<lambda> i. ?r (?d i * ?d i) * ?n i" 
-  let ?dn' = "\<lambda> i. ?r (?d' i * ?d' i) * ?n' i" 
-  let ?mu = "\<mu> fs" 
-  let ?mu' = "\<mu> fs''" 
-  let ?dmu = "\<lambda> i j. ?r (?d (Suc j)) * ?mu i j" 
-  let ?dmu' = "\<lambda> i j. ?r (?d' (Suc j)) * ?mu' i j" 
   let ?dmus = "dmu_ij_state state" 
   let ?ds = "d_state state" 
-  let ?idmu = "d\<mu> fs" 
-  let ?idmu' = "d\<mu> fs''" 
-  let ?x = "?n (i - 1)" 
-  let ?y = "\<alpha> * ?n i" 
-  let ?dd = "?n (i - 1) / ?n' (i - 1)" 
-  let ?mui = "?mu i (i - 1)" 
-  let ?mui' = "?mu' i (i - 1)" 
   note swap = basis_reduction_swap[OF inv i i0 cond refl, unfolded fs'']
   note dmu = d\<mu>[OF inv]
   note dmu' = d\<mu>[OF swap(1)]
   note inv' = LLL_invD[OF inv]
-  have nim1: "?n i + square_rat (?mu i (i - 1)) * ?n (i - 1) = 
-    ?n' (i - 1)" by (subst swap(4), insert i, auto)
-  have ni: "?n i * (?n (i - 1) / ?n' (i - 1)) = ?n' i"
-    by (subst swap(4)[of i], insert i i0, auto)
-  have mu': "?mu i (i - 1) * (?n (i - 1) / ?n' (i - 1)) = ?mu' i (i - 1)"
-    by (subst swap(5), insert i i0, auto)
   have fi: "fs ! (i - 1) = fs'' ! i" "fs ! i = fs'' ! (i - 1)" 
     unfolding fs''[symmetric] using inv'(7) i i0 by auto
   from res have upw': "upw' = False" "i' = i - 1" by auto
   let ?dmu_repr' = "swap_mu m mu i (?dmus i (i - 1)) (?d (i - 1)) (?d i) (?d (Suc i))" 
   let ?d'i = "(?d (Suc i) * ?d (i - 1) + ?dmus i (i - 1) * ?dmus i (i - 1)) div (?d i)" 
-  from res[unfolded mu' nim1 ni, unfolded fi d_state_i] 
+  from res[unfolded fi d_state_i] 
   have res: "upw' = False" "i' = i - 1" 
     "state' = (dec_i (update_im1 (update_i f (fs'' ! i)) (fs'' ! (i - 1))), 
        ?dmu_repr', iarray_update ds i ?d'i)" by auto 
@@ -515,75 +456,8 @@ proof -
   also have "?xs = map ((!) fs'') [0..<m]" unfolding fs''[symmetric]
     by (intro nth_equalityI, insert i i0 len, auto simp: nth_append, rename_tac ii, case_tac "ii \<in> {i-1,i}", auto)
   finally have f_repr: "list_repr (i - 1) ?fr (map ((!) fs'') [0..<m])" .    
-  have rat': "ii < m \<Longrightarrow> j < ii \<Longrightarrow> ?r (?idmu' ii j) = ?dmu' ii j" for ii j 
-    using d\<mu>[OF swap(1), of j ii] 
-     using LLL_mu_d_Z[OF swap(1), of j ii] by simp
-  have rat: "ii < m \<Longrightarrow> j < ii \<Longrightarrow> ?dmu ii j = ?r (?dmus ii j)"
-     "ii < m \<Longrightarrow> j < ii \<Longrightarrow> ?idmu ii j = ?dmus ii j" for ii j 
-    using LLL_mu_d_Z[OF inv, of j ii]
-    using dmu_ij_state[of j ii, symmetric] unfolding d\<mu>_def by auto
   from i0 have sim1: "Suc (i - 1) = i" by simp
   from LLL_d_Suc[OF inv im1, unfolded sim1] 
-  have dn_im1: "?dn (i - 1) = ?r (?d i) * ?r (?d (i - 1))" by simp
-  note pos = Gramian_determinant[OF inv le_refl] 
-  from pos(2) have "?r (gs.Gramian_determinant fs m) \<noteq> 0" by auto
-  from this[unfolded pos(1)] have nzero: "ii < m \<Longrightarrow> ?n ii \<noteq> 0" for ii by auto
-  note pos = Gramian_determinant[OF swap(1) le_refl] 
-  from pos(2) have "?r (gs.Gramian_determinant fs'' m) \<noteq> 0" by auto
-  from this[unfolded pos(1)] have nzero': "ii < m \<Longrightarrow> ?n' ii \<noteq> 0" for ii by auto
-  have dzero: "ii \<le> m \<Longrightarrow> ?d ii \<noteq> 0" for ii using LLL_d_pos[OF inv, of ii] by auto
-  have dzero': "ii \<le> m \<Longrightarrow> ?d' ii \<noteq> 0" for ii using LLL_d_pos[OF swap(1), of ii] by auto
-
-  {
-    define start where "start = ?dmu' i (i - 1)" 
-    have "start = (?n' (i - 1) / ?n (i - 1) * ?r (?d i)) * ?mu' i (i - 1)" 
-      using start_def swap(6)[of i] i i0 by simp
-    also have "?mu' i (i - 1) = ?mu i (i - 1) * (?n (i - 1) / ?n' (i - 1))" 
-      using mu' by simp
-    also have "(?n' (i - 1) / ?n (i - 1) * ?r (?d i)) * \<dots> = ?r (?d i) * ?mu i (i - 1)" 
-      using nzero[OF im1] nzero'[OF im1] by simp
-    also have "\<dots> = ?dmu i (i - 1)" using i0 by simp
-    finally have "?dmu' i (i - 1) = ?dmu i (i - 1)" unfolding start_def .
-  } note dmu_i_im1 = this
-  have mu_ij: "ii < m \<Longrightarrow> j < ii \<Longrightarrow> ?dmus ii j = ?idmu ii j" for ii j
-    using dmu_ij_state[symmetric, of j ii] dmu[of j ii] by auto
-  note mu_ii = mu_ij[OF i \<open>i - 1 < i\<close>]
-  { (* d updates *)
-    fix j
-    assume j: "j \<le> m" 
-    define start where "start = ?d' j" 
-    {
-      assume jj: "j \<noteq> i" 
-      have "?r start = ?r (?d' j)" unfolding start_def ..
-      also have "?r (?d' j) = ?r (?d j)" 
-        by (subst swap(6), insert j jj, auto)
-      finally have "start = ?d j" by simp
-    } note d_j = this 
-    {
-      assume jj: "j = i"  
-      have "?r start = ?r (?d' i)" unfolding start_def unfolding jj by simp
-      also have "\<dots> = ?n' (i - 1) / ?n (i - 1) * ?r (?d i)" 
-        by (subst swap(6), insert i, auto)
-      also have "?n' (i - 1) = (?r (?d i) / ?r (?d i)) * (?r (?d i) / ?r (?d i)) 
-          * (?n i  + ?mu i (i - 1) * ?mu i (i - 1) * ?n (i - 1))" 
-        by (subst swap(4)[OF im1], insert dzero[of i], insert i, simp)
-      also have "?n (i - 1) = ?r (?d i) / ?r (?d (i - 1))" 
-        unfolding LLL_d_Suc[OF inv im1, unfolded sim1] using dzero[of "i - 1"] i0 i by simp
-      finally have "?r start = 
-          ((?r (?d i) * ?n i) * ?r (?d (i - 1)) + ?dmu i (i - 1) * ?dmu i (i - 1)) 
-          / (?r (?d i))" 
-        using i0 dzero[of i] i dzero[of "i - 1"]
-        by (simp add: ring_distribs)
-      also have "?r (?d i) * ?n i = ?r (?d (Suc i))" 
-        unfolding LLL_d_Suc[OF inv i] by simp
-      also have "?dmu i (i - 1) = ?r (?dmus i (i - 1))" by (rule rat, insert i i0, auto)
-      finally have "?r start = (?r (?d (Suc i) * ?d (i - 1) + ?dmus i (i - 1) * ?dmus i (i - 1)))
-          / (?r (?d i))" by simp
-      from division_to_div[OF this]
-      have "start = ?d'i" .
-    } note d_i = this
-    from d_j d_i have "?d' j = (if j = i then ?d'i else ?d j)" unfolding start_def by auto
-  } note d_update = this
   have "length fs'' = m" 
     using fs'' inv'(7) by auto
   hence fs_id: "fs' = fs''" unfolding fs' res fs_state.simps using of_list_repr[OF f_repr] 
@@ -591,12 +465,14 @@ proof -
   from to_mu_repr[OF impl inv state] have mu: "mu_repr mu fs" by auto
   from to_d_repr[OF impl inv state] have d_repr: "d_repr ds fs" by auto
   note mu_def = mu[unfolded mu_repr_def]
+  note updates = d_d\<mu>_swap[OF inv i i0 cond fs''[symmetric]]
+  note dmu_ii = dmu_ij_state[OF \<open>i - 1 < i\<close> i]
   show ?g1 unfolding fs_id LLL_impl_inv.simps res
   proof (intro conjI f_repr)
     show "d_repr (iarray_update ds i ?d'i) fs''" 
-      unfolding d_repr[unfolded d_repr_def] iarray_update_def d_repr_def iarray_length_of_fun
-      by (rule iarray_of_fun_cong, subst d_update, auto simp: nth_append intro: arg_cong)
-    show "mu_repr ?dmu_repr' fs''" unfolding mu_repr_def swap_mu_def Let_def mu_ii
+      unfolding d_repr[unfolded d_repr_def] iarray_update_def d_repr_def iarray_length_of_fun dmu_ii
+      by (rule iarray_of_fun_cong, subst updates(1), auto simp: nth_append intro: arg_cong)
+    show "mu_repr ?dmu_repr' fs''" unfolding mu_repr_def swap_mu_def Let_def dmu_ii 
     proof (rule iarray_of_fun_cong, goal_cases)
       case ii: (1 ii) 
       show ?case
@@ -606,126 +482,35 @@ proof -
         have mu: "IArray.sub mu ii = IArray.of_fun (d\<mu> fs ii) ii" 
           using ii unfolding mu_def by auto
         show ?thesis unfolding id if_True if_False mu
-        proof (rule iarray_of_fun_cong, goal_cases)
-          case j: (1 j)
-          with ii swap(5)[of ii j, unfolded id if_False] swap(6)[of "Suc j"] i i0 small show ?case 
-            by (auto simp: d\<mu>_def)
-        qed
+          by (rule iarray_of_fun_cong, insert small ii i i0, subst updates(2), simp_all, linarith) 
       next
         case False
-        hence iFalse: "(ii < i - 1) = False" by simp
+        hence iFalse: "(ii < i - 1) = False" by auto
         show ?thesis unfolding iFalse if_False if_distrib[of "\<lambda> f. IArray.of_fun f ii", symmetric]
           dmu_ij_state.simps[of f mu ds, folded state, symmetric] 
         proof (rule iarray_of_fun_cong, goal_cases)
           case j: (1 j)
-          let ?start = "?idmu' ii j" 
-          define start where "start = ?start" 
-          from j ii have sj: "Suc j \<le> m" by auto
-          note mu_ij[OF ii j]
-          note rat'[OF ii j]
-          note rat_ii_j = rat[OF ii j]
-          note swaps = swap(5)[OF ii j] swap(6)[OF sj]
+          note upd = updates(2)[OF ii j] dmu_ii dmu_ij_state[OF j ii] if_distrib[of "\<lambda> x. x j"]
+          note simps = dmu_ij_state[OF _ ii] dmu_ij_state[OF _ im1] dmu_ij_state[OF _ i]
           from False consider (I) "ii = i" "j = i - 1" | (Is) "ii = i" "j \<noteq> i - 1" | 
             (Im1) "ii = i - 1" | (large) "ii > i" by linarith
-          thus ?case
-          proof cases
-            case iii: Is
-            with j have j: "j < i - 1" by auto
-            have "?start = ?idmu (i - 1) j" unfolding swaps d\<mu>_def using iii ii i j i0 by auto
-            also have "\<dots> = ?dmus (i - 1) j" by (subst mu_ij, insert iii i j , auto)
-            finally show ?thesis using iii j by auto
+          thus ?case 
+          proof (cases)
+            case (I)
+            show ?thesis unfolding upd using I by auto
           next
-            case iii: I
-            with j i0 have j: "j = i - 1" "Suc j = i" by auto
-            have "?r (?start) = ?dmu' ii j" by fact
-            also have "\<dots> = ?dmu i (i - 1)" unfolding iii j using dmu_i_im1 i0 by simp 
-            also have "\<dots> = ?dmu ii j" unfolding j iii ..
-            also have "\<dots> = ?r (?idmu ii j)" using rat_ii_j by simp
-            finally have "?r ?start = ?r (?idmu ii j)" .
-            hence "?start = ?idmu ii j" by simp
-            thus ?thesis using iii by auto
+            case (Is)
+            show ?thesis unfolding upd using Is j simps by auto
           next
-            case iii: Im1
-            have "?start = ?idmu i j" unfolding swaps d\<mu>_def using iii ii i j i0 by auto
-            also have "\<dots> = ?dmus i j" by (subst mu_ij, insert iii i j, auto)
-            finally have id: "?start = ?dmus i j" .
-            from iii have id': "(i < ii) = False" "(ii = i) = False" using i0 by auto
-            show ?thesis unfolding id id' if_False ..
+            case (Im1)
+            hence id: "(i < ii) = False" "(ii = i) = False" "(ii = i - 1) = True" using i0 by auto
+            show ?thesis unfolding upd unfolding id if_False if_True by (rule simps, insert j Im1, auto)
           next
-            case iii: large
-            hence id': "(i < ii) = True" by auto
-            consider (jj) "j \<noteq> i - 1" "j \<noteq> i" | (ji) "j = i" | (jim1) "j = i - 1" by linarith
-            thus ?thesis 
-            proof cases
-              case jj
-              have "?start = ?idmu ii j" unfolding swaps d\<mu>_def using iii ii i jj i0 by auto
-              also have "\<dots> = ?dmus ii j" by fact
-              finally have id: "?start = ?dmus ii j" .
-              show ?thesis unfolding id id' if_True using jj by auto
-            next
-              case ji
-              have "?r start = ?dmu' ii j" unfolding start_def by fact
-              also have "?r (?d' (Suc j)) = ?r (?d (Suc i))" unfolding swaps unfolding ji by simp 
-              also have "?mu' ii j = ?mu ii (i - 1) - ?mu i (i - 1) * ?mu ii i" 
-                unfolding swaps unfolding ji using i0 iii by auto
-              also have "?r (?d (Suc i)) * \<dots> = ?r (?d (Suc i)) * ?r (?d i) / ?r (?d i) * \<dots>" 
-                using dzero[of i] i by auto
-              also have "\<dots> =  
-                (?r (?d (Suc i)) * ?dmu ii (i - 1) - ?dmu i (i - 1) * ?dmu ii i) / ?r (?d i)" 
-                using i0 by (simp add: field_simps)
-              also have "\<dots> = 
-                (?r (?d (Suc i)) * ?r (?dmus ii (i - 1)) - ?r (?dmus i (i - 1)) * ?r (?dmus ii i)) / ?r (?d i)" 
-                by (subst (1 2 3) rat, insert i i0 ii iii, auto)
-              also have "\<dots> = ?r (?d (Suc i) * ?dmus ii (i - 1) - ?dmus i (i - 1) * ?dmus ii i) / ?r (?d i)" 
-                (is "_ = of_int ?x / _")
-                by simp
-              finally have "?r start = ?r ?x / ?r (?d i)" .
-              from division_to_div[OF this]
-              have id: "?start = (?d (Suc i) * ?dmus ii (i - 1) - ?dmus i (i - 1) * ?dmus ii i) div ?d i" 
-                unfolding start_def .
-              show ?thesis unfolding id' id if_True using mu_ii using ji by auto
-            next
-              case jim1
-              hence id'': "(j = i - 1) = True" "(j = i) = False" using i0 by auto
-              have "?r (start) = ?dmu' ii j" unfolding start_def by fact
-              also have "?mu' ii j = ?mu ii (i - 1) * ?mu' i (i - 1) +
-                                 ?mu ii i * ?n i / ?n' (i - 1)" (is "_ = ?x1 + ?x2")
-                unfolding swaps unfolding jim1 using i0 iii by auto
-              also have "?r (?d' (Suc j)) * (?x1 + ?x2)
-                  = ?r (?d' (Suc j)) * ?x1 + ?r (?d' (Suc j)) * ?x2" by (simp add: ring_distribs)
-              also have "?r (?d' (Suc j)) * ?x1 = ?dmu' i (i - 1) * (?r (?d i) * ?mu ii (i - 1))
-                / ?r (?d i)"
-                unfolding jim1 using i0 dzero[of i] i by simp
-              also have "?dmu' i (i - 1) = ?dmu i (i - 1)" by fact
-              also have "?r (?d i) * ?mu ii (i - 1) = ?dmu ii (i - 1)" using i0 by simp
-              also have "?r (?d' (Suc j)) = ?n' (i - 1) * ?r (?d i) / ?n (i - 1)" 
-                unfolding swaps unfolding jim1 using i0 i by simp 
-              also have "\<dots> * ?x2 = (?n i * ?r (?d i)) / ?n (i - 1) * ?mu ii i" 
-                using i0 nzero'[of "i - 1"] i by simp
-              also have "?n i * ?r (?d i) = ?r (?d (Suc i))" unfolding LLL_d_Suc[OF inv i] ..
-              also have "?r (?d (Suc i)) / ?n (i - 1) * ?mu ii i = ?dmu ii i / ?n (i - 1)" by simp
-              also have "\<dots> = ?dmu ii i * ?r (?d (i - 1) * ?d (i - 1)) / ?dn (i - 1)" 
-                using dzero[of "i - 1"] i by simp
-              finally have "?r start = (?dmu i (i - 1) * ?dmu ii j * ?dn (i - 1) + 
-                 ?dmu ii i * (?r (?d (i - 1) * ?d (i - 1) * ?d i))) / (?r (?d i) * ?dn (i - 1))"
-                unfolding add_divide_distrib of_int_mult jim1
-                using dzero[of "i - 1"] nzero[of "i - 1"] i dzero[of i] by auto
-              also have "\<dots> = (?r (?dmus i (i - 1)) * ?r (?dmus ii j) * (?r (?d i) * ?r (?d (i - 1))) + 
-                 ?r (?dmus ii i) * (?r (?d (i - 1) * ?d (i - 1) * ?d i))) / (?r (?d i) * (?r (?d i) * ?r (?d (i - 1))))" 
-                unfolding dn_im1 
-                by (subst (1 2 3) rat, insert i ii iii i0 j, auto)
-              also have "\<dots> = (?r (?dmus i (i - 1)) * ?r (?dmus ii j) + ?r (?dmus ii i) * ?r (?d (i - 1))) 
-                  / ?r (?d i)" 
-                unfolding of_int_mult using dzero[of i] dzero[of "i - 1"] i i0 by (auto simp: field_simps)
-              also have "\<dots> = ?r (?dmus i (i - 1) * ?dmus ii j + ?dmus ii i * ?d (i - 1)) / ?r (?d i)" 
-                (is "_ = of_int ?x / _" )
-                by simp
-              finally have "?r start = ?r ?x / ?r (?d i)" .
-              from division_to_div[OF this]
-              have id: "?start = (?dmus i (i - 1) * ?dmus ii j + ?dmus ii i * ?d (i - 1)) div (?d i)" 
-                unfolding start_def .
-              show ?thesis unfolding id id' id'' if_True if_False mu_ii ..
-            qed
+            case (large)
+            hence "i - 1 < ii" "i < ii" by auto
+            note simps = simps(1)[OF this(1)] simps(1)[OF this(2)]
+            from large have id: "(i < ii) = True" "(ii = i - 1) = False" "\<And> x. (ii = i \<and> x) = False" by auto
+            show ?thesis unfolding id if_True if_False upd simps by auto
           qed
         qed
       qed
@@ -771,25 +556,13 @@ proof (atomize(full), goal_cases)
     note d_state = d_state[OF impl inv state]
     from i have le: "i - 1 \<le> m" " i \<le> m" "Suc i \<le> m" by auto
     note d_state = d_state[OF le(1)] d_state[OF le(2)] d_state[OF le(3)]
-    note res = res[unfolded def id if_False Let_def state'' quot split d_state] 
+    note res = res[unfolded def id if_False Let_def state'' quot split d_state 
+        d_sq_norm_comparison[OF inv quot i False]] 
     note pos = LLL_d_pos[OF inv le(1)] LLL_d_pos[OF inv le(2)] quotient_of_denom_pos[OF quot]
     from False have sim1: "Suc (i - 1) = i" by simp
     let ?r = "rat_of_int" 
     let ?x = "sq_norm (gso fs'' (i - 1))" 
     let ?y = "\<alpha> * sq_norm (gso fs'' i)" 
-    have "(d fs'' i * d fs'' i * denom \<le> num * d fs'' (i - 1) * d fs'' (Suc i))
-      = (?r (d fs'' i * d fs'' i * denom) \<le> ?r (num * d fs'' (i - 1) * d fs'' (Suc i)))" (is "?cond = _") by presburger
-    also have "\<dots> = (?r (d fs'' i) * ?r (d fs'' i) * ?r denom \<le> ?r num * ?r (d fs'' (i - 1)) * ?r (d fs'' (Suc i)))" by simp
-    also have "\<dots> = (?r (d fs'' i) * ?r (d fs'' i) \<le> \<alpha> * ?r (d fs'' (i - 1)) * ?r (d fs'' (Suc i)))" 
-      using pos unfolding quotient_of_div[OF quot] by (auto simp: field_simps)
-    also have "\<dots> = (?r (d fs'' i) / ?r (d fs'' (i - 1)) \<le> \<alpha> * (?r (d fs'' (Suc i)) / ?r (d fs'' i)))" 
-      using pos by (auto simp: field_simps)
-    also have "?r (d fs'' i) / ?r (d fs'' (i - 1)) = ?x" using LLL_d_Suc[OF inv, of "i - 1"] pos i False
-      by (auto simp: field_simps)
-    also have "\<alpha> * (?r (d fs'' (Suc i)) / ?r (d fs'' i)) = ?y" using LLL_d_Suc[OF inv i] pos i False
-      by (auto simp: field_simps)
-    finally have "?cond = (?x \<le> ?y)" .
-    note res = res[unfolded this]
     show ?thesis
     proof (cases "?x \<le> ?y")
       case True
