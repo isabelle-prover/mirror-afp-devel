@@ -104,6 +104,138 @@ lemma norm_smult: "norm ((a :: real) *s x) = abs a * norm x"
   unfolding norm_vec_def 
   by (metis norm_scaleR norm_vec_def scalar_mult_eq_scaleR)
 
+lemma nonneg_mat_mult: 
+  "nonneg_mat A \<Longrightarrow> nonneg_mat B \<Longrightarrow> A \<in> carrier_mat nr n
+  \<Longrightarrow> B \<in> carrier_mat n nc \<Longrightarrow> nonneg_mat (A * B)" 
+  unfolding nonneg_mat_def
+  by (auto simp: elements_mat_def scalar_prod_def intro!: sum_nonneg)
+
+lemma nonneg_mat_power: assumes "A \<in> carrier_mat n n" "nonneg_mat A" 
+  shows "nonneg_mat (A ^\<^sub>m k)"
+proof (induct k)
+  case 0
+  thus ?case by (auto simp: nonneg_mat_def)
+next
+  case (Suc k)
+  from nonneg_mat_mult[OF this assms(2) _ assms(1), of n] assms(1)
+  show ?case by auto
+qed
+
+lemma nonneg_matD: assumes "nonneg_mat A"
+  and "i < dim_row A" and "j < dim_col A"
+shows "A $$ (i,j) \<ge> 0"
+  using assms unfolding nonneg_mat_def elements_mat by auto
+
+lemma (in comm_ring_hom) similar_mat_wit_hom: assumes
+  "similar_mat_wit A B C D"
+shows "similar_mat_wit (mat\<^sub>h A) (mat\<^sub>h B) (mat\<^sub>h C) (mat\<^sub>h D)"
+proof -
+  obtain n where n: "n = dim_row A" by auto
+  note * = similar_mat_witD[OF n assms]
+  from * have [simp]: "dim_row C = n" by auto
+  note C = *(6) note D = *(7)
+  note id = mat_hom_mult[OF C D] mat_hom_mult[OF D C]
+  note ** = *(1-3)[THEN arg_cong[of _ _ "mat\<^sub>h"], unfolded id]
+  note mult = mult_carrier_mat[of _ n n]
+  note hom_mult = mat_hom_mult[of _ n n _ n]
+  show ?thesis unfolding similar_mat_wit_def Let_def unfolding **(3) using **(1,2)
+    by (auto simp: n[symmetric] hom_mult simp: *(4-) mult)
+qed
+
+lemma (in comm_ring_hom) similar_mat_hom:
+  "similar_mat A B \<Longrightarrow> similar_mat (mat\<^sub>h A) (mat\<^sub>h B)"
+  using similar_mat_wit_hom[of A B C D for C D]
+  by (smt similar_mat_def)
+
+lemma det_dim_1: assumes A: "A \<in> carrier_mat n n"
+  and n: "n = 1"
+shows "Determinant.det A = A $$ (0,0)"
+  by (subst laplace_expansion_column[OF A[unfolded n], of 0], insert A n,
+    auto simp: cofactor_def mat_delete_def)
+
+lemma det_dim_2: assumes A: "A \<in> carrier_mat n n"
+  and n: "n = 2"
+shows "Determinant.det A = A $$ (0,0) * A $$ (1,1) - A $$ (0,1) * A $$ (1,0)"
+proof -
+  have set: "(\<Sum>i<(2 :: nat). f i) = f 0 + f 1" for f
+    by (subst sum.cong[of _ "{0,1}" f f], auto)
+  show ?thesis
+    apply (subst laplace_expansion_column[OF A[unfolded n], of 0], insert A n,
+      auto simp: cofactor_def mat_delete_def set)
+    apply (subst (1 2) det_dim_1, auto)
+    done
+qed
+
+
+lemma jordan_nf_root_char_poly: fixes A :: "'a :: {semiring_no_zero_divisors, idom} mat"
+  assumes "jordan_nf A n_as" 
+  and "(m, lam) \<in> set n_as" 
+shows "poly (char_poly A) lam = 0" 
+proof -
+  from assms have m0: "m \<noteq> 0" unfolding jordan_nf_def by force
+  from split_list[OF assms(2)] obtain as bs where nas: "n_as = as @ (m, lam) # bs" by auto
+  show ?thesis using m0
+    unfolding jordan_nf_char_poly[OF assms(1)] nas poly_prod_list prod_list_zero_iff by (auto simp: o_def)
+qed
+
+lemma inverse_power_tendsto_zero:
+  "(\<lambda>x. inverse ((of_nat x :: 'a :: real_normed_div_algebra) ^ Suc d)) \<longlonglongrightarrow> 0"
+proof (rule filterlim_compose[OF tendsto_inverse_0], 
+  intro filterlim_at_infinity[THEN iffD2, of 0] allI impI, goal_cases) 
+  case (2 r)
+  let ?r = "nat (ceiling r) + 1" 
+  show ?case
+  proof (intro eventually_sequentiallyI[of ?r], unfold norm_power norm_of_nat)
+    fix x
+    assume r: "?r \<le> x" 
+    hence x1: "real x \<ge> 1" by auto 
+    have "r \<le> real ?r" by linarith
+    also have "\<dots> \<le> x" using r by auto
+    also have "\<dots> \<le> real x ^ Suc d" using x1 by simp
+    finally show "r \<le> real x ^ Suc d" .
+  qed 
+qed simp
+
+lemma inverse_of_nat_tendsto_zero:
+  "(\<lambda>x. inverse (of_nat x :: 'a :: real_normed_div_algebra)) \<longlonglongrightarrow> 0"
+  using inverse_power_tendsto_zero[of 0] by auto
+
+lemma poly_times_exp_tendsto_zero: assumes b: "norm (b :: 'a :: real_normed_field) < 1" 
+  shows "(\<lambda> x. of_nat x ^ k * b ^ x) \<longlonglongrightarrow> 0" 
+proof (cases "b = 0")
+  case False
+  define nla where "nla = norm b" 
+  define s where "s = sqrt nla" 
+  from b False have nla: "0 < nla" "nla < 1" unfolding nla_def by auto
+  hence s: "0 < s" "s < 1" unfolding s_def by auto
+  { 
+    fix x
+    have "s^x * s^x = sqrt (nla ^ (2 * x))"
+      unfolding s_def power_add[symmetric] 
+      unfolding real_sqrt_power[symmetric] 
+      by (rule arg_cong[of _ _ "\<lambda> x. sqrt (nla ^ x)"], simp)
+    also have "\<dots> = nla^x" unfolding power_mult real_sqrt_power
+      using nla by simp
+    finally have "nla^x = s^x * s^x" by simp
+  } note nla_s = this
+  show "(\<lambda>x. of_nat x ^ k * b ^ x) \<longlonglongrightarrow> 0"        
+  proof (rule tendsto_norm_zero_cancel, unfold norm_mult norm_power norm_of_nat nla_def[symmetric] nla_s
+       mult.assoc[symmetric])  
+    from poly_exp_constant_bound[OF s, of 1 k] obtain p where 
+      p: "real x ^ k * s^x \<le> p" for x by (auto simp: ac_simps)              
+    have "norm (real x ^ k * s ^ x) = real x ^ k * s^x" for x using s by auto
+    with p have p: "norm (real x ^ k * s ^ x) \<le> p" for x by auto
+    from s have s: "norm s < 1" by auto
+    show "(\<lambda>x. real x ^ k * s ^ x * s ^ x) \<longlonglongrightarrow> 0" 
+      by (rule lim_null_mult_left_bounded[OF _ LIMSEQ_power_zero[OF s], of _ p], insert p, auto)
+  qed 
+next
+  case True
+  show ?thesis unfolding True
+    by (subst tendsto_cong[of _ "\<lambda> x. 0"], rule eventually_sequentiallyI[of 1], auto)
+qed
+
+
 lemma (in linorder_topology) tendsto_Min: assumes I: "I \<noteq> {}" and fin: "finite I"
   shows "(\<And>i. i \<in> I \<Longrightarrow> (f i \<longlongrightarrow> a i) F) \<Longrightarrow> ((\<lambda>x. Min ((\<lambda> i. f i x) ` I)) \<longlongrightarrow> 
     (Min (a ` I) :: 'a)) F" 
@@ -156,6 +288,10 @@ proof
     unfolding ereal_less_eq using poly_pinfty_ge[OF assms, of b]
     by (meson of_nat_le_iff order_trans real_arch_simple)
 qed
+
+lemma div_lt_nat: "(j :: nat) < x * y \<Longrightarrow> j div x < y" 
+  by (simp add: less_mult_imp_div_less mult.commute)
+
 
 definition diagvector :: "('n \<Rightarrow> 'a :: semiring_0) \<Rightarrow> 'a ^ 'n ^ 'n" where
   "diagvector x = (\<chi> i. \<chi> j. if i = j then x i else 0)" 
