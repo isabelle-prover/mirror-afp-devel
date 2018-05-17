@@ -308,7 +308,7 @@ next
       by (rule nth_equalityI, insert j i, auto simp: rev_nth fs''[symmetric])
     have nth_id: "[0..<m] ! i = i" using i by auto
     note res = res[unfolded False map_id_f id if_False]
-    have fi: "fi' = fs'' ! i" unfolding fs''[symmetric] fi'_def using inv(7) i by auto
+    have fi: "fi' = fs'' ! i" unfolding fs''[symmetric] fi'_def using inv(6) i by auto
     let ?fn = "\<lambda> fs i. (fs ! i, sq_norm (gso fs i))" 
     let ?d = "\<lambda> fs i. d fs (Suc i)" 
     let ?mu' = "IArray.of_fun
@@ -352,7 +352,7 @@ next
     have repr_id_d: 
       "map (d fs) [0..<Suc m] = map (d fs'') [0..<Suc m]"
       by (rule nth_equalityI, force, intro allI impI, insert step(4,6), auto simp: nth_append)
-    have mu: "fs ! i - ?c \<cdot>\<^sub>v fs ! j = fs'' ! i" unfolding fs''[symmetric] using inv(7) i by auto
+    have mu: "fs ! i - ?c \<cdot>\<^sub>v fs ! j = fs'' ! i" unfolding fs''[symmetric] using inv(6) i by auto
     note res = res[unfolded mu' mu d']
     show ?thesis unfolding step(3)[symmetric]
     proof (rule Suc(1)[OF _ step(1,2) res _ i])
@@ -439,7 +439,7 @@ proof -
   note dmu' = d\<mu>[OF swap(1)]
   note inv' = LLL_invD[OF inv]
   have fi: "fs ! (i - 1) = fs'' ! i" "fs ! i = fs'' ! (i - 1)" 
-    unfolding fs''[symmetric] using inv'(7) i i0 by auto
+    unfolding fs''[symmetric] using inv'(6) i i0 by auto
   from res have upw': "upw' = False" "i' = i - 1" by auto
   let ?dmu_repr' = "swap_mu m mu i (?dmus i (i - 1)) (?d (i - 1)) (?d i) (?d (Suc i))" 
   let ?d'i = "(?d (Suc i) * ?d (i - 1) + ?dmus i (i - 1) * ?dmus i (i - 1)) div (?d i)" 
@@ -459,7 +459,7 @@ proof -
   from i0 have sim1: "Suc (i - 1) = i" by simp
   from LLL_d_Suc[OF inv im1, unfolded sim1] 
   have "length fs'' = m" 
-    using fs'' inv'(7) by auto
+    using fs'' inv'(6) by auto
   hence fs_id: "fs' = fs''" unfolding fs' res fs_state.simps using of_list_repr[OF f_repr] 
     by (intro nth_equalityI, auto simp: o_def)
   from to_mu_repr[OF impl inv state] have mu: "mu_repr mu fs" by auto
@@ -612,7 +612,7 @@ qed
 
 lemma initial_state: "LLL_impl_inv (initial_state n m fs_init) 0 fs_init" 
 proof -
-  note conn = gs.main_connect[OF lin_dep, unfolded length_map, OF len refl]
+  note conn = gs.main_connect[OF lin_dep, unfolded length_map, OF len]
   have id: "gram_schmidt n (RAT fs_init) = map (gso fs_init) [0..<m]" 
     using conn by auto
   have f_repr: "list_repr 0 ([], fs_init) (map ((!) fs_init) [0..<m])" 
@@ -628,8 +628,6 @@ proof -
   proof (rule arg_cong[of _ _ IArray], insert jm, induct j)
     case (Suc j)
     hence small: "m - Suc j < m" and [simp]: "Suc (m - Suc j) = m - j" by auto
-    have id0: "snd (gs.main (RAT fs_init)) ! (m - Suc j) = gso fs_init (m - Suc j)" 
-      unfolding conn using Suc by simp 
     from Suc(2-) have id1: "[m - Suc j..<m] = (m - Suc j) # [m - j ..<m]"
       "[m - Suc j..<Suc m] = (m - Suc j) # [m - j ..< Suc m]"
       by (auto simp add: Suc_diff_Suc Suc_le_lessD upt_conv_Cons)
@@ -642,18 +640,18 @@ proof -
     } note conv = this
     from Suc have le: "m - (Suc j) \<le> m" by auto
     note nzero = 
-      gs.Gramian_determinant(2)[OF lin_dep, unfolded length_map, OF len refl le, unfolded conv[OF le]]
+      gs.Gramian_determinant(2)[OF lin_dep, unfolded length_map, OF len le, unfolded conv[OF le]]
     have id': "(int_of_rat (rat_of_int (d fs_init (m - Suc j)) * \<parallel>gso fs_init (m - Suc j)\<parallel>\<^sup>2))
         = d fs_init (m - j)" 
       by (rule int_via_rat_eqI, 
-      unfold gs.Gramian_determinant_div[OF lin_dep, unfolded length_map, OF len refl small, symmetric, unfolded id0],
+      unfold gs.Gramian_determinant_div[OF lin_dep, unfolded length_map, OF len small, symmetric],
       subst (1 2) conv, insert Suc(2-) nzero, auto)      
     show ?case unfolding id1 list.simps norms_to_ds.simps int_times_rat_def id'
       by (intro conjI[OF refl Suc(1)], insert Suc(2-), auto)
   qed simp
   show ?thesis unfolding initial_state_def Let_def LLL_impl_inv.simps gram_schmidt_triv id
     norms_mus_rat_norms_mus 
-    gs.norms_mus[OF Rn, unfolded length_map len, OF gs.mn[OF lin_dep, unfolded length_map, OF len refl]]
+    gs.norms_mus[OF Rn, unfolded length_map len, OF gs.mn[OF lin_dep, unfolded length_map, OF len]]
     fst_conv snd_conv split
     by (intro conjI f_repr d_repr, unfold d_repr[unfolded d_repr_def] int_times_rat_def mu_repr_def d\<mu>_def,
       intro iarray_of_fun_cong, auto simp: nth_append)

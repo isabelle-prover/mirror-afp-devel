@@ -222,7 +222,7 @@ proof -
   proof (rule mult_left_mono; linarith?)
     define l where "l = log base (real A)" 
     define k where "k = 2 * m * m" 
-    from fs_state[OF initial_state] LLL_invD(7)[OF LLL_inv_initial_state]
+    from fs_state[OF initial_state] LLL_invD(6)[OF LLL_inv_initial_state]
     have fs: "fs_state (initial_state n fs_init) = fs_init" by auto
     have "LLL_measure i (fs_state state) \<le> nat (ceiling (m + k * l))" unfolding l_def k_def
       using LLL_measure_approx_fs_init[OF LLL_inv_initial_state \<alpha>_gt m0] unfolding state fs i
@@ -354,7 +354,7 @@ proof -
   have c1: "c1 \<le> initial_gso_cost" and init: "initial_state n fs_init = state1" by auto
   note inv = LLL_inv_initial_state
   note impl = initial_state
-  from fs_state[OF impl LLL_invD(7)[OF inv]] 
+  from fs_state[OF impl LLL_invD(6)[OF inv]] 
   have fs: "fs_state (initial_state n fs_init) = fs_init" by auto
   from basis_reduction_main_cost[of "initial_state n fs_init", unfolded fs, OF impl inv,
     unfolded init main cost_simps] 

@@ -81,16 +81,10 @@ definition LLL_invariant :: "bool \<Rightarrow> nat \<Rightarrow> int vec list \
     (i = m \<longrightarrow> upw)
   )" 
 
-lemma lin_indep_gs_main: assumes "lin_indep fs"
-  and "length fs = m" 
-shows "snd (gs.main (RAT fs)) = map (gso fs) [0 ..< m]" 
-  using assms gs.lin_indpt_list_def gs.gso_carrier'[of _ "RAT fs"] gs.main_connect by auto
-
 lemma LLL_invD: assumes "LLL_invariant upw i fs"
   shows 
   "lin_indep fs" 
   "length (RAT fs) = m" 
-  "snd (gs.main (RAT fs)) = map (gso fs) [0 ..< m]" 
   "set fs \<subseteq> carrier_vec n"
   "\<And> i. i < m \<Longrightarrow> fs ! i \<in> carrier_vec n" 
   "\<And> i. i < m \<Longrightarrow> gso fs i \<in> carrier_vec n" 
@@ -101,7 +95,7 @@ lemma LLL_invD: assumes "LLL_invariant upw i fs"
   "reduced fs i" 
   "upw \<or> \<mu>_small fs i"
   "i = m \<Longrightarrow> upw"
-  using assms gs.lin_indpt_list_def gs.gso_carrier'[of _ "RAT fs"] lin_indep_gs_main[of fs]
+  using assms gs.lin_indpt_list_def gs.gso_carrier'[of _ "RAT fs"] 
   unfolding LLL_invariant_def split gs.reduced_def set_conv_nth by auto
 
 lemma LLL_invI: assumes  
@@ -166,8 +160,8 @@ shows "of_int (gs.Gramian_determinant fs k) = (\<Prod> j<k. sq_norm (gso fs j))"
 proof -
   note inv = LLL_invD[OF Linv]
   have hom: "gs.Gramian_determinant (RAT fs) k = of_int (gs.Gramian_determinant fs k)" 
-    by (rule of_int_Gramian_determinant[of _ fs, unfolded inv(7), OF k], insert inv(5-7) k, auto)
-  show ?g1 ?g2 using gs.Gramian_determinant[OF inv(1-3) k] 
+    by (rule of_int_Gramian_determinant[of _ fs, unfolded inv(6), OF k], insert inv(4-6) k, auto)
+  show ?g1 ?g2 using gs.Gramian_determinant[OF inv(1-2) k] 
     unfolding hom using k by auto
 qed
    
@@ -208,7 +202,7 @@ proof -
   from red red_i i have red: "weakly_reduced fs (Suc i)" 
     unfolding gs.weakly_reduced_def
     by (intro allI impI, rename_tac ii, case_tac "Suc ii = i", auto)
-  from inv(12) upw have sred_i: "\<And> j. j < i \<Longrightarrow> \<bar>\<mu> fs i j\<bar> \<le> 1 / 2" 
+  from inv(11) upw have sred_i: "\<And> j. j < i \<Longrightarrow> \<bar>\<mu> fs i j\<bar> \<le> 1 / 2" 
     unfolding \<mu>_small_def by auto
   from sred sred_i have sred: "reduced fs (Suc i)"
     unfolding gs.reduced_def
@@ -312,15 +306,15 @@ proof -
   also have "?F1 = RAT fs'" unfolding fs' using i len Fij' **
     by (auto simp: map_update)
   finally have indep_F1: "lin_indep fs'" .
-  note conn1 = inv(1-3)
-  note conn2 = indep_F1 F1'(1) lin_indep_gs_main[OF indep_F1 F1(2)]
+  note conn1 = inv(1-2)
+  note conn2 = indep_F1 F1'(1) 
   let ?G = "map ?g [0 ..< m]" 
   let ?G' = "map ?g' [0 ..< m]" 
-  from gs.main_connect[OF conn1] gs.main_connect[OF conn2]
+(*  from gs.main_connect[OF conn1] gs.main_connect[OF conn2]
   have G_def: "gram_schmidt n (RAT fs) = ?G" 
      and G1_def: "gram_schmidt n (RAT fs') = ?G'"
-    by auto
-  from gs.gram_schmidt[OF conn1] gs.gram_schmidt[OF conn2] span_F_F1 len
+    by auto *)
+  from gs.span_gso[OF conn1] gs.span_gso[OF conn2] gs.gso_carrier[OF conn1] gs.gso_carrier[OF conn2] span_F_F1 len 
   have span_G_G1: "gs.span (set ?G) = gs.span (set ?G')"
    and lenG: "length ?G = m" 
    and Gi: "i < length ?G \<Longrightarrow> ?G ! i \<in> Rn"
@@ -390,8 +384,7 @@ proof -
     } note eq_rest = this
     show ?case by (rule linorder_class.linorder_cases[of x i],insert G1_G eq_part eq_rest,auto)
   qed
-  with G_def G1_def 
-  have Hs:"?G' = ?G" by (auto simp:o_def)
+  hence Hs:"?G' = ?G" by (auto simp:o_def)
   have red: "weakly_reduced fs' i" using red unfolding Hs .
   let ?Mi = "M ! i ! j"  
   have Gjn: "dim_vec (fs ! j) = n" using Fij(2) carrier_vecD by blast
@@ -403,7 +396,7 @@ proof -
   have N: "N' \<in> carrier_mat m m" unfolding gram_schmidt.M_def N'_def by auto
   let ?mat = "mat_of_rows n" 
   let ?GsM = "?mat ?G" 
-  have Gs: "?GsM \<in> carrier_mat m n" using G_def by auto
+  have Gs: "?GsM \<in> carrier_mat m n" by auto
   hence GsT: "?GsM\<^sup>T \<in> carrier_mat n m" by auto
   have Gnn: "?mat (RAT fs) \<in> carrier_mat m n" unfolding mat_of_rows_def using len by auto
   have "?mat (RAT fs') = addrow (- ?R c) i j (?mat (RAT fs))" 
@@ -423,10 +416,10 @@ proof -
     by (subst (1 2) assoc_mult_mat[OF _ Gs GsT, of _ m, symmetric], auto)
   have "det (?GsM * ?GsM\<^sup>T) = gs.Gramian_determinant ?G m" 
     unfolding gs.Gramian_determinant_def
-    by (subst gs.Gramian_matrix_alt_def, auto simp: Let_def G_def)
+    by (subst gs.Gramian_matrix_alt_def, auto simp: Let_def)
   also have "\<dots> > 0" 
     by (rule gs.Gramian_determinant(2)[OF gs.orthogonal_imp_lin_indpt_list \<open>length ?G = m\<close>],
-    insert gs.gram_schmidt(2-)[OF conn1], auto)
+      insert gs.orthogonal_gso[OF conn1] gs.gso_carrier[OF conn1], auto)
   finally have "det (?GsM * ?GsM\<^sup>T) \<noteq> 0" by simp
   from vec_space.det_nonzero_congruence[OF EMN this _ _ N] Gs E M
   have EMN: "E * M' = N'" by auto (* lemma 16.12(i), part 2 *) 
@@ -540,7 +533,7 @@ proof -
   from mu_small 
   have mu_small: "\<mu>_small fs i" unfolding \<mu>_small_row_def \<mu>_small_def by auto
   show ?thesis
-    using i mu_small by (intro LLL_invI[OF inv(4,7,8,10,1,11)], auto)
+    using i mu_small by (intro LLL_invI[OF inv(3,6,7,9,1,10)], auto)
 qed     
 
 (* lemma 16.16 (ii), one case *)
@@ -665,7 +658,7 @@ proof -
   let ?mu2 = "\<mu> fs'" 
   let ?g1 = "gso fs" 
   let ?g2 = "gso fs'" 
-  from inv(12)[unfolded \<mu>_small_def]
+  from inv(11)[unfolded \<mu>_small_def]
   have mu_F1_i: "\<And> j. j<i \<Longrightarrow> \<bar>?mu1 i j\<bar> \<le> 1 / 2" by auto
   from mu_F1_i[of "i-1"] have m12: "\<bar>?mu1 i (i - 1)\<bar> \<le> inverse 2" using i0
     by auto
@@ -698,8 +691,8 @@ proof -
   with len' fs' span' indepH have indepH': "lin_indep fs'" unfolding fs'_def using i i0
     by (auto simp: gs.lin_indpt_list_def)
   have lenR': "length (RAT fs') = m" using len' by auto
-  note conn1 = inv(1-3)
-  note conn2 = indepH' lenR' lin_indep_gs_main[OF indepH' len']
+  note conn1 = inv(1-2)
+  note conn2 = indepH' lenR' 
   have fs'_fs: "k < i - 1 \<Longrightarrow> fs' ! k = fs ! k" for k unfolding fs'_def by auto
   { 
     fix k
@@ -922,7 +915,7 @@ proof -
     also have "?g1 i \<bullet> ?mu_f1 = ?mu1 i (i - 1) * (?g1 i \<bullet> ?g1 (i - 1))" 
       by (rule scalar_prod_smult_right, insert gs[OF i] gs[OF \<open>i - 1 < m\<close>], auto)
     also have "?g1 i \<bullet> ?g1 (i - 1) = 0" 
-      using corthogonalD[OF gs.gram_schmidt(2)[OF conn1], of i "i - 1"] i len i0  
+      using orthogonalD[OF gs.orthogonal_gso[OF conn1], of i "i - 1"] i len i0  
       by (auto simp: o_def)
     also have "?mu_f1 \<bullet> ?mu_f1 = ?mu1 i (i - 1) * (?mu_f1 \<bullet> ?g1 (i - 1))" 
       by (rule scalar_prod_smult_right, insert gs[OF i] gs[OF \<open>i - 1 < m\<close>], auto)
@@ -1116,7 +1109,7 @@ proof -
     unfolding \<mu>_small_def
   proof (intro allI impI, goal_cases)
     case (1 j)
-    show ?case using inv(12) 1 unfolding mu'_mu_i_im1_j[OF 1] \<mu>_small_def by auto
+    show ?case using inv(11) 1 unfolding mu'_mu_i_im1_j[OF 1] \<mu>_small_def by auto
   qed      
       
   (* invariant is established *)
@@ -1246,8 +1239,6 @@ proof -
     and lenH: "length fs = m" 
     and H: "set fs \<subseteq> carrier_vec n" 
     by (auto simp: gs.lin_indpt_list_def gs.reduced_def)
-  from gs.main_connect[OF basis _ refl, of m] lenH
-  have gs: "snd (gs.main (RAT fs)) = map (gso fs) [0..<m]" by auto
   from lin_dep have G: "set fs_init \<subseteq> carrier_vec n" unfolding gs.lin_indpt_list_def by auto
   with m0 len have "dim_vec (hd fs_init) = n" by (cases fs_init, auto)
   from v m0 lenH v have v: "v = fs ! 0" by (cases fs, auto)
@@ -1267,7 +1258,7 @@ proof -
     with lattice_of_of_int[OF H h(1)]
     have "?h \<in> gs.lattice_of ?F - {0\<^sub>v n}" by auto
   } 
-  from gs.weakly_reduced_imp_short_vector[OF basis _ gs red this a1] lenH
+  from gs.weakly_reduced_imp_short_vector[OF basis _ red this a1] lenH
   show "h \<in> L - {0\<^sub>v n} \<Longrightarrow> ?r (sq_norm v) \<le> \<alpha> ^ (m - 1) * ?r (sq_norm h)"
     unfolding L v by (auto simp: sq_norm_of_int)
   from m0 H lenH show vn: "v \<in> carrier_vec n" unfolding v by (cases fs, auto)
@@ -1294,14 +1285,14 @@ proof -
   note inv = LLL_invD[OF Linv]
   from inv have F: "RAT fs ! 0 \<in> Rn" "fs ! 0 \<in> carrier_vec n" using m by auto
   from m have upt: "[0..< m] = 0 # [1 ..< m]" using upt_add_eq_append[of 0 1 "m - 1"] by auto
-  from inv(7) m have "map_vec ?r (fs ! 0) \<noteq> 0\<^sub>v n" using gs.lin_indpt_list_nonzero[OF inv(1)]
+  from inv(6) m have "map_vec ?r (fs ! 0) \<noteq> 0\<^sub>v n" using gs.lin_indpt_list_nonzero[OF inv(1)]
     unfolding set_conv_nth by force
   hence F0: "fs ! 0 \<noteq> 0\<^sub>v n" by auto
   hence "sq_norm (fs ! 0) \<noteq> 0" using F by simp
   hence 1: "sq_norm (fs ! 0) \<ge> 1" using sq_norm_vec_ge_0[of "fs ! 0"] by auto
   from gbnd m have "sq_norm (gso fs 0) \<le> of_nat A" unfolding g_bound_def by auto
   also have "gso fs 0 = RAT fs ! 0" unfolding upt using F by (simp add: gs.gso.simps[of _ 0])
-  also have "RAT fs ! 0 = map_vec ?r (fs ! 0)" using inv(7) m by auto
+  also have "RAT fs ! 0 = map_vec ?r (fs ! 0)" using inv(6) m by auto
   also have "sq_norm \<dots> = ?r (sq_norm (fs ! 0))" by (simp add: sq_norm_of_int)
   finally show ?thesis using 1 by (cases A, auto)
 qed
@@ -1399,7 +1390,7 @@ proof -
       using sq_norm_vec_ge_0[of "fs_init ! i"] by auto
     also have "\<dots> = sq_norm (RAT fs_init ! i)" unfolding sq_norm_of_int[symmetric] using fs_init len i by auto
     finally have "sq_norm (RAT fs_init ! i) \<le> rat_of_nat A" .
-    with gs.sq_norm_gso_le_f[OF lin_dep _ refl i] len
+    with gs.sq_norm_gso_le_f[OF lin_dep _ i] len
     have g_bnd: "\<parallel>gs.gso (RAT fs_init) i\<parallel>\<^sup>2 \<le> rat_of_nat A" by simp
     note f_bnd g_bnd
   }

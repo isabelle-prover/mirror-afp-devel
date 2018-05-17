@@ -245,8 +245,8 @@ locale gram_schmidt_rat = gram_schmidt n "TYPE(rat)"
 begin
 
 context
-  fixes fs vs and m::nat
-  assumes con_assms: "lin_indpt_list fs" "length fs = m" "snd (main fs) = vs"
+  fixes fs and m::nat
+  assumes con_assms: "lin_indpt_list fs" "length fs = m"
 begin
 
 context
@@ -345,18 +345,18 @@ qed
 
 lemma Gramian_determinant_div:
   assumes "l < m"
-  shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>vs ! l\<parallel>\<^sup>2"
+  shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>gso fs l\<parallel>\<^sup>2"
 proof -
   have "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = 
-             (\<Prod>j<Suc l. \<parallel>vs ! j\<parallel>\<^sup>2) / (\<Prod>j<l. \<parallel>vs ! j\<parallel>\<^sup>2)"
+             (\<Prod>j<Suc l. \<parallel>gso fs j\<parallel>\<^sup>2) / (\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2)"
     using con_assms assms by (auto simp add: Gramian_determinant)
-  also have "(\<Prod>j<Suc l. \<parallel>vs ! j\<parallel>\<^sup>2) = (\<Prod>j \<in> {0..<l} \<union> {l}. \<parallel>vs ! j\<parallel>\<^sup>2)"
+  also have "(\<Prod>j<Suc l. \<parallel>gso fs j\<parallel>\<^sup>2) = (\<Prod>j \<in> {0..<l} \<union> {l}. \<parallel>gso fs j\<parallel>\<^sup>2)"
     using assms by (intro prod.cong) (auto)
-  also have "\<dots> = (\<Prod>j<l. \<parallel>vs ! j\<parallel>\<^sup>2) * \<parallel>vs ! l\<parallel>\<^sup>2"
+  also have "\<dots> = (\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2) * \<parallel>gso fs l\<parallel>\<^sup>2"
     using assms by (subst prod_Un) (auto simp add: atLeast0LessThan)
-  also have "(\<Prod>j<l. \<parallel>vs ! j\<parallel>\<^sup>2) * \<parallel>vs ! l\<parallel>\<^sup>2 / (\<Prod>j<l. \<parallel>vs ! j\<parallel>\<^sup>2) = \<parallel>vs ! l\<parallel>\<^sup>2"
+  also have "(\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2) * \<parallel>gso fs l\<parallel>\<^sup>2 / (\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2) = \<parallel>gso fs l\<parallel>\<^sup>2"
   proof -
-    have "0 < \<parallel>vs ! j\<parallel>\<^sup>2" if "j < l" for j
+    have "0 < \<parallel>gso fs j\<parallel>\<^sup>2" if "j < l" for j
       using assms con_assms that by (intro sq_norm_pos[of _ m]) (auto)
     then show ?thesis
       using assms by (fastforce simp add: field_simps)
@@ -369,15 +369,12 @@ lemma Gramian_determinant_mu_ints:
   assumes "l < k" "k < m"
   shows "Gramian_determinant fs (Suc l) * \<mu> fs k l \<in> \<int>"
 proof -
-  have l: "gso fs l = vs ! l "
-    using gram_schmidt.main_connect(2)
-    by (metis assms atLeast0LessThan con_assms gram_schmidt(4)  lessThan_iff map_eq_conv map_nth nat_SN.gt_trans set_upt)
   have ll: "Gramian_determinant fs l * gso fs l $v i = (Gramian_determinant fs l \<cdot>\<^sub>v gso fs l) $v i" if "i < n" for i
     using that assms con_assms by auto
-  have "Gramian_determinant fs (Suc l) * \<mu> fs k l = Gramian_determinant fs (Suc l) * (fs ! k \<bullet> gso fs l) / \<parallel>vs ! l\<parallel>\<^sup>2 "
-    using assms unfolding \<mu>.simps by (simp add: l)
+  have "Gramian_determinant fs (Suc l) * \<mu> fs k l = Gramian_determinant fs (Suc l) * (fs ! k \<bullet> gso fs l) / \<parallel>gso fs l\<parallel>\<^sup>2 "
+    using assms unfolding \<mu>.simps by simp
   also have "\<dots> = fs ! k \<bullet> (Gramian_determinant fs l \<cdot>\<^sub>v gso fs l)"
-    using assms con_assms Gramian_determinant(2)[of fs m vs "Suc l"]
+    using assms con_assms Gramian_determinant(2)[of fs m "Suc l"]
     by (subst Gramian_determinant_div[symmetric]) (auto)
   also have "\<dots> \<in> \<int>"
   proof -
@@ -392,7 +389,7 @@ qed
 
 end (* fs_int *)
 
-end (* fixes fs vs *)
+end (* fixes fs *)
 
 end (* gram_schmidt_rat *)
 
@@ -413,9 +410,9 @@ proof -
   note * = LLL_invD[OF inv]
   have id: "gs.Gramian_determinant (RAT fs) (Suc j) = of_int (d fs (Suc j))" 
     unfolding d_def
-    by (rule of_int_Gramian_determinant, insert j ii *(5,7), auto)
+    by (rule of_int_Gramian_determinant, insert j ii *(4,6), auto)
   show ?thesis
-    by (rule Gramian_determinant_mu_ints[OF *(1-3) _ j ii, unfolded id], insert *(5,7), force)
+    by (rule Gramian_determinant_mu_ints[OF *(1-2) _ j ii, unfolded id], insert *(4,6), force)
 qed
 
 text \<open>maximum absolute value in initial basis\<close>
@@ -500,7 +497,7 @@ proof -
   let ?gso = "\<lambda> fs j. ?G ! j"
   have "of_int \<parallel>fs ! i\<parallel>\<^sup>2 = \<parallel>RAT fs ! i\<parallel>\<^sup>2" unfolding sq_norm_of_int[symmetric] using insert i len by auto
   also have "RAT fs ! i = gs.sumlist (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i])" 
-    using gs.fi_is_sum_of_mu_gso[OF lin_indep _ lin_indep_gs_main[OF lin_indep len] i] len by auto
+    using gs.fi_is_sum_of_mu_gso[OF lin_indep _ i] len by auto
   also have id: "map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i] = map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v ?gso fs j) [0..<Suc i]" 
     by (rule nth_equalityI, insert i, auto simp: nth_append)
   also have "sq_norm (gs.sumlist \<dots>) = sum_list (map sq_norm (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i]))" 
@@ -508,9 +505,8 @@ proof -
     unfolding sq_norm_vec_as_cscalar_prod cscalar_prod_is_scalar_prod conjugate_id
   proof (subst gs.scalar_prod_lincomb_orthogonal)
     show "Suc i \<le> length ?G" using i by auto
-    show "set ?G \<subseteq> Rn" using gs.gso_carrier[OF lin_indep _ refl, of m] len by auto
-    show "orthogonal ?G" 
-      using gs.gram_schmidt[OF lin_indep _ lin_indep_gs_main[OF lin_indep len]] by auto
+    show "set ?G \<subseteq> Rn" using gs.gso_carrier[OF lin_indep, of m] len by auto
+    show "orthogonal ?G" using gs.orthogonal_gso[OF lin_indep, of m] len by auto
   qed (rule arg_cong[of _ _ sum_list], intro nth_equalityI, insert i, auto simp: nth_append)
   also have "map sq_norm (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i]) = map (\<lambda>j. (\<mu> fs i j)^2 * sq_norm (gso fs j)) [0..<Suc i]" 
     unfolding map_map o_def sq_norm_smult_vec by (rule map_cong, auto simp: power2_eq_square)
@@ -615,7 +611,7 @@ proof (rule bound_invI)
         also have "\<dots> \<le> abs (?mu i k) + (abs (?mu i j) + 1/2) * (1/2)" 
         proof (rule add_left_mono[OF mult_mono], unfold c)
           show "\<bar>?R (floor_ceil (?mu i j))\<bar> \<le> \<bar>?mu i j\<bar> + 1 / 2" unfolding floor_ceil_def by linarith
-          from inv(11)[unfolded gs.reduced_def, THEN conjunct2, rule_format, OF \<open>j < i\<close> k_j]
+          from inv(10)[unfolded gs.reduced_def, THEN conjunct2, rule_format, OF \<open>j < i\<close> k_j]
           show "\<bar>?mu j k\<bar> \<le> 1/2" .
         qed auto
         also have "\<dots> \<le> M + (M + M) * (1/2)" 
@@ -657,7 +653,7 @@ proof (rule bound_invI)
       case True        
       have "of_int \<parallel>fs' ! i\<parallel>\<^sup>2 = \<parallel>RAT fs' ! i\<parallel>\<^sup>2" using i inv' by (auto simp: sq_norm_of_int)
       also have "... \<le> rat_of_nat (Suc i * A) * (4 ^ (m - 1 - j) * rat_of_nat (A ^ (m - 1) * m))" 
-        using sq_norm_fs_mu_g_bound[OF inv'(1,7) i bnd gbnd] i inv'
+        using sq_norm_fs_mu_g_bound[OF inv'(1,6) i bnd gbnd] i inv'
         unfolding sq_norm_of_int[symmetric]
         by (auto simp: ac_simps)
       also have "\<dots> = rat_of_int ( int (Suc i * A) * (4 ^ (m - 1 - j) * (A ^ (m - 1) * m)))"
@@ -696,9 +692,9 @@ proof (rule bound_invI)
     fix j
     assume ji: "j < i" 
     have "(\<mu> fs i j)\<^sup>2 \<le> gs.Gramian_determinant (RAT fs) j * \<parallel>RAT fs ! i\<parallel>\<^sup>2"
-    proof (rule gs.mu_bound_Gramian_determinant[OF inv(1-3) _ ji i], goal_cases)
+    proof (rule gs.mu_bound_Gramian_determinant[OF inv(1-2) _ ji i], goal_cases)
       case (1 j i)
-      thus ?case using inv(5)[OF 1(2)] inv(7) by auto
+      thus ?case using inv(4)[OF 1(2)] inv(6) by auto
     qed
     also have "gs.Gramian_determinant (RAT fs) j = of_int (d fs j)" unfolding d_def 
       by (subst of_int_Gramian_determinant, insert ji i inv(2-), auto simp: set_conv_nth)
@@ -762,7 +758,7 @@ proof -
         from mult_mono[OF this this] show "(\<mu> fs i j)\<^sup>2 \<le> 1" by (auto simp: power2_eq_square)
       qed
       have "rat_of_int \<parallel>fs ! i\<parallel>\<^sup>2 \<le> rat_of_int (int (Suc i * A))" 
-        using sq_norm_fs_mu_g_bound[OF inv(1,7) i row gbnd] by auto
+        using sq_norm_fs_mu_g_bound[OF inv(1,6) i row gbnd] by auto
       hence "\<parallel>fs ! i\<parallel>\<^sup>2 \<le> int (Suc i * A)" by linarith
       also have "\<dots> = int A * int (Suc i)" unfolding of_nat_mult by simp
       also have "\<dots> \<le> int A * int m" 
@@ -849,7 +845,7 @@ proof (rule bound_invI)
   show Linv': "LLL_invariant upw' i' fs'" by auto
   from res[unfolded basic_basis_reduction_swap_def]
   have id: "i' = i - 1" "fs' = fs[i := fs ! (i - 1), i - 1 := fs ! i]" by auto
-  from LLL_invD(7)[OF Linv] i
+  from LLL_invD(6)[OF Linv] i
   have choice: "fs' ! k = fs ! k \<or> fs' ! k = fs ! i \<or> fs' ! k = fs ! (i - 1)" for k 
     unfolding id by (cases "k = i"; cases "k = i - 1", auto) 
   from bound_invD(2)[OF binv] i 
@@ -923,13 +919,13 @@ proof (rule bound_invI)
         have uU: "u \<in> gs.span U"
         proof -
           have im1: "i - 1 \<le> m" using i by auto
-          have G1: "?g1 ` {0..< i - 1} \<subseteq> Rn" using inv(6) i by auto
+          have G1: "?g1 ` {0..< i - 1} \<subseteq> Rn" using inv(5) i by auto
           have "u \<in> gs.span (?g1 ` {0 ..< i - 1})" unfolding u_def 
             by (rule gs.sumlist_in_span[OF G1], unfold set_map, insert G1,
               auto intro!: gs.smult_in_span intro: gs.span_mem)
           also have "gs.span (?g1 ` {0 ..< i - 1}) = gs.span (?f1 ` {0 ..< i - 1})" 
-            unfolding gs.partial_span[OF inv(1-3) im1]
-            by (rule arg_cong[of _ _ gs.span], subst nth_image[symmetric], insert i inv(7), auto)
+            unfolding gs.partial_span[OF inv(1-2) im1]
+            by (rule arg_cong[of _ _ gs.span], subst nth_image[symmetric], insert i inv(6), auto)
           also have "\<dots> \<subseteq> gs.span U" unfolding U_def 
             by (rule gs.span_is_monotone, auto)
           finally show ?thesis .
@@ -937,28 +933,28 @@ proof (rule bound_invI)
         from i have im1: "i - 1 < m" by auto
         have u: "u \<in> Rn" using uU U by simp
         have id_u: "u + (?g1 (i - 1) - ?g2 i) = u + ?g1 (i - 1) - ?g2 i" 
-          using u g2i inv(6)[OF im1] by auto
+          using u g2i inv(5)[OF im1] by auto
         have list_id: "[0..<Suc (i - 1)] = [0..< i - 1] @ [i - 1]" 
           "map f [x] = [f x]" for f x by auto
-        from gs.gso_oc_projection_span(2)[OF inv'(1-3) i(1)]
+        from gs.gso_oc_projection_span(2)[OF inv'(1-2) i(1)]
         have "gs.is_oc_projection (?g2 i) (gs.span (gs.gso (RAT fs') ` {0 ..< i}))  (?f1 (i - 1))" 
-          unfolding id(2) using inv(7) i by simp
+          unfolding id(2) using inv(6) i by simp
         also have "?f1 (i - 1) = u + ?g1 (i - 1) " 
-          unfolding gs.fi_is_sum_of_mu_gso[OF inv(1-3) im1] list_id map_append u_def 
-          by (subst gs.M.sumlist_snoc, insert i, auto simp: gs.\<mu>.simps intro!: inv(6))
+          unfolding gs.fi_is_sum_of_mu_gso[OF inv(1-2) im1] list_id map_append u_def 
+          by (subst gs.M.sumlist_snoc, insert i, auto simp: gs.\<mu>.simps intro!: inv(5))
         also have "gs.span (gs.gso (RAT fs') ` {0 ..< i}) = gs.span (set (take i (RAT fs')))" 
-          unfolding gs.partial_span[OF inv'(1-3) \<open>i \<le> m\<close>] ..
-        also have "set (take i (RAT fs')) = ?f2 ` {0 ..< i}" using inv'(7) i 
+          unfolding gs.partial_span[OF inv'(1-2) \<open>i \<le> m\<close>] ..
+        also have "set (take i (RAT fs')) = ?f2 ` {0 ..< i}" using inv'(6) i 
           by (subst nth_image[symmetric], auto)
         also have "{0 ..< i} = {0 ..< i - 1} \<union> {(i - 1)}" using i by auto
         also have "?f2 ` \<dots> = ?f2 ` {0 ..< i - 1} \<union> {?f2 (i - 1)}" by auto
         also have "\<dots> = U" unfolding U_def id(2) 
-          by (rule arg_cong2[of _ _ _ _ "(\<union>)"], insert i inv(7), force+)
+          by (rule arg_cong2[of _ _ _ _ "(\<union>)"], insert i inv(6), force+)
         finally have "gs.is_oc_projection (?g2 i) (gs.span U) (u + ?g1 (i - 1))" .        
         hence proj: "gs.is_oc_projection (?g2 i) (gs.span U) (?g1 (i - 1))"
           unfolding gs.is_oc_projection_def using gs.span_add[OF U uU, of "?g1 (i - 1) - ?g2 i"] 
-          inv(6)[OF im1] g2i u id_u by (auto simp: U)
-        from gs.is_oc_projection_sq_norm[OF this gs.span_is_subset2[OF U]  inv(6)[OF im1]]
+          inv(5)[OF im1] g2i u id_u by (auto simp: U)
+        from gs.is_oc_projection_sq_norm[OF this gs.span_is_subset2[OF U]  inv(5)[OF im1]]
         show "?n2 i \<le> ?n1 (i - 1)" .
       qed
       also have "\<dots> \<le> of_nat A" by fact
@@ -1194,7 +1190,7 @@ proof -
       using * gs.gso_connect snd_gram_schmidt_int assms
       by (intro gs.Gramian_determinant_times_gso_Ints) (auto)
   qed
-  have gsi: "gso fs i \<in> Rn" using *(6)[OF i] .
+  have gsi: "gso fs i \<in> Rn" using *(5)[OF i] .
   have gs_sq: "\<bar>(gso fs i $ j)\<bar>\<^sup>2 \<le> rat_of_nat A"
     by(rule order_trans, rule vec_le_sq_norm[of _ n])
       (use gsi assms gbnd * LLL.g_bound_def in auto)
@@ -1210,7 +1206,7 @@ proof -
     using gs_sq A0 unfolding max_def by auto
   finally have gs_bound: "\<bar>(gso fs i $ j)\<bar> \<le> of_nat A" .
   have "gs.Gramian_determinant (RAT fs) i = rat_of_int (gs.Gramian_determinant fs i)"
-    using  assms *(5-7) carrier_vecD nth_mem by (intro of_int_Gramian_determinant) (simp, blast)
+    using  assms *(4-6) carrier_vecD nth_mem by (intro of_int_Gramian_determinant) (simp, blast)
   with int have "(of_int (d fs i) \<cdot>\<^sub>v gso fs i) $v j \<in> \<int>"
     unfolding d_def by simp
   also have "(of_int (d fs i) \<cdot>\<^sub>v gso fs i) $v j = of_int (d fs i) * (gso fs i $ j)"
@@ -1288,11 +1284,11 @@ proof (atomize(full))
     have sq_f_bnd: "sq_norm (fs ! i) \<le> int ?num" by (auto split: if_splits)
     have four: "(4 :: nat) = 2^2" by auto
     have "?mu^2 \<le> (gs.Gramian_determinant (RAT fs) j) * sq_norm (RAT fs ! i)"
-      by (rule gs.mu_bound_Gramian_determinant[OF *(1-3) _ j i], insert *(4,7) j i, auto simp: set_conv_nth)
+      by (rule gs.mu_bound_Gramian_determinant[OF *(1-2) _ j i], insert *(3,6) j i, auto simp: set_conv_nth)
     also have "sq_norm (RAT fs ! i) = of_int (sq_norm (fs ! i))" 
-      unfolding sq_norm_of_int[symmetric] using *(7) i by auto
+      unfolding sq_norm_of_int[symmetric] using *(6) i by auto
     also have "(gs.Gramian_determinant (RAT fs) j) = of_int (d fs j)" 
-      unfolding d_def by (rule of_int_Gramian_determinant, insert i j *(4,7), auto simp: set_conv_nth)
+      unfolding d_def by (rule of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)
     also have "\<dots> * of_int (sq_norm (fs ! i)) = of_int (d fs j * sq_norm (fs ! i))" by simp 
     also have "\<dots> \<le> of_int (int (A^j) * int ?num)" unfolding of_int_le_iff 
       by (rule mult_mono[OF dj sq_f_bnd], auto)
@@ -1305,10 +1301,10 @@ proof (atomize(full))
     from this[folded abs_le_square_iff] 
     have mu_bound: "abs ?mu \<le> of_nat ?bnd" by auto
     have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
-      by (rule gs.Gramian_determinant_mu_ints[OF *(1-3) _ j i],
-      insert *(4,7), auto simp: set_conv_nth)
+      by (rule gs.Gramian_determinant_mu_ints[OF *(1-2) _ j i],
+      insert *(3,6), auto simp: set_conv_nth)
     also have "(gs.Gramian_determinant (RAT fs) (Suc j)) = of_int (d fs (Suc j))" 
-      unfolding d_def by (rule of_int_Gramian_determinant, insert i j *(4,7), auto simp: set_conv_nth)
+      unfolding d_def by (rule of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)
     finally have ints: "of_int (d fs (Suc j)) * ?mu \<in> \<int>" .
     have "d fs (Suc j) \<le> A ^ (Suc j)" by fact
     also have "\<dots> \<le> A ^ m" unfolding of_nat_le_iff

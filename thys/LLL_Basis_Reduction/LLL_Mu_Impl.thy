@@ -303,7 +303,7 @@ next
       by (rule nth_equalityI, insert j step(4) i, auto simp: rev_nth fs''[symmetric])
     have nth_id: "[0..<m] ! i = i" using i by auto
     note res = res[unfolded False map_id_f map_id_n id if_False]
-    have fi: "fi' = fs'' ! i" unfolding fs''[symmetric] fi'_def using inv(7) i by auto
+    have fi: "fi' = fs'' ! i" unfolding fs''[symmetric] fi'_def using inv(6) i by auto
     let ?fn = "\<lambda> fs i. (fs ! i, sq_norm (gso fs i))" 
     have repr_id: "(map (?fn fs) [0..<m] [i := (fs'' ! i, \<parallel>gso fs'' i\<parallel>\<^sup>2)])
       = (map (?fn fs'') [0..<m])" (is "?xs = ?ys") 
@@ -335,7 +335,7 @@ next
     have repr_id': 
       "map (\<lambda> i. sq_norm (gso fs i)) [0..<m] = map (\<lambda> i. sq_norm (gso fs'' i)) [0..<m]"
       by (rule nth_equalityI, force, intro allI impI, insert step(4), auto)
-    have mu: "fs ! i - ?c \<cdot>\<^sub>v fs ! j = fs'' ! i" unfolding fs''[symmetric] using inv(7) i by auto
+    have mu: "fs ! i - ?c \<cdot>\<^sub>v fs ! j = fs'' ! i" unfolding fs''[symmetric] using inv(6) i by auto
     note res = res[unfolded mu' mu]
     show ?thesis unfolding step(3)[symmetric]
     proof (rule Suc(1)[OF _ step(1,2) res])
@@ -440,7 +440,7 @@ proof -
   have mu': "?mu i (i - 1) * (?n (i - 1) / ?n' (i - 1)) = ?mu' i (i - 1)"
     by (subst swap(5), insert i i0, auto)
   have fi: "fs ! (i - 1) = fs'' ! i" "fs ! i = fs'' ! (i - 1)" 
-    unfolding fs''[symmetric] using inv'(7) i i0 by auto
+    unfolding fs''[symmetric] using inv'(6) i i0 by auto
   let ?mu_repr' = "swap_mu m mu i ?mui ?mui' (?n i / ?n' (i - 1))" 
   from res[unfolded mu' nim1 ni, unfolded fi] 
   have res: "upw' = False" "i' = i - 1" 
@@ -464,7 +464,7 @@ proof -
     by (intro nth_equalityI, insert i i0 len, auto simp: nth_append, rename_tac ii, case_tac "ii \<in> {i-1,i}", auto simp: swap(4))
   finally have n_repr: "list_repr (i - 1) ?nr (map ?n' [0..<m])" .
   have "length fs'' = m" 
-    using fs'' inv'(7) by auto
+    using fs'' inv'(6) by auto
   hence fs_id: "fs' = fs''" unfolding fs' res fs_state.simps using of_list_repr[OF f_repr] 
     by (intro nth_equalityI, auto simp: o_def)
   from to_mu_repr[OF impl state] have mu: "mu_repr mu fs" by auto
@@ -626,7 +626,7 @@ proof -
   from fs_init have Rn: "set (RAT fs_init) \<subseteq> Rn" by auto
   show ?thesis unfolding case_prod_beta' initial_state_def Let_def LLL_impl_inv.simps gram_schmidt_triv id
     norms_mus_rat_norms_mus 
-    gs.norms_mus[OF Rn, unfolded length_map len, OF gs.mn[OF lin_dep, unfolded length_map, OF len refl]]
+    gs.norms_mus[OF Rn, unfolded length_map len, OF gs.mn[OF lin_dep, unfolded length_map, OF len]]
     fst_conv snd_conv
     by (intro conjI f_repr, auto simp: list_repr_def mu_repr_def)
 qed

@@ -205,7 +205,7 @@ next
       by (rule nth_equalityI, insert j step(4) i, auto simp: rev_nth fs''[symmetric])
     have nth_id: "[0..<m] ! i = i" using i by auto
     note res = res[unfolded False map_id id if_False]
-    have fi: "fi' = fs'' ! i" unfolding fs''[symmetric] fi'_def using inv(7) i by auto
+    have fi: "fi' = fs'' ! i" unfolding fs''[symmetric] fi'_def using inv(6) i by auto
     have repr_id: "(map (fgn fs) [0..<m] [i := (fs'' ! i, gso fs'' i, \<parallel>gso fs'' i\<parallel>\<^sup>2)])
       = (map (fgn fs'') [0..<m])" (is "?xs = ?ys") 
     proof (rule nth_equalityI, force, intro allI impI)
@@ -297,12 +297,12 @@ proof -
   have id': "fs ! (i - 1) \<bullet>i gso fs'' (i - 1) = 
     (RAT fs ! (i - 1) \<bullet> gso fs'' (i - 1))" 
     unfolding scalar_prod_int_rat_def
-    by (subst comm_scalar_prod, insert i0 i inv'(2-6) LLL_invD(2-6)[OF swap(1)], auto)
+    by (subst comm_scalar_prod, insert i0 i inv'(2-5) LLL_invD(2-6)[OF swap(1)], auto)
   have gi: "gso fs (i - 1) - fs ! (i - 1) \<bullet>i gso fs'' (i - 1) / \<parallel>gso fs'' (i - 1)\<parallel>\<^sup>2 \<cdot>\<^sub>v
      gso fs'' (i - 1) = gso fs'' i"     
     by (subst swap(3)[of i, OF i], unfold id', insert i i0, auto)
   have fi: "fs ! (i - 1) = fs'' ! i" "fs ! i = fs'' ! (i - 1)" 
-    unfolding fs''[symmetric] using inv'(7) i i0 by auto
+    unfolding fs''[symmetric] using inv'(6) i i0 by auto
   from res[unfolded mu nim1 ni, unfolded gim1 gi, unfolded fi] 
   have res: "upw' = False" "i' = i - 1" 
     "state' = dec_i (update_im1
@@ -329,7 +329,7 @@ proof -
   qed
   finally have repr: "list_repr (i - 1) state' (map (fgn fs'') [0..< m])" .
   have "length fs'' = m" 
-    using fs'' inv'(7) by auto
+    using fs'' inv'(6) by auto
   hence fs_id: "fs'' = fs'" unfolding fs' of_list_repr[OF repr] fs_state_def
     by (intro nth_equalityI, auto simp: o_def)
   from repr fs_id have impl: "LLL_impl_inv state' (i - 1) fs'" 
@@ -421,7 +421,7 @@ qed
 lemma initial_state: "LLL_impl_inv (initial_state n fs_init) 0 fs_init" 
 proof -
   have id: "gram_schmidt n (RAT fs_init) = map (gso fs_init) [0..<m]" 
-    using gs.main_connect[OF lin_dep, unfolded length_map, OF len refl] by auto
+    using gs.main_connect[OF lin_dep, unfolded length_map, OF len] by auto
   show ?thesis unfolding initial_state_def Let_def LLL_impl_inv_def list_repr_def gram_schmidt_triv id
     by (simp, intro nth_equalityI, auto simp: len)
 qed

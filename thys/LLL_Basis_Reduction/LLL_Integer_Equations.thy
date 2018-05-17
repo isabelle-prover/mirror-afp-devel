@@ -168,7 +168,7 @@ proof -
   have mu': "\<mu> fs i (i - 1) * (?n (i - 1) / ?n' (i - 1)) = \<mu> fs' i (i - 1)"
     by (subst swap(5), insert i i0, auto)
   have fi: "fs ! (i - 1) = fs' ! i" "fs ! i = fs' ! (i - 1)" 
-    unfolding fs'_def using inv'(7) i i0 by auto
+    unfolding fs'_def using inv'(6) i i0 by auto
   let ?d'i = "(d fs (Suc i) * d fs (i - 1) + d\<mu> fs i (i - 1) * d\<mu> fs i (i - 1)) div (d fs i)" 
   have rat': "ii < m \<Longrightarrow> j < ii \<Longrightarrow> ?r (d\<mu> fs' ii j) = ?dmu' ii j" for ii j 
     using d\<mu>[OF swap(1), of j ii] by simp
@@ -234,7 +234,7 @@ proof -
     from d_j d_i show "d fs' j = (if j = i then ?d'i else d fs j)" unfolding start_def by auto
   } 
   have "length fs' = m" 
-    using fs'_def inv'(7) by auto
+    using fs'_def inv'(6) by auto
   {
     fix ii j
     assume ii: "ii < m" and j: "j < ii" 

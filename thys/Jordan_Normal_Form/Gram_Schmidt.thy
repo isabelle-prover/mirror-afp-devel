@@ -610,6 +610,7 @@ theorem gram_schmidt_result:
     and "corthogonal us"
     and "set us \<subseteq> carrier_vec n"
     and "length us = length ws"
+    and "distinct us"
 proof -
   have main: "gram_schmidt_sub n [] ws = rev us"
     using us unfolding gram_schmidt_def
@@ -619,17 +620,17 @@ proof -
    and orth2: "corthogonal (rev us)"
    and "set us \<subseteq> carrier_vec n"
    and "length us = length ws"
+   and dist: "distinct us" 
     using gram_schmidt_sub_result[OF main ws]
     by (auto simp: assms orth)
   thus "span (set ws) = span (set us)" by simp
   show "set us \<subseteq> carrier_vec n" by fact
   show "length us = length ws" by fact
+  show "distinct us" by fact
   show "corthogonal us"
     using corthogonal_distinct[OF orth2] unfolding distinct_rev
     using corthogonal_sort[OF _ set_rev orth2] by auto
 qed
-
-
 end
 
 end
