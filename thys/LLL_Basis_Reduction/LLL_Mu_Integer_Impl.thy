@@ -618,8 +618,7 @@ proof -
   have f_repr: "list_repr 0 ([], fs_init) (map ((!) fs_init) [0..<m])" 
     unfolding list_repr_def by (simp, intro nth_equalityI, auto simp: len)
   from fs_init have Rn: "set (RAT fs_init) \<subseteq> Rn" by auto
-  have 1: "1 = d fs_init 0" unfolding d_def gs.Gramian_determinant_def gs.Gramian_matrix_def Let_def
-    by (simp add: times_mat_def)
+  have 1: "1 = d fs_init 0" unfolding d_def by simp
   define j where "j = m" 
   have jm: "j \<le> m" unfolding j_def by auto
   have 0: "0 = m - j" unfolding j_def by auto

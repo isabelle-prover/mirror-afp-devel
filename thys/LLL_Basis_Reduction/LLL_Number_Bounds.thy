@@ -127,10 +127,9 @@ context
 begin
 
 context
-  fixes vs fs
+  fixes fs
   assumes indep: "lin_indpt_list fs"
    and len_fs: "length fs = m" 
-   and snd_main: "snd (main fs) = vs" 
 begin
 
 (* Lemma 16.17 *) 
@@ -223,7 +222,7 @@ proof -
   from someI_ex[OF this] show ?thesis
     unfolding \<rho>_SOME_def using assms by blast
 qed
-end (* vs fs *)
+end (* fs *)
 
 end (* m *)
 

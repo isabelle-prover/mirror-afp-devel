@@ -1,5 +1,6 @@
 (*
-    Authors:    Jose Divasón
+    Authors:    Ralph Bottesch
+                Jose Divasón
                 Maximilian Haslbeck
                 Sebastiaan Joosten
                 René Thiemann
@@ -667,9 +668,9 @@ proof -
   with indep1 V show ?thesis unfolding lin_indpt_list_def by auto
 qed
 
-lemma scalar_prod_lincomb_orthogonal: assumes ortho: "orthogonal gs" and gs: "set gs \<subseteq> carrier_vec n" 
-  shows "k \<le> length gs \<Longrightarrow> sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gs ! i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gs ! i) [0 ..< k])
-  = sum_list (map (\<lambda> i. g i * g i * (gs ! i \<bullet> gs ! i)) [0 ..< k])"
+lemma scalar_prod_lincomb_orthogonal: assumes ortho: "orthogonal gs" and gs: "set gs \<subseteq> carrier_vec n"
+  shows "k \<le> length gs \<Longrightarrow> sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gs ! i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. h i \<cdot>\<^sub>v gs ! i) [0 ..< k])
+  = sum_list (map (\<lambda> i. g i * h i * (gs ! i \<bullet> gs ! i)) [0 ..< k])"
 proof (induct k)
   case (Suc k)
   note ortho = orthogonalD[OF ortho]
@@ -678,29 +679,40 @@ proof (induct k)
   from Suc have kn: "k \<le> ?m" and k: "k < ?m" by auto
   let ?v1 = "sumlist (map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<k])" 
   let ?v2 = "(g k \<cdot>\<^sub>v gs ! k)" 
+  let ?w1 = "sumlist (map (\<lambda>i. h i \<cdot>\<^sub>v gs ! i) [0..<k])" 
+  let ?w2 = "(h k \<cdot>\<^sub>v gs ! k)" 
   from Suc have id: "[0 ..< Suc k] = [0 ..< k] @ [k]" by simp
-  have id: "sumlist (map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<Suc k]) = ?v1 + ?v2" 
+  have id: "sumlist (map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<Suc k]) = ?v1 + ?v2"
+     "sumlist (map (\<lambda>i. h i \<cdot>\<^sub>v gs ! i) [0..<Suc k]) = ?w1 + ?w2"
     unfolding id map_append
-    by (subst sumlist_append, insert Suc(2), auto)
+    by (subst sumlist_append, insert Suc(2), auto)+
   have v1: "?v1 \<in> carrier_vec n" by (rule sumlist_carrier, insert Suc(2), auto)
   have v2: "?v2 \<in> carrier_vec n" by (insert Suc(2), auto)
+  have w1: "?w1 \<in> carrier_vec n" by (rule sumlist_carrier, insert Suc(2), auto)
+  have w2: "?w2 \<in> carrier_vec n" by (insert Suc(2), auto)
   have gsk: "gs ! k \<in> carrier_vec n" by simp
   have v12: "?v1 + ?v2 \<in> carrier_vec n" using v1 v2 by auto
-  have 0: "i < k \<Longrightarrow> (g i \<cdot>\<^sub>v gs ! i) \<bullet> (g k \<cdot>\<^sub>v gs ! k) = 0" for i
+  have w12: "?w1 + ?w2 \<in> carrier_vec n" using w1 w2 by auto
+  have 0: "\<And> g h. i < k \<Longrightarrow> (g \<cdot>\<^sub>v gs ! i) \<bullet> (h \<cdot>\<^sub>v gs ! k) = 0" for i
     by (subst scalar_prod_smult_distrib[OF _ gsk], (insert k, auto)[1],
     subst smult_scalar_prod_distrib[OF _ gsk], (insert k, auto)[1], insert ortho[of i k] k, auto)
-  have 0: "?v1 \<bullet> ?v2 = 0" 
-    by (subst scalar_prod_left_sum_distrib[OF _ v2], (insert Suc(2), auto)[1], rule sum_list_neutral, 
-        insert 0, auto)     
+  have 1: "?v1 \<bullet> ?w2 = 0" 
+    by (subst scalar_prod_left_sum_distrib[OF _ w2], (insert Suc(2), auto)[1], rule sum_list_neutral, 
+        insert 0, auto)   
+  have 2: "?v2 \<bullet> ?w1 = 0" unfolding comm_scalar_prod[OF v2 w1]
+    apply (subst scalar_prod_left_sum_distrib[OF _ v2])
+     apply ((insert gs, force)[1])
+    apply (rule sum_list_neutral)
+    by (insert 0, auto)
   show ?case unfolding id
-    unfolding scalar_prod_add_distrib[OF v12 v1 v2]
-      add_scalar_prod_distrib[OF v1 v2 v1]
-      add_scalar_prod_distrib[OF v1 v2 v2]
-      scalar_prod_smult_distrib[OF v2 gsk]
+    unfolding scalar_prod_add_distrib[OF v12 w1 w2]
+      add_scalar_prod_distrib[OF v1 v2 w1]
+      add_scalar_prod_distrib[OF v1 v2 w2]
+      scalar_prod_smult_distrib[OF w2 gsk]
       smult_scalar_prod_distrib[OF gsk gsk]
     unfolding Suc(1)[OF kn]
-    by (simp add: 0 comm_scalar_prod[OF v2 v1])
-qed auto  
+    by (simp add: 1 2 comm_scalar_prod[OF v2 w1])
+qed auto
 end
 
 
@@ -718,6 +730,10 @@ lemma Gramian_matrix_alt_def: "k \<le> length G \<Longrightarrow>
 
 definition Gramian_determinant where
   "Gramian_determinant G k = det (Gramian_matrix G k)"
+
+lemma Gramian_determinant_0 [simp]: "Gramian_determinant G 0 = 1"
+  unfolding Gramian_determinant_def Gramian_matrix_def Let_def
+  by (simp add: times_mat_def)
 
 lemma orthogonal_imp_lin_indpt_list: 
   assumes ortho: "orthogonal gs" and gs: "set gs \<subseteq> carrier_vec n"
@@ -1129,6 +1145,30 @@ proof -
     by (rule li_le_dim[OF _ fs_carrier lin_indpt], simp)
 qed
 
+lemma fs_by_gso_def : 
+assumes i: "i < m"
+shows "fs ! i = gso i + M.sumlist (map (\<lambda>ja. \<mu> i ja \<cdot>\<^sub>v gso ja) [0..<i])" (is "_ = _ + ?sum")
+proof -
+  {
+    fix f
+    have a: "M.sumlist (map (\<lambda>ja. f ja \<cdot>\<^sub>v gso ja) [0..<i]) \<in> carrier_vec n" 
+      using gso_carrier i by (intro M.sumlist_carrier, auto)
+    hence "dim_vec (M.sumlist (map (\<lambda>ja. f ja \<cdot>\<^sub>v gso ja) [0..<i])) = n" by auto
+    note a this
+  } note sum_carrier = this
+  note [simp] = sum_carrier(2)
+  have f: "fs ! i \<in> carrier_vec n" using i by simp
+  have "gso i + ?sum = fs ! i + M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<i]) + ?sum " 
+    (is "_ = _ + ?minus_sum + _")
+    unfolding gso.simps[of i] by simp
+  also have "?minus_sum = - ?sum"
+    using gso_carrier i sum_carrier
+    by (intro eq_vecI, auto simp: sumlist_nth sum_negf)
+  also have "fs ! i + (-?sum) + ?sum = fs ! i"
+    using sum_carrier fs_carrier f by simp
+  finally show ?thesis by auto
+qed
+
 lemma main_connect: 
   "gram_schmidt n fs = map gso [0..<m]"
 proof -
@@ -1247,23 +1287,11 @@ qed
 lemma gi_is_fi_minus_sum_mu_gso: assumes i: "i < m" 
   shows "gso i = fs ! i - sumlist (map (\<lambda> j. \<mu> i j \<cdot>\<^sub>v gso j) [0 ..< i])" (is "_ = _ - ?sum")
 proof -
-  have "fs ! i = sumlist (map (\<lambda>j. \<mu> i j \<cdot>\<^sub>v gso j) [0..<Suc i])" unfolding fi_is_sum_of_mu_gso[OF i] ..
-  also have "map (\<lambda>j. \<mu> i j \<cdot>\<^sub>v gso j) [0..<Suc i] = map (\<lambda>j. \<mu> i j \<cdot>\<^sub>v gso j) [0..<i] @ [\<mu> i i \<cdot>\<^sub>v gso i]" 
-    by (rule nth_equalityI, auto)
-  also have "sumlist \<dots> = ?sum + \<mu> i i \<cdot>\<^sub>v gso i" 
-    by (rule sumlist_snoc, insert gso_carrier i, auto)
-  also have "\<mu> i i \<cdot>\<^sub>v gso i = gso i" unfolding \<mu>.simps by simp
-  finally have fs: "fs ! i = ?sum + gso i" .
   have sum: "?sum \<in> carrier_vec n" 
     by (rule sumlist_carrier, insert gso_carrier i, auto)
-  note gso = gso_carrier[OF i]
-  from fs have "fs ! i - ?sum = (?sum + gso i) - ?sum" by simp
-  also have "\<dots> = gso i" 
-    by (rule eq_vecI, insert sum gso, auto)
-  finally show ?thesis ..
+  show ?thesis unfolding fs_by_gso_def[OF i]
+    by (intro eq_vecI, insert gso_carrier[OF i] sum, auto)
 qed
-
-
 
 lemma gso_inj[intro]:
   shows "i < m \<Longrightarrow> inj_on gso {0..<i}"
@@ -1524,16 +1552,28 @@ lemma gso_scalar_zero:
   insert assms, auto simp: \<mu>.simps)
 
 lemma scalar_prod_lincomb_gso: assumes k: "k \<le> m"
-  shows "sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gso i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gso i) [0 ..< k])
-    = sum_list (map (\<lambda> i. g i * g i * (gso i \<bullet> gso i)) [0 ..< k])" 
+  shows "sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gso i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. h i \<cdot>\<^sub>v gso i) [0 ..< k])
+    = sum_list (map (\<lambda> i. g i * h i * (gso i \<bullet> gso i)) [0 ..< k])" 
 proof -
-  have id1: "map (\<lambda>i. g i \<cdot>\<^sub>v gso i) [0..<k] = map (\<lambda>i. g i \<cdot>\<^sub>v map gso [0..<m] ! i) [0..<k]" using k
+  have id1: "map (\<lambda>i. g i \<cdot>\<^sub>v map (gso) [0..<m] ! i) [0..<k] = map (\<lambda>i. g i \<cdot>\<^sub>v gso i) [0..<k]" for g using k
     by auto
-  have id2: "(\<Sum>i\<leftarrow>[0..<k]. g i * g i * (gso i \<bullet> gso i)) 
-    = (\<Sum>i\<leftarrow>[0..<k]. g i * g i * (map gso [0..<m] ! i \<bullet> map gso [0..<m] ! i))" using k
+  have id2: "(\<Sum>i\<leftarrow>[0..<k]. g i * h i * (map (gso) [0..<m] ! i \<bullet> map (gso) [0..<m] ! i)) 
+    = (\<Sum>i\<leftarrow>[0..<k]. g i * h i * (gso i \<bullet> gso i))" using k
     by (intro arg_cong[OF map_cong], auto)
-  show ?thesis unfolding id1 id2
-    by (rule scalar_prod_lincomb_orthogonal[OF orthogonal_gso], insert k, auto)
+  define gs where "gs = map (gso) [0..<m]"
+  have gs_gso: "gs ! i = gso i" if "i < k" for i
+    using that assms unfolding gs_def by auto
+  have "M.sumlist (map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<k]) \<bullet> M.sumlist (map (\<lambda>i. h i \<cdot>\<^sub>v gs ! i) [0..<k]) = 
+        (\<Sum>i\<leftarrow>[0..<k]. g i * h i * (gs ! i \<bullet> gs ! i))"
+    unfolding gs_def using assm assms  orthogonal_gso 
+    by (intro scalar_prod_lincomb_orthogonal) auto
+  also have "map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<k] = map (\<lambda>i. g i \<cdot>\<^sub>v gso i) [0..<k]"
+    using gs_gso by (intro map_cong) (auto)
+  also have "map (\<lambda>i. h i \<cdot>\<^sub>v gs ! i) [0..<k] = map (\<lambda>i. h i \<cdot>\<^sub>v gso i) [0..<k]"
+    using gs_gso by (intro map_cong) (auto)
+  also have "map (\<lambda>i. g i * h i * (gs ! i \<bullet> gs ! i)) [0..<k] = map (\<lambda>i. g i * h i * (gso i \<bullet> gso i)) [0..<k]"
+    using gs_gso by (intro map_cong) (auto)
+  finally show ?thesis by simp
 qed
 
 lemma gso_times_self_is_norm:
