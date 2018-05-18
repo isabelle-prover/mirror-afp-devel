@@ -18,8 +18,12 @@ theory LLL_Integer_Equations
    LLL_Number_Bounds
 begin
 
-lemma division_to_div: "rat_of_int x = of_int y / of_int z \<Longrightarrow> x = y div z" 
+lemma division_to_div: "(of_int x  :: 'a :: floor_ceiling) = of_int y / of_int z \<Longrightarrow> x = y div z" 
   by (metis floor_divide_of_int_eq floor_of_int)
+
+lemma exact_division: assumes "of_int x / (of_int y  :: 'a :: floor_ceiling) \<in> \<int>"
+  shows "of_int (x div y) = of_int x / (of_int y :: 'a)" 
+  using assms by (metis Ints_cases division_to_div)
 
 lemma int_via_rat_eqI: "rat_of_int x = rat_of_int y \<Longrightarrow> x = y" by auto
 

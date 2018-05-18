@@ -1920,7 +1920,7 @@ context
 begin
 
 lemma Gramian_determinant_Ints:
-  assumes "k < m"
+  assumes "k \<le> m"
   shows "Gramian_determinant fs k \<in> \<int>"
 proof -
   let ?oi = "of_int :: int \<Rightarrow> 'a" 
@@ -1931,7 +1931,7 @@ proof -
   have fs: "fs = map (map_vec ?oi) d" 
     unfolding d_def by (rule nth_equalityI, insert len_fs, auto intro!: eq_vecI c)
   have id: "mat k n (\<lambda>(i, y). map (map_vec ?oi) d ! i $ y) = map_mat of_int (mat k n (\<lambda>(i, y). d ! i $ y))" 
-    by (rule eq_matI, insert \<open>k < m\<close>, auto simp: d_def o_def)
+    by (rule eq_matI, insert \<open>k \<le> m\<close>, auto simp: d_def o_def)
   show ?thesis unfolding fs Gramian_determinant_def Gramian_matrix_def Let_def id
     map_mat_transpose
     by (subst of_int_hom.mat_hom_mult[symmetric], auto)
@@ -1939,7 +1939,7 @@ qed
 
 
 lemma Gramian_determinant_ge1:
-  assumes "k < m"
+  assumes "k \<le> m"
   shows "1 \<le> Gramian_determinant fs k"
 proof -
   have "0 < Gramian_determinant fs k"
