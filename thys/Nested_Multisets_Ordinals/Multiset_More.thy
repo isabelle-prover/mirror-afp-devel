@@ -44,7 +44,7 @@ lemma subset_add_mset_notin_subset_mset: \<open>A \<subseteq># add_mset b B \<Lo
   by (simp add: subset_mset.le_iff_sup)
 
 lemma subset_msetE: "\<lbrakk>A \<subset># B; \<lbrakk>A \<subseteq># B; \<not> B \<subseteq># A\<rbrakk> \<Longrightarrow> R\<rbrakk> \<Longrightarrow> R"
-  unfolding subseteq_mset_def subset_mset_def by (meson mset_subset_eqI subset_mset.eq_iff)
+  by (simp add: subset_mset.less_le_not_le)
 
 lemma Diff_triv_mset: "M \<inter># N = {#} \<Longrightarrow> M - N = M"
   by (metis diff_intersect_left_idem diff_zero)
@@ -68,7 +68,7 @@ lemma count_image_mset_ge_count: "count (image_mset f A) (f b) \<ge> count A b"
 
 lemma count_image_mset_inj:
   assumes \<open>inj f\<close>
-  shows  \<open>count (image_mset f M) (f x) = count M x\<close>
+  shows \<open>count (image_mset f M) (f x) = count M x\<close>
   by (induct M) (use assms in \<open>auto simp: inj_on_def\<close>)
 
 lemma count_image_mset_le_count_inj_on:
@@ -165,7 +165,7 @@ lemma multiset_filter_mono2: \<open>filter_mset P A \<subseteq># filter_mset Q A
 
 lemma image_filter_cong:
   assumes \<open>\<And>C. C \<in># M \<Longrightarrow> P C \<Longrightarrow> f C = g C\<close>
-  shows \<open>{#f C. C \<in># {#C \<in># M. P C#}#} = {#g C|C\<in># M. P C#}\<close>
+  shows \<open>{#f C. C \<in># {#C \<in># M. P C#}#} = {#g C | C\<in># M. P C#}\<close>
   using assms by (induction M) auto
 
 lemma image_mset_filter_swap2: \<open>{#C \<in># {#P x. x \<in># D#}. Q C #} = {#P x. x \<in># {#C| C \<in># D. Q (P C)#}#}\<close>
@@ -187,7 +187,7 @@ lemma sum_image_mset_mono:
 
 lemma sum_image_mset_mono_mem:
   "n \<in># M \<Longrightarrow> f n \<le> (\<Sum>m \<in># M. f m)" for f :: "'a \<Rightarrow> 'b::canonically_ordered_monoid_add"
-  by (metis image_mset_single mset_subset_eq_single sum_image_mset_mono sum_mset.singleton)
+  using le_iff_add multi_member_split by fastforce
 
 lemma count_sum_mset_if_1_0: \<open>count M a = (\<Sum>x\<in>#M. if x = a then 1 else 0)\<close>
   by (induction M) auto
@@ -242,12 +242,10 @@ lemma size_mset_remove1_mset_le_iff: "size (remove1_mset x M) < size M \<longlef
   using less_irrefl
   by (fastforce intro!: mset_subset_size elim: in_countE simp: subset_mset_def multiset_eq_iff)
 
-lemma remove_1_mset_id_iff_notin:
-  "remove1_mset a M = M \<longleftrightarrow> a \<notin># M"
+lemma remove_1_mset_id_iff_notin: "remove1_mset a M = M \<longleftrightarrow> a \<notin># M"
   by (meson diff_single_trivial multi_drop_mem_not_eq)
 
-lemma id_remove_1_mset_iff_notin:
-  "M = remove1_mset a M \<longleftrightarrow> a \<notin># M"
+lemma id_remove_1_mset_iff_notin: "M = remove1_mset a M \<longleftrightarrow> a \<notin># M"
   using remove_1_mset_id_iff_notin by metis
 
 lemma remove1_mset_eqE:
@@ -308,8 +306,7 @@ proof -
   have "M < N"
     using assms le_multiset_right_total mset_le_trans by blast
   then show ?thesis
-    by (metis (no_types) xM_lt_N add_le_cancel_right add_mset_add_single diff_single_trivial
-      insert_DiffM less_le_not_le)
+    by (metis add_less_cancel_right add_mset_add_single diff_single_trivial insert_DiffM2 xM_lt_N)
 qed
 
 
@@ -384,6 +381,7 @@ lemma sorted_list_of_multiset_eq_Nil[simp]: "sorted_list_of_multiset M = [] \<lo
 
 subsection \<open>Duplicate Removal\<close>
 
+(* TODO: use abbreviation? *)
 definition remdups_mset :: "'v multiset \<Rightarrow> 'v multiset" where
   "remdups_mset S = mset_set (set_mset S)"
 
@@ -714,7 +712,7 @@ begin
 qualified definition product_mset :: "'a multiset \<Rightarrow> 'b multiset \<Rightarrow> ('a \<times> 'b) multiset" where
   [code_abbrev]: "product_mset A B = A \<times># B"
 
-lemma member_product_mset: "x \<in># Multiset_More.product_mset A B \<longleftrightarrow> x \<in># A \<times># B"
+lemma member_product_mset: "x \<in># product_mset A B \<longleftrightarrow> x \<in># A \<times># B"
   by (simp add: Multiset_More.product_mset_def)
 
 end
