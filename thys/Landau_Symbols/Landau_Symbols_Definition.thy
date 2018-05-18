@@ -9,153 +9,11 @@ section {* Definition of Landau symbols *}
 theory Landau_Symbols_Definition
 imports 
   Complex_Main
-  "HOL-Library.Function_Algebras" 
-  "HOL-Library.Set_Algebras"
-  Landau_Library
 begin
 
-subsection {* Eventual non-negativity/non-zeroness *}
-
-text {* 
-  For certain transformations of Landau symbols, it is required that the functions involved 
-  are eventually non-negative of non-zero. In the following, we set up a system to guide the 
-  simplifier to discharge these requirements during simplification at least in obvious cases.
-*}
-
-definition "eventually_nonzero F f \<longleftrightarrow> eventually (\<lambda>x. (f x :: _ :: real_normed_field) \<noteq> 0) F"
-definition "eventually_nonneg F f \<longleftrightarrow> eventually (\<lambda>x. (f x :: _ :: linordered_field) \<ge> 0) F"
-
-named_theorems eventually_nonzero_simps
-
-lemmas [eventually_nonzero_simps] = 
-  eventually_nonzero_def [symmetric] eventually_nonneg_def [symmetric]
-
-lemma eventually_nonzeroD: "eventually_nonzero F f \<Longrightarrow> eventually (\<lambda>x. f x \<noteq> 0) F"
-  by (simp add: eventually_nonzero_def)
-
-lemma eventually_nonzero_const [eventually_nonzero_simps]:
-  "eventually_nonzero F (\<lambda>_::_::linorder. c) \<longleftrightarrow> F = bot \<or> c \<noteq> 0"
-  unfolding eventually_nonzero_def by (auto simp add: eventually_False)
-
-lemma eventually_nonzero_inverse [eventually_nonzero_simps]:
-  "eventually_nonzero F (\<lambda>x. inverse (f x)) \<longleftrightarrow> eventually_nonzero F f"
-  unfolding eventually_nonzero_def by simp
-
-lemma eventually_nonzero_mult [eventually_nonzero_simps]:
-  "eventually_nonzero F (\<lambda>x. f x * g x) \<longleftrightarrow> eventually_nonzero F f \<and> eventually_nonzero F g"
-  unfolding eventually_nonzero_def by (simp_all add: eventually_conj_iff[symmetric])
-
-lemma eventually_nonzero_pow [eventually_nonzero_simps]:
-  "eventually_nonzero F (\<lambda>x::_::linorder. f x ^ n) \<longleftrightarrow> n = 0 \<or> eventually_nonzero F f"
-  by (induction n) (auto simp: eventually_nonzero_simps)
-
-lemma eventually_nonzero_divide [eventually_nonzero_simps]:
-  "eventually_nonzero F (\<lambda>x. f x / g x) \<longleftrightarrow> eventually_nonzero F f \<and> eventually_nonzero F g"
-  unfolding eventually_nonzero_def by (simp_all add: eventually_conj_iff[symmetric])
-
-lemma eventually_nonzero_ident_at_top_linorder [eventually_nonzero_simps]:
-  "eventually_nonzero at_top (\<lambda>x::'a::{real_normed_field,linordered_field}. x)"
-  unfolding eventually_nonzero_def by (simp add: eventually_not_equal)
-    
-lemma eventually_nonzero_ident_nhds [eventually_nonzero_simps]:
-  "eventually_nonzero (nhds a) (\<lambda>x. x) \<longleftrightarrow> a \<noteq> 0"
-  using eventually_nhds_in_open[of "-{0}" a]
-  by (auto elim!: eventually_mono simp: eventually_nonzero_def open_Compl 
-           dest: eventually_nhds_x_imp_x)
-
-lemma eventually_nonzero_ident_at_within [eventually_nonzero_simps]:
-  "eventually_nonzero (at a within A) (\<lambda>x. x)"
-  using eventually_nonzero_ident_nhds[of a]
-  by (cases "a = 0") (auto simp: eventually_nonzero_def eventually_at_filter elim!: eventually_mono)
-
-lemma eventually_nonzero_ln_at_top [eventually_nonzero_simps]:
-  "eventually_nonzero at_top (\<lambda>x::real. ln x)"
-  unfolding eventually_nonzero_def by (subst eventually_ln_at_top) (rule eventually_not_equal)
-
-lemma eventually_nonzero_ln_const_at_top [eventually_nonzero_simps]:
-  "b > 0 \<Longrightarrow> eventually_nonzero at_top (\<lambda>x. ln (b * x :: real))"
-  unfolding eventually_nonzero_def 
-    apply (rule eventually_mono [OF eventually_gt_at_top[of "max 1 (inverse b)"]])
-  by (metis exp_ln exp_minus exp_minus_inverse less_numeral_extra(3) ln_gt_zero max_less_iff_conj mult.commute mult_strict_right_mono)
-
-lemma eventually_nonzero_ln_const'_at_top [eventually_nonzero_simps]:
-  "b > 0 \<Longrightarrow> eventually_nonzero at_top (\<lambda>x. ln (x * b :: real))"
-  using eventually_nonzero_ln_const_at_top[of b] by (simp add: mult.commute)
-
-lemma eventually_nonzero_powr_at_top [eventually_nonzero_simps]:
-  "eventually_nonzero at_top (\<lambda>x::real. f x powr p) \<longleftrightarrow> eventually_nonzero at_top f"
-  unfolding eventually_nonzero_def by simp
-
-
-
-lemma eventually_nonneg_const [eventually_nonzero_simps]:
-  "eventually_nonneg F (\<lambda>_. c) \<longleftrightarrow> F = bot \<or> c \<ge> 0"
-  unfolding eventually_nonneg_def by (auto simp: eventually_False)
-
-lemma eventually_nonneg_inverse [eventually_nonzero_simps]:
-  "eventually_nonneg F (\<lambda>x. inverse (f x)) \<longleftrightarrow> eventually_nonneg F f"
-  unfolding eventually_nonneg_def by (intro eventually_subst) (auto)
-
-lemma eventually_nonneg_add [eventually_nonzero_simps]:
-  assumes "eventually_nonneg F f" "eventually_nonneg F g"
-  shows   "eventually_nonneg F (\<lambda>x. f x + g x)"
-  using assms unfolding eventually_nonneg_def by eventually_elim simp
-
-lemma eventually_nonneg_mult [eventually_nonzero_simps]:
-  assumes "eventually_nonneg F f" "eventually_nonneg F g"
-  shows   "eventually_nonneg F (\<lambda>x. f x * g x)"
-  using assms unfolding eventually_nonneg_def by eventually_elim simp
-
-lemma eventually_nonneg_mult' [eventually_nonzero_simps]:
-  assumes "eventually_nonneg F (\<lambda>x. -f x)" "eventually_nonneg F (\<lambda>x. - g x)"
-  shows   "eventually_nonneg F (\<lambda>x. f x * g x)"
-  using assms unfolding eventually_nonneg_def by eventually_elim (auto intro: mult_nonpos_nonpos)
-
-lemma eventually_nonneg_divide [eventually_nonzero_simps]:
-  assumes "eventually_nonneg F f" "eventually_nonneg F g"
-  shows   "eventually_nonneg F (\<lambda>x. f x / g x)"
-  using assms unfolding eventually_nonneg_def by eventually_elim simp
-
-lemma eventually_nonneg_divide' [eventually_nonzero_simps]:
-  assumes "eventually_nonneg F (\<lambda>x. -f x)" "eventually_nonneg F (\<lambda>x. - g x)"
-  shows   "eventually_nonneg F (\<lambda>x. f x / g x)"
-  using assms unfolding eventually_nonneg_def by eventually_elim (auto intro: divide_nonpos_nonpos)
-
-lemma eventually_nonneg_ident_at_top [eventually_nonzero_simps]:
-  "eventually_nonneg at_top (\<lambda>x. x)" unfolding eventually_nonneg_def by (rule eventually_ge_at_top)
-
-lemma eventually_nonneg_ident_nhds [eventually_nonzero_simps]:
-  fixes a :: "'a :: {linorder_topology, linordered_field}"
-  shows "a > 0 \<Longrightarrow> eventually_nonneg (nhds a) (\<lambda>x. x)" unfolding eventually_nonneg_def
-  using eventually_nhds_in_open[of "{0<..}" a]
-  by (auto simp: eventually_nonneg_def dest: eventually_nhds_x_imp_x elim!: eventually_mono)
-
-lemma eventually_nonneg_ident_at_within [eventually_nonzero_simps]:
-  fixes a :: "'a :: {linorder_topology, linordered_field}"
-  shows "a > 0 \<Longrightarrow> eventually_nonneg (at a within A) (\<lambda>x. x)"
-  using eventually_nonneg_ident_nhds[of a]
-  by (auto simp: eventually_nonneg_def eventually_at_filter elim: eventually_mono)
-
-lemma eventually_nonneg_pow [eventually_nonzero_simps]:
-  "eventually_nonneg F f \<Longrightarrow> eventually_nonneg F (\<lambda>x. f x ^ n)"
-  by (induction n) (auto simp: eventually_nonzero_simps)
-
-lemma eventually_nonneg_powr [eventually_nonzero_simps]:
-  "eventually_nonneg F (\<lambda>x. f x powr y :: real)" by (simp add: eventually_nonneg_def)
-
-lemma eventually_nonneg_ln_at_top [eventually_nonzero_simps]:
-  "eventually_nonneg at_top (\<lambda>x. ln x :: real)" 
-  by (simp add: eventually_nonneg_def eventually_ln_at_top eventually_ge_at_top)
-
-lemma eventually_nonneg_ln_const [eventually_nonzero_simps]:
-  "b > 0 \<Longrightarrow> eventually_nonneg at_top (\<lambda>x. ln (b*x) :: real)" 
-  unfolding eventually_nonneg_def using eventually_ge_at_top[of "inverse b"]
-  by eventually_elim (simp_all add: field_simps)
-
-lemma eventually_nonneg_ln_const' [eventually_nonzero_simps]:
-  "b > 0 \<Longrightarrow> eventually_nonneg at_top (\<lambda>x. ln (x*b) :: real)" 
-  using eventually_nonneg_ln_const[of b] by (simp add: mult.commute)
-
+lemma eventually_subst':
+  "eventually (\<lambda>x. f x = g x) F \<Longrightarrow> eventually (\<lambda>x. P x (f x)) F = eventually (\<lambda>x. P x (g x)) F"
+  by (rule eventually_subst, erule eventually_rev_mp) simp
 
 
 subsection {* Definition of Landau symbols *}
@@ -257,7 +115,7 @@ lemma bigtheta_trans1:
 lemma bigtheta_trans2: 
   "f \<in> \<Theta>[F](g) \<Longrightarrow> g \<in> L F (h) \<Longrightarrow> f \<in> L F (h)"
   by (subst in_cong_bigtheta)
-    
+   
 lemma cmult' [simp]: "c \<noteq> 0 \<Longrightarrow> L F (\<lambda>x. f x * c) = L F (f)"
   by (subst mult.commute) (rule cmult)
 
@@ -771,7 +629,10 @@ proof
   }
   {
     fix f g :: "'a \<Rightarrow> 'b" and F assume A: "eventually (\<lambda>x. f x = g x) F"
-    show "L F (f) = L F (g)" unfolding L_def by (subst eventually_subst'[OF A]) (rule refl)
+    show "L F (f) = L F (g)" unfolding L_def
+      
+      thm eventually_subst A
+      by (subst eventually_subst'[OF A]) (rule refl)
   }
   {
     fix f g h :: "'a \<Rightarrow> 'b" and F assume A: "eventually (\<lambda>x. f x = g x) F"
@@ -1072,7 +933,7 @@ done
 
 lemma bigthetaI_cong: "eventually (\<lambda>x. f x = g x) F \<Longrightarrow> f \<in> \<Theta>[F](g)"
   by (intro bigthetaI'[of 1 1]) (auto elim!: eventually_mono)
-    
+
 lemma (in landau_symbol) ev_eq_trans1: 
   "f \<in> L F (g) \<Longrightarrow> eventually (\<lambda>x. g x = h x) F \<Longrightarrow> f \<in> L F (h)"
   by (rule bigtheta_trans1[OF _ bigthetaI_cong])
@@ -1168,81 +1029,6 @@ proof-
   }
   with assms show ?thesis by (force simp: bigtheta_sym)
 qed
-
-lemma eventually_nonzero_bigtheta':
-  "f \<in> \<Theta>[F](g) \<Longrightarrow> eventually_nonzero F f \<longleftrightarrow> eventually_nonzero F g"
-  unfolding eventually_nonzero_def by (rule eventually_nonzero_bigtheta)
-
-lemma bigtheta_mult_eq: "\<Theta>[F](\<lambda>x. f x * g x) = \<Theta>[F](f) * \<Theta>[F](g)"
-proof (intro equalityI subsetI)
-  fix h assume "h \<in> \<Theta>[F](f) * \<Theta>[F](g)"
-  thus "h \<in> \<Theta>[F](\<lambda>x. f x * g x)"
-    by (elim set_times_elim, hypsubst, unfold func_times) (erule (1) landau_theta.mult)
-next
-  fix h assume "h \<in> \<Theta>[F](\<lambda>x. f x * g x)"
-  then guess c1 c2 :: real unfolding bigtheta_def by (elim landau_o.bigE landau_omega.bigE IntE)
-  note c = this
-
-  define h1 h2
-    where "h1 x = (if g x = 0 then if f x = 0 then if h x = 0 then h x else 1 else f x else h x / g x)"
-      and "h2 x = (if g x = 0 then if f x = 0 then h x else h x / f x else g x)"
-    for x
-
-  have "h = h1 * h2" by (intro ext) (auto simp: h1_def h2_def field_simps)
-  moreover have "h1 \<in> \<Theta>[F](f)"
-  proof (rule bigthetaI')
-    from c(3) show "min c2 1 > 0" by simp
-    from c(1) show "max c1 1 > 0" by simp
-    from c(2,4) 
-      show "eventually (\<lambda>x. min c2 1 * (norm (f x)) \<le> norm (h1 x) \<and> 
-                            norm (h1 x) \<le> max c1 1 * (norm (f x))) F"
-      apply eventually_elim
-    proof (rule conjI)
-      fix x assume A: "(norm (h x)) \<le> c1 * norm (f x * g x)" 
-               and B: "(norm (h x)) \<ge> c2 * norm (f x * g x)"
-      have m: "min c2 1 * (norm (f x)) \<le> 1 * (norm (f x))" by (rule mult_right_mono) simp_all
-      have "min c2 1 * norm (f x * g x) \<le> c2 * norm (f x * g x)" by (intro mult_right_mono) simp_all
-      also note B
-      finally show "norm (h1 x) \<ge> min c2 1 * (norm (f x))" using m A
-        by (cases "g x = 0") (simp_all add: h1_def norm_mult norm_divide field_simps)+
-
-      have m: "1 * (norm (f x)) \<le> max c1 1 * (norm (f x))" by (rule mult_right_mono) simp_all
-      note A
-      also have "c1 * norm (f x * g x) \<le> max c1 1 * norm (f x * g x)" 
-        by (intro mult_right_mono) simp_all
-      finally show "norm (h1 x) \<le> max c1 1 * (norm (f x))" using m A
-        by (cases "g x = 0") (simp_all add: h1_def norm_mult norm_divide field_simps)+
-    qed
-  qed
-  moreover have "h2 \<in> \<Theta>[F](g)"
-  proof (rule bigthetaI')
-    from c(3) show "min c2 1 > 0" by simp
-    from c(1) show "max c1 1 > 0" by simp
-    from c(2,4) 
-      show "eventually (\<lambda>x. min c2 1 * (norm (g x)) \<le> norm (h2 x) \<and>  
-                            norm (h2 x) \<le> max c1 1 * (norm (g x))) F"
-      apply eventually_elim
-    proof (rule conjI)
-      fix x assume A: "(norm (h x)) \<le> c1 * norm (f x * g x)" 
-               and B: "(norm (h x)) \<ge> c2 * norm (f x * g x)"
-      have m: "min c2 1 * (norm (f x)) \<le> 1 * (norm (f x))" by (rule mult_right_mono) simp_all
-      have "min c2 1 * norm (f x * g x) \<le> c2 * norm (f x * g x)" 
-        by (intro mult_right_mono) simp_all
-      also note B
-      finally show "norm (h2 x) \<ge> min c2 1 * (norm (g x))" using m A B
-        by (cases "g x = 0") (auto simp: h2_def abs_mult field_simps)+
-
-      have m: "1 * (norm (g x)) \<le> max c1 1 * (norm (g x))" by (rule mult_right_mono) simp_all
-      note A
-      also have "c1 * norm (f x * g x) \<le> max c1 1 * norm (f x * g x)" 
-        by (intro mult_right_mono) simp_all
-      finally show "norm (h2 x) \<le> max c1 1 * (norm (g x))" using m A
-        by (cases "g x = 0") (simp_all add: h2_def abs_mult field_simps)+
-    qed
-  qed
-  ultimately show "h \<in> \<Theta>[F](f) * \<Theta>[F](g)" by blast
-qed
-
 
 
 subsection {* Landau symbols and limits *}
@@ -1347,6 +1133,9 @@ lemma smallomegaD_filterlim_at_infinity:
   assumes "eventually (\<lambda>x. g x \<noteq> 0) F"
   shows   "LIM x F. f x / g x :> at_infinity"
   using assms by (intro filterlim_norm_at_top_imp_at_infinity smallomegaD_filterlim_at_top_norm)
+
+lemma smallomega_1_conv_filterlim: "f \<in> \<omega>[F](\<lambda>_. 1) \<longleftrightarrow> filterlim f at_infinity F"
+  by (auto intro: smallomegaI_filterlim_at_infinity dest: smallomegaD_filterlim_at_infinity)
 
 lemma smalloI_tendsto:
   assumes lim: "((\<lambda>x. f x / g x) \<longlongrightarrow> 0) F"
@@ -1471,7 +1260,7 @@ proof-
   from assms(1) guess c by (elim landau_o.bigE landau_omega.bigE IntE)
   note c = this
   from c(2) assms(2) have "eventually (\<lambda>x. (norm (f x)) powr p \<le> (c * (norm (g x))) powr p) F"
-    by (auto elim!: eventually_mono intro!: powr_mono2_ex)
+    by (auto elim!: eventually_mono intro!: powr_mono2)
   thus "(\<lambda>x. \<bar>f x\<bar> powr p) \<in> O[F](\<lambda>x. \<bar>g x\<bar> powr p)" using c(1)
     by (intro bigoI[of _ "c powr p"]) (simp_all add: powr_mult)
 qed
@@ -1488,7 +1277,7 @@ proof (rule landau_o.smallI)
   proof eventually_elim
     fix x assume "(norm (f x)) \<le> c powr (1 / p) * (norm (g x))"
     with assms(2) have "(norm (f x)) powr p \<le> (c powr (1 / p) * (norm (g x))) powr p"
-      by (intro powr_mono2_ex) simp_all
+      by (intro powr_mono2) simp_all
     also from assms(2) c have "... = c * (norm (g x)) powr p"
       by (simp add: field_simps powr_mult powr_powr)
     finally show "norm (\<bar>f x\<bar> powr p) \<le> c * norm (\<bar>g x\<bar> powr p)" by simp
@@ -1592,22 +1381,21 @@ lemma bigomega_const_iff [simp]: "(\<lambda>_. c1) \<in> \<Omega>[F](\<lambda>_.
      (auto simp: bigomega_def eventually_False mult_le_0_iff 
            intro: exI[of _ 1] exI[of _ "norm c1 / norm c2"])
 
-
 lemma smallo_real_nat_transfer:
   "(f :: real \<Rightarrow> real) \<in> o(g) \<Longrightarrow> (\<lambda>x::nat. f (real x)) \<in> o(\<lambda>x. g (real x))"
-  by (force intro!: eventually_nat_real landau_o.smallI dest!: landau_o.smallD)
+  by (rule landau_o.small.compose[OF _ filterlim_real_sequentially])
 
 lemma bigo_real_nat_transfer:
   "(f :: real \<Rightarrow> real) \<in> O(g) \<Longrightarrow> (\<lambda>x::nat. f (real x)) \<in> O(\<lambda>x. g (real x))"
-  by (elim landau_o.bigE, erule landau_o.bigI, erule eventually_nat_real)
+  by (rule landau_o.big.compose[OF _ filterlim_real_sequentially])
 
 lemma smallomega_real_nat_transfer:
   "(f :: real \<Rightarrow> real) \<in> \<omega>(g) \<Longrightarrow> (\<lambda>x::nat. f (real x)) \<in> \<omega>(\<lambda>x. g (real x))"
-  by (force intro!: eventually_nat_real landau_omega.smallI dest!: landau_omega.smallD)
+  by (rule landau_omega.small.compose[OF _ filterlim_real_sequentially])
 
 lemma bigomega_real_nat_transfer:
   "(f :: real \<Rightarrow> real) \<in> \<Omega>(g) \<Longrightarrow> (\<lambda>x::nat. f (real x)) \<in> \<Omega>(\<lambda>x. g (real x))"
-  by (elim landau_omega.bigE, erule landau_omega.bigI, erule eventually_nat_real)
+  by (rule landau_omega.big.compose[OF _ filterlim_real_sequentially])
 
 lemma bigtheta_real_nat_transfer:
   "(f :: real \<Rightarrow> real) \<in> \<Theta>(g) \<Longrightarrow> (\<lambda>x::nat. f (real x)) \<in> \<Theta>(\<lambda>x. g (real x))"
@@ -1673,118 +1461,6 @@ lemma big_sum_in_bigo:
   assumes "\<And>x. x \<in> A \<Longrightarrow> f x \<in> O[F](g)"
   shows   "(\<lambda>x. sum (\<lambda>y. f y x) A) \<in> O[F](g)"
   using assms by (induction A rule: infinite_finite_induct) (auto intro: sum_in_bigo)
-
-
-lemma tendsto_ln_over_powr: 
-  assumes "(a::real) > 0"
-  shows   "((\<lambda>x. ln x / x powr a) \<longlongrightarrow> 0) at_top"
-proof (rule lhospital_at_top_at_top)
-  from assms show "LIM x at_top. x powr a :> at_top" by (rule powr_at_top)
-  show "eventually (\<lambda>x. a * x powr (a - 1) \<noteq> 0) at_top"
-    using eventually_gt_at_top[of "0::real"] by eventually_elim (insert assms, simp)
-  show "eventually (\<lambda>x::real. (ln has_real_derivative (inverse x)) (at x)) at_top"
-    using eventually_gt_at_top[of "0::real"] DERIV_ln by (elim eventually_mono) simp
-  show "eventually (\<lambda>x. ((\<lambda>x. x powr a) has_real_derivative a * x powr (a - 1)) (at x)) at_top"
-    using eventually_gt_at_top[of "0::real"] DERIV_powr by (elim eventually_mono) simp
-  have "eventually (\<lambda>x. inverse a * x powr -a = inverse x / (a*x powr (a-1))) at_top"
-    using eventually_gt_at_top[of "0::real"] 
-    by (elim eventually_mono) (simp add: field_simps powr_diff powr_minus)
-  moreover from assms have "((\<lambda>x. inverse a * x powr -a) \<longlongrightarrow> 0) at_top"
-    by (intro tendsto_mult_right_zero tendsto_neg_powr filterlim_ident) simp_all
-  ultimately show "((\<lambda>x. inverse x / (a * x powr (a - 1))) \<longlongrightarrow> 0) at_top"
-    by (subst (asm) tendsto_cong) simp_all
-qed
-
-lemma tendsto_ln_powr_over_powr: 
-  assumes "(a::real) > 0" "b > 0"
-  shows   "((\<lambda>x. ln x powr a / x powr b) \<longlongrightarrow> 0) at_top"
-proof-
-  have "eventually (\<lambda>x. ln x powr a / x powr b = (ln x / x powr (b/a)) powr a) at_top"
-    using assms eventually_gt_at_top[of "1::real"]
-    by (elim eventually_mono) (simp add: powr_divide powr_powr)
-  moreover have "eventually (\<lambda>x. 0 < ln x / x powr (b / a)) at_top"
-    using eventually_gt_at_top[of "1::real"] by (elim eventually_mono) simp
-  with assms have "((\<lambda>x. (ln x / x powr (b/a)) powr a) \<longlongrightarrow> 0) at_top"
-    by (intro tendsto_zero_powrI tendsto_ln_over_powr) (simp_all add: eventually_mono)
-  ultimately show ?thesis by (subst tendsto_cong) simp_all
-qed
-
-lemma tendsto_ln_powr_over_powr': 
-  assumes "b > 0"
-  shows   "((\<lambda>x::real. ln x powr a / x powr b) \<longlongrightarrow> 0) at_top"
-proof (cases "a \<le> 0")
-  assume a: "a \<le> 0"
-  show ?thesis
-  proof (rule tendsto_sandwich[of "\<lambda>_::real. 0"])
-    have "eventually (\<lambda>x. ln x powr a \<le> 1) at_top" unfolding eventually_at_top_linorder
-    proof (intro allI exI impI)
-      fix x :: real assume "x \<ge> exp 1"
-      from ln_mono[OF _ less_le_trans[OF _ this] this] have "ln x \<ge> 1" by simp
-      hence "ln x powr a \<le> ln (exp 1) powr a" using a by (intro powr_mono2') simp_all
-      thus "ln x powr a \<le> 1" by simp
-    qed
-    thus "eventually (\<lambda>x. ln x powr a / x powr b \<le> x powr -b) at_top"
-      by eventually_elim (insert a, simp add: field_simps powr_minus divide_right_mono)
-  qed (auto intro!: filterlim_ident tendsto_neg_powr assms)
-qed (intro tendsto_ln_powr_over_powr, simp_all add: assms)
-
-lemma tendsto_ln_over_ln:
-  assumes "(a::real) > 0" "c > 0"
-  shows   "((\<lambda>x. ln (a*x) / ln (c*x)) \<longlongrightarrow> 1) at_top"
-proof (rule lhospital_at_top_at_top)
-  show "LIM x at_top. ln (c*x) :> at_top"
-    by (intro filterlim_compose[OF ln_at_top] filterlim_tendsto_pos_mult_at_top[OF tendsto_const] 
-              filterlim_ident assms(2))
-  show "eventually (\<lambda>x. ((\<lambda>x. ln (a*x)) has_real_derivative (inverse x)) (at x)) at_top"
-    using eventually_gt_at_top[of "inverse a"] assms
-    by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
-  show "eventually (\<lambda>x. ((\<lambda>x. ln (c*x)) has_real_derivative (inverse x)) (at x)) at_top"
-    using eventually_gt_at_top[of "inverse c"] assms
-    by (auto elim!: eventually_mono intro!: derivative_eq_intros simp: field_simps)
-  show "((\<lambda>x::real. inverse x / inverse x) \<longlongrightarrow> 1) at_top"
-    by (subst tendsto_cong[of _ "\<lambda>_. 1"]) (simp_all add: eventually_not_equal)
-qed (simp_all add: eventually_not_equal)
-
-lemma tendsto_ln_powr_over_ln_powr:
-  assumes "(a::real) > 0" "c > 0"
-  shows   "((\<lambda>x. ln (a*x) powr d / ln (c*x) powr d) \<longlongrightarrow> 1) at_top"
-proof-
-  have "eventually (\<lambda>x. ln (a*x) powr d / ln (c*x) powr d = (ln (a*x) / ln (c*x)) powr d) at_top"
-    using assms eventually_gt_at_top[of "max (inverse a) (inverse c)"]
-    by (auto elim!: eventually_mono simp: powr_divide field_simps)
-  moreover have "((\<lambda>x. (ln (a*x) / ln (c*x)) powr d) \<longlongrightarrow> 1) at_top" using assms
-    by (intro tendsto_eq_rhs[OF tendsto_powr[OF tendsto_ln_over_ln tendsto_const]]) simp_all
-  ultimately show ?thesis by (subst tendsto_cong)
-qed
-
-lemma tendsto_ln_powr_over_ln_powr': 
-  "c > 0 \<Longrightarrow> ((\<lambda>x::real. ln x powr d / ln (c*x) powr d) \<longlongrightarrow> 1) at_top"
-  using tendsto_ln_powr_over_ln_powr[of 1 c d] by simp
-
-lemma tendsto_ln_powr_over_ln_powr'': 
-  "a > 0 \<Longrightarrow> ((\<lambda>x::real. ln (a*x) powr d / ln x powr d) \<longlongrightarrow> 1) at_top"
-  using tendsto_ln_powr_over_ln_powr[of _ 1] by simp
-
-lemma bigtheta_const_ln_powr [simp]: "a > 0 \<Longrightarrow> (\<lambda>x::real. ln (a*x) powr d) \<in> \<Theta>(\<lambda>x. ln x powr d)"
-  by (intro bigthetaI_tendsto[of 1] tendsto_ln_powr_over_ln_powr'') simp
-
-lemma bigtheta_const_ln_pow [simp]: "a > 0 \<Longrightarrow> (\<lambda>x::real. ln (a*x) ^ d) \<in> \<Theta>(\<lambda>x. ln x ^ d)"
-proof-
-  assume A: "a > 0"
-  hence "(\<lambda>x::real. ln (a*x) ^ d) \<in> \<Theta>(\<lambda>x. ln (a*x) powr real d)"
-    by (subst bigtheta_sym, intro bigthetaI_cong powr_realpow_eventually 
-         filterlim_compose[OF ln_at_top] 
-         filterlim_tendsto_pos_mult_at_top[OF tendsto_const _ filterlim_ident])
-  also from A have "(\<lambda>x. ln (a*x) powr real d) \<in> \<Theta>(\<lambda>x. ln x powr real d)" by simp
-  also have "(\<lambda>x. ln x powr real d) \<in> \<Theta>(\<lambda>x. ln x ^ d)"
-    by (intro bigthetaI_cong powr_realpow_eventually filterlim_compose[OF ln_at_top] filterlim_ident)
-  finally show ?thesis .
-qed
-
-lemma bigtheta_const_ln [simp]: "a > 0 \<Longrightarrow> (\<lambda>x::real. ln (a*x)) \<in> \<Theta>(\<lambda>x. ln x)"
-  using tendsto_ln_over_ln[of a 1]  by (intro bigthetaI_tendsto[of 1]) simp_all
-
-
 
 context landau_symbol
 begin
@@ -1898,256 +1574,6 @@ lemma powr_bigtheta_iff:
   assumes "filterlim g at_top F" "F \<noteq> bot"
   shows   "(\<lambda>x. g x powr p :: real) \<in> \<Theta>[F](\<lambda>x. g x powr q) \<longleftrightarrow> p = q"
   using assms unfolding bigtheta_def by (auto simp: bigomega_iff_bigo powr_bigo_iff)
-
-
-
-subsection {* Rewriting Landau symbols *}
-
-text {* 
-  Since the simplifier does not currently rewriting with relations other than equality,
-  but we want to rewrite terms like @{term "\<Theta>(\<lambda>x. log 2 x * x)"} to @{term "\<Theta>(\<lambda>x. ln x * x)"}, 
-  we need to bring the term into something that contains @{term "\<Theta>(\<lambda>x. log 2 x)"} and 
-  @{term "\<Theta>(\<lambda>x. x)"}, which can then be rewritten individually.
-  For this, we introduce the following constants and rewrite rules. The rules are mainly used 
-  by the simprocs, but may be useful for manual reasoning occasionally.
-*}
-
-definition "set_mult A B = {\<lambda>x. f x * g x |f g. f \<in> A \<and> g \<in> B}"
-definition "set_inverse A = {\<lambda>x. inverse (f x) |f. f \<in> A}"
-definition "set_divide A B = {\<lambda>x. f x / g x |f g. f \<in> A \<and> g \<in> B}"
-definition "set_pow A n = {\<lambda>x. f x ^ n |f. f \<in> A}"
-definition "set_powr A y = {\<lambda>x. f x powr y |f. f \<in> A}"
-
-lemma bigtheta_mult_eq_set_mult:
-  shows "\<Theta>[F](\<lambda>x. f x * g x) = set_mult (\<Theta>[F](f)) (\<Theta>[F](g))"
-  unfolding bigtheta_mult_eq set_mult_def set_times_def func_times by blast
-
-lemma bigtheta_inverse_eq_set_inverse:
-  shows "\<Theta>[F](\<lambda>x. inverse (f x)) = set_inverse (\<Theta>[F](f))"
-proof (intro equalityI subsetI)
-  fix g :: "'a \<Rightarrow> 'b" assume "g \<in> \<Theta>[F](\<lambda>x. inverse (f x))"
-  hence "(\<lambda>x. inverse (g x)) \<in> \<Theta>[F](\<lambda>x. inverse (inverse (f x)))" by (subst bigtheta_inverse)
-  also have "(\<lambda>x. inverse (inverse (f x))) = f" by (rule ext) simp
-  finally show "g \<in> set_inverse (\<Theta>[F](f))" unfolding set_inverse_def by force
-next
-  fix g :: "'a \<Rightarrow> 'b" assume "g \<in> set_inverse (\<Theta>[F](f))"
-  then obtain g' where "g = (\<lambda>x. inverse (g' x))" "g' \<in> \<Theta>[F](f)" unfolding set_inverse_def by blast
-  hence "(\<lambda>x. inverse (g' x)) \<in> \<Theta>[F](\<lambda>x. inverse (f x))" by (subst bigtheta_inverse)
-  also from `g = (\<lambda>x. inverse (g' x))` have "(\<lambda>x. inverse (g' x)) = g" by (intro ext) simp
-  finally show "g \<in> \<Theta>[F](\<lambda>x. inverse (f x))" .
-qed
-
-lemma set_divide_inverse: 
-  "set_divide (A :: (_ \<Rightarrow> (_ :: division_ring)) set) B = set_mult A (set_inverse B)"
-proof (intro equalityI subsetI)
-  fix f assume "f \<in> set_divide A B"
-  then obtain g h where "f = (\<lambda>x. g x / h x)" "g \<in> A" "h \<in> B" unfolding set_divide_def by blast
-  hence "f = g * (\<lambda>x. inverse (h x))" "(\<lambda>x. inverse (h x)) \<in> set_inverse B"
-    unfolding set_inverse_def by (auto simp: divide_inverse)
-  with `g \<in> A` show "f \<in> set_mult A (set_inverse B)" unfolding set_mult_def by force
-next
-  fix f assume "f \<in> set_mult A (set_inverse B)"
-  then obtain g h where "f = g * (\<lambda>x. inverse (h x))" "g \<in> A" "h \<in> B"
-    unfolding set_times_def set_inverse_def set_mult_def by force
-  hence "f = (\<lambda>x. g x / h x)" by (intro ext) (simp add: divide_inverse)
-  with `g \<in> A` `h \<in> B` show "f \<in> set_divide A B" unfolding set_divide_def by blast
-qed
-
-lemma bigtheta_divide_eq_set_divide:
-  shows "\<Theta>[F](\<lambda>x. f x / g x) = set_divide (\<Theta>[F](f)) (\<Theta>[F](g))"
-  by (simp only: set_divide_inverse divide_inverse bigtheta_mult_eq_set_mult 
-                 bigtheta_inverse_eq_set_inverse)
-
-primrec bigtheta_pow where
-  "bigtheta_pow F A 0 = \<Theta>[F](\<lambda>_. 1)"
-| "bigtheta_pow F A (Suc n) = set_mult A (bigtheta_pow F A n)"
-
-lemma bigtheta_pow_eq_set_pow: "\<Theta>[F](\<lambda>x. f x ^ n) = bigtheta_pow F (\<Theta>[F](f)) n"
-  by (induction n) (simp_all add: bigtheta_mult_eq_set_mult)
-
-definition bigtheta_powr where
-  "bigtheta_powr F A y = (if y = 0 then {f. \<exists>g\<in>A. eventually_nonneg F g \<and> f \<in> \<Theta>[F](\<lambda>x. g x powr y)} 
-     else {f. \<exists>g\<in>A. eventually_nonneg F g \<and> (\<forall>x. (norm (f x)) = g x powr y)})"
-
-lemma bigtheta_powr_eq_set_powr: 
-  assumes "eventually_nonneg F f"
-  shows   "\<Theta>[F](\<lambda>x. f x powr (y::real)) = bigtheta_powr F (\<Theta>[F](f)) y"
-proof (cases "y = 0")
-  assume [simp]: "y = 0"
-  show ?thesis
-  proof (intro equalityI subsetI)
-    fix h assume "h \<in> bigtheta_powr F \<Theta>[F](f) y"
-    then obtain g where g: "g \<in> \<Theta>[F](f)" "eventually_nonneg F g" "h \<in> \<Theta>[F](\<lambda>x. g x powr 0)"
-      unfolding bigtheta_powr_def by force
-    note this(3)
-    also have "(\<lambda>x. g x powr 0) \<in> \<Theta>[F](\<lambda>x. \<bar>g x\<bar> powr 0)" 
-      using assms unfolding eventually_nonneg_def
-      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
-    also from g(1) have "(\<lambda>x. \<bar>g x\<bar> powr 0) \<in> \<Theta>[F](\<lambda>x. \<bar>f x\<bar> powr 0)" 
-      by (rule bigtheta_powr)
-    also from g(2) have "(\<lambda>x. f x powr 0) \<in> \<Theta>[F](\<lambda>x. \<bar>f x\<bar> powr 0)" 
-      unfolding eventually_nonneg_def
-      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
-    finally show "h \<in> \<Theta>[F](\<lambda>x. f x powr y)" by simp
-  next
-    fix h assume "h \<in> \<Theta>[F](\<lambda>x. f x powr y)"
-    with assms have "\<exists>g\<in>\<Theta>[F](f). eventually_nonneg F g \<and> h \<in> \<Theta>[F](\<lambda>x. g x powr 0)"
-      by (intro bexI[of _ f] conjI) simp_all
-    thus "h \<in> bigtheta_powr F \<Theta>[F](f) y" unfolding bigtheta_powr_def by simp
-  qed
-next
-  assume y: "y \<noteq> 0"
-  show ?thesis
-  proof (intro equalityI subsetI)
-    fix h assume h: "h \<in> \<Theta>[F](\<lambda>x. f x powr y)"
-    let ?h' = "\<lambda>x. \<bar>h x\<bar> powr inverse y"
-    from bigtheta_powr[OF h, of "inverse y"] y
-      have "?h' \<in> \<Theta>[F](\<lambda>x. f x powr 1)" by (simp add: powr_powr)
-    also have "(\<lambda>x. f x powr 1) \<in> \<Theta>[F](f)" using assms unfolding eventually_nonneg_def 
-      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
-    finally have "?h' \<in> \<Theta>[F](f)" .
-    with y have "\<exists>g\<in>\<Theta>[F](f). eventually_nonneg F g \<and> (\<forall>x. (norm (h x)) = g x powr y)"
-      by (intro bexI[of _ ?h']) (simp_all add: powr_powr eventually_nonneg_def)
-    thus "h \<in> bigtheta_powr F \<Theta>[F](f) y" using y unfolding bigtheta_powr_def by simp
-  next
-    fix h assume "h \<in> bigtheta_powr F (\<Theta>[F](f)) y"
-    with y obtain g where A: "g \<in> \<Theta>[F](f)" "\<And>x. \<bar>h x\<bar> = g x powr y" "eventually_nonneg F g"
-      unfolding bigtheta_powr_def by force
-    from this(3) have "(\<lambda>x. g x powr y) \<in> \<Theta>[F](\<lambda>x. \<bar>g x\<bar> powr y)" unfolding eventually_nonneg_def
-      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
-    also from A(1) have "(\<lambda>x. \<bar>g x\<bar> powr y) \<in> \<Theta>[F](\<lambda>x. \<bar>f x\<bar> powr y)" by (rule bigtheta_powr)
-    also have "(\<lambda>x. \<bar>f x\<bar> powr y) \<in> \<Theta>[F](\<lambda>x. f x powr y)" using assms unfolding eventually_nonneg_def
-      by (intro bigthetaI_cong) (auto elim!: eventually_mono)
-    finally have "(\<lambda>x. \<bar>h x\<bar>) \<in> \<Theta>[F](\<lambda>x. f x powr y)" by (subst A(2))
-    thus "(\<lambda>x. h x) \<in> \<Theta>[F](\<lambda>x. f x powr y)" by simp
-  qed
-qed
-
-
-lemmas bigtheta_factors_eq = 
-  bigtheta_mult_eq_set_mult bigtheta_inverse_eq_set_inverse bigtheta_divide_eq_set_divide 
-  bigtheta_pow_eq_set_pow bigtheta_powr_eq_set_powr
-
-lemmas landau_bigtheta_congs = landau_symbols[THEN landau_symbol.cong_bigtheta]
-
-lemma (in landau_symbol) meta_cong_bigtheta: "\<Theta>[F](f) \<equiv> \<Theta>[F](g) \<Longrightarrow> L F (f) \<equiv> L F (g)"
-  using bigtheta_refl[of f] by (intro eq_reflection cong_bigtheta) blast
-
-lemmas landau_bigtheta_meta_congs = landau_symbols[THEN landau_symbol.meta_cong_bigtheta]
-
-(* TODO: Make this work with bigtheta_powr_eq_set_powr *)
-  
-  
-(* Additional theorems, contributed by Andreas Lochbihler and adapted by Manuel Eberl *)
-
-lemma eventually_nonneg_at_top: 
-  assumes "filterlim f at_top F"
-  shows   "eventually_nonneg F f"
-proof -
-  from assms have "eventually (\<lambda>x. f x \<ge> 0) F"
-    by (simp add: filterlim_at_top)
-  thus ?thesis unfolding eventually_nonneg_def by eventually_elim simp
-qed
-
-lemma eventually_nonzero_at_top: 
-  assumes "filterlim (f :: 'a \<Rightarrow> 'b :: {linordered_field, real_normed_field}) at_top F"
-  shows   "eventually_nonzero F f"
-proof -
-  from assms have "eventually (\<lambda>x. f x \<ge> 1) F"
-    by (simp add: filterlim_at_top)
-  thus ?thesis unfolding eventually_nonzero_def by eventually_elim auto
-qed
-
-lemma eventually_nonneg_at_top_ASSUMPTION [eventually_nonzero_simps]:
-  "ASSUMPTION (filterlim f at_top F) \<Longrightarrow> eventually_nonneg F f"
-  by (simp add: ASSUMPTION_def eventually_nonneg_at_top)
-
-lemma eventually_nonzero_at_top_ASSUMPTION [eventually_nonzero_simps]:
-  "ASSUMPTION (filterlim f (at_top :: 'a :: {linordered_field, real_normed_field} filter) F) \<Longrightarrow> 
-     eventually_nonzero F f"
-  using eventually_nonzero_at_top[of f F] by (simp add: ASSUMPTION_def)
-
-lemma filterlim_at_top_iff_smallomega:
-  fixes f :: "_ \<Rightarrow> real"
-  shows "filterlim f at_top F \<longleftrightarrow> f \<in> \<omega>[F](\<lambda>_. 1) \<and> eventually_nonneg F f"
-  unfolding eventually_nonneg_def
-proof safe
-  assume A: "filterlim f at_top F"
-  thus B: "eventually (\<lambda>x. f x \<ge> 0) F" by (simp add: eventually_nonzero_simps)
-  {
-    fix c
-    from A have "filterlim (\<lambda>x. norm (f x)) at_top F"
-      by (intro filterlim_at_infinity_imp_norm_at_top filterlim_at_top_imp_at_infinity) 
-    hence "eventually (\<lambda>x. norm (f x) \<ge> c) F" by (auto simp: filterlim_at_top)
-  }
-  thus "f \<in> \<omega>[F](\<lambda>_. 1)" by (rule landau_omega.smallI)
-next
-  assume A: "f \<in> \<omega>[F](\<lambda>_. 1)" and B: "eventually (\<lambda>x. f x \<ge> 0) F"
-  {
-    fix c :: real assume "c > 0"
-    from landau_omega.smallD[OF A this] B 
-      have "eventually (\<lambda>x. f x \<ge> c) F" by eventually_elim simp
-  }
-  thus "filterlim f at_top F"
-    by (subst filterlim_at_top_gt[of _ _ 0]) simp_all
-qed
-
-lemma smallomega_1_iff: 
-  "eventually_nonneg F f \<Longrightarrow> f \<in> \<omega>[F](\<lambda>_. 1 :: real) \<longleftrightarrow> filterlim f at_top F"
-  by (simp add: filterlim_at_top_iff_smallomega)
-
-lemma smallo_1_iff: 
-  "eventually_nonneg F f \<Longrightarrow> (\<lambda>_. 1 :: real) \<in> o[F](f) \<longleftrightarrow> filterlim f at_top F"
-  by (simp add: filterlim_at_top_iff_smallomega smallomega_iff_smallo)
-
-lemma eventually_nonneg_add1 [eventually_nonzero_simps]:
-  assumes "eventually_nonneg F f" "g \<in> o[F](f)"
-  shows   "eventually_nonneg F (\<lambda>x. f x + g x :: real)"
-  using  landau_o.smallD[OF assms(2) zero_less_one] assms(1) unfolding eventually_nonneg_def
-  by eventually_elim simp_all
-
-lemma eventually_nonneg_add2 [eventually_nonzero_simps]:
-  assumes "eventually_nonneg F g" "f \<in> o[F](g)"
-  shows   "eventually_nonneg F (\<lambda>x. f x + g x :: real)"
-  using  landau_o.smallD[OF assms(2) zero_less_one] assms(1) unfolding eventually_nonneg_def
-  by eventually_elim simp_all
-
-lemma eventually_nonneg_diff1 [eventually_nonzero_simps]:
-  assumes "eventually_nonneg F f" "g \<in> o[F](f)"
-  shows   "eventually_nonneg F (\<lambda>x. f x - g x :: real)"
-  using  landau_o.smallD[OF assms(2) zero_less_one] assms(1) unfolding eventually_nonneg_def
-  by eventually_elim simp_all
-
-lemma eventually_nonneg_diff2 [eventually_nonzero_simps]:
-  assumes "eventually_nonneg F (\<lambda>x. - g x)" "f \<in> o[F](g)"
-  shows   "eventually_nonneg F (\<lambda>x. f x - g x :: real)"
-  using  landau_o.smallD[OF assms(2) zero_less_one] assms(1) unfolding eventually_nonneg_def
-  by eventually_elim simp_all
-
-lemma bigo_const_inverse [simp]:
-  assumes "filterlim f at_top F" "F \<noteq> bot"
-  shows "(\<lambda>_. c) \<in> O[F](\<lambda>x. inverse (f x) :: real) \<longleftrightarrow> c = 0"
-proof -
-  {
-    assume A: "(\<lambda>_. 1) \<in> O[F](\<lambda>x. inverse (f x))"
-    from assms have "(\<lambda>_. 1) \<in> o[F](f)"
-      by (simp add: eventually_nonzero_simps smallomega_iff_smallo filterlim_at_top_iff_smallomega)
-    also from assms A have "f \<in> O[F](\<lambda>_. 1)"
-      by (simp add: eventually_nonzero_simps landau_divide_simps)
-    finally have False using assms by (simp add: landau_o.small_refl_iff)
-  }
-  thus ?thesis by (cases "c = 0") auto
-qed
- 
-lemma smallo_const_inverse [simp]:
-  "filterlim f at_top F \<Longrightarrow> F \<noteq> bot \<Longrightarrow> (\<lambda>_. c :: real) \<in> o[F](\<lambda>x. inverse (f x)) \<longleftrightarrow> c = 0"
-  by (auto dest: landau_o.small_imp_big)
-
-lemma const_in_smallo_const [simp]: "(\<lambda>_. b) \<in> o(\<lambda>_ :: _ :: linorder. c) \<longleftrightarrow> b = 0" (is "?lhs \<longleftrightarrow> ?rhs")
-  by (cases "b = 0"; cases "c = 0") (simp_all add: landau_o.small_refl_iff)
-
-lemma smallomega_1_conv_filterlim: "f \<in> \<omega>[F](\<lambda>_. 1) \<longleftrightarrow> filterlim f at_infinity F"
-  by (auto intro: smallomegaI_filterlim_at_infinity dest: smallomegaD_filterlim_at_infinity)
 
 
 subsection \<open>Flatness of real functions\<close>

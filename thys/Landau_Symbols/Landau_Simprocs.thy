@@ -151,10 +151,10 @@ simproc_setup landau_real_prod (
 
 subsection {* Tests *}
 
-lemma asymp_equiv_plus_const_left: "(\<lambda>n. c + real n) \<sim> (\<lambda>n. real n)"
+lemma asymp_equiv_plus_const_left: "(\<lambda>n. c + real n) \<sim>[at_top] (\<lambda>n. real n)"
   by (subst asymp_equiv_add_left) (auto intro!: asymp_equiv_intros eventually_gt_at_top)
 
-lemma asymp_equiv_plus_const_right: "(\<lambda>n. real n + c) \<sim> (\<lambda>n. real n)"
+lemma asymp_equiv_plus_const_right: "(\<lambda>n. real n + c) \<sim>[at_top] (\<lambda>n. real n)"
   using asymp_equiv_plus_const_left[of c] by (simp add: add.commute)
 
 

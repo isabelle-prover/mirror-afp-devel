@@ -209,18 +209,13 @@ theorem summatory_totient_asymptotics':
   using summatory_totient_asymptotics
   by (subst set_minus_plus [symmetric]) (simp_all add: fun_diff_def)
 
-lemma asymp_equiv_smalloI:
-  assumes "(\<lambda>x. f x - g x) \<in> o(g)"
-  shows   "f \<sim> g"
-  using Asymptotic_Equivalence.asymp_equiv_add_right[OF assms, of g] by simp
-
 theorem summatory_totient_asymptotics'':
-  "sum_upto (\<lambda>n. real (totient n)) \<sim> (\<lambda>x. 3 / pi\<^sup>2 * x\<^sup>2)"
+  "sum_upto (\<lambda>n. real (totient n)) \<sim>[at_top] (\<lambda>x. 3 / pi\<^sup>2 * x\<^sup>2)"
 proof -
   have "(\<lambda>x. sum_upto (\<lambda>n. real (totient n)) x - 3 / pi\<^sup>2 * x\<^sup>2) \<in> O(\<lambda>x. x * ln x)"
     by (rule summatory_totient_asymptotics)
   also have "(\<lambda>x. x * ln x) \<in> o(\<lambda>x. 3 / pi ^ 2 * x ^ 2)" by simp
-  finally show ?thesis by (rule asymp_equiv_smalloI)
+  finally show ?thesis by (simp add: asymp_equiv_altdef)
 qed
 
 
@@ -377,7 +372,7 @@ theorem squarefree_asymptotics':
   by (subst set_minus_plus [symmetric]) (simp_all add: fun_diff_def)
 
 theorem squarefree_asymptotics'':
-  "(\<lambda>x. card {n. real n \<le> x \<and> squarefree n}) \<sim> (\<lambda>x. 6 / pi\<^sup>2 * x)"
+  "(\<lambda>x. card {n. real n \<le> x \<and> squarefree n}) \<sim>[at_top] (\<lambda>x. 6 / pi\<^sup>2 * x)"
 proof -
   have "(\<lambda>x. card {n. real n \<le> x \<and> squarefree n} - 6 / pi\<^sup>2 * x) \<in> O(\<lambda>x. sqrt x)"
     by (rule squarefree_asymptotics)
@@ -385,7 +380,7 @@ proof -
     by (intro bigthetaI_cong eventually_mono[OF eventually_ge_at_top[of "0::real"]]) 
        (auto simp: powr_half_sqrt)
   also have "(\<lambda>x::real. x powr (1/2)) \<in> o(\<lambda>x. 6 / pi ^ 2 * x)" by simp
-  finally show ?thesis by (rule asymp_equiv_smalloI)
+  finally show ?thesis by (simp add: asymp_equiv_altdef)
 qed
 
 
@@ -574,7 +569,7 @@ theorem summatory_divisor_count_asymptotics':
   by (subst set_minus_plus [symmetric]) (simp_all add: fun_diff_def)
 
 theorem summatory_divisor_count_asymptotics'':
-  "sum_upto (\<lambda>n. real (divisor_count n)) \<sim> (\<lambda>x. x * ln x)"
+  "sum_upto (\<lambda>n. real (divisor_count n)) \<sim>[at_top] (\<lambda>x. x * ln x)"
 proof -
   have "(\<lambda>x. sum_upto (\<lambda>n. real (divisor_count n)) x - 
            (x * ln x + (2 * euler_mascheroni - 1) * x)) \<in> O(sqrt)"
@@ -583,10 +578,10 @@ proof -
     by (intro bigthetaI_cong eventually_mono [OF eventually_ge_at_top[of "0::real"]]) 
        (auto elim!: eventually_mono simp: powr_half_sqrt)
   also have "(\<lambda>x::real. x powr (1/2)) \<in> o(\<lambda>x. x * ln x + (2 * euler_mascheroni - 1) * x)" by simp
-  finally have "sum_upto (\<lambda>n. real (divisor_count n)) \<sim>
+  finally have "sum_upto (\<lambda>n. real (divisor_count n)) \<sim>[at_top]
                   (\<lambda>x. x * ln x + (2 * euler_mascheroni - 1) * x)"
-    by (rule asymp_equiv_smalloI)
-  also have "\<dots> \<sim> (\<lambda>x. x * ln x)" by (subst asymp_equiv_add_right) simp_all
+    by (simp add: asymp_equiv_altdef)
+  also have "\<dots> \<sim>[at_top] (\<lambda>x. x * ln x)" by (subst asymp_equiv_add_right) simp_all
   finally show ?thesis .
 qed
 
@@ -627,7 +622,7 @@ theorem mean_divisor_count_asymptotics':
   using mean_divisor_count_asymptotics
   by (subst set_minus_plus [symmetric]) (simp_all add: fun_diff_def)
 
-theorem mean_divisor_count_asymptotics'': "M \<sim> ln"
+theorem mean_divisor_count_asymptotics'': "M \<sim>[at_top] ln"
 proof -
   have "(\<lambda>x. M x - (ln x + 2 * euler_mascheroni - 1)) \<in> O(\<lambda>x. 1 / sqrt x)"
     by (rule mean_divisor_count_asymptotics)
@@ -637,10 +632,10 @@ proof -
        (auto elim!: eventually_mono simp: powr_half_sqrt field_simps powr_minus)
   also have "(\<lambda>x::nat. x powr (-1/2)) \<in> o(\<lambda>x. ln x + 2 * euler_mascheroni - 1)"
     by (intro smallo_real_nat_transfer) simp_all
-  finally have "M \<sim> (\<lambda>x. ln x + 2 * euler_mascheroni - 1)"
-    by (rule asymp_equiv_smalloI)
+  finally have "M \<sim>[at_top] (\<lambda>x. ln x + 2 * euler_mascheroni - 1)"
+    by (simp add: asymp_equiv_altdef)
   also have "\<dots> = (\<lambda>x::nat. ln x + (2 * euler_mascheroni - 1))" by (simp add: algebra_simps)
-  also have "\<dots> \<sim> (\<lambda>x::nat. ln x)" by (subst asymp_equiv_add_right) auto
+  also have "\<dots> \<sim>[at_top] (\<lambda>x::nat. ln x)" by (subst asymp_equiv_add_right) auto
   finally show ?thesis .
 qed
 
@@ -708,26 +703,26 @@ theorem coprime_pairs_asymptotics':
   by (subst set_minus_plus [symmetric]) (simp_all add: fun_diff_def)
 
 theorem coprime_pairs_asymptotics'':
-  "(\<lambda>N. real (card (A N))) \<sim> (\<lambda>N. 6 / pi\<^sup>2 * (real N)\<^sup>2)"
+  "(\<lambda>N. real (card (A N))) \<sim>[at_top] (\<lambda>N. 6 / pi\<^sup>2 * (real N)\<^sup>2)"
 proof -
   have "(\<lambda>N. real (card (A N)) - 6 / pi\<^sup>2 * (real N) ^ 2) \<in> O(\<lambda>N. real N * ln (real N))"
     by (rule coprime_pairs_asymptotics)
   also have "(\<lambda>N. real N * ln (real N)) \<in> o(\<lambda>N. 6 / pi ^ 2 * real N ^ 2)"
     by (rule landau_o.small.compose[OF _ filterlim_real_sequentially]) simp
-  finally show ?thesis by (rule asymp_equiv_smalloI)
+  finally show ?thesis by (simp add: asymp_equiv_altdef)
 qed
 
 theorem coprime_probability_tendsto:
   "(\<lambda>N. card (A N) / card ({1..N} \<times> {1..N})) \<longlonglongrightarrow> 6 / pi\<^sup>2"
 proof -
-  have "(\<lambda>N. 6 / pi ^ 2) \<sim> (\<lambda>N. 6 / pi ^ 2 * real N ^ 2 / real N ^ 2)" 
+  have "(\<lambda>N. 6 / pi ^ 2) \<sim>[at_top] (\<lambda>N. 6 / pi ^ 2 * real N ^ 2 / real N ^ 2)" 
     using eventually_gt_at_top[of "0::nat"]
     by (intro asymp_equiv_refl_ev) (auto elim!: eventually_mono)
-  also have "\<dots> \<sim> (\<lambda>N. real (card (A N)) / real N ^ 2)"
+  also have "\<dots> \<sim>[at_top] (\<lambda>N. real (card (A N)) / real N ^ 2)"
     by (intro asymp_equiv_intros asymp_equiv_symI[OF coprime_pairs_asymptotics''])
-  also have "\<dots> \<sim> (\<lambda>N. real (card (A N)) / real (card ({1..N} \<times> {1..N})))"
+  also have "\<dots> \<sim>[at_top] (\<lambda>N. real (card (A N)) / real (card ({1..N} \<times> {1..N})))"
     by (simp add: power2_eq_square)
-  finally have "\<dots> \<sim> (\<lambda>_. 6 / pi ^ 2)" by (simp add: asymp_equiv_sym)
+  finally have "\<dots> \<sim>[at_top] (\<lambda>_. 6 / pi ^ 2)" by (simp add: asymp_equiv_sym)
   thus ?thesis by (rule asymp_equivD_const)
 qed
 
@@ -814,13 +809,13 @@ theorem card_farey_fractions_asymptotics':
   by (subst set_minus_plus [symmetric]) (simp_all add: fun_diff_def)
 
 theorem card_farey_fractions_asymptotics'':
-  "(\<lambda>N. real (card (farey_fractions N))) \<sim> (\<lambda>N. 3 / pi\<^sup>2 * (real N)\<^sup>2)"
+  "(\<lambda>N. real (card (farey_fractions N))) \<sim>[at_top] (\<lambda>N. 3 / pi\<^sup>2 * (real N)\<^sup>2)"
 proof -
   have "(\<lambda>N. real (card (farey_fractions N)) - 3 / pi\<^sup>2 * (real N) ^ 2) \<in> O(\<lambda>N. real N * ln (real N))"
     by (rule card_farey_fractions_asymptotics)
   also have "(\<lambda>N. real N * ln (real N)) \<in> o(\<lambda>N. 3 / pi ^ 2 * real N ^ 2)"
     by (rule landau_o.small.compose[OF _ filterlim_real_sequentially]) simp
-  finally show ?thesis by (rule asymp_equiv_smalloI)
+  finally show ?thesis by (simp add: asymp_equiv_altdef)
 qed
 
 end

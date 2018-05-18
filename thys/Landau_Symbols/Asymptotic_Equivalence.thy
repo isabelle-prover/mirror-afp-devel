@@ -4,6 +4,10 @@ imports
   Landau_Symbols_Definition
 begin
 
+(* TODO Move *)
+lemma Lim_eventually: "eventually (\<lambda>x. f x = c) F \<Longrightarrow> filterlim f (nhds c) F"
+  by (simp add: eventually_mono eventually_nhds_x_imp_x filterlim_iff)
+
 named_theorems asymp_equiv_intros
 named_theorems asymp_equiv_simps
 
@@ -11,8 +15,13 @@ definition asymp_equiv :: "('a \<Rightarrow> ('b :: real_normed_field)) \<Righta
   ("_ \<sim>[_] _" [51, 10, 51] 50)
   where "f \<sim>[F] g \<longleftrightarrow> ((\<lambda>x. if f x = 0 \<and> g x = 0 then 1 else f x / g x) \<longlongrightarrow> 1) F"
 
-abbreviation asymp_equiv_at_top (infix "\<sim>" 51) where
-  "f \<sim> g \<equiv> f \<sim>[at_top] g"
+abbreviation asymp_equiv_at_top where
+  "asymp_equiv_at_top f g \<equiv> f \<sim>[at_top] g"
+
+bundle asymp_equiv_notation
+begin
+notation asymp_equiv_at_top (infix "\<sim>" 50) 
+end
 
 lemma asymp_equivI: "((\<lambda>x. if f x = 0 \<and> g x = 0 then 1 else f x / g x) \<longlongrightarrow> 1) F \<Longrightarrow> f \<sim>[F] g"
   by (simp add: asymp_equiv_def)
@@ -120,10 +129,6 @@ lemma asymp_equiv_trans_lift2 [trans]:
   using asymp_equiv_symI[OF assms(3)[OF assms(2)]] assms(1)
   by (blast intro: asymp_equiv_trans)
 
-(* TODO Move *)
-lemma Lim_eventually: "eventually (\<lambda>x. f x = c) F \<Longrightarrow> filterlim f (nhds c) F"
-  by (simp add: eventually_mono eventually_nhds_x_imp_x filterlim_iff)
-
 lemma asymp_equivD_const:
   assumes "f \<sim>[F] (\<lambda>_. c)"
   shows   "(f \<longlongrightarrow> c) F"
@@ -167,15 +172,15 @@ qed
 
 lemma asymp_equiv_imp_eventually_same_sign:
   fixes f g :: "real \<Rightarrow> real"
-  assumes "f \<sim> g"
-  shows   "eventually (\<lambda>x. sgn (f x) = sgn (g x)) at_top"
+  assumes "f \<sim>[F] g"
+  shows   "eventually (\<lambda>x. sgn (f x) = sgn (g x)) F"
 proof -
-  from assms have "((\<lambda>x. sgn (if f x = 0 \<and> g x = 0 then 1 else f x / g x)) \<longlongrightarrow> sgn 1) at_top"
+  from assms have "((\<lambda>x. sgn (if f x = 0 \<and> g x = 0 then 1 else f x / g x)) \<longlongrightarrow> sgn 1) F"
     unfolding asymp_equiv_def by (rule tendsto_sgn) simp_all
   from order_tendstoD(1)[OF this, of "1/2"]
-    have "eventually (\<lambda>x. sgn (if f x = 0 \<and> g x = 0 then 1 else f x / g x) > 1/2) at_top"
+    have "eventually (\<lambda>x. sgn (if f x = 0 \<and> g x = 0 then 1 else f x / g x) > 1/2) F"
     by simp
-  thus "eventually (\<lambda>x. sgn (f x) = sgn (g x)) at_top"
+  thus "eventually (\<lambda>x. sgn (f x) = sgn (g x)) F"
   proof eventually_elim
     case (elim x)
     thus ?case
@@ -213,33 +218,22 @@ proof -
 qed
 
 lemma tendsto_asymp_equiv_cong:
-  assumes "f \<sim> (g :: 'a :: order \<Rightarrow> real)"
-  shows   "(f \<longlongrightarrow> c) at_top \<longleftrightarrow> (g \<longlongrightarrow> c) at_top"
+  assumes "f \<sim>[F] g"
+  shows   "(f \<longlongrightarrow> c) F \<longleftrightarrow> (g \<longlongrightarrow> c) F"
 proof -
   {
-    fix f g :: "'a \<Rightarrow> real"
-    assume *: "f \<sim> g" "(g \<longlongrightarrow> c) at_top"
-    have "eventually (\<lambda>x. g x * (if f x = 0 \<and> g x = 0 then 1 else f x / g x) = f x) at_top"
+    fix f g :: "'a \<Rightarrow> 'b"
+    assume *: "f \<sim>[F] g" "(g \<longlongrightarrow> c) F"
+    have "eventually (\<lambda>x. g x * (if f x = 0 \<and> g x = 0 then 1 else f x / g x) = f x) F"
       using asymp_equiv_eventually_zeros[OF *(1)] by eventually_elim simp
-    moreover have "((\<lambda>x. g x * (if f x = 0 \<and> g x = 0 then 1 else f x / g x)) \<longlongrightarrow> c * 1) at_top"
+    moreover have "((\<lambda>x. g x * (if f x = 0 \<and> g x = 0 then 1 else f x / g x)) \<longlongrightarrow> c * 1) F"
       by (intro tendsto_intros asymp_equivD *)
-    ultimately have "(f \<longlongrightarrow> c * 1) at_top"
+    ultimately have "(f \<longlongrightarrow> c * 1) F"
       by (rule Lim_transform_eventually)
   }
   from this[of f g] this[of g f] assms show ?thesis by (auto simp: asymp_equiv_sym)
 qed
 
-lemma asymp_equiv_0_left_iff [simp]: "(\<lambda>_. 0::real) \<sim> f \<longleftrightarrow> eventually (\<lambda>x. f x = 0) at_top"
-proof
-  assume "(\<lambda>_. 0) \<sim> f"
-  hence "((\<lambda>x. if f x = 0 then 1 else 0) \<longlongrightarrow> (1::real)) at_top" 
-    by (simp add: asymp_equiv_def cong: if_cong)
-  from order_tendstoD(1)[OF this, of "1/2"] show "eventually (\<lambda>x. f x = 0) at_top"
-    by (auto split: if_splits elim: eventually_mono)
-qed (auto intro: asymp_equiv_refl_ev)
-
-lemma asymp_equiv_0_right_iff [simp]: "f \<sim> (\<lambda>_. 0::real) \<longleftrightarrow> eventually (\<lambda>x. f x = 0) at_top"
-  by (subst asymp_equiv_sym) simp
 
 lemma smallo_imp_eventually_sgn:
   fixes f g :: "real \<Rightarrow> real"
@@ -257,7 +251,6 @@ proof -
           cases "f x + g x" "0::real" rule: linorder_cases) simp_all
   qed
 qed
-
 
 context
 begin
@@ -535,6 +528,10 @@ qed
 lemma asymp_equiv_altdef:
   "f \<sim>[F] g \<longleftrightarrow> (\<lambda>x. f x - g x) \<in> o[F](g)"
   by (rule iffI[OF asymp_equiv_imp_diff_smallo smallo_imp_asymp_equiv])
+
+lemma asymp_equiv_0_left_iff [simp]: "(\<lambda>_. 0) \<sim>[F] f \<longleftrightarrow> eventually (\<lambda>x. f x = 0) F"
+  and asymp_equiv_0_right_iff [simp]: "f \<sim>[F] (\<lambda>_. 0) \<longleftrightarrow> eventually (\<lambda>x. f x = 0) F"
+  by (simp_all add: asymp_equiv_altdef landau_o.small_refl_iff)
 
 lemma asymp_equiv_sandwich_real:
   fixes f g l u :: "'a \<Rightarrow> real"
