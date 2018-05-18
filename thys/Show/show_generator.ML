@@ -339,7 +339,6 @@ fun generate_showsp tyco lthy =
                 val IHs = instantiate_IHs IHs assms |> split_IHs Ts
               in
                 unfold_tac ctxt (nth show_simps i)
-                THEN print_tac ctxt ("after unfold_tac")
                 THEN o_append_intro_tac ctxt (fn i => fn ctxt' =>
                   resolve_tac ctxt' @{thms show_lawD} 1
                   THEN recursor_tac assms (nth Ts i) (nth IHs i) ctxt')
