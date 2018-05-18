@@ -14,8 +14,8 @@ imports
   Main
   "HOL-Library.Function_Algebras" 
   "HOL-Library.Set_Algebras"
+  "HOL-Library.Landau_Symbols"
   Group_Sort
-  Landau_Symbols_Definition
 begin
 
 subsection {* Eventual non-negativity/non-zeroness *}

@@ -8,9 +8,8 @@ section \<open>Randomised QuickSort\<close>
 theory Randomised_Quick_Sort
   imports 
     "HOL-Probability.Probability"
-    Landau_Symbols.Landau_Symbols
+    "Landau_Symbols.Landau_More"
     Comparison_Sort_Lower_Bound.Linorder_Relations
-    "~~/src/HOL/Library/Code_Target_Numeral"
 begin
 
 subsection \<open>Deletion by index\<close>  

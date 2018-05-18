@@ -4,8 +4,6 @@ session Error_Function (AFP) = "HOL-Analysis" +
   options [timeout=100]
   sessions
     Landau_Symbols
-  theories [document=false]
-    "Landau_Symbols.Landau_Symbols"
   theories
     Error_Function
     Error_Function_Asymptotics

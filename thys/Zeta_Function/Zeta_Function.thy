@@ -8,7 +8,7 @@ imports
   "Euler_MacLaurin.Euler_MacLaurin"
   "Bernoulli.Bernoulli_Zeta"
   "Dirichlet_Series.Dirichlet_Series_Analysis"
-  "Landau_Symbols.Landau_Symbols"
+  "HOL-Library.Landau_Symbols"
 begin
 
 subsection \<open>Preliminary facts\<close>

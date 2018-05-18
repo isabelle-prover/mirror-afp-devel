@@ -13,7 +13,8 @@ imports
   Catalan_Auxiliary_Integral
   "HOL-Analysis.Analysis"
   "HOL-Computational_Algebra.Formal_Power_Series"
-  Landau_Symbols.Landau_Symbols
+  "HOL-Library.Landau_Symbols"
+  Landau_Symbols.Landau_More
 begin
 
 subsection \<open> Other auxiliary lemmas\<close>
@@ -45,8 +46,10 @@ proof -
   finally have "(\<lambda>x. z gchoose (x + k)) \<sim>[at_top]
                   (\<lambda>x. (- 1) ^ (x + k) / (Gamma (- z) * real (x + k) powr (z + 1)))"
     by (rule asymp_equiv_compose') (simp add: filterlim_subseq strict_mono_add)
-  also have "(\<lambda>x. real (x + k) powr (z + 1)) \<sim>[at_top] (\<lambda>x. real x powr (z + 1))"
-    by (rule asymp_equiv_powr_real) (simp_all add: asymp_equiv_plus_const_right)
+  also have "(\<lambda>x. real x + real k) \<sim>[at_top] real"
+    by (subst asymp_equiv_add_right) auto
+  hence "(\<lambda>x. real (x + k) powr (z + 1)) \<sim>[at_top] (\<lambda>x. real x powr (z + 1))"
+    by (intro asymp_equiv_powr_real) auto
   finally show ?thesis by - (simp_all add: asymp_equiv_intros)
 qed
 

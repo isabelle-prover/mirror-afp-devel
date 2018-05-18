@@ -8,7 +8,6 @@ section {* The Master theorem *}
 theory Master_Theorem
 imports
   "HOL-Analysis.Analysis"
-  Landau_Symbols.Landau_Symbols
   Akra_Bazzi_Library
   Akra_Bazzi
 begin
