@@ -273,7 +273,7 @@ proof (atomize(full), insert assms(1-6), induct j arbitrary: fs state)
   thus ?case using 0 basis_reduction_add_row_done[of i fs] i fs' by auto
 next
   case (Suc j fs state)
-  hence j: "j < i" and id: "(j < i) = True" by auto
+  hence j: "j < i" and jj: "j \<le> i" and id: "(j < i) = True" by auto
   obtain f mu ds where state: "state = (f,mu,ds)" by (cases state, auto)
   note Linv = Suc(3)
   note inv = LLL_invD[OF Linv]
@@ -282,7 +282,7 @@ next
   have id: "Suc j - 1 = j" by simp
   note mu = dmu_ij_state[OF impl Linv state j i]
   let ?c = "floor_ceil (\<mu> fs i j)" 
-  note floor = floor_ceil_num_denom_d\<mu>_d[OF Linv j i]
+  note floor = floor_ceil_num_denom_d\<mu>_d[OF Linv jj i]
   from LLL_d_pos[OF Linv] j i have dj: "d fs (Suc j) > 0" by auto
   note updates = d_d\<mu>_add_row[OF Linv i j refl refl Suc(4)]
   note d_state = d_state[OF impl Linv state]

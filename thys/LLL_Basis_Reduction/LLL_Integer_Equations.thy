@@ -43,7 +43,7 @@ begin
 
 definition "d\<mu> fs i j = int_of_rat (of_int (d fs (Suc j)) * \<mu> fs i j)" 
 
-lemma d\<mu>: assumes inv: "LLL_invariant upw i fs" "j < ii" "ii < m" 
+lemma d\<mu>: assumes inv: "LLL_invariant upw i fs" "j \<le> ii" "ii < m" 
   shows "of_int (d\<mu> fs ii j) = of_int (d fs (Suc j)) * \<mu> fs ii j" 
   unfolding d\<mu>_def using LLL_mu_d_Z[OF inv] by auto
 
@@ -74,7 +74,7 @@ proof -
 qed
 
 lemma floor_ceil_num_denom_d\<mu>_d: assumes inv: "LLL_invariant upw k fs"
-  and j: "j < i" and i: "i < m"  
+  and j: "j \<le> i" and i: "i < m"  
 shows "floor_ceil_num_denom (d\<mu> fs i j) (d fs (Suc j)) = floor_ceil (\<mu> fs i j)" 
 proof -
   from j i have sj: "Suc j \<le> m" by auto
@@ -104,8 +104,8 @@ proof -
   note add = basis_reduction_add_row_main[OF Linv i j c fs' mu_small]
   show d: "\<And> ii. ii \<le> m \<Longrightarrow> d fs' ii = d fs ii" by fact
   fix i' j'
-  assume i': "i' < m" and j': "j' < i'"   
-  hence j'm: "j' < m" by auto
+  assume i': "i' < m" and j': "j' < i'"    
+  hence j'm: "j' < m" and j'': "j' \<le> i'" by auto
   note updates = add(5)[OF i' j'm]
   show "d\<mu> fs' i' j' = ?new_mu i' j'" 
   proof (cases "i' = i")
@@ -117,7 +117,7 @@ proof -
     show ?thesis
       by (rule int_via_rat_eqI, 
           unfold if_distrib[of rat_of_int] of_int_diff of_int_mult updates id' 
-          d\<mu>[OF add(1) j' i'] d\<mu>[OF Linv j' i'] 
+          d\<mu>[OF add(1) j'' i'] d\<mu>[OF Linv j'' i'] 
           if_distrib[of "( * ) (rat_of_int (d fs (Suc j')))"] ring_distribs,
           insert True i' j' i j d\<mu>[OF Linv], auto simp: gs.\<mu>.simps[of _ x x for x]) 
   qed

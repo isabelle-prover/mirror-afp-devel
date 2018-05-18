@@ -365,13 +365,14 @@ proof -
 qed
 
 lemma Gramian_determinant_mu_ints:
-  assumes "l < k" "k < m"
+  assumes "l \<le> k" "k < m"
   shows "Gramian_determinant fs (Suc l) * \<mu> fs k l \<in> \<int>"
-proof -
+proof (cases "l < k")
+  case True
   have ll: "Gramian_determinant fs l * gso fs l $v i = (Gramian_determinant fs l \<cdot>\<^sub>v gso fs l) $v i" if "i < n" for i
     using that assms con_assms by auto
   have "Gramian_determinant fs (Suc l) * \<mu> fs k l = Gramian_determinant fs (Suc l) * (fs ! k \<bullet> gso fs l) / \<parallel>gso fs l\<parallel>\<^sup>2 "
-    using assms unfolding \<mu>.simps by simp
+    using assms True unfolding \<mu>.simps by simp
   also have "\<dots> = fs ! k \<bullet> (Gramian_determinant fs l \<cdot>\<^sub>v gso fs l)"
     using assms con_assms Gramian_determinant(2)[of fs m "Suc l"]
     by (subst Gramian_determinant_div[symmetric]) (auto)
@@ -382,8 +383,12 @@ proof -
     then show ?thesis
      using con_assms assms by (auto intro!: Ints_sum simp add: con_assms fs_int scalar_prod_def)
  qed
-  finally show ?thesis
-    by simp
+ finally show ?thesis
+   by simp
+next
+  case False
+  with assms have l: "l = k" by auto
+  show ?thesis unfolding l \<mu>.simps using Gramian_determinant_Ints[OF con_assms fs_int] assms by simp
 qed
 
 end (* fs_int *)
@@ -402,7 +407,7 @@ context LLL
 begin
 
 lemma LLL_mu_d_Z: assumes inv: "LLL_invariant upw i fs" 
-  and j: "j < ii" and ii: "ii < m" 
+  and j: "j \<le> ii" and ii: "ii < m" 
 shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
 proof -
   interpret gram_schmidt_rat n .
@@ -1300,8 +1305,8 @@ proof (atomize(full))
     from this[folded abs_le_square_iff] 
     have mu_bound: "abs ?mu \<le> of_nat ?bnd" by auto
     have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
-      by (rule gs.Gramian_determinant_mu_ints[OF *(1-2) _ j i],
-      insert *(3,6), auto simp: set_conv_nth)
+      by (rule gs.Gramian_determinant_mu_ints[OF *(1-2) _ _ i],
+      insert j *(3,6), auto simp: set_conv_nth)
     also have "(gs.Gramian_determinant (RAT fs) (Suc j)) = of_int (d fs (Suc j))" 
       unfolding d_def by (rule of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)
     finally have ints: "of_int (d fs (Suc j)) * ?mu \<in> \<int>" .
