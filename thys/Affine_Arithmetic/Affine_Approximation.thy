@@ -24,7 +24,7 @@ proof (cases x c rule: linorder_cases)
     using xc
     by (simp add: at_within_eq_bot_iff)
   moreover from deriv have "((\<lambda>y. (f y - f c) / (y - c)) \<longlongrightarrow> f') (at c within ?A')"
-    unfolding DERIV_within_iff using subs
+    unfolding has_field_derivative_iff using subs
     by (blast intro: tendsto_mono at_le)
   moreover from eventually_at_right_real[OF xc]
     have "eventually (\<lambda>y. (f y - f c) / (y - c) \<le> (f x - f c) / (x - c)) (at_right c)"
@@ -49,7 +49,7 @@ next
     using xc
     by (simp add: at_within_eq_bot_iff)
   moreover from deriv have "((\<lambda>y. (f y - f c) / (y - c)) \<longlongrightarrow> f') (at c within ?A')"
-    unfolding DERIV_within_iff using subs
+    unfolding has_field_derivative_iff using subs
     by (blast intro: tendsto_mono at_le)
   moreover from eventually_at_left_real[OF xc]
     have "eventually (\<lambda>y. (f y - f c) / (y - c) \<ge> (f x - f c) / (x - c)) (at_left c)"

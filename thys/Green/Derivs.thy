@@ -568,7 +568,7 @@ proof -
   proof (simp add: C1_differentiable_on_def has_vector_derivative_def, intro exI conjI)
     show "continuous_on s (\<lambda>x. D x \<bullet> b)" using D continuous_on_componentwise assms(1) by fastforce
     show "(\<forall>x\<in>s. ((\<lambda>x. f x \<bullet> b) has_derivative (\<lambda>y. y * (\<lambda>x. D x \<bullet> b) x)) (at x))"
-      using inner_left_has_derivative D(1) by fastforce
+      using has_derivative_inner_left D(1) by fastforce
   qed
 qed
 
