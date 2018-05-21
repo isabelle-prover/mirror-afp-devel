@@ -36,7 +36,7 @@ qed
 lemma MVT_corrected:
   fixes f::"'a::ordered_euclidean_space\<Rightarrow>'b::euclidean_space"
   assumes fderiv: "\<And>x. x \<in> D \<Longrightarrow> (f has_derivative J x) (at x within D)"
-  assumes line_in: "\<And>x. x \<in> {0..1} \<Longrightarrow> a + x *\<^sub>R u \<in> D"
+  assumes line_in: "\<And>x. \<lbrakk>0 \<le> x; x \<le> 1\<rbrakk> \<Longrightarrow> a + x *\<^sub>R u \<in> D"
   shows "(\<exists>t\<in>Basis\<rightarrow>{0<..<1}. (f (a + u) - f a) = (\<Sum>i\<in>Basis. (J (a + t i *\<^sub>R u) u \<bullet> i) *\<^sub>R i))"
 proof -
   {
@@ -44,7 +44,7 @@ proof -
     assume "i \<in> Basis"
     have subset: "((\<lambda>x. a + x *\<^sub>R u) ` {0..1}) \<subseteq> D"
       using line_in by force
-    have "\<forall>x\<in> {0 .. 1}. ((\<lambda>b. f (a + b *\<^sub>R u) \<bullet> i) has_derivative (\<lambda>b. b *\<^sub>R J (a + x *\<^sub>R u) u \<bullet> i)) (at x within {0..1})"
+    have "\<And>x. \<lbrakk>0 \<le> x; x \<le> 1\<rbrakk> \<Longrightarrow> ((\<lambda>b. f (a + b *\<^sub>R u) \<bullet> i) has_derivative (\<lambda>b. b *\<^sub>R J (a + x *\<^sub>R u) u \<bullet> i)) (at x within {0..1})"
       using line_in
       by (auto intro!: derivative_eq_intros
         has_derivative_subset[OF _ subset]
@@ -105,12 +105,7 @@ lemma MVT_ivl':
   shows "f a \<in> {f b + J0..f b + J1}"
 proof -
   have "f (b + (a - b)) - f b \<in> {J0 .. J1}"
-    apply (rule MVT_ivl[OF fderiv ])
-    apply assumption
-    apply (rule J_ivl) apply assumption
-    using line_in
-    apply (auto simp: diff_le_eq le_diff_eq ac_simps)
-    done
+    using J_ivl MVT_ivl fderiv line_in by blast
   thus ?thesis
     by (auto simp: diff_le_eq le_diff_eq ac_simps)
 qed

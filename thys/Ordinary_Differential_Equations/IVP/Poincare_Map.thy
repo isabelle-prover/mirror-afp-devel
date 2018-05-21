@@ -1457,7 +1457,7 @@ proof -
       have csi: "{0..z} \<subseteq> existence_ivl0 x" by (auto simp add: closed_segment_eq_real_ivl)
       then have cont: "continuous_on {0..z} (\<lambda>t. s (flow0 x t))"
         by (auto intro!: continuous_intros)
-      have "\<forall>xa\<in>{0<..<z}. ((\<lambda>t. s (flow0 x t)) has_derivative (\<lambda>t. t * blinfun_apply (Ds (flow0 x xa)) (f (flow0 x xa)))) (at xa)"
+      have "\<And>u. \<lbrakk>0 < u; u < z\<rbrakk> \<Longrightarrow> ((\<lambda>t. s (flow0 x t)) has_derivative (\<lambda>t. t * blinfun_apply (Ds (flow0 x u)) (f (flow0 x u)))) (at u)"
         using csi
         by (auto intro!: derivative_eq_intros simp: flowderiv_def blinfun.bilinear_simps)
       from mvt[OF \<open>0 < z\<close> cont this]
@@ -1886,7 +1886,7 @@ proof (rule tendstoI)
     have c: "continuous_on {0 .. t} (\<lambda>t. s (flow0 y t))"
       using that
       by (auto intro!: continuous_intros d_ex)
-    have d: "\<forall>x\<in>{0<..<t}. ((\<lambda>t. s (flow0 y t)) has_derivative (\<lambda>t. t * blinfun_apply (Ds (flow0 y x)) (f (flow0 y x)))) (at x)"
+    have d: "\<And>x. \<lbrakk>0 < x; x < t\<rbrakk> \<Longrightarrow> ((\<lambda>t. s (flow0 y t)) has_derivative (\<lambda>t. t * blinfun_apply (Ds (flow0 y x)) (f (flow0 y x)))) (at x)"
       using that
       by (auto intro!: derivative_eq_intros d_ex simp: flowderiv_def blinfun.bilinear_simps)
     from mvt[OF \<open>0 < t\<close> c d]
