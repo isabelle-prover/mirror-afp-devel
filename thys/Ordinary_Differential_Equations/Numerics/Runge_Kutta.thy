@@ -976,9 +976,9 @@ proof
     fix x y
     let ?I = "T \<times> X"
     have "convex ?I" by (intro convex convex_Times)
-    moreover have "\<forall>x\<in>?I. ((\<lambda>(t, x). f t x) has_derivative f' x) (at x within ?I)" "\<forall>x\<in>?I. onorm (f' x) \<le> B'"
-      using f' f'_bounded
-      by (auto simp add: intro!: f'_bounded has_derivative_linear)
+    moreover have "\<And>x. x \<in> ?I \<Longrightarrow> ((\<lambda>(t, x). f t x) has_derivative f' x) (at x within ?I)" 
+                  "\<And>x. x \<in> ?I \<Longrightarrow> onorm (f' x) \<le> B'"
+      using f' f'_bounded  by (auto simp add: intro!: f'_bounded has_derivative_linear)
     moreover assume "x \<in> X" "y \<in> X"
     with \<open>t \<in> T\<close> have "(t, x) \<in> ?I" "(t, y) \<in> ?I" by simp_all
     ultimately have "norm ((\<lambda>(t, x). f t x) (t, x) - (\<lambda>(t, x). f t x) (t, y)) \<le> B' * norm ((t, x) - (t, y))"
@@ -1361,10 +1361,9 @@ proof -
     using assms stability by simp
   finally
   have "dist (solution ((t j))) ((euler' e g x0' t j))
-     \<le> sqrt DIM('a) * (B + 1) / 2 * (exp (B' * (e1') + 1) - 1) *
-       max_stepsize j +
-       sqrt DIM('a) * (B + 1) / 2 * (exp (B' * (e1') + 1) - 1) *
-       max_stepsize j" by simp
+     \<le> sqrt DIM('a) * (B + 1) / 2 * (exp (B' * (e1') + 1) - 1) * max_stepsize j +
+       sqrt DIM('a) * (B + 1) / 2 * (exp (B' * (e1') + 1) - 1) * max_stepsize j" 
+    by simp
   thus ?thesis by (simp add: field_simps)
 qed
 
