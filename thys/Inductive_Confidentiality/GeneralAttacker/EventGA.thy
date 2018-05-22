@@ -163,7 +163,7 @@ by (force
     intro: analz_subset_parts [THEN subsetD] parts_mono [THEN [2] rev_subsetD])
 
 
-lemmas analz_impI = impI [where P = "Y \<notin> analz (knows A evs)"] for A evs
+lemmas analz_impI = impI [where P = "Y \<notin> analz (knows A evs)"] for Y A evs
 
 ML
 {*
