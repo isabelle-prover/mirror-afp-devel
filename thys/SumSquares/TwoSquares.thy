@@ -166,9 +166,9 @@ proof
   ultimately have "[?bdiva^2 + 1 = 2] (mod ?p)"
     by (auto simp add: cong_def)
   hence "[0 = 2] (mod ?p)" using h8 by (simp add: cong_def)
-  moreover have "?p dvd 0" by simp
-  ultimately have "?p dvd 2" using cong_dvd_iff by blast
-  thus "False" using dvd_imp_le by fastforce
+  then have "?p dvd 2" by (auto dest: cong_dvd_iff)
+  then show False
+    by (auto dest: dvd_imp_le)
 qed
 
 private lemma sots1: assumes "is_sum2sq_nat n"

@@ -1689,12 +1689,14 @@ proof -
   have deg_fi: "degree fi > 0"
     using U_irr_monic
     using fi_U irreducible\<^sub>dD[of fi] by auto
-  have "u dvd (v^CARD('a) - v)"
+  have "fi dvd u"
+    using u_U U_irr_monic finite_U dvd_prod_eqI fi_U by blast
+  moreover have "u dvd (v^CARD('a) - v)"
     using v unfolding W cong_def
     by (simp add: mod_eq_dvd_iff_poly)
-  moreover have "fi dvd u" using u_U U_irr_monic finite_U dvd_prod_eqI fi_U by blast
-  ultimately have "fi dvd (v^CARD('a) - v)" using dvd_trans by fast
-  hence fi_dvd_prod_vc: "fi dvd prod (\<lambda>c. v - [:c:]) (UNIV::'a mod_ring set)"
+  ultimately have "fi dvd (v^CARD('a) - v)"
+    by (rule dvd_trans)
+  then have fi_dvd_prod_vc: "fi dvd prod (\<lambda>c. v - [:c:]) (UNIV::'a mod_ring set)"
     by (simp add: poly_identity_mod_p)
   have irr_fi: "irreducible fi" using fi_U U_irr_monic by blast
   have fi_not_unit: "\<not> is_unit fi"

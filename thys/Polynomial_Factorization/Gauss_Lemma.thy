@@ -157,9 +157,14 @@ proof -
     by (rule sym, subst map_poly_map_poly, force+, rule degree_map_poly, insert d, auto)
 qed
 
-lemma content_dvd_1: assumes "content f = (1 :: 'a :: semiring_gcd)" "g dvd f" 
-  shows "content g = 1" using assms 
-  using content_dvd_contentI by fastforce
+lemma content_dvd_1:
+  "content g = 1" if "content f = (1 :: 'a :: semiring_gcd)" "g dvd f" 
+proof -
+  from \<open>g dvd f\<close> have "content g dvd content f"
+    by (rule content_dvd_contentI)
+  with \<open>content f = 1\<close> show ?thesis
+    by simp
+qed
 
 lemma dvd_smult_int: fixes c :: int assumes c: "c \<noteq> 0"
   and dvd: "q dvd (smult c p)"

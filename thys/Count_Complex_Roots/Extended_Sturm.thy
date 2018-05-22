@@ -137,7 +137,7 @@ definition changes_alt_itv_smods:: "real \<Rightarrow> real \<Rightarrow>real po
 lemma changes_alt_itv_smods_rec:
   assumes "a<b" "coprime p q" 
   shows "changes_alt_itv_smods a b p q  = cross_alt p q a b + changes_alt_itv_smods a b q (-(p mod q))"
-proof (cases "p=0 \<or> q=0 \<or> p mod q = 0")
+proof (cases "p = 0 \<or> q = 0 \<or> q dvd p")
   case True
   moreover have "p=0 \<or> q=0 \<Longrightarrow> ?thesis"
     using cross_alt_coprime_0[OF \<open>coprime p q\<close>] 
@@ -145,7 +145,8 @@ proof (cases "p=0 \<or> q=0 \<or> p mod q = 0")
   moreover have "\<lbrakk>p\<noteq>0;q\<noteq>0;p mod q = 0\<rbrakk> \<Longrightarrow> ?thesis"  
     unfolding changes_alt_itv_smods_def changes_alt_poly_at_def cross_alt_def
     by (simp add:sign_times)
-  ultimately show ?thesis by blast 
+  ultimately show ?thesis
+    by auto (auto elim: dvdE)
 next
   case False
   hence "p\<noteq>0" "q\<noteq>0" "p mod q\<noteq>0" by auto

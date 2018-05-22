@@ -160,7 +160,8 @@ proof (induct A B rule: strassen_mat_mult.induct)
       from even have nr: "?nr = ?nr2 + ?nr2" by presburger 
       from even have n: "?n = ?n2 + ?n2" by presburger 
       from even have nc: "?nc = ?nc2 + ?nc2" by presburger 
-      from 1(9) even have n': "dim_row B = ?n2 + ?n2" by auto presburger   
+      from 1(9) even have n': "dim_row B = ?n2 + ?n2"
+        by auto
       obtain A1 A2 A3 A4 where splitA: 
         "split_block A ?nr2 ?n2 = (A1,A2,A3,A4)" by (rule prod_cases4)
       obtain B1 B2 B3 B4 where splitB: 

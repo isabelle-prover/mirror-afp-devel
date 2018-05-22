@@ -328,29 +328,27 @@ lemma degree_f[simp]: "degree f > 0"
 lemma element_in_carrier: "(a \<in> carrier R) = (degree a < degree f)" 
   unfolding R_def carrier_irr_def by auto
 
-lemma ab_mod_f0:
-  assumes ab_mod_f0: "a * b mod f = 0" 
+lemma f_dvd_ab:
+  "a = 0 \<or> b = 0" if "f dvd a * b" 
     and a: "degree a < degree f" 
     and b: "degree b < degree f" 
-  shows "a = 0 \<or> b = 0"
-proof (cases "b=0")
-  case False
-  note b0 = False
-  show ?thesis
-  proof (rule ccontr)
-    assume "\<not> (a = 0 \<or> b = 0)"
-    hence a0: "a \<noteq> 0" using b0 by auto    
-    have f: "f dvd (a*b)"
-      by (simp add: ab_mod_f0 dvd_eq_mod_eq_0)
-    with irr_f have "f dvd a \<or> f dvd b" by auto
-    moreover have "\<not> f dvd a" using a
-      by (simp add: a0 dvd_eq_mod_eq_0 mod_poly_less)
-    moreover have "\<not> f dvd b" using b0
-      by (simp add: b dvd_eq_mod_eq_0 mod_poly_less)
-    ultimately show False by simp
-  qed
-qed simp
+proof (rule ccontr)
+  assume "\<not> (a = 0 \<or> b = 0)"
+  then have "a \<noteq> 0" and "b \<noteq> 0"
+    by simp_all
+  with a b have "\<not> f dvd a" and "\<not> f dvd b"
+    by (auto simp add: mod_poly_less dvd_eq_mod_eq_0)
+  moreover from \<open>f dvd a * b\<close> irr_f have "f dvd a \<or> f dvd b"
+    by auto
+  ultimately show False
+    by simp
+qed
 
+lemma ab_mod_f0:
+  "a = 0 \<or> b = 0" if "a * b mod f = 0" 
+    and a: "degree a < degree f" 
+    and b: "degree b < degree f" 
+  using that f_dvd_ab by auto
 
 lemma irreducible\<^sub>dD2:
   fixes p q :: "'b::{comm_semiring_1,semiring_no_zero_divisors} poly"
@@ -396,14 +394,27 @@ proof (rule ccontr)
   ultimately show False using x2 by auto
 qed
 
-
 sublocale field_R: field R 
-by (unfold_locales, auto simp add: R_def carrier_irr_def plus_irr_def mult_irr_def Units_def ,
-  auto simp add: degree_add_less mod_poly_less mod_add_eq mult_poly_add_left mod_mult_left_eq 
-  distrib_left mod_mult_right_eq mult.assoc)
-  (metis add.commute degree_0 degree_diff_less degree_f diff_eq_eq mult.commute
-   mod_poly_less degree_0 degree_f degree_mod_less' irr_f irreducible\<^sub>d_def_0 ab_mod_f0 times_mod_f_1_imp_0)+
- 
+proof -
+  have *: "\<exists>y. degree y < degree f \<and> f dvd x + y" if "degree x < degree f"
+    for x :: "'a mod_ring poly"  
+  proof -
+    from that have "degree (- x) < degree f"
+      by simp
+    moreover have "f dvd (x + - x)"
+      by simp
+    ultimately show ?thesis
+      by blast
+  qed
+  have **: "degree (x * y mod f) < degree f"
+    if "degree x < degree f" and "degree y < degree f"
+    for x y :: "'a mod_ring poly"
+    using that by (cases "x = 0 \<or> y = 0")
+      (auto intro: degree_mod_less' dest: f_dvd_ab)
+  show "field R"
+    by standard (auto simp add: R_def carrier_irr_def plus_irr_def mult_irr_def Units_def algebra_simps degree_add_less mod_poly_less mod_add_eq mult_poly_add_left mod_mult_left_eq mod_mult_right_eq mod_eq_0_iff_dvd ab_mod_f0 * ** dest: times_mod_f_1_imp_0)
+qed
+
 lemma zero_in_carrier[simp]: "0 \<in> carrier_irr" unfolding carrier_irr_def by auto
 
 lemma card_carrier_irr[simp]: "card carrier_irr = CARD('a)^(degree f)"
