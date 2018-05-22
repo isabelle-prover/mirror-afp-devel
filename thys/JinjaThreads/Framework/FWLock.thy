@@ -55,7 +55,7 @@ lemma has_locks_Suc_has_lock:
   "has_locks l t = Suc n \<Longrightarrow> has_lock l t"
 by(auto)
 
-lemmas has_lock_has_locks_Suc = gr0_implies_Suc[where n = "has_locks l t"]
+lemmas has_lock_has_locks_Suc = gr0_implies_Suc[where n = "has_locks l t"] for l t
 
 lemma has_lock_has_locks_conv:
   "has_lock l t \<longleftrightarrow> (\<exists>n. has_locks l t = (Suc n))"
