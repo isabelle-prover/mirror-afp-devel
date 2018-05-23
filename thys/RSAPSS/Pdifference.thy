@@ -33,12 +33,8 @@ lemma modadd: "\<lbrakk>b = a+p*q\<rbrakk> \<Longrightarrow> (a::nat) mod p = b 
   by auto
 
 lemma equalmodstrick1: "pdifference a b mod p = 0 \<Longrightarrow> a mod p = b mod p"
-  apply (cases "a < b")
-  apply auto
-  apply (rule modadd, rule invers2, auto)
-  apply (rule sym)
-  apply (rule modadd, rule invers2, auto)
-  done
+  using mod_eq_dvd_iff_nat [of a b p] mod_eq_dvd_iff_nat [of b a p]
+  by (cases "a < b") auto
 
 lemma diff_add_assoc: "b \<le> c \<Longrightarrow> c - (c - b) = c - c + (b::nat)"
   by auto

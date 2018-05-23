@@ -1148,10 +1148,10 @@ apply (rule iffI)
  apply simp
  apply (rule_tac x="t * k + k" in exI)
  apply fastforce
-apply (clarify, rename_tac x1 x2)
+apply (clarify elim!: dvdE, rename_tac x1 x2)
 apply (case_tac "x2 = Suc (t * k)")
  apply (simp add: mod_Suc)
-apply (clarsimp, rename_tac q)
+apply (clarsimp elim!: dvdE, rename_tac q)
 apply (drule_tac y=x1 in order_le_imp_less_or_eq, erule disjE)
  prefer 2
  apply simp
@@ -1229,7 +1229,7 @@ apply (rule iffI)
  apply simp
 apply (simp add: mod_Suc)
 apply (erule disjE)
- apply (clarsimp simp: mult.commute[of k], rename_tac i)
+ apply (clarsimp simp: mult.commute[of k] elim!: dvdE, rename_tac i)
  apply (subgoal_tac "t < i")
   prefer 2
   apply (rule ccontr)
@@ -1256,11 +1256,11 @@ apply (case_tac "i = Suc (t * k)")
  apply (rule_tac x="Suc (t * k)" in exI)
  apply simp
  apply (case_tac "k = Suc (Suc 0)", simp)
- apply (clarsimp simp: mult.commute[of k], rename_tac q)
+ apply (clarsimp simp: mult.commute[of k] elim!: dvdE, rename_tac q)
  apply (subgoal_tac "Suc (t * k) < t * k + k - Suc 0")
   prefer 2
   apply simp
- apply (clarsimp, rename_tac j)
+ apply (clarsimp elim!: dvdE, rename_tac j)
  apply (drule_tac x=j in spec)
  apply (simp add: numeral_3_eq_3 Suc_diff_Suc)
  apply (subgoal_tac "t * k + k \<le> q * k")
@@ -1288,7 +1288,7 @@ apply (case_tac "i1 = Suc i")
    apply simp
    apply (cut_tac b="k - Suc (Suc 0)" and m=k and k=t and a="Suc 0" and n=i in between_imp_mod_between)
    apply (simp add: mult.commute[of k])+
-   apply clarsimp+
+   apply (clarsimp elim!: dvdE)+
 apply (rename_tac q)
 apply (simp add: mult.commute[of k])
 apply (subgoal_tac "Suc t \<le> q")

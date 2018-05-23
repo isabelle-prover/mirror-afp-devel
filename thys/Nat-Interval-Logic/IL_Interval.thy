@@ -454,7 +454,8 @@ lemma iMOD_plus: "
 apply safe
  apply (drule iMOD_modD)+
  apply (rule mod_add_eq_imp_mod_0[of x, THEN iffD1])
- apply simp
+   apply simp
+  apply (erule dvdE)
 apply (simp add: mult.commute iMOD_plus_divisor_mult)
 done
 corollary iMOD_Suc: "
@@ -469,7 +470,8 @@ lemma iMOD_minus: "
 apply safe
  apply (clarsimp simp: iMOD_iff)
  apply (rule mod_add_eq_imp_mod_0[of "x - k" k, THEN iffD1])
- apply simp
+   apply simp
+  apply (erule dvdE)
 apply (simp add: mult.commute iMOD_minus_divisor_mult)
 done
 

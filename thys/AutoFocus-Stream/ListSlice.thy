@@ -127,9 +127,7 @@ done
 lemma list_slice_append_mod: "
   length xs mod k = 0 \<Longrightarrow>
   list_slice (xs @ ys) k = list_slice xs k @ list_slice ys k"
-apply clarify
-apply (simp only: mult.commute[of k] list_slice_append_mult)
-done
+  by (auto intro: list_slice_append_mult elim!: dvdE)
 
 lemma list_slice_div_eq_1[rule_format]: "
   length xs div k = Suc 0 \<Longrightarrow> list_slice xs k = [take k xs]"
@@ -244,10 +242,7 @@ done
 lemma list_slice2_append_mod: "
   length xs mod k = 0 \<Longrightarrow>
   list_slice2 (xs @ ys) k = list_slice2 xs k @ list_slice2 ys k"
-apply clarify
-apply (simp only: mult.commute[of k] list_slice2_append_mult)
-done
-
+  by (auto intro: list_slice2_append_mult elim!: dvdE)
 
 lemma ilist_slice_nth: "
   (ilist_slice f k) m = map f [m * k..<Suc m * k]"
@@ -321,7 +316,7 @@ lemma ilist_slice_i_append_mod: "
   length xs mod k = 0 \<Longrightarrow> 
   ilist_slice (xs \<frown> f) k = list_slice xs k \<frown> ilist_slice f k"
 apply (simp add: ilist_eq_iff ilist_slice_nth i_append_nth list_slice_length)
-apply (clarsimp simp: mult.commute[of k], rename_tac n i)
+apply (clarsimp simp: mult.commute[of k] elim!: dvdE, rename_tac n i)
 apply (intro conjI impI)
  apply (simp add: list_slice_nth)
  apply (subgoal_tac "k \<le> n * k - i * k")

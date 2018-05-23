@@ -74,7 +74,8 @@ proof -
     have "2 \<le> i \<Longrightarrow> Suc 0 < i * i" using one_less_mult[of i i] by auto
   } note * = this
   show ?thesis
-    by (rule, rule wf_measures[of "[?m1,?m2]"], auto split: if_splits simp: * dvd_eq_mod_eq_0)
+    using wf_measures [of "[?m1, ?m2]"]
+    by rule (auto simp add: * elim!: dvdE split: if_splits)
 qed
   
 lemma prime_product_factor_main: assumes "\<not> (\<exists> s. s * s = n)"

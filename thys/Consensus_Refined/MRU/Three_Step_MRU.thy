@@ -236,7 +236,7 @@ proof(auto simp only: PO_rhoare_defs)
         opt_mru_step0_def opt_mru_step1_def opt_mru_step2_def sa'_def)
   qed
   thus "\<exists>y. (sa, y) \<in> (\<Union>r' Q S' v D'. opt_mru_round r' Q S' v D') \<and> (y, sc3) \<in> ts_ref_rel"
-    by blast
+    by simp blast
 qed  
 
 lemma ThreeStep_Coordinated_Refines:

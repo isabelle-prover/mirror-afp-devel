@@ -662,7 +662,7 @@ done
 corollary mod_eq_mod_0_imp_mod_eq: "
   \<lbrakk> (a::nat) mod m' = b mod m'; m' mod m = 0 \<rbrakk>
   \<Longrightarrow> a mod m = b mod m"
-by (clarify, drule mod_mult_eq_imp_mod_eq)
+  using mod_mod_cancel [of m m' a] mod_mod_cancel [of m m' b] by auto
 
 lemma mod_factor_imp_mod_0: "
   \<lbrakk>(x::nat) mod (m * k) = y * k mod (m * k)\<rbrakk> \<Longrightarrow> x mod k = 0"
