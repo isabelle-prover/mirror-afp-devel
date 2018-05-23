@@ -3940,6 +3940,24 @@ topic = Mathematics/Number Theory
 abstract = In 1975, Pratt introduced a proof system for certifying primes. He showed that a number <i>p</i> is prime iff a primality certificate for <i>p</i> exists. By showing a logarithmic upper bound on the length of the certificates in size of the prime number, he concluded that the decision problem for prime numbers is in NP. This work formalizes soundness and completeness of Pratt's proof system as well as an upper bound for the size of the certificate.
 notify = noschinl@in.tum.de, simon.wimmer@tum.de
 
+[Monad_Memo_DP]
+title = Monadification, Memoization and Dynamic Programming
+author = Simon Wimmer <http://home.in.tum.de/~wimmers/>, Shuwei Hu <mailto:shuwei.hu@tum.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow/>
+topic = Computer Science/Programming Languages/Transformations, Computer Science/Algorithms, Computer Science/Functional Programming
+date = 2018-05-22
+notify = wimmers@in.tum.de
+abstract =
+  We present a lightweight framework for the automatic verified
+  (functional or imperative) memoization of recursive functions. Our
+  tool can turn a pure Isabelle/HOL function definition into a
+  monadified version in a state monad or the Imperative HOL heap monad,
+  and prove a correspondence theorem. We provide a variety of memory
+  implementations for the two types of monads. A number of simple
+  techniques allow us to achieve bottom-up computation and
+  space-efficient memoization. The framework’s utility is demonstrated
+  on a number of representative dynamic programming problems. A detailed
+  description of our work can be found in the accompanying paper [2].
+
 [ArrowImpossibilityGS]
 title = Arrow and Gibbard-Satterthwaite
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
@@ -6728,12 +6746,12 @@ author = Oliver Bračevac <mailto:bracevac@st.informatik.tu-darmstadt.de>, Richa
 topic = Computer Science/Security
 date = 2018-05-07
 notify = tasch@mais.informatik.tu-darmstadt.de
-abstract = 
+abstract =
   The "Modular Assembly Kit for Security Properties" (MAKS) is
   a framework for both the definition and verification of possibilistic
   information-flow security properties at the specification-level. MAKS
   supports the uniform representation of a wide range of possibilistic
   information-flow properties and provides support for the verification
   of such properties via unwinding results and compositionality results.
-  We provide a formalization of this framework in Isabelle/HOL.  
+  We provide a formalization of this framework in Isabelle/HOL.
 

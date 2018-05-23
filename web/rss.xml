@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>07 May 2018 00:00:00 +0000</pubDate>
+    <pubDate>22 May 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Monadification, Memoization and Dynamic Programming</title>
+              <link>https://www.isa-afp.org/entries/Monad_Memo_DP.html</link>
+       <guid>https://www.isa-afp.org/entries/Monad_Memo_DP.html</guid>
+       <dc:creator> Simon Wimmer, Shuwei Hu, Tobias Nipkow       </dc:creator>
+       <pubDate>22 May 2018 00:00:00 +0000</pubDate>
+       <description>
+We present a lightweight framework for the automatic verified
+(functional or imperative) memoization of recursive functions. Our
+tool can turn a pure Isabelle/HOL function definition into a
+monadified version in a state monad or the Imperative HOL heap monad,
+and prove a correspondence theorem. We provide a variety of memory
+implementations for the two types of monads. A number of simple
+techniques allow us to achieve bottom-up computation and
+space-efficient memoization. The framework’s utility is demonstrated
+on a number of representative dynamic programming problems. A detailed
+description of our work can be found in the accompanying paper [2].</description>
+    </item>
     <item>
        <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</title>
               <link>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</link>
@@ -523,30 +541,6 @@ bounds due to Clausen and Fortenbacher. We proceed by proving its
 soundness and completeness. Finally, we employ code equations to
 obtain a reasonably efficient implementation. Thus, we provide a
 formally verified solver for homogeneous linear diophantine equations.</description>
-    </item>
-    <item>
-       <title>The Hurwitz and Riemann ζ Functions</title>
-              <link>https://www.isa-afp.org/entries/Zeta_Function.html</link>
-       <guid>https://www.isa-afp.org/entries/Zeta_Function.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>12 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt; This entry builds upon the results about formal and analytic
-Dirichlet series to define the Hurwitz &amp;zeta; function and, based
-on that, the Riemann &amp;zeta; function. This is done by first
-defining them for &amp;real;(&lt;i&gt;z&lt;/i&gt;) &gt; 1 and then
-successively extending the domain to the left using the
-Euler&amp;ndash;MacLaurin formula. &lt;/p&gt; &lt;p&gt; Some basic
-results about these functions are also shown, such as their
-analyticity on &amp;#8450;&amp;#8726;&amp;#123;1&amp;#125;, that they
-have a simple pole with residue 1 at 1, their relation to the
-&amp;Gamma; function, and the special values at negative integers and
-positive even integers &amp;ndash; including the famous &amp;zeta;(-1)
-= -1/12 and &amp;zeta;(2) = &amp;pi;&amp;sup2;/6. &lt;/p&gt; &lt;p&gt;
-Lastly, the entry also contains Euler&#39;s analytic proof of the
-infinitude of primes, based on the fact that
-&amp;zeta;(&lt;i&gt;s&lt;/i&gt;) has a pole at &lt;i&gt;s&lt;/i&gt; =
-1. &lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
