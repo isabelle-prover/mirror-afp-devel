@@ -78,6 +78,15 @@ proof (induct vvs)
   finally show ?case using Cons by auto
 qed (insert w, auto)   
 
+lemma scalar_prod_right_sum_distrib: 
+  assumes vs: "\<And> v. v \<in> set vvs \<Longrightarrow> v \<in> carrier_vec n" and w: "w \<in> carrier_vec n" 
+  shows "w \<bullet> sumlist vvs = sum_list (map (\<lambda> v. w \<bullet> v) vvs)"
+  by (subst comm_scalar_prod[OF w sumlist_carrier], insert vs w, force,
+  subst scalar_prod_left_sum_distrib[OF vs w], force,
+  rule arg_cong[of _ _ sum_list], rule nth_equalityI, 
+  auto simp: set_conv_nth intro!: comm_scalar_prod)
+
+
 definition lattice_of :: "'a vec list \<Rightarrow> 'a vec set" where
   "lattice_of fs = range (\<lambda> c. sumlist (map (\<lambda> i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0 ..< length fs]))"
 
