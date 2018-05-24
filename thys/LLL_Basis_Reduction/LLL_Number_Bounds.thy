@@ -238,6 +238,10 @@ lemma Ints_prod:
   shows "prod f A \<in> \<int>"
 using assms by (induction A rule: infinite_finite_induct) auto
 
+lemma Ints_scalar_prod: 
+  "v \<in> carrier_vec n \<Longrightarrow> w \<in> carrier_vec n
+   \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> v $ i \<in> \<int>) \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> w $ i \<in> \<int>) \<Longrightarrow> v \<bullet> w \<in> \<int>" 
+  unfolding scalar_prod_def  by (intro Ints_sum Ints_mult, auto)
 
 locale gram_schmidt_rat = gram_schmidt n "TYPE(rat)"
   for n :: nat 
@@ -255,14 +259,7 @@ begin
 lemma fs_scalar_Ints:
   assumes "i < m" "j < m"
   shows "fs ! i \<bullet> fs ! j \<in> \<int>"
-proof -
-  have "dim_vec (fs ! j) = n"
-    using assms con_assms by auto
-  moreover have "(\<Sum>x = 0..<n'. fs ! i $v x * fs ! j $v x) \<in> \<int>" if "n' \<le> n" for n'
-    using that assms by (induction n') (auto intro!: fs_int Ints_mult Ints_add)
-  ultimately show ?thesis
-    unfolding scalar_prod_def by auto
-qed
+  by (rule Ints_scalar_prod[of _ n], insert fs_int assms con_assms, auto)
 
 lemma Gramian_matrix_alt_alt_def:
   assumes "k < m"
