@@ -16,8 +16,8 @@ begin
 
 (*open import Bool Basic_classes*)
 (*open import {isabelle} `HOL-Word.Word` `HOL.Real` `HOL.NthRoot`*)
-(*open import {hol} `integerTheory` `intReduce` `wordsTheory` `wordsLib` `ratTheory` `realTheory` `intrealTheory`*)
-(*open import {coq} `Coq.Numbers.BinNums` `Coq.ZArith.BinInt` `Coq.ZArith.Zpower` `Coq.ZArith.Zdiv` `Coq.ZArith.Zmax` `Coq.Numbers.Natural.Peano.NPeano` `Coq.QArith.Qabs` `Coq.QArith.Qminmax` `Coq.Reals.ROrderedType` `Coq.Reals.Rbase` `Coq.Reals.Rfunctions`*) 
+(*open import {hol} `integerTheory` `intReduce` `wordsTheory` `wordsLib` `ratTheory` `realTheory` `intrealTheory` `transcTheory`*)
+(*open import {coq} `Coq.Numbers.BinNums` `Coq.ZArith.BinInt` `Coq.ZArith.Zpower` `Coq.ZArith.Zdiv` `Coq.ZArith.Zmax` `Coq.Numbers.Natural.Peano.NPeano` `Coq.QArith.Qabs` `Coq.QArith.Qminmax` `Coq.QArith.Qround` `Coq.Reals.ROrderedType` `Coq.Reals.Rbase` `Coq.Reals.Rfunctions`*) 
 
 (*class inline ( Numeral 'a ) 
   val fromNumeral : numeral -> 'a 
@@ -1028,12 +1028,11 @@ definition instance_Num_NumDivision_Num_rational_dict  :: "(rat)NumDivision_clas
 (*let rationalFromFrac n d=  (Instance_Num_NumDivision_Num_rational./) (rationalFromInt n) (rationalFromInt d)*)
 
 (*val rationalPowInteger : rational -> integer -> rational*)
-function (sequential,domintros)  rationalPowInteger  :: " rat \<Rightarrow> int \<Rightarrow> rat "  where 
+fun  rationalPowInteger  :: " rat \<Rightarrow> int \<Rightarrow> rat "  where 
      " rationalPowInteger b e = (
   if e =( 0 :: int) then(Fract ( 1 :: int) (1 :: int)) else
   if e >( 0 :: int) then rationalPowInteger b (e -( 1 :: int)) * b else
-  rationalPowInteger b (e +( 1 :: int)) div b )" 
-by pat_completeness auto
+  rationalPowInteger b (e +( 1 :: int)) div b )"
 
 
 (*val rationalPowNat : rational -> nat -> rational*)
@@ -1158,12 +1157,11 @@ definition realFromFrac  :: " int \<Rightarrow> int \<Rightarrow> real "  where
 
 
 (*val realPowInteger : real -> integer -> real*)
-function (sequential,domintros)  realPowInteger  :: " real \<Rightarrow> int \<Rightarrow> real "  where 
+fun  realPowInteger  :: " real \<Rightarrow> int \<Rightarrow> real "  where 
      " realPowInteger b e = (
   if e =( 0 :: int) then( 1 :: real) else
   if e >( 0 :: int) then realPowInteger b (e -( 1 :: int)) * b else
-  realPowInteger b (e +( 1 :: int)) div b )" 
-by pat_completeness auto
+  realPowInteger b (e +( 1 :: int)) div b )"
 
 
 (*val realPowNat : real -> nat -> real*)

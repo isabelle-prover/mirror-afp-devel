@@ -316,11 +316,10 @@ definition removeMaybe  :: "('a option)set \<Rightarrow> 'a set "  where
 
 (*val leastFixedPoint : forall 'a. SetType 'a 
   => nat -> (set 'a -> set 'a) -> set 'a -> set 'a*)
-function (sequential,domintros)  leastFixedPoint  :: " nat \<Rightarrow>('a set \<Rightarrow> 'a set)\<Rightarrow> 'a set \<Rightarrow> 'a set "  where 
+fun  leastFixedPoint  :: " nat \<Rightarrow>('a set \<Rightarrow> 'a set)\<Rightarrow> 'a set \<Rightarrow> 'a set "  where 
      " leastFixedPoint 0 f x = ( x )"
 |" leastFixedPoint ((Suc bound')) f x = ( (let fx = (f x) in
                   if fx \<subseteq> x then x
-                  else leastFixedPoint bound' f (fx \<union> x)))" 
-by pat_completeness auto
+                  else leastFixedPoint bound' f (fx \<union> x)))"
  
 end

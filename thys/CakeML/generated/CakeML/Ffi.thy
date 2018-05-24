@@ -60,8 +60,8 @@ definition call_FFI  :: " 'ffi ffi_state \<Rightarrow> string \<Rightarrow>(8 wo
       Oracle_return ffi' bytes' =>
         if List.length bytes' = List.length bytes then
           (( st (| ffi_state := ffi'
-                    , io_events :=                        
-((io_events   st) @
+                    , io_events :=
+                        ((io_events   st) @
                           [IO_event s conf (zipSameLength bytes bytes')])
             |)), bytes')
         else (( st (| final_event := (Some (Final_event s conf bytes FFI_failed)) |)), bytes)

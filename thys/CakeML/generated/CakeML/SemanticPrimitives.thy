@@ -571,8 +571,8 @@ fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(
         if n <( 0 :: int) then
           Some ((s,t1), Rerr (Rraise (prim_exn (''Subscript''))))
         else
-          (let (s',lnum) =            
-(store_alloc (W8array (List.replicate (nat (abs ( n))) w)) s)
+          (let (s',lnum) =
+            (store_alloc (W8array (List.replicate (nat (abs ( n))) w)) s)
           in
             Some ((s',t1), Rval (Loc lnum)))
     | (Aw8sub, [Loc lnum, Litv (IntLit i)]) =>
@@ -665,8 +665,8 @@ fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(
     | (Ord, [Litv (Char c2)]) =>
           Some ((s,t1), Rval (Litv(IntLit(int(of_char c2)))))
     | (Chr, [Litv (IntLit i)]) =>
-        Some ((s,t1),          
-(if (i <( 0 :: int)) \<or> (i >( 255 :: int)) then
+        Some ((s,t1),
+          (if (i <( 0 :: int)) \<or> (i >( 255 :: int)) then
             Rerr (Rraise (prim_exn (''Chr'')))
           else
             Rval (Litv(Char((%n. char_of (n::nat))(nat (abs ( i))))))))
@@ -720,8 +720,8 @@ fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(
         if n <( 0 :: int) then
           Some ((s,t1), Rerr (Rraise (prim_exn (''Subscript''))))
         else
-          (let (s',lnum) =            
-(store_alloc (Varray (List.replicate (nat (abs ( n))) v2)) s)
+          (let (s',lnum) =
+            (store_alloc (Varray (List.replicate (nat (abs ( n))) v2)) s)
           in
             Some ((s',t1), Rval (Loc lnum)))
     | (AallocEmpty, [Conv None []]) =>
