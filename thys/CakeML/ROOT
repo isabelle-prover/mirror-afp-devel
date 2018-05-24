@@ -12,17 +12,11 @@ session LEM (AFP) = "Word_Lib" +
     "generated/Lem_string"
     "generated/Lem_string_extra"
 
-session CakeML_Prelim (AFP) = LEM +
-  options [timeout = 300]
+session CakeML (AFP) = LEM +
+  options [timeout = 900]
   sessions
     Coinductive
     IEEE_Floating_Point
-  theories
-    "Coinductive.Coinductive_List"
-    "IEEE_Floating_Point.FP64"
-
-session CakeML (AFP) = CakeML_Prelim +
-  options [timeout = 600]
   theories
     "doc/Doc_Generated"
   theories
