@@ -1,9 +1,9 @@
 theory Refine_Reachability_Analysis
 imports
   Affine_Arithmetic.Print
-  "HOL-ODE-Refinement.Weak_Set"
-  "HOL-ODE-Refinement.Refine_String"
-  "HOL-ODE-Refinement.Refine_Folds"
+  "../Refinement/Weak_Set"
+  "../Refinement/Refine_String"
+  "../Refinement/Refine_Folds"
   Ordinary_Differential_Equations.Flow
   Refine_Rigorous_Numerics
   "HOL-Decision_Procs.Approximation"

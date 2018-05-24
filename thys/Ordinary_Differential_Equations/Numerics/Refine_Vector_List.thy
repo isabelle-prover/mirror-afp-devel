@@ -2,8 +2,8 @@ theory Refine_Vector_List
   imports
   Ordinary_Differential_Equations.Reachability_Analysis
   Affine_Arithmetic.Affine_Arithmetic
-  "HOL-ODE-Refinement.Autoref_Misc" (* TODO: what is still needed there? *)
-  "HOL-ODE-Refinement.Weak_Set"
+  "../Refinement/Autoref_Misc" (* TODO: what is still needed there? *)
+  "../Refinement/Weak_Set"
   Runge_Kutta
 begin
 

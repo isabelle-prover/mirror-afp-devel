@@ -13,29 +13,13 @@ session "Ordinary_Differential_Equations" (AFP) = "HOL-Analysis" +
     "root.bib"
     "root.tex"
 
-session "HOL-ODE" (AFP) = "Ordinary_Differential_Equations" +
-  options [timeout = 300]
-
-session "HOL-ODE-Refinement" (AFP) = "HOL-ODE" +
-  options [timeout = 3600]
+session "HOL-ODE-Numerics" (AFP) = Ordinary_Differential_Equations +
+  options [timeout = 10800]
   sessions
     Collections
     Show
     Affine_Arithmetic
     Deriving
-  theories
-    "HOL-Decision_Procs.Approximation"
-    "List-Index.List_Index"
-    Show.Show_Instances
-    Affine_Arithmetic.Affine_Arithmetic
-    "Refinement/Autoref_Misc"
-    "Refinement/Weak_Set"
-    "Refinement/Refine_String"
-    "Refinement/Refine_Folds"
-
-session "HOL-ODE-Numerics" (AFP) = "HOL-ODE-Refinement" +
-  options [timeout = 7200]
-  sessions
     "HOL-Types_To_Sets"
   theories
     ODE_Numerics
