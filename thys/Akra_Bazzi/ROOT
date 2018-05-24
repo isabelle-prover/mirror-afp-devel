@@ -3,7 +3,7 @@ chapter AFP
 session Akra_Bazzi (AFP) = "Landau_Analysis" +
   options [timeout = 600]
   sessions
-    Ordinary_Differential_Equations
+    "HOL-Decision_Procs"
   theories
     Akra_Bazzi
     Master_Theorem
