@@ -209,8 +209,8 @@ fun_evaluate_decs mn st env [Dlet locs p e] = (
     (st, Rerr (Rabort Rtype_error)))"
 |"
 fun_evaluate_decs mn st env [Dletrec locs funs] = (
-  (st,   
-(if allDistinct (List.map ( \<lambda>x .  
+  (st,
+   (if allDistinct (List.map ( \<lambda>x .  
   (case  x of (x,y,z) => x )) funs) then
      Rval (| v = (build_rec_env funs env nsEmpty), c = nsEmpty |)
    else
@@ -218,8 +218,8 @@ fun_evaluate_decs mn st env [Dletrec locs funs] = (
 |"
 fun_evaluate_decs mn st env [Dtype locs tds] = (
   (let new_tdecs = (type_defs_to_new_tdecs mn tds) in
-    if check_dup_ctors tds \<and>       
-((% M N. M \<inter> N = {}) new_tdecs(defined_types   st) \<and>
+    if check_dup_ctors tds \<and>
+       ((% M N. M \<inter> N = {}) new_tdecs(defined_types   st) \<and>
        allDistinct (List.map ( \<lambda>x .  
   (case  x of (tvs,tn,ctors) => tn )) tds))
     then

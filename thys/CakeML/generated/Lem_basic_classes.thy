@@ -17,6 +17,7 @@ begin
 (*open import {isabelle} `HOL-Library.Datatype_Records`*)
 
 (*open import {coq} `Coq.Strings.Ascii`*)
+(*open import {hol} `ternaryComparisonsTheory`*)
 
 (* ========================================================================== *)
 (* Equality                                                                   *)

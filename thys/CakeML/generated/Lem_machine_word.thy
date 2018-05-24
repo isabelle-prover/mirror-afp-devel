@@ -8,13 +8,14 @@ imports
 	 "Lem_num" 
 	 "Lem_basic_classes" 
 	 "Lem_show" 
+	 "Lem_function" 
 	 "HOL-Word.Word" 
 
 begin 
 
 
 
-(*open import Bool Num Basic_classes Show*)
+(*open import Bool Num Basic_classes Show Function*)
 
 (*open import {isabelle} `HOL-Word.Word`*)
 (*open import {hol} `wordsTheory` `wordsLib` `bitstringTheory` `integer_wordTheory`*)
@@ -439,7 +440,11 @@ definition size_test_fn  :: "('a::len)Word.word \<Rightarrow> nat "  where
 
 definition signedDivide  :: "('a::len)Word.word \<Rightarrow>('a::len)Word.word \<Rightarrow>('a::len)Word.word "  where 
      " signedDivide x y = (
-  Word.word_of_int ((Word.sint x) div (Word.sint y)))"
+    if Bits.msb x then
+        if Bits.msb y then (- x) div (- y)
+        else - ((- x) div y)
+    else if Bits.msb y then - (x div (- y))
+        else x div y )"
 
 
 (*val modulo : forall 'a. mword 'a -> mword 'a -> mword 'a*)
