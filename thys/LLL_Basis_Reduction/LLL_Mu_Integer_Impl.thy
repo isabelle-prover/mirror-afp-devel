@@ -8,15 +8,8 @@ theory LLL_Mu_Integer_Impl
   imports LLL
    List_Representation
    LLL_Integer_Equations
+   Gram_Schmidt_Int
 begin
-
-definition iarray_update :: "'a iarray \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a iarray" where
-  "iarray_update a i x = IArray.of_fun (\<lambda> j. if j = i then x else IArray.sub a j) (IArray.length a)" 
-
-lemma iarray_of_fun_cong: "(\<And> i. i < n \<Longrightarrow> f i = g i) \<Longrightarrow> IArray.of_fun f n = IArray.of_fun g n" 
-  unfolding IArray.of_fun_def by auto
-
-lemma iarray_length_of_fun[simp]: "IArray.length (IArray.of_fun f n) = n" by simp
 
 type_synonym LLL_dmu_d_state = "int vec list_repr \<times> int iarray iarray \<times> int iarray"
 
@@ -171,21 +164,17 @@ partial_function (tailrec) basis_reduction_main where
        basis_reduction_main upw' i' state' else
        state)"
 
-fun norms_to_ds where 
-    "norms_to_ds d [] = [d]" 
-  | "norms_to_ds d (ni # nis) = (d # norms_to_ds (int_of_rat (int_times_rat d ni)) nis)" 
-
-(* TODO: use better gram_schmidt, which already computes mu-values *)
 definition "initial_state = (let
-  (n_gs, mus) = norms_mus_rat n (map (map_vec rat_of_int) fs_init);
-  ds = (IArray (norms_to_ds 1 n_gs) :: int iarray)
-  in (([], fs_init), 
-    IArray.of_fun (\<lambda> i. IArray.of_fun (\<lambda> j. int_of_rat (int_times_rat (IArray.sub ds (Suc j)) (mus ! i ! j))) i) m, 
-    ds) :: LLL_dmu_d_state)" 
+  dmus = d\<mu>_impl fs_init;
+  ds = IArray.of_fun (\<lambda> i. if i = 0 then 1 else let i1 = i - 1 in IArray.sub (IArray.sub dmus i1) i1) (Suc m);
+  dmus' = IArray.of_fun (\<lambda> i. let row_i = IArray.sub dmus i in
+       IArray.of_fun (\<lambda> j. IArray.sub row_i j) i) m
+  in (([], fs_init), dmus', ds) :: LLL_dmu_d_state)" 
 
 end
 
-definition "basis_reduction \<alpha> n fs = basis_reduction_main \<alpha> (length fs) True 0 (initial_state n (length fs) fs)" 
+definition "basis_reduction \<alpha> n fs = (let m = length fs in 
+  basis_reduction_main \<alpha> m True 0 (initial_state m fs))" 
 
 definition "reduce_basis \<alpha> fs = (case fs of Nil \<Rightarrow> fs | Cons f _ \<Rightarrow> fs_state (basis_reduction \<alpha> (dim_vec f) fs))" 
 
@@ -610,11 +599,8 @@ proof (atomize(full), insert assms(1-3), induct "LLL_measure i fs" arbitrary: i 
   qed
 qed
 
-lemma initial_state: "LLL_impl_inv (initial_state n m fs_init) 0 fs_init" 
+lemma initial_state: "LLL_impl_inv (initial_state m fs_init) 0 fs_init" 
 proof -
-  note conn = gs.main_connect[OF lin_dep, unfolded length_map, OF len]
-  have id: "gram_schmidt n (RAT fs_init) = map (gso fs_init) [0..<m]" 
-    using conn by auto
   have f_repr: "list_repr 0 ([], fs_init) (map ((!) fs_init) [0..<m])" 
     unfolding list_repr_def by (simp, intro nth_equalityI, auto simp: len)
   from fs_init have Rn: "set (RAT fs_init) \<subseteq> Rn" by auto
@@ -622,45 +608,34 @@ proof -
   define j where "j = m" 
   have jm: "j \<le> m" unfolding j_def by auto
   have 0: "0 = m - j" unfolding j_def by auto
-  have d_repr: "d_repr (IArray (norms_to_ds 1 (map (\<lambda>j. \<parallel>gs.gso (map of_int_hom.vec_hom fs_init) j\<parallel>\<^sup>2) [0..<m]))) fs_init" 
-    unfolding d_repr_def IArray.of_fun_def 1 0
-  proof (rule arg_cong[of _ _ IArray], insert jm, induct j)
-    case (Suc j)
-    hence small: "m - Suc j < m" and [simp]: "Suc (m - Suc j) = m - j" by auto
-    from Suc(2-) have id1: "[m - Suc j..<m] = (m - Suc j) # [m - j ..<m]"
-      "[m - Suc j..<Suc m] = (m - Suc j) # [m - j ..< Suc m]"
-      by (auto simp add: Suc_diff_Suc Suc_le_lessD upt_conv_Cons)
-    {
-      fix j
-      assume j: "j \<le> m" 
-      have "gs.Gramian_determinant (RAT fs_init) j = of_int (d fs_init j)" 
-        unfolding d_def
-        by (rule of_int_Gramian_determinant, insert len fs_init j, auto simp: set_conv_nth)
-    } note conv = this
-    from Suc have le: "m - (Suc j) \<le> m" by auto
-    note nzero = 
-      gs.Gramian_determinant(2)[OF lin_dep, unfolded length_map, OF len le, unfolded conv[OF le]]
-    have id': "(int_of_rat (rat_of_int (d fs_init (m - Suc j)) * \<parallel>gso fs_init (m - Suc j)\<parallel>\<^sup>2))
-        = d fs_init (m - j)" 
-      by (rule int_via_rat_eqI, 
-      unfold gs.Gramian_determinant_div[OF lin_dep, unfolded length_map, OF len small, symmetric],
-      subst (1 2) conv, insert Suc(2-) nzero, auto)      
-    show ?case unfolding id1 list.simps norms_to_ds.simps int_times_rat_def id'
-      by (intro conjI[OF refl Suc(1)], insert Suc(2-), auto)
-  qed simp
-  show ?thesis unfolding initial_state_def Let_def LLL_impl_inv.simps gram_schmidt_triv id
-    norms_mus_rat_norms_mus 
-    gs.norms_mus[OF Rn, unfolded length_map len, OF gs.mn[OF lin_dep, unfolded length_map, OF len]]
-    fst_conv snd_conv split
-    by (intro conjI f_repr d_repr, unfold d_repr[unfolded d_repr_def] int_times_rat_def mu_repr_def d\<mu>_def,
-      intro iarray_of_fun_cong, auto simp: nth_append)
+  have mu_repr: "mu_repr (IArray.of_fun (\<lambda>i. IArray.of_fun ((!!) (d\<mu>_impl fs_init !! i)) i) m) fs_init" 
+    unfolding d\<mu>_impl[OF lin_dep len] mu_repr_def 
+    by (intro iarray_of_fun_cong, simp only: of_fun_nth)
+  have d_repr: "d_repr (IArray.of_fun (\<lambda>i. if i = 0 then 1 else d\<mu>_impl fs_init !! (i - 1) !! (i - 1)) (Suc m)) fs_init" 
+    unfolding d\<mu>_impl[OF lin_dep len] d_repr_def 
+  proof (intro iarray_of_fun_cong, goal_cases)
+    case (1 i)
+    show ?case
+    proof (cases "i = 0")
+      case False
+      hence le: "i - 1 < m" "i - 1 < i" and id: "(i = 0) = False" "Suc (i - 1) = i" using 1 by auto
+      show ?thesis unfolding of_fun_nth[OF le(1)] of_fun_nth[OF le(2)] id if_False d\<mu>_def 
+        by (simp add: gs.\<mu>.simps)
+    next
+      case True
+      have "d fs_init 0 = 1" unfolding d_def gs.Gramian_determinant_0 by simp
+      thus ?thesis unfolding True by simp
+    qed 
+  qed 
+  show ?thesis unfolding initial_state_def Let_def LLL_impl_inv.simps id
+    by (intro conjI f_repr mu_repr d_repr)
 qed
 
 lemma basis_reduction: assumes res: "basis_reduction \<alpha> n fs_init = state" 
   and fs: "fs = fs_state state" 
 shows "LLL_invariant True m fs" 
   "LLL_impl_inv state m fs" 
-  using basis_reduction_main[OF initial_state LLL_inv_initial_state res[unfolded basis_reduction_def len] fs]
+  using basis_reduction_main[OF initial_state LLL_inv_initial_state res[unfolded basis_reduction_def len Let_def] fs]
   by auto
 
 lemma reduce_basis: assumes res: "reduce_basis \<alpha> fs_init = fs" 

@@ -558,8 +558,8 @@ fun evaluate_whole_prog  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi st
      " evaluate_whole_prog ck env s1 tops (s2, res) = (
   if no_dup_mods tops(defined_mods   s1) \<and> no_dup_top_types tops(defined_types   s1) then
     evaluate_prog ck env s1 tops (s2, res)
-  else    
-(s1 = s2) \<and> (res = Rerr (Rabort Rtype_error)))"
+  else
+    (s1 = s2) \<and> (res = Rerr (Rabort Rtype_error)))"
 
 
 (*val dec_diverges : forall 'ffi. sem_env v -> state 'ffi -> dec -> bool*)

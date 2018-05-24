@@ -106,20 +106,20 @@ definition nsSing  :: " 'n \<Rightarrow> 'v \<Rightarrow>('m,'n,'v)namespace "  
   (id 'm 'n -> 'v1 -> 'v2 -> bool) -> namespace 'm 'n 'v1 -> namespace 'm 'n 'v2 -> bool*)
 definition nsSub  :: "(('m,'n)id0 \<Rightarrow> 'v1 \<Rightarrow> 'v2 \<Rightarrow> bool)\<Rightarrow>('m,'n,'v1)namespace \<Rightarrow>('m,'n,'v2)namespace \<Rightarrow> bool "  where 
      " nsSub r env1 env2 = (
-  ((\<forall> id0. \<forall> v1.     
-(nsLookup env1 id0 = Some v1)
-    \<longrightarrow>    
-((\<exists> v2.  (nsLookup env2 id0 = Some v2) \<and> r id0 v1 v2))))
+  ((\<forall> id0. \<forall> v1. 
+    (nsLookup env1 id0 = Some v1)
+    \<longrightarrow>
+    ((\<exists> v2.  (nsLookup env2 id0 = Some v2) \<and> r id0 v1 v2))))
   \<and>
-  ((\<forall> path.     
-(nsLookupMod env2 path = None) \<longrightarrow> (nsLookupMod env1 path = None))))"
+  ((\<forall> path. 
+    (nsLookupMod env2 path = None) \<longrightarrow> (nsLookupMod env1 path = None))))"
 
 
 (*val nsAll : forall 'v 'm 'n. Eq 'm, Eq 'n, Eq 'v => (id 'm 'n -> 'v -> bool) -> namespace 'm 'n 'v -> bool*)
 fun  nsAll  :: "(('m,'n)id0 \<Rightarrow> 'v \<Rightarrow> bool)\<Rightarrow>('m,'n,'v)namespace \<Rightarrow> bool "  where 
      " nsAll f env = (
-  ((\<forall> id0. \<forall> v1.      
-(nsLookup env id0 = Some v1)
+  ((\<forall> id0. \<forall> v1. 
+     (nsLookup env id0 = Some v1)
      \<longrightarrow>
      f id0 v1)))"
 
