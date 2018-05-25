@@ -47,6 +47,29 @@ on a number of representative dynamic programming problems. A detailed
 description of our work can be found in the accompanying paper [2].</description>
     </item>
     <item>
+       <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
+              <link>https://www.isa-afp.org/entries/OpSets.html</link>
+       <guid>https://www.isa-afp.org/entries/OpSets.html</guid>
+       <dc:creator> Martin Kleppmann, Victor B. F. Gomes, Dominic P. Mulligan, Alastair R. Beresford       </dc:creator>
+       <pubDate>10 May 2018 00:00:00 +0000</pubDate>
+       <description>
+We introduce OpSets, an executable framework for specifying and
+reasoning about the semantics of replicated datatypes that provide
+eventual consistency in a distributed system, and for mechanically
+verifying algorithms that implement these datatypes. Our approach is
+simple but expressive, allowing us to succinctly specify a variety of
+abstract datatypes, including maps, sets, lists, text, graphs, trees,
+and registers. Our datatypes are also composable, enabling the
+construction of complex data structures. To demonstrate the utility of
+OpSets for analysing replication algorithms, we highlight an important
+correctness property for collaborative text editing that has
+traditionally been overlooked; algorithms that do not satisfy this
+property can exhibit awkward interleaving of text. We use OpSets to
+specify this correctness property and prove that although one existing
+replication algorithm satisfies this property, several other published
+algorithms do not.</description>
+    </item>
+    <item>
        <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</title>
               <link>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</link>
        <guid>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</guid>
@@ -526,21 +549,6 @@ formalisation of the Cauchy index, which is then shown to be related
 to the winding number. In addition, this entry also offers a tactic
 that enables users to evaluate the winding number by calculating
 Cauchy indices.</description>
-    </item>
-    <item>
-       <title>Count the Number of Complex Roots</title>
-              <link>https://www.isa-afp.org/entries/Count_Complex_Roots.html</link>
-       <guid>https://www.isa-afp.org/entries/Count_Complex_Roots.html</guid>
-       <dc:creator> Wenda Li       </dc:creator>
-       <pubDate>17 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-Based on evaluating Cauchy indices through remainder sequences, this
-entry provides an effective procedure to count the number of complex
-roots (with multiplicity) of a polynomial within a rectangle box or a
-half-plane. Potential applications of this entry include certified
-complex root isolation (of a polynomial) and testing the Routh-Hurwitz
-stability criterion (i.e., to check whether all the roots of some
-characteristic polynomial have negative real parts).</description>
     </item>
   </channel>
 </rss>

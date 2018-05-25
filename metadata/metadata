@@ -6773,3 +6773,25 @@ abstract =
   Freyd and Scedrov in 1990, which we slightly modified to remedy a
   minor technical issue.
 
+[OpSets]
+title = OpSets: Sequential Specifications for Replicated Datatypes
+author = Martin Kleppmann <mailto:mk428@cl.cam.ac.uk>, Victor B. F. Gomes <mailto:vb358@cl.cam.ac.uk>, Dominic P. Mulligan <mailto:Dominic.Mulligan@arm.com>, Alastair R. Beresford <mailto:arb33@cl.cam.ac.uk>
+topic = Computer Science/Algorithms/Distributed, Computer Science/Data Structures
+date = 2018-05-10
+notify = vb358@cam.ac.uk
+abstract = 
+  We introduce OpSets, an executable framework for specifying and
+  reasoning about the semantics of replicated datatypes that provide
+  eventual consistency in a distributed system, and for mechanically
+  verifying algorithms that implement these datatypes. Our approach is
+  simple but expressive, allowing us to succinctly specify a variety of
+  abstract datatypes, including maps, sets, lists, text, graphs, trees,
+  and registers. Our datatypes are also composable, enabling the
+  construction of complex data structures. To demonstrate the utility of
+  OpSets for analysing replication algorithms, we highlight an important
+  correctness property for collaborative text editing that has
+  traditionally been overlooked; algorithms that do not satisfy this
+  property can exhibit awkward interleaving of text. We use OpSets to
+  specify this correctness property and prove that although one existing
+  replication algorithm satisfies this property, several other published
+  algorithms do not.
