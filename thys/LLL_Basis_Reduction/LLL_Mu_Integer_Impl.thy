@@ -20,7 +20,7 @@ fun fim1_state :: "LLL_dmu_d_state \<Rightarrow> int vec" where
   "fim1_state (f,mu,d) = get_nth_im1 f" 
 
 fun d_state :: "LLL_dmu_d_state \<Rightarrow> nat \<Rightarrow> int" where
-  "d_state (f,mu,d) i = IArray.sub d i" 
+  "d_state (f,mu,d) i = d !! i" 
 
 fun fs_state :: "LLL_dmu_d_state \<Rightarrow> int vec list" where
   "fs_state (f,mu,d) = of_list_repr f" 
@@ -32,7 +32,7 @@ fun small_fs_state :: "LLL_dmu_d_state \<Rightarrow> int vec list" where
   "small_fs_state (f,_) = fst f" 
 
 fun dmu_ij_state :: "LLL_dmu_d_state \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> int" where
-  "dmu_ij_state (f,mu,_) i j = IArray.sub (IArray.sub mu i) j" 
+  "dmu_ij_state (f,mu,_) i j = mu !! i !! j" 
 
 fun inc_state :: "LLL_dmu_d_state \<Rightarrow> LLL_dmu_d_state" where
   "inc_state (f,mu,d) = (inc_i f, mu, d)" 
@@ -51,23 +51,23 @@ fun basis_reduction_add_rows_loop where
       in basis_reduction_add_rows_loop state' i j fjs)"
 
 text \<open>More efficient code which breaks abstraction of state.\<close>
-
+ 
 lemma basis_reduction_add_rows_loop_code: 
   "basis_reduction_add_rows_loop state i sj (fj # fjs) = (
      case state of ((f1,f2),mus,ds) \<Rightarrow> 
      let fi = hd f2;
          j = sj - 1;
-         dsj = IArray.sub ds sj;
-         mui = IArray.sub (IArray.sub mus i);
-         c = floor_ceil_num_denom (mui j) dsj
+         dsj = ds !! sj;
+         mui = mus !! i;
+         c = floor_ceil_num_denom (mui !! j) dsj
       in (if c = 0 then 
           basis_reduction_add_rows_loop state i j fjs
          else  
-             let muj = IArray.sub (IArray.sub mus j) in 
+             let muj = mus !! j in 
            basis_reduction_add_rows_loop
                 ((f1,  (fi - c \<cdot>\<^sub>v fj) # tl f2), iarray_update mus i 
-             (IArray.of_fun (\<lambda> jj. let mu = mui jj in 
-                  if jj < j then mu - c * muj jj else 
+             (IArray.of_fun (\<lambda> jj. let mu = mui !! jj in 
+                  if jj < j then mu - c * muj !! jj else 
                   if jj = j then mu - dsj * c else mu) i),
                   ds) i j fjs))"
 proof -
@@ -96,15 +96,15 @@ begin
 
 definition swap_mu :: "int iarray iarray \<Rightarrow> nat \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int iarray iarray" where
   "swap_mu dmu i dmu_i_im1 dim1 di dsi = (let im1 = i - 1 in 
-       IArray.of_fun (\<lambda> ii. if ii < im1 then IArray.sub dmu ii else 
-       if ii > i then let dmu_ii = IArray.sub (IArray.sub dmu ii) in 
-           IArray.of_fun (\<lambda> j. let dmu_ii_j = dmu_ii j in 
-               if j = i then (dsi * dmu_ii im1 - dmu_i_im1 * dmu_ii_j) div di
-               else if j = im1 then (dmu_i_im1 * dmu_ii_j + dmu_ii i * dim1) div di
+       IArray.of_fun (\<lambda> ii. if ii < im1 then dmu !! ii else 
+       if ii > i then let dmu_ii = dmu !! ii in 
+           IArray.of_fun (\<lambda> j. let dmu_ii_j = dmu_ii !! j in 
+               if j = i then (dsi * dmu_ii !! im1 - dmu_i_im1 * dmu_ii_j) div di
+               else if j = im1 then (dmu_i_im1 * dmu_ii_j + dmu_ii !! i * dim1) div di
                else dmu_ii_j) ii else 
-       if ii = i then let mu_im1 = IArray.sub (IArray.sub dmu im1) in 
-           IArray.of_fun (\<lambda> j. if j = im1 then dmu_i_im1 else mu_im1 j) ii 
-         else IArray.of_fun (IArray.sub (IArray.sub dmu i)) ii) \<comment> \<open>ii = i - 1\<close>
+       if ii = i then let mu_im1 = dmu !! im1 in 
+           IArray.of_fun (\<lambda> j. if j = im1 then dmu_i_im1 else mu_im1 !! j) ii 
+         else IArray.of_fun (\<lambda> j. dmu !! i !! j) ii) \<comment> \<open>ii = i - 1\<close>
        m)" 
 
 definition basis_reduction_swap where
@@ -127,13 +127,13 @@ text \<open>More efficient code which breaks abstraction of state.\<close>
 
 lemma basis_reduction_swap_code[code]:
   "basis_reduction_swap i ((f1,f2), dmus, ds) = (let 
-       di = IArray.sub ds i;
-       dsi = IArray.sub ds (Suc i);
+       di = ds !! i;
+       dsi = ds !! (Suc i);
        im1 = i - 1;
-       dim1 = IArray.sub ds im1;
+       dim1 = ds !! im1;
        fi = hd f2;
        fim1 = hd f1;
-       dmu_i_im1 = IArray.sub (IArray.sub dmus i) im1;
+       dmu_i_im1 = dmus !! i !! im1;
        fi' = fim1;
        fim1' = fi
      in (False, im1, 
@@ -166,9 +166,9 @@ partial_function (tailrec) basis_reduction_main where
 
 definition "initial_state = (let
   dmus = d\<mu>_impl fs_init;
-  ds = IArray.of_fun (\<lambda> i. if i = 0 then 1 else let i1 = i - 1 in IArray.sub (IArray.sub dmus i1) i1) (Suc m);
-  dmus' = IArray.of_fun (\<lambda> i. let row_i = IArray.sub dmus i in
-       IArray.of_fun (\<lambda> j. IArray.sub row_i j) i) m
+  ds = IArray.of_fun (\<lambda> i. if i = 0 then 1 else let i1 = i - 1 in dmus !! i1 !! i1) (Suc m);
+  dmus' = IArray.of_fun (\<lambda> i. let row_i = dmus !! i in
+       IArray.of_fun (\<lambda> j. row_i !! j) i) m
   in (([], fs_init), dmus', ds) :: LLL_dmu_d_state)" 
 
 end
@@ -313,7 +313,7 @@ next
     {
       fix ii
       assume ii: "ii < m" "ii \<noteq> i" 
-      hence "IArray.sub (IArray.of_fun (\<lambda>i. IArray.of_fun (d\<mu> fs i) i) m) ii
+      hence "(IArray.of_fun (\<lambda>i. IArray.of_fun (d\<mu> fs i) i) m) !! ii
         = IArray.of_fun (d\<mu> fs ii) ii" by auto
       also have "\<dots> = IArray.of_fun (d\<mu> fs'' ii) ii" 
       proof (rule iarray_of_fun_cong, goal_cases)
@@ -321,7 +321,7 @@ next
         with ii have j: "Suc j \<le> m" by auto
         show ?case unfolding updates(2)[OF ii(1) 1] using ii by auto
       qed
-      finally have "IArray.sub (IArray.of_fun (\<lambda>i. IArray.of_fun (d\<mu> fs i) i) m) ii 
+      finally have "(IArray.of_fun (\<lambda>i. IArray.of_fun (d\<mu> fs i) i) m) !! ii 
          = IArray.of_fun (d\<mu> fs'' ii) ii" by auto
     } note ii = this
     let ?mu'' = "iarray_update mu i (IArray.of_fun (d\<mu> fs'' i) i)" 
@@ -468,7 +468,7 @@ proof -
       proof (cases "ii < i - 1")
         case small: True
         hence id: "(ii = i) = False" "(ii = i - 1) = False" "(i < ii) = False" "(ii < i - 1) = True" by auto
-        have mu: "IArray.sub mu ii = IArray.of_fun (d\<mu> fs ii) ii" 
+        have mu: "mu !! ii = IArray.of_fun (d\<mu> fs ii) ii" 
           using ii unfolding mu_def by auto
         show ?thesis unfolding id if_True if_False mu
           by (rule iarray_of_fun_cong, insert small ii i i0, subst updates(2), simp_all, linarith) 

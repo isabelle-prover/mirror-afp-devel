@@ -13,6 +13,8 @@ theory Gram_Schmidt_Int
   imports LLL_Integer_Equations
 begin
 
+no_notation test_bit (infixl "!!" 100)
+ 
 context gram_schmidt
 begin
 
@@ -547,7 +549,7 @@ end (* gram_schmidt_rat *)
 
 (* TODO move *)
 definition iarray_update :: "'a iarray \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a iarray" where
-  "iarray_update a i x = IArray.of_fun (\<lambda> j. if j = i then x else IArray.sub a j) (IArray.length a)" 
+  "iarray_update a i x = IArray.of_fun (\<lambda> j. if j = i then x else a !! j) (IArray.length a)" 
 
 lemma iarray_of_fun_cong: "(\<And> i. i < n \<Longrightarrow> f i = g i) \<Longrightarrow> IArray.of_fun f n = IArray.of_fun g n" 
   unfolding IArray.of_fun_def by auto
@@ -564,9 +566,9 @@ context fixes
   fs :: "int vec iarray" and m :: nat
 begin 
 fun sigma_array where
-  "sigma_array dmus dmusi dmusj dll l = (if l = 0 then IArray.sub dmusi l * IArray.sub dmusj l
-      else let l1 = l - 1; dll1 = IArray.sub (IArray.sub dmus l1) l1 in
-      (dll * sigma_array dmus dmusi dmusj dll1 l1 + IArray.sub dmusi l * IArray.sub dmusj l) div 
+  "sigma_array dmus dmusi dmusj dll l = (if l = 0 then dmusi !! l * dmusj !! l
+      else let l1 = l - 1; dll1 = dmus !! l1 !! l1 in
+      (dll * sigma_array dmus dmusi dmusj dll1 l1 + dmusi !! l * dmusj !! l) div 
           dll1)"
 
 declare sigma_array.simps[simp del]
@@ -574,15 +576,15 @@ declare sigma_array.simps[simp del]
 partial_function(tailrec) dmu_array_row_main where
   [code]: "dmu_array_row_main fi i dmus j = (if j = i then dmus
      else let sj = Suc j; 
-       dmus_i = IArray.sub dmus i;
-       djj = IArray.sub (IArray.sub dmus j) j;
-       dmu_ij = djj * (fi \<bullet> IArray.sub fs sj) - sigma_array dmus dmus_i (IArray.sub dmus sj) djj j;
+       dmus_i = dmus !! i;
+       djj = dmus !! j !! j;
+       dmu_ij = djj * (fi \<bullet> fs !! sj) - sigma_array dmus dmus_i (dmus !! sj) djj j;
        dmus' = iarray_update dmus i (iarray_append dmus_i dmu_ij)
       in dmu_array_row_main fi i dmus' sj)" 
 
 definition dmu_array_row where
-  "dmu_array_row dmus i = (let fi = IArray.sub fs i in 
-      dmu_array_row_main fi i (iarray_append dmus (IArray [fi \<bullet> IArray.sub fs 0])) 0)" 
+  "dmu_array_row dmus i = (let fi = fs !! i in 
+      dmu_array_row_main fi i (iarray_append dmus (IArray [fi \<bullet> fs !! 0])) 0)" 
 
 partial_function (tailrec) dmu_array where 
   [code]: "dmu_array dmus i = (if i = m then dmus else 
@@ -712,7 +714,7 @@ next
 qed
 
 lemma dmu_array_row_main: assumes mm: "mm \<le> m" shows
-  "j \<le> mm \<Longrightarrow> dmu_array_row_main (IArray fs) (IArray.sub (IArray fs) mm) mm
+  "j \<le> mm \<Longrightarrow> dmu_array_row_main (IArray fs) (IArray fs !!  mm) mm
     (IArray.of_fun (\<lambda>i. IArray.of_fun (\<mu>' i) (if i = mm then Suc j else Suc i)) (Suc mm))    
      j = IArray.of_fun (\<lambda>i. IArray.of_fun (\<mu>' i) (Suc i)) (Suc mm)" 
 proof (induct "mm - j" arbitrary: j)
