@@ -1,7 +1,6 @@
 theory Tracing
   imports
     "../heap_monad/Heap_Main"
-    "HOL-Library.Code_Char"
     "HOL-Library.Code_Target_Numeral"
 begin
 
