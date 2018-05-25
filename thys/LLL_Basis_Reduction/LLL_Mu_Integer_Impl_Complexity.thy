@@ -523,36 +523,36 @@ proof (atomize(full), goal_cases)
   show ?case unfolding d\<mu>_impl_cost_def d\<mu>_impl_def len res res_c cost_simps by simp
 qed
   
+definition "initial_gso_cost = m * (m * (m + n + 2) + 2 * n + 1)" 
 
-(* TODO: integrate cost for initial_state: below is the calculation for the GSO-based initial state
+definition "initial_state_cost fs = (let
+  (dmus, cost) = d\<mu>_impl_cost fs;
+  ds = IArray.of_fun (\<lambda> i. if i = 0 then 1 else let i1 = i - 1 in dmus !! i1 !! i1) (Suc m);
+  dmus' = IArray.of_fun (\<lambda> i. let row_i = dmus !! i in
+       IArray.of_fun (\<lambda> j. row_i !! j) i) m
+  in ((([], fs), dmus', ds), cost) :: LLL_dmu_d_state cost)" 
 
-definition "initial_gso_cost = (4 * m + 3) * m * n * arith_cost" 
 
-definition initial_state_cost :: "int vec list \<Rightarrow> LLL_gso_state cost" where
-  "initial_state_cost fs = (case gram_schmidt_triv_cost (map (map_vec of_int) fs)
-     of (gs,c) \<Rightarrow> (([], (zip fs gs)), c))" 
-
-definition basis_reduction_cost :: "int vec list \<Rightarrow> LLL_gso_state cost" where 
+definition basis_reduction_cost :: "_ \<Rightarrow> LLL_dmu_d_state cost" where 
   "basis_reduction_cost fs = (
     case initial_state_cost fs of (state1, c1) \<Rightarrow> 
     case basis_reduction_main_cost True 0 state1 of (state2, c2) \<Rightarrow> 
       (state2, c1 + c2))" 
 
-definition reduce_basis_cost :: "int vec list \<Rightarrow> int vec list cost" where
+definition reduce_basis_cost :: "_ \<Rightarrow> int vec list cost" where
   "reduce_basis_cost fs = (case fs of Nil \<Rightarrow> (fs, 0) | Cons f _ \<Rightarrow> 
     case basis_reduction_cost fs of (state,c) \<Rightarrow> 
     (fs_state state, c))" 
 
-lemma initial_state_cost: "result (initial_state_cost fs_init) = initial_state n fs_init" (is ?g1)
+lemma initial_state_cost: "result (initial_state_cost fs_init) = initial_state m fs_init" (is ?g1)
   "cost (initial_state_cost fs_init) \<le> initial_gso_cost" (is ?g2)
 proof -
-  let ?F = "map (map_vec rat_of_int) fs_init" 
-  have len: "length ?F \<le> m" using len by auto
-  obtain G c where gso: "gram_schmidt_triv_cost ?F = (G,c)" (is "?gso = _")
-    by (cases ?gso, auto)
-  note gsoc = gram_schmidt_triv_cost[OF len, unfolded gso cost_simps]
-  show ?g1 ?g2 unfolding initial_gso_cost_def initial_state_cost_def gso split cost_simps 
-    initial_state_def Let_def gsoc(1)[symmetric] using gsoc(2) by auto
+  obtain st c where dmu: "d\<mu>_impl_cost fs_init = (st,c)" by force
+  from d\<mu>_impl_cost[unfolded dmu cost_simps]
+  have dmu': "d\<mu>_impl fs_init = st" and c: "c \<le> initial_gso_cost" 
+    unfolding initial_gso_cost_def by auto
+  show ?g1 ?g2 using c unfolding initial_state_cost_def dmu dmu' split cost_simps 
+    initial_state_def Let_def by auto
 qed
 
 lemma basis_reduction_cost: 
@@ -564,16 +564,16 @@ proof -
   have res: "basis_reduction_cost fs_init = (state2, c1 + c2)" 
     unfolding basis_reduction_cost_def init main split by simp
   from initial_state_cost[unfolded init cost_simps]
-  have c1: "c1 \<le> initial_gso_cost" and init: "initial_state n fs_init = state1" by auto
+  have c1: "c1 \<le> initial_gso_cost" and init: "initial_state m fs_init = state1" by auto
   note inv = LLL_inv_initial_state
   note impl = initial_state
-  from fs_state[OF impl LLL_invD(6)[OF inv]] 
-  have fs: "fs_state (initial_state n fs_init) = fs_init" by auto
-  from basis_reduction_main_cost[of "initial_state n fs_init", unfolded fs, OF impl inv,
+  from fs_state[OF impl inv _ len]  
+  have fs: "fs_state (initial_state m fs_init) = fs_init" by (cases "initial_state m fs_init", auto)
+  from basis_reduction_main_cost[of "initial_state m fs_init", unfolded fs, OF impl inv,
     unfolded init main cost_simps] 
   have main: "basis_reduction_main \<alpha> m True 0 state1 = state2" and c2: "c2 \<le> body_cost * num_loops" 
     by auto
-  have res': "basis_reduction \<alpha> n fs_init = state2" unfolding basis_reduction_def len init main ..
+  have res': "basis_reduction \<alpha> n fs_init = state2" unfolding basis_reduction_def len init main Let_def ..
   show ?g1 unfolding res res' cost_simps ..
   show ?g2 unfolding res cost_simps using c1 c2 by auto
 qed
@@ -611,10 +611,13 @@ lemma reduce_basis_cost_expanded:
   assumes "Log = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) AA\<rceil>"   
   and "AA = max_list (map (nat \<circ> sq_norm) fs_init)" 
   shows "cost (reduce_basis_cost fs_init)
-  \<le> (4 * m * m + 3 * m + (4 * m * m + 8 * m) * (1 + 2 * m * Log)) * n * arith_cost"
+  \<le> m * (m * Log * (4 * m * n + 4 * m * m + 16 * m + 4) 
+      + 3 * m * m + 3 * m * n 
+      + 10 * m + 2 * n 
+      + 3)"
   unfolding assms A_def[symmetric]
   using reduce_basis_cost(2)[unfolded num_loops_def body_cost_def initial_gso_cost_def base_def]
-  by (auto simp: nat_distrib ac_simps) *)
+  by (auto simp: algebra_simps)
 
 end (* fixing arith_cost and assume \<alpha> > 4/3 *)
 end (* LLL locale *)
