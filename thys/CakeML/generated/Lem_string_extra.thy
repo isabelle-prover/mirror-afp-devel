@@ -38,13 +38,12 @@ begin
 (******************************************************************************)
 
 (*val stringFromNatHelper : nat -> list char -> list char*)
-function (sequential,domintros)  stringFromNatHelper  :: " nat \<Rightarrow>(char)list \<Rightarrow>(char)list "  where 
+fun  stringFromNatHelper  :: " nat \<Rightarrow>(char)list \<Rightarrow>(char)list "  where 
      " stringFromNatHelper n acc1 = (
   if n =( 0 :: nat) then
     acc1
   else
-    stringFromNatHelper (n div( 10 :: nat)) (char_of_nat ((n mod( 10 :: nat)) +( 48 :: nat)) # acc1))" 
-by pat_completeness auto
+    stringFromNatHelper (n div( 10 :: nat)) ((%n. char_of (n::nat)) ((n mod( 10 :: nat)) +( 48 :: nat)) # acc1))"
 
 
 (*val stringFromNat : nat -> string*)
@@ -54,13 +53,12 @@ definition stringFromNat  :: " nat \<Rightarrow> string "  where
 
 
 (*val stringFromNaturalHelper : natural -> list char -> list char*)
-function (sequential,domintros)  stringFromNaturalHelper  :: " nat \<Rightarrow>(char)list \<Rightarrow>(char)list "  where 
+fun  stringFromNaturalHelper  :: " nat \<Rightarrow>(char)list \<Rightarrow>(char)list "  where 
      " stringFromNaturalHelper n acc1 = (
   if n =( 0 :: nat) then
     acc1
   else
-    stringFromNaturalHelper (n div( 10 :: nat)) (char_of_nat ( ((n mod( 10 :: nat)) +( 48 :: nat))) # acc1))" 
-by pat_completeness auto
+    stringFromNaturalHelper (n div( 10 :: nat)) ((%n. char_of (n::nat)) ( ((n mod( 10 :: nat)) +( 48 :: nat))) # acc1))"
 
 
 (*val stringFromNatural : natural -> string*)

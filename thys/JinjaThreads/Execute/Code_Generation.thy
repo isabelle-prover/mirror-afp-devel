@@ -13,7 +13,6 @@ imports
   "../Compiler/Compiler"
   Coinductive.Lazy_TLList
   "HOL-Library.Code_Target_Int"
-  "HOL-Library.Code_Char"
   "HOL-Library.Code_Target_Numeral"
 begin
 

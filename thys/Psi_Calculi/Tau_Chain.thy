@@ -19,8 +19,8 @@ where "P \<Longrightarrow>\<^sup>^\<^sub>\<tau> P' \<equiv> \<one> \<rhd> P \<Lo
 abbreviation tauContextStepChain :: "('a, 'b, 'c) psi \<Rightarrow> ('a, 'b, 'c) psi \<Rightarrow> bool" ("_ \<Longrightarrow>\<^sub>\<tau> _" [80, 80] 80)
 where "P \<Longrightarrow>\<^sub>\<tau> P' \<equiv> \<one> \<rhd> P \<Longrightarrow>\<^sub>\<tau> P'"
 
-lemmas tauChainInduct[consumes 1, case_names TauBase TauStep] = rtrancl.induct[of _ _ "{(P, P'). \<Psi> \<rhd> P \<longmapsto>\<tau> \<prec> P'}", simplified]
-lemmas tauStepChainInduct[consumes 1, case_names TauBase TauStep] = trancl.induct[of _ _ "{(P, P'). \<Psi> \<rhd> P \<longmapsto>\<tau> \<prec> P'}", simplified]
+lemmas tauChainInduct[consumes 1, case_names TauBase TauStep] = rtrancl.induct[of _ _ "{(P, P'). \<Psi> \<rhd> P \<longmapsto>\<tau> \<prec> P'}", simplified] for \<Psi>
+lemmas tauStepChainInduct[consumes 1, case_names TauBase TauStep] = trancl.induct[of _ _ "{(P, P'). \<Psi> \<rhd> P \<longmapsto>\<tau> \<prec> P'}", simplified] for \<Psi>
 
 
 lemma tauActTauStepChain:

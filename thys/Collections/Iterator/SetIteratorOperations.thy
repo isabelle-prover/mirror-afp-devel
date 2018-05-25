@@ -121,12 +121,12 @@ lemma set_iterator_genord_union_correct :
 proof -
   from it_a obtain as where 
     dist_as: "distinct as" and S_a_eq: "S_a = set as" and 
-    sorted_as: "sorted_by_rel R as" and it_a_eq: "it_a = foldli as"
+    sorted_as: "sorted_wrt R as" and it_a_eq: "it_a = foldli as"
   unfolding set_iterator_genord_foldli_conv by blast
 
   from it_b obtain bs where 
     dist_bs: "distinct bs" and S_b_eq: "S_b = set bs" and 
-    sorted_bs: "sorted_by_rel R bs" and it_b_eq: "it_b = foldli bs"
+    sorted_bs: "sorted_wrt R bs" and it_b_eq: "it_b = foldli bs"
   unfolding set_iterator_genord_foldli_conv by blast
 
   show ?thesis
@@ -138,8 +138,8 @@ proof -
     show "S_a \<union> S_b = set (as @ bs)" by simp
   next
     from sorted_as sorted_bs R_OK S_a_eq S_b_eq
-    show "sorted_by_rel R (as @ bs)"
-      by (simp add: sorted_by_rel_append Ball_def)
+    show "sorted_wrt R (as @ bs)"
+      by (simp add: sorted_wrt_append Ball_def)
   next
     show "set_iterator_union it_a it_b = (foldli (as @ bs))"
       unfolding it_a_eq it_b_eq set_iterator_union_foldli_conv by simp
@@ -271,12 +271,12 @@ lemma set_iterator_genord_product_correct :
 proof -
   from it_a obtain as where 
     dist_as: "distinct as" and S_a_eq: "S_a = set as" and 
-    sorted_as: "sorted_by_rel R_a as" and it_a_eq: "it_a = foldli as"
+    sorted_as: "sorted_wrt R_a as" and it_a_eq: "it_a = foldli as"
   unfolding set_iterator_genord_foldli_conv by blast
 
   from it_b obtain bs where 
     dist_bs: "\<And>a. a \<in> set as \<Longrightarrow> distinct (bs a)" and S_b_eq: "\<And>a. a \<in> set as \<Longrightarrow>  S_b a = set (bs a)" and 
-    sorted_bs: "\<And>a. a \<in> set as \<Longrightarrow> sorted_by_rel (R_b a) (bs a)" and 
+    sorted_bs: "\<And>a. a \<in> set as \<Longrightarrow> sorted_wrt (R_b a) (bs a)" and 
     it_b_eq: "\<And>a. a \<in> set as \<Longrightarrow> it_b a = foldli (bs a)"
   unfolding set_iterator_genord_foldli_conv by (metis S_a_eq)
 
@@ -301,7 +301,7 @@ proof -
       by (induct as) auto  
   next
     from sorted_as sorted_bs dist_as     
-    show "sorted_by_rel
+    show "sorted_wrt
            (set_iterator_product_order R_a R_b)
            (concat (map (\<lambda>a. map (Pair a) (bs a)) as))"
     proof (induct as rule: list.induct)
@@ -309,22 +309,22 @@ proof -
     next
       case (Cons a as)
       from Cons(2) have R_a_as: "\<And>a'. a' \<in> set as \<Longrightarrow> R_a a a'" and
-                        sorted_as: "sorted_by_rel R_a as" by simp_all
-      from Cons(3) have sorted_bs_a: "sorted_by_rel (R_b a) (bs a)" 
-                    and sorted_bs_as: "\<And>a. a \<in> set as \<Longrightarrow> sorted_by_rel (R_b a) (bs a)" by simp_all
+                        sorted_as: "sorted_wrt R_a as" by simp_all
+      from Cons(3) have sorted_bs_a: "sorted_wrt (R_b a) (bs a)" 
+                    and sorted_bs_as: "\<And>a. a \<in> set as \<Longrightarrow> sorted_wrt (R_b a) (bs a)" by simp_all
       from Cons(4) have dist_as: "distinct as" and a_nin_as: "a \<notin> set as" by simp_all
       note ind_hyp = Cons(1)[OF sorted_as sorted_bs_as dist_as]
       
       define bs_a where "bs_a = bs a"
       from sorted_bs_a
-      have sorted_prod_a : "sorted_by_rel (set_iterator_product_order R_a R_b) (map (Pair a) (bs a))"
+      have sorted_prod_a : "sorted_wrt (set_iterator_product_order R_a R_b) (map (Pair a) (bs a))"
         unfolding bs_a_def[symmetric]
         apply (induct bs_a rule: list.induct) 
         apply (simp_all add: set_iterator_product_order_def Ball_def image_iff)
       done
 
       show ?case
-        apply (simp add: sorted_by_rel_append ind_hyp sorted_prod_a)
+        apply (simp add: sorted_wrt_append ind_hyp sorted_prod_a)
         apply (simp add: set_iterator_product_order_def R_a_as a_nin_as)
       done
     qed
@@ -369,7 +369,7 @@ lemma set_iterator_genord_image_filter_correct :
 proof -
   from it_OK obtain xs where 
     dist_xs: "distinct xs" and S_eq: "S = set xs" and 
-    sorted_xs: "sorted_by_rel R xs" and it_eq: "it = foldli xs"
+    sorted_xs: "sorted_wrt R xs" and it_eq: "it = foldli xs"
   unfolding set_iterator_genord_foldli_conv by blast
 
   show ?thesis
@@ -391,7 +391,7 @@ proof -
       unfolding S_eq set_map_filter by simp
   next
     from sorted_xs R'_prop[unfolded S_eq]
-    show "sorted_by_rel R' (List.map_filter g xs)"
+    show "sorted_wrt R' (List.map_filter g xs)"
     proof (induct xs rule: list.induct)
       case Nil thus ?case by (simp add: List.map_filter_simps) 
     next
@@ -399,7 +399,7 @@ proof -
       note sort_x_xs = Cons(2)
       note R'_x_xs = Cons(3)
 
-      from Cons have ind_hyp: "sorted_by_rel R' (List.map_filter g xs)" by auto
+      from Cons have ind_hyp: "sorted_wrt R' (List.map_filter g xs)" by auto
 
       show ?case
         apply (cases "g x")  
@@ -549,7 +549,7 @@ text {* Iterators correspond by definition to iteration over distinct lists. The
  distinct list. *}
 
 lemma set_iterator_genord_foldli_correct :
-"distinct xs \<Longrightarrow> sorted_by_rel R xs \<Longrightarrow> set_iterator_genord (foldli xs) (set xs) R"
+"distinct xs \<Longrightarrow> sorted_wrt R xs \<Longrightarrow> set_iterator_genord (foldli xs) (set xs) R"
 by (rule set_iterator_genord_I[of xs]) (simp_all)
 
 lemma set_iterator_foldli_correct :
@@ -573,7 +573,7 @@ by (rule_tac set_iterator_rev_linord_I[of xs]) (simp_all)
 
 
 lemma map_iterator_genord_foldli_correct :
-"distinct (map fst xs) \<Longrightarrow> sorted_by_rel R xs \<Longrightarrow> map_iterator_genord (foldli xs) (map_of xs) R"
+"distinct (map fst xs) \<Longrightarrow> sorted_wrt R xs \<Longrightarrow> map_iterator_genord (foldli xs) (map_of xs) R"
 by (rule map_iterator_genord_I[of xs]) simp_all
 
 lemma map_iterator_foldli_correct :
@@ -599,7 +599,7 @@ by (rule_tac map_iterator_rev_linord_I[of xs]) (simp_all)
 subsection {*Construction from list (foldri)*}
 
 lemma set_iterator_genord_foldri_correct :
-"distinct xs \<Longrightarrow> sorted_by_rel R (rev xs) \<Longrightarrow> set_iterator_genord (foldri xs) (set xs) R"
+"distinct xs \<Longrightarrow> sorted_wrt R (rev xs) \<Longrightarrow> set_iterator_genord (foldri xs) (set xs) R"
 by (rule set_iterator_genord_I[of "rev xs"]) (simp_all add: foldri_def)
 
 lemma set_iterator_foldri_correct :
@@ -621,7 +621,7 @@ using assms
 by (rule_tac set_iterator_rev_linord_I[of "rev xs"]) (simp_all add: foldri_def)
 
 lemma map_iterator_genord_foldri_correct :
-"distinct (map fst xs) \<Longrightarrow> sorted_by_rel R (rev xs) \<Longrightarrow> map_iterator_genord (foldri xs) (map_of xs) R"
+"distinct (map fst xs) \<Longrightarrow> sorted_wrt R (rev xs) \<Longrightarrow> map_iterator_genord (foldri xs) (map_of xs) R"
 by (rule map_iterator_genord_I[of "rev xs"]) 
    (simp_all add: rev_map[symmetric] foldri_def)
 

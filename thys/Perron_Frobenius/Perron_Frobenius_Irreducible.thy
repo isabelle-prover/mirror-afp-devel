@@ -594,8 +594,9 @@ proof -
   proof (induct n)
     case (Suc n)
     then show ?case
-      by (simp add: matrix_vector_mul_assoc[symmetric] algebra_simps sr_imp_eigen_vector_main[symmetric])
-  qed (auto simp: matrix_vector_mul_lid)
+      by (simp add: matrix_vector_mul_assoc[symmetric] algebra_simps vec.scale
+          sr_imp_eigen_vector_main[symmetric])
+  qed auto
   finally have lt: "lt_vec 0 (c *s u)" .
   have "0 < u $ i" for i using lt[rule_format, of i] c by simp (metis zero_less_mult_pos)
   thus "lt_vec 0 u" by simp
@@ -881,12 +882,12 @@ proof -
   finally have 1: "?w ** A = rowvector (sr *s w)" .
   have "sr *s (?w *v y) = ?w ** A *v y" unfolding 1
     by (auto simp: rowvector_def vector_scalar_mult_def matrix_vector_mult_def vec_eq_iff
-       sum_distrib_left)
+       sum_distrib_left mult.assoc)
   also have "\<dots> = ?w *v (A *v y)" by (simp add: matrix_vector_mul_assoc)
   finally have eq1: "sr *s (rowvector w *v y) = rowvector w *v (A *v y)" .
   have "le_vec (rowvector w *v (A *v y)) (?w *v (mu *s y))" 
     by (rule le_vec_mono_left[OF _ le], insert w(2), auto simp: rowvector_def order.strict_iff_order)
-  also have "?w *v (mu *s y) = mu *s (?w *v y)" by (simp add: algebra_simps)
+  also have "?w *v (mu *s y) = mu *s (?w *v y)" by (simp add: algebra_simps vec.scale)
   finally have le1: "le_vec (rowvector w *v (A *v y)) (mu *s (?w *v y))" .
   from le1[unfolded eq1[symmetric]] 
   have 2: "le_vec (sr *s (?w *v y)) (mu *s (?w *v y))" .
@@ -917,7 +918,7 @@ proof -
       by (simp add: matrix_add_ldistrib matrix_mul_rid matrix_add_vect_distrib matpow_1_commute
        matrix_vector_mul_assoc[symmetric])
     have "le_vec ?b (?mu^n *s (A *v y))" 
-      using le_vec_mono_left[OF nonneg Suc] by (simp add: algebra_simps)    
+      using le_vec_mono_left[OF nonneg Suc] by (simp add: algebra_simps vec.scale)
     moreover have "le_vec (?mu^n *s (A *v y)) (?mu^n *s (mu *s y))" 
       using le mu by auto
     moreover have id: "?mu^n *s (mu *s y) = (?mu^n * mu) *s y" by simp
@@ -925,7 +926,7 @@ proof -
     have le1: "le_vec ?b ((?mu^n * mu) *s y)" . 
     from Suc have le2: "le_vec ?c ((mu + 1) ^ n *s y)" .
     have le: "le_vec ?a ((?mu^n * mu) *s y + ?mu^n *s y)" 
-      unfolding id' using add_mono[OF le1[rule_format] le2[rule_format]] by auto    
+      unfolding id' using add_mono[OF le1[rule_format] le2[rule_format]] by auto
     have id'': "(?mu^n * mu) *s y + ?mu^n *s y = ?mu^Suc n *s y" by (simp add: algebra_simps)
     show ?case using le unfolding id'' .
   qed (simp add: matrix_vector_mul_lid)
@@ -1007,7 +1008,7 @@ proof -
     fix i j
     have "cmod (F $ i $ j) = cmod (?\<phi> * cA $h i $h j * (cis (- arg (y $h i)) * cis (arg (y $h j))))" 
       unfolding F_def prod vec_lambda_beta matrix_scalar_mult_def
-      by (simp, simp only: ac_simps)
+      by (simp only: ac_simps)
     also have "\<dots> = A $ i $ j" unfolding cis_mult unfolding norm_mult by simp
     also note calculation
   }
@@ -1152,7 +1153,7 @@ proof -
   also have "\<dots> = 2 * pi / ?k" unfolding sum ..
   finally have Min: "Min \<le> 2 * pi / ?k" unfolding Min_def by auto
   have lt: "i < ?k \<Longrightarrow> args ! i < args ! (Suc i)" for i 
-    using sorted[unfolded sorted_equals_nth_mono, rule_format, of "Suc i" i]
+    using sorted[unfolded sorted_iff_nth_mono, rule_format, of i "Suc i"]
     dist[unfolded distinct_conv_nth, rule_format, of "Suc i" i] by (auto simp: args_def)
   let ?c = "\<lambda> i. rcis sr (args ! i)" 
   have hda[simp]: "hd a = aa" unfolding a_split by simp  
@@ -1240,7 +1241,7 @@ proof -
     unfolding set_map image_image 
     by (rule image_cong, insert sr_pos, auto simp: rcis_mult rcis_def)
   finally show M_cis: "M = ( * ) (c sr) ` ?f ` {0 ..< ?M}" 
-    unfolding card Min by simp
+    unfolding card Min by (simp add: mult.assoc)
   thus M_pow: "M = ( * ) (c sr) ` { x :: complex. x ^ ?M = 1}" using roots_of_unity[OF cM] by simp
   let ?rphi = "rcis sr (2 * pi / ?M)" 
   let ?phi = "cis (2 * pi / ?M)" 
@@ -1314,7 +1315,8 @@ proof -
       fix x
       assume "x \<in> set ?list" 
       then obtain i where x: "x = rcis sr (real i * ?piM)" by auto
-      have "x^k = (c sr)^k" unfolding x DeMoivre2 kM by simp
+      have "x^k = (c sr)^k" unfolding x DeMoivre2 kM
+        by simp (metis mult.assoc of_real_power rcis_times_2pi)
       hence "poly ?cp x = 0" unfolding poly_diff poly_monom by simp
     }
     thus "set ?list \<subseteq> {x. poly ?cp x = 0}" by auto

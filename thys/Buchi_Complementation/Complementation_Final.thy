@@ -3,7 +3,7 @@ section {* Complementation to Explicit Büchi Automaton *}
 theory Complementation_Final
 imports
   "Complementation_Implement"
-  "Transition_Systems_and_Automata.BA_Translate"
+  "Transition_Systems_and_Automata.NBA_Translate"
   "HOL-Library.Permutation"
 begin
 
@@ -91,19 +91,19 @@ begin
 
   schematic_goal complement_impl:
     assumes [simp]: "finite (nodes A)"
-    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel, unit_rel\<rangle> bai_ba_rel"
-    shows "(?f :: ?'c, RETURN (to_baei (complement_3 A))) \<in> ?R"
+    assumes [autoref_rules]: "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    shows "(?f :: ?'c, RETURN (to_nbaei (complement_3 A))) \<in> ?R"
     by (autoref_monadic (plain))
   concrete_definition complement_impl uses complement_impl[unfolded autoref_tag_defs]
 
   theorem
     assumes "finite (nodes A)"
-    assumes "(Ai, A) \<in> \<langle>Id, nat_rel, unit_rel\<rangle> bai_ba_rel"
-    shows "language (bae_ba (bae (complement_impl Ai))) = streams (alphabet A) - language A"
+    assumes "(Ai, A) \<in> \<langle>Id, nat_rel\<rangle> nbai_nba_rel"
+    shows "language (nbae_nba (nbaei_nbae (complement_impl Ai))) = streams (alphabet A) - language A"
   proof -
-    have "(language ((bae_ba \<circ> bae) (complement_impl Ai)), language (id (complement_3 A))) \<in>
+    have "(language ((nbae_nba \<circ> nbaei_nbae) (complement_impl Ai)), language (id (complement_3 A))) \<in>
       \<langle>\<langle>Id_on (alphabet (complement_3 A))\<rangle> stream_rel\<rangle> set_rel"
-      using complement_impl.refine[OF assms, unfolded to_baei_def id_apply, THEN RETURN_nres_relD]
+      using complement_impl.refine[OF assms, unfolded to_nbaei_def id_apply, THEN RETURN_nres_relD]
       by parametricity
     also have "language (id (complement_3 A)) = streams (alphabet A) - language A"
       using assms(1) by simp
@@ -114,8 +114,7 @@ begin
     "s n a p \<equiv> if p = 0
       then (if a = ''a'' then [0 ..< n] else [1])
       else (if a = ''a'' then [1 ..< n] else [])"
-  definition Ai where
-    "Ai n \<equiv> \<lparr> alphabeti = [''a'', ''b''], initiali = [0], succi = s n, acceptingi = \<lambda> p. False \<rparr>"
+  definition "Ai n \<equiv> nbai [''a'', ''b''] [0] (s n) bot"
 
   definition "test n \<equiv> length (transei (complement_impl (Ai n)))"
 

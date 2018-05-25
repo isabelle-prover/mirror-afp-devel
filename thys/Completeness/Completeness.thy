@@ -368,11 +368,11 @@ lemma contains_initialEVs:
 
 subsection "termination: (for EV contains implies EV considers)"
 
-lemmas r = wf_induct[of "measure msrFn", OF wf_measure]
+lemmas r = wf_induct[of "measure msrFn", OF wf_measure] for msrFn
 lemmas r' = r[simplified measure_def inv_image_def less_than_def less_eq mem_Collect_eq]
 
 lemma r'': "(\<forall> x. (\<forall> y. ( ((msrFn::'a \<Rightarrow> nat) y) < ((msrFn :: 'a \<Rightarrow> nat) x)) \<longrightarrow> P y) \<longrightarrow> P x) \<Longrightarrow> P a"
-  by (blast intro: r' [of P]) 
+  by (blast intro: r' [of _ P])
 
 lemma terminationRule [rule_format]:
   "! n. P n --> (~(P (Suc n)) | (P (Suc n) & msrFn (Suc n) < (msrFn::nat => nat) n)) ==> P m --> (? n . P n & ~(P (Suc n)))"

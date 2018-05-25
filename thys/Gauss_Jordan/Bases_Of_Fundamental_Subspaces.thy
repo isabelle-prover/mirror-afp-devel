@@ -169,7 +169,8 @@ shows "basis_row_space A \<subseteq> row_space A"
     also have "... \<subseteq> row_space (Gauss_Jordan A)"
       proof (unfold row_space_def, clarify)
         fix i assume "row i (Gauss_Jordan A) \<noteq> 0" 
-        show "row i (Gauss_Jordan A) \<in> vec.span (rows (Gauss_Jordan A))" by (rule vec.span_superset, auto simp add: rows_def)
+        show "row i (Gauss_Jordan A) \<in> vec.span (rows (Gauss_Jordan A))"
+          using rows_def vec.span_base by auto
       qed
       also have "... = row_space A" unfolding Gauss_Jordan_PA_eq[symmetric] unfolding fst_Gauss_Jordan_PA[symmetric]
       by (rule row_space_is_preserved[OF invertible_fst_Gauss_Jordan_PA])

@@ -104,7 +104,7 @@ proof -
 qed
 
 lemma span_columns_divide_by_norm:
-  shows "real_vector.span (columns A) = real_vector.span (columns (divide_by_norm A))"
+  shows "span (columns A) = span (columns (divide_by_norm A))"
   unfolding real_vector.span_eq
 proof (auto)
   fix x assume x: "x \<in> columns (divide_by_norm A)"
@@ -112,14 +112,14 @@ proof (auto)
   also have "... = (1/norm (column i  A)) *\<^sub>R (column i A)" 
     unfolding divide_by_norm_def column_def normalize_def by vector
   finally have x_eq: "x=(1/norm (column i A)) *\<^sub>R (column i A)" .
-  show "x \<in> real_vector.span (columns A)"
-    by (unfold x_eq, rule real_vector.span_mul, rule real_vector.span_superset, auto simp add: columns_def)
+  show "x \<in> span (columns A)"
+    by (unfold x_eq, rule span_mul, rule span_base, auto simp add: columns_def)
 next
   fix x
   assume x: "x \<in> columns A"
-  show "x \<in> real_vector.span (columns (divide_by_norm A))"
+  show "x \<in> span (columns (divide_by_norm A))"
   proof (cases "x=0")
-    case True show ?thesis by (metis True real_vector.span_0)
+    case True show ?thesis by (metis True span_0)
   next
     case False
     from x obtain i where x_col_i: "x=column i A" unfolding columns_def by blast
@@ -127,8 +127,8 @@ next
     also have "... = norm (column i A) *\<^sub>R column i (divide_by_norm A)"
       using False unfolding x_col_i columns_def divide_by_norm_def column_def normalize_def by vector
     finally have x_eq: "x = norm (column i A) *\<^sub>R column i (divide_by_norm A)" .
-    show "x \<in> real_vector.span (columns (divide_by_norm A))" 
-      by (unfold x_eq, rule real_vector.span_mul, rule real_vector.span_superset,
+    show "x \<in> span (columns (divide_by_norm A))"
+      by (unfold x_eq, rule span_mul, rule span_base,
         auto simp add: columns_def Let_def)
   qed
 qed
@@ -165,30 +165,23 @@ proof (rule conjI, unfold is_basis_def, rule conjI)
   have "vec.span (columns (fst (QR_decomposition A))) = vec.span (columns (Gram_Schmidt_matrix A))"
     unfolding vec.span_eq
   proof (auto)
-    fix x assume x: "x \<in> columns (fst (QR_decomposition A))"
-    from this obtain i where x_col_i: "x=column i (fst (QR_decomposition A))" unfolding columns_def by blast
-    also have "... = column i (divide_by_norm (Gram_Schmidt_matrix A))" unfolding QR_decomposition_def Let_def fst_conv ..
-    also have "... = (1/norm (column i (Gram_Schmidt_matrix A))) *\<^sub>R (column i (Gram_Schmidt_matrix A))" 
-      unfolding divide_by_norm_def column_def normalize_def by vector
-    finally have x_eq: "x=(1/norm (column i (Gram_Schmidt_matrix A))) *\<^sub>R (column i (Gram_Schmidt_matrix A))" .
-    show "x \<in> vec.span (columns (Gram_Schmidt_matrix A))"
-      unfolding x_eq
-      by (metis UNIV_I b is_basis_def op_vec_scaleR span_Gram_Schmidt_matrix)
+    fix x show "x \<in> vec.span (columns (Gram_Schmidt_matrix A))"
+      using assms(1) assms(2) is_basis_columns_Gram_Schmidt_matrix is_basis_def by auto
   next
     fix x
     assume x: "x \<in> columns (Gram_Schmidt_matrix A)"
     from this obtain i where x_col_i: "x=column i (Gram_Schmidt_matrix A)" unfolding columns_def by blast
     have zero_not_in: "x \<noteq> 0" using is_basis_columns_Gram_Schmidt_matrix[OF b c] unfolding is_basis_def
-      using vec.dependent_0[of "(columns (Gram_Schmidt_matrix A))"] x by auto
+      using vec.dependent_zero[of "(columns (Gram_Schmidt_matrix A))"] x by auto
     have "x=column i (Gram_Schmidt_matrix A)" using x_col_i .
     also have "... = norm (column i (Gram_Schmidt_matrix A)) *\<^sub>R column i (divide_by_norm (Gram_Schmidt_matrix A))"
       using zero_not_in unfolding x_col_i columns_def divide_by_norm_def column_def normalize_def by vector
     finally have x_eq: "x = norm (column i (Gram_Schmidt_matrix A)) *\<^sub>R column i (divide_by_norm (Gram_Schmidt_matrix A))" .
     show "x \<in> vec.span (columns (fst (QR_decomposition A)))"
-      unfolding x_eq op_vec_scaleR 
-      apply (rule vec.span_mul[of "column i (divide_by_norm (Gram_Schmidt_matrix A))", unfolded op_vec_scaleR])
-      apply (rule vec.span_superset[of "column i (divide_by_norm (Gram_Schmidt_matrix A))", unfolded op_vec_scaleR])
-      by (auto simp add: columns_def QR_decomposition_def Let_def)
+      unfolding x_eq span_vec_eq
+      apply (rule subspace_mul)
+      apply (auto simp add: columns_def QR_decomposition_def Let_def subspace_span intro: span_superset)
+      using span_superset by force
   qed
   thus s: "vec.span (columns (fst (QR_decomposition A))) = (UNIV::(real^'m::{mod_type}) set)"
     using is_basis_columns_Gram_Schmidt_matrix[OF b c] unfolding is_basis_def by simp
@@ -242,7 +235,7 @@ proof -
   have "vec.independent (columns (Gram_Schmidt_matrix A))"
     by (metis assms full_rank_imp_is_basis2 independent_columns_Gram_Schmidt_matrix)
   hence "column i (Gram_Schmidt_matrix A) \<noteq> 0" 
-    using vec.dependent_0[of "columns (Gram_Schmidt_matrix A)"]
+    using vec.dependent_zero[of "columns (Gram_Schmidt_matrix A)"]
     unfolding columns_def by auto
   thus "norm (column i (fst (QR_decomposition A))) = 1"
     unfolding QR_decomposition_def Let_def fst_conv 
@@ -255,8 +248,8 @@ corollary span_fst_QR_decomposition:
   fixes A::"real^'n::{mod_type}^'m::{mod_type}"
   shows "vec.span (columns A) = vec.span (columns (fst (QR_decomposition A)))"
   unfolding span_Gram_Schmidt_matrix[of A]
-  unfolding QR_decomposition_def Let_def fst_conv 
-  by (metis op_vec_scaleR span_Gram_Schmidt_matrix span_columns_divide_by_norm)
+  unfolding QR_decomposition_def Let_def fst_conv
+  by (metis \<open>span (columns A) = span (columns (Gram_Schmidt_matrix A))\<close> span_columns_divide_by_norm span_vec_eq)
 
 corollary col_space_QR_decomposition:
   fixes A::"real^'n::{mod_type}^'m::{mod_type}"
@@ -276,7 +269,9 @@ proof -
   proof -
     have "rank A = col_rank A" unfolding rank_col_rank ..
     also have "... = vec.dim (col_space A)" unfolding col_rank_def ..
-    also have "... = card (columns A)" by (metis b col_space_def vec.dim_unique order_refl vec.span_inc)
+    also have "... = card (columns A)"
+      unfolding col_space_def using b
+      by (rule vec.dim_span_eq_card_independent)
     also have "... = ncols A" using c .
     finally show ?thesis .
   qed
@@ -415,7 +410,7 @@ proof -
       show "{column i (Gram_Schmidt_matrix A) |i. i < k} \<subseteq> columns (Gram_Schmidt_matrix A)"
         unfolding columns_def by auto
     qed
-    hence "x \<noteq> 0" using vec.dependent_0[of " {column i (Gram_Schmidt_matrix A) |i. i < k}"] x
+    hence "x \<noteq> 0" using vec.dependent_zero[of " {column i (Gram_Schmidt_matrix A) |i. i < k}"] x
       by blast
     hence "((1 / norm x) *\<^sub>R x \<bullet> (1 / norm x) *\<^sub>R x) = 1" by (metis inverse_eq_divide norm_eq_1 norm_sgn sgn_div_norm)
     thus "((1 / norm x) *\<^sub>R x \<bullet> ?ak / ((1 / norm x) *\<^sub>R x \<bullet> (1 / norm x) *\<^sub>R x)) *\<^sub>R (1 / norm x) *\<^sub>R x =
@@ -500,7 +495,7 @@ proof -
       by (metis full_rank_imp_is_basis2 independent_columns_Gram_Schmidt_matrix r)
     moreover have "?uk \<in> columns (Gram_Schmidt_matrix A)" unfolding columns_def by auto
     ultimately have "?uk \<noteq> 0"
-      using vec.dependent_0[of "columns (Gram_Schmidt_matrix A)"] unfolding columns_def by auto    
+      using vec.dependent_zero[of "columns (Gram_Schmidt_matrix A)"] unfolding columns_def by auto    
     hence norm_not_0: "norm ?uk \<noteq> 0" unfolding norm_eq_zero .
     have "norm (?uk) *\<^sub>R ?qk = (norm ?uk) *\<^sub>R ((1 / norm ?uk) *\<^sub>R ?uk)" using qk_uk_norm[of k A] by simp
     also have "... = ((norm ?uk) * (1 / norm ?uk)) *\<^sub>R ?uk" unfolding scaleR_scaleR ..
@@ -687,7 +682,7 @@ proof (rule upper_triangular_invertible)
     have ind: "vec.independent (columns (Gram_Schmidt_matrix A))"
       by (metis full_rank_imp_is_basis2
         independent_columns_Gram_Schmidt_matrix r)
-    hence zero_not_in: "0 \<notin> (columns (Gram_Schmidt_matrix A))" by (metis vec.dependent_0)
+    hence zero_not_in: "0 \<notin> (columns (Gram_Schmidt_matrix A))" by (metis vec.dependent_zero)
     hence c:"column i (Gram_Schmidt_matrix A) \<noteq> 0" unfolding columns_def by simp
     have "snd (QR_decomposition A) $ i $ i = column i (fst (QR_decomposition A)) \<bullet> column i A"
       unfolding QR_decomposition_def Let_def snd_conv fst_conv

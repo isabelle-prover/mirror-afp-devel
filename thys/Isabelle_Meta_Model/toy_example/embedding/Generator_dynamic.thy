@@ -116,10 +116,14 @@ code_reflect' open META
              (* printing the TOY AST to (deep Isabelle) string *)
              isabelle_apply isabelle_of_compiler_env_config
 
+             (* Interface Between the Reflected and the Native *)
+             String.implode
+
+
 subsection\<open>Interface Between the Reflected and the Native\<close>
 
 ML\<open>
- val To_string0 = String.implode o META.to_list
+ val To_string0 = META.implode o META.to_list
 \<close>
 
 ML\<open>
@@ -1131,7 +1135,7 @@ fun exec_deep (env, output_header_thy, seri_args, filename_thy, tmp_export_code,
           | _ => String.concat (map ( (fn s => s ^ "\n")
                                     o Active.sendback_markup_command
                                     o trim_line)
-             (String.tokens (fn c => c = META.char_escape) s))) in
+             (String.tokens (fn c => c = #"\t") s))) in
        fold (fn (out, err) => K ( writeln (Markup.markup Markup.keyword2 err)
                                 ; case trim_line out of
                                     "" => ()

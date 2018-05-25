@@ -5031,27 +5031,18 @@ next
       by (rule alignUp_not_aligned_eq) fact+
     
     then have "\<dots> = 0" using asm by simp
-    then have "unat a div 2 ^ n = 2 ^ (len_of TYPE('a) - n) - 1" using sz leq
-      apply -
-      apply (rule nat_diff_add)
-      apply simp
-      apply (subst nat_mult_eq_cancel1 [where k = "2 ^ n", symmetric])
-      apply simp
-      apply (subst power_add [symmetric])
-      apply simp
-      apply (drule unat_cong)
-      apply simp
-      apply (subst (asm) unat_word_ariths)
-      apply (subst (asm) unat_word_ariths)
-      apply (simp add: unat_div mult_mod_left power_add [symmetric] mod_mod_power
-                       min.absorb2)
-      apply (clarsimp simp: field_simps)
-      apply (rule ccontr)
-      apply (drule (1) order_le_neq_trans)
-      apply (simp)
-      done
-    
-    then have "2 ^ (len_of TYPE('a) - n) - 1 < k" using r
+    then have "2 ^ LENGTH('a) dvd 2 ^ n * (unat a div 2 ^ n + 1)"
+      using sz by (simp add: unat_arith_simps ac_simps)
+        (simp add: unat_word_ariths mod_simps mod_eq_0_iff_dvd)
+    with leq have "2 ^ n * (unat a div 2 ^ n + 1) = 2 ^ LENGTH('a)"
+      by (auto elim!: dvdE le_SucE)
+    then have "unat a div 2 ^ n = 2 ^ LENGTH('a) div 2 ^ n - 1"
+      by (metis (no_types, hide_lams) Groups.add_ac(2) add.right_neutral
+        add_diff_cancel_left' div_le_dividend div_mult_self4 gr_implies_not0
+        le_neq_implies_less power_eq_0_iff unat_def zero_neq_numeral)
+    then have "unat a div 2 ^ n = 2 ^ (LENGTH('a) - n) - 1"
+      using sz by (simp add: power_sub)
+    then have "2 ^ (LENGTH('a) - n) - 1 < k" using r
       by simp
     then have False using kv by simp
   } then show ?thesis by (clarsimp)

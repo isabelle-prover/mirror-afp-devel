@@ -44,7 +44,7 @@ text {* Foreach with continuation condition, order and annotated invariant: *}
 
 definition FOREACHoci ("FOREACH\<^sub>O\<^sub>C\<^bsup>_,_\<^esup>") where "FOREACHoci R \<Phi> S c f \<sigma>0 \<equiv> do {
   ASSERT (finite S);
-  xs \<leftarrow> SPEC (\<lambda>xs. distinct xs \<and> S = set xs \<and> sorted_by_rel R xs);
+  xs \<leftarrow> SPEC (\<lambda>xs. distinct xs \<and> S = set xs \<and> sorted_wrt R xs);
   (_,\<sigma>) \<leftarrow> WHILEIT 
     (\<lambda>(it,\<sigma>). \<exists>xs'. xs = xs' @ it \<and> \<Phi> (set it) \<sigma>) (FOREACH_cond c) (FOREACH_body f) (xs,\<sigma>0); 
   RETURN \<sigma> }"
@@ -103,7 +103,7 @@ proof -
   fix xs' \<sigma> xs
 
   assume I_xs': "I (set xs') \<sigma>"
-     and sorted_xs_xs': "sorted_by_rel R (xs @ xs')"
+     and sorted_xs_xs': "sorted_wrt R (xs @ xs')"
      and dist: "distinct xs" "distinct xs'" "set xs \<inter> set xs' = {}"
      and S_eq: "S = set xs \<union> set xs'" 
 
@@ -122,7 +122,7 @@ proof -
             (\<lambda>x. (\<exists>xs'a. xs @ xs' = xs'a @ tl xs') \<and>
                  I (set (tl xs')) x)"
       apply (simp add: xs'_eq)
-      apply (simp add: sorted_by_rel_append)
+      apply (simp add: sorted_wrt_append)
     done
   }
 
@@ -137,7 +137,7 @@ proof -
       from II2 [of "set xs'" \<sigma>] S_diff sorted_xs_xs'
       show "P \<sigma>" 
         apply (simp add: xs'_neq_nil S_eq `\<not> c \<sigma>` I_xs')
-        apply (simp add: sorted_by_rel_append)
+        apply (simp add: sorted_wrt_append)
       done
     qed
   }
@@ -228,8 +228,8 @@ lemma FOREACHoci_refine_genR:
   apply (rule SPEC_refine)
   using INJ RR_OK 
   apply (auto 
-    simp add: distinct_map sorted_by_rel_map 
-    intro: sorted_by_rel_weaken[of _ RR]) []
+    simp add: distinct_map sorted_wrt_map 
+    intro: sorted_wrt_mono_rel[of _ RR]) []
   using REF0 apply auto []
 
   apply simp apply (rule conjI)
@@ -265,7 +265,7 @@ lemma FOREACHoci_refine_genR:
   apply (rule ccontr)
   apply (rename_tac a b d e f)
   apply (case_tac b)
-  apply (auto simp: sorted_by_rel_append) [2]
+  apply (auto simp: sorted_wrt_append) [2]
 
   apply (auto simp: FOREACH_cond_def) []
   apply (rename_tac a b d e)
@@ -276,7 +276,7 @@ lemma FOREACHoci_refine_genR:
   apply (rule ccontr)
   apply (rename_tac a b d e f)
   apply (case_tac b)
-  apply (auto simp: sorted_by_rel_append) [2]
+  apply (auto simp: sorted_wrt_append) [2]
 
   apply (clarsimp simp: FOREACH_cond_def)
   apply (clarsimp simp: FOREACH_cond_def)
@@ -289,9 +289,9 @@ lemma FOREACHoci_refine_genR:
   apply (rename_tac a b d e f g)
   apply (case_tac b, auto) []
   apply (rename_tac a b d e f g)
-  apply (case_tac b, auto simp: sorted_by_rel_append) []
+  apply (case_tac b, auto simp: sorted_wrt_append) []
   apply (rename_tac a b d e f g)
-  apply (case_tac b, auto simp: sorted_by_rel_append) []
+  apply (case_tac b, auto simp: sorted_wrt_append) []
   apply (rename_tac a b d e f g)
   apply (case_tac b, auto) []
 
@@ -927,7 +927,7 @@ subsection {* FOREACH with empty sets *}
 lemma FOREACHoci_emp [simp] :
   "FOREACHoci R \<Phi> {} c f \<sigma> = do {ASSERT (\<Phi> {} \<sigma>); RETURN \<sigma>}"
 proof -
-  have "\<And>xs. {xs. xs = [] \<and> distinct xs \<and> sorted_by_rel R xs} = {[]}"
+  have "\<And>xs. {xs. xs = [] \<and> distinct xs \<and> sorted_wrt R xs} = {[]}"
     by auto
   then show ?thesis
     by (simp add: FOREACHoci_def bind_RES image_def WHILEIT_unfold FOREACH_cond_def)
@@ -1411,7 +1411,7 @@ lemma autoref_nfoldli[autoref_rules]:
 text {* This constant is a placeholder to be converted to
   custom operations by pattern rules *}
 definition "it_to_sorted_list R s 
-  \<equiv> SPEC (\<lambda>l. distinct l \<and> s = set l \<and> sorted_by_rel R l)"
+  \<equiv> SPEC (\<lambda>l. distinct l \<and> s = set l \<and> sorted_wrt R l)"
 
 definition "LIST_FOREACH \<Phi> tsl c f \<sigma>0 \<equiv> do {
   xs \<leftarrow> tsl;

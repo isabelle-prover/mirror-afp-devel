@@ -397,7 +397,7 @@ parse_translation \<open>
    , parse_translation_cartouche
        @{binding cartouche_type'}
        (( "fun\<^sub>p\<^sub>r\<^sub>i\<^sub>n\<^sub>t\<^sub>f"
-        , let fun f x = Syntax.const @{const_syntax STR} $ x
+        , let fun f x = Syntax.const @{const_syntax String.implode} $ x
               fun f' c x = Syntax.const c $ f x in
           fn (0, x) => f x
            | (1, x) => f' @{const_syntax sprintf1} x

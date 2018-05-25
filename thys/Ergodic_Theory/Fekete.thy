@@ -62,7 +62,7 @@ proof -
     have "real m>0" using \<open>m\<ge>n\<close> \<open>0 < real n\<close> by linarith
 
     obtain a0 r0 where "r0<n" "m = a0*n+r0"
-      by (metis \<open>0 < n\<close> add.commute mod_eqD mod_less_divisor)
+      using \<open>0 < n\<close> mod_div_decomp mod_less_divisor by blast
     define a where "a = a0-1"
     define r where "r = r0+n"
     have "r<2*n" "r\<ge>n" unfolding r_def by (auto simp add: \<open>r0<n\<close>)

@@ -3,7 +3,6 @@ section \<open>Definedness\<close>
 theory Definedness
   imports
     Data_List
-    "HOL-Library.Adhoc_Overloading"
 begin
 
 text \<open>

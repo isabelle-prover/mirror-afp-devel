@@ -21,11 +21,11 @@ lemmas minimize_wrtD = minimize_wrt_subset [THEN subsetD]
 
 lemma sorted_wrt_minimize_wrt:
   "sorted_wrt P (minimize_wrt P xs)"
-  by (induct xs) (auto simp: sorted_wrt_Cons sorted_wrt_filter)
+  by (induct xs) (auto simp: sorted_wrt_filter)
 
 lemma sorted_wrt_imp_sorted_wrt_minimize_wrt:
   "sorted_wrt Q xs \<Longrightarrow> sorted_wrt Q (minimize_wrt P xs)"
-  by (induct xs) (auto simp: sorted_wrt_Cons sorted_wrt_filter dest: minimize_wrtD)
+  by (induct xs) (auto simp: sorted_wrt_filter dest: minimize_wrtD)
 
 lemma in_minimize_wrt_False:
   assumes "\<And>x y. Q x y \<Longrightarrow> \<not> Q y x"
@@ -33,7 +33,7 @@ lemma in_minimize_wrt_False:
     and "x \<in> set (minimize_wrt P xs)"
     and "\<not> P y x" and "Q y x" and "y \<in> set xs" and "y \<noteq> x"
   shows False
-  using assms by (induct xs) (auto dest: minimize_wrtD simp: sorted_wrt_Cons)
+  using assms by (induct xs) (auto dest: minimize_wrtD)
 
 lemma in_minimize_wrtI:
   assumes "x \<in> set xs"

@@ -9,13 +9,13 @@ signature NOMINAL_DT_ALPHA =
 sig
   val comb_binders: Proof.context -> bmode -> term list -> (term option * int) list -> term
 
-  val define_raw_alpha: raw_dt_info -> bn_info list -> bclause list list list -> term list -> 
+  val define_raw_alpha: raw_dt_info -> bn_info list -> bclause list list list -> term list ->
     Proof.context -> alpha_result * local_theory
 
-  val induct_prove: typ list -> (typ * (term -> term)) list -> thm -> 
+  val induct_prove: typ list -> (typ * (term -> term)) list -> thm ->
     (Proof.context -> int -> tactic) -> Proof.context -> thm list
-  
-  val alpha_prove: term list -> (term * ((term * term) -> term)) list -> thm -> 
+
+  val alpha_prove: term list -> (term * ((term * term) -> term)) list -> thm ->
     (Proof.context -> int -> tactic) -> Proof.context -> thm list
 
   val raw_prove_alpha_distincts: Proof.context -> alpha_result -> raw_dt_info -> thm list
@@ -23,18 +23,18 @@ sig
   val raw_prove_refl: Proof.context -> alpha_result -> thm -> thm list
   val raw_prove_sym: Proof.context -> alpha_result -> thm list -> thm list
   val raw_prove_trans: Proof.context -> alpha_result -> thm list -> thm list -> thm list
-  val raw_prove_equivp: Proof.context -> alpha_result -> thm list -> thm list -> thm list -> 
+  val raw_prove_equivp: Proof.context -> alpha_result -> thm list -> thm list -> thm list ->
     thm list * thm list
   val raw_prove_bn_imp: Proof.context -> alpha_result -> thm list
-  val raw_fv_bn_rsp_aux: Proof.context -> alpha_result -> term list -> term list -> term list -> 
+  val raw_fv_bn_rsp_aux: Proof.context -> alpha_result -> term list -> term list -> term list ->
     thm list -> thm list
   val raw_size_rsp_aux: Proof.context -> alpha_result -> thm list -> thm list
   val raw_constrs_rsp: Proof.context -> alpha_result -> term list list -> thm list -> thm list list
   val raw_alpha_bn_rsp: alpha_result -> thm list -> thm list -> thm list
   val raw_perm_bn_rsp: Proof.context -> alpha_result -> term list -> thm list -> thm list
-  
+
   val mk_funs_rsp: Proof.context -> thm -> thm
-  val mk_alpha_permute_rsp: Proof.context -> thm -> thm 
+  val mk_alpha_permute_rsp: Proof.context -> thm -> thm
 end
 
 structure Nominal_Dt_Alpha: NOMINAL_DT_ALPHA =
@@ -53,7 +53,7 @@ fun group xs = AList.group (op=) xs
 fun mk_prod_fv (t1, t2) =
   let
     val ty1 = fastype_of t1
-    val ty2 = fastype_of t2 
+    val ty2 = fastype_of t2
     val resT = HOLogic.mk_prodT (domain_type ty1, domain_type ty2) --> @{typ "atom set"}
   in
     Const (@{const_name "prod_fv"}, [ty1, ty2] ---> resT) $ t1 $ t2
@@ -62,7 +62,7 @@ fun mk_prod_fv (t1, t2) =
 fun mk_prod_alpha (t1, t2) =
   let
     val ty1 = fastype_of t1
-    val ty2 = fastype_of t2 
+    val ty2 = fastype_of t2
     val prodT = HOLogic.mk_prodT (domain_type ty1, domain_type ty2)
     val resT = [prodT, prodT] ---> @{typ "bool"}
   in
@@ -70,8 +70,8 @@ fun mk_prod_alpha (t1, t2) =
   end
 
 (* generates the compound binder terms *)
-fun comb_binders lthy bmode args binders = 
-  let  
+fun comb_binders lthy bmode args binders =
+  let
     fun bind_set lthy args (NONE, i) = setify lthy (nth args i)
       | bind_set _ args (SOME bn, i) = bn $ (nth args i)
     fun bind_lst lthy args (NONE, i) = listify lthy (nth args i)
@@ -79,19 +79,19 @@ fun comb_binders lthy bmode args binders =
 
     val (combine_fn, bind_fn) =
       case bmode of
-        Lst => (mk_append, bind_lst) 
+        Lst => (mk_append, bind_lst)
       | Set => (mk_union,  bind_set)
       | Res => (mk_union,  bind_set)
   in
     binders
     |> map (bind_fn lthy args)
-    |> foldl1 combine_fn 
+    |> foldl1 combine_fn
   end
 
 (* produces the term for an alpha with abstraction *)
 fun mk_alpha_term bmode fv alpha args args' binders binders' =
   let
-    val (alpha_name, binder_ty) = 
+    val (alpha_name, binder_ty) =
       case bmode of
         Lst => (@{const_name "alpha_lst"}, @{typ "atom list"})
       | Set => (@{const_name "alpha_set"}, @{typ "atom set"})
@@ -104,16 +104,16 @@ fun mk_alpha_term bmode fv alpha args args' binders binders' =
     val pair_rhs = HOLogic.mk_prod (binders', args')
   in
     HOLogic.exists_const @{typ perm} $ Abs ("p", @{typ perm},
-      Const (alpha_name, [pair_ty, alpha_ty, fv_ty, @{typ "perm"}, pair_ty] ---> @{typ bool}) 
+      Const (alpha_name, [pair_ty, alpha_ty, fv_ty, @{typ "perm"}, pair_ty] ---> @{typ bool})
         $ pair_lhs $ alpha $ fv $ (Bound 0) $ pair_rhs)
   end
 
 (* for non-recursive binders we have to produce alpha_bn premises *)
-fun mk_alpha_bn_prem alpha_bn_map args args' bodies binder = 
+fun mk_alpha_bn_prem alpha_bn_map args args' bodies binder =
   case binder of
     (NONE, _) => []
   | (SOME bn, i) =>
-     if member (op=) bodies i then [] 
+     if member (op=) bodies i then []
      else [lookup alpha_bn_map bn $ nth args i $ nth args' i]
 
 (* generate the premises for an alpha rule; mk_frees is used
@@ -131,18 +131,18 @@ fun mk_alpha_prems lthy alpha_map alpha_bn_map is_rec (args, args') bclause =
         else HOLogic.mk_eq (arg, arg')
       end
 
-    fun mk_alpha_fv i = 
+    fun mk_alpha_fv i =
       let
         val ty = fastype_of (nth args i)
       in
         case AList.lookup (op=) alpha_map ty of
-          NONE => (HOLogic.eq_const ty, supp_const ty) 
-        | SOME (alpha, fv) => (alpha, fv) 
-      end  
+          NONE => (HOLogic.eq_const ty, supp_const ty)
+        | SOME (alpha, fv) => (alpha, fv)
+      end
   in
     case bclause of
-      BC (_, [], bodies) => map (HOLogic.mk_Trueprop o mk_frees) bodies 
-    | BC (bmode, binders, bodies) => 
+      BC (_, [], bodies) => map (HOLogic.mk_Trueprop o mk_frees) bodies
+    | BC (bmode, binders, bodies) =>
         let
           val (alphas, fvs) = split_list (map mk_alpha_fv bodies)
           val comp_fv = foldl1 mk_prod_fv fvs
@@ -151,7 +151,7 @@ fun mk_alpha_prems lthy alpha_map alpha_bn_map is_rec (args, args') bclause =
           val comp_args' = foldl1 HOLogic.mk_prod (map (nth args') bodies)
           val comp_binders = comb_binders lthy bmode args binders
           val comp_binders' = comb_binders lthy bmode args' binders
-          val alpha_prem = 
+          val alpha_prem =
             mk_alpha_term bmode comp_fv comp_alpha comp_args comp_args' comp_binders comp_binders'
           val alpha_bn_prems = flat (map (mk_alpha_bn_prem alpha_bn_map args args' bodies) binders)
         in
@@ -160,7 +160,7 @@ fun mk_alpha_prems lthy alpha_map alpha_bn_map is_rec (args, args') bclause =
   end
 
 (* produces the introduction rule for an alpha rule *)
-fun mk_alpha_intros lthy alpha_map alpha_bn_map (constr, ty, arg_tys, is_rec) bclauses = 
+fun mk_alpha_intros lthy alpha_map alpha_bn_map (constr, ty, arg_tys, is_rec) bclauses =
   let
     val arg_names = Old_Datatype_Prop.make_tnames arg_tys
     val arg_names' = Name.variant_list arg_names arg_names
@@ -175,7 +175,7 @@ fun mk_alpha_intros lthy alpha_map alpha_bn_map (constr, ty, arg_tys, is_rec) bc
 
 (* produces the premise of an alpha-bn rule; we only need to
    treat the case special where the binding clause is empty;
-   
+
    - if the body is not included in the bn_info, then we either
      produce an equation or an alpha-premise
 
@@ -183,7 +183,7 @@ fun mk_alpha_intros lthy alpha_map alpha_bn_map (constr, ty, arg_tys, is_rec) bc
      either a recursive call to alpha-bn, or no premise  *)
 fun mk_alpha_bn lthy alpha_map alpha_bn_map bn_args is_rec (args, args') bclause =
   let
-    fun mk_alpha_bn_prem i = 
+    fun mk_alpha_bn_prem i =
       let
         val arg = nth args i
         val arg' = nth args' i
@@ -195,10 +195,10 @@ fun mk_alpha_bn lthy alpha_map alpha_bn_map bn_args is_rec (args, args') bclause
                    | SOME (alpha, _) => [alpha $ arg $ arg'])
         | SOME (NONE) => []
         | SOME (SOME bn) => [lookup alpha_bn_map bn $ arg $ arg']
-      end  
+      end
   in
     case bclause of
-      BC (_, [], bodies) => 
+      BC (_, [], bodies) =>
         map HOLogic.mk_Trueprop (flat (map mk_alpha_bn_prem bodies))
     | _ => mk_alpha_prems lthy alpha_map alpha_bn_map is_rec (args, args') bclause
   end
@@ -216,7 +216,7 @@ fun mk_alpha_bn_intro lthy bn_trm alpha_map alpha_bn_map (bn_args, (constr, _, a
     Library.foldr Logic.mk_implies (flat prems, concl)
   end
 
-fun mk_alpha_bn_intros lthy alpha_map alpha_bn_map constrs_info bclausesss (bn_trm, bn_n, bn_argss) = 
+fun mk_alpha_bn_intros lthy alpha_map alpha_bn_map constrs_info bclausesss (bn_trm, bn_n, bn_argss) =
   let
     val nth_constrs_info = nth constrs_info bn_n
     val nth_bclausess = nth bclausesss bn_n
@@ -241,7 +241,7 @@ fun define_raw_alpha raw_dt_info bn_info bclausesss fvs lthy =
     val alpha_bn_frees = map Free (alpha_bn_names ~~ alpha_bn_tys)
     val alpha_bn_map = bns ~~ alpha_bn_frees
 
-    val alpha_intros = map2 (map2 (mk_alpha_intros lthy alpha_map alpha_bn_map)) raw_cns_info bclausesss 
+    val alpha_intros = map2 (map2 (mk_alpha_intros lthy alpha_map alpha_bn_map)) raw_cns_info bclausesss
     val alpha_bn_intros = map (mk_alpha_bn_intros lthy alpha_map alpha_bn_map raw_cns_info bclausesss) bn_info
 
     val all_alpha_names = map (fn (a, ty) => ((Binding.name a, ty), NoSyn))
@@ -261,29 +261,29 @@ fun define_raw_alpha raw_dt_info bn_info bclausesss fvs lthy =
     val phi =
       Proof_Context.export_morphism lthy'
         (Proof_Context.transfer (Proof_Context.theory_of lthy') lthy);
-    
+
     val all_alpha_trms = all_alpha_trms_loc
-      |> map (Morphism.term phi) 
-      |> map Type.legacy_freeze 
+      |> map (Morphism.term phi)
+      |> map Type.legacy_freeze
     val alpha_raw_induct = Morphism.thm phi alpha_raw_induct_loc
     val alpha_intros = map (Morphism.thm phi) alpha_intros_loc
     val alpha_cases = map (Morphism.thm phi) alpha_cases_loc
 
     val (alpha_trms, alpha_bn_trms) = chop (length fvs) all_alpha_trms
-    
+
     val alpha_tys = map (domain_type o fastype_of) alpha_trms
     val alpha_bn_tys = map (domain_type o fastype_of) alpha_bn_trms
 
-    val alpha_names = map (fst o dest_Const) alpha_trms  
+    val alpha_names = map (fst o dest_Const) alpha_trms
     val alpha_bn_names = map (fst o dest_Const) alpha_bn_trms
   in
     (AlphaResult
       {alpha_names = alpha_names,
        alpha_trms = alpha_trms,
        alpha_tys = alpha_tys,
-       alpha_bn_names = alpha_bn_names, 
+       alpha_bn_names = alpha_bn_names,
        alpha_bn_trms = alpha_bn_trms,
-       alpha_bn_tys = alpha_bn_tys, 
+       alpha_bn_tys = alpha_bn_tys,
        alpha_intros = alpha_intros,
        alpha_cases = alpha_cases,
        alpha_raw_induct = alpha_raw_induct}, Local_Theory.reset lthy')  (* FIXME disrupts context *)
@@ -303,21 +303,21 @@ fun induct_prove tys props induct_thm cases_tac ctxt =
     val args = map2 (curry Free) arg_names tys
 
     val true_trms = replicate (length tys) (K @{term True})
-  
+
     fun apply_all x fs = map (fn f => f x) fs
-    
-    val goals = 
+
+    val goals =
         group (props @ (tys ~~ true_trms))
-        |> map snd 
+        |> map snd
         |> map2 apply_all args
         |> map fold_conj
         |> foldr1 HOLogic.mk_conj
         |> HOLogic.mk_Trueprop
 
     fun tac ctxt =
-      HEADGOAL 
-        (DETERM o (resolve_tac ctxt [induct_thm]) 
-         THEN_ALL_NEW 
+      HEADGOAL
+        (DETERM o (resolve_tac ctxt [induct_thm])
+         THEN_ALL_NEW
            (REPEAT_ALL_NEW (FIRST' [resolve_tac ctxt @{thms TrueI conjI}, cases_tac ctxt])))
   in
     Goal.prove ctxt' [] [] goals (fn {context, ...} => tac context)
@@ -337,19 +337,19 @@ fun alpha_prove alphas props alpha_induct_thm cases_tac ctxt =
 
     val ((arg_names1, arg_names2), ctxt') =
       ctxt
-      |> Variable.variant_fixes (replicate (length alphas) "x") 
+      |> Variable.variant_fixes (replicate (length alphas) "x")
       ||>> Variable.variant_fixes (replicate (length alphas) "y")
 
     val args1 = map2 (curry Free) arg_names1 arg_tys
     val args2 = map2 (curry Free) arg_names2 arg_tys
 
     val true_trms = replicate (length alphas) (K @{term True})
-  
+
     fun apply_all x fs = map (fn f => f x) fs
-    
-    val goals_rhs = 
+
+    val goals_rhs =
         group (props @ (alphas ~~ true_trms))
-        |> map snd 
+        |> map snd
         |> map2 apply_all (args1 ~~ args2)
         |> map fold_conj
 
@@ -362,14 +362,14 @@ fun alpha_prove alphas props alpha_induct_thm cases_tac ctxt =
       |> HOLogic.mk_Trueprop
 
     fun tac ctxt =
-      HEADGOAL 
-        (DETERM o (resolve_tac ctxt [alpha_induct_thm]) 
+      HEADGOAL
+        (DETERM o (resolve_tac ctxt [alpha_induct_thm])
          THEN_ALL_NEW FIRST' [resolve_tac ctxt @{thms TrueI}, cases_tac ctxt])
   in
     Goal.prove ctxt' [] [] goals (fn {context, ...} => tac context)
     |> singleton (Proof_Context.export ctxt' ctxt)
     |> Old_Datatype_Aux.split_conj_thm
-    |> map (fn th => th RS mp) 
+    |> map (fn th => th RS mp)
     |> map Old_Datatype_Aux.split_conj_thm
     |> flat
     |> filter_out (is_true o Thm.concl_of)
@@ -381,11 +381,11 @@ fun alpha_prove alphas props alpha_induct_thm cases_tac ctxt =
 (** produces the distinctness theorems **)
 
 
-(* transforms the distinctness theorems of the constructors 
+(* transforms the distinctness theorems of the constructors
    into "not-alphas" of the constructors *)
 fun mk_distinct_goal ty_trm_assoc neq =
   let
-    val (Const (@{const_name "HOL.eq"}, ty_eq) $ lhs $ rhs) = 
+    val (Const (@{const_name "HOL.eq"}, ty_eq) $ lhs $ rhs) =
       HOLogic.dest_not (HOLogic.dest_Trueprop neq)
     val ty_str = fst (dest_Type (domain_type ty_eq))
   in
@@ -395,7 +395,7 @@ fun mk_distinct_goal ty_trm_assoc neq =
   end
 
 fun distinct_tac ctxt cases_thms distinct_thms =
-  resolve_tac ctxt [notI] THEN' eresolve_tac ctxt cases_thms 
+  resolve_tac ctxt [notI] THEN' eresolve_tac ctxt cases_thms
   THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps distinct_thms)
 
 fun raw_prove_alpha_distincts ctxt alpha_result raw_dt_info =
@@ -409,7 +409,7 @@ fun raw_prove_alpha_distincts ctxt alpha_result raw_dt_info =
       let
         val goal = mk_distinct_goal ty_trm_assoc raw_distinct_trm
     in
-      Goal.prove ctxt [] [] goal 
+      Goal.prove ctxt [] [] goal
         (K (distinct_tac ctxt alpha_cases raw_distinct_thms 1))
     end
   in
@@ -421,7 +421,7 @@ fun raw_prove_alpha_distincts ctxt alpha_result raw_dt_info =
 (** produces the alpha_eq_iff simplification rules **)
 
 (* in case a theorem is of the form (Rel Const Const), it will be
-   rewritten to ((Rel Const = Const) = True) 
+   rewritten to ((Rel Const = Const) = True)
 *)
 fun mk_simp_rule thm =
   case Thm.prop_of thm of
@@ -430,7 +430,7 @@ fun mk_simp_rule thm =
 
 fun alpha_eq_iff_tac ctxt dist_inj intros elims =
   SOLVED' (asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps intros)) ORELSE'
-  (resolve_tac ctxt @{thms iffI} THEN' 
+  (resolve_tac ctxt @{thms iffI} THEN'
     RANGE [eresolve_tac ctxt elims THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps dist_inj),
            asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps intros)])
 
@@ -468,11 +468,11 @@ fun cases_tac intros ctxt =
   let
     val prod_simps = @{thms split_conv prod_alpha_def rel_prod_conv}
 
-    val unbound_tac = REPEAT o (eresolve_tac ctxt @{thms conjE}) THEN' assume_tac ctxt  
+    val unbound_tac = REPEAT o (eresolve_tac ctxt @{thms conjE}) THEN' assume_tac ctxt
 
-    val bound_tac = 
-      EVERY' [ resolve_tac ctxt [exi_zero], 
-               resolve_tac ctxt @{thms alpha_refl}, 
+    val bound_tac =
+      EVERY' [ resolve_tac ctxt [exi_zero],
+               resolve_tac ctxt @{thms alpha_refl},
                asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps) ]
   in
     resolve_tac ctxt intros THEN_ALL_NEW
@@ -481,14 +481,14 @@ fun cases_tac intros ctxt =
 
 fun raw_prove_refl ctxt alpha_result raw_dt_induct =
   let
-    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_bn_tys, alpha_intros, ...} = 
+    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_bn_tys, alpha_intros, ...} =
       alpha_result
-    
-    val props = 
-      map (fn (ty, c) => (ty, fn x => c $ x $ x)) 
+
+    val props =
+      map (fn (ty, c) => (ty, fn x => c $ x $ x))
         ((alpha_tys ~~ alpha_trms) @ (alpha_bn_tys ~~ alpha_bn_trms))
   in
-    induct_prove alpha_tys props raw_dt_induct (cases_tac alpha_intros) ctxt 
+    induct_prove alpha_tys props raw_dt_induct (cases_tac alpha_intros) ctxt
   end
 
 
@@ -499,10 +499,10 @@ val exi_neg = @{lemma "(\<exists>(p::perm). P p) \<Longrightarrow> (\<And>q. P q
   by (erule exE, rule_tac x="-p" in exI, auto)}
 
 (* for premises that contain binders *)
-fun prem_bound_tac pred_names alpha_eqvt ctxt = 
+fun prem_bound_tac pred_names alpha_eqvt ctxt =
   let
-    fun trans_prem_tac pred_names ctxt = 
-      SUBPROOF (fn {prems, context = ctxt', ...} => 
+    fun trans_prem_tac pred_names ctxt =
+      SUBPROOF (fn {prems, context = ctxt', ...} =>
         let
           val prems' = map (transform_prem1 ctxt' pred_names) prems
         in
@@ -510,49 +510,49 @@ fun prem_bound_tac pred_names alpha_eqvt ctxt =
         end) ctxt
     val prod_simps = @{thms split_conv permute_prod.simps prod_alpha_def rel_prod_conv alphas}
   in
-    EVERY' 
+    EVERY'
       [ eresolve_tac ctxt [exi_neg],
         resolve_tac ctxt @{thms alpha_sym_eqvt},
         asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps),
         eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN'
         resolve_tac ctxt @{thms refl},
-        trans_prem_tac pred_names ctxt] 
+        trans_prem_tac pred_names ctxt]
   end
 
 fun raw_prove_sym ctxt alpha_result alpha_eqvt =
   let
-    val AlphaResult {alpha_names, alpha_trms, alpha_bn_names, alpha_bn_trms, 
+    val AlphaResult {alpha_names, alpha_trms, alpha_bn_names, alpha_bn_trms,
       alpha_intros, alpha_raw_induct, ...} = alpha_result
 
     val alpha_trms = alpha_trms @ alpha_bn_trms
-    val alpha_names = alpha_names @ alpha_bn_names 
+    val alpha_names = alpha_names @ alpha_bn_names
 
     val props = map (fn t => fn (x, y) => t $ y $ x) alpha_trms
 
-    fun tac ctxt = 
-      resolve_tac ctxt alpha_intros THEN_ALL_NEW 
+    fun tac ctxt =
+      resolve_tac ctxt alpha_intros THEN_ALL_NEW
       FIRST' [assume_tac ctxt,
         resolve_tac ctxt @{thms sym} THEN' assume_tac ctxt,
         prem_bound_tac alpha_names alpha_eqvt ctxt]
   in
-    alpha_prove alpha_trms (alpha_trms ~~ props) alpha_raw_induct tac ctxt 
+    alpha_prove alpha_trms (alpha_trms ~~ props) alpha_raw_induct tac ctxt
   end
 
 
 (** transitivity proof for alphas **)
 
 (* applies cases rules and resolves them with the last premise *)
-fun ecases_tac cases = 
+fun ecases_tac cases =
   Subgoal.FOCUS (fn {context = ctxt, prems, ...} =>
     HEADGOAL (resolve_tac ctxt cases THEN' resolve_tac ctxt [List.last prems]))
 
-fun aatac pred_names = 
+fun aatac pred_names =
   SUBPROOF (fn {context = ctxt, prems, ...} =>
     HEADGOAL (resolve_tac ctxt (map (transform_prem1 ctxt pred_names) prems)))
-  
+
 (* instantiates exI with the permutation p + q *)
 val perm_inst_tac =
-  Subgoal.FOCUS (fn {context = ctxt, params, ...} => 
+  Subgoal.FOCUS (fn {context = ctxt, params, ...} =>
     let
       val (p, q) = apply2 snd (last2 params)
       val pq_inst = foldl1 (uncurry Thm.apply) [@{cterm "plus::perm => perm => perm"}, p, q]
@@ -561,19 +561,19 @@ val perm_inst_tac =
       HEADGOAL (resolve_tac ctxt [exi_inst])
     end)
 
-fun non_trivial_cases_tac pred_names intros alpha_eqvt ctxt = 
+fun non_trivial_cases_tac pred_names intros alpha_eqvt ctxt =
   let
     val prod_simps = @{thms split_conv alphas permute_prod.simps prod_alpha_def rel_prod_conv}
   in
     resolve_tac ctxt intros
-    THEN_ALL_NEW (asm_simp_tac (put_simpset HOL_basic_ss ctxt) THEN' 
+    THEN_ALL_NEW (asm_simp_tac (put_simpset HOL_basic_ss ctxt) THEN'
       TRY o EVERY'   (* if binders are present *)
         [ eresolve_tac ctxt @{thms exE},
           eresolve_tac ctxt @{thms exE},
-          perm_inst_tac ctxt, 
+          perm_inst_tac ctxt,
           resolve_tac ctxt @{thms alpha_trans_eqvt},
           assume_tac ctxt,
-          aatac pred_names ctxt, 
+          aatac pred_names ctxt,
           eqvt_tac ctxt (eqvt_relaxed_config addpres alpha_eqvt) THEN'
           resolve_tac ctxt @{thms refl},
           asm_full_simp_tac (put_simpset HOL_ss ctxt addsimps prod_simps) ])
@@ -582,14 +582,14 @@ fun non_trivial_cases_tac pred_names intros alpha_eqvt ctxt =
 fun prove_trans_tac alpha_result raw_dt_thms alpha_eqvt ctxt =
   let
     val AlphaResult {alpha_names, alpha_bn_names, alpha_intros, alpha_cases, ...} = alpha_result
-    val alpha_names = alpha_names @ alpha_bn_names 
+    val alpha_names = alpha_names @ alpha_bn_names
 
-    fun all_cases ctxt = 
-      asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps raw_dt_thms) 
+    fun all_cases ctxt =
+      asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps raw_dt_thms)
       THEN' TRY o non_trivial_cases_tac alpha_names alpha_intros alpha_eqvt ctxt
   in
     EVERY' [ resolve_tac ctxt @{thms allI},
-      resolve_tac ctxt @{thms impI}, 
+      resolve_tac ctxt @{thms impI},
       ecases_tac alpha_cases ctxt THEN_ALL_NEW all_cases ctxt ]
   end
 
@@ -597,14 +597,14 @@ fun prep_trans_goal alpha_trm (arg1, arg2) =
   let
     val arg_ty = fastype_of arg1
     val mid = alpha_trm $ arg2 $ (Bound 0)
-    val rhs = alpha_trm $ arg1 $ (Bound 0) 
+    val rhs = alpha_trm $ arg1 $ (Bound 0)
   in
     HOLogic.all_const arg_ty $ Abs ("z", arg_ty, HOLogic.mk_imp (mid, rhs))
   end
 
 fun raw_prove_trans ctxt alpha_result raw_dt_thms alpha_eqvt =
   let
-    val AlphaResult {alpha_names, alpha_trms, alpha_bn_names, alpha_bn_trms, 
+    val AlphaResult {alpha_names, alpha_trms, alpha_bn_names, alpha_bn_trms,
       alpha_raw_induct, ...} = alpha_result
 
     val alpha_trms = alpha_trms @ alpha_bn_trms
@@ -618,29 +618,29 @@ fun raw_prove_trans ctxt alpha_result raw_dt_thms alpha_eqvt =
 
 (** proves the equivp predicate for all alphas **)
 
-val reflp_def' = 
+val reflp_def' =
   @{lemma "reflp R == \<forall>x. R x x" by (simp add: reflp_def refl_on_def)}
 
 val symp_def' =
   @{lemma "symp R \<equiv> \<forall>x y . R x y --> R y x" by (simp add: symp_def sym_def)}
 
 val transp_def' =
-  @{lemma "transp R \<equiv> \<forall>x y. R x y \<longrightarrow> (\<forall>z. R y z \<longrightarrow> R x z)" 
+  @{lemma "transp R \<equiv> \<forall>x y. R x y \<longrightarrow> (\<forall>z. R y z \<longrightarrow> R x z)"
     by (rule eq_reflection, auto simp add: trans_def transp_def)}
 
-fun raw_prove_equivp ctxt alpha_result refl symm trans = 
+fun raw_prove_equivp ctxt alpha_result refl symm trans =
   let
-    val AlphaResult {alpha_trms, alpha_bn_trms, ...} = alpha_result 
+    val AlphaResult {alpha_trms, alpha_bn_trms, ...} = alpha_result
 
     val refl' = map (fold_rule ctxt [reflp_def'] o atomize ctxt) refl
     val symm' = map (fold_rule ctxt [symp_def'] o atomize ctxt) symm
     val trans' = map (fold_rule ctxt [transp_def'] o atomize ctxt) trans
 
-    fun prep_goal t = 
-      HOLogic.mk_Trueprop (Const (@{const_name "equivp"}, fastype_of t --> @{typ bool}) $ t) 
-  in    
+    fun prep_goal t =
+      HOLogic.mk_Trueprop (Const (@{const_name "equivp"}, fastype_of t --> @{typ bool}) $ t)
+  in
     Goal.prove_common ctxt NONE [] [] (map prep_goal (alpha_trms @ alpha_bn_trms))
-    (K (HEADGOAL (Goal.conjunction_tac THEN_ALL_NEW (resolve_tac ctxt @{thms equivpI} THEN' 
+    (K (HEADGOAL (Goal.conjunction_tac THEN_ALL_NEW (resolve_tac ctxt @{thms equivpI} THEN'
        RANGE [resolve_tac ctxt refl', resolve_tac ctxt symm', resolve_tac ctxt trans']))))
     |> chop (length alpha_trms)
   end
@@ -648,19 +648,19 @@ fun raw_prove_equivp ctxt alpha_result refl symm trans =
 
 (* proves that alpha_raw implies alpha_bn *)
 
-fun raw_prove_bn_imp_tac alpha_result ctxt = 
-  SUBPROOF (fn {prems, context = ctxt', ...} => 
+fun raw_prove_bn_imp_tac alpha_result ctxt =
+  SUBPROOF (fn {prems, context = ctxt', ...} =>
     let
-      val AlphaResult {alpha_names, alpha_intros, ...} = alpha_result 
+      val AlphaResult {alpha_names, alpha_intros, ...} = alpha_result
 
       val prems' = flat (map Old_Datatype_Aux.split_conj_thm prems)
       val prems'' = map (transform_prem1 ctxt' alpha_names) prems'
     in
-      HEADGOAL 
-        (REPEAT_ALL_NEW 
-           (FIRST' [ resolve_tac ctxt' @{thms TrueI}, 
-                     resolve_tac ctxt' @{thms conjI}, 
-                     resolve_tac ctxt' prems', 
+      HEADGOAL
+        (REPEAT_ALL_NEW
+           (FIRST' [ resolve_tac ctxt' @{thms TrueI},
+                     resolve_tac ctxt' @{thms conjI},
+                     resolve_tac ctxt' prems',
                      resolve_tac ctxt' prems'',
                      resolve_tac ctxt' alpha_intros ]))
     end) ctxt
@@ -668,13 +668,13 @@ fun raw_prove_bn_imp_tac alpha_result ctxt =
 
 fun raw_prove_bn_imp ctxt alpha_result =
   let
-    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_raw_induct, ...} = alpha_result 
+    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_raw_induct, ...} = alpha_result
 
-    val arg_ty = domain_type o fastype_of 
+    val arg_ty = domain_type o fastype_of
     val ty_assoc = alpha_tys ~~ alpha_trms
     val props = map (fn t => (lookup ty_assoc (arg_ty t), fn (x, y) => t $ x $ y)) alpha_bn_trms
   in
-    alpha_prove (alpha_trms @ alpha_bn_trms) props alpha_raw_induct 
+    alpha_prove (alpha_trms @ alpha_bn_trms) props alpha_raw_induct
       (raw_prove_bn_imp_tac alpha_result) ctxt
   end
 
@@ -683,9 +683,9 @@ fun raw_prove_bn_imp ctxt alpha_result =
 
 fun raw_fv_bn_rsp_aux ctxt alpha_result fvs bns fv_bns simps =
   let
-    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_raw_induct, ...} = alpha_result 
+    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_raw_induct, ...} = alpha_result
 
-    val arg_ty = domain_type o fastype_of 
+    val arg_ty = domain_type o fastype_of
     val ty_assoc = alpha_tys ~~ alpha_trms
     fun mk_eq' t x y = HOLogic.mk_eq (t $ x, t $ y)
 
@@ -694,10 +694,10 @@ fun raw_fv_bn_rsp_aux ctxt alpha_result fvs bns fv_bns simps =
     val prop3 = map2 (fn t1 => fn t2 => (t1, fn (x, y) => mk_eq' t2 x y)) alpha_bn_trms fv_bns
 
     val simpset =
-      put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_fv.simps set_simps append.simps} 
-      @ @{thms Un_assoc Un_insert_left Un_empty_right Un_empty_left}) 
+      put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_fv.simps set_simps append.simps}
+      @ @{thms Un_assoc Un_insert_left Un_empty_right Un_empty_left})
   in
-    alpha_prove (alpha_trms @ alpha_bn_trms) (prop1 @ prop2 @ prop3) alpha_raw_induct 
+    alpha_prove (alpha_trms @ alpha_bn_trms) (prop1 @ prop2 @ prop3) alpha_raw_induct
       (K (asm_full_simp_tac simpset)) ctxt
   end
 
@@ -706,16 +706,16 @@ fun raw_fv_bn_rsp_aux ctxt alpha_result fvs bns fv_bns simps =
 
 fun raw_size_rsp_aux ctxt alpha_result simps =
   let
-    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_bn_tys, alpha_raw_induct, ...} = 
-      alpha_result 
-    
-    fun mk_prop ty (x, y) = HOLogic.mk_eq 
+    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_bn_tys, alpha_raw_induct, ...} =
+      alpha_result
+
+    fun mk_prop ty (x, y) = HOLogic.mk_eq
       (HOLogic.size_const ty $ x, HOLogic.size_const ty $ y)
 
-    val props = (alpha_trms @ alpha_bn_trms) ~~ (map mk_prop (alpha_tys @ alpha_bn_tys)) 
-  
+    val props = (alpha_trms @ alpha_bn_trms) ~~ (map mk_prop (alpha_tys @ alpha_bn_tys))
+
     val simpset =
-      put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_alpha_def rel_prod_conv 
+      put_simpset HOL_ss ctxt addsimps (simps @ @{thms alphas prod_alpha_def rel_prod_conv
       permute_prod_def prod.case prod.rec})
 
     val tac = (TRY o REPEAT o eresolve_tac ctxt @{thms exE}) THEN' asm_full_simp_tac simpset
@@ -726,10 +726,10 @@ fun raw_size_rsp_aux ctxt alpha_result simps =
 
 (* respectfulness for constructors *)
 
-fun raw_constr_rsp_tac ctxt alpha_intros simps = 
+fun raw_constr_rsp_tac ctxt alpha_intros simps =
   let
     val pre_simpset = put_simpset HOL_ss ctxt addsimps @{thms rel_fun_def}
-    val post_simpset = put_simpset HOL_ss ctxt addsimps @{thms alphas prod_alpha_def rel_prod_conv 
+    val post_simpset = put_simpset HOL_ss ctxt addsimps @{thms alphas prod_alpha_def rel_prod_conv
       prod_fv.simps fresh_star_zero permute_zero prod.case} @ simps
   in
     asm_full_simp_tac pre_simpset
@@ -740,14 +740,14 @@ fun raw_constr_rsp_tac ctxt alpha_intros simps =
 
 fun raw_constrs_rsp ctxt alpha_result constrs simps =
   let
-    val AlphaResult {alpha_trms, alpha_tys, alpha_intros, ...} = alpha_result 
+    val AlphaResult {alpha_trms, alpha_tys, alpha_intros, ...} = alpha_result
 
-    fun lookup ty = 
+    fun lookup ty =
       case AList.lookup (op=) (alpha_tys ~~ alpha_trms) ty of
         NONE => HOLogic.eq_const ty
-      | SOME alpha => alpha 
-  
-    fun rel_fun_app (t1, t2) = 
+      | SOME alpha => alpha
+
+    fun rel_fun_app (t1, t2) =
       Const (@{const_name "rel_fun"}, dummyT) $ t1 $ t2
 
     fun prep_goal trm =
@@ -762,7 +762,7 @@ fun raw_constrs_rsp ctxt alpha_result constrs simps =
   in
     map (fn constrs =>
     Goal.prove_common ctxt NONE [] [] (map prep_goal constrs)
-      (K (HEADGOAL 
+      (K (HEADGOAL
         (Goal.conjunction_tac THEN_ALL_NEW raw_constr_rsp_tac ctxt alpha_intros simps)))) constrs
   end
 
@@ -778,7 +778,7 @@ val rsp_equivp =
    to be in order with alpha_bn_trms *)
 fun raw_alpha_bn_rsp alpha_result alpha_bn_equivp alpha_bn_imps =
   let
-    val AlphaResult {alpha_bn_trms, ...} = alpha_result 
+    val AlphaResult {alpha_bn_trms, ...} = alpha_result
 
     fun mk_map thm =
       thm |> `Thm.prop_of
@@ -787,10 +787,10 @@ fun raw_alpha_bn_rsp alpha_result alpha_bn_equivp alpha_bn_imps =
           |>> head_of
           |>> fst o dest_Const
 
-    val alpha_bn_imps' = 
+    val alpha_bn_imps' =
       map (lookup (map mk_map alpha_bn_imps) o fst o dest_Const) alpha_bn_trms
 
-    fun mk_thm thm1 thm2 = 
+    fun mk_thm thm1 thm2 =
       (forall_intr_vars thm2) COMP (thm1 RS rsp_equivp)
   in
     map2 mk_thm alpha_bn_equivp alpha_bn_imps'
@@ -802,28 +802,28 @@ fun raw_alpha_bn_rsp alpha_result alpha_bn_equivp alpha_bn_imps =
 val perm_bn_rsp = @{lemma "(\<forall>x y p. R x y \<longrightarrow> R (f p x) (f p y)) \<Longrightarrow> ((=) ===> R ===> R) f f"
  by (simp add: rel_fun_def)}
 
-fun raw_prove_perm_bn_tac alpha_result simps ctxt = 
-  SUBPROOF (fn {prems, context = ctxt', ...} => 
+fun raw_prove_perm_bn_tac alpha_result simps ctxt =
+  SUBPROOF (fn {prems, context = ctxt', ...} =>
     let
-      val AlphaResult {alpha_names, alpha_bn_names, alpha_intros, ...} = alpha_result 
+      val AlphaResult {alpha_names, alpha_bn_names, alpha_intros, ...} = alpha_result
       val prems' = flat (map Old_Datatype_Aux.split_conj_thm prems)
       val prems'' = map (transform_prem1 ctxt' (alpha_names @ alpha_bn_names)) prems'
     in
-      HEADGOAL 
+      HEADGOAL
         (simp_tac (put_simpset HOL_basic_ss ctxt' addsimps (simps @ prems'))
-         THEN' TRY o REPEAT_ALL_NEW 
-           (FIRST' [ resolve_tac ctxt' @{thms TrueI}, 
-                     resolve_tac ctxt' @{thms conjI}, 
+         THEN' TRY o REPEAT_ALL_NEW
+           (FIRST' [ resolve_tac ctxt' @{thms TrueI},
+                     resolve_tac ctxt' @{thms conjI},
                      resolve_tac ctxt' @{thms refl},
-                     resolve_tac ctxt' prems', 
+                     resolve_tac ctxt' prems',
                      resolve_tac ctxt' prems'',
                      resolve_tac ctxt' alpha_intros ]))
     end) ctxt
 
 fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
   let
-    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_bn_tys, alpha_raw_induct, ...} = 
-      alpha_result 
+    val AlphaResult {alpha_trms, alpha_tys, alpha_bn_trms, alpha_bn_tys, alpha_raw_induct, ...} =
+      alpha_result
 
     val perm_bn_ty = range_type o range_type o fastype_of
     val ty_assoc = (alpha_tys @ alpha_bn_tys) ~~ (alpha_trms @ alpha_bn_trms)
@@ -838,9 +838,9 @@ fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
         (alpha_trm, fn (x, y) => alpha_trm $ (t $ p $ x) $ (t $ p $ y))
       end
 
-    val goals = map mk_prop perm_bns    
+    val goals = map mk_prop perm_bns
   in
-    alpha_prove (alpha_trms @ alpha_bn_trms) goals alpha_raw_induct 
+    alpha_prove (alpha_trms @ alpha_bn_trms) goals alpha_raw_induct
       (raw_prove_perm_bn_tac alpha_result simps) ctxt
      |> Proof_Context.export ctxt' ctxt
      |> map (atomize ctxt)
@@ -855,18 +855,18 @@ fun raw_perm_bn_rsp ctxt alpha_result perm_bns simps =
 val fun_rsp = @{lemma
   "(\<forall>x y. R x y \<longrightarrow> f x = f y) \<Longrightarrow> (R ===> (=)) f f" by (simp add: rel_fun_def)}
 
-fun mk_funs_rsp ctxt thm = 
+fun mk_funs_rsp ctxt thm =
   thm
   |> atomize ctxt
   |> single
   |> curry (op OF) fun_rsp
 
 
-val permute_rsp = @{lemma 
-  "(\<forall>x y p. R x y \<longrightarrow> R (permute p x) (permute p y)) 
+val permute_rsp = @{lemma
+  "(\<forall>x y p. R x y \<longrightarrow> R (permute p x) (permute p y))
      ==> ((=) ===> R ===> R) permute permute"  by (simp add: rel_fun_def)}
 
-fun mk_alpha_permute_rsp ctxt thm = 
+fun mk_alpha_permute_rsp ctxt thm =
   thm
   |> atomize ctxt
   |> single

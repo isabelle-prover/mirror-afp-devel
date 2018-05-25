@@ -871,7 +871,6 @@ proof -
     subgoal using \<open>e > 0\<close> by simp
     subgoal premises prems
     proof -
-      note prems
       have "(x, y) \<in> cball (x, y) r2"
         using r2
         by auto
@@ -882,15 +881,14 @@ proof -
       moreover
       have "cball (x, y) r2 \<subseteq> S"
         using r r2 by auto
-      moreover have "\<forall>y\<in>cball (x, y) r2. G (H y) = y"
+      moreover have "\<And>z. z \<in> cball (x, y) r2 \<Longrightarrow> G (H z) = z"
         using r2 by (auto intro!: GH)
       ultimately have "(G has_derivative Hi) (at (H (x, y)))"
-        apply (rule has_derivative_inverse[where g = G and f = H,
+      proof (rule has_derivative_inverse[where g = G and f = H,
               OF compact_cball _ _ continuous_on_subset[OF cH] _ H' _ _])
-        subgoal by (simp add: S)
-        subgoal by (rule blinfun.bounded_linear_right)
-        subgoal using Hi by transfer auto
-        done
+        show "blinfun_apply Hi \<circ> blinfun_apply (H' (x, y)) = id"
+          using Hi by transfer auto
+      qed (use S blinfun.bounded_linear_right in auto)
       then have g': "(G has_derivative Hi) (at (x, 0))"
         by (auto simp: H_def assms)
       show ?thesis
@@ -1459,7 +1457,7 @@ proof -
       have csi: "{0..z} \<subseteq> existence_ivl0 x" by (auto simp add: closed_segment_eq_real_ivl)
       then have cont: "continuous_on {0..z} (\<lambda>t. s (flow0 x t))"
         by (auto intro!: continuous_intros)
-      have "\<forall>xa\<in>{0<..<z}. ((\<lambda>t. s (flow0 x t)) has_derivative (\<lambda>t. t * blinfun_apply (Ds (flow0 x xa)) (f (flow0 x xa)))) (at xa)"
+      have "\<And>u. \<lbrakk>0 < u; u < z\<rbrakk> \<Longrightarrow> ((\<lambda>t. s (flow0 x t)) has_derivative (\<lambda>t. t * blinfun_apply (Ds (flow0 x u)) (f (flow0 x u)))) (at u)"
         using csi
         by (auto intro!: derivative_eq_intros simp: flowderiv_def blinfun.bilinear_simps)
       from mvt[OF \<open>0 < z\<close> cont this]
@@ -1888,7 +1886,7 @@ proof (rule tendstoI)
     have c: "continuous_on {0 .. t} (\<lambda>t. s (flow0 y t))"
       using that
       by (auto intro!: continuous_intros d_ex)
-    have d: "\<forall>x\<in>{0<..<t}. ((\<lambda>t. s (flow0 y t)) has_derivative (\<lambda>t. t * blinfun_apply (Ds (flow0 y x)) (f (flow0 y x)))) (at x)"
+    have d: "\<And>x. \<lbrakk>0 < x; x < t\<rbrakk> \<Longrightarrow> ((\<lambda>t. s (flow0 y t)) has_derivative (\<lambda>t. t * blinfun_apply (Ds (flow0 y x)) (f (flow0 y x)))) (at x)"
       using that
       by (auto intro!: derivative_eq_intros d_ex simp: flowderiv_def blinfun.bilinear_simps)
     from mvt[OF \<open>0 < t\<close> c d]

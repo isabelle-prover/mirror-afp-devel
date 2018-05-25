@@ -2,7 +2,7 @@ chapter AFP
 
 session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
   description {* LLL Algorithm *}
-  options [timeout = 600]
+  options [timeout = 1500]
   sessions 
     Algebraic_Numbers
     Perron_Frobenius
@@ -10,8 +10,14 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
     List_Representation
     Norms
     Missing_Lemmas
+    More_IArray
     Gram_Schmidt_2
     LLL    
+    LLL_GSO_Impl    
+    LLL_GSO_Impl_Complexity
+    LLL_Mu_Integer_Impl    
+    LLL_Mu_Integer_Impl_Complexity    
+    LLL_Number_Bounds
   document_files
     "root.tex"
     "root.bib"

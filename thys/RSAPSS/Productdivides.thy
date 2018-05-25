@@ -9,15 +9,8 @@ theory Productdivides
 imports Pdifference
 begin
 
-lemma productdivides_lemma: "\<lbrakk>x mod z = (0::nat)\<rbrakk> \<Longrightarrow> ((y*x) mod (y*z) = 0)"
-  apply (subst mod_eq_0_iff [of "y*x" "y*z"])
-  apply auto
-  done
-
 lemma productdivides: "\<lbrakk>x mod a = (0::nat); x mod b = 0; prime a; prime b; a \<noteq> b\<rbrakk> \<Longrightarrow> x mod (a*b) = 0"
-  apply (simp add: mod_eq_0_iff [of x a])
-  apply (auto simp add: dvd_eq_mod_eq_0 [symmetric] prime_dvd_mult_iff dest: primes_dvd_imp_eq)
-  done
+  by (simp add: mod_eq_0_iff_dvd primes_coprime divides_mult)
 
 lemma specializedtoprimes1: 
   fixes p::nat 

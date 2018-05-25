@@ -1,8 +1,8 @@
 (*  Title:      Nominal2_Base
     Authors:    Christian Urban, Brian Huffman, Cezary Kaliszyk
 
-    Basic definitions and lemma infrastructure for 
-    Nominal Isabelle. 
+    Basic definitions and lemma infrastructure for
+    Nominal Isabelle.
 *)
 theory Nominal2_Base
 imports "HOL-Library.Infinite_Set"
@@ -10,7 +10,7 @@ imports "HOL-Library.Infinite_Set"
         "HOL-Library.FSet"
         FinFun.FinFun
 keywords
-  "atom_decl" "equivariance" :: thy_decl 
+  "atom_decl" "equivariance" :: thy_decl
 begin
 
 declare [[typedef_overloaded]]
@@ -21,7 +21,7 @@ section {* Atoms and Sorts *}
 text {* A simple implementation for @{text atom_sorts} is strings. *}
 (* types atom_sort = string *)
 
-text {* To deal with Church-like binding we use trees of  
+text {* To deal with Church-like binding we use trees of
   strings as sorts. *}
 
 datatype atom_sort = Sort "string" "atom_sort list"
@@ -43,7 +43,7 @@ where
 
 
 text {* There are infinitely many atoms of each sort. *}
-lemma INFM_sort_of_eq: 
+lemma INFM_sort_of_eq:
   shows "INFM a. sort_of a = s"
 proof -
   have "INFM i. sort_of (Atom s i) = s" by simp
@@ -55,7 +55,7 @@ lemma infinite_sort_of_eq:
   shows "infinite {a. sort_of a = s}"
   using INFM_sort_of_eq unfolding INFM_iff_infinite .
 
-lemma atom_infinite [simp]: 
+lemma atom_infinite [simp]:
   shows "infinite (UNIV :: atom set)"
   using subset_UNIV infinite_sort_of_eq
   by (rule infinite_super)
@@ -203,13 +203,13 @@ definition
   swap :: "atom \<Rightarrow> atom \<Rightarrow> perm" ("'(_ \<rightleftharpoons> _')")
 where
   "(a \<rightleftharpoons> b) =
-    Abs_perm (if sort_of a = sort_of b 
-              then (\<lambda>c. if a = c then b else if b = c then a else c) 
+    Abs_perm (if sort_of a = sort_of b
+              then (\<lambda>c. if a = c then b else if b = c then a else c)
               else id)"
 
 lemma Rep_perm_swap:
   "Rep_perm (a \<rightleftharpoons> b) =
-    (if sort_of a = sort_of b 
+    (if sort_of a = sort_of b
      then (\<lambda>c. if a = c then b else if b = c then a else c)
      else id)"
 unfolding swap_def
@@ -235,7 +235,7 @@ lemma swap_different_sorts [simp]:
 lemma swap_cancel:
   shows "(a \<rightleftharpoons> b) + (a \<rightleftharpoons> b) = 0"
   and   "(a \<rightleftharpoons> b) + (b \<rightleftharpoons> a) = 0"
-  by (rule_tac [!] Rep_perm_ext) 
+  by (rule_tac [!] Rep_perm_ext)
      (simp_all add: Rep_perm_simps fun_eq_iff)
 
 lemma swap_self [simp]:
@@ -292,28 +292,28 @@ lemma permute_swap_cancel2 [simp]:
   unfolding permute_plus [symmetric]
   by (simp add: swap_commute)
 
-lemma inj_permute [simp]: 
+lemma inj_permute [simp]:
   shows "inj (permute p)"
   by (rule inj_on_inverseI)
      (rule permute_minus_cancel)
 
-lemma surj_permute [simp]: 
+lemma surj_permute [simp]:
   shows "surj (permute p)"
   by (rule surjI, rule permute_minus_cancel)
 
-lemma bij_permute [simp]: 
+lemma bij_permute [simp]:
   shows "bij (permute p)"
   by (rule bijI [OF inj_permute surj_permute])
 
-lemma inv_permute: 
+lemma inv_permute:
   shows "inv (permute p) = permute (- p)"
   by (rule inv_equality) (simp_all)
 
-lemma permute_minus: 
+lemma permute_minus:
   shows "permute (- p) = inv (permute p)"
   by (simp add: inv_permute)
 
-lemma permute_eq_iff [simp]: 
+lemma permute_eq_iff [simp]:
   shows "p \<bullet> x = p \<bullet> y \<longleftrightarrow> x = y"
   by (rule inj_permute [THEN inj_eq])
 
@@ -327,7 +327,7 @@ begin
 definition
   "p \<bullet> a = (Rep_perm p) a"
 
-instance 
+instance
 apply standard
 apply(simp_all add: permute_atom_def Rep_perm_simps)
 done
@@ -373,14 +373,14 @@ done
 
 end
 
-lemma permute_self: 
+lemma permute_self:
   shows "p \<bullet> p = p"
-  unfolding permute_perm_def 
+  unfolding permute_perm_def
   by (simp add: add.assoc)
 
 lemma pemute_minus_self:
   shows "- p \<bullet> p = p"
-  unfolding permute_perm_def 
+  unfolding permute_perm_def
   by (simp add: add.assoc)
 
 
@@ -438,7 +438,7 @@ instantiation "set" :: (pt) pt
 begin
 
 definition
-  "p \<bullet> X = {p \<bullet> x | x. x \<in> X}" 
+  "p \<bullet> X = {p \<bullet> x | x. x \<in> X}"
 
 instance
 apply standard
@@ -460,7 +460,7 @@ lemma permute_set_eq_vimage:
   shows "p \<bullet> X = permute (- p) -` X"
   unfolding permute_set_eq vimage_def
   by simp
-  
+
 lemma permute_finite [simp]:
   shows "finite (p \<bullet> X) = finite X"
   unfolding permute_set_eq_vimage
@@ -512,7 +512,7 @@ begin
 
 definition "p \<bullet> (u::unit) = u"
 
-instance 
+instance
   by standard (simp_all add: permute_unit_def)
 
 end
@@ -523,8 +523,8 @@ subsection {* Permutations for products *}
 instantiation prod :: (pt, pt) pt
 begin
 
-primrec 
-  permute_prod 
+primrec
+  permute_prod
 where
   Pair_eqvt: "p \<bullet> (x, y) = (p \<bullet> x, p \<bullet> y)"
 
@@ -538,13 +538,13 @@ subsection {* Permutations for sums *}
 instantiation sum :: (pt, pt) pt
 begin
 
-primrec 
-  permute_sum 
+primrec
+  permute_sum
 where
   Inl_eqvt: "p \<bullet> (Inl x) = Inl (p \<bullet> x)"
 | Inr_eqvt: "p \<bullet> (Inr y) = Inr (p \<bullet> y)"
 
-instance 
+instance
   by standard (case_tac [!] x, simp_all)
 
 end
@@ -554,13 +554,13 @@ subsection {* Permutations for @{typ "'a list"} *}
 instantiation list :: (pt) pt
 begin
 
-primrec 
-  permute_list 
+primrec
+  permute_list
 where
   Nil_eqvt:  "p \<bullet> [] = []"
 | Cons_eqvt: "p \<bullet> (x # xs) = p \<bullet> x # p \<bullet> xs"
 
-instance 
+instance
   by standard (induct_tac [!] x, simp_all)
 
 end
@@ -576,13 +576,13 @@ subsection {* Permutations for @{typ "'a option"} *}
 instantiation option :: (pt) pt
 begin
 
-primrec 
-  permute_option 
+primrec
+  permute_option
 where
   None_eqvt: "p \<bullet> None = None"
 | Some_eqvt: "p \<bullet> (Some x) = Some (p \<bullet> x)"
 
-instance 
+instance
   by standard (induct_tac [!] x, simp_all)
 
 end
@@ -595,13 +595,13 @@ begin
 definition
   "p \<bullet> M = {# p \<bullet> x. x :# M #}"
 
-instance 
+instance
 proof
   fix M :: "'a multiset" and p q :: "perm"
-  show "0 \<bullet> M = M" 
+  show "0 \<bullet> M = M"
     unfolding permute_multiset_def
     by (induct_tac M) (simp_all)
-  show "(p + q) \<bullet> M = p \<bullet> q \<bullet> M" 
+  show "(p + q) \<bullet> M = p \<bullet> q \<bullet> M"
     unfolding permute_multiset_def
     by (induct_tac M) (simp_all)
 qed
@@ -629,7 +629,7 @@ is "permute :: perm \<Rightarrow> 'a set \<Rightarrow> 'a set" by simp
 end
 
 context includes fset.lifting begin
-instance 
+instance
 proof
   fix x :: "'a fset" and p q :: "perm"
   show "0 \<bullet> x = x" by transfer simp
@@ -649,7 +649,7 @@ lemma permute_fset [simp]:
   apply (transfer, simp add: insert_eqvt)
   done
 
-lemma fset_eqvt: 
+lemma fset_eqvt:
   shows "p \<bullet> (fset S) = fset (p \<bullet> S)"
   by transfer simp
 end
@@ -689,7 +689,7 @@ begin
 
 definition "p \<bullet> (c::char) = c"
 
-instance 
+instance
   by standard (simp_all add: permute_char_def)
 
 end
@@ -699,7 +699,7 @@ begin
 
 definition "p \<bullet> (n::nat) = n"
 
-instance 
+instance
   by standard (simp_all add: permute_nat_def)
 
 end
@@ -709,7 +709,7 @@ begin
 
 definition "p \<bullet> (i::int) = i"
 
-instance 
+instance
   by standard (simp_all add: permute_int_def)
 
 end
@@ -774,19 +774,19 @@ ML_file "nominal_basics.ML"
 subsection {* Eqvt infrastructure *}
 
 text {* Setup of the theorem attributes @{text eqvt} and @{text eqvt_raw}. *}
-                   
+
 ML_file "nominal_thmdecls.ML"
 
 
 lemmas [eqvt] =
   (* pt types *)
-  permute_prod.simps 
-  permute_list.simps 
-  permute_option.simps 
+  permute_prod.simps
+  permute_list.simps
+  permute_option.simps
   permute_sum.simps
 
   (* sets *)
-  empty_eqvt insert_eqvt set_eqvt 
+  empty_eqvt insert_eqvt set_eqvt
 
   (* fsets *)
   permute_fset fset_eqvt
@@ -800,7 +800,7 @@ definition
   "unpermute p = permute (- p)"
 
 lemma eqvt_apply:
-  fixes f :: "'a::pt \<Rightarrow> 'b::pt" 
+  fixes f :: "'a::pt \<Rightarrow> 'b::pt"
   and x :: "'a::pt"
   shows "p \<bullet> (f x) \<equiv> (p \<bullet> f) (p \<bullet> x)"
   unfolding permute_fun_def by simp
@@ -827,7 +827,7 @@ method_setup perm_strict_simp =
  {* pushes permutations inside, raises an error if it cannot solve all permutations. *}
 
 simproc_setup perm_simproc ("p \<bullet> t") = {* fn _ => fn ctxt => fn ctrm =>
-  case Thm.term_of (Thm.dest_arg ctrm) of 
+  case Thm.term_of (Thm.dest_arg ctrm) of
     Free _ => NONE
   | Var _ => NONE
   | Const (@{const_name permute}, _) $ _ $ _ => NONE
@@ -994,7 +994,7 @@ lemma Image_eqvt [eqvt]:
 
 lemma UNIV_eqvt [eqvt]:
   shows "p \<bullet> UNIV = UNIV"
-  unfolding UNIV_def 
+  unfolding UNIV_def
   by (perm_simp) (rule refl)
 
 lemma inter_eqvt [eqvt]:
@@ -1050,10 +1050,10 @@ lemma Sigma_eqvt:
 unfolding Sigma_def
 by (perm_simp) (rule refl)
 
-text {* 
+text {*
   In order to prove that lfp is equivariant we need two
   auxiliary classes which specify that (<=) and
-  Inf are equivariant. Instances for bool and fun are 
+  Inf are equivariant. Instances for bool and fun are
   given.
 *}
 
@@ -1066,7 +1066,7 @@ class inf_eqvt = Inf +
 instantiation bool :: le_eqvt
 begin
 
-instance 
+instance
 apply standard
 unfolding le_bool_def
 apply(perm_simp)
@@ -1078,19 +1078,19 @@ end
 instantiation "fun" :: (pt, le_eqvt) le_eqvt
 begin
 
-instance 
+instance
 apply standard
 unfolding le_fun_def
 apply(perm_simp)
 apply(rule refl)
-done 
+done
 
 end
 
 instantiation bool :: inf_eqvt
 begin
 
-instance 
+instance
 apply standard
 unfolding Inf_bool_def
 apply(perm_simp)
@@ -1102,12 +1102,12 @@ end
 instantiation "fun" :: (pt, inf_eqvt) inf_eqvt
 begin
 
-instance 
+instance
 apply standard
 unfolding Inf_fun_def
 apply(perm_simp)
 apply(rule refl)
-done 
+done
 
 end
 
@@ -1142,7 +1142,7 @@ lemma snd_eqvt [eqvt]:
   shows "p \<bullet> (snd x) = snd (p \<bullet> x)"
   by (cases x) simp
 
-lemma split_eqvt [eqvt]: 
+lemma split_eqvt [eqvt]:
   shows "p \<bullet> (case_prod P x) = case_prod (p \<bullet> P) (p \<bullet> x)"
   unfolding split_def
   by simp
@@ -1158,7 +1158,7 @@ lemma rev_eqvt [eqvt]:
   shows "p \<bullet> (rev xs) = rev (p \<bullet> xs)"
   by (induct xs) (simp_all add: append_eqvt)
 
-lemma map_eqvt [eqvt]: 
+lemma map_eqvt [eqvt]:
   shows "p \<bullet> (map f xs) = map (p \<bullet> f) (p \<bullet> xs)"
   by (induct xs) (simp_all)
 
@@ -1211,8 +1211,8 @@ lemma inter_fset_eqvt [eqvt]:
 lemma subset_fset_eqvt [eqvt]:
   shows "(p \<bullet> (S |\<subseteq>| T)) = ((p \<bullet> S) |\<subseteq>| (p \<bullet> T))"
   by transfer simp
-  
-lemma map_fset_eqvt [eqvt]: 
+
+lemma map_fset_eqvt [eqvt]:
   shows "p \<bullet> (f |`| S) = (p \<bullet> f) |`| (p \<bullet> S)"
   by transfer simp
 end
@@ -1244,12 +1244,12 @@ where
 
 definition
   fresh :: "atom \<Rightarrow> 'a \<Rightarrow> bool" ("_ \<sharp> _" [55, 55] 55)
-where   
+where
   "a \<sharp> x \<equiv> a \<notin> supp x"
 
 end
 
-lemma supp_conv_fresh: 
+lemma supp_conv_fresh:
   shows "supp x = {a. \<not> a \<sharp> x}"
   unfolding fresh_def by simp
 
@@ -1272,15 +1272,15 @@ next
 qed
 
 lemma swap_fresh_fresh:
-  assumes a: "a \<sharp> x" 
+  assumes a: "a \<sharp> x"
   and     b: "b \<sharp> x"
   shows "(a \<rightleftharpoons> b) \<bullet> x = x"
 proof (cases)
-  assume asm: "sort_of a = sort_of b" 
-  have "finite {c. (a \<rightleftharpoons> c) \<bullet> x \<noteq> x}" "finite {c. (b \<rightleftharpoons> c) \<bullet> x \<noteq> x}" 
+  assume asm: "sort_of a = sort_of b"
+  have "finite {c. (a \<rightleftharpoons> c) \<bullet> x \<noteq> x}" "finite {c. (b \<rightleftharpoons> c) \<bullet> x \<noteq> x}"
     using a b unfolding fresh_def supp_def by simp_all
   then have "finite ({c. (a \<rightleftharpoons> c) \<bullet> x \<noteq> x} \<union> {c. (b \<rightleftharpoons> c) \<bullet> x \<noteq> x})" by simp
-  then obtain c 
+  then obtain c
     where "(a \<rightleftharpoons> c) \<bullet> x = x" "(b \<rightleftharpoons> c) \<bullet> x = x" "sort_of c = sort_of b"
     by (rule obtain_atom) (auto)
   then show "(a \<rightleftharpoons> b) \<bullet> x = x" using asm by (rule_tac swap_rel_trans) (simp_all)
@@ -1322,7 +1322,7 @@ section {* supports *}
 
 definition
   supports :: "atom set \<Rightarrow> 'a::pt \<Rightarrow> bool" (infixl "supports" 80)
-where  
+where
   "S supports x \<equiv> \<forall>a b. (a \<notin> S \<and> b \<notin> S \<longrightarrow> (a \<rightleftharpoons> b) \<bullet> x = x)"
 
 lemma supp_is_subset:
@@ -1390,7 +1390,7 @@ proof (rule equalityI)
 qed
 
 
-lemma subsetCI: 
+lemma subsetCI:
   shows "(\<And>x. x \<in> A \<Longrightarrow> x \<notin> B \<Longrightarrow> False) \<Longrightarrow> A \<subseteq> B"
   by auto
 
@@ -1424,12 +1424,12 @@ qed
 
 section {* Support w.r.t. relations *}
 
-text {* 
+text {*
   This definition is used for unquotient types, where
   alpha-equivalence does not coincide with equality.
 *}
 
-definition 
+definition
   "supp_rel R x = {a. infinite {b. \<not>(R ((a \<rightleftharpoons> b) \<bullet> x) x)}}"
 
 
@@ -1439,7 +1439,7 @@ section {* Finitely-supported types *}
 class fs = pt +
   assumes finite_supp: "finite (supp x)"
 
-lemma pure_supp: 
+lemma pure_supp:
   fixes x::"'a::pure"
   shows "supp x = {}"
   unfolding supp_def by (simp add: permute_pure)
@@ -1463,7 +1463,7 @@ apply simp
 apply simp
 done
 
-lemma fresh_atom: 
+lemma fresh_atom:
   shows "a \<sharp> b \<longleftrightarrow> a \<noteq> b"
   unfolding fresh_def supp_atom by simp
 
@@ -1478,13 +1478,13 @@ lemma perm_swap_eq:
 unfolding permute_perm_def
 by (metis add_diff_cancel minus_perm_def)
 
-lemma supports_perm: 
+lemma supports_perm:
   shows "{a. p \<bullet> a \<noteq> a} supports p"
   unfolding supports_def
   unfolding perm_swap_eq
   by (simp add: swap_eqvt)
 
-lemma finite_perm_lemma: 
+lemma finite_perm_lemma:
   shows "finite {a::atom. p \<bullet> a \<noteq> a}"
   using finite_Rep_perm [of p]
   unfolding permute_atom_def .
@@ -1498,9 +1498,9 @@ apply (simp add: perm_swap_eq swap_eqvt)
 apply (auto simp: perm_eq_iff swap_atom)
 done
 
-lemma fresh_perm: 
+lemma fresh_perm:
   shows "a \<sharp> p \<longleftrightarrow> p \<bullet> a = a"
-  unfolding fresh_def 
+  unfolding fresh_def
   by (simp add: supp_perm)
 
 lemma supp_swap:
@@ -1511,11 +1511,11 @@ lemma fresh_swap:
   shows "a \<sharp> (b \<rightleftharpoons> c) \<longleftrightarrow> (sort_of b \<noteq> sort_of c) \<or> b = c \<or> (a \<sharp> b \<and> a \<sharp> c)"
   by (simp add: fresh_def supp_swap supp_atom)
 
-lemma fresh_zero_perm: 
+lemma fresh_zero_perm:
   shows "a \<sharp> (0::perm)"
   unfolding fresh_perm by simp
 
-lemma supp_zero_perm: 
+lemma supp_zero_perm:
   shows "supp (0::perm) = {}"
   unfolding supp_perm by simp
 
@@ -1557,24 +1557,24 @@ proof
   show "(p + q) \<bullet> a = (q + p) \<bullet> a"
   proof -
     { assume "a \<notin> supp p" "a \<notin> supp q"
-      then have "(p + q) \<bullet> a = (q + p) \<bullet> a" 
+      then have "(p + q) \<bullet> a = (q + p) \<bullet> a"
         by (simp add: supp_perm)
     }
     moreover
     { assume a: "a \<in> supp p" "a \<notin> supp q"
       then have "p \<bullet> a \<in> supp p" by (simp add: supp_perm)
       then have "p \<bullet> a \<notin> supp q" using asm by auto
-      with a have "(p + q) \<bullet> a = (q + p) \<bullet> a" 
+      with a have "(p + q) \<bullet> a = (q + p) \<bullet> a"
         by (simp add: supp_perm)
     }
     moreover
     { assume a: "a \<notin> supp p" "a \<in> supp q"
       then have "q \<bullet> a \<in> supp q" by (simp add: supp_perm)
-      then have "q \<bullet> a \<notin> supp p" using asm by auto 
-      with a have "(p + q) \<bullet> a = (q + p) \<bullet> a" 
+      then have "q \<bullet> a \<notin> supp p" using asm by auto
+      with a have "(p + q) \<bullet> a = (q + p) \<bullet> a"
         by (simp add: supp_perm)
     }
-    ultimately show "(p + q) \<bullet> a = (q + p) \<bullet> a" 
+    ultimately show "(p + q) \<bullet> a = (q + p) \<bullet> a"
       using asm by blast
   qed
 qed
@@ -1587,14 +1587,14 @@ proof -
   { fix a::"atom"
     assume "a \<in> supp p"
     then have "a \<notin> supp q" using asm by auto
-    then have "a \<in> supp (p + q)" using `a \<in> supp p` 
+    then have "a \<in> supp (p + q)" using `a \<in> supp p`
       by (simp add: supp_perm)
   }
   moreover
   { fix a::"atom"
     assume "a \<in> supp q"
     then have "a \<notin> supp p" using asm by auto
-    then have "a \<in> supp (q + p)" using `a \<in> supp q` 
+    then have "a \<in> supp (q + p)" using `a \<in> supp q`
       by (simp add: supp_perm)
     then have "a \<in> supp (p + q)" using asm plus_perm_eq
       by metis
@@ -1626,11 +1626,11 @@ section {* Finite Support instances for other types *}
 
 subsection {* Type @{typ "'a \<times> 'b"} is finitely-supported. *}
 
-lemma supp_Pair: 
+lemma supp_Pair:
   shows "supp (x, y) = supp x \<union> supp y"
   by (simp add: supp_def Collect_imp_eq Collect_neg_eq)
 
-lemma fresh_Pair: 
+lemma fresh_Pair:
   shows "a \<sharp> (x, y) \<longleftrightarrow> a \<sharp> x \<and> a \<sharp> y"
   by (simp add: fresh_def supp_Pair)
 
@@ -1651,19 +1651,19 @@ done
 
 subsection {* Type @{typ "'a + 'b"} is finitely supported *}
 
-lemma supp_Inl: 
+lemma supp_Inl:
   shows "supp (Inl x) = supp x"
   by (simp add: supp_def)
 
-lemma supp_Inr: 
+lemma supp_Inr:
   shows "supp (Inr x) = supp x"
   by (simp add: supp_def)
 
-lemma fresh_Inl: 
+lemma fresh_Inl:
   shows "a \<sharp> Inl x \<longleftrightarrow> a \<sharp> x"
   by (simp add: fresh_def supp_Inl)
 
-lemma fresh_Inr: 
+lemma fresh_Inr:
   shows "a \<sharp> Inr y \<longleftrightarrow> a \<sharp> y"
   by (simp add: fresh_def supp_Inr)
 
@@ -1676,19 +1676,19 @@ done
 
 subsection {* Type @{typ "'a option"} is finitely supported *}
 
-lemma supp_None: 
+lemma supp_None:
   shows "supp None = {}"
 by (simp add: supp_def)
 
-lemma supp_Some: 
+lemma supp_Some:
   shows "supp (Some x) = supp x"
   by (simp add: supp_def)
 
-lemma fresh_None: 
+lemma fresh_None:
   shows "a \<sharp> None"
   by (simp add: fresh_def supp_None)
 
-lemma fresh_Some: 
+lemma fresh_Some:
   shows "a \<sharp> Some x \<longleftrightarrow> a \<sharp> x"
   by (simp add: fresh_def supp_Some)
 
@@ -1701,19 +1701,19 @@ done
 
 subsubsection {* Type @{typ "'a list"} is finitely supported *}
 
-lemma supp_Nil: 
+lemma supp_Nil:
   shows "supp [] = {}"
   by (simp add: supp_def)
 
-lemma fresh_Nil: 
+lemma fresh_Nil:
   shows "a \<sharp> []"
   by (simp add: fresh_def supp_Nil)
 
-lemma supp_Cons: 
+lemma supp_Cons:
   shows "supp (x # xs) = supp x \<union> supp xs"
 by (simp add: supp_def Collect_imp_eq Collect_neg_eq)
 
-lemma fresh_Cons: 
+lemma fresh_Cons:
   shows "a \<sharp> (x # xs) \<longleftrightarrow> a \<sharp> x \<and> a \<sharp> xs"
   by (simp add: fresh_def supp_Cons)
 
@@ -1754,13 +1754,13 @@ done
 
 section {* Support and Freshness for Applications *}
 
-lemma fresh_conv_MOST: 
+lemma fresh_conv_MOST:
   shows "a \<sharp> x \<longleftrightarrow> (MOST b. (a \<rightleftharpoons> b) \<bullet> x = x)"
-  unfolding fresh_def supp_def 
+  unfolding fresh_def supp_def
   unfolding MOST_iff_cofinite by simp
 
 lemma fresh_fun_app:
-  assumes "a \<sharp> f" and "a \<sharp> x" 
+  assumes "a \<sharp> f" and "a \<sharp> x"
   shows "a \<sharp> f x"
   using assms
   unfolding fresh_conv_MOST
@@ -1805,7 +1805,7 @@ proof -
     also have "\<dots> = (p + q) \<bullet> (f x)" by simp
     also have "\<dots> = f ((p + q) \<bullet> x)"
       using assms by (simp only: eqvt_at_def)
-    finally have "p \<bullet> (f (q \<bullet> x)) = f (p \<bullet> q \<bullet> x)" by simp } 
+    finally have "p \<bullet> (f (q \<bullet> x)) = f (p \<bullet> q \<bullet> x)" by simp }
   then show "eqvt_at f (q \<bullet> x)" unfolding eqvt_at_def
     by simp
 qed
@@ -1815,7 +1815,7 @@ lemma supp_fun_eqvt:
   shows "supp f = {}"
   using a
   unfolding eqvt_def
-  unfolding supp_def 
+  unfolding supp_def
   by simp
 
 lemma fresh_fun_eqvt:
@@ -1877,7 +1877,7 @@ by auto
 text {* for handling of freshness of functions *}
 
 simproc_setup fresh_fun_simproc ("a \<sharp> (f::'a::pt \<Rightarrow>'b::pt)") = {* fn _ => fn ctxt => fn ctrm =>
-  let 
+  let
     val _ $ _ $ f = Thm.term_of ctrm
   in
     case (Term.add_frees f [], Term.add_vars f []) of
@@ -1888,11 +1888,11 @@ simproc_setup fresh_fun_simproc ("a \<sharp> (f::'a::pt \<Rightarrow>'b::pt)") =
         val absf = absfree x f
         val cty_inst =
           [SOME (Thm.ctyp_of ctxt (fastype_of argx)), SOME (Thm.ctyp_of ctxt (fastype_of f))]
-        val ctrm_inst = [NONE, SOME (Thm.cterm_of ctxt absf), SOME (Thm.cterm_of ctxt argx)] 
+        val ctrm_inst = [NONE, SOME (Thm.cterm_of ctxt absf), SOME (Thm.cterm_of ctxt argx)]
         val thm = Thm.instantiate' cty_inst ctrm_inst @{thm fresh_fun_app}
       in
-        SOME(thm RS @{thm Eq_TrueI}) 
-      end  
+        SOME(thm RS @{thm Eq_TrueI})
+      end
     | (_, _) => NONE
   end
 *}
@@ -1932,7 +1932,7 @@ lemma fundef_ex1_eqvt:
   using eqvt[simplified eqvt_def]
   apply(simp)
   apply(rule ex1)
-  apply(rule THE_defaultI2) 
+  apply(rule THE_defaultI2)
   apply(rule_tac p="-p" in permute_boolE)
   apply(perm_simp add: permute_minus_cancel)
   apply(rule ex1)
@@ -2016,13 +2016,13 @@ proof -
       unfolding permute_set_def by force
   }
   then show "(\<Union>x \<in> S. supp x) supports S"
-    unfolding supports_def 
+    unfolding supports_def
     by (simp add: fresh_def[symmetric] swap_fresh_fresh)
 qed
 
 lemma Union_of_finite_supp_sets:
   fixes S::"('a::fs set)"
-  assumes fin: "finite S"   
+  assumes fin: "finite S"
   shows "finite (\<Union>x\<in>S. supp x)"
   using fin by (induct) (auto simp: finite_supp)
 
@@ -2031,13 +2031,13 @@ lemma Union_included_in_supp:
   assumes fin: "finite S"
   shows "(\<Union>x\<in>S. supp x) \<subseteq> supp S"
 proof -
-  have eqvt: "eqvt (\<lambda>S. \<Union>x \<in> S. supp x)" 
-    unfolding eqvt_def by simp 
+  have eqvt: "eqvt (\<lambda>S. \<Union>x \<in> S. supp x)"
+    unfolding eqvt_def by simp
   have "(\<Union>x\<in>S. supp x) = supp (\<Union>x\<in>S. supp x)"
     by (rule supp_finite_atom_set[symmetric]) (rule Union_of_finite_supp_sets[OF fin])
   also have "\<dots> \<subseteq> supp S" using eqvt
     by (rule supp_fun_app_eqvt)
-  finally show "(\<Union>x\<in>S. supp x) \<subseteq> supp S" .  
+  finally show "(\<Union>x\<in>S. supp x) \<subseteq> supp S" .
 qed
 
 lemma supp_of_finite_sets:
@@ -2129,7 +2129,7 @@ lemma supp_set_mset:
 lemma Union_finite_multiset:
   fixes M::"'a::fs multiset"
   shows "finite (\<Union>{supp x | x. x \<in># M})"
-proof - 
+proof -
   have "finite (\<Union>(supp ` {x. x \<in># M}))"
     by (induct M) (simp_all add: Collect_imp_eq Collect_neg_eq finite_supp)
   then show "finite (\<Union>{supp x | x. x \<in># M})"
@@ -2149,7 +2149,7 @@ proof -
 qed
 
 lemma Union_included_multiset:
-  fixes M::"('a::fs multiset)" 
+  fixes M::"('a::fs multiset)"
   shows "(\<Union>{supp x | x. x \<in># M}) \<subseteq> supp M"
 proof -
   have "(\<Union>{supp x | x. x \<in># M}) = (\<Union>x \<in> set_mset M. supp x)" by auto
@@ -2259,7 +2259,7 @@ lemma supp_finfun_update:
   shows "supp (finfun_update f x y) \<subseteq> supp(f, x, y)"
 using fresh_finfun_update
 by (auto simp: fresh_def supp_Pair)
-    
+
 instance finfun :: (fs, fs) fs
   apply standard
   apply(induct_tac x rule: finfun_weak_induct)
@@ -2272,16 +2272,16 @@ instance finfun :: (fs, fs) fs
 
 section {* Freshness and Fresh-Star *}
 
-lemma fresh_Unit_elim: 
+lemma fresh_Unit_elim:
   shows "(a \<sharp> () \<Longrightarrow> PROP C) \<equiv> PROP C"
   by (simp add: fresh_Unit)
 
-lemma fresh_Pair_elim: 
+lemma fresh_Pair_elim:
   shows "(a \<sharp> (x, y) \<Longrightarrow> PROP C) \<equiv> (a \<sharp> x \<Longrightarrow> a \<sharp> y \<Longrightarrow> PROP C)"
   by rule (simp_all add: fresh_Pair)
 
 (* this rule needs to be added before the fresh_prodD is *)
-(* added to the simplifier with mksimps                  *) 
+(* added to the simplifier with mksimps                  *)
 lemma [simp]:
   shows "a \<sharp> x1 \<Longrightarrow> a \<sharp> x2 \<Longrightarrow> a \<sharp> (x1, x2)"
   by (simp add: fresh_Pair)
@@ -2303,9 +2303,9 @@ end
 text {* The fresh-star generalisation of fresh is used in strong
   induction principles. *}
 
-definition 
+definition
   fresh_star :: "atom set \<Rightarrow> 'a::pt \<Rightarrow> bool" ("_ \<sharp>* _" [80,80] 80)
-where 
+where
   "as \<sharp>* x \<equiv> \<forall>a \<in> as. a \<sharp> x"
 
 lemma fresh_star_supp_conv:
@@ -2330,7 +2330,7 @@ unfolding fresh_star_def fresh_def
 by (auto simp: supp_finite_atom_set fin)
 
 lemma atom_fresh_star_disjoint:
-  assumes fin: "finite bs" 
+  assumes fin: "finite bs"
   shows "as \<sharp>* bs \<longleftrightarrow> (as \<inter> bs = {})"
 
 unfolding fresh_star_def fresh_def
@@ -2338,7 +2338,7 @@ by (auto simp: supp_finite_atom_set fin)
 
 
 lemma fresh_star_Pair:
-  shows "as \<sharp>* (x, y) = (as \<sharp>* x \<and> as \<sharp>* y)" 
+  shows "as \<sharp>* (x, y) = (as \<sharp>* x \<and> as \<sharp>* y)"
   by (auto simp: fresh_star_def fresh_Pair)
 
 lemma fresh_star_list:
@@ -2361,7 +2361,7 @@ lemma fresh_star_singleton:
 lemma fresh_star_fset:
   fixes xs::"('a::fs) list"
   shows "as \<sharp>* fset S \<longleftrightarrow> as \<sharp>* S"
-by (simp add: fresh_star_def fresh_def) 
+by (simp add: fresh_star_def fresh_def)
 
 lemma fresh_star_Un:
   shows "(as \<union> bs) \<sharp>* x = (as \<sharp>* x \<and> bs \<sharp>* x)"
@@ -2388,11 +2388,11 @@ lemma fresh_star_empty_elim:
   "({} \<sharp>* x \<Longrightarrow> PROP C) \<equiv> PROP C"
   by (simp add: fresh_star_def)
 
-lemma fresh_star_Unit_elim: 
+lemma fresh_star_Unit_elim:
   shows "(a \<sharp>* () \<Longrightarrow> PROP C) \<equiv> PROP C"
-  by (simp add: fresh_star_def fresh_Unit) 
+  by (simp add: fresh_star_def fresh_Unit)
 
-lemma fresh_star_Pair_elim: 
+lemma fresh_star_Pair_elim:
   shows "(a \<sharp>* (x, y) \<Longrightarrow> PROP C) \<equiv> (a \<sharp>* x \<Longrightarrow> a \<sharp>* y \<Longrightarrow> PROP C)"
   by (rule, simp_all add: fresh_star_Pair)
 
@@ -2428,10 +2428,10 @@ proof -
   moreover
   have "a \<notin> supp ((p \<bullet> a \<rightleftharpoons> a) + p)" by (simp add: supp_perm)
   then have "supp ((p \<bullet> a \<rightleftharpoons> a) + p) \<noteq> supp p" using a by auto
-  ultimately 
+  ultimately
   show "supp ((p \<bullet> a \<rightleftharpoons> a) + p) \<subset> supp p" by auto
 qed
-  
+
 
 lemma perm_struct_induct[consumes 1, case_names zero swap]:
   assumes S: "supp p \<subseteq> S"
@@ -2459,8 +2459,8 @@ proof -
       then have "P ?q" using ih by simp
       moreover
       have "supp ?q \<subseteq> S" using as a2 by simp
-      ultimately  have "P ((p \<bullet> a \<rightleftharpoons> a) + ?q)" using as a1 swap by simp 
-      moreover 
+      ultimately  have "P ((p \<bullet> a \<rightleftharpoons> a) + ?q)" using as a1 swap by simp
+      moreover
       have "p = (p \<bullet> a \<rightleftharpoons> a) + ?q" by (simp add: perm_eq_iff)
       ultimately have "P p" by simp
     }
@@ -2510,12 +2510,12 @@ lemma supp_perm_pair:
 proof -
   { assume "supp p \<subseteq> {a, b}"
     then have "p = 0 \<or> p = (b \<rightleftharpoons> a)"
-      apply (induct p rule: perm_struct_induct) 
+      apply (induct p rule: perm_struct_induct)
       apply (auto simp: swap_cancel supp_zero_perm supp_swap)
       apply (simp add: swap_commute)
       done
   }
-  then show "supp p \<subseteq> {a, b} \<longleftrightarrow> p = 0 \<or> p = (b \<rightleftharpoons> a)" 
+  then show "supp p \<subseteq> {a, b} \<longleftrightarrow> p = 0 \<or> p = (b \<rightleftharpoons> a)"
     by (auto simp: supp_zero_perm supp_swap split: if_splits)
 qed
 
@@ -2584,7 +2584,7 @@ lemma supp_perm_perm_eq:
   shows "p \<bullet> x = q \<bullet> x"
 proof -
   from a have "\<forall>a \<in> supp x. (-q + p) \<bullet> a = a" by simp
-  then have "\<forall>a \<in> supp x. a \<notin> supp (-q + p)" 
+  then have "\<forall>a \<in> supp x. a \<notin> supp (-q + p)"
     unfolding supp_perm by simp
   then have "supp x \<sharp>* (-q + p)"
     unfolding fresh_star_def fresh_def by simp
@@ -2626,7 +2626,7 @@ qed
 
 section {* Avoiding of atom sets *}
 
-text {* 
+text {*
   For every set of atoms, there is another set of atoms
   avoiding a finitely supported c and there is a permutation
   which 'translates' between both sets.
@@ -2650,7 +2650,7 @@ proof -
   next
     case (insert x Xs)
     then obtain p where
-      p1: "(p \<bullet> Xs) \<inter> As = {}" and 
+      p1: "(p \<bullet> Xs) \<inter> As = {}" and
       p2: "supp p = (Xs \<union> (p \<bullet> Xs))" by blast
     from `x \<in> As` p1 have "x \<notin> p \<bullet> Xs" by fast
     with `x \<notin> Xs` p2 have "x \<notin> supp p" by fast
@@ -2676,7 +2676,7 @@ proof -
     moreover
     have "supp (x \<rightleftharpoons> y) \<inter> supp p = {}" using px py `sort_of y = sort_of x`
       unfolding supp_swap by (simp add: supp_perm)
-    then have "supp ?q = (supp (x \<rightleftharpoons> y) \<union> supp p)" 
+    then have "supp ?q = (supp (x \<rightleftharpoons> y) \<union> supp p)"
       by (simp add: supp_plus_perm_eq)
     then have "supp ?q = insert x Xs \<union> ?q \<bullet> insert x Xs"
       using p2 `sort_of y = sort_of x` `x \<noteq> y` unfolding q supp_swap
@@ -2738,7 +2738,7 @@ proof -
   obtain p where p1: "(p \<bullet> {a}) \<sharp>* c" and p2: "supp x \<sharp>* p"
     using at_set_avoiding2[of "{a}" "c" "x"] assms a by blast
   have c: "(p \<bullet> a) \<sharp> c" using p1
-    unfolding fresh_star_def Ball_def 
+    unfolding fresh_star_def Ball_def
     by(erule_tac x="p \<bullet> a" in allE) (simp add: permute_set_def)
   hence "p \<bullet> a \<sharp> c \<and> supp x \<sharp>* p" using p2 by blast
   then show "\<exists>p. (p \<bullet> a) \<sharp> c \<and> supp x \<sharp>* p" by blast
@@ -2758,15 +2758,15 @@ proof (induct)
   then show "\<exists>q. (\<forall>b \<in> {}. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> {} \<union> p \<bullet> {}" by blast
 next
   case (insert a bs)
-  then have " \<exists>q. (\<forall>b \<in> bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> bs \<union> p \<bullet> bs" by simp 
+  then have " \<exists>q. (\<forall>b \<in> bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> bs \<union> p \<bullet> bs" by simp
   then obtain q where *: "\<forall>b \<in> bs. q \<bullet> b = p \<bullet> b" and **: "supp q \<subseteq> bs \<union> p \<bullet> bs"
-    by (metis empty_subsetI insert(3) supp_swap) 
+    by (metis empty_subsetI insert(3) supp_swap)
   { assume 1: "q \<bullet> a = p \<bullet> a"
     have "\<forall>b \<in> (insert a bs). q \<bullet> b = p \<bullet> b" using 1 * by simp
-    moreover 
-    have "supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs" 
+    moreover
+    have "supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs"
       using ** by (auto simp: insert_eqvt)
-    ultimately 
+    ultimately
     have "\<exists>q. (\<forall>b \<in> insert a bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs" by blast
   }
   moreover
@@ -2774,9 +2774,9 @@ next
     define q' where "q' = ((q \<bullet> a) \<rightleftharpoons> (p \<bullet> a)) + q"
     have "\<forall>b \<in> insert a bs. q' \<bullet> b = p \<bullet> b" using 2 * `a \<notin> bs` unfolding q'_def
       by (auto simp: swap_atom)
-    moreover 
+    moreover
     { have "{q \<bullet> a, p \<bullet> a} \<subseteq> insert a bs \<union> p \<bullet> insert a bs"
-        using ** 
+        using **
         apply (auto simp: supp_perm insert_eqvt)
         apply (subgoal_tac "q \<bullet> a \<in> bs \<union> p \<bullet> bs")
         apply(auto)[1]
@@ -2784,16 +2784,16 @@ next
         apply(blast)
         apply(simp)
         done
-      then have "supp (q \<bullet> a \<rightleftharpoons> p \<bullet> a) \<subseteq> insert a bs \<union> p \<bullet> insert a bs" 
+      then have "supp (q \<bullet> a \<rightleftharpoons> p \<bullet> a) \<subseteq> insert a bs \<union> p \<bullet> insert a bs"
         unfolding supp_swap by auto
       moreover
-      have "supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs" 
+      have "supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs"
         using ** by (auto simp: insert_eqvt)
-      ultimately 
-      have "supp q' \<subseteq> insert a bs \<union> p \<bullet> insert a bs" 
+      ultimately
+      have "supp q' \<subseteq> insert a bs \<union> p \<bullet> insert a bs"
         unfolding q'_def using supp_plus_perm by blast
     }
-    ultimately 
+    ultimately
     have "\<exists>q. (\<forall>b \<in> insert a bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs" by blast
   }
   ultimately show "\<exists>q. (\<forall>b \<in> insert a bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> insert a bs \<union> p \<bullet> insert a bs"
@@ -2804,12 +2804,12 @@ lemma set_renaming_perm2:
   shows "\<exists>q. (\<forall>b \<in> bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> bs \<union> (p \<bullet> bs)"
 proof -
   have "finite (bs \<inter> supp p)" by (simp add: finite_supp)
-  then obtain q 
+  then obtain q
     where *: "\<forall>b \<in> bs \<inter> supp p. q \<bullet> b = p \<bullet> b" and **: "supp q \<subseteq> (bs \<inter> supp p) \<union> (p \<bullet> (bs \<inter> supp p))"
     using set_renaming_perm by blast
   from ** have "supp q \<subseteq> bs \<union> (p \<bullet> bs)" by (auto simp: inter_eqvt)
   moreover
-  have "\<forall>b \<in> bs - supp p. q \<bullet> b = p \<bullet> b" 
+  have "\<forall>b \<in> bs - supp p. q \<bullet> b = p \<bullet> b"
     apply(auto)
     apply(subgoal_tac "b \<notin> supp q")
     apply(simp add: fresh_def[symmetric])
@@ -2822,7 +2822,7 @@ proof -
   ultimately have "(\<forall>b \<in> bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> bs \<union> (p \<bullet> bs)" using * by auto
   then show "\<exists>q. (\<forall>b \<in> bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> bs \<union> (p \<bullet> bs)" by blast
 qed
-    
+
 lemma list_renaming_perm:
   shows "\<exists>q. (\<forall>b \<in> set bs. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> set bs \<union> (p \<bullet> set bs)"
 proof (induct bs)
@@ -2832,18 +2832,18 @@ proof (induct bs)
     by (blast)
   { assume 1: "a \<in> set bs"
     have "q \<bullet> a = p \<bullet> a" using * 1 by (induct bs) (auto)
-    then have "\<forall>b \<in> set (a # bs). q \<bullet> b = p \<bullet> b" using * by simp 
-    moreover 
+    then have "\<forall>b \<in> set (a # bs). q \<bullet> b = p \<bullet> b" using * by simp
+    moreover
     have "supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" using ** by (auto simp: insert_eqvt)
-    ultimately 
+    ultimately
     have "\<exists>q. (\<forall>b \<in> set (a # bs). q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" by blast
   }
   moreover
   { assume 2: "a \<notin> set bs"
     define q' where "q' = ((q \<bullet> a) \<rightleftharpoons> (p \<bullet> a)) + q"
-    have "\<forall>b \<in> set (a # bs). q' \<bullet> b = p \<bullet> b" 
+    have "\<forall>b \<in> set (a # bs). q' \<bullet> b = p \<bullet> b"
       unfolding q'_def using 2 * `a \<notin> set bs` by (auto simp: swap_atom)
-    moreover 
+    moreover
     { have "{q \<bullet> a, p \<bullet> a} \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))"
         using **
         apply (auto simp: supp_perm insert_eqvt)
@@ -2853,23 +2853,23 @@ proof (induct bs)
         apply(blast)
         apply(simp)
         done
-      then have "supp (q \<bullet> a \<rightleftharpoons> p \<bullet> a) \<subseteq> set (a # bs) \<union> p \<bullet> set (a # bs)" 
+      then have "supp (q \<bullet> a \<rightleftharpoons> p \<bullet> a) \<subseteq> set (a # bs) \<union> p \<bullet> set (a # bs)"
         unfolding supp_swap by auto
       moreover
-      have "supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" 
+      have "supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))"
         using ** by (auto simp: insert_eqvt)
-      ultimately 
-      have "supp q' \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" 
+      ultimately
+      have "supp q' \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))"
         unfolding q'_def using supp_plus_perm by blast
     }
-    ultimately 
+    ultimately
     have "\<exists>q. (\<forall>b \<in> set (a # bs).  q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))" by blast
   }
   ultimately show "\<exists>q. (\<forall>b \<in> set (a # bs). q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> set (a # bs) \<union> p \<bullet> (set (a # bs))"
     by blast
 next
  case Nil
-  have "(\<forall>b \<in> set []. 0 \<bullet> b = p \<bullet> b) \<and> supp (0::perm) \<subseteq> set [] \<union> p \<bullet> set []" 
+  have "(\<forall>b \<in> set []. 0 \<bullet> b = p \<bullet> b) \<and> supp (0::perm) \<subseteq> set [] \<union> p \<bullet> set []"
     by (simp add: supp_zero_perm)
   then show "\<exists>q. (\<forall>b \<in> set []. q \<bullet> b = p \<bullet> b) \<and> supp q \<subseteq> set [] \<union> p \<bullet> (set [])" by blast
 qed
@@ -2897,32 +2897,32 @@ lemma sort_ineq [simp]:
   shows "atom a \<noteq> atom b"
 using assms by metis
 
-lemma supp_at_base: 
+lemma supp_at_base:
   fixes a::"'a::at_base"
   shows "supp a = {atom a}"
   by (simp add: supp_atom [symmetric] supp_def atom_eqvt)
 
-lemma fresh_at_base: 
+lemma fresh_at_base:
   shows  "sort_of a \<noteq> sort_of (atom b) \<Longrightarrow> a \<sharp> b"
   and "a \<sharp> b \<longleftrightarrow> a \<noteq> atom b"
-  unfolding fresh_def 
+  unfolding fresh_def
   apply(simp_all add: supp_at_base)
   apply(metis)
   done
 
 (* solves the freshness only if the inequality can be shown by the
-   simproc below *)  
+   simproc below *)
 lemma fresh_ineq_at_base [simp]:
   shows "a \<noteq> atom b \<Longrightarrow> a \<sharp> b"
   by (simp add: fresh_at_base)
 
 
-lemma fresh_atom_at_base [simp]: 
+lemma fresh_atom_at_base [simp]:
   fixes b::"'a::at_base"
   shows "a \<sharp> atom b \<longleftrightarrow> a \<sharp> b"
   by (simp add: fresh_def supp_at_base supp_atom)
 
-lemma fresh_star_atom_at_base: 
+lemma fresh_star_atom_at_base:
   fixes b::"'a::at_base"
   shows "as \<sharp>* atom b \<longleftrightarrow> as \<sharp>* b"
   by (simp add: fresh_star_def fresh_atom_at_base)
@@ -2935,30 +2935,30 @@ by (simp_all add: fresh_at_base)
 
 simproc_setup fresh_ineq ("x \<noteq> (y::'a::at_base)") = {* fn _ => fn ctxt => fn ctrm =>
   case Thm.term_of ctrm of @{term "HOL.Not"} $ (Const (@{const_name HOL.eq}, _) $ lhs $ rhs) =>
-    let  
+    let
       fun first_is_neg lhs rhs [] = NONE
         | first_is_neg lhs rhs (thm::thms) =
           (case Thm.prop_of thm of
              _ $ (@{term "HOL.Not"} $ (Const (@{const_name HOL.eq}, _) $ l $ r)) =>
                (if l = lhs andalso r = rhs then SOME(thm)
                 else if r = lhs andalso l = rhs then SOME(thm RS @{thm not_sym})
-                else first_is_neg lhs rhs thms)  
+                else first_is_neg lhs rhs thms)
         | _ => first_is_neg lhs rhs thms)
 
       val simp_thms = @{thms fresh_Pair fresh_at_base atom_eq_iff}
       val prems = Simplifier.prems_of ctxt
-         |> filter (fn thm => case Thm.prop_of thm of                    
-            _ $ (Const (@{const_name fresh}, ty) $ (_ $ a) $ b) => 
-            (let 
+         |> filter (fn thm => case Thm.prop_of thm of
+            _ $ (Const (@{const_name fresh}, ty) $ (_ $ a) $ b) =>
+            (let
                val atms = a :: HOLogic.strip_tuple b
              in
                member ((=)) atms lhs andalso member ((=)) atms rhs
-             end) 
+             end)
             | _ => false)
          |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps simp_thms))
          |> map (HOLogic.conj_elims ctxt)
          |> flat
-    in 
+    in
       case first_is_neg lhs rhs prems of
         SOME(thm) => SOME(thm RS @{thm Eq_TrueI})
       | NONE => NONE
@@ -3029,7 +3029,7 @@ apply(simp add: supp_at_base)
 apply(auto)
 done
 
-(* FIXME 
+(* FIXME
 lemma supp_cofinite_set_at_base:
   assumes a: "finite (UNIV - S)"
   shows "supp S = atom ` (UNIV - S)"
@@ -3053,7 +3053,7 @@ lemma fresh_at_base_permute_iff [simp]:
   unfolding atom_eqvt[symmetric]
   by (simp only: fresh_permute_iff)
 
-lemma fresh_at_base_permI: 
+lemma fresh_at_base_permI:
   shows "atom a \<sharp> p \<Longrightarrow> p \<bullet> a = a"
 by (simp add: fresh_def supp_perm)
 
@@ -3089,7 +3089,7 @@ lemma permute_flip_cancel [simp]: "(a \<leftrightarrow> b) \<bullet> (a \<leftri
 lemma permute_flip_cancel2 [simp]: "(a \<leftrightarrow> b) \<bullet> (b \<leftrightarrow> a) \<bullet> x = x"
   by (simp add: flip_commute)
 
-lemma flip_eqvt [eqvt]: 
+lemma flip_eqvt [eqvt]:
   shows "p \<bullet> (a \<leftrightarrow> b) = (p \<bullet> a \<leftrightarrow> p \<bullet> b)"
   unfolding flip_def
   by (simp add: swap_eqvt atom_eqvt)
@@ -3104,7 +3104,7 @@ lemma flip_at_base_simps [simp]:
   unfolding atom_eqvt [symmetric]
   by simp_all
 
-text {* the following two lemmas do not hold for @{text at_base}, 
+text {* the following two lemmas do not hold for @{text at_base},
   only for single sort atoms from at *}
 
 lemma flip_triple:
@@ -3125,7 +3125,7 @@ lemma permute_flip_at:
 
 lemma flip_at_simps [simp]:
   fixes a b::"'a::at"
-  shows "(a \<leftrightarrow> b) \<bullet> a = b" 
+  shows "(a \<leftrightarrow> b) \<bullet> a = b"
   and   "(a \<leftrightarrow> b) \<bullet> b = a"
   unfolding permute_flip_at by simp_all
 
@@ -3148,11 +3148,11 @@ text {*
   New atom types are defined as subtypes of @{typ atom}.
 *}
 
-lemma exists_eq_simple_sort: 
+lemma exists_eq_simple_sort:
   shows "\<exists>a. a \<in> {a. sort_of a = s}"
   by (rule_tac x="Atom s 0" in exI, simp)
 
-lemma exists_eq_sort: 
+lemma exists_eq_sort:
   shows "\<exists>a. a \<in> {a. sort_of a \<in> range sort_fun}"
   by (rule_tac x="Atom (sort_fun x) y" in exI, simp)
 
@@ -3267,7 +3267,7 @@ proof -
     next
       assume "a \<noteq> b"
       hence "atom a \<sharp> b" by (simp add: fresh_at_base)
-      with a3 have "atom a \<sharp> h b" 
+      with a3 have "atom a \<sharp> h b"
         by (rule fresh_fun_app)
       with a2 have d1: "(atom b \<rightleftharpoons> atom a) \<bullet> (h b) = (h b)"
         by (rule swap_fresh_fresh)
@@ -3294,7 +3294,7 @@ next
   fix x y
   assume x: "\<forall>a. atom a \<sharp> h \<longrightarrow> h a = x"
   assume y: "\<forall>a. atom a \<sharp> h \<longrightarrow> h a = y"
-  from a x y show "x = y" 
+  from a x y show "x = y"
     by (auto simp: fresh_Pair)
 qed
 
@@ -3341,17 +3341,17 @@ simproc_setup Fresh_simproc ("Fresh (h::'a::at \<Rightarrow> 'b::pt)") = {* fn _
      val catom  = @{const_name atom}
 
      val atoms = Simplifier.prems_of ctxt
-      |> map_filter (fn thm => case Thm.prop_of thm of                    
+      |> map_filter (fn thm => case Thm.prop_of thm of
            _ $ (Const (cfresh, _) $ (Const (catom, _) $ atm) $ _) => SOME (atm) | _ => NONE)
       |> distinct ((=))
-     
-     fun get_thm atm = 
+
+     fun get_thm atm =
        let
          val goal1 = HOLogic.mk_Trueprop (mk_fresh (mk_atom atm) h)
          val goal2 = HOLogic.mk_Trueprop (mk_fresh (mk_atom atm) (h $ atm))
- 
-         val thm1 = Goal.prove ctxt [] [] goal1 (K (asm_simp_tac ctxt 1)) 
-         val thm2 = Goal.prove ctxt [] [] goal2 (K (asm_simp_tac ctxt 1)) 
+
+         val thm1 = Goal.prove ctxt [] [] goal1 (K (asm_simp_tac ctxt 1))
+         val thm2 = Goal.prove ctxt [] [] goal2 (K (asm_simp_tac ctxt 1))
        in
          SOME (@{thm Fresh_apply'} OF [thm1, thm2] RS eq_reflection)
        end handle ERROR _ => NONE
@@ -3401,12 +3401,12 @@ lemma FRESH_binop_iff:
   fixes P :: "'a::at \<Rightarrow> 'b::pure"
   fixes Q :: "'a::at \<Rightarrow> 'c::pure"
   fixes binop :: "'b \<Rightarrow> 'c \<Rightarrow> 'd::pure"
-  assumes P: "finite (supp P)" 
+  assumes P: "finite (supp P)"
   and     Q: "finite (supp Q)"
   shows "(FRESH x. binop (P x) (Q x)) = binop (FRESH x. P x) (FRESH x. Q x)"
 proof -
   from assms have "finite (supp (P, Q))" by (simp add: supp_Pair)
-  then obtain a::'a where "atom a \<sharp> (P, Q)" by (rule obtain_fresh') 
+  then obtain a::'a where "atom a \<sharp> (P, Q)" by (rule obtain_fresh')
   then show ?thesis
     by (simp add: pure_fresh)
 qed

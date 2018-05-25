@@ -12,6 +12,14 @@ imports
   Landau_Symbols.Landau_Symbols
 begin
 
+(* TODO: Move? *)
+
+lemma ln_mono: "0 < x \<Longrightarrow> 0 < y \<Longrightarrow> x \<le> y \<Longrightarrow> ln (x::real) \<le> ln y"
+  by (subst ln_le_cancel_iff) simp_all
+
+lemma ln_mono_strict: "0 < x \<Longrightarrow> 0 < y \<Longrightarrow> x < y \<Longrightarrow> ln (x::real) < ln y"
+  by (subst ln_less_cancel_iff) simp_all
+
 declare DERIV_powr[THEN DERIV_chain2, derivative_intros]
 
 lemma sum_pos':
@@ -144,6 +152,18 @@ next
   with that[of 0] show ?thesis by simp
 qed
 
+lemma powr_lower_bound: "\<lbrakk>(l::real) > 0; l \<le> x; x \<le> u\<rbrakk> \<Longrightarrow> min (l powr z) (u powr z) \<le> x powr z"
+apply (cases "z \<ge> 0")
+apply (rule order.trans[OF min.cobounded1 powr_mono2], simp_all) []
+apply (rule order.trans[OF min.cobounded2 powr_mono2'], simp_all) []
+done
+
+lemma powr_upper_bound: "\<lbrakk>(l::real) > 0; l \<le> x; x \<le> u\<rbrakk> \<Longrightarrow> max (l powr z) (u powr z) \<ge> x powr z"
+apply (cases "z \<ge> 0")
+apply (rule order.trans[OF powr_mono2 max.cobounded2], simp_all) []
+apply (rule order.trans[OF powr_mono2' max.cobounded1], simp_all) []
+done
+
 lemma one_plus_x_powr_taylor2:
   obtains k where "\<And>x. abs (x::real) \<le> 1/2 \<Longrightarrow> abs ((1 + x) powr p - 1 - p*x) \<le> k*x^2"
 proof-
@@ -196,5 +216,70 @@ qed simp
 
 lemma x_times_x_minus_1_nonpos: "x \<ge> 0 \<Longrightarrow> x \<le> 1 \<Longrightarrow> (x::_::linordered_idom) * (x - 1) \<le> 0"
   by (intro mult_nonneg_nonpos) simp_all
+
+lemma powr_mono':
+  assumes "(x::real) > 0" "x \<le> 1" "a \<le> b"
+  shows   "x powr b \<le> x powr a"
+proof-
+  have "inverse x powr a \<le> inverse x powr b" using assms
+    by (intro powr_mono) (simp_all add: field_simps)
+  hence "inverse (x powr a) \<le> inverse (x powr b)" using assms by simp
+  with assms show ?thesis by (simp add: field_simps)
+qed
+
+lemma powr_less_mono':
+  assumes "(x::real) > 0" "x < 1" "a < b"
+  shows   "x powr b < x powr a"
+proof-
+  have "inverse x powr a < inverse x powr b" using assms
+    by (intro powr_less_mono) (simp_all add: field_simps)
+  hence "inverse (x powr a) < inverse (x powr b)" using assms by simp
+  with assms show ?thesis by (simp add: field_simps)
+qed
+
+lemma real_powr_at_bot:
+  assumes "(a::real) > 1"
+  shows   "((\<lambda>x. a powr x) \<longlongrightarrow> 0) at_bot"
+proof-
+  from assms have "filterlim (\<lambda>x. ln a * x) at_bot at_bot"
+    by (intro filterlim_tendsto_pos_mult_at_bot[OF tendsto_const _ filterlim_ident]) auto
+  hence "((\<lambda>x. exp (x * ln a)) \<longlongrightarrow> 0) at_bot"
+    by (intro filterlim_compose[OF exp_at_bot]) (simp add: algebra_simps)
+  thus ?thesis using assms unfolding powr_def by simp
+qed
+
+lemma real_powr_at_bot_neg:
+  assumes "(a::real) > 0" "a < 1"
+  shows   "filterlim (\<lambda>x. a powr x) at_top at_bot"
+proof-
+  from assms have "LIM x at_bot. ln (inverse a) * -x :> at_top"
+    by (intro filterlim_tendsto_pos_mult_at_top[OF tendsto_const] filterlim_uminus_at_top_at_bot)
+       (simp_all add: ln_inverse)
+  with assms have "LIM x at_bot. x * ln a :> at_top" 
+    by (subst (asm) ln_inverse) (simp_all add: mult.commute)
+  hence "LIM x at_bot. exp (x * ln a) :> at_top"
+    by (intro filterlim_compose[OF exp_at_top]) simp
+  thus ?thesis using assms unfolding powr_def by simp
+qed
+
+lemma real_powr_at_top_neg: 
+  assumes "(a::real) > 0" "a < 1"
+  shows   "((\<lambda>x. a powr x) \<longlongrightarrow> 0) at_top"
+proof-
+  from assms have "LIM x at_top. ln (inverse a) * x :> at_top"
+    by (intro filterlim_tendsto_pos_mult_at_top[OF tendsto_const])
+       (simp_all add: filterlim_ident field_simps)
+  with assms have "LIM x at_top. ln a * x :> at_bot"
+    by (subst filterlim_uminus_at_bot) (simp add: ln_inverse)
+  hence "((\<lambda>x. exp (x * ln a)) \<longlongrightarrow> 0) at_top"
+    by (intro filterlim_compose[OF exp_at_bot]) (simp_all add: mult.commute)
+  with assms show ?thesis unfolding powr_def by simp
+qed
+
+lemma eventually_nat_real:
+  assumes "eventually P (at_top :: real filter)"
+  shows   "eventually (\<lambda>x. P (real x)) (at_top :: nat filter)"
+  using assms filterlim_real_sequentially
+  unfolding filterlim_def le_filter_def eventually_filtermap by auto
 
 end

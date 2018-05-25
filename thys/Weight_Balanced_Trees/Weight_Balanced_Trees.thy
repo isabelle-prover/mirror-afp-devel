@@ -142,9 +142,9 @@ fun insert :: "'a::linorder \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
       GT \<Rightarrow> balanceL l a (insert x r) |
       EQ \<Rightarrow> Node n l a r )"
 
-fun del_min :: "'a wbt \<Rightarrow> 'a * 'a wbt" where
-"del_min (Node _ l a r) =
-   (if l = Leaf then (a,r) else let (x,l') = del_min l in (x, balanceL l' a r))"
+fun split_min :: "'a wbt \<Rightarrow> 'a * 'a wbt" where
+"split_min (Node _ l a r) =
+   (if l = Leaf then (a,r) else let (x,l') = split_min l in (x, balanceL l' a r))"
    
 fun del_max :: "'a wbt \<Rightarrow> 'a * 'a wbt" where
 "del_max (Node _ l a r) =
@@ -158,7 +158,7 @@ fun combine :: "'a wbt \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt"  where
    (if size l > size r then
       let (lMax, l') = del_max l in balanceL l' lMax r
     else
-      let (rMin, r') = del_min r in balanceR l rMin r')"
+      let (rMin, r') = split_min r in balanceR l rMin r')"
 
 fun delete :: "'a::linorder \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "delete _ Leaf = Leaf" |
@@ -206,9 +206,9 @@ lemma inorder_insert:
 by (induction t)
    (auto simp: ins_list_simps inorder_rotateL inorder_rotateR not_Leaf_if_not_balanced1)
 
-lemma del_minD:
-  "del_min t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> x # inorder t' = inorder t"
-by (induction t arbitrary: t' rule: del_min.induct)
+lemma split_minD:
+  "split_min t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> x # inorder t' = inorder t"
+by (induction t arbitrary: t' rule: split_min.induct)
    (auto simp: sorted_lems inorder_rotateL not_Leaf_if_not_balanced1
      split: prod.splits if_splits) 
 
@@ -221,7 +221,7 @@ by (induction t arbitrary: t' rule: del_max.induct)
 lemma inorder_combine:
   "inorder(combine l r) = inorder l @ inorder r"
 by(induction l r rule: combine.induct)
-  (auto simp: del_maxD del_minD inorder_rotateL inorder_rotateR not_Leaf_if_not_balanced1
+  (auto simp: del_maxD split_minD inorder_rotateL inorder_rotateR not_Leaf_if_not_balanced1
     simp del: rotateL.simps rotateR.simps split: prod.splits)
 
 lemma inorder_delete:
@@ -273,7 +273,7 @@ qed (auto)
 lemma delete_id_if_wbt_notin: "wbt t \<Longrightarrow> \<not> isin t x \<Longrightarrow> delete x t = t"
 by (induction t) auto
 
-lemma size_del_min: "t \<noteq> Leaf \<Longrightarrow> size t = Suc (size (snd (del_min t)))"
+lemma size_split_min: "t \<noteq> Leaf \<Longrightarrow> size t = Suc (size (snd (split_min t)))"
 by(induction t) (auto simp: not_Leaf_if_not_balanced1 split: if_splits prod.splits)
 
 lemma size_del_max: "t \<noteq> Leaf \<Longrightarrow> size t = Suc(size(snd(del_max t)))"
@@ -302,22 +302,23 @@ subsection "Preservation of WB tree Invariant for Concrete Parameters"
 
 text \<open>A number of sample interpretations with valid parameters:\<close>
 
-interpretation WBT where \<Delta>1 = 25 and \<Delta>2 = 10 and \<Gamma>1 = 14 and \<Gamma>2 = 10
-(*interpretation WBT where \<Delta>1 = 25 and \<Delta>2 = 10 and \<Gamma>1 = 15 and \<Gamma>2 = 10*)
-(*interpretation WBT where \<Delta>1 = 28 and \<Delta>2 = 10 and \<Gamma>1 = 10 and \<Gamma>2 = 7*) (* smt! *)
+interpretation WBT where
+  \<Delta>1 = 25 and \<Delta>2 = 10 and \<Gamma>1 = 14 and \<Gamma>2 = 10
+(* \<Delta>1 = 25 and \<Delta>2 = 10 and \<Gamma>1 = 15 and \<Gamma>2 = 10*)
+(* \<Delta>1 = 28 and \<Delta>2 = 10 and \<Gamma>1 = 10 and \<Gamma>2 = 7*)
 
-(*interpretation WBT where \<Delta>1 = 3 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 4 and \<Gamma>2 = 3*)
+(* \<Delta>1 = 3 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 4 and \<Gamma>2 = 3*)
   (* The only integer solution: *)
-(*interpretation WBT where \<Delta>1 = 3 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 2 and \<Gamma>2 = "Suc 0"*)
-(*interpretation WBT where \<Delta>1 = 31 and \<Delta>2 = 10 and \<Gamma>1 = 18 and \<Gamma>2 = 10*)
+(* \<Delta>1 = 3 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 2 and \<Gamma>2 = "Suc 0"*)
+(* \<Delta>1 = 31 and \<Delta>2 = 10 and \<Gamma>1 = 18 and \<Gamma>2 = 10*)
 
-(*interpretation WBT where \<Delta>1 = 35 and \<Delta>2 = 10 and \<Gamma>1 = 45 and \<Gamma>2 = 35*) (* smt! *)
-(*interpretation WBT where \<Delta>1 = 35 and \<Delta>2 = 10 and \<Gamma>1 = 4 and \<Gamma>2 = 3*)  (* smt! *)
-(*interpretation WBT where \<Delta>1 = 37 and \<Delta>2 = 10 and \<Gamma>1 = 13 and \<Gamma>2 = 10*)
+(* \<Delta>1 = 35 and \<Delta>2 = 10 and \<Gamma>1 = 45 and \<Gamma>2 = 35*)
+(* \<Delta>1 = 35 and \<Delta>2 = 10 and \<Gamma>1 = 4 and \<Gamma>2 = 3*)
+(* \<Delta>1 = 37 and \<Delta>2 = 10 and \<Gamma>1 = 13 and \<Gamma>2 = 10*)
 
-(*interpretation WBT where \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 4*)
-(*interpretation WBT where \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 3*)
-(* interpretation WBT where \<Delta>1 = 17 and \<Delta>2 = 4 and \<Gamma>1 = 5 and \<Gamma>2 = 3 *) (* smt! *)
+(* \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 4*)
+(* \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 3*)
+(* \<Delta>1 = 17 and \<Delta>2 = 4 and \<Gamma>1 = 5 and \<Gamma>2 = 3 *)
 by (auto simp add: WBT_def)  
 
 lemma wbt_insert:
@@ -450,20 +451,20 @@ proof -
   qed
 qed
 
-lemma wbt_del_min: "t \<noteq> Leaf \<Longrightarrow> wbt t \<Longrightarrow> wbt (snd (del_min t))"
-proof (induction t rule: del_min.induct) 
+lemma wbt_split_min: "t \<noteq> Leaf \<Longrightarrow> wbt t \<Longrightarrow> wbt (snd (split_min t))"
+proof (induction t rule: split_min.induct) 
   case (1 m l a r)
   show ?case
   proof (cases l)
     case Leaf thus ?thesis using "1.prems"(2) by simp
   next
     case (Node n ll al rl)
-    let ?l' = "snd (del_min (Node n ll al rl))"
-    have delBalanceL: "snd (del_min (Node m l a r)) = balanceL ?l' a r"
+    let ?l' = "snd (split_min (Node n ll al rl))"
+    have delBalanceL: "snd (split_min (Node m l a r)) = balanceL ?l' a r"
       using Node by(auto split: prod.splits)
     have "wbt ?l'" using "1"(1) "1.prems"(2) Node by auto
     moreover have "size l = size ?l' + 1"
-      using Node size_del_min by fastforce
+      using Node size_split_min by fastforce
     ultimately have "wbt (balanceL ?l' a r)"
       by (meson "1.prems"(2) wbt_balanceL)
     thus ?thesis using delBalanceL by auto
@@ -558,15 +559,15 @@ next
           thus ?thesis using balanceLeft by simp
         next
           case False
-          obtain rMin r' where letMin: "del_min r = (rMin, r')"
+          obtain rMin r' where letMin: "split_min r = (rMin, r')"
             by (metis prod.exhaust)
           hence balanceRight: "combine l r = balanceR l rMin r'" 
             using \<open>\<not> size l > size r\<close> by (simp)
           have "wbt r'"
-            using Node.prems wbt_del_min[OF lrNotLeaf(2)] letMin
+            using Node.prems wbt_split_min[OF lrNotLeaf(2)] letMin
             by (metis wbt.simps(2) snd_conv)
           moreover have "size r = size r' + 1"
-            using size_del_min[OF lrNotLeaf(2)] letMin by simp
+            using size_split_min[OF lrNotLeaf(2)] letMin by simp
           ultimately have "wbt(balanceR l rMin r')"
             using wbt_balanceR by (metis Node.prems)
           thus ?thesis using balanceRight by simp

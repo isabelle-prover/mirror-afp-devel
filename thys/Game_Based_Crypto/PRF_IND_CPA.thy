@@ -204,7 +204,7 @@ proof -
     }"
     including monad_normalisation by(simp add: game2_def split_def rf_encrypt_def Let_def)
   also have "\<dots> = map_spmf fst game2_a" unfolding game2_a_def
-    by(clarsimp simp add: map_spmf_conv_bind_spmf Let_def cond_application_beta if_distrib split_def cong: if_cong)
+    by(clarsimp simp add: map_spmf_conv_bind_spmf Let_def if_distribR if_distrib split_def cong: if_cong)
   finally have game2_2a: "game2 = \<dots>"  .
 
   have "map_spmf snd game2_a = map_spmf snd game2_b" unfolding game2_a_def game2_b_def

@@ -336,7 +336,7 @@ lemma f'_cong: "(g has_derivative blinfun_apply (f' x)) (at x)" if "x \<in> Y"
 proof -
   from derivative_rhs[of x] that cong
   have "(f has_derivative blinfun_apply (f' x)) (at x within Y)"
-    by (auto intro!: has_derivative_at_within)
+    by (auto intro!: has_derivative_at_withinI)
   then have "(g has_derivative blinfun_apply (f' x)) (at x within Y)"
     by (rule has_derivative_transform_within[OF _ zero_less_one that])
        (auto simp: cong)
@@ -1013,9 +1013,7 @@ lemma blinfuns_of_lvivl_eq: "blinfuns_of_lvivl x =
 lemma range_blinfun_of_vmatrix[simp]: "range blinfun_of_vmatrix = UNIV"
   apply auto
   apply transfer
-  subgoal for x
-    unfolding linear_linear
-    by (auto intro!: matrix_works[symmetric])
+  subgoal for x by (rule image_eqI[where x="matrix x"]) auto
   done
 
 lemma blinfun_of_vmatrix_image:
@@ -1417,7 +1415,7 @@ proof -
        apply (force simp add: Basis_vec_def Basis_list_real_def)
       apply (rule refl)
      apply (rule refl)
-    apply (auto simp: cond_application_beta if_distrib axis_eq_axis Basis_list_real_def cong: if_cong)
+    apply (auto simp: if_distribR if_distrib axis_eq_axis Basis_list_real_def cong: if_cong)
     done
   also have "\<dots> = f $ enum_class.enum ! (k div CARD('n)) $ enum_class.enum ! (k mod CARD('n))"
     apply (subst if_conn)

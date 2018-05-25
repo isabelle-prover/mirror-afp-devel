@@ -3841,6 +3841,10 @@ qed
 
 end (* context R_scalar_mult *)
 
+
+hide_const real_vector.dim
+hide_const (open) Real_Vector_Spaces.dim
+
 abbreviation (in scalar_mult) "fingen \<equiv> R_scalar_mult.R_fingen UNIV smult"
 abbreviation (in scalar_mult) "dim    \<equiv> R_scalar_mult.dim_R UNIV smult"
 
@@ -7561,7 +7565,8 @@ proof (rule FinGroupRepresentation.intro)
     using trivial_FGModule by fast
 
   have "fscalar_mult.findim (aezfun_scalar_mult.fsmult smult) 0"
-    using aezfun_scalar_mult.R_scalar_mult R_scalar_mult.RSpan.simps(1) by force
+    by auto (metis R_scalar_mult.RSpan.simps(1) aezfun_scalar_mult.R_scalar_mult empty_set empty_subsetI set_zero)
+
   with good_char show "FinGroupRepresentation_axioms G smult 0" by unfold_locales
 qed
 

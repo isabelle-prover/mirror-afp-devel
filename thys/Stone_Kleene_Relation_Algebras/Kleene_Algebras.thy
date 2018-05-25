@@ -578,6 +578,12 @@ lemma plus_half_bot:
   "x * y * x = bot \<Longrightarrow> (x * y)\<^sup>+ = x * y"
   by (metis star_absorb star_slide mult_assoc)
 
+lemma cancel_separate_1_sup:
+  assumes "x * y \<le> 1"
+      and "y * x \<le> 1"
+  shows "(x \<squnion> y)\<^sup>\<star> = x\<^sup>\<star> \<squnion> y\<^sup>\<star>"
+  by (simp add: assms cancel_separate_1 cancel_separate_eq local.sup_commute)
+
 end
 
 text {*

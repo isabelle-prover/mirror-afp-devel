@@ -1414,15 +1414,34 @@ lemma projr_hnr[sepref_fr_rules]: "(return o projr,RETURN o projr) \<in> [Not o 
   done
   
 subsection \<open>String Literals\<close>  
-  
-context fixes x :: "char list" begin
-  sepref_register "PR_CONST (STR x)"
 
-  lemma STR_hnr[sepref_import_param]: "(STR x,PR_CONST (STR x))\<in>Id" by simp
+sepref_register "PR_CONST String.empty_literal"
+
+lemma empty_literal_hnr [sepref_import_param]:
+  "(String.empty_literal, PR_CONST String.empty_literal) \<in> Id"
+  by simp
+
+lemma empty_literal_pat [def_pat_rules]:
+  "String.empty_literal \<equiv> UNPROTECT String.empty_literal"
+  by simp
+
+context
+  fixes b0 b1 b2 b3 b4 b5 b6 :: bool
+  and s :: String.literal
+begin
+
+sepref_register "PR_CONST (String.Literal b0 b1 b2 b3 b4 b5 b6 s)"
+
+lemma Literal_hnr [sepref_import_param]:
+  "(String.Literal b0 b1 b2 b3 b4 b5 b6 s,
+    PR_CONST (String.Literal b0 b1 b2 b3 b4 b5 b6 s)) \<in> Id"
+  by simp
 
 end
 
-lemma STR_pat[def_pat_rules]: "STR$x \<equiv> UNPROTECT (STR$x)" by simp
-  
+lemma Literal_pat [def_pat_rules]:
+  "String.Literal $ b0 $ b1 $ b2 $ b3 $ b4 $ b5 $ b6 $ s \<equiv>
+    UNPROTECT (String.Literal $ b0 $ b1 $ b2 $ b3 $ b4 $ b5 $ b6 $ s)"
+  by simp
   
 end

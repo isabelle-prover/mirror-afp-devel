@@ -508,7 +508,6 @@ lemma eucl_of_list_inner_eq: "(eucl_of_list xs::'a) \<bullet> eucl_of_list ys = 
 
 lemma euclidean_vec_componentwise:
   "(\<Sum>(xa::'a::euclidean_space^'b::finite)\<in>Basis. f xa) = (\<Sum>a\<in>Basis. (\<Sum>b::'b\<in>UNIV. f (axis b a)))"
-  apply vector
   apply (auto simp: Basis_vec_def)
   apply (subst sum.swap)
   apply (subst sum.Union_disjoint)
@@ -679,15 +678,9 @@ lemma vec_nth_eucl_of_list_eq: "length M = CARD('n) \<Longrightarrow>
     subgoal for a
       apply (auto simp: in_set_zip)
       subgoal premises prems for n
-      proof -
-        have "index Basis_list (axis i (1::real)) = n"
-          by (metis DIM_cart DIM_real index_Basis_list_nth nat_mult_1_right prems(3) prems(4))
-        then show ?thesis
-          by auto
-      qed
+        by (metis DIM_cart DIM_real index_Basis_list_nth mult.right_neutral prems(2) prems(3))
       done
     done
-  subgoal by (auto simp: Basis_vec_def)
   done
 
 lemma index_Basis_list_axis1: "index Basis_list (axis i (1::real)) = index enum_class.enum i"
@@ -723,8 +716,7 @@ lemma eucl_of_list_vec_nth3[simp]:
   "(eucl_of_list [g, h, i]::real^3) $ 1 = h"
   "(eucl_of_list [g, h, i]::real^3) $ 2 = i"
   "(eucl_of_list [g, h, i]::real^3) $ 3 = g"
-  by (auto simp: cart_eq_inner_axis eucl_of_list_inner axis_in_Basis
-    vec_nth_eq_list_of_eucl1 index_Basis_list_axis1)
+  by (auto simp: cart_eq_inner_axis eucl_of_list_inner vec_nth_eq_list_of_eucl1 index_Basis_list_axis1)
 
 type_synonym R3 = "real*real*real"
 
@@ -830,7 +822,7 @@ proof -
   interpret f': bounded_linear "f' y x" for x
     by (rule bounded_linear_via_derivative) (rule assms)
   have 3: "(\<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (f' y x i)) i = f' y x i" for x i
-    by (auto simp: if_distrib cond_application_beta blinfun.bilinear_simps
+    by (auto simp: if_distrib if_distribR blinfun.bilinear_simps
       f'.scaleR[symmetric] f'.sum[symmetric] euclidean_representation
       intro!: blinfun_euclidean_eqI)
   have 4: "blinfun_apply (Blinfun (f' y x)) = f' y x" for x
@@ -922,7 +914,7 @@ lemma blinfun_apply_eq_sum:
   apply (subst blinfun_apply_componentwise[of B])
   apply (auto intro!: euclidean_eqI[where 'a="(real,'m) vec"]
       simp: blinfun.bilinear_simps eucl_of_list_inner inner_sum_left inner_Basis if_distrib
-        sum_Basis_sum_nth_Basis_list nth_eq_iff_index cond_application_beta
+        sum_Basis_sum_nth_Basis_list nth_eq_iff_index if_distribR
         cong: if_cong)
   apply (subst sum.swap)
   by (auto simp: sum.delta algebra_simps)
@@ -1028,14 +1020,13 @@ lemma vec_nth_eucl_of_list_eq2: "length M = CARD('n) * CARD('m) \<Longrightarrow
       apply (auto simp: in_set_zip)
       subgoal premises prems for n
       proof -
-        have "index Basis_list (axis i (axis j (1::real))) = n"
-          by (metis DIM_cart DIM_real index_Basis_list_nth mult.right_neutral prems(3) prems(5))
+        have "n < card (Basis::(real^'n::_^'m::_) set)"
+          by (simp add: prems(4))
         then show ?thesis
-          by auto
+          by (metis index_Basis_list_nth prems(2))
       qed
       done
     done
-  subgoal by (auto simp: Basis_vec_def)
   done
 
 lemma vec_nth_eq_list_of_eucl2:

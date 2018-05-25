@@ -421,8 +421,6 @@ section {* Tests for casts *}
 
 definition test_casts :: bool
 where "test_casts \<longleftrightarrow>
-  map uint8_of_char [CHR ''a'', 0, char_of_nat 255] = [97, 0, 255] \<and>
-  map char_of_uint8 [65, 0, 255] = [CHR ''A'', 0, char_of_nat 255] \<and>
   map uint8_of_uint32 [10, 0, 0xFE, 0xFFFFFFFF] = [10, 0, 0xFE, 0xFF] \<and>
   map uint8_of_uint64 [10, 0, 0xFE, 0xFFFFFFFFFFFFFFFF] = [10, 0, 0xFE, 0xFF] \<and>
   map uint32_of_uint8 [10, 0, 0xFF] = [10, 0, 0xFF] \<and>

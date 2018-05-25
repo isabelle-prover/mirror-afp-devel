@@ -54,7 +54,7 @@ lemma find_map_filter_None: "find_map_filter f p as = None \<Longrightarrow> \<f
   by (induct f p as rule: find_map_filter.induct, auto simp: Let_def split: if_splits)
 
 lemma remdups_adj_sorted_distinct[simp]: "sorted xs \<Longrightarrow> distinct (remdups_adj xs)"
-by (induct xs rule: sorted.induct) (auto simp add: sorted_Cons)
+by (induct xs rule: remdups_adj.induct) (auto)
 
 lemma subseqs_length_simple:
   assumes "b \<in> set (subseqs xs)" shows "length b \<le> length xs"
@@ -719,7 +719,7 @@ proof (induct xs ys rule: subtract_list_sorted.induct)
   case (1 x xs y ys)
   have xxs: "sorted (x # xs)" by fact 
   have yys: "sorted (y # ys)" by fact
-  have xs: "sorted xs" using xxs by (simp add: sorted_Cons)
+  have xs: "sorted xs" using xxs by (simp)
   show ?case
   proof (cases "x = y")
     case True
@@ -728,7 +728,7 @@ proof (induct xs ys rule: subtract_list_sorted.induct)
     case False note neq = this
     note IH = 1(2-3)[OF this]
     show ?thesis 
-      by (cases "x < y", insert IH xxs yys False, auto simp: sorted_Cons)
+      by (cases "x < y", insert IH xxs yys False, auto)
   qed
 qed auto  
 

@@ -13,13 +13,14 @@ theory Compiler1 imports
 begin
 
 definition fresh_var :: "vname list \<Rightarrow> vname"
-where "fresh_var Vs \<equiv> sum_list (STR ''V'' # Vs)"
+  where "fresh_var Vs = sum_list (STR ''V'' # Vs)"
 
 lemma fresh_var_fresh: "fresh_var Vs \<notin> set Vs"
 proof -
-  have "\<forall>V \<in> set Vs. length (String.explode V) < length (String.explode (fresh_var Vs))"
-    by (induct Vs) (auto simp add: fresh_var_def STR_inverse implode_def)
-  thus ?thesis by auto
+  have "V \<in> set Vs \<Longrightarrow> length (String.explode V) < length (String.explode (fresh_var Vs))" for V
+    by (induction Vs) (auto simp add: fresh_var_def Literal.rep_eq)
+  then show ?thesis
+    by auto
 qed
 
 text{* Replacing variable names by indices. *}

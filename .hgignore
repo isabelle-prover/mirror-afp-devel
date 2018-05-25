@@ -45,5 +45,10 @@ thys/EdmondsKarp_Maxflow/evaluation/fofu-SML/Fofu_Export.sml
 
 thys/Diophantine_Eqns_Lin_Hom/generated
 
+thys/Buchi_Complementation/code/Complementation_Export.sml
+
+thys/SPARCv8/SparcModel_MMU/sparc_seq
+
 admin/py-bootstrap
 admin/venv
+

@@ -19,6 +19,7 @@ theory LLL_Factorization
 begin
 
 subsection \<open>Basic facts about the auxiliary functions\<close>
+hide_const (open) Finite_Cartesian_Product.rows
 
 lemma nth_factorization_lattice:
   fixes u and d
@@ -69,7 +70,7 @@ proof (cases "f = 0")
   case True
   thus ?thesis
     by (auto simp add: sylvester_mat_def row_def sq_norm_vec_def o_def
-        interv_sum_list_conv_sum_set_nat i)
+        interv_sum_list_conv_sum_set_nat i intro!: sum_list_zero)
 next
   case False note f = False         
   let ?f = "\<lambda>j. if i \<le> j \<and> j - i \<le> degree f then coeff f (degree f + i - j) else 0"
@@ -216,7 +217,7 @@ proof -
   also have "... \<le> sqrt (of_int (prod_list (map sq_norm (rows ?S))))"
     by (rule Hadamard's_inequality_int, auto)
   also have "map sq_norm (rows ?S) = map ?f [0..<degree f + degree g]"
-    unfolding rows_def by auto
+    unfolding Matrix.rows_def by auto
   also have "... =  map ?f ([0..<degree g] @ [degree g..<degree f + degree g])"
     by (simp add: list_rw)
   also have "prod_list ... = prod_list (map ?f [0..<degree g])
@@ -327,7 +328,7 @@ sublocale idom_vec n "TYPE(int)".
 
 (*In this context, "n" is fixed by the locale and corresponds to "j" in the book*)
 lemma upper_triangular_factorization_lattice:
-  fixes u :: "'a :: semidom poly"
+  fixes u :: "'a :: semidom poly" and d :: nat
   assumes d: "d \<le> n" and du: "d = degree u"
   shows "upper_triangular (mat_of_rows n (factorization_lattice u (n-d) k))"
     (is "upper_triangular ?M")
@@ -350,7 +351,7 @@ next
 qed
 
 lemma factorization_lattice_diag_nonzero:
-  fixes u :: "'a :: semidom poly"
+  fixes u :: "'a :: semidom poly" and d
   assumes d: "d=degree u" 
     and dn: "d\<le>n"
     and u: "u\<noteq>0" 
@@ -370,7 +371,7 @@ proof-
     done
 qed
 
-corollary factorization_lattice_diag_nonzero_RAT:
+corollary factorization_lattice_diag_nonzero_RAT: fixes d
   assumes "d=degree u" 
     and "d\<le>n"
     and "u\<noteq>0" 
@@ -382,7 +383,7 @@ corollary factorization_lattice_diag_nonzero_RAT:
 
 sublocale gs: vec_space "TYPE(rat)" n.
 
-lemma lin_indpt_list_factorization_lattice:
+lemma lin_indpt_list_factorization_lattice: fixes d
   assumes d: "d = degree u" and dn: "d \<le> n" and u: "u \<noteq> 0" and k: "k \<noteq> 0"
   shows "gs.lin_indpt_list (RAT (factorization_lattice u (n-d) k))" (is "gs.lin_indpt_list (RAT ?vs)")
 proof-
@@ -408,7 +409,7 @@ context LLL
 begin
 
 lemma lincomb_to_dvd_modulo:
-  fixes u
+  fixes u d
   defines "d \<equiv> degree u"
   assumes d: "d \<le> n"
       and lincomb: "lincomb_list c (factorization_lattice u (n-d) k) = g" (is "?l = ?r")
@@ -441,7 +442,7 @@ qed
   the correct fact is r' = q'' * u+r'' 
 *)
 lemma dvd_modulo_to_lincomb:
-  fixes u :: "int poly"
+  fixes u :: "int poly" and d
   defines "d \<equiv> degree u"
   assumes d: "d < n"
       and dvd: "poly_mod.dvdm k u (poly_of_vec g)"
@@ -451,11 +452,11 @@ lemma dvd_modulo_to_lincomb:
       and deg_u: "degree u > 0"      
   shows "\<exists>c. lincomb_list c (factorization_lattice u (n-d) k) = g"
 proof -
-  interpret poly_mod k .
+  interpret p: poly_mod k .
   have u_not0: "u \<noteq> 0" using monic_u by auto
   hence n[simp]: "0 < n" using d by auto
   obtain q' r' where g: "poly_of_vec g = q' * u + smult k r'"
-    using dvdm_imp_div_mod[OF dvd] by auto
+    using p.dvdm_imp_div_mod[OF dvd] by auto
   obtain q'' r'' where r': "r' = q'' * u + r''" and deg_r'': "degree r''<degree u"
     using monic_imp_div_mod_int_poly_degree2[OF monic_u deg_u, of r'] by auto
   (*The following fact is explained in the paragraph below equation (6) in page 476 of the textbook*)
@@ -608,7 +609,7 @@ proof -
           next
             case False
             hence "(\<Sum>i = n - d..<n. if n - Suc i = j then coeff r (n - Suc i) else 0) = 0"
-              by (auto intro!: sum.neutral)
+              by (intro sum.neutral ballI, insert False, simp, linarith) 
             also have "... = coeff r j" 
               by (rule coeff_eq_0[symmetric], insert False deg_r'' r d_def, auto)
             finally show ?thesis ..
@@ -656,9 +657,8 @@ qed
 text \<open>The factorization lattice precisely characterises the polynomials of a certain
   degree which divide $u$ modulo $M$.\<close>
 
-lemma factorization_lattice: assumes  
-  deg_u: "degree u \<noteq> 0"  
-  and M: "M \<noteq> 0" 
+lemma factorization_lattice: fixes M assumes  
+  deg_u: "degree u \<noteq> 0"  and M: "M \<noteq> 0" 
 shows "degree u \<le> n \<Longrightarrow> n \<noteq> 0 \<Longrightarrow> f \<in> poly_of_vec ` lattice_of (factorization_lattice u (n - degree u) M) \<Longrightarrow> 
   degree f < n \<and> poly_mod.dvdm M u f" 
   "monic u \<Longrightarrow> degree u < n \<Longrightarrow> 
@@ -731,18 +731,21 @@ proof -
   have id: "LLL_short_polynomial n u = poly_of_vec ?sv" 
     unfolding LLL_short_polynomial_def by blast
   have id': "\<parallel>?sv\<parallel>\<^sup>2 = \<parallel>LLL_short_polynomial n u\<parallel>\<^sup>2" unfolding id by simp
-  interpret LLL n n .
+  interpret vec_module "TYPE(int)" n.
+  interpret L: LLL n n "?L" 2 .
   from deg_le deg_iu have deg_iu_le: "degree ?iu \<le> n" by simp
   have len: "length ?L = n" 
     unfolding factorization_lattice_def using deg_le deg_iu by auto
   from deg_u_0 deg_iu have deg_iu0: "degree ?iu \<noteq> 0" by auto
   hence iu0: "?iu \<noteq> 0" by auto
-  from lin_indpt_list_factorization_lattice[OF refl deg_iu_le iu0 pl0]
-  have "4/3 \<le> (2 :: rat)" "gs.lin_indpt_list (RAT ?L)" by (auto simp: deg_iu)
-  note short = short_vector[OF this len refl n, unfolded id']
+  from L.lin_indpt_list_factorization_lattice[OF refl deg_iu_le iu0 pl0]
+  have *: "4/3 \<le> (2 :: rat)" "L.gs.lin_indpt_list (L.RAT ?L)" by (auto simp: deg_iu)
+  interpret L: LLL_with_assms n n ?L 2
+    by (unfold_locales, insert *, auto simp: deg_iu deg_le)
+  note short = L.short_vector[OF refl n, unfolded id' L.L_def]
   from short(2) have mem: "LLL_short_polynomial n u \<in> poly_of_vec ` lattice_of ?L" 
     unfolding id by auto
-  note fact = factorization_lattice(1)[OF deg_iu0 pl0 deg_iu_le n, unfolded deg_iu, OF mem]
+  note fact = L.factorization_lattice(1)[OF deg_iu0 pl0 deg_iu_le n, unfolded deg_iu, OF mem]
   show "degree (LLL_short_polynomial n u) < n" using fact by auto
   from fact have "?iu dvdm (LLL_short_polynomial n u)" by auto
   then obtain h where "LLL_short_polynomial n u =m ?iu * h" unfolding dvdm_def by auto
@@ -760,7 +763,7 @@ proof -
   also have "Mp ?iu * h =m ?iu * h" unfolding mult_Mp by simp
   finally have dvd: "?iu dvdm f" unfolding dvdm_def by auto
   from degu deg_iu have deg_iun: "degree ?iu < n" by auto
-  from factorization_lattice(2)[OF deg_iu0 pl0 mon_iu deg_iun degf dvd]
+  from L.factorization_lattice(2)[OF deg_iu0 pl0 mon_iu deg_iun degf dvd]
   have "f \<in> poly_of_vec ` lattice_of ?L" using deg_iu by auto 
   then obtain fv where f: "f = poly_of_vec fv" and fv: "fv \<in> lattice_of ?L" by auto
   have norm: "\<parallel>fv\<parallel>\<^sup>2 = \<parallel>f\<parallel>\<^sup>2" unfolding f by simp

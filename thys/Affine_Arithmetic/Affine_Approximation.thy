@@ -24,7 +24,7 @@ proof (cases x c rule: linorder_cases)
     using xc
     by (simp add: at_within_eq_bot_iff)
   moreover from deriv have "((\<lambda>y. (f y - f c) / (y - c)) \<longlongrightarrow> f') (at c within ?A')"
-    unfolding DERIV_within_iff using subs
+    unfolding has_field_derivative_iff using subs
     by (blast intro: tendsto_mono at_le)
   moreover from eventually_at_right_real[OF xc]
     have "eventually (\<lambda>y. (f y - f c) / (y - c) \<le> (f x - f c) / (x - c)) (at_right c)"
@@ -49,7 +49,7 @@ next
     using xc
     by (simp add: at_within_eq_bot_iff)
   moreover from deriv have "((\<lambda>y. (f y - f c) / (y - c)) \<longlongrightarrow> f') (at c within ?A')"
-    unfolding DERIV_within_iff using subs
+    unfolding has_field_derivative_iff using subs
     by (blast intro: tendsto_mono at_le)
   moreover from eventually_at_left_real[OF xc]
     have "eventually (\<lambda>y. (f y - f c) / (y - c) \<ge> (f x - f c) / (x - c)) (at_left c)"
@@ -1498,8 +1498,8 @@ lemma pdevs_mapping_eq[simp]: "pdevs_mapping xs = pdevs_applys xs"
     subgoal
       apply (frule lookup_eq_SomeD)
       apply (auto simp: map_nth)
-      by (metis (mono_tags, lifting) List.finite_set finite_UN finite_pdevs_domain keys_tabulate
-          lookup_eq_SomeD lookup_tabulate option.inject sorted_list_of_set)
+      by (metis (mono_tags, lifting) keys_tabulate
+          lookup_eq_SomeD lookup_tabulate option.inject distinct_sorted_list_of_set)
     done
   done
 
@@ -2651,7 +2651,7 @@ proof -
     then have t_nonneg: "0 \<le> t" using tdev_nonneg[of xs] by arith
     note t_pdevs = abs_pdevs_val_le_tdev[OF e, THEN order_trans, OF t(1)]
   
-    have rewr1: "{0..n} = (insert 0 (insert 1 {2..n}))" using n by auto
+    have rewr1: "{..n} = (insert 0 (insert 1 {2..n}))" using n by auto
     have "x = (pdevs_val e xs + xe') + x0"
       by (simp add: xe'_def aform_val_def)
     also have "\<dots> ^ n = x0 ^ n + n * x0 ^ (n - Suc 0) * pdevs_val e xs +

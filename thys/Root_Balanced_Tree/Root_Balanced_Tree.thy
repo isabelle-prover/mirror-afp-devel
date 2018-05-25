@@ -91,35 +91,35 @@ lemma t_inorder2: "t_inorder2 t xs = 2*size t + 1"
 by(induction t arbitrary: xs)(auto simp: t_inorder2_Leaf t_inorder2_Node)
 
 
-subsubsection \<open>@{const del_min}\<close>
+subsubsection \<open>@{const split_min}\<close>
 
-fun del_min_tm :: "'a tree \<Rightarrow> ('a * 'a tree) tm" where
-"del_min_tm Leaf =1 return undefined" |
-"del_min_tm (Node l x r) =1
+fun split_min_tm :: "'a tree \<Rightarrow> ('a * 'a tree) tm" where
+"split_min_tm Leaf =1 return undefined" |
+"split_min_tm (Node l x r) =1
   (if l = Leaf then return (x,r)
-   else do { (y,l') \<leftarrow> del_min_tm l; return (y, Node l' x r)})"
+   else do { (y,l') \<leftarrow> split_min_tm l; return (y, Node l' x r)})"
 
-definition del_min :: "'a tree \<Rightarrow> ('a * 'a tree)" where
-"del_min t = val (del_min_tm t)"
+definition split_min :: "'a tree \<Rightarrow> ('a * 'a tree)" where
+"split_min t = val (split_min_tm t)"
 
-lemma del_min_Node[simp,code]:
-  "del_min (Node l x r) =
+lemma split_min_Node[simp,code]:
+  "split_min (Node l x r) =
   (if l = Leaf then (x,r)
-   else let (y,l') = del_min l in (y, Node l' x r))"
-using val_cong[OF del_min_tm.simps(2)]
-by(simp only: del_min_def val_simps)
+   else let (y,l') = split_min l in (y, Node l' x r))"
+using val_cong[OF split_min_tm.simps(2)]
+by(simp only: split_min_def val_simps)
 
-definition t_del_min :: "'a tree \<Rightarrow> nat" where
-"t_del_min t = time (del_min_tm t)"
+definition t_split_min :: "'a tree \<Rightarrow> nat" where
+"t_split_min t = time (split_min_tm t)"
 
-lemma t_del_min_Node[simp]:
-  "t_del_min (Node l x r) = (if l = Leaf then 1 else t_del_min l + 1)"
-using val_cong[OF del_min_tm.simps(2)]
-by(simp add: t_del_min_def tm_simps split: tm.split)
+lemma t_split_min_Node[simp]:
+  "t_split_min (Node l x r) = (if l = Leaf then 1 else t_split_min l + 1)"
+using val_cong[OF split_min_tm.simps(2)]
+by(simp add: t_split_min_def tm_simps split: tm.split)
 
-lemma del_minD:
-  "del_min t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> x # inorder t' = inorder t"
-by(induction t arbitrary: t' rule: del_min.induct)
+lemma split_minD:
+  "split_min t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> x # inorder t' = inorder t"
+by(induction t arbitrary: t' rule: split_min.induct)
   (auto simp: sorted_lems split: prod.splits if_splits)
 
 
@@ -1291,8 +1291,8 @@ definition up_d :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool \<Rightarrow> 'a
 
 declare up_d_def[simp]
 (* FIXME tdel \<le> height
-fun t_del_min :: "'a tree \<Rightarrow> nat" where
-"t_del_min t = height t"
+fun t_split_min :: "'a tree \<Rightarrow> nat" where
+"t_split_min t = height t"
 *)
 fun del_tm :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree option tm" where
 "del_tm x Leaf =1 return None" |
@@ -1300,7 +1300,7 @@ fun del_tm :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree option t
   (case cmp x y of
      LT \<Rightarrow> do { l' \<leftarrow> del_tm x l; return (up_d y r False l')} |
      EQ \<Rightarrow> if r = Leaf then return (Some l)
-           else do { (a',r') \<leftarrow> del_min_tm r;
+           else do { (a',r') \<leftarrow> split_min_tm r;
                      return (Some(Node l a' r'))} |
      GT \<Rightarrow> do { r' \<leftarrow> del_tm x r; return (up_d y l True r')})"
 
@@ -1315,10 +1315,10 @@ lemma del_Node[simp]: "del x (Node l y r) =
   (case cmp x y of
      LT \<Rightarrow> let l' = del x l in up_d y r False l' |
      EQ \<Rightarrow> if r = Leaf then Some l
-           else let (a',r') = del_min r in Some(Node l a' r') |
+           else let (a',r') = split_min r in Some(Node l a' r') |
      GT \<Rightarrow> let r' = del x r in up_d y l True r')"
 using val_cong[OF del_tm.simps(2)]
-by(simp only: del_def del_min_def val_simps cmp_val.case_distrib[of val])
+by(simp only: del_def split_min_def val_simps cmp_val.case_distrib[of val])
 
 definition t_del :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> nat" where
 "t_del x t = time(del_tm x t)"
@@ -1329,9 +1329,9 @@ by(simp add: t_del_def tm_simps)
 lemma t_del_Node[simp]: "t_del x (Node l y r) =
   (case cmp x y of
      LT \<Rightarrow> t_del x l + 1 |
-     EQ \<Rightarrow> if r = Leaf then 1 else t_del_min r + 1 |
+     EQ \<Rightarrow> if r = Leaf then 1 else t_split_min r + 1 |
      GT \<Rightarrow> t_del x r + 1)"
-by(simp add: t_del_def t_del_min_def tm_simps split: tm.split prod.split)
+by(simp add: t_del_def t_split_min_def tm_simps split: tm.split prod.split)
 
 fun delete :: "'a::linorder \<Rightarrow> 'a rbt1 \<Rightarrow> 'a rbt1" where
 "delete x (t,dl) =
@@ -1370,7 +1370,7 @@ lemma inorder_del:
   "sorted(inorder t) \<Longrightarrow>
   inorder(case del x t of None \<Rightarrow> t | Some t' \<Rightarrow> t') = del_list x (inorder t)"
 by(induction t)
-  (auto simp add: del_list_simps del_minD split: option.splits prod.splits)
+  (auto simp add: del_list_simps split_minD split: option.splits prod.splits)
 
 lemma inorder_delete:
   "\<lbrakk> delete x (t,dl) = (t',dl'); sorted(inorder t) \<rbrakk> \<Longrightarrow>
@@ -1378,13 +1378,13 @@ lemma inorder_delete:
 using inorder_del[of t x]
 by(auto simp add: delete.simps split: option.splits if_splits)
 
-lemma size_del_min:
-  "\<lbrakk> del_min t = (a,t'); t \<noteq> Leaf \<rbrakk> \<Longrightarrow> size t' = size t - 1"
+lemma size_split_min:
+  "\<lbrakk> split_min t = (a,t'); t \<noteq> Leaf \<rbrakk> \<Longrightarrow> size t' = size t - 1"
 by(induction t arbitrary: t')
   (auto simp add: zero_less_iff_neq_zero split: if_splits prod.splits)
 
-lemma height_del_min:
-  "\<lbrakk> del_min t = (a,t'); t \<noteq> Leaf \<rbrakk> \<Longrightarrow> height t' \<le> height t"
+lemma height_split_min:
+  "\<lbrakk> split_min t = (a,t'); t \<noteq> Leaf \<rbrakk> \<Longrightarrow> height t' \<le> height t"
 apply(induction t arbitrary: t')
  apply simp
 by(fastforce split: if_splits prod.splits)
@@ -1412,7 +1412,7 @@ next
       case False
       thus ?thesis
         using eq "2.prems" eq_size_0[of r]
-        by (auto simp add: size_del_min simp del: eq_size_0 split: prod.splits)
+        by (auto simp add: size_split_min simp del: eq_size_0 split: prod.splits)
     qed
   next
     case gr
@@ -1439,7 +1439,7 @@ next
     case eq
     thus ?thesis
       using "2.prems"
-      by (auto dest: height_del_min split: if_splits prod.splits)
+      by (auto dest: height_split_min split: if_splits prod.splits)
   next
     case gr
     thus ?thesis
@@ -1624,22 +1624,22 @@ next
 qed
 
 
-lemma t_del_min_ub:
-  "t \<noteq> Leaf \<Longrightarrow> t_del_min t \<le> height t + 1"
+lemma t_split_min_ub:
+  "t \<noteq> Leaf \<Longrightarrow> t_split_min t \<le> height t + 1"
 by(induction t) auto
 
 lemma t_del_ub:
   "t_del x t \<le> height t + 1"
-by(induction t) (auto dest: t_del_min_ub)
+by(induction t) (auto dest: t_split_min_ub)
 
-lemma imbal_del_min:
-  "del_min t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> real(imbal t') - imbal t \<le> 1"
+lemma imbal_split_min:
+  "split_min t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> real(imbal t') - imbal t \<le> 1"
 proof(induction t arbitrary: t')
   case Leaf thus ?case
     by simp
 next
   case (Node l y r)
-  thus ?case using size_del_min[OF Node.prems]
+  thus ?case using size_split_min[OF Node.prems]
     apply(auto split: if_splits option.splits prod.splits)
     apply(auto simp: imbal.simps)
     apply(cases t')
@@ -1665,8 +1665,8 @@ next
     done
 qed
 
-lemma Phi_diff_del_min:
-  "del_min t = (x, t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> \<Phi> t' - \<Phi> t \<le> 6*e*height t"
+lemma Phi_diff_split_min:
+  "split_min t = (x, t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> \<Phi> t' - \<Phi> t \<le> 6*e*height t"
 proof(induction t arbitrary: t')
   case Leaf thus ?case
     by simp
@@ -1681,7 +1681,7 @@ next
         by(cases r)(auto simp: imbal.simps *)
   next
     case False
-    with Node.prems obtain l' where rec: "del_min l = (x,l')"
+    with Node.prems obtain l' where rec: "split_min l = (x,l')"
       and t': "t' = Node l' y r"
       by (auto split: prod.splits)
     hence "\<Phi> t' - \<Phi> \<langle>l,y,r\<rangle> = 6*e*imbal\<langle>l',y,r\<rangle> - 6*e*imbal\<langle>l,y,r\<rangle> + \<Phi> l' - \<Phi> l"
@@ -1689,7 +1689,7 @@ next
     also have "\<dots> = 6*e * (real(imbal\<langle>l',y,r\<rangle>) - imbal\<langle>l,y,r\<rangle>) + \<Phi> l' - \<Phi> l"
       by (simp add: ring_distribs)
     also have "\<dots> \<le> 6*e + \<Phi> l' - \<Phi> l"
-      using imbal_del_min[OF Node.prems(1)] t'
+      using imbal_split_min[OF Node.prems(1)] t'
       by (simp)
     also have "\<dots> \<le> 6*e * (height l + 1)"
       using Node.IH(1)[OF rec False] by (simp add: ring_distribs)
@@ -1743,12 +1743,12 @@ next
       qed
     next
       case False
-      then obtain a r' where *: "del_min r = (a,r')" using Node.prems
+      then obtain a r' where *: "split_min r = (a,r')" using Node.prems
         by(auto split: prod.splits)
-      from  mult_left_mono[OF imbal_diff_decr[OF size_del_min[OF this False], of l a y], of "5*e"]
+      from  mult_left_mono[OF imbal_diff_decr[OF size_split_min[OF this False], of l a y], of "5*e"]
       have "6*e*real (imbal \<langle>l, a, r'\<rangle>) - 6*e*real (imbal \<langle>l, y, r\<rangle>) \<le> 6*e"
         by(simp add: ring_distribs)
-      thus ?thesis using Node.prems * False Phi_diff_del_min[OF *]
+      thus ?thesis using Node.prems * False Phi_diff_split_min[OF *]
         apply(auto simp add: max_def ring_distribs)
         using mult_less_cancel_left_pos[of "6*e" "height r" "height l"] by linarith
     qed

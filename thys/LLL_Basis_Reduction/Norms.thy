@@ -1,5 +1,6 @@
 (*
     Authors:    Jose Divasón
+                Maximilian Haslbeck
                 Sebastiaan Joosten
                 René Thiemann
                 Akihisa Yamada
@@ -583,5 +584,73 @@ lemma sq_norm_smult_vec: "sq_norm ((c :: 'a :: {conjugatable_ring,comm_semiring_
   unfolding sq_norm_vec_as_cscalar_prod 
   by (subst scalar_prod_smult_left, force, unfold conjugate_smult_vec, 
     subst scalar_prod_smult_right, force, simp add: ac_simps)
+
+lemma vec_le_sq_norm:
+  fixes v :: "'a :: conjugatable_ring_1_abs_real_line vec"
+  assumes "v \<in> carrier_vec n" "i < n"
+  shows "\<bar>v $ i\<bar>\<^sup>2 \<le> \<parallel>v\<parallel>\<^sup>2"
+using assms proof (induction v arbitrary: i)
+  case (Suc n a v i)
+  note IH = Suc
+  show ?case 
+  proof (cases i)
+    case (Suc ii)
+    then show ?thesis
+      using IH IH(2)[of ii] le_add_same_cancel2 order_trans by fastforce
+  qed auto
+qed auto
+
+class trivial_conjugatable_ordered_field = 
+  conjugatable_ordered_field + linordered_idom +
+  assumes conjugate_id [simp]: "conjugate x = x"
+
+lemma scalar_prod_ge_0: "(x :: 'a :: linordered_idom vec) \<bullet> x \<ge> 0" 
+  unfolding scalar_prod_def
+  by (rule sum_nonneg, auto)
+
+lemma cscalar_prod_is_scalar_prod[simp]: "(x :: 'a :: trivial_conjugatable_ordered_field vec) \<bullet>c y = x \<bullet> y"
+  unfolding conjugate_id
+  by (rule arg_cong[of _ _ "scalar_prod x"], auto)
+
+instance rat :: trivial_conjugatable_ordered_field 
+  by (standard, auto)
+
+instance real :: trivial_conjugatable_ordered_field 
+  by (standard, auto)
+
+lemma scalar_prod_Cauchy:
+  fixes u v::"'a :: {trivial_conjugatable_ordered_field, linordered_field} Matrix.vec"
+  assumes "u \<in> carrier_vec n" "v \<in> carrier_vec n"
+  shows "(u \<bullet> v)\<^sup>2 \<le> \<parallel>u\<parallel>\<^sup>2 * \<parallel>v\<parallel>\<^sup>2 "
+proof -
+  { assume v_0: "v \<noteq> 0\<^sub>v n"
+    have "0 \<le> (u - r \<cdot>\<^sub>v v) \<bullet> (u - r \<cdot>\<^sub>v v)" for r
+      by (simp add: scalar_prod_ge_0)
+    also have "(u - r \<cdot>\<^sub>v v) \<bullet> (u - r \<cdot>\<^sub>v v) = u \<bullet> u - r * (u \<bullet> v) - r * (u \<bullet> v) + r * r * (v \<bullet> v)" for r::'a
+    proof -
+      have "(u - r \<cdot>\<^sub>v v) \<bullet> (u - r \<cdot>\<^sub>v v) = (u - r \<cdot>\<^sub>v v) \<bullet> u - (u - r \<cdot>\<^sub>v v) \<bullet> (r \<cdot>\<^sub>v v)"
+        using assms by (subst scalar_prod_minus_distrib) auto
+      also have "\<dots> = u \<bullet> u - (r \<cdot>\<^sub>v v) \<bullet> u - r * ((u - r \<cdot>\<^sub>v v) \<bullet> v)"
+        using assms by (subst minus_scalar_prod_distrib) auto
+      also have "\<dots> = u \<bullet> u - r * (v \<bullet> u) - r * (u \<bullet> v - r * (v \<bullet> v))"
+        using assms by (subst minus_scalar_prod_distrib) auto
+      also have "\<dots> = u \<bullet> u - r * (u \<bullet> v) - r * (u \<bullet> v) + r * r * (v \<bullet> v)"
+        using assms comm_scalar_prod by (auto simp add: field_simps)
+      finally show ?thesis
+        by simp
+    qed
+    also have "u \<bullet> u - r * (u \<bullet> v) - r * (u \<bullet> v) + r * r * (v \<bullet> v) = sq_norm u - (u \<bullet> v)\<^sup>2 / sq_norm v"
+      if "r = (u \<bullet> v) / (v \<bullet> v)" for r
+      unfolding that by (auto simp add: sq_norm_vec_as_cscalar_prod power2_eq_square)
+    finally have "0 \<le> \<parallel>u\<parallel>\<^sup>2 - (u \<bullet> v)\<^sup>2 / \<parallel>v\<parallel>\<^sup>2"
+      by auto
+    then have "(u \<bullet> v)\<^sup>2 / \<parallel>v\<parallel>\<^sup>2 \<le> \<parallel>u\<parallel>\<^sup>2"
+      by auto
+    then have "(u \<bullet> v)\<^sup>2 \<le> \<parallel>u\<parallel>\<^sup>2 * \<parallel>v\<parallel>\<^sup>2"
+      using pos_divide_le_eq[of "\<parallel>v\<parallel>\<^sup>2"] v_0 assms by (auto)
+  }
+  then show ?thesis
+    by (fastforce simp add: assms)
+qed
 
 end

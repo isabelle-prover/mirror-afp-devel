@@ -1,10 +1,10 @@
 theory Nominal2_FCB
-imports Nominal2_Abs 
+imports Nominal2_Abs
 begin
 
 
 text {*
-  A tactic which solves all trivial cases in function 
+  A tactic which solves all trivial cases in function
   definitions, and leaves the others unchanged.
 *}
 
@@ -13,7 +13,7 @@ val all_trivials : (Proof.context -> Proof.method) context_parser =
 Scan.succeed (fn ctxt =>
  let
    val tac = TRYALL (SOLVED' (full_simp_tac ctxt))
- in 
+ in
    Method.SIMPLE_METHOD' (K tac)
  end)
 *}
@@ -27,7 +27,7 @@ lemma Abs_lst1_fcb:
   assumes e: "[[atom x]]lst. T = [[atom y]]lst. S"
   and f1: "\<lbrakk>x \<noteq> y; atom y \<sharp> T; atom x \<sharp> (y \<leftrightarrow> x) \<bullet> T\<rbrakk> \<Longrightarrow> atom x \<sharp> f x T"
   and f2: "\<lbrakk>x \<noteq> y; atom y \<sharp> T; atom x \<sharp> (y \<leftrightarrow> x) \<bullet> T\<rbrakk> \<Longrightarrow> atom y \<sharp> f x T"
-  and p: "\<lbrakk>S = (x \<leftrightarrow> y) \<bullet> T; x \<noteq> y; atom y \<sharp> T; atom x \<sharp> S\<rbrakk> 
+  and p: "\<lbrakk>S = (x \<leftrightarrow> y) \<bullet> T; x \<noteq> y; atom y \<sharp> T; atom x \<sharp> S\<rbrakk>
     \<Longrightarrow> (x \<leftrightarrow> y) \<bullet> (f x T) = f y S"
   shows "f x T = f y S"
   using e
@@ -49,7 +49,7 @@ lemma Abs_lst_fcb:
   assumes e: "(Abs_lst (ba xs) T) = (Abs_lst (ba ys) S)"
     and f1: "\<And>x. x \<in> set (ba xs) \<Longrightarrow> x \<sharp> f xs T"
     and f2: "\<And>x. \<lbrakk>supp T - set (ba xs) = supp S - set (ba ys); x \<in> set (ba ys)\<rbrakk> \<Longrightarrow> x \<sharp> f xs T"
-    and eqv: "\<And>p. \<lbrakk>p \<bullet> T = S; p \<bullet> ba xs = ba ys; supp p \<subseteq> set (ba xs) \<union> set (ba ys)\<rbrakk> 
+    and eqv: "\<And>p. \<lbrakk>p \<bullet> T = S; p \<bullet> ba xs = ba ys; supp p \<subseteq> set (ba xs) \<union> set (ba ys)\<rbrakk>
       \<Longrightarrow> p \<bullet> (f xs T) = f ys S"
   shows "f xs T = f ys S"
   using e apply -
@@ -154,20 +154,20 @@ proof -
     by (simp add: fresh_Pair perm2 fresh_star_def supp_swap swap_fresh_fresh)
   then have fin2: "finite (supp (f bs y c))"
     using fin by (auto intro: supports_finite simp add: finite_supp supp_of_finite_sets supp_Pair)
-  obtain q::"perm" where 
-    fr1: "(q \<bullet> as) \<sharp>* (x, c, f as x c, f bs y c)" and 
-    fr2: "supp q \<sharp>* ([as]set. x)" and 
+  obtain q::"perm" where
+    fr1: "(q \<bullet> as) \<sharp>* (x, c, f as x c, f bs y c)" and
+    fr2: "supp q \<sharp>* ([as]set. x)" and
     inc: "supp q \<subseteq> as \<union> (q \<bullet> as)"
-    using at_set_avoiding3[where xs="as" and c="(x, c, f as x c, f bs y c)" and x="[as]set. x"]  
+    using at_set_avoiding3[where xs="as" and c="(x, c, f as x c, f bs y c)" and x="[as]set. x"]
       fin1 fin2 fin
     by (auto simp add: supp_Pair finite_supp Abs_fresh_star dest: fresh_star_supp_conv)
   have "[q \<bullet> as]set. (q \<bullet> x) = q \<bullet> ([as]set. x)" by simp
   also have "\<dots> = [as]set. x"
     by (simp only: fr2 perm_supp_eq)
   finally have "[q \<bullet> as]set. (q \<bullet> x) = [bs]set. y" using eq by simp
-  then obtain r::perm where 
-    qq1: "q \<bullet> x = r \<bullet> y" and 
-    qq2: "q \<bullet> as = r \<bullet> bs" and 
+  then obtain r::perm where
+    qq1: "q \<bullet> x = r \<bullet> y" and
+    qq2: "q \<bullet> as = r \<bullet> bs" and
     qq3: "supp r \<subseteq> (q \<bullet> as) \<union> bs"
     apply(drule_tac sym)
     apply(simp only: Abs_eq_iff2 alphas)
@@ -197,7 +197,7 @@ proof -
   have "f as x c = q \<bullet> (f as x c)"
     apply(rule perm_supp_eq[symmetric])
     using inc fcb1 fr1 by (auto simp add: fresh_star_def)
-  also have "\<dots> = f (q \<bullet> as) (q \<bullet> x) c" 
+  also have "\<dots> = f (q \<bullet> as) (q \<bullet> x) c"
     apply(rule perm1)
     using inc fresh1 fr1 by (auto simp add: fresh_star_def)
   also have "\<dots> = f (r \<bullet> bs) (r \<bullet> y) c" using qq1 qq2 by simp
@@ -234,23 +234,23 @@ proof -
     by (simp add: fresh_Pair perm2 fresh_star_def supp_swap swap_fresh_fresh inter_eqvt supp_eqvt)
   then have fin2: "finite (supp (f (bs \<inter> supp y) y c))"
     using fin by (auto intro: supports_finite simp add: finite_supp supp_of_finite_sets supp_Pair)
-  obtain q::"perm" where 
-    fr1: "(q \<bullet> (as \<inter> supp x)) \<sharp>* (x, c, f (as \<inter> supp x) x c, f (bs \<inter> supp y) y c)" and 
-    fr2: "supp q \<sharp>* ([as \<inter> supp x]set. x)" and 
+  obtain q::"perm" where
+    fr1: "(q \<bullet> (as \<inter> supp x)) \<sharp>* (x, c, f (as \<inter> supp x) x c, f (bs \<inter> supp y) y c)" and
+    fr2: "supp q \<sharp>* ([as \<inter> supp x]set. x)" and
     inc: "supp q \<subseteq> (as \<inter> supp x) \<union> (q \<bullet> (as \<inter> supp x))"
-    using at_set_avoiding3[where xs="as \<inter> supp x" and c="(x, c, f (as \<inter> supp x) x c, f (bs \<inter> supp y) y c)" 
-      and x="[as \<inter> supp x]set. x"]  
+    using at_set_avoiding3[where xs="as \<inter> supp x" and c="(x, c, f (as \<inter> supp x) x c, f (bs \<inter> supp y) y c)"
+      and x="[as \<inter> supp x]set. x"]
       fin1 fin2 fin
     apply (auto simp add: supp_Pair finite_supp Abs_fresh_star dest: fresh_star_supp_conv)
     done
   have "[q \<bullet> (as \<inter> supp x)]set. (q \<bullet> x) = q \<bullet> ([as \<inter> supp x]set. x)" by simp
   also have "\<dots> = [as \<inter> supp x]set. x"
     by (simp only: fr2 perm_supp_eq)
-  finally have "[q \<bullet> (as \<inter> supp x)]set. (q \<bullet> x) = [bs \<inter> supp y]set. y" using eq 
+  finally have "[q \<bullet> (as \<inter> supp x)]set. (q \<bullet> x) = [bs \<inter> supp y]set. y" using eq
     by(simp add: Abs_eq_res_set)
-  then obtain r::perm where 
-    qq1: "q \<bullet> x = r \<bullet> y" and 
-    qq2: "(q \<bullet> as \<inter> supp (q \<bullet> x)) = r \<bullet> (bs \<inter> supp y)" and 
+  then obtain r::perm where
+    qq1: "q \<bullet> x = r \<bullet> y" and
+    qq2: "(q \<bullet> as \<inter> supp (q \<bullet> x)) = r \<bullet> (bs \<inter> supp y)" and
     qq3: "supp r \<subseteq> (bs \<inter> supp y) \<union> q \<bullet> (as \<inter> supp x)"
     apply(drule_tac sym)
     apply(simp only: Abs_eq_iff2 alphas)
@@ -268,7 +268,7 @@ proof -
     using inc fresh1 fr1
     apply(auto simp add: fresh_star_def fresh_Pair)
     done
-  then have "(r \<bullet> (bs \<inter> supp y)) \<sharp>* f (r \<bullet> (bs \<inter> supp y)) (r \<bullet> y) c" using qq1 qq2 
+  then have "(r \<bullet> (bs \<inter> supp y)) \<sharp>* f (r \<bullet> (bs \<inter> supp y)) (r \<bullet> y) c" using qq1 qq2
     apply(perm_simp)
     apply simp
     done
@@ -281,13 +281,13 @@ proof -
   then have fcb2: "(bs \<inter> supp y) \<sharp>* f (bs \<inter> supp y) y c" by (simp add: permute_bool_def)
   have "f (as \<inter> supp x) x c = q \<bullet> (f (as \<inter> supp x) x c)"
     apply(rule perm_supp_eq[symmetric])
-    using inc fcb1 fr1 
+    using inc fcb1 fr1
     apply (auto simp add: fresh_star_def)
     done
-  also have "\<dots> = f (q \<bullet> (as \<inter> supp x)) (q \<bullet> x) c" 
+  also have "\<dots> = f (q \<bullet> (as \<inter> supp x)) (q \<bullet> x) c"
     apply(rule perm1)
     using inc fresh1 fr1 by (auto simp add: fresh_star_def)
-  also have "\<dots> = f (r \<bullet> (bs \<inter> supp y)) (r \<bullet> y) c" using qq1 qq2 
+  also have "\<dots> = f (r \<bullet> (bs \<inter> supp y)) (r \<bullet> y) c" using qq1 qq2
     apply(perm_simp)
     apply simp
     done
@@ -322,20 +322,20 @@ proof -
     by (simp add: fresh_Pair perm2 fresh_star_def supp_swap swap_fresh_fresh)
   then have fin2: "finite (supp (f bs y c))"
     by (auto intro: supports_finite simp add: finite_supp)
-  obtain q::"perm" where 
-    fr1: "(q \<bullet> (set as)) \<sharp>* (x, c, f as x c, f bs y c)" and 
-    fr2: "supp q \<sharp>* Abs_lst as x" and 
+  obtain q::"perm" where
+    fr1: "(q \<bullet> (set as)) \<sharp>* (x, c, f as x c, f bs y c)" and
+    fr2: "supp q \<sharp>* Abs_lst as x" and
     inc: "supp q \<subseteq> (set as) \<union> q \<bullet> (set as)"
-    using at_set_avoiding3[where xs="set as" and c="(x, c, f as x c, f bs y c)" and x="[as]lst. x"]  
+    using at_set_avoiding3[where xs="set as" and c="(x, c, f as x c, f bs y c)" and x="[as]lst. x"]
       fin1 fin2
     by (auto simp add: supp_Pair finite_supp Abs_fresh_star dest: fresh_star_supp_conv)
   have "Abs_lst (q \<bullet> as) (q \<bullet> x) = q \<bullet> Abs_lst as x" by simp
   also have "\<dots> = Abs_lst as x"
     by (simp only: fr2 perm_supp_eq)
   finally have "Abs_lst (q \<bullet> as) (q \<bullet> x) = Abs_lst bs y" using eq by simp
-  then obtain r::perm where 
-    qq1: "q \<bullet> x = r \<bullet> y" and 
-    qq2: "q \<bullet> as = r \<bullet> bs" and 
+  then obtain r::perm where
+    qq1: "q \<bullet> x = r \<bullet> y" and
+    qq2: "q \<bullet> as = r \<bullet> bs" and
     qq3: "supp r \<subseteq> (q \<bullet> (set as)) \<union> set bs"
     apply(drule_tac sym)
     apply(simp only: Abs_eq_iff2 alphas)
@@ -365,7 +365,7 @@ proof -
   have "f as x c = q \<bullet> (f as x c)"
     apply(rule perm_supp_eq[symmetric])
     using inc fcb1 fr1 by (auto simp add: fresh_star_def)
-  also have "\<dots> = f (q \<bullet> as) (q \<bullet> x) c" 
+  also have "\<dots> = f (q \<bullet> as) (q \<bullet> x) c"
     apply(rule perm1)
     using inc fresh1 fr1 by (auto simp add: fresh_star_def)
   also have "\<dots> = f (r \<bullet> bs) (r \<bullet> y) c" using qq1 qq2 by simp

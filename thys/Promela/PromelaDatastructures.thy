@@ -130,20 +130,17 @@ for something meaningful. *}
 consts 
   warn :: "String.literal \<Rightarrow> unit"
 
-abbreviation "with_warn msg e \<equiv> let _ = warn (STR msg) in e"
-abbreviation "the_warn opt msg \<equiv> case opt of None \<Rightarrow> () | _ \<Rightarrow> warn (STR msg)"
+abbreviation "with_warn msg e \<equiv> let _ = warn msg in e"
+abbreviation "the_warn opt msg \<equiv> case opt of None \<Rightarrow> () | _ \<Rightarrow> warn msg"
 
 text {* @{text usc}: "Unsupported Construct" *}
-definition [code del]: "usc' c \<equiv> undefined"
-abbreviation "usc c \<equiv> usc' (STR c)"
+definition [code del]: "usc (c :: String.literal) \<equiv> undefined"
 
-definition  [code del]: "err' e = undefined"
-abbreviation "err e \<equiv> err' (STR e)"
-abbreviation "errv e v \<equiv> err' (STR e @@ v)"
+definition  [code del]: "err (e :: String.literal) = undefined"
+abbreviation "errv e v \<equiv> err (e + v)"
 
-definition [simp, code del]: "abort' msg f = f ()"
-abbreviation "abort msg f \<equiv> abort' (STR msg) f"
-abbreviation "abortv msg v f \<equiv> abort' (STR msg @@ v) f"
+definition [simp, code del]: "abort (msg :: String.literal) f = f ()"
+abbreviation "abortv msg v f \<equiv> abort (msg + v) f"
 
 code_printing
   code_module PromelaUtils \<rightharpoonup> (SML) {*
@@ -157,9 +154,9 @@ code_printing
       fun abort msg _ = raise (RuntimeError msg)
     end *}
 | constant warn \<rightharpoonup> (SML) "PromelaUtils.warn"
-| constant usc' \<rightharpoonup> (SML) "PromelaUtils.usc"
-| constant err' \<rightharpoonup> (SML) "PromelaUtils.err"
-| constant abort' \<rightharpoonup> (SML) "PromelaUtils.abort"
+| constant usc \<rightharpoonup> (SML) "PromelaUtils.usc"
+| constant err \<rightharpoonup> (SML) "PromelaUtils.err"
+| constant abort \<rightharpoonup> (SML) "PromelaUtils.abort"
 code_reserved SML PromelaUtils
 
 
@@ -184,17 +181,17 @@ where
 | "ppBinOp AST.BinOpNEq = BinOpNEq"
 | "ppBinOp AST.BinOpAnd = BinOpAnd"
 | "ppBinOp AST.BinOpOr = BinOpOr"
-| "ppBinOp AST.BinOpBitAnd = usc ''BinOpBitAnd''"
-| "ppBinOp AST.BinOpBitXor = usc ''BinOpBitXor''"
-| "ppBinOp AST.BinOpBitOr = usc ''BinOpBitOr''"
-| "ppBinOp AST.BinOpShiftL = usc ''BinOpShiftL''"
-| "ppBinOp AST.BinOpShiftR = usc ''BinOpShiftR''"
+| "ppBinOp AST.BinOpBitAnd = usc STR ''BinOpBitAnd''"
+| "ppBinOp AST.BinOpBitXor = usc STR ''BinOpBitXor''"
+| "ppBinOp AST.BinOpBitOr = usc STR ''BinOpBitOr''"
+| "ppBinOp AST.BinOpShiftL = usc STR ''BinOpShiftL''"
+| "ppBinOp AST.BinOpShiftR = usc STR ''BinOpShiftR''"
 
 primrec ppUnOp :: "AST.unOp \<Rightarrow> unOp"
 where
   "ppUnOp AST.UnOpMinus = UnOpMinus"
 | "ppUnOp AST.UnOpNeg = UnOpNeg"
-| "ppUnOp AST.UnOpComp = usc ''UnOpComp''"
+| "ppUnOp AST.UnOpComp = usc STR ''UnOpComp''"
 
 text {* The data structure holding all information on variables we found so far. *}
 type_synonym var_data = "
@@ -217,15 +214,15 @@ where
     in
     case lm.lookup n m of 
       Some i \<Rightarrow> (case idx of None \<Rightarrow> fM i 
-                           | _ \<Rightarrow> err ''Array subscript used on MType (via alias).'')
+                           | _ \<Rightarrow> err STR ''Array subscript used on MType (via alias).'')
     | None \<Rightarrow> (case lm.lookup n v of
                Some g \<Rightarrow> fV n g idx
              | None \<Rightarrow> (case lm.lookup n c of
                    Some g \<Rightarrow> fC n g idx
-                 | None \<Rightarrow> err' (STR ''Unknown variable referenced: '' + n))))"
+                 | None \<Rightarrow> err (STR ''Unknown variable referenced: '' + n))))"
 
 primrec enforceChan :: "varRef + chanRef \<Rightarrow> chanRef" where
-  "enforceChan (Inl _) = err ''Channel expected. Got normal variable.''"
+  "enforceChan (Inl _) = err STR ''Channel expected. Got normal variable.''"
 | "enforceChan (Inr c) = c"
 
 fun liftChan :: "varRef + chanRef \<Rightarrow> varRef" where
@@ -237,7 +234,7 @@ where
   "resolveIdx None None = None"
 | "resolveIdx idx  None = idx"
 | "resolveIdx None aliasIdx = aliasIdx"
-| "resolveIdx _   _     = err ''Array subscript used twice (via alias).''"
+| "resolveIdx _   _     = err STR ''Array subscript used twice (via alias).''"
 
 fun ppExpr :: "var_data \<Rightarrow> AST.expr \<Rightarrow> expr"
 and ppVarRef :: "var_data \<Rightarrow> AST.varRef \<Rightarrow> varRef + chanRef"
@@ -248,9 +245,9 @@ where
                          Inr (ChanRef (VarRef g name (resolveIdx idx aIdx))))
                     (\<lambda>name (_,g) aIdx. let idx = map_option (ppExpr cvm) idx in 
                          Inl (VarRef g name (resolveIdx idx aIdx)))
-                    (\<lambda>_. err ''Variable expected. Got MType.'')"
+                    (\<lambda>_. err STR ''Variable expected. Got MType.'')"
 | "ppVarRef cvm (AST.VarRef _ _ (Some _)) = 
-     usc ''next operation on variables''"
+     usc STR ''next operation on variables''"
 
 | "ppExpr cvm AST.ExprTimeOut = ExprTimeOut"
 | "ppExpr cvm (AST.ExprConst c) = ExprConst c"
@@ -290,12 +287,12 @@ where
 | "ppExpr cvm (AST.ExprRndPoll v es) = 
      ExprPoll (enforceChan (ppVarRef cvm v)) (map (ppRecvArg cvm) es) True"
 
-| "ppExpr cvm AST.ExprNP = usc ''ExprNP''"
-| "ppExpr cvm (AST.ExprEnabled _) = usc ''ExprEnabled''"
-| "ppExpr cvm (AST.ExprPC _) = usc ''ExprPC''"
-| "ppExpr cvm (AST.ExprRemoteRef _ _ _) = usc ''ExprRemoteRef''"
-| "ppExpr cvm (AST.ExprGetPrio _) = usc ''ExprGetPrio''"
-| "ppExpr cvm (AST.ExprSetPrio _ _) = usc ''ExprSetPrio''"
+| "ppExpr cvm AST.ExprNP = usc STR ''ExprNP''"
+| "ppExpr cvm (AST.ExprEnabled _) = usc STR ''ExprEnabled''"
+| "ppExpr cvm (AST.ExprPC _) = usc STR ''ExprPC''"
+| "ppExpr cvm (AST.ExprRemoteRef _ _ _) = usc STR ''ExprRemoteRef''"
+| "ppExpr cvm (AST.ExprGetPrio _) = usc STR ''ExprGetPrio''"
+| "ppExpr cvm (AST.ExprSetPrio _ _) = usc STR ''ExprSetPrio''"
 
 | "ppRecvArg cvm (AST.RecvArgVar v) = (
           let to_ra = \<lambda>_. RecvArgVar (liftChan (ppVarRef cvm v)) in
@@ -318,8 +315,8 @@ primrec ppVarType :: "AST.varType \<Rightarrow> varType" where
 | "ppVarType AST.VarTypeInt = VTBounded (-(2^31)) ((2^31) - 1)"
 | "ppVarType AST.VarTypeMType = VTBounded 1 255"
 | "ppVarType AST.VarTypeChan = VTChan"
-| "ppVarType AST.VarTypeUnsigned = usc ''VarTypeUnsigned''"
-| "ppVarType (AST.VarTypeCustom _) = usc ''VarTypeCustom''"
+| "ppVarType AST.VarTypeUnsigned = usc STR ''VarTypeUnsigned''"
+| "ppVarType (AST.VarTypeCustom _) = usc STR ''VarTypeCustom''"
 
 fun ppVarDecl 
   :: "var_data \<Rightarrow> varType \<Rightarrow> bool \<Rightarrow> AST.varDecl \<Rightarrow> var_data \<times> varDecl" 
@@ -327,47 +324,47 @@ where
   "ppVarDecl (c,v,m,a) (VTBounded l h) g 
                        (AST.VarDeclNum name sze init) = (
      case lm.lookup name v of 
-        Some _ \<Rightarrow> errv ''Duplicate variable '' name
+        Some _ \<Rightarrow> errv STR ''Duplicate variable '' name
        | _ \<Rightarrow> (case lm.lookup name a of 
                Some _ \<Rightarrow> errv
-                         ''Variable name clashes with alias: '' name
+                         STR ''Variable name clashes with alias: '' name
                | _ \<Rightarrow> ((c, lm.update name (sze,g) v, m, a), 
                         VarDeclNum l h name sze 
                           (map_option (ppExpr (c,v,m,a)) init))))"
 | "ppVarDecl _ _ g (AST.VarDeclNum name sze init) = 
-     err ''Assiging num to non-num''"
+     err STR ''Assiging num to non-num''"
 
 | "ppVarDecl (c,v,m,a) VTChan g 
                        (AST.VarDeclChan name sze cap) = (
      let cap' = map_option (apsnd (map ppVarType)) cap in
      case lm.lookup name c of 
-        Some _ \<Rightarrow> errv ''Duplicate variable '' name
+        Some _ \<Rightarrow> errv STR ''Duplicate variable '' name
        | _ \<Rightarrow> (case lm.lookup name a of 
                Some _ \<Rightarrow> errv 
-                         ''Variable name clashes with alias: '' name
+                         STR ''Variable name clashes with alias: '' name
               | _ \<Rightarrow> ((lm.update name (sze, g) c, v, m, a), 
                      VarDeclChan name sze cap')))"
 | "ppVarDecl _ _ g (AST.VarDeclChan name sze init) = 
-     err ''Assiging chan to non-chan''"
+     err STR ''Assiging chan to non-chan''"
 
 | "ppVarDecl (c,v,m,a) (VTBounded l h) g 
                        (AST.VarDeclMType name sze init) = (
      let init = map_option (\<lambda>mty. 
      case lm.lookup mty m of 
-        None \<Rightarrow> errv ''Unknown MType '' mty
+        None \<Rightarrow> errv STR ''Unknown MType '' mty
       | Some mval \<Rightarrow> ExprMConst mval mty) init in
             case lm.lookup name c of 
-              Some _ \<Rightarrow> errv ''Duplicate variable '' name
+              Some _ \<Rightarrow> errv STR ''Duplicate variable '' name
              | _ \<Rightarrow> (case lm.lookup name a of Some _ 
-                       \<Rightarrow> errv ''Variable name clashes with alias: '' name
+                       \<Rightarrow> errv STR ''Variable name clashes with alias: '' name
              | _ \<Rightarrow> ((c, lm.update name (sze,g) v, m, a), 
                     VarDeclNum l h name sze init)))"
 
 | "ppVarDecl _ _ g (AST.VarDeclMType name sze init) = 
-     err ''Assiging num to non-num''"
+     err STR ''Assiging num to non-num''"
 
 | "ppVarDecl _ _ _ (AST.VarDeclUnsigned _ _ _) = 
-     usc ''VarDeclUnsigned''"
+     usc STR ''VarDeclUnsigned''"
 
 definition ppProcVarDecl 
   :: "var_data \<Rightarrow> varType \<Rightarrow> bool \<Rightarrow> AST.varDecl \<Rightarrow> var_data \<times> procVarDecl"
@@ -375,7 +372,7 @@ where
   "ppProcVarDecl cvm ty g v = (case ppVarDecl cvm ty g v of
        (cvm, VarDeclNum l h name sze init) \<Rightarrow> (cvm, ProcVarDeclNum l h name sze init)
      | (cvm, VarDeclChan name sze None) \<Rightarrow> (cvm, ProcVarDeclChan name sze)
-     | _ \<Rightarrow> err ''Channel initilizations only allowed at the beginning of proctypes.'')"
+     | _ \<Rightarrow> err STR ''Channel initilizations only allowed at the beginning of proctypes.'')"
 
 fun ppProcArg 
   :: "var_data \<Rightarrow> varType \<Rightarrow> bool \<Rightarrow> AST.varDecl \<Rightarrow> var_data \<times> procArg"
@@ -383,39 +380,39 @@ where
   "ppProcArg (c,v,m,a) (VTBounded l h) g 
                        (AST.VarDeclNum name None None) = (
      case lm.lookup name v of 
-        Some _ \<Rightarrow> errv ''Duplicate variable '' name
+        Some _ \<Rightarrow> errv STR ''Duplicate variable '' name
       | _ \<Rightarrow> (case lm.lookup name a of 
                Some _ \<Rightarrow> errv 
-                          ''Variable name clashes with alias: '' name
+                          STR ''Variable name clashes with alias: '' name
              | _ \<Rightarrow> ((c, lm.update name (None, g) v, m, a), 
                     ProcArg (VTBounded l h) name)))"
 | "ppProcArg _ _ _ (AST.VarDeclNum _ _ _) = 
-     err ''Invalid proctype arguments''"
+     err STR ''Invalid proctype arguments''"
 
 | "ppProcArg (c,v,m,a) VTChan g 
                        (AST.VarDeclChan name None None) = (
      case lm.lookup name c of 
-        Some _ \<Rightarrow> errv ''Duplicate variable '' name
+        Some _ \<Rightarrow> errv STR ''Duplicate variable '' name
       | _ \<Rightarrow> (case lm.lookup name a of 
                Some _ \<Rightarrow> errv
-                          ''Variable name clashes with alias: '' name
+                          STR ''Variable name clashes with alias: '' name
              | _ \<Rightarrow> ((lm.update name (None, g) c, v, m, a), ProcArg VTChan name)))"
 | "ppProcArg _ _ _ (AST.VarDeclChan _ _ _) = 
-     err ''Invalid proctype arguments''"
+     err STR ''Invalid proctype arguments''"
 
 | "ppProcArg (c,v,m,a) (VTBounded l h) g 
                        (AST.VarDeclMType name None None) = (
      case lm.lookup name v of 
-        Some _ \<Rightarrow> errv ''Duplicate variable '' name
+        Some _ \<Rightarrow> errv STR ''Duplicate variable '' name
        | _ \<Rightarrow> (case lm.lookup name a of 
                Some _ \<Rightarrow> errv
-                          ''Variable name clashes with alias: '' name
+                          STR ''Variable name clashes with alias: '' name
               | _ \<Rightarrow> ((c, lm.update name (None, g) v, m, a), 
                      ProcArg (VTBounded l h) name)))"
 | "ppProcArg _ _ _ (AST.VarDeclMType _ _ _) = 
-     err ''Invalid proctype arguments''"
+     err STR ''Invalid proctype arguments''"
 
-| "ppProcArg _ _ _ (AST.VarDeclUnsigned _ _ _) = usc ''VarDeclUnsigned''"
+| "ppProcArg _ _ _ (AST.VarDeclUnsigned _ _ _) = usc STR ''VarDeclUnsigned''"
 
 text {* Some preprocessing functions enrich the @{typ var_data} argument and hence return
 a new updated one. When chaining multiple calls to such functions after another, we need to make
@@ -437,7 +434,7 @@ by (fastforce intro: foldl_cong split: prod.split)
 
 fun liftDecl where
   "liftDecl f g cvm (AST.Decl vis t decls) = (
-     let _ = the_warn vis ''Visibility in declarations not supported. Ignored.'' in
+     let _ = the_warn vis STR ''Visibility in declarations not supported. Ignored.'' in
      let t = ppVarType t in
      cvm_fold (\<lambda>cvm. f cvm t g) cvm decls)"
 
@@ -622,9 +619,9 @@ where
              let (cvm', ps') = ppDecl False cvm d 
              in ((True, ps@ps', i, cvm'), StepSkip))"
 | "ppStep (_,cvm) (AST.StepXR _) = 
-     with_warn ''StepXR not supported. Ignored.'' ((False,cvm), StepSkip)"
+     with_warn STR ''StepXR not supported. Ignored.'' ((False,cvm), StepSkip)"
 | "ppStep (_,cvm) (AST.StepXS _) = 
-     with_warn ''StepXS not supported. Ignored.'' ((False,cvm), StepSkip)"
+     with_warn STR ''StepXS not supported. Ignored.'' ((False,cvm), StepSkip)"
 
 | "ppStmnt (_,cvm) (AST.StmntBreak) = ((False,cvm), StmntBreak)"
 | "ppStmnt (_,cvm) (AST.StmntElse) = ((False,cvm), StmntElse)"
@@ -656,7 +653,7 @@ where
      ((False,ps,i,cvm), StmntRecv (enforceChan (ppVarRef cvm v)) 
                                   (map (ppRecvArg cvm) rs) True False)"
 | "ppStmnt (_,ps,i,cvm) (AST.StmntRun n es p) = ( 
-     let _ = the_warn p ''Priorities for 'run' not supported. Ignored.'' in
+     let _ = the_warn p STR ''Priorities for 'run' not supported. Ignored.'' in
     ((False,ps,i,cvm), StmntRun n (map (ppExpr cvm) es)))"
 | "ppStmnt (_,cvm) (AST.StmntSeq ss) = 
      apsnd StmntSeq (cvm_fold ppStep (False,cvm) ss)"
@@ -674,9 +671,9 @@ where
      ((False,ps,i,cvm), decr (liftChan (ppVarRef cvm v)))"
 
 | "ppStmnt (_,cvm) (AST.StmntPrintF _ _) = 
-     with_warn ''PrintF ignored'' ((False,cvm), StmntSkip)"
+     with_warn STR ''PrintF ignored'' ((False,cvm), StmntSkip)"
 | "ppStmnt (_,cvm) (AST.StmntPrintM _) = 
-     with_warn ''PrintM ignored'' ((False,cvm), StmntSkip)"
+     with_warn STR ''PrintM ignored'' ((False,cvm), StmntSkip)"
 
 | "ppStmnt (_,ps,inl,cvm) (AST.StmntFor 
                               (AST.RangeFromTo i lb ub) 
@@ -695,11 +692,11 @@ where
      in
         case ppVarRef cvm v of
          Inr c \<Rightarrow> (cvm', forInChan i c steps)
-       | Inl (VarRef _ _ (Some _)) \<Rightarrow> err ''Iterating over array-member.''
+       | Inl (VarRef _ _ (Some _)) \<Rightarrow> err STR ''Iterating over array-member.''
        | Inl (VarRef _ name None) \<Rightarrow> (
              let (_,v,_) = cvm in
              case fst (the (lm.lookup name v)) of
-              None \<Rightarrow> err ''Iterating over non-array variable.''
+              None \<Rightarrow> err STR ''Iterating over non-array variable.''
             | Some N \<Rightarrow> (cvm', forInArray i N steps)))"
 
 | "ppStmnt (_,ps,inl,cvm) (AST.StmntSelect 
@@ -710,7 +707,7 @@ where
      in
        ((False,ps,inl,cvm), select i lb ub))"
 | "ppStmnt (_,cvm) (AST.StmntSelect (AST.RangeIn _ _)) = 
-     err ''\"in\" not allowed in select''"
+     err STR ''\"in\" not allowed in select''"
 
 | "ppStmnt (_,ps,inl,cvm) (AST.StmntCall macro args) = (
      let 
@@ -718,16 +715,16 @@ where
        (c,v,m,a) = cvm
      in
        case lm.lookup macro inl of
-        None \<Rightarrow> errv ''Calling unknown macro '' macro
+        None \<Rightarrow> errv STR ''Calling unknown macro '' macro
       | Some (names,sF) \<Rightarrow>
           if length names \<noteq> length args then 
-             (err ''Called macro with wrong number of arguments.'') 
+             (err STR ''Called macro with wrong number of arguments.'') 
           else
              let a' = foldl (\<lambda>a (k,v). lm.update k v a) a (zip names args) in
              let ((c,v,m,_),steps) = sF (c,v,m,a') in
              ((False,ps,inl,c,v,m,a), StmntSeq steps))"
          
-| "ppStmnt cvm (AST.StmntDStep _) = usc ''StmntDStep''"
+| "ppStmnt cvm (AST.StmntDStep _) = usc STR ''StmntDStep''"
 
 fun ppModule 
   :: "var_data \<times> inlines \<Rightarrow> AST.module 
@@ -735,15 +732,15 @@ fun ppModule
 where
   "ppModule (cvm, inl) (AST.ProcType act name args prio prov steps) = (
      let 
-        _ = the_warn prio ''Priorities for procs not supported. Ignored.'';
-        _ = the_warn prov ''Priov (??) for procs not supported. Ignored.'';
+        _ = the_warn prio STR ''Priorities for procs not supported. Ignored.'';
+        _ = the_warn prov STR ''Priov (??) for procs not supported. Ignored.'';
         (cvm', args) = cvm_fold ppDeclProcArg cvm args;
         ((_, vars, _, _), steps) = cvm_fold ppStep (True,[],inl,cvm') steps
      in
         (cvm, inl, Inr (Inl (ProcType act name (concat args) vars steps))))"
 
 | "ppModule (cvm,inl) (AST.Init prio steps) = (
-     let _ = the_warn prio ''Priorities for procs not supported. Ignored.'' in
+     let _ = the_warn prio STR ''Priorities for procs not supported. Ignored.'' in
      let ((_, vars, _, _), steps) = cvm_fold ppStep (True,[],inl,cvm) steps in
      (cvm, inl, Inr (Inl (Init vars steps))))"
 
@@ -769,11 +766,11 @@ where
      in let inl = lm.update name (args, stepF) inl
      in (cvm,inl, Inl[]))"
 
-| "ppModule cvm (AST.DProcType _ _ _ _ _ _) = usc ''DProcType''"
-| "ppModule cvm (AST.Never _) = usc ''Never''"
-| "ppModule cvm (AST.Trace _) = usc ''Trace''"
-| "ppModule cvm (AST.NoTrace _) = usc ''NoTrace''"
-| "ppModule cvm (AST.TypeDef _ _) = usc ''TypeDef''"
+| "ppModule cvm (AST.DProcType _ _ _ _ _ _) = usc STR ''DProcType''"
+| "ppModule cvm (AST.Never _) = usc STR ''Never''"
+| "ppModule cvm (AST.Trace _) = usc STR ''Trace''"
+| "ppModule cvm (AST.NoTrace _) = usc STR ''NoTrace''"
+| "ppModule cvm (AST.TypeDef _ _) = usc STR ''TypeDef''"
 
 definition preprocess :: "AST.module list \<Rightarrow> promela" where
   "preprocess ms = (

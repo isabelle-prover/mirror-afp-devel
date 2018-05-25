@@ -44,14 +44,14 @@ next
         apply (cases "sorted_list_of_set R" "sorted_list_of_set S" rule: list.exhaust[case_product list.exhaust])
         apply (auto split: if_splits simp add: not_le)
         using insort_not_Nil apply metis
-        using insert.prems(1) sorted_list_of_set apply fastforce
-        using insert.prems(1) sorted_list_of_set apply fastforce
-        using insert.prems(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
-        using insert.hyps(1) sorted_list_of_set apply fastforce
+        using insert.prems(1) set_sorted_list_of_set apply fastforce
+        using insert.prems(1) set_sorted_list_of_set apply fastforce
+        using insert.prems(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
+        using insert.hyps(1) set_sorted_list_of_set apply fastforce
         done
       with insert show "insert a R = insert b S" by auto
     next
@@ -160,7 +160,7 @@ proof (induct xs rule: list_singleton_induct)
     apply (auto simp: less_rexp_def less_eq_rexp_def)
     done
 next
-  case (cons y1 y2 ys) thus ?case unfolding is_Zero_def is_Plus_def sorted_Cons
+  case (cons y1 y2 ys) thus ?case unfolding is_Zero_def is_Plus_def
     apply (cases x)
     apply (metis UnCI insertI1)
     apply simp apply (metis antisym less_eq_rexp_def)

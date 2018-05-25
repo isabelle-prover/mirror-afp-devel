@@ -1538,7 +1538,7 @@ proof -
           qed
           then have "(\<Sum>(k, \<gamma>) \<in> (one_chain1 - {p. f p = {}}). one_chain_line_integral F basis (f (k, \<gamma>)))
                    = (\<Sum>(k, \<gamma>) \<in> (one_chain1 - {p. f p = {}}). k* (line_integral F basis \<gamma>))"
-            by (auto intro!: Cartesian_Euclidean_Space.sum_cong_aux)
+            by (auto intro!: Finite_Cartesian_Product.sum_cong_aux)
           then show "(\<Sum>one_chain \<in> (f ` (one_chain1 - {p. f p = {}})). one_chain_line_integral F basis one_chain) =
                                                      (\<Sum>(k, \<gamma>) \<in> (one_chain1 - {p. f p = {}}). k* (line_integral F basis \<gamma>))"
             using 0  by auto
@@ -3306,7 +3306,7 @@ proof -
             using cube_line_integ by auto
           then have "(\<Sum>(k, \<gamma>) \<in> (one_chain1 - {p. f p = {}}). one_chain_line_integral F basis (f (k, \<gamma>)))
                    = (\<Sum>(k, \<gamma>) \<in> (one_chain1 - {p. f p = {}}). k* (line_integral F basis \<gamma>))"
-            by (auto intro!: Cartesian_Euclidean_Space.sum_cong_aux)
+            by (auto intro!: Finite_Cartesian_Product.sum_cong_aux)
           then show "(\<Sum>one_chain \<in> (f ` (one_chain1 - {p. f p = {}})). one_chain_line_integral F basis one_chain) =
                                                      (\<Sum>(k, \<gamma>) \<in> (one_chain1 - {p. f p = {}}). k* (line_integral F basis \<gamma>))"
             using 0  by auto

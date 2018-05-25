@@ -748,9 +748,10 @@ lemma irreducible_pos_gcd_twice:
   shows "gcd p q = 1 \<or> p = q"
 proof (cases "gcd p q = 1")
   case False note pq = this
-  have id: "gcd p q = gcd q p" by (simp add: gcd.commute)
-  have "p = gcd p q" using irreducible_pos_gcd[OF p] pq by force
-  also have "\<dots> = q" using irreducible_pos_gcd[OF q] pq unfolding id by force
+  have "p = gcd p q" using irreducible_pos_gcd [OF p, of q] pq
+    by auto
+  also have "\<dots> = q" using irreducible_pos_gcd [OF q, of p] pq
+    by (auto simp add: ac_simps)
   finally show ?thesis by auto
 qed simp
 

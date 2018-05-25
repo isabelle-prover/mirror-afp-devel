@@ -403,113 +403,6 @@ proof -
     by (metis (no_types, lifting)  Henstock_Kurzweil_Integration.integral_cong mult.commute real_scaleR_def)
 qed
 
-lemma integral_cbox_box:
-  shows "((f::('a::euclidean_space) \<Rightarrow> ('a)) has_integral g) (cbox a b) = (f has_integral g) (box a b)"
-  using negligible_frontier_interval  box_subset_cbox[of "a" "b"]  has_integral_spike_set_eq[where ?T = "box a b", where ?S ="cbox a b"]
-  apply (auto simp only: Diff_eq_empty_iff[symmetric] Un_empty_right)
-   apply blast
-  by blast
-
-lemma integrable_cbox_box:
-  shows "((f::('a::euclidean_space) \<Rightarrow> ('a)) integrable_on (cbox a b)) = (f integrable_on (box a b))"
-  using negligible_frontier_interval  box_subset_cbox[of "a" "b"]  integrable_spike_set_eq[where ?T = "box a b", where ?S ="cbox a b"]
-  by (auto simp only: Diff_eq_empty_iff[symmetric] Un_empty_right)
-
-lemma integral_on_spikes:
-  assumes "finite t"
-  assumes "((f::('a::euclidean_space) \<Rightarrow> ('a)) has_integral g) s"
-  shows "(f has_integral g) (s - t)"
-  by (metis Diff_Diff_Int Diff_eq_empty_iff Diff_subset Un_empty_right assms has_integral_spike_set negligible_Int negligible_finite)
-
-
-(*The idea now is how to convert a tagged division to another one whose tags are not in s, and show that it will have the same content*)
-lemma rsum_bound_:
-  assumes p: "p tagged_division_of (cbox a b)"
-    and "\<forall>x\<in>(cbox a b) -s. norm (f x) \<le> e"
-    and "(cbox a b) -s \<noteq> {}"
-    and "\<forall>(x,K)\<in> p. x \<notin> s"
-  shows "norm (sum (\<lambda>(x,k). content k *\<^sub>R f x) p) \<le> e * content (cbox a b)"
-proof (cases "(cbox a b) = {}")
-  case True show ?thesis
-    using p unfolding True tagged_division_of_trivial by auto
-next
-  case False
-  then have e: "e \<ge> 0"
-    by (meson ex_in_conv assms(2) assms(3) norm_ge_zero order_trans)
-  have sum_le: "sum (content \<circ> snd) p \<le> content (cbox a b)"
-    unfolding additive_content_tagged_division[OF p, symmetric] split_def
-    by (auto intro: eq_refl)
-  have con: "\<And>xk. xk \<in> p \<Longrightarrow> 0 \<le> content (snd xk)"
-    using tagged_division_ofD(4) [OF p] content_pos_le
-    by force
-  have norm: "\<And>xk. xk \<in> p \<Longrightarrow> norm (f (fst xk)) \<le> e"
-  proof-
-    fix xk
-    assume ass: "xk \<in> p"
-    then obtain x K where xk: "(x,K)\<in>p" "xk = (x, K)" "K \<subseteq> cbox a b" "x \<in> K"
-      using tagged_division_ofD(2,3)[OF p] prod.collapse by metis
-    then have "x \<in> (cbox a b) - s" using assms by auto
-    then have "norm (f x) \<le> e" using assms by auto
-    then show "norm (f (fst xk)) \<le> e" using xk by auto
-  qed
-  have "norm (sum (\<lambda>(x,k). content k *\<^sub>R f x) p) \<le> (\<Sum>i\<in>p. norm (case i of (x, k) \<Rightarrow> content k *\<^sub>R f x))"
-    by (rule norm_sum)
-  also have "...  \<le> e * content (cbox a b)"
-    unfolding split_def norm_scaleR
-    apply (rule order_trans[OF sum_mono])
-     apply (rule mult_left_mono[OF _ abs_ge_zero, of _ e])
-     apply (metis norm)
-    unfolding sum_distrib_right[symmetric]
-    using con sum_le
-    apply (auto simp: mult.commute intro: mult_left_mono [OF _ e])
-    done
-  finally show ?thesis .
-qed
-
-lemma rsum_bound_'(*Larry's proof*):
-  assumes p: "p tagged_division_of (cbox a b)"
-    and "\<forall>x\<in>(cbox a b) -s. norm (f x) \<le> e"
-    and "(cbox a b) -s \<noteq> {}"
-    and "\<forall>(x,K)\<in> p. x \<notin> s"
-  shows "norm (sum (\<lambda>(x,k). content k *\<^sub>R f x) p) \<le> e * content (cbox a b)"
-proof (cases "(cbox a b) = {}")
-  case True show ?thesis
-    using p unfolding True tagged_division_of_trivial by auto
-next
-  case False
-  then have e: "e \<ge> 0"
-    by (meson ex_in_conv assms(2) assms(3) norm_ge_zero order_trans)
-  have sum_le: "sum (content \<circ> snd) p \<le> content (cbox a b)"
-    unfolding additive_content_tagged_division[OF p, symmetric] split_def
-    by (auto intro: eq_refl)
-  have con: "\<And>xk. xk \<in> p \<Longrightarrow> 0 \<le> content (snd xk)"
-    using tagged_division_ofD(4) [OF p] content_pos_le
-    by force
-  have norm: "\<And>xk. xk \<in> p \<Longrightarrow> norm (f (fst xk)) \<le> e"
-  proof-
-    fix xk
-    assume ass: "xk \<in> p"
-    then obtain x K where xk: "(x,K)\<in>p" "xk = (x, K)" "K \<subseteq> cbox a b" "x \<in> K"
-      using tagged_division_ofD(2,3)[OF p] prod.collapse by metis
-    then have "x \<in> (cbox a b) - s" using assms by auto
-    then have "norm (f x) \<le> e" using assms by auto
-    then show "norm (f (fst xk)) \<le> e" using xk by auto
-  qed
-  have "norm (sum (\<lambda>(x,k). content k *\<^sub>R f x) p) \<le> (\<Sum>i\<in>p. norm (case i of (x, k) \<Rightarrow> content k *\<^sub>R f x))"
-    by (rule norm_sum)
-  also have "...  \<le> e * content (cbox a b)"
-    unfolding split_def norm_scaleR
-    apply (rule order_trans[OF sum_mono])
-     apply (rule mult_left_mono[OF _ abs_ge_zero, of _ e])
-     apply (metis norm)
-    unfolding sum_distrib_right[symmetric]
-    using con sum_le
-    apply (auto simp: mult.commute intro: mult_left_mono [OF _ e])
-    done
-  finally show ?thesis .
-qed
-
-
 lemma frontier_ic:
   assumes "a < (b::real)"
   shows "frontier {a<..b}  = {a,b}"
@@ -977,7 +870,7 @@ proof -
         by (smt Diff_subset Un_Diff Un_commute Un_upper2 inj_on_image_set_diff subset_trans sup.order_iff)
       then show "((\<lambda>x. integral {c..x} f) has_vector_derivative ?g'3 x) (at (g x) within g ` ({a..b} - s))"
         (*sledgehammer*)
-        by (smt Diff_subset Interval_Integral.has_vector_derivative_weaken Un_upper1 Un_upper2 \<open>finite (g ` s)\<close> ass comp_def continuous_on_eq_continuous_within f(1) f(2) g(2) image_diff_subset image_subset_iff inj_on_image_set_diff integral_has_vector_derivative_continuous_at' subset_trans)
+        by (smt Diff_subset has_vector_derivative_weaken Un_upper1 Un_upper2 \<open>finite (g ` s)\<close> ass comp_def continuous_on_eq_continuous_within f(1) f(2) g(2) image_diff_subset image_subset_iff inj_on_image_set_diff integral_has_vector_derivative_continuous_at' subset_trans)
     qed
     show "\<And>x. x \<in> {a..b} - s \<Longrightarrow> g' x *\<^sub>R ?g'3 x = g' x *\<^sub>R f (g x)" by auto
   qed

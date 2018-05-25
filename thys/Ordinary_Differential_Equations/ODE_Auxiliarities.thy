@@ -306,7 +306,7 @@ proof (rule has_derivativeI)
           if "t \<in> closed_segment (x\<bullet>E!j) (x'\<bullet>E!j)"
           for t
           by (simp add: that)
-        have cont_bound: "\<forall>y\<in>closed_segment (x \<bullet> E ! j) (x' \<bullet> E ! j). norm (g' j y - g' j (x \<bullet> E ! j)) \<le> B"
+        have cont_bound: "\<And>y. y\<in>closed_segment (x \<bullet> E ! j) (x' \<bullet> E ! j) \<Longrightarrow> norm (g' j y - g' j (x \<bullet> E ! j)) \<le> B"
           apply (auto simp add: g'_def j algebra_simps inner_Basis z dist_norm
               intro!: less_imp_le B z_mem norm_z norm_z')
           using closed_segment_commute \<open>\<And>j. j < DIM('a) \<Longrightarrow> E ! j \<in> Basis\<close> csc_subset j apply blast
@@ -446,7 +446,7 @@ proof -
     apply (safe intro!: integral_eucl_le)
     using \<open>0 \<in> {l .. u}\<close>
     apply (auto intro!: assms
-      intro: integrable_continuous_real  integrable_spike[where S="{t0, h}", OF _ _ f_int]
+      intro: integrable_continuous_real  integrable_spike[where S="{t0, h}", OF f_int]
       simp: eucl_le[where 'a='a] divide_simps
       split: if_split_asm)
     done

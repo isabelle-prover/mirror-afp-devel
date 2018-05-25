@@ -56,11 +56,11 @@ begin
   (* TODO: Move to Open_List *)  
   definition os_head :: "'a::heap os_list \<Rightarrow> ('a) Heap" where
     "os_head p \<equiv> case p of 
-      None \<Rightarrow> raise ''os_Head: Empty list''
+      None \<Rightarrow> raise STR ''os_Head: Empty list''
     | Some p \<Rightarrow> do { m \<leftarrow>!p; return (val m) }"
 
   primrec os_tl :: "'a::heap os_list \<Rightarrow> ('a os_list) Heap" where
-    "os_tl None = raise ''os_tl: Empty list''"
+    "os_tl None = raise STR ''os_tl: Empty list''"
   | "os_tl (Some p) = do { m \<leftarrow>!p; return (next m) }"  
 
   interpretation os: imp_list_head os_list os_head
@@ -78,7 +78,7 @@ begin
 
   definition cs_head :: "'a::heap cs_list \<Rightarrow> 'a Heap" where
     "cs_head p \<equiv> case p of 
-      None \<Rightarrow> raise ''cs_head: Empty list''
+      None \<Rightarrow> raise STR ''cs_head: Empty list''
     | Some p \<Rightarrow> do { n \<leftarrow> !p; return (val n)}"
   interpretation cs: imp_list_head cs_list cs_head
     by unfold_locales (sep_auto simp: neq_Nil_conv cs_head_def)
@@ -380,27 +380,27 @@ begin
     lemmas hnr_mop_delete[sepref_fr_rules] = hnr_op_delete[FCOMP mk_mop_rl2_np[OF mop_set_delete_alt]]
   end  
 
-  primrec sorted_by_rel' where
-    "sorted_by_rel' R [] \<longleftrightarrow> True"
-  | "sorted_by_rel' R (x#xs) \<longleftrightarrow> list_all (R x) xs \<and> sorted_by_rel' R xs"  
+  primrec sorted_wrt' where
+    "sorted_wrt' R [] \<longleftrightarrow> True"
+  | "sorted_wrt' R (x#xs) \<longleftrightarrow> list_all (R x) xs \<and> sorted_wrt' R xs"  
 
-  lemma sorted_by_rel'_eq: "sorted_by_rel' = sorted_by_rel" 
+  lemma sorted_wrt'_eq: "sorted_wrt' = sorted_wrt" 
   proof (intro ext iffI)
     fix R :: "'a \<Rightarrow> 'a \<Rightarrow> bool" and xs :: "'a list"
     {
-      assume "sorted_by_rel R xs"
-      thus "sorted_by_rel' R xs"
-        by induction (auto simp: list_all_iff)
+      assume "sorted_wrt R xs"
+      thus "sorted_wrt' R xs"
+        by (induction xs)(auto simp: list_all_iff sorted_sorted_wrt[symmetric])
     }
     {
-      assume "sorted_by_rel' R xs"
-      thus "sorted_by_rel R xs"
+      assume "sorted_wrt' R xs"
+      thus "sorted_wrt R xs"
         by (induction xs) (auto simp: list_all_iff)
     }
   qed    
 
-  lemma param_sorted_by_rel[param]: "(sorted_by_rel, sorted_by_rel) \<in> (A \<rightarrow> A \<rightarrow> bool_rel) \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> bool_rel"
-    unfolding sorted_by_rel'_eq[symmetric] sorted_by_rel'_def 
+  lemma param_sorted_wrt[param]: "(sorted_wrt, sorted_wrt) \<in> (A \<rightarrow> A \<rightarrow> bool_rel) \<rightarrow> \<langle>A\<rangle>list_rel \<rightarrow> bool_rel"
+    unfolding sorted_wrt'_eq[symmetric] sorted_wrt'_def 
     by parametricity
 
   lemma obtain_list_from_setrel:
@@ -464,7 +464,7 @@ begin
     apply (intro exI conjI; assumption?)
     using param_distinct[param_fo] apply blast
     apply simp
-    using param_sorted_by_rel[param_fo] apply blast
+    using param_sorted_wrt[param_fo] apply blast
     done
 
 

@@ -567,7 +567,7 @@ proof -
       using b_gt_1 1
       by (simp add: distrib_left sum.distrib)
     also have "\<dots> = (\<Sum>i \<in> L. fi i *((log b (fi i / (1/(b powr (cw_len i)))))))"
-      using Cartesian_Euclidean_Space.sum_cong_aux[OF eqpi] by simp
+      using Finite_Cartesian_Product.sum_cong_aux[OF eqpi] by simp
     also from big_eq have
     "\<dots> = (\<Sum>i\<in>L. fi i * (log b (fi i * \<K> / (1 / b powr (cw_len i))))) + (\<Sum>i \<in> L. fi i) * log b (1/ \<K>)"
       using \<K>_pos

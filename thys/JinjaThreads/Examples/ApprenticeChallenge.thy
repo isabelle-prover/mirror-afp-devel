@@ -45,7 +45,7 @@ where
   (Job, Thread, [(STR ''objref'', Class Container, \<lparr>volatile=False\<rparr>)],
    [(STR ''incr'', [], Class Job, \<lfloor>([],
      sync(Var (STR ''objref''))
-         ((Var (STR ''objref''))\<bullet>STR ''counter''{STR []} := ((Var (STR ''objref''))\<bullet>STR ''counter''{STR []} \<guillemotleft>Add\<guillemotright> Val (Intg 1)));;
+         ((Var (STR ''objref''))\<bullet>STR ''counter''{STR ''''} := ((Var (STR ''objref''))\<bullet>STR ''counter''{STR ''''} \<guillemotleft>Add\<guillemotright> Val (Intg 1)));;
      Var this)\<rfloor>),
     (STR ''setref'', [Class Container], Void, \<lfloor>([STR ''o''],
      LAss (STR ''objref'') (Var (STR ''o'')))\<rfloor>),

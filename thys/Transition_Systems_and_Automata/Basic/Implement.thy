@@ -196,9 +196,9 @@ begin
     lemma gen_UNION[autoref_rules_raw]:
       assumes PRIO_TAG_GEN_ALGO
       assumes to_list: "SIDE_GEN_ALGO (is_set_to_list A Rs1 tol)"
-      assumes empty: "GEN_OP emp {} (\<langle>B\<rangle> Rs2)"
-      assumes union: "GEN_OP un union (\<langle>B\<rangle> Rs2 \<rightarrow> \<langle>B\<rangle> Rs2 \<rightarrow> \<langle>B\<rangle> Rs2)"
-      shows "(gen_UNION tol emp un, UNION) \<in> \<langle>A\<rangle> Rs1 \<rightarrow> (A \<rightarrow> \<langle>B\<rangle> Rs2) \<rightarrow> \<langle>B\<rangle> Rs2"
+      assumes empty: "GEN_OP emp {} (\<langle>B\<rangle> Rs3)"
+      assumes union: "GEN_OP un union (\<langle>B\<rangle> Rs2 \<rightarrow> \<langle>B\<rangle> Rs3 \<rightarrow> \<langle>B\<rangle> Rs3)"
+      shows "(gen_UNION tol emp un, UNION) \<in> \<langle>A\<rangle> Rs1 \<rightarrow> (A \<rightarrow> \<langle>B\<rangle> Rs2) \<rightarrow> \<langle>B\<rangle> Rs3"
     proof (intro fun_relI)
       note [unfolded autoref_tag_defs, param] = empty union
       fix f g T S
@@ -210,11 +210,11 @@ begin
         by (rule is_set_to_sorted_listE)
       from IT' have 10: "S = set tsl'" "distinct tsl'" unfolding it_to_sorted_list_def by simp_all
       have "gen_UNION tol emp un T g = fold (un \<circ> g) (tol T) emp" unfolding gen_UNION_def by rule
-      also have "(\<dots>, fold (union \<circ> f) tsl' {}) \<in> \<langle>B\<rangle> Rs2" by parametricity
+      also have "(\<dots>, fold (union \<circ> f) tsl' {}) \<in> \<langle>B\<rangle> Rs3" by parametricity
       also have "fold (union \<circ> f) tsl' X = UNION S f \<union> X" for X
         unfolding 10(1) by (induct tsl' arbitrary: X) (auto)
       also have "UNION S f \<union> {} = UNION S f" by simp
-      finally show "(gen_UNION tol emp un T g, UNION S f) \<in> \<langle>B\<rangle> Rs2" by this
+      finally show "(gen_UNION tol emp un T g, UNION S f) \<in> \<langle>B\<rangle> Rs3" by this
     qed
 
     lemma list_set_union_autoref[autoref_rules]:
@@ -368,6 +368,46 @@ begin
       also have "op_map_empty ++ (Some \<circ> f) |` S = (Some \<circ> f) |` S" by simp
       finally show "(gen_build tol upd emp g T, (Some \<circ> f) |` S) \<in> \<langle>A, B\<rangle> Rm" by this
     qed
+
+    definition "to_list it s \<equiv> it s top Cons Nil"
+
+    lemma map2set_to_list:
+      assumes "GEN_ALGO_tag (is_map_to_list Rk unit_rel R it)"
+      shows "is_set_to_list Rk (map2set_rel R) (to_list (map_iterator_dom \<circ> (foldli \<circ> it)))"
+    unfolding is_set_to_list_def is_set_to_sorted_list_def
+    proof safe
+      fix f g
+      assume 1: "(f, g) \<in> \<langle>Rk\<rangle> map2set_rel R"
+      obtain xs where 2: "(it_to_list (map_iterator_dom \<circ> (foldli \<circ> it)) f, xs) \<in> \<langle>Rk\<rangle> list_rel"
+        "RETURN xs \<le> it_to_sorted_list (\<lambda> _ _. True) g"
+        using map2set_to_list[OF assms] 1
+        unfolding is_set_to_list_def is_set_to_sorted_list_def
+        by auto
+      have 3: "map_iterator_dom (foldli xs) top (#) a =
+        rev (map_iterator_dom (foldli xs) (\<lambda> _. True) (\<lambda> x l. l @ [x]) (rev a))"
+          for xs :: "('k \<times> unit) list" and a
+          unfolding map_iterator_dom_def set_iterator_image_def set_iterator_image_filter_def
+          by (induct xs arbitrary: a) (auto)
+      show "\<exists> xs. (to_list (map_iterator_dom \<circ> (foldli \<circ> it)) f, xs) \<in> \<langle>Rk\<rangle> list_rel \<and>
+        RETURN xs \<le> it_to_sorted_list (\<lambda> _ _. True) g"
+      proof (intro exI conjI)
+        have "to_list (map_iterator_dom \<circ> (foldli \<circ> it)) f =
+          rev (it_to_list (map_iterator_dom \<circ> (foldli \<circ> it)) f)"
+          unfolding to_list_def it_to_list_def by (simp add: 3)
+        also have "(rev (it_to_list (map_iterator_dom \<circ> (foldli \<circ> it)) f), rev xs) \<in> \<langle>Rk\<rangle> list_rel"
+          using 2(1) by parametricity
+        finally show "(to_list (map_iterator_dom \<circ> (foldli \<circ> it)) f, rev xs) \<in> \<langle>Rk\<rangle> list_rel" by this
+        show "RETURN (rev xs) \<le> it_to_sorted_list (\<lambda> _ _. True) g"
+          using 2(2) unfolding it_to_sorted_list_def by auto
+      qed
+    qed
+
+    lemma CAST_to_list[autoref_rules_raw]:
+      assumes PRIO_TAG_GEN_ALGO
+      assumes "SIDE_GEN_ALGO (is_set_to_list A Rs tol)"
+      shows "(tol, CAST) \<in> \<langle>A\<rangle> Rs \<rightarrow> \<langle>A\<rangle> list_set_rel"
+      using assms(2) unfolding autoref_tag_defs is_set_to_list_def
+      by (auto simp: it_to_sorted_list_def list_set_rel_def in_br_conv elim!: is_set_to_sorted_listE)
 
     (* TODO: do we really need stronger versions of all these small lemmata? *)
     lemma param_foldli:

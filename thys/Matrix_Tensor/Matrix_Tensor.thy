@@ -2358,7 +2358,7 @@ lemma mod_prop1:"((a::nat) mod (b*c)) mod c = (a mod c)"
   then have "?x = (a - m1*(b*c))"
          by auto
   then have "\<exists>m.( ?x = m*c + ?z)"
-         using mod_eqD by (metis div_mult_mod_eq)
+         using mod_div_decomp by blast
   then obtain m where "( ?x = m*c + ?z)"
          by auto
   then have "(a - m1*(b*c)) = m*c + ?z"
@@ -2417,7 +2417,7 @@ proof(cases "b*c = 0")
    have F_1:"(b > 0)\<and> (c > 0)"
        using False by auto
    have "\<exists>x. a = x*(b*c) + (a mod (b*c))"
-       by (metis mod_eqD add.commute)
+       using mod_div_decomp by blast
    then obtain x where "a = x*(b*c) + (a mod (b*c))"
        by auto
    then have "a div c = ((x*(b*c)) div c) + ((a mod (b*c)) div c)"

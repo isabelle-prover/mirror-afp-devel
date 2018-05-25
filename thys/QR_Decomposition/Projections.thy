@@ -103,10 +103,10 @@ qed
 
 lemma in_orthogonal_complement_basis:
   fixes B::"'a::{euclidean_space} set"
-  assumes S: "real_vector.subspace S"
-  and ind_B: "real_vector.independent B"
+  assumes S: "subspace S"
+  and ind_B: "independent B"
   and B: "B \<subseteq> S"
-  and span_B: "S \<subseteq> real_vector.span B"
+  and span_B: "S \<subseteq> span B"
   shows "(v \<in> orthogonal_complement S) = (\<forall>a\<in>B. orthogonal a v)" 
 proof (unfold orthogonal_complement_def, auto)
   fix a assume "\<forall>x\<in>S. orthogonal v x" and "a \<in> B"  
@@ -114,10 +114,10 @@ proof (unfold orthogonal_complement_def, auto)
     by (metis B orthogonal_commute set_rev_mp)
 next
   fix x assume o: "\<forall>a\<in>B. orthogonal a v" and x: "x \<in> S"
-  have finite_B: "finite B" using euclidean_space.independent_bound_general[OF ind_B] ..
-  have span_B_eq: "S = real_vector.span B" using B S span_B real_vector.span_subspace by blast
-  obtain f where f: "(\<Sum>a\<in>B. f a *\<^sub>R a) = x" using real_vector.span_finite[OF finite_B]
-    using x unfolding span_B_eq by blast
+  have finite_B: "finite B" using independent_bound_general[OF ind_B] ..
+  have span_B_eq: "S = span B" using B S span_B span_subspace by blast
+  obtain f where f: "(\<Sum>a\<in>B. f a *\<^sub>R a) = x" using span_finite[OF finite_B]
+    using x unfolding span_B_eq by force
   have "v \<bullet> x = v \<bullet> (\<Sum>a\<in>B. f a *\<^sub>R a)" unfolding f ..
   also have "... = (\<Sum>a\<in>B. v \<bullet> (f a *\<^sub>R a))" unfolding inner_sum_right ..
   also have "... = (\<Sum>a\<in>B. f a * (v \<bullet> a))" unfolding inner_scaleR_right ..
@@ -133,10 +133,10 @@ text{*Part 1 of the Theorem 1.7 in the previous website, but the proof has been 
 
 lemma v_minus_p_orthogonal_complement:
   fixes X::"'a::{euclidean_space} set"
-  assumes subspace_S: "real_vector.subspace S"
-  and ind_X: "real_vector.independent X"
+  assumes subspace_S: "subspace S"
+  and ind_X: "independent X"
   and X: "X \<subseteq> S"
-  and span_X: "S \<subseteq> real_vector.span X"
+  and span_X: "S \<subseteq> span X"
   and o: "pairwise orthogonal X"
   shows "(v - proj_onto v X) \<in> orthogonal_complement S"
   unfolding in_orthogonal_complement_basis[OF subspace_S ind_X X span_X]
@@ -146,27 +146,28 @@ proof
   show "orthogonal a (v - ?p)"
     unfolding orthogonal_commute[of a "v-?p"]
     by (rule orthogonal_proj_set[OF a _ o])
-       (simp add: euclidean_space.independent_bound_general[OF ind_X])
+       (simp add: independent_bound_general[OF ind_X])
 qed
 
 text{*Part 2 of the Theorem 1.7 in the previous website.*}
 
 lemma UNIV_orthogonal_complement_decomposition:
   fixes S::"'a::{euclidean_space} set"
-  assumes s: "real_vector.subspace S"
+  assumes s: "subspace S"
   shows "UNIV = S + (orthogonal_complement S)"
 proof (unfold set_plus_def, auto)
   fix v
-  obtain X where ind_X: "real_vector.independent X"
+  obtain X where ind_X: "independent X"
     and X: "X \<subseteq> S"
-    and span_X: "S \<subseteq> real_vector.span X"
-    and o: "pairwise orthogonal X" 
-    by (metis Generalizations.real_vector.span_eq Miscellaneous_QR.orthogonal_basis_exists s)
-  have finite_X: "finite X" by (metis euclidean_space.independent_bound_general ind_X)
+    and span_X: "S \<subseteq> span X"
+    and o: "pairwise orthogonal X"
+    by (metis order_refl orthonormal_basis_subspace s)
+  have finite_X: "finite X" by (metis independent_bound_general ind_X)
   let ?p="proj_onto v X"
   have "v=?p +(v-?p)" by simp
   moreover have "?p \<in> S" unfolding proj_onto_def proj_def[abs_def]
-    by (rule real_vector.subspace_sum[OF s finite_X], metis X s subsetD real_vector.subspace_mul)
+    by (rule subspace_sum[OF s])
+      (simp add: X s set_rev_mp subspace_mul)
   moreover have "(v-?p) \<in> orthogonal_complement S"
     by (rule v_minus_p_orthogonal_complement[OF s ind_X X span_X o])
   ultimately show "\<exists>a\<in>S. \<exists>b\<in>orthogonal_complement S. v = a + b" by force
@@ -191,7 +192,6 @@ lemma norm_normalize_set_of_vec:
   assumes "x \<noteq> 0"
   and "x \<in> normalize_set_of_vec X"
   shows "norm x = 1" 
-  using assms norm_normalize unfolding normalize_set_of_vec_def image_def
-  using norm_eq_0_imp normalize_0 by auto
+  using assms norm_normalize normalize_0 unfolding normalize_set_of_vec_def  by blast
 
 end

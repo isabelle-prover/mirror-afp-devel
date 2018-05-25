@@ -37,14 +37,14 @@ sig
 
   val case_sum_const: typ -> typ -> typ -> term
   val mk_case_sum: term -> term -> term
- 
+
   val mk_equiv: thm -> thm
   val safe_mk_equiv: thm -> thm
 
   val mk_minus: term -> term
   val mk_plus: term -> term -> term
 
-  val perm_ty: typ -> typ 
+  val perm_ty: typ -> typ
   val perm_const: typ -> term
   val mk_perm_ty: typ -> term -> term -> term
   val mk_perm: term -> term -> term
@@ -66,14 +66,14 @@ fun trace_msg msg = if ! trace then tracing (msg ()) else ()
 
 infix 1 ||>>> |>>>
 
-fun (x |>>> f) = 
-  let 
-    val (x', y') = f x 
+fun (x |>>> f) =
+  let
+    val (x', y') = f x
   in
     ([x'], y')
   end
 
-fun (([], y) ||>>> f) = ([], y)  
+fun (([], y) ||>>> f) = ([], y)
   | ((xs, y) ||>>> f) =
        let
          val (x', y') = f y
@@ -83,18 +83,18 @@ fun (([], y) ||>>> f) = ([], y)
 
 
 (* orders an AList according to keys - every key needs to be there *)
-fun order eq keys list = 
+fun order eq keys list =
   map (the o AList.lookup eq list) keys
 
 (* orders an AList according to keys - returns default for non-existing keys *)
-fun order_default eq default keys list = 
+fun order_default eq default keys list =
   map (the_default default o AList.lookup eq list) keys
 
 (* remove duplicates *)
 fun remove_dups eq [] = []
-  | remove_dups eq (x :: xs) = 
-      if member eq xs x 
-      then remove_dups eq xs 
+  | remove_dups eq (x :: xs) =
+      if member eq xs x
+      then remove_dups eq xs
       else x :: remove_dups eq xs
 
 fun split_triples xs =
@@ -105,7 +105,7 @@ fun last2 [] = raise Empty
   | last2 [x, y] = (x, y)
   | last2 (_ :: xs) = last2 xs
 
-fun split_last2 xs = 
+fun split_last2 xs =
   let
     val (xs', x) = split_last xs
     val (xs'', y) = split_last xs'
@@ -118,12 +118,12 @@ fun map4 _ [] [] [] [] = []
 
 fun split_filter f [] = ([], [])
   | split_filter f (x :: xs) =
-      let 
-        val (r, l) = split_filter f xs 
-      in 
-        if f x 
-        then (x :: r, l) 
-        else (r, x :: l) 
+      let
+        val (r, l) = split_filter f xs
+      in
+        if f x
+        then (x :: r, l)
+        else (r, x :: l)
       end
 
 (* to be used with left-infix binop-operations *)

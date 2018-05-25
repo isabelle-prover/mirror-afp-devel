@@ -45,7 +45,7 @@ lemma set_Cons: "e \<in> set (a # as) \<longleftrightarrow> (e = a \<or> e \<in>
 subsection\<open>List fun\<close>
 
 lemma sorted_const: "sorted (map (\<lambda>y. x) k)"
-	by(induction k) (simp_all add: sorted_Cons)
+	by(induction k) simp_all
 
 lemma list_all_map: "list_all f (map g l) = list_all (f \<circ> g) l"
 unfolding comp_def by (simp add: list_all_length) (* by(induction l) simp_all *)

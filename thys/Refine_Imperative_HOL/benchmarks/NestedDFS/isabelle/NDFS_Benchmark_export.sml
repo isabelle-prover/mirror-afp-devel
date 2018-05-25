@@ -326,10 +326,6 @@ val equal_nat = {equal = equal_nata} : nat equal;
 
 datatype typerepa = Typerep of string * typerepa list;
 
-datatype num = One | Bit0 of num | Bit1 of num;
-
-datatype char = Zero_char | Char of num;
-
 datatype 'a itself = Type;
 
 fun typerep_nata t = Typerep ("Nat.nat", []);
@@ -384,6 +380,8 @@ val ord_integer =
   {less_eq = (fn a => fn b => IntInf.<= (a, b)),
     less = (fn a => fn b => IntInf.< (a, b))}
   : IntInf.int ord;
+
+datatype num = One | Bit0 of num | Bit1 of num;
 
 datatype color = R | B;
 

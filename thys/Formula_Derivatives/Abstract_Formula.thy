@@ -198,7 +198,7 @@ lemma norm_ACI_if_nf_ACI: "nf_ACI \<phi> \<Longrightarrow> \<langle>\<phi>\<rang
   by (induct \<phi>)
     (auto simp: juncts_list_singleton juncts_eq_set_juncts_list nonempty_juncts_list
       NFOR_def NFAND_def nFOR_Cons nFAND_Cons nFOR_disjuncts nFAND_conjuncts
-      sorted_Cons sorted_list_of_set_sort_remdups distinct_remdups_id sorted_sort_id insort_is_Cons)
+      sorted_list_of_set_sort_remdups distinct_remdups_id sorted_sort_id insort_is_Cons)
 
 lemma norm_ACI_idem: "\<langle>\<langle>\<phi>\<rangle>\<rangle> = \<langle>\<phi>\<rangle>"
   by (metis nf_ACI_norm_ACI norm_ACI_if_nf_ACI)
@@ -1018,7 +1018,7 @@ lemma fut_init: "fut_invariant (\<psi>, [])"
 lemma fut_spec_default: "fut_spec fut_default"
   using satisfies_bounded_fold_rderiv[OF iffD2[OF wf_norm_ACI wf] sym size_zero] 
   unfolding fut_spec_def fut_default_def snd_conv
-    conjunct1[OF sorted_list_of_set[OF finite_fold_rderiv_zeros]]
+    set_sorted_list_of_set[OF finite_fold_rderiv_zeros]
   by (auto simp: satisfies_bounded_norm_ACI wf_fold_rderiv wf wf_norm_ACI simp del: fold_replicate)
 
 lemma fut_invariant: "fut_invariant \<phi>\<Phi> \<Longrightarrow> fut_test \<phi>\<Phi> \<Longrightarrow> fut_invariant (fut_step \<phi>\<Phi>)"

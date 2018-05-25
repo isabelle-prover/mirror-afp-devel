@@ -36,9 +36,9 @@
  ******************************************************************************)
 
 theory Init
-imports "HOL-Library.Code_Char"
-        "isabelle_home/src/HOL/Isabelle_Main0"
-
+imports
+  "isabelle_home/src/HOL/Isabelle_Main0"
+  "HOL-Library.Char_ord"
 begin
 
 section\<open>Optimization on the String Datatype\<close>
@@ -51,7 +51,7 @@ type_notation natural ("nat")
 definition "Succ x = x + 1"
 
 datatype string\<^sub>b\<^sub>a\<^sub>s\<^sub>e = ST String.literal
-                   | ST' "char list"
+                   | ST' string
                    (* NOTE one can further optimize here
                            by adding another constructor for representing "nat"
                            (oid management) *)
@@ -60,11 +60,11 @@ datatype abr_string = (* NOTE operations in this datatype must not decrease the 
                       SS_base string\<^sub>b\<^sub>a\<^sub>s\<^sub>e
                     | String_concatWith abr_string "abr_string list"
 
-syntax "_string1" :: "_ \<Rightarrow> abr_string" ("\<langle>(_)\<rangle>")
-translations "\<langle>x\<rangle>" \<rightleftharpoons> "CONST SS_base (CONST ST (CONST STR x))"
-
 syntax "_string2" :: "_ \<Rightarrow> String.literal" ("\<prec>(_)\<succ>")
-translations "\<prec>x\<succ>" \<rightleftharpoons> "CONST STR x"
+translations "\<prec>x\<succ>" \<rightleftharpoons> "CONST String.implode x"
+
+syntax "_string1" :: "_ \<Rightarrow> abr_string" ("\<langle>(_)\<rangle>")
+translations "\<langle>x\<rangle>" \<rightleftharpoons> "CONST SS_base (CONST ST (CONST String.implode x))"
 
 syntax "_string3" :: "_ \<Rightarrow> abr_string" ("\<lless>(_)\<ggreater>")
 translations "\<lless>x\<ggreater>" \<rightleftharpoons> "CONST SS_base (CONST ST' x)"
@@ -86,10 +86,10 @@ text\<open>We generalize the construction of cartouches for them to be used ``po
 ML\<open>
 val cartouche_grammar =
   [ ("char list", snd)
-  , ("String.literal", (fn (_, x) => Syntax.const @{const_syntax STR} $ x))
+  , ("String.literal", (fn (_, x) => Syntax.const @{const_syntax String.implode} $ x))
   , ("abr_string", (fn (_, x) => Syntax.const @{const_syntax SS_base}
                                  $ (Syntax.const @{const_syntax ST}
-                                    $ (Syntax.const @{const_syntax STR}
+                                    $ (Syntax.const @{const_syntax String.implode}
                                        $ x))))]
 \<close>
 
@@ -281,6 +281,12 @@ lemmas [code] =
 subsection\<open>Operations on String (II)\<close>
 
 definition "wildcard = \<open>_\<close>"
+
+abbreviation (input) nat_of_char :: "char \<Rightarrow> Nat.nat"
+  where "nat_of_char \<equiv> of_char"
+
+abbreviation (input) char_of_nat :: "Nat.nat \<Rightarrow> char"
+  where "char_of_nat \<equiv> char_of"
 
 context String
 begin

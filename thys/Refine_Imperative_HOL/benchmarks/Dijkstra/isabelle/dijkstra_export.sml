@@ -317,10 +317,6 @@ val equal_nat = {equal = equal_nata} : nat equal;
 
 datatype typerepa = Typerep of string * typerepa list;
 
-datatype num = One | Bit0 of num | Bit1 of num;
-
-datatype char = Zero_char | Char of num;
-
 datatype 'a itself = Type;
 
 fun typerep_nata t = Typerep ("Nat.nat", []);
@@ -460,6 +456,8 @@ val ord_integer =
   : IntInf.int ord;
 
 fun nat_of_integer k = Nat (max ord_integer (0 : IntInf.int) k);
+
+datatype num = One | Bit0 of num | Bit1 of num;
 
 fun def_hashmap_size_nat x = (fn _ => nat_of_integer (16 : IntInf.int)) x;
 

@@ -43,9 +43,9 @@ text \<open>Strings are char lists, and are not considered separately.\<close>
 instantiation char :: finitary
 begin
   definition hf_of_char_def: 
-    "hf_of x \<equiv> hf_of (nat_of_char x)"
+    "hf_of x \<equiv> hf_of (of_char x :: nat)"
   instance 
-    by intro_classes (auto simp: inj_on_def hf_of_char_def nat_of_char_eq_iff)
+    by standard (auto simp: inj_on_def hf_of_char_def)
 end
 
 instantiation prod :: (finitary,finitary) finitary

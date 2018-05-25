@@ -313,11 +313,8 @@ proof -
     and three_step2: "\<forall>p. next2 r2 p (cfg2 p) (\<mu>2 p) (crds (Suc r2) p) (cfg3 p)"
     apply(auto simp add: CT_Alg_def three_step_def CT_nextState_def CT_sendMsg_def all_conj_distrib
       r0_def r1_def r2_def
-      cfg0_def cfg1_def cfg2_def cfg3_def 
+      cfg0_def cfg1_def cfg2_def cfg3_def mod_Suc
       )
-     apply (metis One_nat_def Suc3_eq_add_3 Suc_times_mod_eq distrib_left lessI mod_mult_self1_is_0 mult_1_right 
-       nat.distinct(1) nat_less_le numeral_3_eq_3 order.strict_trans2)
-    apply (simp add: mod_Suc)
     done
     
   \<comment> \<open>The proof: the coordinator hears enough messages in r0 and thus selects a value.\<close>

@@ -47,7 +47,7 @@ proof -
   from `proj2_rep (proj2_abs v) = k *\<^sub>R v`
   have "polar (proj2_abs v) = proj2_line_abs (k *\<^sub>R (M *v v))"
     unfolding polar_def
-    by (simp add: matrix_scalar_vector_ac scalar_matrix_vector_assoc)
+    by (simp add: matrix_scaleR_vector_ac scaleR_matrix_vector_assoc)
   with `k \<noteq> 0` and proj2_line_abs_mult
   show "polar (proj2_abs v) = proj2_line_abs (M *v v)" by simp
 qed
@@ -62,7 +62,7 @@ proof -
   from `proj2_line_rep (proj2_line_abs v) = k *\<^sub>R v`
   have "pole (proj2_line_abs v) = proj2_abs (k *\<^sub>R (M *v v))"
     unfolding pole_def
-    by (simp add: matrix_scalar_vector_ac scalar_matrix_vector_assoc)
+    by (simp add: matrix_scaleR_vector_ac scaleR_matrix_vector_assoc)
   with `k \<noteq> 0` and proj2_abs_mult
   show "pole (proj2_line_abs v) = proj2_abs (M *v v)" by simp
 qed
@@ -82,7 +82,7 @@ proof -
     by (rule pole_abs)
   with M_self_inverse
   show "pole (polar p) = p"
-    by (simp add: matrix_vector_mul_assoc proj2_abs_rep matrix_vector_mul_lid)
+    by (simp add: matrix_vector_mul_assoc proj2_abs_rep)
 qed
 
 lemma pole_rep_non_zero: "M *v proj2_line_rep l \<noteq> 0"
@@ -126,8 +126,8 @@ proof -
   have "conic_sgn (proj2_abs v) = sgn (j\<^sup>2 * (v \<bullet> (M *v v)))"
     unfolding conic_sgn_def
     by (simp add:
-      matrix_scalar_vector_ac
-      scalar_matrix_vector_assoc [symmetric]
+      matrix_scaleR_vector_ac
+      scaleR_matrix_vector_assoc [symmetric]
       dot_scaleR_mult
       power2_eq_square
       algebra_simps)
@@ -895,7 +895,7 @@ proof -
     fix t :: proj2
     have "proj2_rep t \<bullet> ((k *\<^sub>R M) *v proj2_rep t)
       = k * (proj2_rep t \<bullet> (M *v proj2_rep t))"
-      by (simp add: scalar_matrix_vector_assoc [symmetric]  dot_scaleR_mult)
+      by (simp add: scaleR_matrix_vector_assoc [symmetric]  dot_scaleR_mult)
     with `?N = k *\<^sub>R M`
     have "proj2_rep t \<bullet> (?N *v proj2_rep t)
       = k * (proj2_rep t \<bullet> (M *v proj2_rep t))"
@@ -1001,9 +1001,9 @@ proof -
       inner_add_left
       matrix_vector_right_distrib
       inner_add_right
-      matrix_scalar_vector_ac
+      matrix_scaleR_vector_ac
       inner_scaleR_right
-      scalar_matrix_vector_assoc [symmetric]
+      scaleR_matrix_vector_assoc [symmetric]
       M_reverse
       power2_eq_square
       algebra_simps)
@@ -1057,8 +1057,8 @@ proof -
     by (simp add:
       matrix_vector_right_distrib
       inner_add_right
-      matrix_scalar_vector_ac
-      scalar_matrix_vector_assoc [symmetric])
+      matrix_scaleR_vector_ac
+      scaleR_matrix_vector_assoc [symmetric])
   hence "(a \<bullet> (M *v t))\<^sup>2 =
     (a \<bullet> (M *v a))\<^sup>2 * i\<^sup>2 +
     2 * (a \<bullet> (M *v a)) * (a \<bullet> (M *v r)) * i +
@@ -1120,8 +1120,8 @@ next
   thus "quarter_discrim a b = 0"
     unfolding quarter_discrim_def
     by (simp add: power2_eq_square
-      matrix_scalar_vector_ac
-      scalar_matrix_vector_assoc [symmetric])
+      matrix_scaleR_vector_ac
+      scaleR_matrix_vector_assoc [symmetric])
 qed
 
 definition S_intersection_coeff1 :: "real^3 \<Rightarrow> real^3 \<Rightarrow> real" where
@@ -1693,7 +1693,7 @@ lemma cart2_append1_apply_cltn2:
 proof -
   have "cart2_append1 p v* cltn2_rep J
     = (1 / (proj2_rep p)$3) *\<^sub>R (proj2_rep p v* cltn2_rep J)"
-    by (unfold cart2_append1_def) (simp add: scalar_vector_matrix_assoc)
+    by (unfold cart2_append1_def) (simp add: scaleR_vector_matrix_assoc)
 
   from `p \<in> hyp2 \<union> S` have "(proj2_rep p)$3 \<noteq> 0" by (rule hyp2_S_z_non_zero)
 
@@ -2824,8 +2824,7 @@ proof -
   with `z_non_zero p` and `z_non_zero q` and `z_non_zero r`
   have "?cr1 = k *\<^sub>R ?cp1 + (1 - k) *\<^sub>R ?cq1" by (simp add: cart2_append1)
   hence "?cr1 v* ?repJ = k *\<^sub>R (?cp1 v* ?repJ) + (1 - k) *\<^sub>R (?cq1 v* ?repJ)"
-    by (simp add: vector_matrix_left_distrib
-      scalar_vector_matrix_assoc [symmetric])
+    by (simp add: vector_matrix_left_distrib scaleR_vector_matrix_assoc [symmetric])
   with `p \<in> hyp2 \<union> S` and `q \<in> hyp2 \<union> S` and `r \<in> hyp2 \<union> S`
     and `is_K2_isometry J`
   show "?er *\<^sub>R cart2_append1 (apply_cltn2 r J)

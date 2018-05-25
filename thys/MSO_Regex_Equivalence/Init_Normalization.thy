@@ -47,7 +47,7 @@ lemma toplevel_inters_in_lang:
 lemma lang_flatten_INTERSECT_finite[simp]:
   "finite X \<Longrightarrow> w \<in> lang n (flatten INTERSECT X) = 
     (if X = {} then w \<in> lists (\<Sigma> n) else (\<forall>r \<in> X. w \<in> lang n r))"
-  unfolding lang_INTERSECT using sorted_list_of_set[of X] by auto
+  unfolding lang_INTERSECT by auto
 
 end
 
@@ -63,11 +63,11 @@ lemma set_merge_distinct[simp]: "set (merge_distinct xs ys) = set xs \<union> se
   by (induct xs ys rule: merge_distinct.induct) auto
 
 lemma sorted_merge_distinct[simp]: "\<lbrakk>sorted xs; sorted ys\<rbrakk> \<Longrightarrow> sorted (merge_distinct xs ys)"
-  by (induct xs ys rule: merge_distinct.induct) (auto simp: sorted_Cons)
+  by (induct xs ys rule: merge_distinct.induct) (auto)
 
 lemma distinct_merge_distinct[simp]: "\<lbrakk>sorted xs; distinct xs; sorted ys; distinct ys\<rbrakk> \<Longrightarrow>
   distinct (merge_distinct xs ys)"
-  by (induct xs ys rule: merge_distinct.induct) (auto simp: sorted_Cons)
+  by (induct xs ys rule: merge_distinct.induct) (auto)
 
 lemma sorted_list_of_set_merge_distinct[simp]: "\<lbrakk>sorted xs; distinct xs; sorted ys; distinct ys\<rbrakk> \<Longrightarrow>
   merge_distinct xs ys = sorted_list_of_set (set xs \<union> set ys)"

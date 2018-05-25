@@ -201,6 +201,7 @@ definition less_matrix    :: "('a,'b::ord) square \<Rightarrow> ('a,'b) square \
 definition sup_matrix     :: "('a,'b::sup) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                                 (infixl "\<oplus>" 65)  where "f \<oplus> g = (\<lambda>e . f e \<squnion> g e)"
 definition inf_matrix     :: "('a,'b::inf) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                                 (infixl "\<otimes>" 67)  where "f \<otimes> g = (\<lambda>e . f e \<sqinter> g e)"
 definition minus_matrix   :: "('a,'b::{uminus,inf}) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                        (infixl "\<ominus>" 65)  where "f \<ominus> g = (\<lambda>e . f e \<sqinter> -g e)"
+definition implies_matrix :: "('a,'b::implies) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square"                             (infixl "\<oslash>" 65)  where "f \<oslash> g = (\<lambda>e . f e \<leadsto> g e)"
 definition times_matrix   :: "('a,'b::{times,bounded_semilattice_sup_bot}) square \<Rightarrow> ('a,'b) square \<Rightarrow> ('a,'b) square" (infixl "\<odot>" 70)  where "f \<odot> g = (\<lambda>(i,j) . \<Squnion>\<^sub>k f (i,k) * g (k,j))"
 definition uminus_matrix  :: "('a,'b::uminus) square \<Rightarrow> ('a,'b) square"                                                ("\<ominus> _" [80] 80)  where "\<ominus>f    = (\<lambda>e . -f e)"
 definition conv_matrix    :: "('a,'b::conv) square \<Rightarrow> ('a,'b) square"                                                  ("_\<^sup>t" [100] 100) where "f\<^sup>t      = (\<lambda>(i,j) . (f (j,i))\<^sup>T)"
@@ -265,6 +266,13 @@ In particular, matrices over Stone algebras form a Stone algebra.
 
 interpretation matrix_stone_algebra: stone_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a,'b::stone_algebra) square" and top = top_matrix and uminus = uminus_matrix
   by unfold_locales (simp add: sup_matrix_def uminus_matrix_def top_matrix_def)
+
+interpretation matrix_heyting_stone_algebra: heyting_stone_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a,'b::heyting_stone_algebra) square" and top = top_matrix and uminus = uminus_matrix and implies = implies_matrix
+  apply unfold_locales
+  apply (unfold inf_matrix_def sup_matrix_def bot_matrix_def top_matrix_def less_eq_matrix_def uminus_matrix_def implies_matrix_def)
+  apply (simp add: implies_galois)
+  apply (simp add: uminus_eq)
+  by simp
 
 interpretation matrix_boolean_algebra: boolean_algebra where sup = sup_matrix and inf = inf_matrix and less_eq = less_eq_matrix and less = less_matrix and bot = "bot_matrix :: ('a,'b::boolean_algebra) square" and top = top_matrix and uminus = uminus_matrix and minus = minus_matrix
   apply unfold_locales

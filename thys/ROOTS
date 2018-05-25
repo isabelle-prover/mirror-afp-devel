@@ -28,6 +28,7 @@ Bertrands_Postulate
 BinarySearchTree
 Binomial-Heaps
 Binomial-Queues
+BNF_CC
 Bondy
 Boolean_Expression_Checkers
 Bounded_Deducibility_Security
@@ -128,6 +129,7 @@ Finger-Trees
 Finite_Automata_HF
 First_Order_Terms
 First_Welfare_Theorem
+Fishburn_Impossibility
 Fisher_Yates
 Flow_Networks
 Floyd_Warshall
@@ -238,6 +240,7 @@ MiniML
 Minimal_SSA
 Minkowskis_Theorem
 Modal_Logics_for_NTS
+Modular_Assembly_Kit_Security
 Monad_Normalisation
 MonoBoolTranAlgebra
 MonoidalCategory
@@ -397,9 +400,11 @@ UpDown_Scheme
 Valuation
 VectorSpace
 Verified-Prover
+VerifyThis2018
 Vickrey_Clarke_Groves
 VolpanoSmith
 WHATandWHERE_Security
+WebAssembly
 Weight_Balanced_Trees
 Well_Quasi_Orders
 Winding_Number_Eval

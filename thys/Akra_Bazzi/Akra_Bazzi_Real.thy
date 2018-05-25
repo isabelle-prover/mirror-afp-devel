@@ -144,7 +144,7 @@ proof (rule strict_mono_imp_ex1_real)
   then obtain i where i: "i < k" "as!i > 0" by (force simp: in_set_conv_nth length_as)
 
   hence "LIM p at_bot. as!i * bs!i powr p :> at_top" using b_bounds i
-    by (intro filterlim_tendsto_pos_mult_at_top[OF tendsto_const] powr_at_bot_neg) simp_all
+    by (intro filterlim_tendsto_pos_mult_at_top[OF tendsto_const] real_powr_at_bot_neg) simp_all
   moreover have "\<forall>p. as!i*bs!i powr p \<le> (\<Sum>i\<in>{..<k}. as ! i * bs ! i powr p)"
   proof
     fix p :: real
@@ -159,7 +159,7 @@ proof (rule strict_mono_imp_ex1_real)
     by (rule filterlim_at_top_mono[OF _ always_eventually])
 next
   from b_bounds show "((\<lambda>x. \<Sum>i<k. as ! i * bs ! i powr x) \<longlongrightarrow> (\<Sum>i<k. 0)) at_top"
-    by (intro tendsto_sum tendsto_mult_right_zero powr_at_top_neg) simp_all
+    by (intro tendsto_sum tendsto_mult_right_zero real_powr_at_top_neg) simp_all
 next
   fix x
   from b_bounds have A: "\<And>i. i < k \<Longrightarrow> bs ! i > 0" by simp
@@ -789,6 +789,8 @@ proof-
 
   {
     fix x i assume i: "i < k" and x: "x \<ge> x\<^sub>1"
+    have powr_negD: "a powr b \<le> 0 \<Longrightarrow> a = 0"
+      for a b :: real unfolding powr_def by (simp split: if_split_asm)
     let ?m = "min 1 (min ((bs!i/2) powr (p+1)) ((bs!i*3/2) powr (p+1)))"
     have "min 1 ((bs!i + (hs ! i) x / x) powr (p+1)) \<ge> min 1 (min ((bs!i/2) powr (p+1)) ((bs!i*3/2) powr (p+1)))"
       apply (insert x i x0_le_x1 x1_pos step_pos b_pos[OF b_in_bs[OF i]],

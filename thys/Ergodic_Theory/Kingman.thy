@@ -159,7 +159,7 @@ proof -
   have "E2 \<ge> 0" unfolding E2_def by auto
 
   obtain a0 s0 where 0: "s0 < N" "n = a0 * N + s0"
-    by (metis \<open>0 < N\<close> add.commute mod_eqD mod_less_divisor)
+    using \<open>0 < N\<close> mod_div_decomp mod_less_divisor by blast
   then have "a0 \<ge> 1" using \<open>n > 2 * N\<close> \<open>N>0\<close>
     by (metis Nat.add_0_right add.commute add_lessD1 add_mult_distrib comm_monoid_mult_class.mult_1 eq_imp_le
     less_imp_add_positive less_imp_le_nat less_one linorder_neqE_nat mult.left_neutral mult_not_zero not_add_less1 one_add_one)

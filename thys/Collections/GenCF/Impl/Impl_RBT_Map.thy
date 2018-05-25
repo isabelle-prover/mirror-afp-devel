@@ -551,7 +551,7 @@ lemma (in linorder) rbt_map_impl:
     rbt_union_is_rbt
     rbt_map_rel'_def br_def)
 
-lemma sorted_by_rel_keys_true[simp]: "sorted_by_rel (\<lambda>(_,_) (_,_). True) l"
+lemma sorted_wrt_keys_true[simp]: "sorted_wrt (\<lambda>(_,_) (_,_). True) l"
   apply (induct l)
   apply auto
   done
@@ -577,12 +577,12 @@ proof -
   ] obtain l where 
       "distinct l" 
       and "map_to_set (rbt_lookup t) = set l"
-      and "sorted_by_rel (\<lambda>(k,_) (k',_). k \<le> k') l"
+      and "sorted_wrt (\<lambda>(k,_) (k',_). k \<le> k') l"
       and "(rm_iterateoi t::('a,'v,'s) map_iterator) = foldli l"
     by blast
   thus ?case 
     apply (rule_tac exI[where x=l])
-    apply (simp add: sorted_by_rel_keys_map_fst)
+    apply (simp add: sorted_wrt_keys_map_fst)
     by (metis iterate_to_list_foldli map_iterator_foldli_conv rev_rev_ident 
       set_iterator_foldli_correct)
 qed
@@ -607,12 +607,12 @@ proof -
   ] obtain l where 
       "distinct l" 
       and "map_to_set (rbt_lookup t) = set l"
-      and "sorted_by_rel (\<lambda>(k,_) (k',_). k \<ge> k') l"
+      and "sorted_wrt (\<lambda>(k,_) (k',_). k \<ge> k') l"
       and "(rm_reverse_iterateoi t::('a,'v,'s) map_iterator) = foldli l"
     by blast
   thus ?case 
     apply (rule_tac exI[where x=l])
-    apply (simp add: sorted_by_rel_keys_map_fst)
+    apply (simp add: sorted_wrt_keys_map_fst)
     by (metis iterate_to_list_foldli map_iterator_foldli_conv rev_rev_ident 
       set_iterator_foldli_correct)
 qed
@@ -980,10 +980,10 @@ proof -
     show "\<exists>l'. (rbt_to_list r, l') \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel \<and>
             distinct l' \<and>
             map_to_set m' = set l' \<and>
-            sorted_by_rel (key_rel (comp2le cmp')) l'"
+            sorted_wrt (key_rel (comp2le cmp')) l'"
     proof (intro exI conjI)
       from D show "distinct (rbt_to_list r')" by (rule distinct_mapI)
-      from S show "sorted_by_rel (key_rel (comp2le cmp')) (rbt_to_list r')"
+      from S show "sorted_wrt (key_rel (comp2le cmp')) (rbt_to_list r')"
         unfolding key_rel_def[abs_def]
         by simp
       show "(rbt_to_list r, rbt_to_list r') \<in> \<langle>\<langle>Rk, Rv\<rangle>prod_rel\<rangle>list_rel"

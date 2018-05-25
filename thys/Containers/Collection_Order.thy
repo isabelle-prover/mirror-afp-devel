@@ -311,11 +311,9 @@ where "cproper_interval_list xso yso = undefined"
 instance by(intro_classes)(simp add: infinite_UNIV_listI)
 end
 
-lemma UNIV_literal_eq_range_STR: "UNIV = range STR"
-by(auto intro: explode_inverse[symmetric])
-
-lemma infinite_UNIV_literal: "\<not> finite (UNIV :: String.literal set)"
-by(auto simp add: UNIV_literal_eq_range_STR infinite_UNIV_listI dest!: finite_imageD intro: inj_onI)
+lemma infinite_UNIV_literal:
+  "infinite (UNIV :: String.literal set)"
+  by (fact infinite_literal)
 
 instantiation String.literal :: cproper_interval begin
 definition cproper_interval_literal :: "String.literal proper_interval"

@@ -9,9 +9,16 @@
 (*          Peter Sewell, University of Cambridge                         *)
 (*          Scott Owens, University of Kent                               *)
 (*          Thomas Tuerk, University of Cambridge                         *)
+(*          Brian Campbell, University of Edinburgh                       *)
+(*          Shaked Flur, University of Cambridge                          *)
+(*          Thomas Bauereiss, University of Cambridge                     *)
+(*          Stephen Kell, University of Cambridge                         *)
+(*          Thomas Williams                                               *)
+(*          Lars Hupel                                                    *)
+(*          Basile Clement                                                *)
 (*                                                                        *)
-(*  The Lem sources are copyright 2010-2013                               *)
-(*  by the UK authors above and Institut National de Recherche en         *)
+(*  The Lem sources are copyright 2010-2018                               *)
+(*  by the authors above and Institut National de Recherche en            *)
 (*  Informatique et en Automatique (INRIA).                               *)
 (*                                                                        *)
 (*  All files except ocaml-lib/pmap.{ml,mli} and ocaml-libpset.{ml,mli}   *)
@@ -49,7 +56,7 @@ chapter \<open>Auxiliary Definitions needed by Lem\<close>
 theory "LemExtraDefs"
 
 imports
- 	 Main
+   Main
    "HOL-Library.Permutation"
    "HOL-Library.While_Combinator"
 begin
@@ -102,7 +109,7 @@ by (induct l) auto
 
 lemma sorted_map_suc :
   "sorted l \<Longrightarrow> sorted (map Suc l)"
-by (induct l) (simp_all add: sorted_Cons)
+by (induct l) (simp_all)
 
 lemma sorted_find_indices :
   "sorted (find_indices P xs)"
@@ -112,7 +119,7 @@ next
   case (Cons x xs)
   from sorted_map_suc[OF this]
   show ?case
-    by (simp add: sorted_Cons)
+    by (simp)
 qed
 
 lemma find_indices_set [simp] :
@@ -152,7 +159,7 @@ next
 
   from sorted_find_indices[of P xs] find_indices_eq
   have "sorted (i # il)" by simp
-  hence i_leq: "\<And>i'. i' \<in> set (i # il) \<Longrightarrow> i \<le> i'" unfolding sorted_Cons by auto
+  hence i_leq: "\<And>i'. i' \<in> set (i # il) \<Longrightarrow> i \<le> i'" by auto
 
   from find_indices_set[of P xs, unfolded find_indices_eq]
   have set_i_il_eq:"\<And>i'. i' \<in> set (i # il) = (i' < length xs \<and> P (xs ! i'))"
@@ -343,7 +350,7 @@ proof (rule ext)
     case Nil thus ?case by simp
   next
     case (Cons x xs)
-    thus ?case by (cases xs) (simp_all)
+    thus ?case by (cases xs) (simp_all del: sorted.simps(2) add: sorted2_simps)
   qed
 qed
 
@@ -850,16 +857,12 @@ subsection \<open>sorting\<close>
 
 subsection \<open>Strings\<close>
 
-lemma explode_str_simp [simp] :
-  "String.explode (STR l) = l"
-by (metis STR_inverse UNIV_I)
-
 declare String.literal.explode_inverse [simp]
 
 subsection \<open>num to string conversions\<close>
 
 definition nat_list_to_string :: "nat list \<Rightarrow> string" where
-  "nat_list_to_string nl = map char_of_nat nl"
+  "nat_list_to_string nl = map char_of nl"
 
 definition is_digit where
   "is_digit (n::nat) = (n < 10)"

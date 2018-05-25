@@ -24,14 +24,14 @@ locale set_iterator_genord =
     and S0::"'x set" 
     and R::"'x \<Rightarrow> 'x \<Rightarrow> bool"
   assumes foldli_transform:
-    "\<exists>l0. distinct l0 \<and> S0 = set l0 \<and> sorted_by_rel R l0 \<and> iti = foldli l0"
+    "\<exists>l0. distinct l0 \<and> S0 = set l0 \<and> sorted_wrt R l0 \<and> iti = foldli l0"
 begin
   text {* Let's prove some trivial lemmata to show that the formalisation agrees with
           the view of iterators described above. *}
   lemma set_iterator_weaken_R :
     "(\<And>x y. \<lbrakk>x \<in> S0; y \<in> S0; R x y\<rbrakk> \<Longrightarrow> R' x y) \<Longrightarrow> 
              set_iterator_genord iti S0 R'"
-    by (metis set_iterator_genord.intro foldli_transform sorted_by_rel_weaken)
+    by (metis set_iterator_genord.intro foldli_transform sorted_wrt_mono_rel)
 
   lemma finite_S0 :
     shows "finite S0"
@@ -79,7 +79,7 @@ begin
         C2:"\<And>S. \<lbrakk>S \<subseteq> S0; S \<noteq> {}; \<not> c (iti c f \<sigma>0); I S (iti c f \<sigma>0)\<rbrakk> \<Longrightarrow> P"
 
       from foldli_transform obtain l0 where l0_props:
-         "distinct l0" "S0 = set l0" "sorted_by_rel R l0"  "iti c = foldli l0 c" by auto
+         "distinct l0" "S0 = set l0" "sorted_wrt R l0"  "iti c = foldli l0 c" by auto
 
       from I R  
       have "I {} (iti c f \<sigma>0) \<or> 
@@ -96,7 +96,7 @@ begin
         note step = Cons(3)
         from Cons(4) have dist_l0: "distinct l0" and x_nin_l0: "x \<notin> set l0" by simp_all
         from Cons(5) have R_l0: "\<forall>y\<in>set l0. R x y" and 
-                          sort_l0: "sorted_by_rel R l0" by simp_all
+                          sort_l0: "sorted_wrt R l0" by simp_all
 
         show ?case
         proof (cases "c \<sigma>0")
@@ -673,11 +673,11 @@ subsection {* Conversions to foldli *}
 
 lemma set_iterator_genord_foldli_conv :
   "set_iterator_genord iti S R \<longleftrightarrow>
-   (\<exists>l0. distinct l0 \<and> S = set l0 \<and> sorted_by_rel R l0 \<and> iti = foldli l0)"
+   (\<exists>l0. distinct l0 \<and> S = set l0 \<and> sorted_wrt R l0 \<and> iti = foldli l0)"
 unfolding set_iterator_genord_def by simp
 
 lemma set_iterator_genord_I [intro] :
-  "\<lbrakk>distinct l0; S = set l0; sorted_by_rel R l0; iti = foldli l0\<rbrakk> \<Longrightarrow>
+  "\<lbrakk>distinct l0; S = set l0; sorted_wrt R l0; iti = foldli l0\<rbrakk> \<Longrightarrow>
    set_iterator_genord iti S R" unfolding set_iterator_genord_foldli_conv
    by blast
 
@@ -696,7 +696,7 @@ context linorder begin
   lemma set_iterator_linord_foldli_conv :
     "set_iterator_linord iti S \<longleftrightarrow>
      (\<exists>l0. distinct l0 \<and> S = set l0 \<and> sorted l0 \<and> iti = foldli l0)"
-  unfolding set_iterator_linord_def set_iterator_genord_def by simp
+  unfolding set_iterator_linord_def set_iterator_genord_def by (simp add: sorted_sorted_wrt)
 
   lemma set_iterator_linord_I [intro] :
     "\<lbrakk>distinct l0; S = set l0; sorted l0; iti = foldli l0\<rbrakk> \<Longrightarrow>
@@ -719,7 +719,7 @@ end
 
 lemma map_iterator_genord_foldli_conv :
   "map_iterator_genord iti m R \<longleftrightarrow>
-   (\<exists>(l0::('k \<times> 'v) list). distinct (map fst l0) \<and> m = map_of l0 \<and> sorted_by_rel R l0 \<and> iti = foldli l0)"
+   (\<exists>(l0::('k \<times> 'v) list). distinct (map fst l0) \<and> m = map_of l0 \<and> sorted_wrt R l0 \<and> iti = foldli l0)"
 proof -
   { fix l0 :: "('k \<times> 'v) list"
     assume dist: "distinct l0"
@@ -743,7 +743,7 @@ proof -
 qed
 
 lemma map_iterator_genord_I [intro] :
-  "\<lbrakk>distinct (map fst l0); m = map_of l0; sorted_by_rel R l0; iti = foldli l0\<rbrakk> \<Longrightarrow>
+  "\<lbrakk>distinct (map fst l0); m = map_of l0; sorted_wrt R l0; iti = foldli l0\<rbrakk> \<Longrightarrow>
    map_iterator_genord iti m R" 
    unfolding map_iterator_genord_foldli_conv
    by blast
@@ -762,15 +762,15 @@ lemma map_iterator_I [intro] :
 
 context linorder begin
 
-  lemma sorted_by_rel_keys_map_fst:
-    "sorted_by_rel (\<lambda>(k,_) (k',_). R k k') l = sorted_by_rel R (map fst l)"
+  lemma sorted_wrt_keys_map_fst:
+    "sorted_wrt (\<lambda>(k,_) (k',_). R k k') l = sorted_wrt R (map fst l)"
     by (induct l) auto
 
   lemma map_iterator_linord_foldli_conv :
     "map_iterator_linord iti m \<longleftrightarrow>
      (\<exists>l0. distinct (map fst l0) \<and> m = map_of l0 \<and> sorted (map fst l0) \<and> iti = foldli l0)"
   unfolding set_iterator_map_linord_def map_iterator_genord_foldli_conv
-  by (simp add: sorted_by_rel_keys_map_fst)
+  by (simp add: sorted_wrt_keys_map_fst sorted_sorted_wrt)
 
   lemma map_iterator_linord_I [intro] :
     "\<lbrakk>distinct (map fst l0); m = map_of l0; sorted (map fst l0); iti = foldli l0\<rbrakk> \<Longrightarrow>
@@ -782,7 +782,7 @@ context linorder begin
     "map_iterator_rev_linord iti m \<longleftrightarrow>
      (\<exists>l0. distinct (map fst l0) \<and> m = map_of l0 \<and> sorted (rev (map fst l0)) \<and> iti = foldli l0)"
   unfolding set_iterator_map_rev_linord_def map_iterator_genord_foldli_conv 
-  by (simp add: sorted_by_rel_keys_map_fst)
+  by (simp add: sorted_wrt_keys_map_fst)
 
   lemma map_iterator_rev_linord_I [intro] :
     "\<lbrakk>distinct (map fst l0); m = map_of l0; sorted (rev (map fst l0)); iti = foldli l0\<rbrakk> \<Longrightarrow>

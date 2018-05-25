@@ -11,7 +11,6 @@ imports
   Complex_Main
   "HOL-Library.Transitive_Closure_Table"
   "HOL-Library.Predicate_Compile_Alternative_Defs"
-  "HOL-Library.Code_Char"
   "HOL-Library.Monad_Syntax"
   "HOL-Library.Infinite_Set"
   FinFun.FinFun

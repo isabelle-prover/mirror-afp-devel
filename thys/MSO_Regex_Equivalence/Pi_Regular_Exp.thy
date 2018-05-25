@@ -87,7 +87,7 @@ lemma toplevel_summands_PLUS_strong:
 
 lemma toplevel_summands_flatten:
   "\<lbrakk>X \<noteq> {}; finite X; \<forall>x \<in> X. \<not>(\<exists>r s. x = Plus r s)\<rbrakk> \<Longrightarrow> toplevel_summands (flatten PLUS X) = X"
-  using toplevel_summands_PLUS_strong[of "sorted_list_of_set X"] sorted_list_of_set[of X]
+  using toplevel_summands_PLUS_strong[of "sorted_list_of_set X"]
   unfolding list_all_iff by fastforce
 
 lemma ACI_norm_Plus:
@@ -181,7 +181,7 @@ proof (induct xs rule: list_singleton_induct)
   thus ?case
     by (cases x y rule: linorder_cases) (induct x y rule: ACI_nPlus.induct, auto)+
 next
-  case (cons y1 y2 ys) thus ?case by (cases x) (auto simp: sorted_Cons)
+  case (cons y1 y2 ys) thus ?case by (cases x) (auto)
 qed simp
 
 lemma ACI_nPlus_PLUS:
@@ -300,7 +300,7 @@ lemma wf_TIMES[simp]:
 
 lemma wf_flatten_PLUS[simp]:
   "finite X \<Longrightarrow> wf n (flatten PLUS X) = (\<forall>r \<in> X. wf n r)"
-  using wf_PLUS[of n "sorted_list_of_set X"] sorted_list_of_set[of X] by fastforce
+  using wf_PLUS[of n "sorted_list_of_set X"] by fastforce
 
 theorem ACI_norm_wf[simp]:
   "wf n \<guillemotleft>r\<guillemotright> = wf n r"
@@ -315,7 +315,7 @@ lemma wf_INTERSECT[simp]:
 
 lemma wf_flatten_INTERSECT[simp]:
   "finite X \<Longrightarrow> wf n (flatten INTERSECT X) = (\<forall>r \<in> X. wf n r)"
-  using wf_INTERSECT[of n "sorted_list_of_set X"] sorted_list_of_set[of X] by fastforce
+  using wf_INTERSECT[of n "sorted_list_of_set X"] by fastforce
 
 end
 
@@ -375,7 +375,7 @@ lemma lang_TIMES[simp]:
 
 lemma lang_flatten_PLUS:
   "finite X \<Longrightarrow> lang n (flatten PLUS X) = (\<Union>r \<in> X. lang n r)"
-  using lang_PLUS[of n "sorted_list_of_set X"] sorted_list_of_set[of X] by fastforce
+  using lang_PLUS[of n "sorted_list_of_set X"] by fastforce
 
 theorem ACI_norm_lang[simp]:
   "lang n \<guillemotleft>r\<guillemotright> = lang n r"

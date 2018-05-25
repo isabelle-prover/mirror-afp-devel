@@ -52,14 +52,27 @@ lemma cryptinverts_hilf3: "prime q \<Longrightarrow> m*(m^(k * (pred p) * (pred 
   by (fact cryptinverts_hilf1)
 
 lemma cryptinverts_hilf4:
-    "\<lbrakk>prime p; prime q; p \<noteq> q; m < p*q; x mod ((pred p)*(pred q)) = 1\<rbrakk> \<Longrightarrow> m^x mod (p*q) = m"
-  apply (frule cryptinverts_hilf2 [of p m k q])
-  apply (frule cryptinverts_hilf3 [of q m k p])
-  apply (frule mod_eqD)
-  apply (elim exE)
-  apply (rule specializedtoprimes1a)
-  apply (simp add: cryptinverts_hilf2 cryptinverts_hilf3 mult.assoc [symmetric])+
-  done
+  "m ^ x mod (p * q) = m" if "prime p" "prime q" "p \<noteq> q"
+    "m < p * q" "x mod (pred p * pred q) = 1"
+proof (cases x)
+  case 0
+  with that show ?thesis
+    by simp
+next
+  case (Suc x)
+  with that(5) have "Suc x mod (pred p * pred q) = Suc 0"
+    by simp
+  then have "pred p * pred q dvd x"
+    using dvd_minus_mod [of "(pred p * pred q)" "Suc x"]
+    by simp
+  then obtain y where "x = pred p * pred q * y" ..
+  then have "m ^ Suc x mod p = m mod p" and "m ^ Suc x mod q = m mod q"
+    using cryptinverts_hilf2 [of p m y q, OF \<open>prime p\<close>]
+      cryptinverts_hilf3 [of q m y p, OF \<open>prime q\<close>]
+    by (simp_all add: ac_simps)
+  with that Suc show ?thesis
+    by (auto intro: specializedtoprimes1a)
+qed
 
 lemma primmultgreater: fixes p::nat shows "\<lbrakk> prime p; prime q; p \<noteq> 2; q \<noteq> 2\<rbrakk> \<Longrightarrow> 2 < p*q"
   apply (simp add: prime_nat_iff)

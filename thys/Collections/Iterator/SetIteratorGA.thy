@@ -45,7 +45,7 @@ by (induct xs rule: rev_induct, simp_all add: foldli_snoc)
 lemma iterate_to_list_genord_correct :
 assumes it: "set_iterator_genord it S0 R"
 shows "set (iterate_to_list it) = S0 \<and> distinct (iterate_to_list it) \<and>
-       sorted_by_rel R (rev (iterate_to_list it))"
+       sorted_wrt R (rev (iterate_to_list it))"
 using it unfolding set_iterator_genord_foldli_conv by auto
 
 lemma iterate_to_list_correct :
@@ -300,7 +300,7 @@ definition iterator_to_ordered_iterator where
    foldli (sort_fun (iterate_to_list it))"
 
 lemma iterator_to_ordered_iterator_correct :
-assumes sort_fun_OK: "\<And>l. sorted_by_rel R (sort_fun l) \<and> mset (sort_fun l) = mset l"
+assumes sort_fun_OK: "\<And>l. sorted_wrt R (sort_fun l) \<and> mset (sort_fun l) = mset l"
     and it_OK: "set_iterator it S0"
 shows "set_iterator_genord (iterator_to_ordered_iterator sort_fun it) S0 R"
 proof -
@@ -309,7 +309,7 @@ proof -
     using iterate_to_list_correct [OF it_OK, folded l_def] by simp_all
 
   with sort_fun_OK[of l] have sort_l_props:
-    "sorted_by_rel R (sort_fun l)"
+    "sorted_wrt R (sort_fun l)"
     "set (sort_fun l) = S0" "distinct (sort_fun l)"
     apply (simp_all)
     apply (metis set_mset_mset)
@@ -337,7 +337,7 @@ assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
 shows "set_iterator_genord (iterator_to_ordered_iterator_quicksort R it) S0 R"
 unfolding iterator_to_ordered_iterator_quicksort_def
 apply (rule iterator_to_ordered_iterator_correct [OF _ it_OK])
-apply (simp_all add: sorted_by_rel_quicksort_by_rel[OF lin trans_R])
+apply (simp_all add: sorted_wrt_quicksort_by_rel[OF lin trans_R])
 done
 
 definition iterator_to_ordered_iterator_mergesort where
@@ -354,7 +354,7 @@ assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
 shows "set_iterator_genord (iterator_to_ordered_iterator_mergesort R it) S0 R"
 unfolding iterator_to_ordered_iterator_mergesort_def
 apply (rule iterator_to_ordered_iterator_correct [OF _ it_OK])
-apply (simp_all add: sorted_by_rel_mergesort_by_rel[OF lin trans_R])
+apply (simp_all add: sorted_wrt_mergesort_by_rel[OF lin trans_R])
 done
 
 end

@@ -12,12 +12,12 @@ begin
 abbreviation (output)
   unanFAcc :: "'addr expr \<Rightarrow> vname \<Rightarrow> 'addr expr" ("(_\<bullet>_)" [10,10] 90)
 where
-  "unanFAcc e F \<equiv> FAcc e F (STR [])"
+  "unanFAcc e F \<equiv> FAcc e F (STR '''')"
 
 abbreviation (output)
   unanFAss :: "'addr expr \<Rightarrow> vname \<Rightarrow> 'addr expr \<Rightarrow> 'addr expr" ("(_\<bullet>_ := _)" [10,0,90] 90)
 where
-  "unanFAss e F e' \<equiv> FAss e F (STR []) e'"
+  "unanFAss e F e' \<equiv> FAss e F (STR '''') e'"
 
 definition array_length_field_name :: vname
 where "array_length_field_name = STR ''length''"
@@ -68,24 +68,24 @@ where
   AnnoFAcc:
   "\<lbrakk> is_lub,P,E \<turnstile> e \<leadsto> e';  is_lub,P,E \<turnstile> e' :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D; 
      is_Array U \<longrightarrow> F \<noteq> array_length_field_name \<rbrakk>
-   \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>F{STR []} \<leadsto> e'\<bullet>F{D}"
+   \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>F{STR ''''} \<leadsto> e'\<bullet>F{D}"
 | AnnoFAccALength:
   "\<lbrakk> is_lub,P,E \<turnstile> e \<leadsto> e'; is_lub,P,E \<turnstile> e' :: T\<lfloor>\<rceil> \<rbrakk>
-  \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>array_length_field_name{STR []} \<leadsto> e'\<bullet>length"
+  \<Longrightarrow> is_lub,P,E \<turnstile> e\<bullet>array_length_field_name{STR ''''} \<leadsto> e'\<bullet>length"
 | AnnoFAccSuper:
   \<comment> \<open>In class C with super class D, "super" is syntactic sugar for "((D) this)" (cf. JLS, 15.11.2)\<close>
   "\<lbrakk> E this = \<lfloor>Class C\<rfloor>; C \<noteq> Object; class P C = \<lfloor>(D, fs, ms)\<rfloor>; 
      P \<turnstile> D sees F:T (fm) in D' \<rbrakk>
-  \<Longrightarrow> is_lub,P,E \<turnstile> Var super\<bullet>F{STR []} \<leadsto> (Cast (Class D) (Var this))\<bullet>F{D'}"
+  \<Longrightarrow> is_lub,P,E \<turnstile> Var super\<bullet>F{STR ''''} \<leadsto> (Cast (Class D) (Var this))\<bullet>F{D'}"
 |  AnnoFAss:
   "\<lbrakk> is_lub,P,E \<turnstile> e1 \<leadsto> e1';  is_lub,P,E \<turnstile> e2 \<leadsto> e2';
      is_lub,P,E \<turnstile> e1' :: U; class_type_of' U = \<lfloor>C\<rfloor>; P \<turnstile> C sees F:T (fm) in D;
      is_Array U \<longrightarrow> F \<noteq> array_length_field_name \<rbrakk>
-  \<Longrightarrow> is_lub,P,E \<turnstile> e1\<bullet>F{STR []} := e2 \<leadsto> e1'\<bullet>F{D} := e2'"
+  \<Longrightarrow> is_lub,P,E \<turnstile> e1\<bullet>F{STR ''''} := e2 \<leadsto> e1'\<bullet>F{D} := e2'"
 | AnnoFAssSuper:
   "\<lbrakk> E this = \<lfloor>Class C\<rfloor>; C \<noteq> Object; class P C = \<lfloor>(D, fs, ms)\<rfloor>;
      P \<turnstile> D sees F:T (fm) in D'; is_lub,P,E \<turnstile> e \<leadsto> e' \<rbrakk>
-  \<Longrightarrow> is_lub,P,E \<turnstile> Var super\<bullet>F{STR []} := e \<leadsto> (Cast (Class D) (Var this))\<bullet>F{D'} := e'"
+  \<Longrightarrow> is_lub,P,E \<turnstile> Var super\<bullet>F{STR ''''} := e \<leadsto> (Cast (Class D) (Var this))\<bullet>F{D'} := e'"
 | AnnoCAS:
   "\<lbrakk> is_lub,P,E \<turnstile> e1 \<leadsto> e1'; is_lub,P,E \<turnstile> e2 \<leadsto> e2'; is_lub,P,E \<turnstile> e3 \<leadsto> e3' \<rbrakk>
   \<Longrightarrow> is_lub,P,E \<turnstile> e1\<bullet>compareAndSwap(D\<bullet>F, e2, e3) \<leadsto> e1'\<bullet>compareAndSwap(D\<bullet>F, e2', e3')"
@@ -161,7 +161,7 @@ lemma fixes is_lub :: "ty \<Rightarrow> ty \<Rightarrow> ty \<Rightarrow> bool" 
   and Annos_fun: "\<lbrakk> is_lub,P,E \<turnstile> es [\<leadsto>] es'; is_lub,P,E \<turnstile> es [\<leadsto>] es'' \<rbrakk> \<Longrightarrow> es' = es''"
 proof(induct arbitrary: e'' and es'' rule: Anno_Annos.inducts)
   case (AnnoFAcc E e e' U C F T fm D)
-  from `is_lub,P,E \<turnstile> e\<bullet>F{STR []} \<leadsto> e''` show ?case
+  from `is_lub,P,E \<turnstile> e\<bullet>F{STR ''''} \<leadsto> e''` show ?case
   proof(rule Anno_cases)
     fix e''' U' C' T' fm' D'
     assume "is_lub,P,E \<turnstile> e \<leadsto> e'''" "is_lub,P,E \<turnstile> e''' :: U'"
@@ -198,7 +198,7 @@ next
   case AnnoFAccALength thus ?case by(fastforce intro: WT_unique[OF is_lub_unique])
 next
   case (AnnoFAss E e1 e1' e2 e2' U C F T fm D)
-  from `is_lub,P,E \<turnstile> e1\<bullet>F{STR []} := e2 \<leadsto> e''` 
+  from `is_lub,P,E \<turnstile> e1\<bullet>F{STR ''''} := e2 \<leadsto> e''` 
   show ?case
   proof(rule Anno_cases)
     fix e1'' e2'' U' C' T' fm' D'

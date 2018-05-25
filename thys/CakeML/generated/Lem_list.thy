@@ -49,8 +49,8 @@ begin
 (* ----------------------- *)
 
 (*val length : forall 'a. list 'a -> nat*)
-(*let rec length l= 
-  match l with
+(*let rec length l=
+   match l with
     | [] -> 0
     | x :: xs -> (Instance_Num_NumAdd_nat.+) (length xs) 1
   end*)
@@ -342,8 +342,8 @@ end*)
 (*val genlist : forall 'a. (nat -> 'a) -> nat -> list 'a*)
 
 
-(*let rec genlist f n= 
-  match n with
+(*let rec genlist f n=
+   match n with
     | 0 -> []
     | n' + 1 -> snoc (f n') (genlist f n')
   end*)
@@ -354,8 +354,8 @@ end*)
 (* ------------------------- *)
 
 (*val replicate : forall 'a. nat -> 'a -> list 'a*)
-(*let rec replicate n x= 
-  match n with
+(*let rec replicate n x=
+   match n with
     | 0 -> []
     | n' + 1 -> x :: replicate n' x
   end*)
@@ -383,8 +383,8 @@ by pat_completeness auto
 
 
 (*val splitAt : forall 'a. nat -> list 'a -> (list 'a * list 'a)*)
-(*let rec splitAt n l=  
-   splitAtAcc [] n l*)
+(*let rec splitAt n l= 
+    splitAtAcc [] n l*)
 
 
 (* ------------------------- *)
@@ -450,8 +450,8 @@ fun  isPrefixOf  :: " 'a list \<Rightarrow> 'a list \<Rightarrow> bool "  where
 (* update                    *)
 (* ------------------------- *)
 (*val update : forall 'a. list 'a -> nat -> 'a -> list 'a*)
-(*let rec update l n e=  
-  match l with
+(*let rec update l n e= 
+   match l with
     | []      -> []
     | x :: xs -> if (Instance_Basic_classes_Eq_nat.=) n 0 then e :: xs else x :: (update xs ((Instance_Num_NumMinus_nat.-) n 1) e)
 end*)

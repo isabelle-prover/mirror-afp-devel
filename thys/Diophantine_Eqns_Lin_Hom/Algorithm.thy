@@ -423,17 +423,15 @@ lemma (in hlde) in_non_special_solutions:
     simp: non_special_solutions_def in_Solutions_iff minimize_def set_alls2)
 
 lemma generate_unique:
-  assumes "i < length (generate A B a b)"
+  assumes "i < j"
     and "j < length (generate A B a b)"
-    and "i < j"
   shows "generate A B a b ! i \<noteq> generate A B a b ! j"
   using sorted_wrt_nth_less [OF sorted_wrt_generate assms]
   by (auto simp: rlex2_irrefl)
 
 lemma gen2_unique:
-  assumes "i < length (gen2 A B a b)"
+  assumes "i < j"
     and "j < length (gen2 A B a b)"
-    and "i < j"
   shows "gen2 A B a b ! i \<noteq> gen2 A B a b ! j"
   using sorted_wrt_nth_less [OF sorted_wrt_gen2 assms]
   by (auto simp: rlex2_irrefl)
@@ -442,7 +440,7 @@ lemma zeroes_ni_generate':
   "(zeroes (length a), zeroes (length b)) \<notin> set (generate' A B a b)"
 proof -
   have "gen2 A B a b ! 0 = (zeroes (length a), zeroes (length b))" by (auto)
-  with gen2_unique [of 0 A B a b] show ?thesis
+  with gen2_unique [of 0 _ A B a b] show ?thesis
     by (auto simp: in_set_conv_nth nth_tl generate'_def)
       (metis One_nat_def Suc_eq_plus1 less_diff_conv zero_less_Suc)
 qed

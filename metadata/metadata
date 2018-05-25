@@ -12,6 +12,20 @@ abstract =
   theory files that adapt the exported code to Isabelle and port proofs
   from the HOL4 formalization, e.g. termination and equivalence proofs.
 
+[WebAssembly]
+title = WebAssembly
+author = Conrad Watt <http://www.cl.cam.ac.uk/~caw77/>
+topic = Computer Science/Programming Languages/Language Definitions
+date = 2018-04-29
+notify = caw77@cam.ac.uk
+abstract =
+  This is a mechanised specification of the WebAssembly language, drawn
+  mainly from the previously published paper formalisation of Haas et
+  al. Also included is a full proof of soundness of the type system,
+  together with a verified type checker and interpreter. We include only
+  a partial procedure for the extraction of the type checker and
+  interpreter here. For more details, please see our paper in CPP 2018.
+
 [Knuth_Morris_Pratt]
 title = The string search algorithm by Knuth, Morris and Pratt
 author = Fabian Hellauer <mailto:hellauer@in.tum.de>, Peter Lammich <http://www21.in.tum.de/~lammich>
@@ -1474,6 +1488,20 @@ abstract =
 	Further refinement yields a verified implementation, whose execution
 	time compares well to an unverified reference implementation in Java.
 	This entry is based on our ITP-2016 paper with the same title.
+
+[VerifyThis2018]
+title = VerifyThis 2018 - Polished Isabelle Solutions
+author = Peter Lammich <http://www21.in.tum.de/~lammich>, Simon Wimmer <http://in.tum.de/~wimmers>
+topic = Computer Science/Algorithms
+date = 2018-04-27
+notify = lammich@in.tum.de
+abstract =
+  <a
+  href="http://www.pm.inf.ethz.ch/research/verifythis.html">VerifyThis
+  2018</a> was a program verification competition associated with
+  ETAPS 2018. It was the 7th event in the VerifyThis competition series.
+  In this entry, we present polished and completed versions of our
+  solutions that we created during the competition.
 
 [PseudoHoops]
 title = Pseudo Hoops
@@ -3616,21 +3644,19 @@ author = Fabian Immler <http://www21.in.tum.de/~immler>, Johannes Hölzl <http:/
 topic = Mathematics/Analysis
 date = 2012-04-26
 abstract =
-	<p>Session HOL-ODE formalizes ordinary differential equations (ODEs) and initial value
+	<p>Session Ordinary-Differential-Equations formalizes ordinary differential equations (ODEs) and initial value
 	problems. This work comprises proofs for local and global existence of unique solutions
 	(Picard-Lindelöf theorem). Moreover, it contains a formalization of the (continuous or even
 	differentiable) dependency of the flow on initial conditions as the <i>flow</i> of ODEs.</p>
 	<p>
 	Not in the generated document are the following sessions:
 	<ul>
-	<li> HOL-ODE-Refinement:
-	Intermediate session combining \texttt{HOL-ODE} and Lammich's (automatic) refinement framework.</li>
 	<li> HOL-ODE-Numerics:
 	Rigorous numerical algorithms for computing enclosures of solutions based on Runge-Kutta methods
 	and affine arithmetic. Reachability analysis with splitting and reduction at hyperplanes.</li>
 	<li> HOL-ODE-Examples:
 	Applications of the numerical algorithms to concrete systems of ODEs.</li>
-	<li> Lorenz_Approximation, Lorenz_C0, Lorenz_C1:
+	<li> Lorenz_C0, Lorenz_C1:
 	  Verified algorithms for checking C1-information according to Tucker's proof,
 	  computation of C0-information.</li>
 	</ul>
@@ -4954,6 +4980,7 @@ abstract =
 title = Matrices, Jordan Normal Forms, and Spectral Radius Theory
 topic = Mathematics/Algebra
 author = René Thiemann <mailto:rene.thiemann@uibk.ac.at>, Akihisa Yamada <mailto:akihisa.yamada@uibk.ac.at>
+contributors = Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2015-08-21
 abstract =
 	<p>
@@ -4966,7 +4993,9 @@ abstract =
 	All the results have been applied to improve CeTA, our certifier to validate termination and complexity proof certificates.
 	</p>
 extra-history =
-	Change history: [2016-01-07]: Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms
+	Change history: 
+           [2016-01-07]: Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms<br/>
+           [2018-04-17]: Integrated lemmas from deep-learning AFP-entry of Alexander Bentkamp
 notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at
 
 [LTL_to_DRA]
@@ -6648,10 +6677,10 @@ abstract =
 
 [LLL_Basis_Reduction]
 title = A verified LLL algorithm
-author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
+author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
 topic = Computer Science/Algorithms, Mathematics/Algebra
 date = 2018-02-02
-notify = jose.divason@unirioja.es, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
+notify = jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
 abstract =
   The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
   LLL algorithm, is an algorithm to find a basis with short, nearly
@@ -6666,6 +6695,9 @@ abstract =
   present the first mechanized soundness proof of the LLL algorithm to
   compute short vectors in lattices. The formalization follows a
   textbook by von zur Gathen and Gerhard.
+extra-history =
+        Change history:
+        [2018-04-16]: Haslbeck integrated formal complexity bounds and was therefore added as author
 
 [LLL_Factorization]
 title = A verified factorization algorithm for integer polynomials with polynomial complexity
@@ -6718,7 +6750,7 @@ author = Maximilian P. L. Haslbeck <http://www.in.tum.de/~haslbema>, Tobias Nipk
 topic = Computer Science/Programming Languages/Logics
 date = 2018-02-26
 notify = haslbema@in.tum.de
-abstract = 
+abstract =
   We study three different Hoare logics for reasoning about time bounds
   of imperative programs and formalize them in Isabelle/HOL: a classical
   Hoare like logic due to Nielson, a logic with potentials due to
@@ -6730,14 +6762,14 @@ abstract =
   multiplicative constants in the running time bounds, thus supporting a
   big-O style of reasoning.  Finally we compare the expressive power of
   the three systems.
-  
+
 [Architectural_Design_Patterns]
 title = A Theory of Architectural Design Patterns
 author = Diego Marmsoler<>
 topic = Computer Science/System Description Languages
 date = 2018-03-01
 notify = diego.marmsoler@tum.de
-abstract = 
+abstract =
   The following document formalizes and verifies several architectural
   design patterns. Each pattern specification is formalized in terms of
   a locale where the locale assumptions correspond to the assumptions
@@ -6752,17 +6784,14 @@ abstract =
   pattern is modeled as an instance of the publisher subscriber pattern.
   In general, this entry provides the first steps towards an overall
   theory of architectural design patterns.
-extra-history =
-	Change history:
-		[2018-05-25]: changing the major assumption for blockchain architectures from alternative minings to relative mining frequencies (revision 5043c5c71685)
-  
+
 [Weight_Balanced_Trees]
 title = Weight-Balanced Trees
 author = Tobias Nipkow <https://www.in.tum.de/~nipkow>, Stefan Dirix<>
 topic = Computer Science/Data Structures
 date = 2018-03-13
 notify = nipkow@in.tum.de
-abstract = 
+abstract =
   This theory provides a verified implementation of weight-balanced
   trees following the work of <a
   href="https://doi.org/10.1017/S0956796811000104">Hirai
@@ -6770,5 +6799,64 @@ abstract =
   range are valid, i.e. guarantee that insertion and deletion preserve
   weight-balance. Instead of a general theorem we provide parameterized
   proofs of preservation of the invariant that work for many (all?)
-  valid parameters.  
+  valid parameters.
+
+[Fishburn_Impossibility]
+title = The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency
+author = Felix Brandt <http://dss.in.tum.de/staff/brandt.html>, Manuel Eberl <https://www21.in.tum.de/~eberlm>, Christian Saile <http://dss.in.tum.de/staff/christian-saile.html>, Christian Stricker <http://dss.in.tum.de/staff/christian-stricker.html>
+topic = Mathematics/Economics
+date = 2018-03-22
+notify = eberlm@in.tum.de
+abstract =
+  <p>This formalisation contains the proof that there is no
+  anonymous Social Choice Function for at least three agents and
+  alternatives that fulfils both Pareto-Efficiency and
+  Fishburn-Strategyproofness. It was derived from a proof of <a
+  href="http://dss.in.tum.de/files/brandt-research/stratset.pdf">Brandt
+  <em>et al.</em></a>, which relies on an unverified
+  translation of a fixed finite instance of the original problem to SAT.
+  This Isabelle proof contains a machine-checked version of both the
+  statement for exactly three agents and alternatives and the lifting to
+  the general case.</p>
+
+[BNF_CC]
+title = Bounded Natural Functors with Covariance and Contravariance
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, Joshua Schneider <mailto:joshua.schneider@inf.ethz.ch>
+topic = Computer Science/Functional Programming, Tools
+date = 2018-04-24
+notify = mail@andreas-lochbihler.de, joshua.schneider@inf.ethz.ch
+abstract =
+  Bounded natural functors (BNFs) provide a modular framework for the
+  construction of (co)datatypes in higher-order logic.  Their functorial
+  operations, the mapper and relator, are restricted to a subset of the
+  parameters, namely those where recursion can take place.  For certain
+  applications, such as free theorems, data refinement, quotients, and
+  generalised rewriting, it is desirable that these operations do not
+  ignore the other parameters.  In this article, we formalise the
+  generalisation BNF<sub>CC</sub> that extends the mapper
+  and relator to covariant and contravariant parameters.  We show that
+  <ol> <li> BNF<sub>CC</sub>s are closed under
+  functor composition and least and greatest fixpoints,</li>
+  <li> subtypes inherit the BNF<sub>CC</sub> structure
+  under conditions that generalise those for the BNF case,
+  and</li> <li> BNF<sub>CC</sub>s preserve
+  quotients under mild conditions.</li> </ol> These proofs
+  are carried out for abstract BNF<sub>CC</sub>s similar to
+  the AFP entry BNF Operations.  In addition, we apply the
+  BNF<sub>CC</sub> theory to several concrete functors.
+
+[Modular_Assembly_Kit_Security]
+title = An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties
+author = Oliver Bračevac <mailto:bracevac@st.informatik.tu-darmstadt.de>, Richard Gay <mailto:gay@mais.informatik.tu-darmstadt.de>, Sylvia Grewe <mailto:grewe@st.informatik.tu-darmstadt.de>, Heiko Mantel <mailto:mantel@mais.informatik.tu-darmstadt.de>, Henning Sudbrock <mailto:sudbrock@mais.informatik.tu-darmstadt.de>, Markus Tasch <mailto:tasch@mais.informatik.tu-darmstadt.de>
+topic = Computer Science/Security
+date = 2018-05-07
+notify = tasch@mais.informatik.tu-darmstadt.de
+abstract = 
+  The "Modular Assembly Kit for Security Properties" (MAKS) is
+  a framework for both the definition and verification of possibilistic
+  information-flow security properties at the specification-level. MAKS
+  supports the uniform representation of a wide range of possibilistic
+  information-flow properties and provides support for the verification
+  of such properties via unwinding results and compositionality results.
+  We provide a formalization of this framework in Isabelle/HOL.  
 

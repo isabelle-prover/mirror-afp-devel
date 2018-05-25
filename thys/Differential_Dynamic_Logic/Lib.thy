@@ -26,61 +26,26 @@ lemma bounded_linear_vec:
   fixes f::"('a::finite) \<Rightarrow> 'b::real_normed_vector \<Rightarrow> 'c::real_normed_vector"
   assumes bounds:"\<And>i. bounded_linear (f i)"
   shows "bounded_linear (\<lambda>x. \<chi> i. f i x)"
-proof -
-  let ?g = "(\<lambda>x. \<chi> i. f i x)"
-  have additives:"\<And>i. Real_Vector_Spaces.additive (f i)"
-    using bounds unfolding bounded_linear_def bounded_linear_axioms_def linear_def by auto
-  have additive:"Real_Vector_Spaces.additive (\<lambda>x. \<chi> i. f i x)"
-    using additives unfolding Real_Vector_Spaces.additive_def apply auto 
-    by (metis (mono_tags, lifting) Cart_lambda_cong plus_vec_def vec_lambda_beta)
-  have scales:"\<And>i. (\<forall>r x. f i (r *\<^sub>R x) = r *\<^sub>R f i x)"
-    using bounds unfolding bounded_linear_def bounded_linear_axioms_def linear_def linear_axioms_def by auto
-  have scale:"(\<forall>r x. ?g (r *\<^sub>R x) = r *\<^sub>R ?g x)"
-    using scales
-  proof -
-    have f1: "\<And>v0_1 v1_0. (\<chi> a. f a (v0_1 *\<^sub>R v1_0)) = (\<chi> a. v0_1 *\<^sub>R (\<chi> a. f a v1_0) $ a)"
-      using scales by force
-    obtain rr :: real and bb :: 'b where
-      "(\<exists>v0 v1. (\<chi> uub. f uub (v0 *\<^sub>R v1)) \<noteq> (\<chi> uub. v0 *\<^sub>R (\<chi> uua. f uua v1) $ uub)) = ((\<chi> uub. f uub (rr *\<^sub>R bb)) \<noteq> (\<chi> uub. rr *\<^sub>R (\<chi> uua. f uua bb) $ uub))"
-      by blast
-    then show ?thesis
-      using f1 by (simp add: scaleR_vec_def)
-  qed
-  have norms:"\<And>i. (\<exists>K. \<forall>x. norm (f i x) \<le> norm x * K)"
-    using bounds unfolding bounded_linear_def bounded_linear_axioms_def by auto
-  let ?Ki = "(\<lambda>i. SOME K. \<forall>x. norm (f i x) \<le> norm x * K)"
-  have each_norm:"\<And>i.  \<forall>x. norm (f i x) \<le> norm x * (?Ki i)"
-    subgoal for i
-      using norms someI_ex[of "(\<lambda>K.  \<forall>x. norm (f i x) \<le> norm x * K)"]
-      by auto
-      done
-  let ?TheK = "(\<Sum> i \<in> (UNIV::'a set).?Ki i)"
-  have axes:"\<And>x. (?g x) = (\<Sum> i\<in>(UNIV::'a set). (axis i (f i x)))"
-    unfolding axis_def by(rule vec_extensionality, auto)
-  have triangle:"\<And>x. (\<Sum> i \<in> (UNIV::'a set). norm (axis i (f i x))) \<ge> norm (\<Sum> i \<in> (UNIV::('a::finite) set). axis i (f i x))"
-    using norm_sum by blast
-  have triangle':"\<And>x. (\<Sum> i \<in> (UNIV::'a set). norm (f i x)) \<ge> norm (\<Sum> i \<in> (UNIV::('a::finite) set). axis i (f i x))"
-    using norm_axis
-    by (simp add: norm_axis Real_Vector_Spaces.sum_norm_le)
-  have norms':"\<And>x. (\<Sum> i\<in> (UNIV::'a set). norm (f i x)) \<le> norm x * ?TheK"
-    using norms  each_norm axes triangle'
-    by (simp add: sum_mono sum_distrib_right sum_distrib_left)
-  have leq:"\<And>x. norm(?g x) \<le> norm x * ?TheK" using axes triangle' norms' 
-    using dual_order.trans by fastforce
-  have norm:"(\<exists>K. \<forall>x. norm (\<chi> i. f i x) \<le> norm x * K)"
-    using leq by blast
-  have linears:"\<And>i. linear (f i)"
-    using bounds unfolding bounded_linear_def bounded_linear_axioms_def by auto
-  have linear:"linear (\<lambda>x. \<chi> i. f i x)"
-    using linears unfolding linear_def linear_axioms_def using scale additive by auto
-  show ?thesis
-    unfolding bounded_linear_def bounded_linear_axioms_def
-    using linear norm by auto
+proof unfold_locales
+  fix r x y
+  interpret bounded_linear "f i" for i by fact
+  show "(\<chi> i. f i (x + y)) = (\<chi> i. f i x) + (\<chi> i. f i y)"
+    by (vector add)
+  show "(\<chi> i. f i (r *\<^sub>R x)) = r *\<^sub>R (\<chi> i. f i x)"
+    by (vector scaleR)
+  obtain K where "norm (f i x) \<le> norm x * K i" for x i
+    using bounded by metis
+  then have "norm (\<chi> i. f i x) \<le> norm x * (\<Sum>i\<in>UNIV. K i)" (is "?lhs \<le> ?rhs") for x
+    unfolding sum_distrib_left
+    unfolding norm_vec_def
+    by (auto intro!: L2_set_le_sum_abs[THEN order_trans] sum_mono simp: abs_mult)
+  then show "\<exists>K. \<forall>x. norm (\<chi> i. f i x) \<le> norm x * K"
+    by blast
 qed
 
 lift_definition blinfun_vec::"('a::finite \<Rightarrow> 'b::real_normed_vector \<Rightarrow>\<^sub>L real) \<Rightarrow> 'b \<Rightarrow>\<^sub>L (real ^ 'a)" is "(\<lambda>(f::('a \<Rightarrow> 'b \<Rightarrow> real)) (x::'b). \<chi> (i::'a). f i x)"
   by(rule bounded_linear_vec, simp)  
-    
+
 lemmas blinfun_vec_simps[simp] = blinfun_vec.rep_eq
 
 lemma continuous_blinfun_vec:"(\<And>i. continuous_on UNIV (blinfun_apply (g i))) \<Longrightarrow> continuous_on UNIV (blinfun_vec g)"

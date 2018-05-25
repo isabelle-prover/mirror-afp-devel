@@ -512,7 +512,8 @@ next
         qed
         with h2b show "h dvd b" 
           using coprime_dvd_mult_right_iff [of h 2 b] by simp
-        with hab show "h dvd a" using dvd_diff by fastforce
+        with hab show "h dvd a"
+          using dvd_diff [of h "a + b" b] by simp
       qed
       from ab1 have ab2: "coprime (a+b) (a-b)"
       proof (rule coprime_imp_coprime)
@@ -668,7 +669,8 @@ proof (rule ccontr)
         with uvwabc have "h dvd ?c*?c^2" by (simp only: dvd_mult2)
         with abc have "h dvd a^3+b^3" using power_Suc[of ?c 2] by simp
         moreover from hu uvwabc have hb3: "h dvd b*b^2" by simp
-        ultimately have "h dvd a^3+b^3-b^3" using power_Suc[of b 2] dvd_diff by fastforce
+        ultimately have "h dvd a^3+b^3-b^3"
+          using power_Suc [of b 2] dvd_diff [of h "a ^ 3 + b ^ 3" "b ^ 3"] by simp
         with hb3 show "h dvd a^3" "h dvd b^3" using power_Suc[of b 2] by auto
       qed
       ultimately have "?Q u v w" using `even a` by simp
@@ -693,7 +695,8 @@ proof (rule ccontr)
         with uvwabc have "h dvd ?c*?c^2" by (simp only: dvd_mult2)
         with abc have "h dvd a^3+b^3" using power_Suc[of ?c 2] by simp
         moreover from hu uvwabc have hb3: "h dvd a*a^2" by simp
-        ultimately have "h dvd a^3+b^3-a^3" using power_Suc[of a 2] dvd_diff by fastforce
+        ultimately have "h dvd a^3+b^3-a^3"
+          using power_Suc [of a 2] dvd_diff [of h "a ^ 3 + b ^ 3" "a ^ 3"] by simp
         with hb3 show "h dvd a^3" and "h dvd b^3" using power_Suc[of a 2] by auto
       qed
       ultimately have "?Q u v w" using `even b` by simp

@@ -4,7 +4,7 @@
     heavily based on the code of Alexander Krauss
     (code forked on 5 June 2011)
 
-Redefinition of config datatype 
+Redefinition of config datatype
 *)
 
 signature NOMINAL_FUNCTION_DATA =
@@ -130,19 +130,19 @@ datatype nominal_function_config = NominalFunctionConfig of
   inv: string option}
 
 fun apply_opt Sequential (NominalFunctionConfig {sequential, default, domintros, partials, inv}) =
-    NominalFunctionConfig 
+    NominalFunctionConfig
       {sequential=true, default=default, domintros=domintros, partials=partials, inv=inv}
   | apply_opt (Default d) (NominalFunctionConfig {sequential, default, domintros, partials, inv}) =
-    NominalFunctionConfig 
+    NominalFunctionConfig
       {sequential=sequential, default=SOME d, domintros=domintros, partials=partials, inv=inv}
   | apply_opt DomIntros (NominalFunctionConfig {sequential, default, domintros, partials, inv}) =
-    NominalFunctionConfig 
+    NominalFunctionConfig
       {sequential=sequential, default=default, domintros=true, partials=partials, inv=inv}
   | apply_opt No_Partials (NominalFunctionConfig {sequential, default, domintros, partials, inv}) =
-    NominalFunctionConfig 
+    NominalFunctionConfig
       {sequential=sequential, default=default, domintros=domintros, partials=false, inv=inv}
   | apply_opt (Invariant s) (NominalFunctionConfig {sequential, default, domintros, partials, inv}) =
-    NominalFunctionConfig 
+    NominalFunctionConfig
       {sequential=sequential, default=default, domintros=domintros, partials=partials, inv = SOME s}
 
 val nominal_default_config =

@@ -114,8 +114,8 @@ definition setCompare  :: " 'a Ord_class \<Rightarrow> 'a set \<Rightarrow> 'a s
 
 (* Is NOT supported by the coq backend! *)
 (*val leastFixedPointUnbounded : forall 'a. SetType 'a => (set 'a -> set 'a) -> set 'a -> set 'a*)
-(*let rec leastFixedPointUnbounded f x= 
-   let fx = f x in
+(*let rec leastFixedPointUnbounded f x=
+    let fx = f x in
    if fx subset x then x
    else leastFixedPointUnbounded f (fx union x)*)
 end

@@ -158,8 +158,8 @@ definition emsapss_decode:: "bv \<Rightarrow> bv \<Rightarrow> nat \<Rightarrow>
      then False
      else emsapss_decode_help1 (sha1 M) EM emBits)"
 
-lemma roundup_positiv: "0 < emBits \<Longrightarrow> 0 < (roundup emBits 160)"
-  by (simp add: roundup, safe, simp)
+lemma roundup_positiv: "0 < emBits \<Longrightarrow> 0 < roundup emBits 160"
+  by (auto simp add: roundup)
 
 lemma roundup_ge_emBits:" 0 < emBits \<Longrightarrow> 0 < x \<Longrightarrow> emBits \<le> (roundup emBits x) * x"
   apply (simp add: roundup mult.commute)

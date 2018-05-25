@@ -452,12 +452,12 @@ fun copy_array  :: " 'a list*int \<Rightarrow> int \<Rightarrow>('a list*int)opt
 
 (*val ws_to_chars : list word8 -> list char*)
 definition ws_to_chars  :: "(8 word)list \<Rightarrow>(char)list "  where 
-     " ws_to_chars ws = ( List.map (\<lambda> w .  char_of_nat(unat w)) ws )"
+     " ws_to_chars ws = ( List.map (\<lambda> w .  (%n. char_of (n::nat))(unat w)) ws )"
 
 
 (*val chars_to_ws : list char -> list word8*)
 definition chars_to_ws  :: "(char)list \<Rightarrow>(8 word)list "  where 
-     " chars_to_ws cs = ( List.map (\<lambda> c2 .  word_of_int(int(nat_of_char c2))) cs )"
+     " chars_to_ws cs = ( List.map (\<lambda> c2 .  word_of_int(int(of_char c2))) cs )"
 
 
 (*val opn_lookup : opn -> integer -> integer -> integer*)
@@ -571,8 +571,8 @@ fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(
         if n <( 0 :: int) then
           Some ((s,t1), Rerr (Rraise (prim_exn (''Subscript''))))
         else
-          (let (s',lnum) =            
-(store_alloc (W8array (List.replicate (nat (abs ( n))) w)) s)
+          (let (s',lnum) =
+            (store_alloc (W8array (List.replicate (nat (abs ( n))) w)) s)
           in
             Some ((s',t1), Rval (Loc lnum)))
     | (Aw8sub, [Loc lnum, Litv (IntLit i)]) =>
@@ -663,15 +663,15 @@ fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(
       | _ => None
       )
     | (Ord, [Litv (Char c2)]) =>
-          Some ((s,t1), Rval (Litv(IntLit(int(nat_of_char c2)))))
+          Some ((s,t1), Rval (Litv(IntLit(int(of_char c2)))))
     | (Chr, [Litv (IntLit i)]) =>
-        Some ((s,t1),          
-(if (i <( 0 :: int)) \<or> (i >( 255 :: int)) then
+        Some ((s,t1),
+          (if (i <( 0 :: int)) \<or> (i >( 255 :: int)) then
             Rerr (Rraise (prim_exn (''Chr'')))
           else
-            Rval (Litv(Char(char_of_nat(nat (abs ( i))))))))
+            Rval (Litv(Char((%n. char_of (n::nat))(nat (abs ( i))))))))
     | (Chopb op1, [Litv (Char c1), Litv (Char c2)]) =>
-        Some ((s,t1), Rval (Boolv (opb_lookup op1 (int(nat_of_char c1)) (int(nat_of_char c2)))))
+        Some ((s,t1), Rval (Boolv (opb_lookup op1 (int(of_char c1)) (int(of_char c2)))))
     | (Implode, [v2]) =>
           (case  v_to_char_list v2 of
             Some ls =>
@@ -720,8 +720,8 @@ fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(
         if n <( 0 :: int) then
           Some ((s,t1), Rerr (Rraise (prim_exn (''Subscript''))))
         else
-          (let (s',lnum) =            
-(store_alloc (Varray (List.replicate (nat (abs ( n))) v2)) s)
+          (let (s',lnum) =
+            (store_alloc (Varray (List.replicate (nat (abs ( n))) v2)) s)
           in
             Some ((s',t1), Rval (Loc lnum)))
     | (AallocEmpty, [Conv None []]) =>
@@ -767,7 +767,7 @@ fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(
     | (FFI n, [Litv(StrLit conf), Loc lnum]) =>
         (case  store_lookup lnum s of
           Some (W8array ws) =>
-            (case  call_FFI t1 n (List.map (\<lambda> c2 .  of_nat(nat_of_char c2)) ( conf)) ws of
+            (case  call_FFI t1 n (List.map (\<lambda> c2 .  of_nat(of_char c2)) ( conf)) ws of
               (t', ws') =>
                (case  store_assign lnum (W8array ws') s of
                  Some s' => Some ((s', t'), Rval (Conv None []))

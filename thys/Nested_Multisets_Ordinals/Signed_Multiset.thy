@@ -741,7 +741,6 @@ instance zmultiset :: (preorder) ordered_ab_semigroup_add
 lemma uminus_add_conv_diff_mset[cancelation_simproc_pre]: \<open>-a + b = b - a\<close> for a :: \<open>'a zmultiset\<close>
   by (simp add: add.commute)
 
-
 lemma uminus_add_add_uminus[cancelation_simproc_pre]: \<open>b -a + c = b + c - a\<close> for a :: \<open>'a zmultiset\<close>
   by (simp add: uminus_add_conv_diff_mset zmset_subset_eq_zmultiset_union_diff_commute)
 

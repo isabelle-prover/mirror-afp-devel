@@ -225,7 +225,7 @@ lemma (in linorder) linorder_order_fun:
   where "(\<forall> x \<in> S. \<forall> y \<in> S. f x \<le> f y \<longleftrightarrow> x \<le> y)" and "range f \<subseteq> {0..card S - 1}"
 proof -
   obtain l where l_def: "l = sorted_list_of_set S" by auto
-  with sorted_list_of_set[OF assms] have l: "set l = S" "sorted l" "distinct l" by auto
+  with assms have l: "set l = S" "sorted l" "distinct l" by auto
   from l(1,3) \<open>finite S\<close> have len: "length l = card S" using distinct_card by force 
   let ?f = "\<lambda> x. if x \<notin> S then 0 else THE i. i < length l \<and> l ! i = x"
   { fix x y assume A: "x \<in> S" "y \<in> S" "x < y"

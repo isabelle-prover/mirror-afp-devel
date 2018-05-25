@@ -5,7 +5,6 @@ imports
   Affine_Code
   Show.Show_Instances
   "HOL-Library.Monad_Syntax"
-  "HOL-Library.Code_Char"
   Optimize_Float
 begin
 

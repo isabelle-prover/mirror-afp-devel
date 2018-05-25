@@ -65,7 +65,7 @@ fun nominal_check_defs ctxt fixes eqs =
           orelse input_error "Defined function may not occur in premises or arguments"
 
         val freeargs = map (fn t => subst_bounds (rev (map Free qs), t)) args
-        val funvars = filter (fn q => 
+        val funvars = filter (fn q =>
           exists (exists_subterm (fn (Free q') $ _ => q = q' | _ => false)) freeargs) qs
         val _ = null funvars orelse (warning (cat_lines
           ["Bound variable" ^ plural " " "s " funvars ^
@@ -133,7 +133,7 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
     val ((fixes0, spec0), ctxt') = prep (constrn_fxs fixspec) eqns lthy
     val fixes = map (apfst (apfst Binding.name_of)) fixes0;
     val spec = map (fn (bnd, prop) => (bnd, [prop])) spec0;
-    val (eqs, post, sort_cont, cnames) =  
+    val (eqs, post, sort_cont, cnames) =
       empty_preproc nominal_check_defs (Function_Common.default_config) ctxt' fixes spec (* nominal *)
 
     val defname = mk_defname fixes
@@ -147,7 +147,7 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
         val NominalFunctionResult {fs, R, psimps, simple_pinducts,
           termination, domintros, cases, eqvts, ...} =
           cont lthy (Thm.close_derivation proof)
-  
+
         val fnames = map (fst o fst) fixes
         fun qualify n = Binding.name n
           |> Binding.qualify true defname
@@ -166,7 +166,7 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
           ||>> Local_Theory.note ((Binding.concealed (qualify "termination"), []), [termination])
           ||> (snd o Local_Theory.note ((qualify "cases",
                  [Attrib.internal (K (Rule_Cases.case_names cnames))]), [cases]))
-          ||> (case domintros of NONE => I | SOME thms => 
+          ||> (case domintros of NONE => I | SOME thms =>
                    Local_Theory.note ((qualify "domintros", []), thms) #> snd)
 
         val info = { add_simps=addsmps, case_names=cnames, psimps=psimps',
@@ -176,8 +176,8 @@ fun prepare_nominal_function do_print prep default_constraint fixspec eqns confi
         val _ = Proof_Display.print_consts do_print
           (Position.thread_data ()) lthy (K false) (map fst fixes)
       in
-        (info, 
-         lthy |> Local_Theory.declaration {syntax = false, pervasive = false} 
+        (info,
+         lthy |> Local_Theory.declaration {syntax = false, pervasive = false}
            (add_function_data o morph_function_data info))
       end
   in
@@ -199,7 +199,7 @@ fun gen_add_nominal_function do_print prep default_constraint fixspec eqns confi
 
 val add_nominal_function =
   gen_add_nominal_function false Specification.check_multi_specs (Type_Infer.anyT @{sort type})
-fun add_nominal_function_cmd a b c d int = 
+fun add_nominal_function_cmd a b c d int =
   gen_add_nominal_function int Specification.read_multi_specs "_::type" a b c d
 
 fun gen_nominal_function do_print prep default_constraint fixspec eqns config lthy =
@@ -214,7 +214,7 @@ fun gen_nominal_function do_print prep default_constraint fixspec eqns config lt
 
 val nominal_function =
   gen_nominal_function false Specification.check_multi_specs (Type_Infer.anyT @{sort type})
-fun nominal_function_cmd a b c int = 
+fun nominal_function_cmd a b c int =
   gen_nominal_function int Specification.read_multi_specs "_::type" a b c
 
 fun get_info ctxt t = Item_Net.retrieve (get_function ctxt) t

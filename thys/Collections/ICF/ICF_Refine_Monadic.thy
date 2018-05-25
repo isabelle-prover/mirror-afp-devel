@@ -112,7 +112,7 @@ proof -
   from A obtain l where [simp]:
     "distinct l" 
     "s = set l" 
-    "sorted_by_rel ordR l"
+    "sorted_wrt ordR l"
     "iterate = foldli l" 
     unfolding set_iterator_genord_def by blast
   
@@ -175,7 +175,7 @@ proof -
   from A obtain l where [simp]:
     "distinct l" 
     "s = set l" 
-    "sorted_by_rel ordR l"
+    "sorted_wrt ordR l"
     "iterate = foldli l" 
     unfolding set_iterator_genord_def by blast
   
@@ -359,5 +359,5 @@ lemma iteratei_mono_lsi[refine_mono]:
       unfolding IT_tag_def lsi_iteratei_def
       by (simp add: A)
  qed
-*)  
+*)
 end

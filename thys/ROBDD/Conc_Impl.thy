@@ -166,7 +166,7 @@ partial_function(heap) iteci where
       (ifci a tb fb s'')
      }
   | None \<Rightarrow> do {
-    case_ifexici (return (t,s)) (return (e,s)) (\<lambda>_ _ _. raise ''Cannot happen'') i s
+    case_ifexici (return (t,s)) (return (e,s)) (\<lambda>_ _ _. raise STR ''Cannot happen'') i s
    }
   }"
 declare iteci.simps[code]
@@ -269,7 +269,7 @@ partial_function(heap) iteci_lu where
         cl \<leftarrow> hm_update (i,t,e) r (dcli s);
         return (r,dcli_update (const cl) s)
        } 
-         | None \<Rightarrow> raise ''Cannot happen'' )})
+         | None \<Rightarrow> raise STR ''Cannot happen'' )})
   })}"
   
 term ht_lookup

@@ -6,8 +6,8 @@ imports WS1S_Formula
 begin
 (*>*)
 
-declare nat_of_char_Char[simp]
-  [[coercion nat_of_char, coercion_enabled]]
+declare [[coercion "of_char :: char \<Rightarrow> nat", coercion_enabled]]
+
 definition is_upper :: "char \<Rightarrow> bool" where [simp]: "is_upper c = (c \<in> {65..90 :: nat})"
 definition is_lower :: "char \<Rightarrow> bool" where [simp]: "is_lower c = (c \<in> {97..122 :: nat})"
 

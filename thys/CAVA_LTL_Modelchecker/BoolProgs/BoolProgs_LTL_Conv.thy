@@ -22,10 +22,10 @@ where
 | "ltl_conv _ _ False_ltlc = Inl False_ltlc"
 | "ltl_conv C _ (Prop_ltlc (CProp s)) = (case Mapping.lookup C s of
                                               Some c \<Rightarrow> Inl (b2l c)
-                                             | None \<Rightarrow> Inr (STR ''Unknown constant: '' @@ s))"
+                                             | None \<Rightarrow> Inr (STR ''Unknown constant: '' + s))"
 | "ltl_conv _ M (Prop_ltlc (FProp (s, argm))) = (case Mapping.lookup M s of
                                                     Some f \<Rightarrow> (Inl \<circ> b2l \<circ> f \<circ> nat_of_integer) argm
-                                                  | None \<Rightarrow> Inr (STR ''Unknown function: '' @@ s))"
+                                                  | None \<Rightarrow> Inr (STR ''Unknown function: '' + s))"
 | "ltl_conv C M (Not_ltlc x) = (case ltl_conv C M x of Inl l \<Rightarrow> Inl (Not_ltlc l) | Inr s \<Rightarrow> Inr s)"
 | "ltl_conv C M (Next_ltlc x) = (case ltl_conv C M x of Inl l \<Rightarrow> Inl (Next_ltlc l) | Inr s \<Rightarrow> Inr s)"
 | "ltl_conv C M (Final_ltlc x) = (case ltl_conv C M x of Inl l \<Rightarrow> Inl (Final_ltlc l) | Inr s \<Rightarrow> Inr s)"

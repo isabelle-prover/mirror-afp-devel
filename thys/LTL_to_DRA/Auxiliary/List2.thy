@@ -172,7 +172,7 @@ lemma sorted_pre:
   "(\<And>x y xs ys. zs = xs @ [x, y] @ ys \<Longrightarrow> x \<le> y) \<Longrightarrow> sorted zs"
 apply (induction zs)
  apply simp
-by (metis append_Nil append_Cons list.exhaust sorted.simps(2,3))
+by (metis append_Nil append_Cons list.exhaust sorted1 sorted2)
 
 lemma sorted_list:
   assumes "x \<in> set xs" and "y \<in> set xs"
@@ -183,9 +183,9 @@ proof -
     using assms by (blast dest: split_list_first)
   moreover
   hence "sorted (map f (y # zs))" 
-    using sorted_append map_append `sorted (map f xs)` by auto
+    using `sorted (map f xs)` by (simp add: sorted_append)
   hence "\<forall>x\<in>set (map f (y # zs)). f y \<le> x"
-    using sorted_Cons by force
+    by force
   hence "\<forall>x\<in>set (y # zs). f y \<le> f x"
     by auto
   have "x \<in> set ys"

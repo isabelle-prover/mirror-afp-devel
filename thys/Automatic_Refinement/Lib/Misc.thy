@@ -126,7 +126,7 @@ lemma distinct_sorted_mono:
   shows "l!i < l!j"
 proof -
   from S B have "l!i \<le> l!j"
-    by (simp add: sorted_equals_nth_mono)
+    by (simp add: sorted_iff_nth_mono)
   also from nth_eq_iff_index_eq[OF D] B have "l!i \<noteq> l!j"
     by auto
   finally show ?thesis .
@@ -1652,11 +1652,11 @@ qed
 
 lemma sorted_hd_last:
   "\<lbrakk>sorted l; l\<noteq>[]\<rbrakk> \<Longrightarrow> hd l \<le> last l"
-by (metis eq_iff hd_Cons_tl last_in_set not_hd_in_tl sorted_Cons)
+by (metis eq_iff hd_Cons_tl last_in_set not_hd_in_tl sorted.simps(2))
 
 lemma (in linorder) sorted_hd_min:
   "\<lbrakk>xs \<noteq> []; sorted xs\<rbrakk> \<Longrightarrow> \<forall>x \<in> set xs. hd xs \<le> x"
-by (induct xs, auto simp add: sorted_Cons)
+by (induct xs, auto)
 
 lemma sorted_append_bigger:
   "\<lbrakk>sorted xs; \<forall>x \<in> set xs. x \<le> y\<rbrakk> \<Longrightarrow> sorted (xs @ [y])"
@@ -1956,54 +1956,19 @@ lemma list_collect_set_as_map: "list_collect_set f l = \<Union>set (map f l)"
 
 subsubsection {* Sorted List with arbitrary Relations *}
 
-inductive sorted_by_rel :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> bool" where
-  Nil [iff]: "sorted_by_rel R []"
-| Cons: "\<forall>y\<in>set xs. R x y \<Longrightarrow> sorted_by_rel R xs \<Longrightarrow> sorted_by_rel R (x # xs)"
+lemma (in linorder) sorted_wrt_rev_linord [simp] :
+  "sorted_wrt (\<ge>) l \<longleftrightarrow> sorted (rev l)"
+by (simp add: sorted_sorted_wrt sorted_wrt_rev)
 
-inductive_simps sorted_by_rel_Cons[iff] : "sorted_by_rel R (x # xs)"
-
-lemma sorted_by_rel_single [iff]:
-  "sorted_by_rel R [x]" by simp
-
-lemma sorted_by_rel_weaken :
-assumes R_weaken: "\<And>x y. \<lbrakk>x \<in> set l0; y \<in> set l0; R x y\<rbrakk> \<Longrightarrow> R' x y"
-    and sort: "sorted_by_rel R l0"
-shows "sorted_by_rel R' l0"
-using assms
-by (induct l0) (simp_all)
-
-
-lemma sorted_by_rel_map :
-  "sorted_by_rel R (map f xs) = sorted_by_rel (\<lambda>x y. R (f x) (f y)) xs"
-by (induct xs) auto
-
-lemma sorted_by_rel_append :
-  "sorted_by_rel R (xs @ ys) =
-   (sorted_by_rel R xs \<and> sorted_by_rel R ys \<and>
-    (\<forall>x \<in> set xs. \<forall>y\<in> set ys. R x y))"
-by (induct xs) auto
-
-lemma sorted_by_rel_true [simp] :
-  "sorted_by_rel (\<lambda>_ _. True) l0"
-by (induct l0) (simp_all)
-
-lemma (in linorder) sorted_by_rel_linord[simp]:
-  "sorted_by_rel (\<le>) l \<longleftrightarrow> sorted l"
-  by (induct l) (auto simp: sorted_Cons)
-
-lemma (in linorder) sorted_by_rel_rev_linord [simp] :
-  "sorted_by_rel (\<ge>) l \<longleftrightarrow> sorted (rev l)"
-  by (induct l) (auto simp add: sorted_Cons sorted_append)
-
-lemma (in linorder) sorted_by_rel_map_linord [simp] :
-  "sorted_by_rel (\<lambda>(x::'a \<times> 'b) y. fst x \<le> fst y) l
+lemma (in linorder) sorted_wrt_map_linord [simp] :
+  "sorted_wrt (\<lambda>(x::'a \<times> 'b) y. fst x \<le> fst y) l
   \<longleftrightarrow> sorted (map fst l)"
-  by (induct l) (auto simp add: sorted_Cons sorted_append)
+by (simp add: sorted_sorted_wrt sorted_wrt_map)
 
-lemma (in linorder) sorted_by_rel_map_rev_linord [simp] :
-  "sorted_by_rel (\<lambda>(x::'a \<times> 'b) y. fst x \<ge> fst y) l
+lemma (in linorder) sorted_wrt_map_rev_linord [simp] :
+  "sorted_wrt (\<lambda>(x::'a \<times> 'b) y. fst x \<ge> fst y) l
   \<longleftrightarrow> sorted (rev (map fst l))"
-  by (induct l) (auto simp add: sorted_Cons sorted_append)
+by (induct l) (auto simp add: sorted_append)
 
     
 subsubsection {* Take and Drop *}
@@ -2413,7 +2378,7 @@ proof
   also have "\<dots> \<ge> i"
   proof -
     have "sorted (i#[k\<leftarrow>[Suc i..<length l] . P (l!k)])" (is "sorted ?l")
-      by (simp add: sorted_Cons sorted_filter[where f=id, simplified])
+      by (simp add: sorted_filter[where f=id, simplified])
     hence "hd ?l \<le> last ?l"
       by (rule sorted_hd_last) simp
     thus ?thesis by simp
@@ -2664,11 +2629,11 @@ qed
 lemma set_quicksort_by_rel [simp]: "set (quicksort_by_rel R sl xs) = set (xs @ sl)"
   unfolding set_mset_comp_mset [symmetric] o_apply by simp
 
-lemma sorted_by_rel_quicksort_by_rel:
+lemma sorted_wrt_quicksort_by_rel:
   fixes R:: "'x \<Rightarrow> 'x \<Rightarrow> bool"
   assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
       and trans_R: "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
-  shows "sorted_by_rel R (quicksort_by_rel R [] xs)"
+  shows "sorted_wrt R (quicksort_by_rel R [] xs)"
 proof (induct xs rule: measure_induct_rule[of "length"])
   case (less xs)
   note ind_hyp = this
@@ -2698,15 +2663,15 @@ proof (induct xs rule: measure_induct_rule[of "length"])
 
     note ind_hyps = ind_hyp[OF length_le(1)] ind_hyp[OF length_le(2)]
     thus ?thesis
-      by (simp add: quicksort_by_rel_remove_acc_guared sorted_by_rel_append Ball_def
+      by (simp add: quicksort_by_rel_remove_acc_guared sorted_wrt_append Ball_def
                     xs1_props xs2_props' xs1_props')
   qed
 qed
 
 lemma sorted_quicksort_by_rel:
   "sorted (quicksort_by_rel (\<le>) [] xs)"
-unfolding sorted_by_rel_linord[symmetric]
-by (rule sorted_by_rel_quicksort_by_rel) auto
+unfolding sorted_sorted_wrt
+by (rule sorted_wrt_quicksort_by_rel) auto
 
 lemma sort_quicksort_by_rel:
   "sort = quicksort_by_rel (\<le>) []"
@@ -2811,11 +2776,11 @@ lemma set_mergesort_by_rel_merge [simp]:
   "set (mergesort_by_rel_merge R xs ys) = set xs \<union> set ys"
   by (induct R xs ys rule: mergesort_by_rel_merge.induct) auto
 
-lemma sorted_by_rel_mergesort_by_rel_merge [simp]:
+lemma sorted_wrt_mergesort_by_rel_merge [simp]:
   assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
       and trans_R: "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
-  shows  "sorted_by_rel R (mergesort_by_rel_merge R xs ys) \<longleftrightarrow>
-          sorted_by_rel R xs \<and> sorted_by_rel R ys"
+  shows  "sorted_wrt R (mergesort_by_rel_merge R xs ys) \<longleftrightarrow>
+          sorted_wrt R xs \<and> sorted_wrt R ys"
 proof (induct xs ys rule: mergesort_by_rel_merge_induct[where R = R])
   case Nil1 thus ?case by simp
 next
@@ -2885,11 +2850,11 @@ qed
 lemma set_mergesort_by_rel [simp]: "set (mergesort_by_rel R xs) = set xs"
   unfolding set_mset_comp_mset [symmetric] o_apply by simp
 
-lemma sorted_by_rel_mergesort_by_rel:
+lemma sorted_wrt_mergesort_by_rel:
   fixes R:: "'x \<Rightarrow> 'x \<Rightarrow> bool"
   assumes lin : "\<And>x y. (R x y) \<or> (R y x)"
       and trans_R: "\<And>x y z. R x y \<Longrightarrow> R y z \<Longrightarrow> R x z"
-  shows "sorted_by_rel R (mergesort_by_rel R xs)"
+  shows "sorted_wrt R (mergesort_by_rel R xs)"
 proof (induct xs rule: measure_induct_rule[of "length"])
   case (less xs)
   note ind_hyp = this
@@ -2910,15 +2875,15 @@ proof (induct xs rule: measure_induct_rule[of "length"])
         by (simp_all add: mergesort_by_rel_split_length)
       with ind_hyp show ?thesis
         unfolding mergesort_by_rel.simps[of _ xs]
-        by (simp add: sorted_by_rel_mergesort_by_rel_merge[OF lin trans_R])
+        by (simp add: sorted_wrt_mergesort_by_rel_merge[OF lin trans_R])
     qed
   qed
 qed
 
 lemma sorted_mergesort_by_rel:
   "sorted (mergesort_by_rel (\<le>) xs)"
-unfolding sorted_by_rel_linord[symmetric]
-by (rule sorted_by_rel_mergesort_by_rel) auto
+unfolding sorted_sorted_wrt
+by (rule sorted_wrt_mergesort_by_rel) auto
 
 lemma sort_mergesort_by_rel:
   "sort = mergesort_by_rel (\<le>)"
@@ -2956,7 +2921,7 @@ next
   from x1_l1_props have l1_props: "distinct l1 \<and> sorted l1"
                     and x1_nin_l1: "x1 \<notin> set l1"
                     and x1_le: "\<And>x. x \<in> set l1 \<Longrightarrow> x1 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
   note ind_hyp_l1 = Cons(1)[OF l1_props]
 
@@ -2970,7 +2935,7 @@ next
     from x2_l2_props have l2_props: "distinct l2 \<and> sorted l2"
                     and x2_nin_l2: "x2 \<notin> set l2"
                     and x2_le: "\<And>x. x \<in> set l2 \<Longrightarrow> x2 \<le> x"
-    by (simp_all add: sorted_Cons Ball_def)
+    by (simp_all add: Ball_def)
 
     note ind_hyp_l2 = Cons(1)[OF l2_props]
     show ?case
@@ -2979,7 +2944,7 @@ next
 
       from ind_hyp_l1[OF x2_l2_props] x1_less_x2 x1_nin_l1 x1_le x2_le
       show ?thesis
-        apply (auto simp add: sorted_Cons Ball_def)
+        apply (auto simp add: Ball_def)
         apply (metis linorder_not_le)
         apply (metis linorder_not_less xt1(6) xt1(9))
       done
@@ -2991,14 +2956,14 @@ next
         case True note x1_eq_x2 = this
 
         from ind_hyp_l1[OF l2_props] x1_le x2_le x2_nin_l2 x1_eq_x2 x1_nin_l1
-        show ?thesis by (simp add: x1_eq_x2 sorted_Cons Ball_def)
+        show ?thesis by (simp add: x1_eq_x2 Ball_def)
       next
         case False note x1_neq_x2 = this
         with x2_le_x1 have x2_less_x1 : "x2 < x1" by auto
 
         from ind_hyp_l2 x2_le_x1 x1_neq_x2 x2_le x2_nin_l2 x1_le
         show ?thesis
-          apply (simp add: x2_less_x1 sorted_Cons Ball_def)
+          apply (simp add: x2_less_x1 Ball_def)
           apply (metis linorder_not_le x2_less_x1 xt1(7))
         done
       qed

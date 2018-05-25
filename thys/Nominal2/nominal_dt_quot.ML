@@ -8,41 +8,41 @@
 
 signature NOMINAL_DT_QUOT =
 sig
-  val define_qtypes: (string list * binding * mixfix) list -> typ list -> term list -> 
+  val define_qtypes: (string list * binding * mixfix) list -> typ list -> term list ->
     thm list -> local_theory -> Quotient_Info.quotients list * local_theory
 
-  val define_qconsts: typ list -> (string  * term * mixfix * thm) list -> local_theory -> 
+  val define_qconsts: typ list -> (string  * term * mixfix * thm) list -> local_theory ->
     Quotient_Info.quotconsts list * local_theory
 
-  val define_qperms: typ list -> string list -> (string * sort) list -> 
+  val define_qperms: typ list -> string list -> (string * sort) list ->
     (string * term * mixfix * thm) list -> thm list -> local_theory -> local_theory
 
-  val define_qsizes: typ list -> string list -> (string * sort) list -> 
+  val define_qsizes: typ list -> string list -> (string * sort) list ->
     (string * term * mixfix * thm) list -> local_theory -> local_theory
 
   val lift_thms: typ list -> thm list -> thm list -> Proof.context -> thm list * Proof.context
 
-  val prove_supports: Proof.context -> thm list -> term list -> thm list  
+  val prove_supports: Proof.context -> thm list -> term list -> thm list
   val prove_fsupp: Proof.context -> typ list -> thm -> thm list -> thm list
 
-  val fs_instance: typ list -> string list -> (string * sort) list -> thm list ->  
+  val fs_instance: typ list -> string list -> (string * sort) list -> thm list ->
     local_theory -> local_theory
 
-  val prove_fv_supp: typ list -> term list -> term list -> term list -> term list -> thm list -> 
-    thm list -> thm list -> thm list -> thm -> bclause list list -> Proof.context -> thm list 
+  val prove_fv_supp: typ list -> term list -> term list -> term list -> term list -> thm list ->
+    thm list -> thm list -> thm list -> thm -> bclause list list -> Proof.context -> thm list
 
   val prove_bns_finite: typ list -> term list -> thm -> thm list -> Proof.context -> thm list
- 
+
   val prove_perm_bn_alpha_thms: typ list -> term list -> term list -> thm -> thm list -> thm list ->
     thm list -> Proof.context -> thm list
 
   val prove_permute_bn_thms: typ list -> term list -> term list -> thm -> thm list -> thm list ->
-    thm list -> Proof.context -> thm list  
+    thm list -> Proof.context -> thm list
 
-  val prove_strong_exhausts: Proof.context -> thm list -> bclause list list list -> thm list -> 
+  val prove_strong_exhausts: Proof.context -> thm list -> bclause list list list -> thm list ->
     thm list -> thm list -> thm list -> thm list -> thm list
 
-  val prove_strong_induct: Proof.context -> thm -> thm list -> thm list -> bclause list list list -> 
+  val prove_strong_induct: Proof.context -> thm -> thm list -> thm list -> bclause list list list ->
     thm list
 end
 
@@ -62,7 +62,7 @@ fun define_qtypes qtys_descr alpha_tys alpha_trms alpha_equivp_thms lthy =
     val qty_args3 = qty_args2 ~~ alpha_equivp_thms
   in
     fold_map (Quotient_Type.add_quotient_type {overloaded = false}) qty_args3 lthy
-  end 
+  end
 
 (* a wrapper for lifting a raw constant *)
 fun lift_raw_const qtys (qconst_name, rconst, mx', rsp_thm) lthy =
@@ -89,7 +89,7 @@ fun lift_raw_const qtys (qconst_name, rconst, mx', rsp_thm) lthy =
 (* defines quotient constants *)
 fun define_qconsts qtys consts_specs lthy =
   let
-    val (qconst_infos, lthy') = 
+    val (qconst_infos, lthy') =
       fold_map (lift_raw_const qtys) consts_specs lthy
     val phi =
       Proof_Context.export_morphism lthy'
@@ -102,16 +102,16 @@ fun define_qconsts qtys consts_specs lthy =
 (* defines the quotient permutations and proves pt-class *)
 fun define_qperms qtys qfull_ty_names tvs perm_specs raw_perm_laws lthy =
   let
-    val lthy1 = 
+    val lthy1 =
       lthy
       |> Local_Theory.exit_global
-      |> Class.instantiation (qfull_ty_names, tvs, @{sort pt}) 
-  
+      |> Class.instantiation (qfull_ty_names, tvs, @{sort pt})
+
     val (_, lthy2) = define_qconsts qtys perm_specs lthy1
 
     val ((_, raw_perm_laws'), lthy3) = Variable.importT raw_perm_laws lthy2
 
-    val lifted_perm_laws = 
+    val lifted_perm_laws =
       map (Quotient_Tacs.lifted lthy3 qtys []) raw_perm_laws'
       |> Variable.exportT lthy3 lthy2
 
@@ -120,7 +120,7 @@ fun define_qperms qtys qfull_ty_names tvs perm_specs raw_perm_laws lthy =
         (ALLGOALS (resolve_tac ctxt lifted_perm_laws))
   in
     lthy2
-    |> Class.prove_instantiation_exit tac 
+    |> Class.prove_instantiation_exit tac
     |> Named_Target.theory_init
   end
 
@@ -151,7 +151,7 @@ local
 in
   fun unraw_str s =
     s |> raw_explode
-      |> Scan.finite Symbol.stopper parser >> implode 
+      |> Scan.finite Symbol.stopper parser >> implode
       |> fst
 end
 
@@ -182,7 +182,7 @@ fun lift_thms qtys simps thms ctxt =
 
 
 fun mk_supports_goal ctxt qtrm =
-  let  
+  let
     val vs = fresh_args ctxt qtrm
     val rhs = list_comb (qtrm, vs)
     val lhs = fold (curry HOLogic.mk_prod) vs @{term "()"}
@@ -206,7 +206,7 @@ fun supports_tac ctxt perm_simps =
 
 fun prove_supports_single ctxt perm_simps qtrm =
   let
-    val goal = mk_supports_goal ctxt qtrm 
+    val goal = mk_supports_goal ctxt qtrm
     val ctxt' = Variable.auto_fixes goal ctxt
   in
     Goal.prove ctxt' [] [] goal
@@ -229,7 +229,7 @@ fun prove_fsupp ctxt qtys qinduct qsupports_thms =
       |> foldr1 (HOLogic.mk_conj)
       |> HOLogic.mk_Trueprop
 
-    val tac = 
+    val tac =
       EVERY' [ resolve_tac ctxt' @{thms supports_finite},
                resolve_tac ctxt' qsupports_thms,
                asm_simp_tac (put_simpset HOL_ss ctxt'
@@ -247,17 +247,17 @@ fun prove_fsupp ctxt qtys qinduct qsupports_thms =
 
 fun fs_instance qtys qfull_ty_names tvs qfsupp_thms lthy =
   let
-    val lthy1 = 
+    val lthy1 =
       lthy
       |> Local_Theory.exit_global
-      |> Class.instantiation (qfull_ty_names, tvs, @{sort fs}) 
-  
+      |> Class.instantiation (qfull_ty_names, tvs, @{sort fs})
+
     fun tac ctxt =
       Class.intro_classes_tac ctxt [] THEN
         (ALLGOALS (resolve_tac ctxt qfsupp_thms))
   in
     lthy1
-    |> Class.prove_instantiation_exit tac 
+    |> Class.prove_instantiation_exit tac
     |> Named_Target.theory_init
   end
 
@@ -266,7 +266,7 @@ fun fs_instance qtys qfull_ty_names tvs qfsupp_thms lthy =
 
 fun gen_mk_goals fv supp =
   let
-    val arg_ty = 
+    val arg_ty =
       fastype_of fv
       |> domain_type
   in
@@ -278,14 +278,14 @@ fun mk_fv_bns_goals fv_bn alpha_bn = gen_mk_goals fv_bn (mk_supp_rel alpha_bn)
 
 fun add_simpset ctxt thms = put_simpset HOL_basic_ss ctxt addsimps thms
 
-fun symmetric thms = 
+fun symmetric thms =
   map (fn thm => thm RS @{thm sym}) thms
 
 val supp_Abs_set = @{thms supp_Abs(1)[symmetric]}
 val supp_Abs_res = @{thms supp_Abs(2)[symmetric]}
 val supp_Abs_lst = @{thms supp_Abs(3)[symmetric]}
 
-fun mk_supp_abs ctxt (BC (Set, _, _)) = EqSubst.eqsubst_tac ctxt [1] supp_Abs_set 
+fun mk_supp_abs ctxt (BC (Set, _, _)) = EqSubst.eqsubst_tac ctxt [1] supp_Abs_set
   | mk_supp_abs ctxt (BC (Res, _, _)) = EqSubst.eqsubst_tac ctxt [1] supp_Abs_res
   | mk_supp_abs ctxt (BC (Lst, _, _)) = EqSubst.eqsubst_tac ctxt [1] supp_Abs_lst
 
@@ -305,25 +305,25 @@ fun mk_bn_supp_abs_tac ctxt trm =
 
 val thms1 = @{thms supp_Pair supp_eqvt[symmetric] Un_assoc conj_assoc}
 val thms2 = @{thms de_Morgan_conj Collect_disj_eq finite_Un}
-val thms3 = @{thms alphas prod_alpha_def prod_fv.simps rel_prod_conv permute_prod_def 
+val thms3 = @{thms alphas prod_alpha_def prod_fv.simps rel_prod_conv permute_prod_def
   prod.rec prod.case prod.inject not_True_eq_False empty_def[symmetric] finite.emptyI}
 
-fun prove_fv_supp qtys qtrms fvs fv_bns alpha_bns fv_simps eq_iffs perm_simps 
+fun prove_fv_supp qtys qtrms fvs fv_bns alpha_bns fv_simps eq_iffs perm_simps
   fv_bn_eqvts qinduct bclausess ctxt =
   let
     val goals1 = map mk_fvs_goals fvs
-    val goals2 = map2 mk_fv_bns_goals fv_bns alpha_bns   
+    val goals2 = map2 mk_fv_bns_goals fv_bns alpha_bns
 
     fun tac ctxt =
       SUBGOAL (fn (goal, i) =>
         let
-          val (fv_fun, arg) = 
+          val (fv_fun, arg) =
             goal |> Envir.eta_contract
                  |> Logic.strip_assums_concl
                  |> HOLogic.dest_Trueprop
                  |> fst o HOLogic.dest_eq
                  |> dest_comb
-          val supp_abs_tac = 
+          val supp_abs_tac =
             case (AList.lookup (op=) (qtrms ~~ bclausess) (head_of arg)) of
               SOME bclauses => EVERY' (mk_supp_abs_tac ctxt bclauses)
             | NONE => mk_bn_supp_abs_tac ctxt fv_fun
@@ -332,7 +332,7 @@ fun prove_fv_supp qtys qtrms fvs fv_bns alpha_bns fv_simps eq_iffs perm_simps
           EVERY' [ TRY o asm_full_simp_tac (add_simpset ctxt (@{thm supp_Pair[symmetric]}::fv_simps)),
                    TRY o supp_abs_tac,
                    TRY o simp_tac (add_simpset ctxt @{thms supp_def supp_rel_def}),
-                   TRY o eqvt_tac ctxt eqvt_rconfig, 
+                   TRY o eqvt_tac ctxt eqvt_rconfig,
                    TRY o simp_tac (add_simpset ctxt (@{thms Abs_eq_iff} @ eq_iffs)),
                    TRY o asm_full_simp_tac (add_simpset ctxt thms3),
                    TRY o simp_tac (add_simpset ctxt thms2),
@@ -347,7 +347,7 @@ fun prove_fv_supp qtys qtrms fvs fv_bns alpha_bns fv_simps eq_iffs perm_simps
 
 fun prove_bns_finite qtys qbns qinduct qbn_simps ctxt =
   let
-    fun mk_goal qbn = 
+    fun mk_goal qbn =
       let
         val arg_ty = domain_type (fastype_of qbn)
         val finite = @{term "finite :: atom set => bool"}
@@ -356,7 +356,7 @@ fun prove_bns_finite qtys qbns qinduct qbn_simps ctxt =
       end
 
     val props = map mk_goal qbns
-    val ss_tac = asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps (qbn_simps @ 
+    val ss_tac = asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps (qbn_simps @
       @{thms set_simps set_append finite_insert finite.emptyI finite_Un}))
   in
     induct_prove qtys props qinduct (K ss_tac) ctxt
@@ -364,7 +364,7 @@ fun prove_bns_finite qtys qbns qinduct qbn_simps ctxt =
 
 
 fun prove_perm_bn_alpha_thms qtys qperm_bns alpha_bns qinduct qperm_bn_simps qeq_iffs qalpha_refls ctxt =
-  let 
+  let
     val ([p], ctxt') = Variable.variant_fixes ["p"] ctxt
     val p = Free (p, @{typ perm})
 
@@ -381,11 +381,11 @@ fun prove_perm_bn_alpha_thms qtys qperm_bns alpha_bns qinduct qperm_bn_simps qeq
   in
     induct_prove qtys props qinduct (K ss_tac) ctxt'
     |> Proof_Context.export ctxt' ctxt
-    |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps @{thms id_def})) 
+    |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps @{thms id_def}))
   end
 
 fun prove_permute_bn_thms qtys qbns qperm_bns qinduct qperm_bn_simps qbn_defs qbn_eqvts ctxt =
-  let 
+  let
     val ([p], ctxt') = Variable.variant_fixes ["p"] ctxt
     val p = Free (p, @{typ perm})
 
@@ -393,21 +393,21 @@ fun prove_permute_bn_thms qtys qbns qperm_bns qinduct qperm_bn_simps qbn_defs qb
       let
         val arg_ty = domain_type (fastype_of qbn)
       in
-        (arg_ty, fn x => 
-          (mk_id (Abs ("", arg_ty, 
+        (arg_ty, fn x =>
+          (mk_id (Abs ("", arg_ty,
              HOLogic.mk_eq (mk_perm p (qbn $ Bound 0), qbn $ (qperm_bn $ p $ Bound 0)))) $ x))
       end
 
     val props = map2 mk_goal qbns qperm_bns
     val ss = @{thm id_def}::qperm_bn_simps @ qbn_defs
-    val ss_tac = 
+    val ss_tac =
       EVERY' [asm_full_simp_tac (put_simpset HOL_basic_ss ctxt' addsimps ss),
               TRY o eqvt_tac ctxt' (eqvt_strict_config addpres qbn_eqvts),
               TRY o asm_full_simp_tac (put_simpset HOL_basic_ss ctxt')]
   in
     induct_prove qtys props qinduct (K ss_tac) ctxt'
-    |> Proof_Context.export ctxt' ctxt 
-    |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps @{thms id_def})) 
+    |> Proof_Context.export ctxt' ctxt
+    |> map (simplify (put_simpset HOL_basic_ss ctxt addsimps @{thms id_def}))
   end
 
 
@@ -417,7 +417,7 @@ fun prove_permute_bn_thms qtys qbns qperm_bns qinduct qperm_bn_simps qbn_defs qb
 (* fixme: move into nominal_library *)
 fun abs_const bmode ty =
   let
-    val (const_name, binder_ty, abs_ty) = 
+    val (const_name, binder_ty, abs_ty) =
       case bmode of
         Lst => (@{const_name "Abs_lst"}, @{typ "atom list"}, @{type_name abs_lst})
       | Set => (@{const_name "Abs_set"}, @{typ "atom set"},  @{type_name abs_set})
@@ -427,7 +427,7 @@ fun abs_const bmode ty =
   end
 
 fun mk_abs bmode trm1 trm2 =
-  abs_const bmode (fastype_of trm2) $ trm1 $ trm2  
+  abs_const bmode (fastype_of trm2) $ trm1 $ trm2
 
 fun is_abs_eq thm =
   let
@@ -437,8 +437,8 @@ fun is_abs_eq thm =
       | Const (@{const_name "Abs_lst"}, _) => true
       | Const (@{const_name "Abs_res"}, _) => true
       | _ => false
-  in 
-    thm |> Thm.prop_of 
+  in
+    thm |> Thm.prop_of
         |> HOLogic.dest_Trueprop
         |> HOLogic.dest_eq
         |> fst
@@ -451,42 +451,42 @@ fun mk_ecase_prems lthy c (params, prems, concl) bclauses =
   let
     val tys = map snd params
     val binders = get_all_binders bclauses
-   
-    fun prep_binder (opt, i) = 
+
+    fun prep_binder (opt, i) =
       let
         val t = Bound (length tys - i - 1)
       in
         case opt of
-          NONE => setify_ty lthy (nth tys i) t 
-        | SOME bn => to_set_ty (fastype_of1 (tys, bn $ t)) (bn $ t)   
-      end 
+          NONE => setify_ty lthy (nth tys i) t
+        | SOME bn => to_set_ty (fastype_of1 (tys, bn $ t)) (bn $ t)
+      end
 
-    val prems' = 
+    val prems' =
       case binders of
         [] => prems                        (* case: no binders *)
-      | _ => binders                       (* case: binders *) 
+      | _ => binders                       (* case: binders *)
           |> map prep_binder
           |> fold_union_env tys
           |> (fn t => mk_fresh_star t c)
           |> (fn t => HOLogic.mk_Trueprop t :: prems)
   in
     mk_full_horn params prems' concl
-  end  
+  end
 
 
-(* derives the freshness theorem that there exists a p, such that 
+(* derives the freshness theorem that there exists a p, such that
    (p o as) #* (c, t1,..., tn) *)
 fun fresh_thm ctxt c parms binders bn_finite_thms =
   let
-    fun prep_binder (opt, i) = 
+    fun prep_binder (opt, i) =
       case opt of
-        NONE => setify ctxt (nth parms i) 
-      | SOME bn => to_set (bn $ (nth parms i))  
+        NONE => setify ctxt (nth parms i)
+      | SOME bn => to_set (bn $ (nth parms i))
 
-    fun prep_binder2 (opt, i) = 
+    fun prep_binder2 (opt, i) =
       case opt of
         NONE => atomify ctxt (nth parms i)
-      | SOME bn => bn $ (nth parms i) 
+      | SOME bn => bn $ (nth parms i)
 
     val rhs = HOLogic.mk_tuple ([c] @ parms @ (map prep_binder2 binders))
     val lhs = binders
@@ -496,10 +496,10 @@ fun fresh_thm ctxt c parms binders bn_finite_thms =
 
     val goal = mk_fresh_star lhs rhs
       |> mk_exists ("p", @{typ perm})
-      |> HOLogic.mk_Trueprop   
- 
-    val ss = bn_finite_thms @ @{thms supp_Pair finite_supp finite_sets_supp} 
-      @ @{thms finite.intros finite_Un finite_set finite_fset}  
+      |> HOLogic.mk_Trueprop
+
+    val ss = bn_finite_thms @ @{thms supp_Pair finite_supp finite_sets_supp}
+      @ @{thms finite.intros finite_Un finite_set finite_fset}
   in
     Goal.prove ctxt [] [] goal
       (K (HEADGOAL (resolve_tac ctxt @{thms at_set_avoiding1}
@@ -507,14 +507,14 @@ fun fresh_thm ctxt c parms binders bn_finite_thms =
   end
 
 
-(* derives an abs_eq theorem of the form 
+(* derives an abs_eq theorem of the form
 
-   Exists q. [as].x = [p o as].(q o x)  for non-recursive binders 
+   Exists q. [as].x = [p o as].(q o x)  for non-recursive binders
    Exists q. [as].x = [q o as].(q o x)  for recursive binders
 *)
 fun abs_eq_thm ctxt fprops p parms bn_eqvt permute_bns (bclause as (BC (bmode, binders, bodies))) =
   case binders of
-    [] => [] 
+    [] => []
   | _ =>
       let
         val rec_flag = is_recursive_binder bclause
@@ -522,27 +522,27 @@ fun abs_eq_thm ctxt fprops p parms bn_eqvt permute_bns (bclause as (BC (bmode, b
         val body_trm = foldl1 HOLogic.mk_prod (map (nth parms) bodies)
 
         val abs_lhs = mk_abs bmode binder_trm body_trm
-        val abs_rhs = 
+        val abs_rhs =
           if rec_flag
           then mk_abs bmode (mk_perm (Bound 0) binder_trm) (mk_perm (Bound 0) body_trm)
           else mk_abs bmode (mk_perm p binder_trm) (mk_perm (Bound 0) body_trm)
-        
+
         val abs_eq = HOLogic.mk_eq (abs_lhs, abs_rhs)
-        val peq = HOLogic.mk_eq (mk_perm (Bound 0) binder_trm, mk_perm p binder_trm) 
+        val peq = HOLogic.mk_eq (mk_perm (Bound 0) binder_trm, mk_perm p binder_trm)
 
         val goal = HOLogic.mk_conj (abs_eq, peq)
           |> (fn t => HOLogic.mk_exists ("q", @{typ "perm"}, t))
-          |> HOLogic.mk_Trueprop  
- 
+          |> HOLogic.mk_Trueprop
+
         val ss = fprops @ @{thms set_simps set_append union_eqvt}
           @ @{thms fresh_star_Un fresh_star_Pair fresh_star_list fresh_star_singleton fresh_star_fset
-          fresh_star_set} 
-  
-        val tac1 = 
+          fresh_star_set}
+
+        val tac1 =
           if rec_flag
           then resolve_tac ctxt @{thms Abs_rename_set' Abs_rename_res' Abs_rename_lst'}
           else resolve_tac ctxt @{thms Abs_rename_set  Abs_rename_res  Abs_rename_lst}
-        
+
         val tac2 =
           EVERY' [simp_tac (put_simpset HOL_basic_ss ctxt addsimps ss),
             TRY o simp_tac (put_simpset HOL_ss ctxt)]
@@ -556,29 +556,29 @@ fun abs_eq_thm ctxt fprops p parms bn_eqvt permute_bns (bclause as (BC (bmode, b
 
 val setify = @{lemma "xs = ys ==> set xs = set ys" by simp}
 
-fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alphas 
+fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alphas
   prems bclausess qexhaust_thm =
   let
     fun aux_tac prem bclauses =
       case (get_all_binders bclauses) of
         [] => EVERY' [resolve_tac ctxt [prem], assume_tac ctxt]
-      | binders => Subgoal.SUBPROOF (fn {params, prems, concl, context = ctxt, ...} =>  
+      | binders => Subgoal.SUBPROOF (fn {params, prems, concl, context = ctxt, ...} =>
           let
             val parms = map (Thm.term_of o snd) params
-            val fthm = fresh_thm ctxt c parms binders bn_finite_thms 
-  
+            val fthm = fresh_thm ctxt c parms binders bn_finite_thms
+
             val ss = @{thms fresh_star_Pair union_eqvt fresh_star_Un}
             val (([(_, fperm)], fprops), ctxt') = Obtain.result
-              (fn ctxt' => EVERY1 [eresolve_tac ctxt [exE], 
-                            full_simp_tac (put_simpset HOL_basic_ss ctxt' addsimps ss), 
+              (fn ctxt' => EVERY1 [eresolve_tac ctxt [exE],
+                            full_simp_tac (put_simpset HOL_basic_ss ctxt' addsimps ss),
                             REPEAT o (eresolve_tac ctxt @{thms conjE})]) [fthm] ctxt
-  
-            val abs_eq_thms = flat 
+
+            val abs_eq_thms = flat
              (map (abs_eq_thm ctxt' fprops (Thm.term_of fperm) parms bn_eqvt permute_bns) bclauses)
 
             val ((_, eqs), ctxt'') = Obtain.result
-              (fn ctxt'' => EVERY1 
-                   [ REPEAT o (eresolve_tac ctxt @{thms exE}), 
+              (fn ctxt'' => EVERY1
+                   [ REPEAT o (eresolve_tac ctxt @{thms exE}),
                      REPEAT o (eresolve_tac ctxt @{thms conjE}),
                      REPEAT o (dresolve_tac ctxt [setify]),
                      full_simp_tac (put_simpset HOL_basic_ss ctxt''
@@ -586,18 +586,18 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
 
             val (abs_eqs, peqs) = split_filter is_abs_eq eqs
 
-            val fprops' = 
+            val fprops' =
               map (eqvt_rule ctxt'' (eqvt_strict_config addpres permute_bns)) fprops
               @ map (eqvt_rule ctxt'' (eqvt_strict_config addpres bn_eqvt)) fprops
 
-            (* for freshness conditions *) 
+            (* for freshness conditions *)
             val tac1 = SOLVED' (EVERY'
               [ simp_tac (put_simpset HOL_basic_ss ctxt'' addsimps peqs),
                 rewrite_goal_tac ctxt'' (@{thms fresh_star_Un[THEN eq_reflection]}),
-                conj_tac ctxt'' (DETERM o resolve_tac ctxt'' fprops') ]) 
+                conj_tac ctxt'' (DETERM o resolve_tac ctxt'' fprops') ])
 
             (* for equalities between constructors *)
-            val tac2 = SOLVED' (EVERY' 
+            val tac2 = SOLVED' (EVERY'
               [ resolve_tac ctxt [@{thm ssubst} OF prems],
                 rewrite_goal_tac ctxt'' (map safe_mk_equiv eq_iff_thms),
                 rewrite_goal_tac ctxt'' (map safe_mk_equiv abs_eqs),
@@ -606,9 +606,9 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
             (* proves goal "P" *)
             val side_thm = Goal.prove ctxt'' [] [] (Thm.term_of concl)
               (K (EVERY1 [ resolve_tac ctxt'' [prem], RANGE [tac1, tac2] ]))
-              |> singleton (Proof_Context.export ctxt'' ctxt)  
+              |> singleton (Proof_Context.export ctxt'' ctxt)
           in
-            resolve_tac ctxt [side_thm] 1 
+            resolve_tac ctxt [side_thm] 1
           end) ctxt
   in
     EVERY1 [resolve_tac ctxt [qexhaust_thm], RANGE (map2 aux_tac prems bclausess)]
@@ -618,7 +618,7 @@ fun case_tac ctxt c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alpha
 fun prove_strong_exhausts lthy exhausts bclausesss bn_finite_thms eq_iff_thms bn_eqvt permute_bns
   perm_bn_alphas =
   let
-    val ((_, exhausts'), lthy') = Variable.import true exhausts lthy 
+    val ((_, exhausts'), lthy') = Variable.import true exhausts lthy
 
     val ([c, a], lthy'') = Variable.variant_fixes ["c", "'a"] lthy'
     val c = Free (c, TFree (a, @{sort fs}))
@@ -631,9 +631,9 @@ fun prove_strong_exhausts lthy exhausts bclausesss bn_finite_thms eq_iff_thms bn
     val ecases' = (map o map) strip_full_horn ecases
 
     val premss = (map2 o map2) (mk_ecase_prems lthy'' c) ecases' bclausesss
-   
+
     fun tac bclausess exhaust {prems, context} =
-      case_tac context c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alphas 
+      case_tac context c bn_finite_thms eq_iff_thms bn_eqvt permute_bns perm_bn_alphas
         prems bclausess exhaust
 
     fun prove prems bclausess exhaust concl =
@@ -660,31 +660,31 @@ fun add_qnt_c_prop c_name c_ty trm =
   trm |> HOLogic.dest_Trueprop
       |> incr_boundvars 1
       |> add_c_prop (Bound 0) c_ty
-      |> HOLogic.mk_Trueprop 
+      |> HOLogic.mk_Trueprop
       |> mk_all (c_name, c_ty)
 
 fun prep_prem lthy c c_name c_ty bclauses (params, prems, concl) =
   let
     val tys = map snd params
     val binders = get_all_binders bclauses
-   
-    fun prep_binder (opt, i) = 
+
+    fun prep_binder (opt, i) =
       let
         val t = Bound (length tys - i - 1)
       in
         case opt of
-          NONE => setify_ty lthy (nth tys i) t 
-        | SOME bn => to_set_ty (fastype_of1 (tys, bn $ t)) (bn $ t)   
-      end 
+          NONE => setify_ty lthy (nth tys i) t
+        | SOME bn => to_set_ty (fastype_of1 (tys, bn $ t)) (bn $ t)
+      end
 
     val prems' = prems
-      |> map (incr_boundvars 1) 
+      |> map (incr_boundvars 1)
       |> map (add_qnt_c_prop c_name c_ty)
 
-    val prems'' = 
+    val prems'' =
       case binders of
         [] => prems'                       (* case: no binders *)
-      | _ => binders                       (* case: binders *) 
+      | _ => binders                       (* case: binders *)
           |> map prep_binder
           |> fold_union_env tys
           |> incr_boundvars 1
@@ -693,10 +693,10 @@ fun prep_prem lthy c c_name c_ty bclauses (params, prems, concl) =
 
     val concl' = concl
       |> HOLogic.dest_Trueprop
-      |> incr_boundvars 1 
-      |> add_c_prop (Bound 0) c_ty  
+      |> incr_boundvars 1
+      |> add_c_prop (Bound 0) c_ty
       |> HOLogic.mk_Trueprop
-  in  
+  in
     mk_full_horn (params @ [(c_name, c_ty)]) prems'' concl'
   end
 
@@ -710,12 +710,12 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
 
     val (prems, concl) = induct'
       |> Thm.prop_of
-      |> Logic.strip_horn 
+      |> Logic.strip_horn
 
     val concls = concl
       |> HOLogic.dest_Trueprop
-      |> HOLogic.dest_conj 
-      |> map (add_c_prop c c_ty) 
+      |> HOLogic.dest_conj
+      |> map (add_c_prop c c_ty)
       |> map HOLogic.mk_Trueprop
 
     val prems' = prems
@@ -723,24 +723,24 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
       |> map2 (prep_prem lthy'' c c_name c_ty) (flat bclausesss)
 
     fun pat_tac ctxt thm =
-      Subgoal.FOCUS (fn {params, context = ctxt', ...} => 
+      Subgoal.FOCUS (fn {params, context = ctxt', ...} =>
         let
           val ty_parms = map (fn (_, ct) => (fastype_of (Thm.term_of ct), ct)) params
           val vs = Term.add_vars (Thm.prop_of thm) []
           val vs_tys = map (Type.legacy_freeze_type o snd) vs
-          val assigns = map (lookup ty_parms) vs_tys          
+          val assigns = map (lookup ty_parms) vs_tys
           val thm' = infer_instantiate ctxt' (map #1 vs ~~ assigns) thm
         in
           resolve_tac ctxt' [thm'] 1
         end) ctxt
       THEN_ALL_NEW asm_full_simp_tac (put_simpset HOL_basic_ss ctxt)
- 
-    fun size_simp_tac ctxt = 
+
+    fun size_simp_tac ctxt =
       simp_tac (put_simpset size_ss ctxt addsimps (@{thms comp_def snd_conv} @ size_thms))
   in
     Goal.prove_common lthy'' NONE [] prems' concls
-      (fn {prems, context = ctxt} => 
-        Induction_Schema.induction_schema_tac ctxt prems  
+      (fn {prems, context = ctxt} =>
+        Induction_Schema.induction_schema_tac ctxt prems
         THEN RANGE (map (pat_tac ctxt) exhausts) 1
         THEN prove_termination_ind ctxt 1
         THEN ALLGOALS (size_simp_tac ctxt))
@@ -749,4 +749,3 @@ fun prove_strong_induct lthy induct exhausts size_thms bclausesss =
 
 
 end (* structure *)
-

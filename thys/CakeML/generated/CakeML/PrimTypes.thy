@@ -30,8 +30,8 @@ definition prim_types_program  :: "(top0)list "  where
    Tdec  (Dexn undefined (''Div'') []),
    Tdec  (Dexn undefined (''Subscript'') []),
    Tdec  (Dtype undefined [([], (''bool''), [((''false''), []), ((''true''), [])])]),
-   Tdec  (Dtype undefined [([([(char_of_nat 39), (CHR ''a'')])], (''list''), [((''nil''), []), ((''::''), [Tvar ([(char_of_nat 39), (CHR ''a'')]), Tapp [Tvar ([(char_of_nat 39), (CHR ''a'')])] (TC_name (Short (''list'')))]) ])]),
-   Tdec (Dtype undefined [([([(char_of_nat 39), (CHR ''a'')])], (''option''), [((''NONE''), []),((''SOME''), [Tvar ([(char_of_nat 39), (CHR ''a'')])]) ])]) ])"
+   Tdec  (Dtype undefined [([([(CHR 0x27), (CHR ''a'')])], (''list''), [((''nil''), []), ((''::''), [Tvar ([(CHR 0x27), (CHR ''a'')]), Tapp [Tvar ([(CHR 0x27), (CHR ''a'')])] (TC_name (Short (''list'')))]) ])]),
+   Tdec (Dtype undefined [([([(CHR 0x27), (CHR ''a'')])], (''option''), [((''NONE''), []),((''SOME''), [Tvar ([(CHR 0x27), (CHR ''a'')])]) ])]) ])"
 
 
 (*val add_to_sem_env :

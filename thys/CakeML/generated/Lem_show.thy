@@ -26,7 +26,7 @@ datatype_record 'a Show_class=
 definition instance_Show_Show_string_dict  :: "(string)Show_class "  where 
      " instance_Show_Show_string_dict = ((|
 
-  show_method = (\<lambda> s. ([(char_of_nat 34)]) @ (s @ ([(char_of_nat 34)])))|) )"
+  show_method = (\<lambda> s. ([(CHR 0x27)]) @ (s @ ([(CHR 0x27)])))|) )"
 
 
 (*val stringFromMaybe : forall 'a. ('a -> string) -> maybe 'a -> string*)

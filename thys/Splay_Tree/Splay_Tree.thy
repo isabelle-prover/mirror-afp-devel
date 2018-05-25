@@ -7,6 +7,8 @@ imports
   "HOL-Data_Structures.Cmp"
 begin
 
+declare sorted_wrt.simps(2)[simp del]
+
 text{* Splay trees were invented by Sleator and Tarjan~\cite{SleatorT-JACM85}. *}
 
 subsection "Function @{text splay}"

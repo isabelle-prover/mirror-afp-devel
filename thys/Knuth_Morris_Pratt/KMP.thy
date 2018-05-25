@@ -1,7 +1,6 @@
 theory KMP
   imports Refine_Imperative_HOL.IICF
     "HOL-Library.Sublist"
-    "HOL-Library.Code_Char"
 begin
 
 declare len_greater_imp_nonempty[simp del] min_absorb2[simp]
@@ -927,8 +926,8 @@ definition "kmp_string_impl \<equiv> kmp_impl :: (char array \<times> nat) \<Rig
 section \<open>Tests of Generated ML-Code\<close>
 
 ML_val \<open>
-  fun str2arl s = (Array.fromList (String.explode s), @{code nat_of_integer} (String.size s))
-  fun kmp s t = map_option (@{code integer_of_nat}) (@{code kmp_string_impl} (str2arl s) (str2arl t) ())
+  fun str2arl s = (Array.fromList (@{code String.explode} s), @{code nat_of_integer} (String.size s))
+  fun kmp s t = map_option @{code integer_of_nat} (@{code kmp_string_impl} (str2arl s) (str2arl t) ())
   
   val test1 = kmp "anas" "bananas"
   val test2 = kmp "" "bananas"

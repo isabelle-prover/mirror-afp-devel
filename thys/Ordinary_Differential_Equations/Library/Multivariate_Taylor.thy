@@ -334,7 +334,7 @@ proof -
     using interior_subset by blast
   interpret second_derivative_within
     by unfold_locales
-      (auto intro!: derivative_intros intro: has_derivative_at_within \<open>a \<in> G\<close>)
+      (auto intro!: derivative_intros intro: has_derivative_at_withinI \<open>a \<in> G\<close>)
   from assms open_interior[of G] interior_subset[of G]
   obtain e where e: "e > 0" "\<And>y. dist y a < e \<Longrightarrow> y \<in> G"
     by (force simp: open_dist)
@@ -448,7 +448,7 @@ proof -
   moreover
   {
     from f' have f_cont: "continuous_on G f"
-      by (rule has_derivative_continuous_on[OF has_derivative_at_within])
+      by (rule has_derivative_continuous_on[OF has_derivative_at_withinI])
     note [continuous_intros] = continuous_on_compose2[OF this]
     from f'_cont have f'_cont: "continuous_on G f'"
       by (auto intro!: continuous_at_imp_continuous_on)

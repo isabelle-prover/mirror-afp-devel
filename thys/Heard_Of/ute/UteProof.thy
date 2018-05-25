@@ -656,8 +656,10 @@ lemma validity_argument:
   and stp: "step r' = Suc 0"
   shows "card {q. sendMsg Ute_M r' q p (rho r' q) = Vote (Some v)} > E - \<alpha>"
 proof -
-  from stp obtain k where stp:"r' = Suc 0 + k * nSteps"
-    unfolding step_def using mod_Suc mod_eqD by blast
+  define k where "k = r' div nSteps"
+  with stp have stp: "r' = Suc 0 + k * nSteps"
+    using div_mult_mod_eq [of r' nSteps]
+    by (simp add: step_def)
   moreover
   have "E - \<alpha> <
         card {q. sendMsg Ute_M (Suc 0 + k*nSteps) q p ((rho (Suc 0 + k*nSteps)) q)

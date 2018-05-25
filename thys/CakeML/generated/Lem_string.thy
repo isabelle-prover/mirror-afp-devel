@@ -52,8 +52,8 @@ begin
 
 (*val string_case : forall 'a. string -> 'a -> (char -> string -> 'a) -> 'a*)
 
-(*let string_case s c_empty c_cons= 
-  match (toCharList s) with
+(*let string_case s c_empty c_cons=
+   match (toCharList s) with
     | [] -> c_empty
     | c :: cs -> c_cons c (toString cs)
   end*)

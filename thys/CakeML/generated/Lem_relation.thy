@@ -442,8 +442,8 @@ definition reflexiveTransitiveClosure  :: "('a*'a)set \<Rightarrow>('a*'a)set " 
 (* ----------------------- *)
 
 (*val withoutTransitiveEdges: forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> rel 'a 'a*)
-(*let withoutTransitiveEdges r= 
-  let tc = transitiveClosure r in
+(*let withoutTransitiveEdges r=
+   let tc = transitiveClosure r in
   {(a, c) | forall ((a, c) IN r) 
   | forall (b IN relRange r). a <> b && b <> c --> not ((a, b) IN tc && (b, c) IN tc)}*)
 end

@@ -7,7 +7,7 @@ section {* Matrices over Bounded Linear Orders *}
 
 text {*
 In this theory we characterise relation-algebraic properties of matrices over bounded linear orders (for example, extended real numbers) in terms of the entries in the matrices.
-We consider, in particular, the following properties: univalent, injective, total, surjective, mapping, bijective, vector, covector, point, atom, reflexive, coreflexive, irreflexive, symmetric, antisymmetric, asymmetric.
+We consider, in particular, the following properties: univalent, injective, total, surjective, mapping, bijective, vector, covector, point, arc, reflexive, coreflexive, irreflexive, symmetric, antisymmetric, asymmetric.
 We also consider the effect of composition with the matrix of greatest elements and with coreflexives (tests).
 *}
 
@@ -408,12 +408,12 @@ lemma pp_point_linorder_matrix_unique:
   by metis
 
 text {*
-An atom is a matrix that has exactly one @{text top} entry and all other entries are @{text bot}.
+An arc is a matrix that has exactly one @{text top} entry and all other entries are @{text bot}.
 *}
 
-lemma atom_linorder_matrix_1:
+lemma arc_linorder_matrix_1:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
-  assumes "matrix_stone_relation_algebra.atom f"
+  assumes "matrix_stone_relation_algebra.arc f"
     shows "\<exists>e . f e = top \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot)"
 proof -
   have "matrix_stone_relation_algebra.point (f \<odot> mtop)"
@@ -457,11 +457,11 @@ proof -
     by (metis old.prod.exhaust)
 qed
 
-lemma pp_atom_linorder_matrix_2:
+lemma pp_arc_linorder_matrix_2:
   fixes f :: "('a::finite,'b::linorder_stone_relation_algebra_expansion) square"
   assumes "\<exists>e . f e \<noteq> bot \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot)"
-    shows "matrix_stone_relation_algebra.pp_atom f"
-proof (unfold matrix_stone_relation_algebra.pp_atom_expanded, intro conjI)
+    shows "matrix_stone_relation_algebra.pp_arc f"
+proof (unfold matrix_stone_relation_algebra.pp_arc_expanded, intro conjI)
   show "f \<odot> mtop \<odot> f\<^sup>t \<preceq> mone"
   proof (unfold less_eq_matrix_def, rule allI, rule prod_cases)
     fix i j
@@ -540,16 +540,16 @@ next
   qed
 qed
 
-lemma atom_linorder_matrix_2:
+lemma arc_linorder_matrix_2:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
   assumes "\<exists>e . f e = top \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot)"
-    shows "matrix_stone_relation_algebra.atom f"
-proof (unfold matrix_stone_relation_algebra.atom_expanded, intro conjI)
+    shows "matrix_stone_relation_algebra.arc f"
+proof (unfold matrix_stone_relation_algebra.arc_expanded, intro conjI)
   show "f \<odot> mtop \<odot> f\<^sup>t \<preceq> mone"
-    by (metis (no_types, lifting) assms bot_not_top matrix_stone_relation_algebra.pp_atom_expanded pp_atom_linorder_matrix_2)
+    by (metis (no_types, lifting) assms bot_not_top matrix_stone_relation_algebra.pp_arc_expanded pp_arc_linorder_matrix_2)
 next
   show "f\<^sup>t \<odot> mtop \<odot> f \<preceq> mone"
-    by (metis (no_types, lifting) assms bot_not_top matrix_stone_relation_algebra.pp_atom_expanded pp_atom_linorder_matrix_2)
+    by (metis (no_types, lifting) assms bot_not_top matrix_stone_relation_algebra.pp_arc_expanded pp_arc_linorder_matrix_2)
 next
   show "mtop \<odot> f \<odot> mtop = mtop"
   proof (rule ext, rule prod_cases)
@@ -571,21 +571,21 @@ next
   qed
 qed
 
-lemma atom_linorder_matrix:
+lemma arc_linorder_matrix:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
-  shows "matrix_stone_relation_algebra.atom f \<longleftrightarrow> (\<exists>e . f e = top \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
-  using atom_linorder_matrix_1 atom_linorder_matrix_2 by blast
+  shows "matrix_stone_relation_algebra.arc f \<longleftrightarrow> (\<exists>e . f e = top \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
+  using arc_linorder_matrix_1 arc_linorder_matrix_2 by blast
 
-lemma atom_linorder_matrix_unique:
+lemma arc_linorder_matrix_unique:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
-  shows "matrix_stone_relation_algebra.atom f \<longleftrightarrow> (\<exists>!e . f e = top \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
+  shows "matrix_stone_relation_algebra.arc f \<longleftrightarrow> (\<exists>!e . f e = top \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
   apply (rule iffI)
-  apply (metis (no_types, hide_lams) atom_linorder_matrix bot_not_top)
-  using atom_linorder_matrix by blast
+  apply (metis (no_types, hide_lams) arc_linorder_matrix bot_not_top)
+  using arc_linorder_matrix by blast
 
-lemma pp_atom_linorder_matrix_1:
+lemma pp_arc_linorder_matrix_1:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
-  assumes "matrix_stone_relation_algebra.pp_atom f"
+  assumes "matrix_stone_relation_algebra.pp_arc f"
     shows "\<exists>e . f e \<noteq> bot \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot)"
 proof -
   have "matrix_stone_relation_algebra.pp_point (f \<odot> mtop)"
@@ -629,17 +629,17 @@ proof -
     by (metis old.prod.exhaust)
 qed
 
-lemma pp_atom_linorder_matrix:
+lemma pp_arc_linorder_matrix:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
-  shows "matrix_stone_relation_algebra.pp_atom f \<longleftrightarrow> (\<exists>e . f e \<noteq> bot \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
-  using pp_atom_linorder_matrix_1 pp_atom_linorder_matrix_2 by blast
+  shows "matrix_stone_relation_algebra.pp_arc f \<longleftrightarrow> (\<exists>e . f e \<noteq> bot \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
+  using pp_arc_linorder_matrix_1 pp_arc_linorder_matrix_2 by blast
 
-lemma pp_atom_linorder_matrix_unique:
+lemma pp_arc_linorder_matrix_unique:
   fixes f :: "('a::finite,'b::non_trivial_linorder_stone_relation_algebra_expansion) square"
-  shows "matrix_stone_relation_algebra.pp_atom f \<longleftrightarrow> (\<exists>!e . f e \<noteq> bot \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
+  shows "matrix_stone_relation_algebra.pp_arc f \<longleftrightarrow> (\<exists>!e . f e \<noteq> bot \<and> (\<forall>d . e \<noteq> d \<longrightarrow> f d = bot))"
   apply (rule iffI)
-  apply (metis (no_types, hide_lams) pp_atom_linorder_matrix)
-  using pp_atom_linorder_matrix by blast
+  apply (metis (no_types, hide_lams) pp_arc_linorder_matrix)
+  using pp_arc_linorder_matrix by blast
 
 text {*
 Reflexive matrices are those with a constant @{text top} diagonal.

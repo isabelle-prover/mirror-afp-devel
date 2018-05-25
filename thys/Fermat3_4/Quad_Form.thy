@@ -185,7 +185,8 @@ proof -
     thus ?thesis by simp
   qed
   then obtain u where u: "a*p - e*N*b*q = ?P*u" by (auto simp only: dvd_def)
-  from e have e2_1: "e*e = 1" using zdvd1_eq is_unit_int by auto
+  from e have e2_1: "e * e = 1"
+    using abs_mult_self_eq [of e] by simp
   have a: "a = p*u + e*N*q*v"
   proof -
     have "(p*u + e*N*q*v)*?P = p*(?P*u) + (e*N*q)*(?P*v)"
@@ -374,7 +375,8 @@ proof -
     thus ?thesis by simp
   qed
   then obtain u where u: "a*p - e*N*b*q = P^n*u" by (auto simp only: dvd_def)
-  from e have e2_1: "e*e = 1" using zdvd1_eq is_unit_int by auto
+  from e have e2_1: "e * e = 1"
+    using abs_mult_self_eq [of e] by simp
   have a: "a = p*u + e*N*q*v"
   proof -
     from ass have "(p*u + e*N*q*v)*P^n = p*(P^n*u) + (e*N*q)*(P^n*v)"
@@ -785,7 +787,8 @@ proof -
   ultimately have "g \<noteq> e*f" by auto
   moreover from f g uve have "\<bar>g\<bar> = \<bar>e*f\<bar>" unfolding abs_mult by presburger
   ultimately have gef: "g = -(e*f)" by arith
-  have "e * - (e * f) = - f" using zdvd1_eq is_unit_int uve by auto
+  from uve have "e * - (e * f) = - f" 
+    using abs_mult_self_eq [of e] by simp
   hence "r = f*(p^2 - N*q^2) \<and> s = (-e*f)*2*p*q" using rs gef unfolding right_diff_distrib by auto
   hence "\<bar>r\<bar> = \<bar>f\<bar> * \<bar>p^2-N*q^2\<bar>
     \<and> \<bar>s\<bar> = \<bar>e\<bar>*\<bar>f\<bar>*\<bar>2*p*q\<bar>"
@@ -826,8 +829,10 @@ proof -
   hence ab: "a = f*p*p^2 + -f*N*p*q^2 + 2*e*g*N*p*q^2
     \<and> b = 2*g*p^2*q - e*f*p^2*q + e*f*N*q*q^2"
     by (auto simp add: ac_simps right_diff_distrib power2_eq_square)
-  from f have f2: "f^2 = 1" using zdvd1_eq is_unit_int power2_eq_square by auto
-  from g have g2: "g^2 = 1" using zdvd1_eq is_unit_int power2_eq_square by auto
+  from f have f2: "f\<^sup>2 = 1"
+    using abs_mult_self_eq [of f] by (simp add: power2_eq_square) 
+  from g have g2: "g\<^sup>2 = 1"
+    using abs_mult_self_eq [of g] by (simp add: power2_eq_square)
   have "e \<noteq> f*g"
   proof (rule ccontr, simp)
     assume efg: "e = f*g"

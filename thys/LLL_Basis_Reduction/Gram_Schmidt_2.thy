@@ -1,5 +1,7 @@
 (*
-    Authors:    Jose Divasón
+    Authors:    Ralph Bottesch
+                Jose Divasón
+                Maximilian Haslbeck
                 Sebastiaan Joosten
                 René Thiemann
                 Akihisa Yamada
@@ -9,11 +11,39 @@
 section \<open>Gram-Schmidt\<close>
 
 theory Gram_Schmidt_2
-  imports Jordan_Normal_Form.Gram_Schmidt
+  imports 
+    Perron_Frobenius.HMA_Connect
+    Jordan_Normal_Form.Gram_Schmidt
     Jordan_Normal_Form.Show_Matrix
     Jordan_Normal_Form.Matrix_Impl
     Norms
+    Int_Rat_Operations
 begin
+
+(* TODO: Documentation and add references to computer algebra book *)
+
+hide_const (open) Determinants.det
+hide_const (open) Finite_Cartesian_Product.mat
+hide_const (open) Finite_Cartesian_Product.row
+hide_const (open) Finite_Cartesian_Product.rows
+hide_const (open) Finite_Cartesian_Product.vec
+hide_const (open) Path_Connected.outside
+hide_const (open) Linear_Algebra.orthogonal
+hide_type (open) Finite_Cartesian_Product.vec
+
+hide_fact (open) Linear_Algebra.real_inner_class.orthogonal_def
+hide_fact (open) Finite_Cartesian_Product.rows_def
+hide_fact (open) Determinants.det_transpose
+
+no_notation Inner_Product.real_inner_class.inner (infix "\<bullet>" 70)
+no_notation Finite_Cartesian_Product.vec.vec_nth (infixl "$" 90)
+
+(* TODO: move *)
+lemma map_mat_transpose: "(map_mat f A)\<^sup>T = map_mat f A\<^sup>T"
+  by auto
+
+lemma rev_unsimp: "rev xs @ (r # rs) = rev (r#xs) @ rs" by(induct xs,auto)
+
 
 (* TODO: unify *)
 no_notation Gram_Schmidt.cscalar_prod (infix "\<bullet>c" 70)
@@ -21,27 +51,10 @@ no_notation Gram_Schmidt.cscalar_prod (infix "\<bullet>c" 70)
 lemma vec_conjugate_connect[simp]: "Gram_Schmidt.vec_conjugate = conjugate"
   by (auto simp: vec_conjugate_def conjugate_vec_def)
 
-lemma scalar_prod_ge_0: "(x :: 'a :: linordered_idom vec) \<bullet> x \<ge> 0" 
-  unfolding scalar_prod_def
-  by (rule sum_nonneg, auto)
-
-class trivial_conjugatable_ordered_field = 
-  conjugatable_ordered_field + linordered_idom +
-  assumes conjugate_id [simp]: "conjugate x = x"
-
-lemma cscalar_prod_is_scalar_prod[simp]: "(x :: 'a :: trivial_conjugatable_ordered_field vec) \<bullet>c y = x \<bullet> y"
-  unfolding conjugate_id
-  by (rule arg_cong[of _ _ "scalar_prod x"], auto)
-
 lemma corthogonal_is_orthogonal[simp]: 
   "corthogonal (xs :: 'a :: trivial_conjugatable_ordered_field vec list) = orthogonal xs"
   unfolding corthogonal_def orthogonal_def by simp
 
-instance rat :: trivial_conjugatable_ordered_field 
-  by (standard, auto)
-
-instance real :: trivial_conjugatable_ordered_field 
-  by (standard, auto)
 
 (* TODO: move *)
 lemma vec_right_zero[simp]: 
@@ -84,6 +97,15 @@ proof (induct vvs)
     by (rule add_scalar_prod_distrib[OF v vs w])
   finally show ?case using Cons by auto
 qed (insert w, auto)   
+
+lemma scalar_prod_right_sum_distrib: 
+  assumes vs: "\<And> v. v \<in> set vvs \<Longrightarrow> v \<in> carrier_vec n" and w: "w \<in> carrier_vec n" 
+  shows "w \<bullet> sumlist vvs = sum_list (map (\<lambda> v. w \<bullet> v) vvs)"
+  by (subst comm_scalar_prod[OF w sumlist_carrier], insert vs w, force,
+  subst scalar_prod_left_sum_distrib[OF vs w], force,
+  rule arg_cong[of _ _ sum_list], rule nth_equalityI, 
+  auto simp: set_conv_nth intro!: comm_scalar_prod)
+
 
 definition lattice_of :: "'a vec list \<Rightarrow> 'a vec set" where
   "lattice_of fs = range (\<lambda> c. sumlist (map (\<lambda> i. of_int (c i) \<cdot>\<^sub>v fs ! i) [0 ..< length fs]))"
@@ -675,9 +697,9 @@ proof -
   with indep1 V show ?thesis unfolding lin_indpt_list_def by auto
 qed
 
-lemma scalar_prod_lincomb_orthogonal: assumes ortho: "orthogonal gs" and gs: "set gs \<subseteq> carrier_vec n" 
-  shows "k \<le> length gs \<Longrightarrow> sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gs ! i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gs ! i) [0 ..< k])
-  = sum_list (map (\<lambda> i. g i * g i * (gs ! i \<bullet> gs ! i)) [0 ..< k])"
+lemma scalar_prod_lincomb_orthogonal: assumes ortho: "orthogonal gs" and gs: "set gs \<subseteq> carrier_vec n"
+  shows "k \<le> length gs \<Longrightarrow> sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gs ! i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. h i \<cdot>\<^sub>v gs ! i) [0 ..< k])
+  = sum_list (map (\<lambda> i. g i * h i * (gs ! i \<bullet> gs ! i)) [0 ..< k])"
 proof (induct k)
   case (Suc k)
   note ortho = orthogonalD[OF ortho]
@@ -686,34 +708,45 @@ proof (induct k)
   from Suc have kn: "k \<le> ?m" and k: "k < ?m" by auto
   let ?v1 = "sumlist (map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<k])" 
   let ?v2 = "(g k \<cdot>\<^sub>v gs ! k)" 
+  let ?w1 = "sumlist (map (\<lambda>i. h i \<cdot>\<^sub>v gs ! i) [0..<k])" 
+  let ?w2 = "(h k \<cdot>\<^sub>v gs ! k)" 
   from Suc have id: "[0 ..< Suc k] = [0 ..< k] @ [k]" by simp
-  have id: "sumlist (map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<Suc k]) = ?v1 + ?v2" 
+  have id: "sumlist (map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<Suc k]) = ?v1 + ?v2"
+     "sumlist (map (\<lambda>i. h i \<cdot>\<^sub>v gs ! i) [0..<Suc k]) = ?w1 + ?w2"
     unfolding id map_append
-    by (subst sumlist_append, insert Suc(2), auto)
+    by (subst sumlist_append, insert Suc(2), auto)+
   have v1: "?v1 \<in> carrier_vec n" by (rule sumlist_carrier, insert Suc(2), auto)
   have v2: "?v2 \<in> carrier_vec n" by (insert Suc(2), auto)
+  have w1: "?w1 \<in> carrier_vec n" by (rule sumlist_carrier, insert Suc(2), auto)
+  have w2: "?w2 \<in> carrier_vec n" by (insert Suc(2), auto)
   have gsk: "gs ! k \<in> carrier_vec n" by simp
   have v12: "?v1 + ?v2 \<in> carrier_vec n" using v1 v2 by auto
-  have 0: "i < k \<Longrightarrow> (g i \<cdot>\<^sub>v gs ! i) \<bullet> (g k \<cdot>\<^sub>v gs ! k) = 0" for i
+  have w12: "?w1 + ?w2 \<in> carrier_vec n" using w1 w2 by auto
+  have 0: "\<And> g h. i < k \<Longrightarrow> (g \<cdot>\<^sub>v gs ! i) \<bullet> (h \<cdot>\<^sub>v gs ! k) = 0" for i
     by (subst scalar_prod_smult_distrib[OF _ gsk], (insert k, auto)[1],
     subst smult_scalar_prod_distrib[OF _ gsk], (insert k, auto)[1], insert ortho[of i k] k, auto)
-  have 0: "?v1 \<bullet> ?v2 = 0" 
-    by (subst scalar_prod_left_sum_distrib[OF _ v2], (insert Suc(2), auto)[1], rule sum_list_neutral, 
-        insert 0, auto)     
+  have 1: "?v1 \<bullet> ?w2 = 0" 
+    by (subst scalar_prod_left_sum_distrib[OF _ w2], (insert Suc(2), auto)[1], rule sum_list_neutral, 
+        insert 0, auto)   
+  have 2: "?v2 \<bullet> ?w1 = 0" unfolding comm_scalar_prod[OF v2 w1]
+    apply (subst scalar_prod_left_sum_distrib[OF _ v2])
+     apply ((insert gs, force)[1])
+    apply (rule sum_list_neutral)
+    by (insert 0, auto)
   show ?case unfolding id
-    unfolding scalar_prod_add_distrib[OF v12 v1 v2]
-      add_scalar_prod_distrib[OF v1 v2 v1]
-      add_scalar_prod_distrib[OF v1 v2 v2]
-      scalar_prod_smult_distrib[OF v2 gsk]
+    unfolding scalar_prod_add_distrib[OF v12 w1 w2]
+      add_scalar_prod_distrib[OF v1 v2 w1]
+      add_scalar_prod_distrib[OF v1 v2 w2]
+      scalar_prod_smult_distrib[OF w2 gsk]
       smult_scalar_prod_distrib[OF gsk gsk]
     unfolding Suc(1)[OF kn]
-    by (simp add: 0 comm_scalar_prod[OF v2 v1])
-qed auto  
+    by (simp add: 1 2 comm_scalar_prod[OF v2 w1])
+qed auto
 end
 
 
 locale gram_schmidt = cof_vec_space n f_ty
-  for n :: nat and f_ty :: "'a :: trivial_conjugatable_ordered_field itself"
+  for n :: nat and f_ty :: "'a :: {linordered_field,trivial_conjugatable_ordered_field} itself"
 begin
 
 definition Gramian_matrix where
@@ -726,6 +759,10 @@ lemma Gramian_matrix_alt_def: "k \<le> length G \<Longrightarrow>
 
 definition Gramian_determinant where
   "Gramian_determinant G k = det (Gramian_matrix G k)"
+
+lemma Gramian_determinant_0 [simp]: "Gramian_determinant G 0 = 1"
+  unfolding Gramian_determinant_def Gramian_matrix_def Let_def
+  by (simp add: times_mat_def)
 
 lemma orthogonal_imp_lin_indpt_list: 
   assumes ortho: "orthogonal gs" and gs: "set gs \<subseteq> carrier_vec n"
@@ -861,134 +898,6 @@ qed
 definition oc_projection where
 "oc_projection S fi \<equiv> (SOME v. is_oc_projection v S fi)"
 
-context
-  fixes fs :: "'a vec list" 
-begin
-  
-fun gso and \<mu> where
-  "gso i = fs ! i + sumlist (map (\<lambda> j. - \<mu> i j \<cdot>\<^sub>v gso j) [0 ..< i])" 
-| "\<mu> i j = (if j < i then (fs ! i \<bullet> gso j)/ sq_norm (gso j) else if i = j then 1 else 0)" 
-    
-declare gso.simps[simp del]
-declare \<mu>.simps[simp del]
-  
-fun adjuster_wit :: "'a list \<Rightarrow> 'a vec \<Rightarrow> 'a vec list \<Rightarrow> 'a list \<times> 'a vec"
-  where "adjuster_wit wits w [] = (wits, 0\<^sub>v n)"
-  |  "adjuster_wit wits w (u#us) = (let a = (w \<bullet> u)/ sq_norm u in 
-            case adjuster_wit (a # wits) w us of (wit, v)
-         \<Rightarrow> (wit, -a \<cdot>\<^sub>v u + v))"
-
-fun sub2_wit where
-    "sub2_wit us [] = ([], [])"
-  | "sub2_wit us (w # ws) =
-     (case adjuster_wit (1 # replicate (n - length us - 1) 0) w us of (wit,aw) \<Rightarrow> let u = aw + w in
-      case sub2_wit (u # us) ws of (wits, vvs) \<Rightarrow> (wit # wits, u # vvs))"  
-    
-definition main :: "'a vec list \<Rightarrow> 'a list list \<times> 'a vec list" where 
-  "main us = sub2_wit [] us" 
-
-lemma gso_carrier'[intro]:
-  assumes "\<And> i. i \<le> j \<Longrightarrow> fs ! i \<in> carrier_vec n"
-  shows "gso j \<in> carrier_vec n"
-using assms proof(induct j rule:nat_less_induct[rule_format])
-  case (1 j)
-  then show ?case unfolding gso.simps[of j] by (auto intro!:sumlist_carrier add_carrier_vec)
-qed
-
-lemma adjuster_wit: assumes res: "adjuster_wit wits w us = (wits',a)"
-  and w: "w \<in> carrier_vec n"
-    and us: "\<And> i. i \<le> j \<Longrightarrow> fs ! i \<in> carrier_vec n"
-    and us_gs: "us = map gso (rev [0 ..< j])" 
-    and wits: "wits = map (\<mu> i) [j ..< n]" 
-    and j: "j \<le> n" "j \<le> i" 
-    and wi: "w = fs ! i" 
-  shows "adjuster n w us = a \<and> a \<in> carrier_vec n \<and> wits' = map (\<mu> i) [0 ..< n] \<and>
-      (a = sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<j]))"
-  using res us us_gs wits j
-proof (induct us arbitrary: wits wits' a j)
-  case (Cons u us wits wits' a j)
-  note us_gs = Cons(4)
-  note wits = Cons(5)
-  note jn = Cons(6-7)
-  from us_gs obtain jj where j: "j = Suc jj" by (cases j, auto)
-  from jn j have jj: "jj \<le> n" "jj < n" "jj \<le> i" "jj < i" by auto
-  have zj: "[0 ..< j] = [0 ..< jj] @ [jj]" unfolding j by simp
-  have jjn: "[jj ..< n] = jj # [j ..< n]" using jj(2) unfolding j by (rule upt_conv_Cons)
-  from us_gs[unfolded zj] have ugs: "u = gso jj" and us: "us = map gso (rev [0..<jj])" by auto
-  let ?w = "w \<bullet> u / (u \<bullet> u)" 
-  have muij: "?w = \<mu> i jj" unfolding \<mu>.simps[of i jj] ugs wi sq_norm_vec_as_cscalar_prod using jj by auto
-  have wwits: "?w # wits = map (\<mu> i) [jj..<n]" unfolding jjn wits muij by simp
-  obtain wwits b where rec: "adjuster_wit (?w # wits) w us = (wwits,b)" by force
-  from Cons(1)[OF this Cons(3) us wwits jj(1,3),unfolded j] have IH: 
-     "adjuster n w us = b" "wwits = map (\<mu> i) [0..<n]"
-     "b = sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<jj])"
-      and b: "b \<in> carrier_vec n" by auto
-  from Cons(2)[simplified, unfolded Let_def rec split sq_norm_vec_as_cscalar_prod 
-      cscalar_prod_is_scalar_prod]
-  have id: "wits' = wwits" and a: "a = - ?w \<cdot>\<^sub>v u + b" by auto
-  have 1: "adjuster n w (u # us) = a" unfolding a IH(1)[symmetric] by auto     
-  from id IH(2) have wits': "wits' =  map (\<mu> i) [0..<n]" by simp
-  have carr:"set (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<j]) \<subseteq> carrier_vec n"
-            "set (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<jj]) \<subseteq> carrier_vec n" and u:"u \<in> carrier_vec n" 
-    using Cons j by (auto intro!:gso_carrier')
-  from u b a have ac: "a \<in> carrier_vec n" "dim_vec (-?w \<cdot>\<^sub>v u) = n" "dim_vec b = n" "dim_vec u = n" by auto
-  show ?case
-    apply (intro conjI[OF 1] ac exI conjI wits')
-    unfolding carr a IH zj muij ugs[symmetric] map_append
-    apply (subst sumlist_append)
-    using Cons.prems j apply force
-    using b u ugs IH(3) by auto
-qed auto
-
-lemma sub2_wit:
-  assumes "set us \<subseteq> carrier_vec n" "set ws \<subseteq> carrier_vec n" "length us + length ws = m" 
-    and "ws = map (\<lambda> i. fs ! i) [i ..< m]"
-    and "us = map gso (rev [0 ..< i])" 
-    and us: "\<And> j. j < m \<Longrightarrow> fs ! j \<in> carrier_vec n"
-    and mn: "m \<le> n" 
-  shows "snd (sub2_wit us ws) = vvs \<Longrightarrow> gram_schmidt_sub2 n us ws = vvs 
-    \<and> vvs = map gso [i ..< m]"
-  using assms(1-6)
-proof (induct ws arbitrary: us vvs i)
-  case (Cons w ws us vs)  
-  note us = Cons(3) note wws = Cons(4)
-  note wsf' = Cons(6)
-  note us_gs = Cons(7)
-  from wsf' have "i < m" "i \<le> m" by (cases "i < m", auto)+
-  hence i_m: "[i ..< m] = i # [Suc i ..< m]" by (metis upt_conv_Cons)
-  from \<open>i < m\<close> mn have "i < n" "i \<le> n" "i \<le> m" by auto
-  hence i_n: "[i ..< n] = i # [Suc i ..< n]" by (metis upt_conv_Cons)
-  from wsf' i_m have wsf: "ws = map (\<lambda> i. fs ! i) [Suc i ..< m]" 
-    and fiw: "fs !  i = w" by auto
-  from wws have w: "w \<in> carrier_vec n" and ws: "set ws \<subseteq> carrier_vec n" by auto
-  let ?list = "1 # replicate (n - Suc (length us)) 0" 
-  have "map (\<mu> i) [Suc i ..< n] = map (\<lambda> i. 0) [Suc i ..< n]" 
-    by (rule map_cong[OF refl], unfold \<mu>.simps[of i], auto)
-  moreover have "\<mu> i i = 1" unfolding \<mu>.simps by simp
-  ultimately have "map (\<mu> i) [i ..< n] = 1 # map (\<lambda> i. 0) [Suc i ..< n]" unfolding i_n by auto
-  also have "\<dots> = ?list" using \<open>i < n\<close> unfolding map_replicate_const by (auto simp: us_gs)
-  finally have list: "?list = map (\<mu> i) [i ..< n]" by auto
-  let ?a = "adjuster_wit ?list w us" 
-  obtain wit a where a: "?a = (wit,a)" by force
-  obtain vv where gs: "snd (sub2_wit ((a + w) # us) ws) = vv" by force      
-  from adjuster_wit[OF a w Cons(8) us_gs list \<open>i \<le> n\<close> _ fiw[symmetric]] us wws \<open>i < m\<close>
-  have awus: "set ((a + w) # us) \<subseteq> carrier_vec n"  
-     and aa: "adjuster n w us = a" "a \<in> carrier_vec n" 
-     and aaa: "a = sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<i])"  
-     and wit: "wit = map (\<mu> i) [0..<n]" 
-    by auto
-  have aw_gs: "a + w = gso i" unfolding gso.simps[of i] fiw aaa[symmetric] using aa(2) w by auto
-  with us_gs have us_gs': "(a + w) # us = map gso (rev [0..<Suc i])" by auto
-  from Cons(1)[OF gs awus ws _ wsf us_gs' Cons(8)] Cons(5) 
-  have IH: "gram_schmidt_sub2 n ((a + w) # us) ws = vv"  
-    and vv: "vv = map gso [Suc i..<m]" by auto
-  from gs a aa IH Cons(5) 
-  have gs_vs: "gram_schmidt_sub2 n us (w # ws) = vs" and vs: "vs = (a + w) # vv" using Cons(2)
-    by (auto simp add: Let_def snd_def split:prod.splits)
-  from vs vv aw_gs have vs: "vs = map gso [i ..< m]" unfolding i_m by auto
-  with gs_vs show ?case by auto
-qed auto
-  
 lemma inv_in_span:
   assumes incarr[intro]:"U \<subseteq> carrier_vec n" and insp:"a \<in> span U"
   shows "- a \<in> span U"
@@ -1055,6 +964,139 @@ proof -
   show ?q1 ?q2 ?q3 using dc cb bd by metis+
 qed
 
+lemma lin_indpt_list_nonzero:
+  assumes "lin_indpt_list G" 
+  shows "0\<^sub>v n \<notin> set G"
+proof-
+  from assms[unfolded lin_indpt_list_def] have "lin_indpt (set G)" by auto
+  from vs_zero_lin_dep[OF _ this] assms[unfolded lin_indpt_list_def] show zero: "0\<^sub>v n \<notin> set G" by auto
+qed
+
+
+context
+  fixes fs :: "'a vec list" 
+begin
+  
+fun gso and \<mu> where
+  "gso i = fs ! i + sumlist (map (\<lambda> j. - \<mu> i j \<cdot>\<^sub>v gso j) [0 ..< i])" 
+| "\<mu> i j = (if j < i then (fs ! i \<bullet> gso j)/ sq_norm (gso j) else if i = j then 1 else 0)" 
+    
+declare gso.simps[simp del]
+declare \<mu>.simps[simp del]
+  
+fun adjuster_wit :: "'a list \<Rightarrow> 'a vec \<Rightarrow> 'a vec list \<Rightarrow> 'a list \<times> 'a vec"
+  where "adjuster_wit wits w [] = (wits, 0\<^sub>v n)"
+  |  "adjuster_wit wits w (u#us) = (let a = (w \<bullet> u)/ sq_norm u in 
+            case adjuster_wit (a # wits) w us of (wit, v)
+         \<Rightarrow> (wit, -a \<cdot>\<^sub>v u + v))"
+
+fun sub2_wit where
+    "sub2_wit us [] = ([], [])"
+  | "sub2_wit us (w # ws) =
+     (case adjuster_wit [] w us of (wit,aw) \<Rightarrow> let u = aw + w in
+      case sub2_wit (u # us) ws of (wits, vvs) \<Rightarrow> (wit # wits, u # vvs))"  
+    
+definition main :: "'a vec list \<Rightarrow> 'a list list \<times> 'a vec list" where 
+  "main us = sub2_wit [] us" 
+
+lemma gso_carrier'[intro]:
+  assumes "\<And> i. i \<le> j \<Longrightarrow> fs ! i \<in> carrier_vec n"
+  shows "gso j \<in> carrier_vec n"
+using assms proof(induct j rule:nat_less_induct[rule_format])
+  case (1 j)
+  then show ?case unfolding gso.simps[of j] by (auto intro!:sumlist_carrier add_carrier_vec)
+qed
+
+lemma adjuster_wit: assumes res: "adjuster_wit wits w us = (wits',a)"
+  and w: "w \<in> carrier_vec n"
+    and us: "\<And> i. i \<le> j \<Longrightarrow> fs ! i \<in> carrier_vec n"
+    and us_gs: "us = map gso (rev [0 ..< j])" 
+    and wits: "wits = map (\<mu> i) [j ..< i]" 
+    and j: "j \<le> n" "j \<le> i" 
+    and wi: "w = fs ! i" 
+  shows "adjuster n w us = a \<and> a \<in> carrier_vec n \<and> wits' = map (\<mu> i) [0 ..< i] \<and>
+      (a = sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<j]))"
+  using res us us_gs wits j
+proof (induct us arbitrary: wits wits' a j)
+  case (Cons u us wits wits' a j)
+  note us_gs = Cons(4)
+  note wits = Cons(5)
+  note jn = Cons(6-7)
+  from us_gs obtain jj where j: "j = Suc jj" by (cases j, auto)
+  from jn j have jj: "jj \<le> n" "jj < n" "jj \<le> i" "jj < i" by auto
+  have zj: "[0 ..< j] = [0 ..< jj] @ [jj]" unfolding j by simp
+  have jjn: "[jj ..< i] = jj # [j ..< i]" using jj unfolding j by (metis upt_conv_Cons)
+  from us_gs[unfolded zj] have ugs: "u = gso jj" and us: "us = map gso (rev [0..<jj])" by auto
+  let ?w = "w \<bullet> u / (u \<bullet> u)" 
+  have muij: "?w = \<mu> i jj" unfolding \<mu>.simps[of i jj] ugs wi sq_norm_vec_as_cscalar_prod using jj by auto
+  have wwits: "?w # wits = map (\<mu> i) [jj..<i]" unfolding jjn wits muij by simp
+  obtain wwits b where rec: "adjuster_wit (?w # wits) w us = (wwits,b)" by force
+  from Cons(1)[OF this Cons(3) us wwits jj(1,3),unfolded j] have IH: 
+     "adjuster n w us = b" "wwits = map (\<mu> i) [0..<i]"
+     "b = sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<jj])"
+      and b: "b \<in> carrier_vec n" by auto
+  from Cons(2)[simplified, unfolded Let_def rec split sq_norm_vec_as_cscalar_prod 
+      cscalar_prod_is_scalar_prod]
+  have id: "wits' = wwits" and a: "a = - ?w \<cdot>\<^sub>v u + b" by auto
+  have 1: "adjuster n w (u # us) = a" unfolding a IH(1)[symmetric] by auto     
+  from id IH(2) have wits': "wits' =  map (\<mu> i) [0..<i]" by simp
+  have carr:"set (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<j]) \<subseteq> carrier_vec n"
+            "set (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<jj]) \<subseteq> carrier_vec n" and u:"u \<in> carrier_vec n" 
+    using Cons j by (auto intro!:gso_carrier')
+  from u b a have ac: "a \<in> carrier_vec n" "dim_vec (-?w \<cdot>\<^sub>v u) = n" "dim_vec b = n" "dim_vec u = n" by auto
+  show ?case
+    apply (intro conjI[OF 1] ac exI conjI wits')
+    unfolding carr a IH zj muij ugs[symmetric] map_append
+    apply (subst sumlist_append)
+    using Cons.prems j apply force
+    using b u ugs IH(3) by auto
+qed auto
+
+lemma sub2_wit:
+  assumes "set us \<subseteq> carrier_vec n" "set ws \<subseteq> carrier_vec n" "length us + length ws = m" 
+    and "ws = map (\<lambda> i. fs ! i) [i ..< m]"
+    and "us = map gso (rev [0 ..< i])" 
+    and us: "\<And> j. j < m \<Longrightarrow> fs ! j \<in> carrier_vec n"
+    and mn: "m \<le> n" 
+  shows "sub2_wit us ws = (wits,vvs) \<Longrightarrow> gram_schmidt_sub2 n us ws = vvs 
+    \<and> vvs = map gso [i ..< m] \<and> wits = map (\<lambda> i. map (\<mu> i) [0..<i]) [i ..< m]"
+  using assms(1-6)
+proof (induct ws arbitrary: us vvs i wits)
+  case (Cons w ws us vs)  
+  note us = Cons(3) note wws = Cons(4)
+  note wsf' = Cons(6)
+  note us_gs = Cons(7)
+  from wsf' have "i < m" "i \<le> m" by (cases "i < m", auto)+
+  hence i_m: "[i ..< m] = i # [Suc i ..< m]" by (metis upt_conv_Cons)
+  from \<open>i < m\<close> mn have "i < n" "i \<le> n" "i \<le> m" by auto
+  hence i_n: "[i ..< n] = i # [Suc i ..< n]" by (metis upt_conv_Cons)
+  from wsf' i_m have wsf: "ws = map (\<lambda> i. fs ! i) [Suc i ..< m]" 
+    and fiw: "fs !  i = w" by auto
+  from wws have w: "w \<in> carrier_vec n" and ws: "set ws \<subseteq> carrier_vec n" by auto
+  have list: "map (\<mu> i) [i ..< i] = []" by auto
+  let ?a = "adjuster_wit [] w us" 
+  obtain wit a where a: "?a = (wit,a)" by force
+  obtain wits' vv where gs: "sub2_wit ((a + w) # us) ws = (wits',vv)" by force      
+  from adjuster_wit[OF a w Cons(8) us_gs list[symmetric] \<open>i \<le> n\<close> _ fiw[symmetric]] us wws \<open>i < m\<close>
+  have awus: "set ((a + w) # us) \<subseteq> carrier_vec n"  
+     and aa: "adjuster n w us = a" "a \<in> carrier_vec n" 
+     and aaa: "a = sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<i])"  
+     and wit: "wit = map (\<mu> i) [0..<i]" 
+    by auto
+  have aw_gs: "a + w = gso i" unfolding gso.simps[of i] fiw aaa[symmetric] using aa(2) w by auto
+  with us_gs have us_gs': "(a + w) # us = map gso (rev [0..<Suc i])" by auto
+  from Cons(1)[OF gs awus ws _ wsf us_gs' Cons(8)] Cons(5) 
+  have IH: "gram_schmidt_sub2 n ((a + w) # us) ws = vv"  
+    and vv: "vv = map gso [Suc i..<m]" 
+    and wits': "wits' = map (\<lambda>i. map (\<mu> i) [0..<i]) [Suc i ..< m]" by auto
+  from gs a aa IH Cons(5) 
+  have gs_vs: "gram_schmidt_sub2 n us (w # ws) = vs" and vs: "vs = (a + w) # vv" using Cons(2)
+    by (auto simp add: Let_def snd_def split:prod.splits)
+  from Cons(2)[unfolded sub2_wit.simps a split Let_def gs] have wits: "wits = wit # wits'" by auto
+  from vs vv aw_gs have vs: "vs = map gso [i ..< m]" unfolding i_m by auto
+  with gs_vs show ?case unfolding wits wit wits' by (auto simp: i_m)
+qed auto
+  
 lemma partial_connect: fixes vs
   assumes "length fs = m" "k \<le> m" "m \<le> n" "set us \<subseteq> carrier_vec n" "snd (main us) = vs" 
   "us = take k fs" "set fs \<subseteq> carrier_vec n"
@@ -1063,8 +1105,13 @@ shows "gram_schmidt n us = vs"
 proof -
   have [simp]: "map ((!) fs) [0..<k] = take k fs" using assms(1,2) by (intro nth_equalityI, auto)
   have carr: "j < m \<Longrightarrow> fs ! j \<in> carrier_vec n" for j using assms by auto
-  from sub2_wit[OF _ assms(4) _ _ _ carr _ assms(5)[unfolded main_def], of k 0] assms
-  show "gram_schmidt n us = vs" "vs = map gso [0..<k]" unfolding gram_schmidt_code by auto
+  note assms(5)[unfolded main_def]
+  have "gram_schmidt_sub2 n [] (take k fs) = vvs \<and> vvs = map gso [0..<k] \<and> wits = map (\<lambda>i. map (\<mu> i) [0..<i]) [0..<k]"
+    if "vvs = snd (sub2_wit [] (take k fs))" "wits = fst (sub2_wit [] (take k fs))" for vvs wits
+    using assms that by (intro sub2_wit) (auto)
+  with assms main_def
+  show "gram_schmidt n us = vs" "vs = map gso [0..<k]" unfolding gram_schmidt_code
+    by (auto simp add: main_def case_prod_beta')
 qed
 
 lemma adjuster_wit_small:
@@ -1075,8 +1122,6 @@ proof(induct xs arbitrary: a v x1 x2)
   then show ?case
     by (auto simp:Let_def sq_norm_vec_as_cscalar_prod split:prod.splits) 
 qed auto
-
-lemma rev_unsimp: "rev xs @ (r # rs) = rev (r#xs) @ rs" by(induct xs,auto)
 
 lemma sub2: "rev xs @ snd (sub2_wit xs us) = rev (gram_schmidt_sub n xs us)"
 proof -
@@ -1092,14 +1137,6 @@ qed
 lemma gso_connect: "snd (main us) = gram_schmidt n us" unfolding main_def gram_schmidt_def
   using sub2[of Nil us] by auto
 
-lemma lin_indpt_list_nonzero:
-  assumes "lin_indpt_list G" 
-  shows "0\<^sub>v n \<notin> set G"
-proof-
-  from assms[unfolded lin_indpt_list_def] have "lin_indpt (set G)" by auto
-  from vs_zero_lin_dep[OF _ this] assms[unfolded lin_indpt_list_def] show zero: "0\<^sub>v n \<notin> set G" by auto
-qed
-
 
 context
   fixes m :: nat
@@ -1107,10 +1144,8 @@ begin
 definition M where "M \<equiv> mat m m (\<lambda> (i,j). \<mu> i j)"
 
 context
-  fixes vs 
   assumes indep: "lin_indpt_list fs"
    and len_fs: "length fs = m" 
-   and snd_main: "snd (main fs) = vs" 
 begin
 
 lemma fs_carrier[simp]: "set fs \<subseteq> carrier_vec n" 
@@ -1118,7 +1153,7 @@ lemma fs_carrier[simp]: "set fs \<subseteq> carrier_vec n"
   and lin_indpt: "lin_indpt (set fs)" 
   using indep[unfolded lin_indpt_list_def] by auto
 
-lemmas assm = len_fs fs_carrier snd_main
+lemmas assm = len_fs fs_carrier
   
 lemma f_carrier[simp]: "i < m \<Longrightarrow> fs ! i \<in> carrier_vec n" 
   using fs_carrier len_fs unfolding set_conv_nth by force
@@ -1139,22 +1174,54 @@ proof -
     by (rule li_le_dim[OF _ fs_carrier lin_indpt], simp)
 qed
 
-lemma main_connect: 
-  "gram_schmidt n fs = vs"  
-  "vs = map gso [0..<m]"
+lemma fs_by_gso_def : 
+assumes i: "i < m"
+shows "fs ! i = gso i + M.sumlist (map (\<lambda>ja. \<mu> i ja \<cdot>\<^sub>v gso ja) [0..<i])" (is "_ = _ + ?sum")
 proof -
-  have "gram_schmidt_sub2 n [] fs = vs \<and> vs = map gso [0..<m]" 
-    by (rule sub2_wit[OF _ assm(2) _ _ _ _ mn], insert snd_main len_fs, 
-      auto simp: main_def intro!: nth_equalityI)
-  thus "gram_schmidt n fs = vs" "vs = map gso [0..<m]" by (auto simp: gram_schmidt_code)
+  {
+    fix f
+    have a: "M.sumlist (map (\<lambda>ja. f ja \<cdot>\<^sub>v gso ja) [0..<i]) \<in> carrier_vec n" 
+      using gso_carrier i by (intro M.sumlist_carrier, auto)
+    hence "dim_vec (M.sumlist (map (\<lambda>ja. f ja \<cdot>\<^sub>v gso ja) [0..<i])) = n" by auto
+    note a this
+  } note sum_carrier = this
+  note [simp] = sum_carrier(2)
+  have f: "fs ! i \<in> carrier_vec n" using i by simp
+  have "gso i + ?sum = fs ! i + M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<i]) + ?sum " 
+    (is "_ = _ + ?minus_sum + _")
+    unfolding gso.simps[of i] by simp
+  also have "?minus_sum = - ?sum"
+    using gso_carrier i sum_carrier
+    by (intro eq_vecI, auto simp: sumlist_nth sum_negf)
+  also have "fs ! i + (-?sum) + ?sum = fs ! i"
+    using sum_carrier fs_carrier f by simp
+  finally show ?thesis by auto
 qed
 
-lemma reduced_vs_E: "weakly_reduced \<alpha> k vs \<Longrightarrow> k \<le> m \<Longrightarrow> Suc i < k \<Longrightarrow> 
+lemma main_connect: 
+  "gram_schmidt n fs = map gso [0..<m]"
+proof -
+  obtain vs where snd_main: "snd (main fs) = vs" by auto
+  have "gram_schmidt_sub2 n [] fs = snd (sub2_wit [] fs) \<and> snd (sub2_wit [] fs) = map gso [0..<length fs]
+        \<and> wits = map (\<lambda>i. map (\<mu> i) [0..<i]) [0..<length fs]" 
+    if "wits = fst (sub2_wit [] fs)" for wits
+    using len_fs mn that by (intro  sub2_wit) (auto simp add: map_nth) 
+  then have "gram_schmidt_sub2 n [] fs = vs \<and> vs = map gso [0..<m]"
+    using assm snd_main main_def by auto
+  thus "gram_schmidt n fs = map gso [0..<m]" by (auto simp: gram_schmidt_code)
+qed
+
+lemma span_gso: "span (gso ` {0..<m}) = span (set fs)" 
+  and orthogonal_gso: "orthogonal (map gso [0..<m])" 
+  and dist_gso: "distinct (map gso [0..<m])" 
+  using gram_schmidt_result[OF fs_carrier dist lin_indpt main_connect[symmetric]] by auto  
+
+lemma reduced_gso_E: "weakly_reduced \<alpha> k (map gso [0..<m]) \<Longrightarrow> k \<le> m \<Longrightarrow> Suc i < k \<Longrightarrow> 
   sq_norm (gso i) \<le> \<alpha> * sq_norm (gso (Suc i))" 
-  unfolding weakly_reduced_def main_connect(2) by auto
+  unfolding weakly_reduced_def by auto
       
 abbreviation (input) FF where "FF \<equiv> mat_of_rows n fs"
-abbreviation (input) Fs where "Fs \<equiv> mat_of_rows n vs" 
+abbreviation (input) Fs where "Fs \<equiv> mat_of_rows n (map gso [0..<m])" 
   
 lemma FF_dim[simp]: "dim_row FF = m" "dim_col FF = n" "FF \<in> carrier_mat m n" 
   unfolding mat_of_rows_def by (auto simp: assm len_fs)
@@ -1194,7 +1261,7 @@ proof -
     also have "\<dots> = (\<Sum> k = 0..<m. row M i $ k * col Fs j $ k)" 
       unfolding scalar_prod_def dim2 by auto
     also have "\<dots> = (\<Sum> k = 0..<m. ?prod k)" 
-      by (rule sum.cong[OF refl], insert i j dim, auto simp: mat_of_rows_list_def mat_of_rows_def main_connect(2))
+      by (rule sum.cong[OF refl], insert i j dim, auto simp: mat_of_rows_list_def mat_of_rows_def)
     also have "\<dots> = sum_list (map ?prod [0 ..< m])"       
       by (subst sum_list_distinct_conv_sum_set, auto)
     also have "\<dots> = sum_list (map ?prod idx) + ?prod i + sum_list (map ?prod [Suc i ..< m])" 
@@ -1230,9 +1297,9 @@ proof -
     also have "\<dots> = (M * Fs) $$ (i,j)" using matrix_equality by simp
     also have "\<dots> = row M i \<bullet> col Fs j" using i j by auto
     also have "\<dots> = (\<Sum> k = 0..<m. row M i $ k * col Fs j $ k)" 
-      unfolding scalar_prod_def by (auto simp: main_connect(2))
+      unfolding scalar_prod_def by auto
     also have "\<dots> = (\<Sum> k = 0..<m. ?prod k)" 
-      by (rule sum.cong[OF refl], insert i j dim, auto simp: mat_of_rows_list_def mat_of_rows_def main_connect(2))
+      by (rule sum.cong[OF refl], insert i j dim, auto simp: mat_of_rows_list_def mat_of_rows_def)
     also have "\<dots> = sum_list (map ?prod [0 ..< m])"       
       by (subst sum_list_distinct_conv_sum_set, auto)
     also have "\<dots> = sum_list (map ?prod [0 ..< Suc i]) + sum_list (map ?prod [Suc i ..< m])" 
@@ -1246,28 +1313,23 @@ proof -
   qed simp
 qed
 
-lemma vs:
-  shows "set vs \<subseteq> carrier_vec n" "distinct vs" "corthogonal (rev vs)"
-        "span (set fs) = span (set vs)" "length vs = length fs"
+lemma gi_is_fi_minus_sum_mu_gso: assumes i: "i < m" 
+  shows "gso i = fs ! i - sumlist (map (\<lambda> j. \<mu> i j \<cdot>\<^sub>v gso j) [0 ..< i])" (is "_ = _ - ?sum")
 proof -
-  from main_connect(1)[unfolded gram_schmidt_def] have e:"gram_schmidt_sub n [] fs = rev vs" by auto
-  have "set [] \<subseteq> carrier_vec n" "distinct ([] @ fs)" "lin_indpt (set ([] @ fs))"
-       "corthogonal []" using assm lin_indpt dist by auto
-  from cof_vec_space.gram_schmidt_sub_result[OF e assm(2) this]
-  show "set vs \<subseteq> carrier_vec n" "distinct vs" " corthogonal (rev vs)"
-    "span (set fs) = span (set vs)" "length vs = length fs"
-    by auto
+  have sum: "?sum \<in> carrier_vec n" 
+    by (rule sumlist_carrier, insert gso_carrier i, auto)
+  show ?thesis unfolding fs_by_gso_def[OF i]
+    by (intro eq_vecI, insert gso_carrier[OF i] sum, auto)
 qed
 
 lemma gso_inj[intro]:
   shows "i < m \<Longrightarrow> inj_on gso {0..<i}"
 proof
   fix x y assume assms:"i < m" "x \<in> {0..<i}" "y \<in> {0..<i}" "gso x = gso y"
-  have "distinct vs" "x < length vs" "y < length vs" using vs assms assm by auto
-  from nth_eq_iff_index_eq[OF this] assms main_connect show "x = y" by auto
+  have "distinct (map gso [0..<m])" "x < length (map gso [0..<m])" "y < length (map gso [0..<m])" 
+    using dist_gso assm assms by auto
+  from nth_eq_iff_index_eq[OF this] assms show "x = y" by auto
 qed
-
-lemmas gram_schmidt = cof_vec_space.gram_schmidt_result[OF fs_carrier dist lin_indpt main_connect(1)[symmetric]]
 
 lemma partial_span: assumes i: "i \<le> m" shows "span (gso ` {0 ..< i}) = span (set (take i fs))" 
 proof -
@@ -1300,11 +1362,11 @@ lemma det: assumes m: "m = n" shows "det FF = det Fs"
 
 (* Theorem 16.5 (iii) *)  
 lemma orthogonal: "i < m \<Longrightarrow> j < m \<Longrightarrow> i \<noteq> j \<Longrightarrow> gso i \<bullet> gso j = 0" 
-  using gram_schmidt(2)[unfolded main_connect corthogonal_def] by auto
+  using orthogonal_gso[unfolded orthogonal_def] by auto
 
 (* Theorem 16.5 (i) not in full general form *)  
 lemma same_base: "span (set fs) = span (gso ` {0..<m})" 
-  using gram_schmidt(1)[unfolded _ main_connect] by auto
+  using span_gso by simp
 
 (* Theorem 16.5 (ii), second half *)
 lemma sq_norm_gso_le_f: assumes i: "i < m"
@@ -1467,33 +1529,85 @@ proof -
   thus ?thesis unfolding a b.
 qed
 
+lemma gso_is_oc_projection:
+  assumes "i < m"
+  shows "is_oc_projection (gso i) (set (take i fs)) (fs ! i)"
+proof -
+  have [simp]: "v \<in> carrier_vec n" if "v \<in> set (take i fs)" for v
+    using that by (meson in_set_takeD indep lin_indpt_list_def subsetCE subsetI)
+  have "span (gso ` {0..<i}) = span (set (take i fs))"
+    by (rule partial_span) (auto simp add: assms len_fs less_or_eq_imp_le indep)
+  moreover have "is_oc_projection (gso i) (span (gso ` {0..<i})) (fs ! i)"
+    by (rule gso_oc_projection_span) (auto simp add: assms len_fs less_or_eq_imp_le indep)
+  ultimately have "is_oc_projection (gso i) (span (set (take i fs))) (fs ! i)"
+    by auto
+  moreover have "set (take i fs) \<subseteq> span (set (take i fs))"
+    by (auto intro!: span_mem)
+  ultimately show ?thesis
+    unfolding is_oc_projection_def by (subst (asm) span_span) (auto)
+qed
+
+lemma fi_scalar_prod_gso: assumes i: "i < m" and j: "j < m" 
+  shows "fs ! i \<bullet> gso j = \<mu> i j * \<parallel>gso j\<parallel>\<^sup>2" 
+proof -
+  let ?mu = "\<lambda>j. \<mu> i j \<cdot>\<^sub>v gso j" 
+  from i have list1: "[0..< m] = [0..< Suc i] @ [Suc i ..< m]" 
+    by (intro nth_equalityI, auto simp: nth_append, rename_tac j, case_tac "j - i", auto)
+  from j have list2: "[0..< m] = [0..< j] @ [j] @ [Suc j ..< m]" 
+    by (intro nth_equalityI, auto simp: nth_append, rename_tac k, case_tac "k - j", auto)
+  have "fs ! i \<bullet> gso j = sumlist (map ?mu [0..<Suc i]) \<bullet> gso j" 
+    unfolding fi_is_sum_of_mu_gso[OF i] by simp
+  also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..<Suc i]. v \<bullet> gso j) + 0" 
+    by (subst scalar_prod_left_sum_distrib, insert gso_carrier i j, auto)
+  also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..<Suc i]. v \<bullet> gso j) + (\<Sum>v\<leftarrow>map ?mu [Suc i..<m]. v \<bullet> gso j)" 
+    by (subst (3) sum_list_neutral, insert i j gso_carrier, auto intro!: orthogonal simp: \<mu>.simps)
+  also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..< m]. v \<bullet> gso j)" 
+    unfolding list1 by simp
+  also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..< j]. v \<bullet> gso j) + ?mu j \<bullet> gso j + (\<Sum>v\<leftarrow>map ?mu [Suc j..< m]. v \<bullet> gso j)" 
+    unfolding list2 by simp
+  also have "(\<Sum>v\<leftarrow>map ?mu [0..< j]. v \<bullet> gso j) = 0" 
+    by (rule sum_list_neutral, insert i j gso_carrier, auto intro!: orthogonal)
+  also have "(\<Sum>v\<leftarrow>map ?mu [Suc j..< m]. v \<bullet> gso j) = 0" 
+    by (rule sum_list_neutral, insert i j gso_carrier, auto intro!: orthogonal)
+  also have "?mu j \<bullet> gso j = \<mu> i j * sq_norm (gso j)" 
+    using gso_carrier[OF j] by (simp add: sq_norm_vec_as_cscalar_prod)  
+  finally show ?thesis by simp
+qed
+
+lemma gso_scalar_zero:
+  assumes "k < m" "i < k"
+  shows "(gso k) \<bullet> (fs ! i) = 0"
+  by (subst comm_scalar_prod[OF gso_carrier]; (subst fi_scalar_prod_gso)?,
+  insert assms, auto simp: \<mu>.simps)
 
 lemma scalar_prod_lincomb_gso: assumes k: "k \<le> m"
-  shows "sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gso i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gso i) [0 ..< k])
-    = sum_list (map (\<lambda> i. g i * g i * (gso i \<bullet> gso i)) [0 ..< k])" 
+  shows "sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gso i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. h i \<cdot>\<^sub>v gso i) [0 ..< k])
+    = sum_list (map (\<lambda> i. g i * h i * (gso i \<bullet> gso i)) [0 ..< k])" 
 proof -
-  have id1: "map (\<lambda>i. g i \<cdot>\<^sub>v map gso [0..<m] ! i) [0..<k] = map (\<lambda>i. g i \<cdot>\<^sub>v gso i) [0..<k]" using k
+  have id1: "map (\<lambda>i. g i \<cdot>\<^sub>v map (gso) [0..<m] ! i) [0..<k] = map (\<lambda>i. g i \<cdot>\<^sub>v gso i) [0..<k]" for g using k
     by auto
-  have id2: "(\<Sum>i\<leftarrow>[0..<k]. g i * g i * (map gso [0..<m] ! i \<bullet> map gso [0..<m] ! i)) 
-    = (\<Sum>i\<leftarrow>[0..<k]. g i * g i * (gso i \<bullet> gso i))" using k
+  have id2: "(\<Sum>i\<leftarrow>[0..<k]. g i * h i * (map (gso) [0..<m] ! i \<bullet> map (gso) [0..<m] ! i)) 
+    = (\<Sum>i\<leftarrow>[0..<k]. g i * h i * (gso i \<bullet> gso i))" using k
     by (intro arg_cong[OF map_cong], auto)
-  from k len_fs gram_schmidt have "orthogonal vs" "set vs \<subseteq> carrier_vec n" "k \<le> length vs" by auto
-  from scalar_prod_lincomb_orthogonal[OF this, of g, unfolded main_connect(2) id1 id2] 
-  show ?thesis .
+  define gs where "gs = map (gso) [0..<m]"
+  have gs_gso: "gs ! i = gso i" if "i < k" for i
+    using that assms unfolding gs_def by auto
+  have "M.sumlist (map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<k]) \<bullet> M.sumlist (map (\<lambda>i. h i \<cdot>\<^sub>v gs ! i) [0..<k]) = 
+        (\<Sum>i\<leftarrow>[0..<k]. g i * h i * (gs ! i \<bullet> gs ! i))"
+    unfolding gs_def using assm assms  orthogonal_gso 
+    by (intro scalar_prod_lincomb_orthogonal) auto
+  also have "map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<k] = map (\<lambda>i. g i \<cdot>\<^sub>v gso i) [0..<k]"
+    using gs_gso by (intro map_cong) (auto)
+  also have "map (\<lambda>i. h i \<cdot>\<^sub>v gs ! i) [0..<k] = map (\<lambda>i. h i \<cdot>\<^sub>v gso i) [0..<k]"
+    using gs_gso by (intro map_cong) (auto)
+  also have "map (\<lambda>i. g i * h i * (gs ! i \<bullet> gs ! i)) [0..<k] = map (\<lambda>i. g i * h i * (gso i \<bullet> gso i)) [0..<k]"
+    using gs_gso by (intro map_cong) (auto)
+  finally show ?thesis by simp
 qed
 
 lemma gso_times_self_is_norm:
-  assumes "j < m" shows "fs ! j \<bullet> gso j = sq_norm_vec (gso j)" (is "?lhs = ?rhs")
-proof -
-  have "?lhs = fs ! j \<bullet>c gso j + 0" by auto
-  also have "0 = M.sumlist (map (\<lambda>ja. - \<mu> j ja \<cdot>\<^sub>v gso ja) [0..<j]) \<bullet>c gso j" using assms orthogonal
-    apply(subst scalar_prod_left_sum_distrib,force,force)
-    by(intro sum_list_0[symmetric],auto)
-  finally show ?thesis unfolding sq_norm_vec_as_cscalar_prod vec_conjugate_rat using assms
-    apply(subst (2) gso.simps)
-    apply(subst add_scalar_prod_distrib[OF f_carrier M.sumlist_carrier])
-    by auto
-qed
+  assumes "j < m" shows "fs ! j \<bullet> gso j = sq_norm (gso j)"
+  by (subst fi_scalar_prod_gso, insert assms, auto simp: \<mu>.simps)
 
 (* Lemma 16.7 *)
 lemma gram_schmidt_short_vector: assumes in_L: "h \<in> lattice_of fs - {0\<^sub>v n}" 
@@ -1665,13 +1779,13 @@ proof -
 qed
   
 lemma fs0_gso0: "0 < m \<Longrightarrow> fs ! 0 = gso 0" 
-  unfolding gso.simps[of 0] using f_dim[of 0] arg_cong[OF assm(3), of hd] len_fs 
+  unfolding gso.simps[of 0] using f_dim[of 0] len_fs 
   by (cases fs, auto simp add: upt_rec)
    
 (* Theorem 16.9 
   (bound in textbook looks better as it uses 2^((n-1)/2), but this difference
   is caused by the fact that we here we look at the squared norms) *)
-lemma weakly_reduced_imp_short_vector: assumes "weakly_reduced \<alpha> m vs"
+lemma weakly_reduced_imp_short_vector: assumes "weakly_reduced \<alpha> m (map gso [0..<m])"
   and in_L: "h \<in> lattice_of fs - {0\<^sub>v n}" and \<alpha>_pos:"\<alpha> \<ge> 1"
 shows "fs \<noteq> [] \<and> sq_norm (fs ! 0) \<le> \<alpha>^(m-1) * sq_norm h"
 proof -
@@ -1685,7 +1799,7 @@ proof -
     case (Suc i)
     hence "sq_norm (fs ! 0) \<le> \<alpha>^i * sq_norm (gso i)" by auto
     also have "\<dots> \<le> \<alpha>^i * (\<alpha> * (sq_norm (gso (Suc i))))" 
-      using reduced_vs_E[OF assms(1) le_refl Suc(2)] \<alpha>_pos by auto
+      using reduced_gso_E[OF assms(1) le_refl Suc(2)] \<alpha>_pos by auto
     finally show ?case unfolding class_semiring.nat_pow_Suc[of \<alpha> i] by auto
   qed
   also have "\<dots> \<le> \<alpha>^(m-1) * sq_norm h" 
@@ -1694,18 +1808,17 @@ proof -
 qed
 
 lemma sq_norm_pos: assumes j: "j < m" 
-  shows "sq_norm (vs ! j) > 0" 
+  shows "sq_norm (gso j) > 0" 
 proof -
-  have len_vs: "length vs = m" using main_connect(2) by simp
-  have "corthogonal vs" by (rule gram_schmidt)
-  from corthogonalD[OF this, unfolded len_vs, OF j j]
-  have "sq_norm (vs ! j) \<noteq> 0" by (simp add: sq_norm_vec_as_cscalar_prod)    
-  moreover have "sq_norm (vs ! j) \<ge> 0" by auto
-  ultimately show "0 < sq_norm (vs ! j)" by auto
+  from j have jj: "j < m - 0" by simp
+  from orthogonalD[OF orthogonal_gso, unfolded length_map length_upt, OF jj jj]
+  have "sq_norm (gso j) \<noteq> 0" using j by (simp add: sq_norm_vec_as_cscalar_prod)    
+  moreover have "sq_norm (gso j) \<ge> 0" by auto
+  ultimately show "0 < sq_norm (gso j)" by auto
 qed
 
 lemma Gramian_determinant: assumes k: "k \<le> m" 
-shows "Gramian_determinant fs k = (\<Prod> j<k. sq_norm (vs ! j))"
+shows "Gramian_determinant fs k = (\<Prod> j<k. sq_norm (gso j))"
   "Gramian_determinant fs k > 0" 
 proof -
   define Gk where "Gk = mat k n (\<lambda> (i,j). fs ! i $ j)" 
@@ -1719,10 +1832,9 @@ proof -
   also have "\<dots> = 1" 
     by (rule prod_list_neutral, auto simp: diag_mat_def Mk_\<mu> \<mu>.simps)
   finally have detMk: "det Mk = 1" .
-  define Gsk where "Gsk = mat k n (\<lambda> (i,j). vs ! i $ j)" 
+  define Gsk where "Gsk = mat k n (\<lambda> (i,j). gso i $ j)" 
   have Gsk: "Gsk \<in> carrier_mat k n" unfolding Gsk_def by auto
   have Gsk': "Gsk\<^sup>T \<in> carrier_mat n k" using Gsk by auto
-  have len_vs: "length vs = m" using main_connect(2) by simp
   let ?Rn = "carrier_vec n" 
   have id: "Gk = Mk * Gsk" 
   proof (rule eq_matI)
@@ -1744,7 +1856,7 @@ proof -
       by (auto simp: mat_of_rows_list_def \<mu>.simps)
     also have "col Fs j = vec m (\<lambda> i'. if i' < k then Gsk $$ (i',j) else (Fs $$ (i',j)))" 
       (is "_ = vec m ?Gsk") 
-      unfolding Gsk_def using ij i len_vs by (auto simp: mat_of_rows_def)
+      unfolding Gsk_def using ij i by (auto simp: mat_of_rows_def)
     also have "vec m ?Mk \<bullet> vec m ?Gsk = (\<Sum> i \<in> {0 ..< m}. ?Mk i * ?Gsk i)" 
       unfolding scalar_prod_def by auto
     also have "\<dots> = (\<Sum> i \<in> {0 ..< k} \<union> {k ..< m}. ?Mk i * ?Gsk i)"
@@ -1763,7 +1875,7 @@ proof -
   have cong: "\<And> a b c d. a = b \<Longrightarrow> c = d \<Longrightarrow> a * c = b * d" by auto
   have "Gramian_determinant fs k = det (Gk * Gk\<^sup>T)" 
     unfolding Gramian_determinant_def Gramian_matrix_def Let_def
-    by (rule arg_cong[of _ _ det], rule cong, insert k, auto simp: Gk_def assm(3)) 
+    by (rule arg_cong[of _ _ det], rule cong, insert k, auto simp: Gk_def) 
   also have "Gk\<^sup>T = Gsk\<^sup>T * Mk\<^sup>T" (is "_ = ?TGsk * ?TMk") unfolding id 
     by (rule transpose_mult[OF Mk Gsk])
   also have "Gk = Mk * Gsk" by fact
@@ -1777,7 +1889,7 @@ proof -
   also have "det \<dots> = det (Gsk * ?TGsk) * det ?TMk" 
     by (rule det_mult, insert Gsk Mk, auto)
   also have "\<dots> = det (Gsk * ?TGsk)" using detMk det_transpose[OF Mk] by simp
-  also have "Gsk * ?TGsk = mat k k (\<lambda> (i,j). if i = j then sq_norm (vs ! j) else 0)" (is "_ = ?M")
+  also have "Gsk * ?TGsk = mat k k (\<lambda> (i,j). if i = j then sq_norm (gso j) else 0)" (is "_ = ?M")
   proof (rule eq_matI)
     show "dim_row (Gsk * ?TGsk) = dim_row ?M" unfolding Gsk_def by auto
     show "dim_col (Gsk * ?TGsk) = dim_col ?M" unfolding Gsk_def by auto
@@ -1788,20 +1900,19 @@ proof -
       fix i
       assume "i < k" 
       hence "i < m" using k by auto
-      hence Gs: "vs ! i \<in> ?Rn" using len_vs vs(1) by auto
-      have "row Gsk i = vs ! i" unfolding row_def Gsk_def
+      hence Gs: "gso i \<in> ?Rn" by auto
+      have "row Gsk i = gso i" unfolding row_def Gsk_def
         by (rule eq_vecI, insert Gs \<open>i < k\<close>, auto)
     } note row = this
     have "(Gsk * ?TGsk) $$ (i,j) = row Gsk i \<bullet> row Gsk j" using ij Gsk by auto
-    also have "\<dots> = vs ! i \<bullet>c vs ! j" using row ij by simp
-    also have "\<dots> = (if i = j then sq_norm (vs ! j) else 0)" 
+    also have "\<dots> = gso i \<bullet> gso j" using row ij by simp
+    also have "\<dots> = (if i = j then sq_norm (gso j) else 0)" 
     proof (cases "i = j")
       assume "i = j" 
       thus ?thesis by (simp add: sq_norm_vec_as_cscalar_prod) 
     next
       assume "i \<noteq> j" 
-      have "corthogonal vs" by (rule gram_schmidt)
-      from \<open>i \<noteq> j\<close> corthogonalD[OF this, unfolded len_vs, OF ijn]
+      from \<open>i \<noteq> j\<close> orthogonalD[OF orthogonal_gso] ijn
       show ?thesis by auto
     qed
     also have "\<dots> = ?M $$ (i,j)" using ij by simp
@@ -1809,17 +1920,112 @@ proof -
   qed
   also have "det ?M = prod_list (diag_mat ?M)" 
     by (rule det_upper_triangular, auto)
-  also have "diag_mat ?M = map (\<lambda> j. sq_norm (vs ! j)) [0 ..< k]" unfolding diag_mat_def by auto
-  also have "prod_list \<dots> = (\<Prod> j < k. sq_norm (vs ! j))"
+  also have "diag_mat ?M = map (\<lambda> j. sq_norm (gso j)) [0 ..< k]" unfolding diag_mat_def by auto
+  also have "prod_list \<dots> = (\<Prod> j < k. sq_norm (gso j))"
     by (subst prod.distinct_set_conv_list[symmetric], force, rule prod.cong, auto) 
-  finally show "Gramian_determinant fs k = (\<Prod>j<k. \<parallel>vs ! j\<parallel>\<^sup>2)" .
+  finally show "Gramian_determinant fs k = (\<Prod>j<k. \<parallel>gso j\<parallel>\<^sup>2)" .
   also have "\<dots> > 0" 
     by (rule prod_pos, intro ballI sq_norm_pos, insert k, auto)
   finally show "0 < Gramian_determinant fs k" by auto
 qed
+
+lemma Gramian_determinant_div:
+  assumes "l < m"
+  shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>gso l\<parallel>\<^sup>2"
+proof -
+  note con_assms = indep len_fs
+  note gram = Gramian_determinant(1)[symmetric]
+  from assms have le: "Suc l \<le> m" "l \<le> m" by auto
+  have "(\<Prod>j<Suc l. \<parallel>gso j\<parallel>\<^sup>2) = (\<Prod>j \<in> {0..<l} \<union> {l}. \<parallel>gso j\<parallel>\<^sup>2)"
+    using assms by (intro prod.cong) (auto)
+  also have "\<dots> = (\<Prod>j<l. \<parallel>gso j\<parallel>\<^sup>2) * \<parallel>gso l\<parallel>\<^sup>2"
+    using assms by (subst prod_Un) (auto simp add: atLeast0LessThan)
+  finally show ?thesis unfolding gram[OF le(1)] gram[OF le(2)]
+    using Gramian_determinant(2)[OF le(2)] by auto 
+qed
+
+context
+  assumes fs_int: "\<And>i j. i < n \<Longrightarrow> j < m \<Longrightarrow> fs ! j $ i \<in> \<int>"
+begin
+
+lemma Gramian_determinant_Ints:
+  assumes "k \<le> m"
+  shows "Gramian_determinant fs k \<in> \<int>"
+proof -
+  let ?oi = "of_int :: int \<Rightarrow> 'a" 
+  from fs_int have "\<And> i. i < n \<Longrightarrow> \<forall>j. \<exists> c. j < m \<longrightarrow> fs ! j $ i = ?oi c" unfolding Ints_def by auto
+  from choice[OF this] have "\<forall> i. \<exists> c. \<forall> j. i < n \<longrightarrow> j < m \<longrightarrow> fs ! j $ i = ?oi (c j)" by blast
+  from choice[OF this] obtain c where c: "\<And> i j. i < n \<Longrightarrow> j < m \<Longrightarrow> fs ! j $ i = ?oi (c i j)" by blast
+  define d where "d = map (\<lambda> j. vec n (\<lambda> i. c i j)) [0..<m]" 
+  have fs: "fs = map (map_vec ?oi) d" 
+    unfolding d_def by (rule nth_equalityI, insert len_fs, auto intro!: eq_vecI c)
+  have id: "mat k n (\<lambda>(i, y). map (map_vec ?oi) d ! i $ y) = map_mat of_int (mat k n (\<lambda>(i, y). d ! i $ y))" 
+    by (rule eq_matI, insert \<open>k \<le> m\<close>, auto simp: d_def o_def)
+  show ?thesis unfolding fs Gramian_determinant_def Gramian_matrix_def Let_def id
+    map_mat_transpose
+    by (subst of_int_hom.mat_hom_mult[symmetric], auto)
+qed
+
+
+lemma Gramian_determinant_ge1:
+  assumes "k \<le> m"
+  shows "1 \<le> Gramian_determinant fs k"
+proof -
+  have "0 < Gramian_determinant fs k"
+    by (simp add: assms len_fs Gramian_determinant(2) less_or_eq_imp_le)
+  moreover have "Gramian_determinant fs k \<in> \<int>"
+    by (simp add: Gramian_determinant_Ints assms)
+  ultimately show ?thesis
+    using Ints_nonzero_abs_ge1 by fastforce
+qed
+
+lemma mu_bound_Gramian_determinant:
+  assumes "l < k" "k < m"
+  shows "(\<mu> k l)\<^sup>2 \<le> Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2"
+proof -
+  note con_assms = indep len_fs 
+  have "(\<mu> k l)\<^sup>2  = (fs ! k \<bullet> gso l)\<^sup>2 / (\<parallel>gso l\<parallel>\<^sup>2)\<^sup>2"
+    using assms by (simp add: power_divide \<mu>.simps)
+  also have "\<dots> \<le> (\<parallel>fs ! k\<parallel>\<^sup>2 * \<parallel>gso l\<parallel>\<^sup>2) / (\<parallel>gso l\<parallel>\<^sup>2)\<^sup>2"
+    using assms by (auto intro!: scalar_prod_Cauchy divide_right_mono)
+  also have "\<dots> = \<parallel>fs ! k\<parallel>\<^sup>2 / \<parallel>gso l\<parallel>\<^sup>2"
+    by (auto simp add: field_simps power2_eq_square)
+  also have "\<dots> =  \<parallel>fs ! k\<parallel>\<^sup>2 / (Gramian_determinant fs (Suc l) / Gramian_determinant fs l)"
+    apply(subst Gramian_determinant_div[symmetric])
+    using assms by auto
+  also have "\<dots> =  Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2 / Gramian_determinant fs (Suc l)"
+    by (auto simp add: field_simps)
+  also have "\<dots> \<le> Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2 / 1"
+    by (rule divide_left_mono, insert Gramian_determinant_ge1[of l] Gramian_determinant_ge1[of "Suc l"] assms,
+    auto intro!: mult_nonneg_nonneg) 
+  finally show ?thesis
+    by simp
+qed
 end
 end
 end
+end
+
+lemma gso_cong: assumes "\<And> i. i \<le> x \<Longrightarrow> f1 ! i = f2 ! i"
+  shows "gso f1 x = gso f2 x"
+  using assms
+proof(induct x rule:nat_less_induct[rule_format])
+  case (1 x)
+  hence fg:"(+) (f1 ! x) = (+) (f2 ! x)" by auto
+  show ?case
+    apply(subst (1 2) gso.simps) unfolding \<mu>.simps
+    apply(rule cong[OF fg cong[OF refl[of "sumlist"]]])
+    using 1 by auto
+qed
+
+lemma \<mu>_cong: assumes "\<And> k. j < i \<Longrightarrow> k \<le> j \<Longrightarrow> f1 ! k = f2 ! k"
+  and "j < i \<Longrightarrow> f1 ! i = f2 ! i" 
+  shows "\<mu> f1 i j = \<mu> f2 i j"
+proof -
+  from gso_cong[of j f1 f2] assms have id: "j < i \<Longrightarrow> gso f1 j = gso f2 j" by auto
+  show ?thesis unfolding \<mu>.simps using assms id by auto
+qed
+
 end
 
 lemma prod_list_le_mono: fixes us :: "'a :: {linordered_nonzero_semiring,ordered_ring} list" 
@@ -1877,47 +2083,47 @@ proof -
   let ?us = "map (row A) [0 ..< n]" 
   have len: "length ?us = n" by simp
   have us: "set ?us \<subseteq> carrier_vec n" using A by auto
-  obtain vs where main: "snd (gso.main ?us) = vs" by force
+  let ?vs = "map (gso.gso ?us) [0..<n]" 
   show ?thesis
   proof (cases "carrier_vec n \<subseteq> gso.span (set ?us)")
     case True
     with us len have basis: "gso.basis_list ?us" unfolding gso.basis_list_def by auto
-    note conn = gso.basis_list_imp_lin_indpt_list[OF basis] len main
-    note gram = gso.gram_schmidt[OF conn]
-    note main = gso.main_connect[OF conn]
-    from main have len_vs: "length vs = n" by simp
-    have last: "0 \<le> prod_list (map sq_norm vs) \<and> prod_list (map sq_norm vs) \<le> prod_list (map sq_norm ?us)" 
-    proof (rule prod_list_le_mono, force simp: main(2), unfold length_map length_upt)
+    note in_dep = gso.basis_list_imp_lin_indpt_list[OF basis]
+    note conn = in_dep len
+    note ortho = gso.orthogonal_gso[OF conn]
+    note vs = gso.gso_carrier[OF conn]
+    have last: "0 \<le> prod_list (map sq_norm ?vs) \<and> prod_list (map sq_norm ?vs) \<le> prod_list (map sq_norm ?us)" 
+    proof (rule prod_list_le_mono, force, unfold length_map length_upt)
       fix i
       assume "i < n - 0" 
       hence i: "i < n" by simp
-      have vsi: "map sq_norm vs ! i = sq_norm (vs ! i)" using main(2) i by simp
+      have vsi: "map sq_norm ?vs ! i = sq_norm (?vs ! i)" using vs i by simp
       have usi: "map sq_norm ?us ! i = sq_norm (row A i)" using i by simp
-      have zero: "0 \<le> sq_norm (vs ! i)" by auto
-      have le: "sq_norm (vs ! i) \<le> sq_norm (row A i)" using gso.sq_norm_gso_le_f[OF conn i]
-        unfolding main(2) using i by simp
-      show "0 \<le> map sq_norm vs ! i \<and> map sq_norm vs ! i \<le> map sq_norm ?us ! i" 
+      have zero: "0 \<le> sq_norm (?vs ! i)" by auto
+      have le: "sq_norm (?vs ! i) \<le> sq_norm (row A i)" using gso.sq_norm_gso_le_f[OF conn i]
+        unfolding vs using i by simp
+      show "0 \<le> map sq_norm ?vs ! i \<and> map sq_norm ?vs ! i \<le> map sq_norm ?us ! i" 
         unfolding vsi usi using zero le by auto
     qed
-    have Fs: "gso.Fs ?us \<in> carrier_mat n n" by auto
-    have A_Fs: "A = gso.Fs ?us" 
+    have Fs: "gso.FF ?us \<in> carrier_mat n n" by auto
+    have A_Fs: "A = gso.FF ?us" 
       by (rule eq_matI, subst gso.FF_index[OF conn], insert A, auto)
-    hence "abs (det A) = abs (det (gso.Fs ?us))" by simp
+    hence "abs (det A) = abs (det (gso.FF ?us))" by simp
     (* the following three steps are based on a discussion with Bertram Felgenhauer *)
-    also have "\<dots> = abs (sqrt (det (gso.Fs ?us) * det (gso.Fs ?us)))" by simp
-    also have "det (gso.Fs ?us) * det (gso.Fs ?us) = det (gso.Fs ?us) * det (gso.Fs ?us)\<^sup>T" 
+    also have "\<dots> = abs (sqrt (det (gso.FF ?us) * det (gso.FF ?us)))" by simp
+    also have "det (gso.FF ?us) * det (gso.FF ?us) = det (gso.FF ?us) * det (gso.FF ?us)\<^sup>T" 
       unfolding det_transpose[OF Fs] ..
-    also have "\<dots> = det (gso.Fs ?us * (gso.Fs ?us)\<^sup>T)" 
+    also have "\<dots> = det (gso.FF ?us * (gso.FF ?us)\<^sup>T)" 
       by (subst det_mult[OF Fs], insert Fs, auto)
     also have "\<dots> = gso.Gramian_determinant ?us n" 
       unfolding gso.Gramian_matrix_def gso.Gramian_determinant_def Let_def A_Fs[symmetric]
       by (rule arg_cong[of _ _ det], rule arg_cong2[of _ _ _ _ "( * )"], insert A, auto)
-    also have "\<dots> = (\<Prod>j \<in> set [0 ..< n]. \<parallel>vs ! j\<parallel>\<^sup>2)" unfolding gso.Gramian_determinant[OF conn le_refl] 
+    also have "\<dots> = (\<Prod>j \<in> set [0 ..< n]. \<parallel>?vs ! j\<parallel>\<^sup>2)" unfolding gso.Gramian_determinant[OF conn le_refl] 
       by (rule prod.cong, auto)
-    also have "\<dots> = prod_list (map (\<lambda> i. sq_norm (vs ! i)) [0 ..< n])"
+    also have "\<dots> = prod_list (map (\<lambda> i. sq_norm (?vs ! i)) [0 ..< n])"
       by (subst prod.distinct_set_conv_list, auto)
-    also have "map (\<lambda> i. sq_norm (vs ! i)) [0 ..< n] = map sq_norm vs" 
-      using len_vs by (intro nth_equalityI, auto)
+    also have "map (\<lambda> i. sq_norm (?vs ! i)) [0 ..< n] = map sq_norm ?vs" 
+      by (intro nth_equalityI, auto)
     also have "abs (sqrt (prod_list \<dots>)) \<le> sqrt (prod_list (map sq_norm ?us))" 
       using last by simp
     also have "?us = rows A" unfolding rows_def using A by simp
@@ -1945,19 +2151,19 @@ definition gram_schmidt_int :: "nat \<Rightarrow> int vec list \<Rightarrow> rat
 lemma snd_gram_schmidt_int : "snd (gram_schmidt_int n us) = gram_schmidt n (map (map_vec of_int) us)"
   unfolding gram_schmidt_int_def gram_schmidt_wit_def gram_schmidt.gso_connect by metis
 
-(* Faster implementation for trivial conjugatable ordered fields which also avoid recomputations
-  of square-norms *)
+text \<open>Faster implementation for rational vectors which also avoid recomputations
+  of square-norms\<close>
 
-fun adjuster_triv :: "nat \<Rightarrow> 'a :: trivial_conjugatable_ordered_field vec \<Rightarrow> ('a vec \<times> 'a) list \<Rightarrow> 'a vec"
+fun adjuster_triv :: "nat \<Rightarrow> rat vec \<Rightarrow> (rat vec \<times> rat) list \<Rightarrow> rat vec"
   where "adjuster_triv n w [] = 0\<^sub>v n"
     |  "adjuster_triv n w ((u,nu)#us) = -(w \<bullet> u)/ nu \<cdot>\<^sub>v u + adjuster_triv n w us"
 
 fun gram_schmidt_sub_triv
   where "gram_schmidt_sub_triv n us [] = us"
   | "gram_schmidt_sub_triv n us (w # ws) = (let u = adjuster_triv n w us + w in
-     gram_schmidt_sub_triv n ((u, sq_norm u) # us) ws)"
+     gram_schmidt_sub_triv n ((u, sq_norm_vec_rat u) # us) ws)"
 
-definition gram_schmidt_triv :: "nat \<Rightarrow> 'a :: trivial_conjugatable_ordered_field vec list \<Rightarrow> ('a vec \<times> 'a) list"
+definition gram_schmidt_triv :: "nat \<Rightarrow> rat vec list \<Rightarrow> (rat vec \<times> rat) list"
   where "gram_schmidt_triv n ws = rev (gram_schmidt_sub_triv n [] ws)"
 
 lemma adjuster_triv: "adjuster_triv n w (map (\<lambda> x. (x,sq_norm x)) us) = adjuster n w us" 
@@ -1970,5 +2176,742 @@ lemma gram_schmidt_sub_triv: "gram_schmidt_sub_triv n ((map (\<lambda> x. (x,sq_
 lemma gram_schmidt_triv[simp]: "gram_schmidt_triv n ws = map (\<lambda> x. (x,sq_norm x)) (gram_schmidt n ws)" 
   unfolding gram_schmidt_def gram_schmidt_triv_def rev_map[symmetric] 
   by (auto simp: gram_schmidt_sub_triv[symmetric])
+
+context gram_schmidt
+begin
+
+fun mus_adjuster :: "'a vec \<Rightarrow> ('a vec \<times> 'a) list \<Rightarrow> 'a list \<Rightarrow> 'a vec \<Rightarrow> 'a list \<times> 'a vec"
+  where
+  "mus_adjuster f []           mus g' = (mus, g')" |
+  "mus_adjuster f ((g, ng)#n_gs) mus g' = (let a = (f \<bullet> g) / ng in
+                                             mus_adjuster f n_gs (a # mus) (-a \<cdot>\<^sub>v g + g'))"
+
+fun norms_mus' where
+  "norms_mus' []       n_gs mus = (map snd n_gs, mus)" |
+  "norms_mus' (f # fs) n_gs mus =
+    (let (mus_row, g') = mus_adjuster f n_gs [] (0\<^sub>v n);
+                     g = g' + f in
+      norms_mus' fs ((g, sq_norm_vec g) # n_gs) (mus_row#mus))"
+
+lemma adjuster_wit_carrier_vec:
+  assumes "f \<in> carrier_vec n" "set gs \<subseteq> carrier_vec n"
+  shows "snd (adjuster_wit mus f gs) \<in> carrier_vec n"
+  using assms
+  by (induction mus f gs rule: adjuster_wit.induct) (auto simp add: Let_def case_prod_beta')
+
+lemma adjuster_wit'':
+  assumes "adjuster_wit mus_acc f gs = (mus, g')" "n_gs = map (\<lambda>x. (x, sq_norm_vec x)) gs"
+ "f \<in> carrier_vec n" "acc \<in> carrier_vec n" "set gs \<subseteq> carrier_vec n"
+  shows "mus_adjuster f n_gs mus_acc acc = (mus, acc + g')"
+  using assms proof(induction f n_gs mus_acc acc arbitrary: g' gs mus rule: mus_adjuster.induct)
+  case (1 mus' f acc g)
+  then show ?case
+    by auto
+next
+  case (2 f g n_g n_gs mus_acc acc g' gs mus)
+  let ?gg = "snd (adjuster_wit (f \<bullet> g / n_g # mus_acc) f (tl gs))"
+  from 2 have l: "gs = g # tl gs"
+    by auto
+  have gg: "?gg \<in> carrier_vec n"
+    using 2 by (auto intro!: adjuster_wit_carrier_vec)
+  then have [simp]: "g' = (- (f \<bullet> g / \<parallel>g\<parallel>\<^sup>2) \<cdot>\<^sub>v g + ?gg)"
+    using 2 by (auto simp add: Let_def case_prod_beta')
+  have "mus_adjuster f ((g, n_g) # n_gs) mus_acc acc =
+        mus_adjuster f n_gs (f \<bullet> g / n_g # mus_acc) (- (f \<bullet> g / n_g) \<cdot>\<^sub>v g + acc)"
+    by (auto simp add: Let_def)
+  also have "\<dots> = (mus, - (f \<bullet> g / n_g) \<cdot>\<^sub>v g + acc + ?gg)"
+  proof -
+    have "adjuster_wit (f \<bullet> g / n_g # mus_acc) f (tl gs) = (mus, ?gg)"
+      using 2 by (subst (asm) l) (auto simp add: Let_def case_prod_beta')
+    then show ?thesis
+      using 2 by (subst 2(1)[of _ "tl gs"]) (auto simp add: Let_def case_prod_beta')
+  qed
+  finally show ?case
+    using 2 gg by auto
+qed
+
+lemma adjuster_wit':
+  assumes "n_gs = map (\<lambda>x. (x, sq_norm_vec x)) gs" "f \<in> carrier_vec n" "set gs \<subseteq> carrier_vec n"
+  shows "mus_adjuster f n_gs mus_acc (0\<^sub>v n) = adjuster_wit mus_acc f gs"
+proof -
+  let ?g = "snd (adjuster_wit mus_acc f gs)"
+  let ?mus = "fst (adjuster_wit mus_acc f gs)"
+  have "?g \<in> carrier_vec n"
+    using assms by (auto intro!: adjuster_wit_carrier_vec)
+  then show ?thesis
+    using assms by (subst adjuster_wit''[of _ _ gs ?mus ?g]) (auto simp add: case_prod_beta')
+qed
+
+lemma sub2_wit_norms_mus':
+  assumes "n_gs' = map (\<lambda>v. (v, sq_norm_vec v)) gs'"
+   "sub2_wit gs' fs = (mus, gs)" "set fs \<subseteq> carrier_vec n" "set gs' \<subseteq> carrier_vec n"
+ shows "norms_mus' fs n_gs' mus_acc = (map sq_norm_vec (rev gs @ gs'), rev mus @ mus_acc)"
+  using assms proof (induction fs n_gs' mus_acc arbitrary: gs' mus gs rule: norms_mus'.induct)
+  case (1 n_gs mus_acc)
+  then show ?case by (auto simp add: rev_map)
+next
+  case (2  f fs n_gs mus_acc)
+  note aw1 = conjunct1[OF conjunct2[OF adjuster_wit]]
+  let ?aw = "mus_adjuster f n_gs [] (0\<^sub>v n)"
+  have aw: "?aw = adjuster_wit [] f gs'"
+    apply(subst adjuster_wit') using 2 by auto
+  have "sub2_wit ((snd ?aw + f) # gs') fs = sub2_wit ((snd (adjuster_wit [] f gs') + f) # gs') fs"
+    apply(subst adjuster_wit') using 2 by auto
+  also have "\<dots> = (tl mus, tl gs)"
+    using 2 by (auto simp add: Let_def case_prod_beta')
+  finally have sub_tl: "sub2_wit ((snd ?aw + f) # gs') fs = (tl mus, tl gs)"
+    by simp
+  have aw_c: "snd ?aw \<in> carrier_vec n"
+    apply(subst adjuster_wit'[of _ gs'])
+     using 2 adjuster_wit_carrier_vec by (auto)
+  have gs: "gs = (snd ?aw + f) # tl gs"
+    apply(subst aw) using 2 by (auto simp add: Let_def case_prod_beta')
+  have mus: "mus = fst ?aw # tl mus"
+    apply(subst aw) using 2 by (auto simp add: Let_def case_prod_beta')
+  show ?case apply(simp add: Let_def case_prod_beta')
+    apply(subst 2(1)[of _ _ _ _ "(snd ?aw + f)#gs'"  "tl mus" "tl gs"]) apply(simp) defer apply(simp)
+         apply (simp add: "2.prems"(1))
+    using sub_tl apply(simp)
+    using 2 apply(simp)
+    subgoal using 2 aw_c by (auto)
+     defer
+     apply(simp)
+    apply(auto)
+    using gs 
+     apply(subst gs) apply(subst (2) gs)
+     apply (metis list.simps(9) rev.simps(2) rev_map)
+    using mus
+    by (metis rev.simps(2))
+qed
+
+lemma sub2_wit_gram_schmidt_sub_triv'':
+  assumes "sub2_wit [] fs = (mus, gs)" "set fs \<subseteq> carrier_vec n"
+  shows "norms_mus' fs [] [] = (map sq_norm_vec (rev gs), rev mus)"
+  using assms by (subst sub2_wit_norms_mus') (simp)+
+
+definition norms_mus where
+  "norms_mus fs = (let (n_gs, mus) = norms_mus' fs [] [] in (rev n_gs, rev mus))"
+
+lemma sub2_wit_gram_schmidt_norm_mus:
+  assumes "sub2_wit [] fs = (mus, gs)" "set fs \<subseteq> carrier_vec n"
+  shows "norms_mus fs = (map sq_norm_vec gs, mus)"
+  unfolding norms_mus_def using assms sub2_wit_gram_schmidt_sub_triv''
+  by (auto simp add: Let_def case_prod_beta' rev_map)
+
+lemma norms_mus: assumes "set fs \<subseteq> carrier_vec n" "length fs \<le> n"
+  shows "norms_mus fs = (map (\<lambda>j. \<parallel>gso fs j\<parallel>\<^sup>2) [0..<length fs], map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs])" 
+proof -
+  let ?s = "sub2_wit [] fs"
+  have "gram_schmidt_sub2 n [] fs = snd ?s \<and> snd ?s = map (gso fs) [0..<length fs] \<and> fst ?s = map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs]"
+    using assms by (intro sub2_wit) (auto simp add: map_nth)
+  then have 1: "snd ?s = map (gso fs) [0..<length fs]" and 2: "fst ?s = map (\<lambda>i. map (\<mu> fs i) [0..<i]) [0..<length fs]" 
+    by auto
+  have s: "?s = (fst ?s, snd ?s)" by auto
+  show ?thesis
+    unfolding sub2_wit_gram_schmidt_norm_mus[OF s assms(1)]
+    unfolding 1 2 o_def map_map by auto
+qed
+end
+
+fun mus_adjuster_rat :: "rat vec \<Rightarrow> (rat vec \<times> rat) list \<Rightarrow> rat list \<Rightarrow> rat vec \<Rightarrow> rat list \<times> rat vec"
+  where
+  "mus_adjuster_rat f []           mus g' = (mus, g')" |
+  "mus_adjuster_rat f ((g, ng)#n_gs) mus g' = (let a = (f \<bullet> g) / ng in
+                                             mus_adjuster_rat f n_gs (a # mus) (-a \<cdot>\<^sub>v g + g'))"
+
+fun norms_mus_rat' where
+  "norms_mus_rat' n []       n_gs mus = (map snd n_gs, mus)" |
+  "norms_mus_rat' n (f # fs) n_gs mus =
+    (let (mus_row, g') = mus_adjuster_rat f n_gs [] (0\<^sub>v n);
+                     g = g' + f in
+      norms_mus_rat' n fs ((g, sq_norm_vec g) # n_gs) (mus_row#mus))"
+
+definition norms_mus_rat where
+  "norms_mus_rat n fs = (let (n_gs, mus) = norms_mus_rat' n fs [] [] in (rev n_gs, rev mus))"
+
+lemma norms_mus_rat_norms_mus:
+  "norms_mus_rat n fs = gram_schmidt.norms_mus n fs"
+proof -
+  have "mus_adjuster_rat f n_gs mus_acc g_acc = gram_schmidt.mus_adjuster f n_gs mus_acc g_acc"
+    for f n_gs mus_acc g_acc
+    by(induction f n_gs mus_acc g_acc rule: mus_adjuster_rat.induct)
+      (auto simp add: gram_schmidt.mus_adjuster.simps)
+  then have "norms_mus_rat' n fs n_gs mus = gram_schmidt.norms_mus' n fs n_gs mus" for n fs n_gs mus
+    by(induction n fs n_gs mus rule: norms_mus_rat'.induct)
+      (auto simp add: gram_schmidt.norms_mus'.simps case_prod_beta')
+  then show ?thesis
+    unfolding norms_mus_rat_def gram_schmidt.norms_mus_def by auto
+qed
+
+
+
+definition "replace_col_hma A b k = (\<chi> i j. if j = k then b $h i else A $h i $h j)"
+
+
+definition "replace_col A b k = mat (dim_row A) (dim_col A) (\<lambda> (i,j). if j = k then b $ i else A $$ (i,j))" 
+
+lemma HMA_M_replace_col[transfer_rule]: 
+  "(HMA_M ===> HMA_V ===> HMA_I ===> HMA_M) replace_col replace_col_hma" 
+  unfolding rel_fun_def replace_col_def replace_col_hma_def HMA_M_def HMA_V_def HMA_I_def
+  by (auto simp: from_hma\<^sub>m_def from_hma\<^sub>v_def to_nat_from_nat_id intro!: eq_matI)
+
+lemma cramer_lemma_real: fixes A :: "real mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  and x: "x \<in> carrier_vec n" 
+  and k: "k < n" 
+shows "det (replace_col A (A *\<^sub>v x) k) = x $v k * det A" 
+  using cramer_lemma[folded replace_col_hma_def, untransferred, cancel_card_constraint] assms
+  by auto
+
+lemma cramer_lemma_rat: fixes A :: "rat mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  and x: "x \<in> carrier_vec n" 
+  and k: "k < n" 
+shows "det (replace_col A (A *\<^sub>v x) k) = x $v k * det A"
+proof -
+  let ?r = real_of_rat
+  let ?hM = "map_mat ?r"
+  let ?hV = "map_vec ?r" 
+  let ?A = "?hM A" 
+  let ?x = "?hV x" 
+  have AA: "?A \<in> carrier_mat n n" using A by auto
+  have xx: "?x \<in> carrier_vec n" using x by auto
+  from cramer_lemma_real[OF AA xx k]
+  have "det (replace_col ?A (?A *\<^sub>v ?x) k) = ?x $v k * det ?A" .
+  also have "\<dots> = ?r (x $v k * det A)" using x k by (simp add: of_rat_mult)
+  also have "?A *\<^sub>v ?x = ?hV (A *\<^sub>v x)" using A x
+    by (metis of_rat_hom.mult_mat_vec_hom)
+  also have "replace_col ?A \<dots> k = ?hM (replace_col A (A *\<^sub>v x) k)" 
+    using A x k unfolding replace_col_def
+    by (intro eq_matI, auto)
+  also have "det \<dots> = ?r (det (replace_col A (A *\<^sub>v x) k))" by simp
+  finally show ?thesis by simp
+qed
+
+lemma rat_of_int_dvd:
+  assumes "b \<noteq> 0" "rat_of_int a / rat_of_int b \<in> \<int>"
+  shows "b dvd a"
+  using assms apply(elim Ints_cases)
+  unfolding dvd_def
+  by (metis nonzero_mult_div_cancel_left of_int_0_eq_iff of_int_eq_iff of_int_simps(4) times_divide_eq_right)
+
+lemma denom_dvd_ints:
+  fixes i::int
+  assumes "quotient_of r = (z, n)" "of_int i * r \<in> \<int>"
+  shows "n dvd i"
+proof -
+  have "rat_of_int i * (rat_of_int z / rat_of_int n) \<in> \<int>"
+    using assms quotient_of_div by blast
+  then have "n dvd i * z"
+    using quotient_of_denom_pos assms by (auto intro!: rat_of_int_dvd)
+  then show "n dvd i"
+    using assms algebraic_semidom_class.coprime_commute 
+      quotient_of_coprime coprime_dvd_mult_left_iff by blast
+qed
+
+lemma quotient_of_bounds: 
+  assumes "quotient_of r = (n, d)" "rat_of_int i * r \<in> \<int>" "0 < i" "\<bar>r\<bar> \<le> b"
+  shows "of_int \<bar>n\<bar> \<le> of_int i * b" "d \<le> i" 
+proof -
+  show ni: "d \<le> i"
+    using assms denom_dvd_ints  by (intro zdvd_imp_le) blast+
+  have "\<bar>r\<bar> = \<bar>rat_of_int n / rat_of_int d\<bar>"
+    using assms quotient_of_div by blast
+  also have "\<dots> = rat_of_int \<bar>n\<bar> / rat_of_int d"
+    using assms using quotient_of_denom_pos by force
+  finally have "of_int \<bar>n\<bar> = rat_of_int d * \<bar>r\<bar>"
+    using assms by auto
+  also have "\<dots> \<le> rat_of_int d * b"
+    using assms quotient_of_denom_pos by auto
+  also have "\<dots> \<le> rat_of_int i * b"
+    using ni assms of_int_le_iff by (auto intro!: mult_right_mono)
+  finally show "rat_of_int \<bar>n\<bar> \<le> rat_of_int i * b" 
+    by simp
+qed
+    
+context gram_schmidt
+begin
+
+context
+  fixes m::nat
+begin
+
+context
+  fixes fs
+  assumes indep: "lin_indpt_list fs"
+   and len_fs: "length fs = m" 
+begin
+
+(* Lemma 16.17 *) 
+
+lemma ex_\<rho>:
+  assumes "k < m"
+  shows "\<exists>\<rho>. gso fs k = fs ! k + sumlist (map (\<lambda>j. \<rho> j \<cdot>\<^sub>v fs ! j) [0 ..< k])" (is "\<exists> \<rho>. ?Prop k \<rho>")
+  using assms proof (induction k rule: less_induct)
+  case (less k)
+  then have "\<exists>\<rho>. ?Prop i \<rho>" if "i < k" for i
+    using that by (intro less) auto
+  hence "\<forall>i. \<exists>\<rho>. i < k \<longrightarrow> ?Prop i \<rho>"
+    by blast
+  from choice[OF this] obtain \<rho> where \<rho>_def: "?Prop i (\<rho> i)" if "i < k" for i
+    by auto
+  have "gso fs k = fs ! k + M.sumlist (map (\<lambda>i. - \<mu> fs k i \<cdot>\<^sub>v gso fs i) [0..<k])"
+    by (subst gso.simps) simp
+  also have "map (\<lambda>i. - \<mu> fs k i \<cdot>\<^sub>v gso fs i) [0..<k] = 
+   map (\<lambda>i. - \<mu> fs k i \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. \<rho> i j \<cdot>\<^sub>v fs ! j) [0..<i]))) [0..<k]"
+    by (auto intro: map_cong simp add: \<rho>_def)
+  finally have *: "gso fs k = fs ! k + 
+    M.sumlist (map (\<lambda>i. (- \<mu> fs k i) \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. \<rho> i j \<cdot>\<^sub>v fs ! j) [0..<i])))
+              [0..<k])"
+    by simp
+  define \<gamma> where "\<gamma> = (\<lambda>x j. (if j < x then \<rho> x j else 0))"
+  define \<rho>'::"nat \<Rightarrow> 'a" where "\<rho>' = (\<lambda>x. - \<mu> fs k x - (\<Sum>xa = 0..<k. \<mu> fs k xa * \<gamma> xa x))"
+  have "gso fs k $ i = (fs ! k + M.sumlist (map (\<lambda>j. \<rho>' j \<cdot>\<^sub>v fs ! j) [0..<k])) $ i" if "i < n" for i
+  proof -
+    (* get rid of sumlist *)
+    have 1: "gso fs k $ i = fs ! k $ i +
+      (\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + (\<Sum>j = 0..<x. (\<rho> x j * fs ! j $v i)))))"
+    proof -
+      have "gso fs k $ i =  fs ! k $ i + 
+    M.sumlist (map (\<lambda>i. (- \<mu> fs k i) \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. \<rho> i j \<cdot>\<^sub>v fs ! j) [0..<i])))
+              [0..<k]) $ i"
+        using that gso_dim indep len_fs less by (fastforce simp add: *)
+      also have "\<dots> = fs ! k $ i + (\<Sum>j = 0..<k. (- \<mu> fs k j \<cdot>\<^sub>v (fs ! j + M.sumlist (map (\<lambda>ja. \<rho> j ja \<cdot>\<^sub>v fs ! ja) [0..<j]))) $v i)"
+        using assms less indep len_fs that by (subst sumlist_nth) (auto intro!: dim_sumlist) 
+      also have "(\<Sum>j = 0..<k. (- \<mu> fs k j \<cdot>\<^sub>v (fs ! j + M.sumlist (map (\<lambda>ja. \<rho> j ja \<cdot>\<^sub>v fs ! ja) [0..<j]))) $v i) =
+      (\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + M.sumlist (map (\<lambda>ja. \<rho> x ja \<cdot>\<^sub>v fs ! ja) [0..<x]) $v i)))"
+        using assms less indep len_fs that by (intro sum.cong) (auto simp add: dim_sumlist)
+      also have "\<dots> = (\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + (\<Sum>j = 0..<x. (\<rho> x j \<cdot>\<^sub>v fs ! j) $v i))))"
+        using assms less indep len_fs that by (intro sum.cong) (auto simp add: dim_sumlist sumlist_nth)
+      finally show ?thesis
+        using assms less indep len_fs that by (auto simp add: dim_sumlist sumlist_nth)
+    qed
+    also have "(\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i)))) =
+(\<Sum>x = 0..<k. - \<mu> fs k x * fs ! x $v i - \<mu> fs k x * (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i))"
+      by (auto simp add: field_simps)
+    also have "\<dots> = (\<Sum>x = 0..<k. - \<mu> fs k x * fs ! x $v i) - (\<Sum>x = 0..<k. \<mu> fs k x * (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i))"
+      using sum_subtractf by fast
+    also have "(\<Sum>x = 0..<k. \<mu> fs k x * (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i)) = (\<Sum>x = 0..<k. \<mu> fs k x * (\<Sum>j = 0..<k. \<gamma> x j * fs ! j $v i))"
+    proof -
+      have "(\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i) = (\<Sum>j = 0..<k. \<gamma> x j * fs ! j $v i)" if "x < k" for x
+      proof -
+        let ?f = "(\<lambda>j. \<gamma> x j * fs ! j $v i)"
+        have "{0..<x} \<union> {x..<k} = {0..<k}"
+          using that by auto
+        then show ?thesis
+          using that sum.union_disjoint[of "{0..<x}" "{x..<k}" ?f] by (auto simp add: \<gamma>_def)
+      qed
+      then show ?thesis
+        by (auto intro: sum.cong)
+    qed
+    also have "(\<Sum>x = 0..<k. \<mu> fs k x * (\<Sum>j = 0..<k. \<gamma> x j * fs ! j $v i)) = (\<Sum>x = 0..<k. (\<Sum>j = 0..<k. \<mu> fs k x * \<gamma> x j * fs ! j $v i))"
+      by (auto simp add: sum_distrib_left field_simps)
+    also have "\<dots> = (\<Sum>j = 0..<k. (\<Sum>x = 0..<k. \<mu> fs k x * \<gamma> x j) * fs ! j $v i)"
+      using sum.swap by (subst sum_distrib_right) fast
+    also have "((\<Sum>x = 0..<k. - \<mu> fs k x * fs ! x $v i) - (\<Sum>j = 0..<k. (\<Sum>x = 0..<k. \<mu> fs k x * \<gamma> x j) * fs ! j $v i))
+    = (\<Sum>x = 0..<k. \<rho>' x * fs ! x $v i)" 
+      by (auto simp add: sum_subtractf field_simps \<rho>'_def)
+    finally show ?thesis
+      using assms less indep len_fs that by (auto simp add: dim_sumlist sumlist_nth)
+  qed
+  then show ?case
+    using less indep len_fs by (intro exI[of _ \<rho>'] eq_vecI) (auto simp add: dim_sumlist) 
+qed
+
+definition \<rho>_SOME_def:
+  "\<rho> = (SOME \<rho>. \<forall>k<m. gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> k l \<cdot>\<^sub>v fs ! l) [0..<k]))"
+
+lemma \<rho>_def:
+  assumes "k < m"
+  shows "gso fs k = fs ! k + M.sumlist (map (\<lambda>j. \<rho> k j \<cdot>\<^sub>v fs ! j) [0..<k])"
+proof -
+  from ex_\<rho> have "\<forall>k. \<exists>\<rho>. k < m \<longrightarrow> gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> l \<cdot>\<^sub>v fs ! l) [0..<k])"
+    by blast
+  from choice[OF this] have "\<exists>\<rho>. \<forall>k<m. gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> k l \<cdot>\<^sub>v fs ! l) [0..<k])"
+    by blast
+  from someI_ex[OF this] show ?thesis
+    unfolding \<rho>_SOME_def using assms by blast
+qed
+end (* fs *)
+
+end (* m *)
+
+end (* gram_schmidt *)
+
+lemma Ints_sum:
+  assumes "\<And>a. a \<in> A \<Longrightarrow> f a \<in> \<int>"
+  shows "sum f A \<in> \<int>"
+  using assms by (induction A rule: infinite_finite_induct) auto
+
+lemma Ints_prod:
+  assumes "\<And>a. a \<in> A \<Longrightarrow> f a \<in> \<int>"
+  shows "prod f A \<in> \<int>"
+using assms by (induction A rule: infinite_finite_induct) auto
+
+lemma Ints_scalar_prod: 
+  "v \<in> carrier_vec n \<Longrightarrow> w \<in> carrier_vec n
+   \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> v $ i \<in> \<int>) \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> w $ i \<in> \<int>) \<Longrightarrow> v \<bullet> w \<in> \<int>" 
+  unfolding scalar_prod_def  by (intro Ints_sum Ints_mult, auto)
+
+locale gram_schmidt_rat = gram_schmidt n "TYPE(rat)"
+  for n :: nat 
+begin
+
+context
+  fixes fs and m::nat
+  assumes con_assms: "lin_indpt_list fs" "length fs = m"
+begin
+
+context
+  assumes fs_int: "\<And>i j. i < n \<Longrightarrow> j < m \<Longrightarrow> fs ! j $v i \<in> \<int>"
+begin
+
+lemma fs_scalar_Ints:
+  assumes "i < m" "j < m"
+  shows "fs ! i \<bullet> fs ! j \<in> \<int>"
+  by (rule Ints_scalar_prod[of _ n], insert fs_int assms con_assms, auto)
+
+lemma Gramian_matrix_alt_alt_def:
+  assumes "k < m"
+  shows "Gramian_matrix fs k = mat k k (\<lambda>(i,j). fs ! i \<bullet> fs ! j)"
+proof -
+  have *: "vec n (($v) (fs ! i)) = fs ! i" if "i < m" for i
+    using that con_assms by auto
+  then show ?thesis
+    unfolding Gramian_matrix_def using con_assms assms
+    by (intro eq_matI) (auto simp add: Let_def)
+qed
+
+lemma Gramian_determinant_times_gso_Ints:
+  assumes "i < n" "k < m"
+  shows "(Gramian_determinant fs k \<cdot>\<^sub>v (gso fs k)) $ i \<in> \<int>"
+proof -
+  let ?\<rho> = "\<rho> m fs" 
+  have [intro!]: "(?\<rho> k i) * Gramian_determinant fs k \<in> \<int>" if "i < k" for i
+  proof -
+    have "- (fs ! k \<bullet> fs ! i) = (\<Sum>j = 0..<k. fs ! i \<bullet> fs ! j * ?\<rho>  k j)" if "i < k" for i
+    proof -
+      have "0 = gso fs k \<bullet> fs ! i"
+        using gso_scalar_zero assms con_assms that by (auto simp add: gso_scalar_zero)
+      also have "gso fs k = fs ! k + M.sumlist (map (\<lambda>j. ?\<rho>  k j \<cdot>\<^sub>v fs ! j) [0..<k])"
+        using con_assms assms \<rho>_def by auto
+      also have "\<dots> \<bullet> fs ! i = fs ! k \<bullet> fs ! i + M.sumlist (map (\<lambda>j. ?\<rho>  k j \<cdot>\<^sub>v fs ! j) [0..<k]) \<bullet> fs ! i"
+        using assms con_assms that by (auto intro!: sumlist_carrier add_scalar_prod_distrib[of _ n])
+      also have "M.sumlist (map (\<lambda>j. ?\<rho>  k j \<cdot>\<^sub>v fs ! j) [0..<k]) \<bullet> fs ! i = 
+                 sum_list (map ((\<lambda>v. v \<bullet> fs ! i) \<circ> (\<lambda>j. ?\<rho>  k j \<cdot>\<^sub>v fs ! j)) [0..<k])"
+        using con_assms assms that
+        by (subst scalar_prod_left_sum_distrib) (auto intro!: sumlist_carrier)
+      also have "\<dots> = (\<Sum>j\<leftarrow>[0..<k]. (?\<rho>  k j \<cdot>\<^sub>v fs ! j) \<bullet> fs ! i)"
+        by (auto intro: arg_cong[where f=sum_list])
+      also have "\<dots> = (\<Sum>j = 0..<k. fs ! i \<bullet> fs ! j * ?\<rho>  k j)"
+        using con_assms assms that f_carrier 
+        by(subst sum_set_upt_conv_sum_list_nat[symmetric], intro sum.cong)
+          (auto simp add: comm_scalar_prod[of _ n])
+      finally show ?thesis
+        by simp
+    qed
+    then have a: "Gramian_matrix fs k *\<^sub>v (vec k (\<lambda>i. ?\<rho> k i)) = (vec k (\<lambda>i. - (fs ! k \<bullet> fs ! i)))"
+      using con_assms assms by (auto simp add: Gramian_matrix_alt_alt_def scalar_prod_def)
+    moreover have "det (replace_col (Gramian_matrix fs k) (vec k (\<lambda>i. - (fs ! k \<bullet> fs ! i))) i) \<in> \<int>" if "i < k" for i
+    proof -
+      have "\<sigma> i < length fs" if "\<sigma> permutes {0..<k}" "i < k" for \<sigma> i
+        using that assms con_assms order.strict_trans permutes_less by blast
+      then show ?thesis
+        using con_assms assms permutes_less(1) 
+        by(subst det_col[of _ k])
+          (auto simp add: Gramian_matrix_alt_alt_def replace_col_def signof_def
+            intro!: Ints_sum Ints_mult Ints_prod Ints_minus fs_scalar_Ints)
+    qed
+    then have "det (replace_col (Gramian_matrix fs k) (Gramian_matrix fs k *\<^sub>v vec k (\<rho> m fs k)) i) \<in> \<int>" if "i < k" for i
+      using that by (subst a) auto
+    then have "vec k (?\<rho>  k) $v i * Gramian_determinant fs k \<in> \<int>" if "i < k" for i
+      using that unfolding Gramian_determinant_def
+      by (subst cramer_lemma_rat[of _ k,symmetric]) (auto simp add: Gramian_matrix_def Let_def)
+    then show ?thesis
+      using that by simp
+  qed
+  then have "( ?\<rho> k j * Gramian_determinant fs k) * fs ! j $v i \<in> \<int>" if "j < k" for j
+    using that fs_int assms by (auto intro!: Ints_mult)
+  moreover have "( ?\<rho> k j * Gramian_determinant fs k) * fs ! j $v i =
+                 Gramian_determinant fs k *  ?\<rho> k j * fs ! j $v i" for j
+    by (auto simp add: field_simps)
+  ultimately have "Gramian_determinant fs k * (\<Sum>j = 0..<k. \<rho> (length fs) fs k j * fs ! j $v i) \<in> \<int>"
+    using con_assms by (subst sum_distrib_left) (auto simp add: field_simps intro!: Ints_sum)
+  moreover have "(gso fs k) $v i = fs ! k $v i + sum (\<lambda>j. (?\<rho> k j \<cdot>\<^sub>v fs ! j) $v i) {0..<k}"
+  proof -
+    have " i < dim_vec (M.sumlist (map (\<lambda>j. \<rho> (length fs) fs k j \<cdot>\<^sub>v fs ! j) [0..<k]))"
+      using con_assms assms by (subst sumlist_dim) auto
+    then show ?thesis
+      using assms con_assms by (auto simp add: sumlist_nth sumlist_dim \<rho>_def)
+  qed
+  ultimately show ?thesis
+    using con_assms assms
+    by (auto simp add: distrib_left Gramian_determinant_Ints fs_int intro!: Ints_mult Ints_add)
+qed
+
+lemma Gramian_determinant_div:
+  assumes "l < m"
+  shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>gso fs l\<parallel>\<^sup>2"
+proof -
+  have "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = 
+             (\<Prod>j<Suc l. \<parallel>gso fs j\<parallel>\<^sup>2) / (\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2)"
+    using con_assms assms by (auto simp add: Gramian_determinant)
+  also have "(\<Prod>j<Suc l. \<parallel>gso fs j\<parallel>\<^sup>2) = (\<Prod>j \<in> {0..<l} \<union> {l}. \<parallel>gso fs j\<parallel>\<^sup>2)"
+    using assms by (intro prod.cong) (auto)
+  also have "\<dots> = (\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2) * \<parallel>gso fs l\<parallel>\<^sup>2"
+    using assms by (subst prod_Un) (auto simp add: atLeast0LessThan)
+  also have "(\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2) * \<parallel>gso fs l\<parallel>\<^sup>2 / (\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2) = \<parallel>gso fs l\<parallel>\<^sup>2"
+  proof -
+    have "0 < \<parallel>gso fs j\<parallel>\<^sup>2" if "j < l" for j
+      using assms con_assms that by (intro sq_norm_pos[of _ m]) (auto)
+    then show ?thesis
+      using assms by (fastforce simp add: field_simps)
+  qed
+  finally show ?thesis
+    by simp
+qed
+
+lemma Gramian_determinant_mu_ints:
+  assumes "l \<le> k" "k < m"
+  shows "Gramian_determinant fs (Suc l) * \<mu> fs k l \<in> \<int>"
+proof (cases "l < k")
+  case True
+  have ll: "Gramian_determinant fs l * gso fs l $v i = (Gramian_determinant fs l \<cdot>\<^sub>v gso fs l) $v i" if "i < n" for i
+    using that assms con_assms by auto
+  have "Gramian_determinant fs (Suc l) * \<mu> fs k l = Gramian_determinant fs (Suc l) * (fs ! k \<bullet> gso fs l) / \<parallel>gso fs l\<parallel>\<^sup>2 "
+    using assms True unfolding \<mu>.simps by simp
+  also have "\<dots> = fs ! k \<bullet> (Gramian_determinant fs l \<cdot>\<^sub>v gso fs l)"
+    using assms con_assms Gramian_determinant(2)[of fs m "Suc l"]
+    by (subst Gramian_determinant_div[symmetric]) (auto)
+  also have "\<dots> \<in> \<int>"
+  proof -
+    have "Gramian_determinant fs l * gso fs l $v i \<in> \<int>" if "i < n" for i
+      using assms Gramian_determinant_times_gso_Ints that ll by (simp)
+    then show ?thesis
+     using con_assms assms by (auto intro!: Ints_sum simp add: con_assms fs_int scalar_prod_def)
+ qed
+ finally show ?thesis
+   by simp
+next
+  case False
+  with assms have l: "l = k" by auto
+  show ?thesis unfolding l \<mu>.simps using Gramian_determinant_Ints[OF con_assms fs_int] assms by simp
+qed
+
+end (* fs_int *)
+
+end (* fixes fs *)
+
+end (* gram_schmidt_rat *)
+
+lemma vec_hom_Ints:
+  assumes "i < n" "xs \<in> carrier_vec n"
+  shows "of_int_hom.vec_hom xs $v i \<in> \<int>"
+  using assms by auto
+
+definition floor_ceil where "floor_ceil x = floor (x + 1/2)" 
+
+lemma floor_ceil: "\<bar>x - rat_of_int (floor_ceil x)\<bar> \<le> inverse 2" 
+  unfolding floor_ceil_def by (metis (no_types, hide_lams) abs_divide abs_neg_one round_def
+      div_by_1 div_minus_right inverse_eq_divide minus_diff_eq of_int_round_abs_le)
+
+lemma division_to_div: "(of_int x  :: 'a :: floor_ceiling) = of_int y / of_int z \<Longrightarrow> x = y div z" 
+  by (metis floor_divide_of_int_eq floor_of_int)
+
+lemma exact_division: assumes "of_int x / (of_int y  :: 'a :: floor_ceiling) \<in> \<int>"
+  shows "of_int (x div y) = of_int x / (of_int y :: 'a)" 
+  using assms by (metis Ints_cases division_to_div)
+
+lemma int_via_rat_eqI: "rat_of_int x = rat_of_int y \<Longrightarrow> x = y" by auto
+
+
+definition floor_ceil_num_denom :: "int \<Rightarrow> int \<Rightarrow> int" where
+  "floor_ceil_num_denom n d = ((2 * n + d) div (2 * d))" 
+
+lemma floor_ceil_num_denom: "denom > 0 \<Longrightarrow> floor_ceil_num_denom num denom = 
+  floor_ceil (of_int num / rat_of_int denom)" 
+  unfolding floor_ceil_def floor_ceil_num_denom_def
+  unfolding floor_divide_of_int_eq[where ?'a = rat, symmetric]
+  by (rule arg_cong[of _ _ floor], simp add: add_divide_distrib)
+
+locale fs_int =
+  fixes
+    n :: nat (* n-dimensional vectors, *) and
+    m :: nat (* number of vectors *) and
+    fs_init :: "int vec list" (* initial basis *)
+begin
+
+sublocale vec_module "TYPE(int)" n.
+               
+sublocale gs: gram_schmidt_rat n .
+
+abbreviation RAT where "RAT \<equiv> map (map_vec rat_of_int)" 
+abbreviation \<mu> where "\<mu> fs \<equiv> gs.\<mu> (RAT fs)" 
+abbreviation gso where "gso fs \<equiv> gs.gso (RAT fs)" 
+abbreviation SRAT where "SRAT xs \<equiv> set (RAT xs)" 
+abbreviation Rn where "Rn \<equiv> carrier_vec n :: rat vec set" 
+abbreviation lin_indep where "lin_indep fs \<equiv> gs.lin_indpt_list (RAT fs)" 
+
+definition d :: "int vec list \<Rightarrow> nat \<Rightarrow> int" where "d fs k = gs.Gramian_determinant fs k"
+
+definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < m. d fs i)" 
+
+definition fs_int :: "int vec list \<Rightarrow> bool" where 
+  "fs_int fs \<equiv> gs.lin_indpt_list (RAT fs) \<and> length fs = m" 
+
+lemma fs_intD: assumes "fs_int fs"
+  shows 
+  "lin_indep fs" 
+  "length (RAT fs) = m" 
+  "set fs \<subseteq> carrier_vec n"
+  "\<And> i. i < m \<Longrightarrow> fs ! i \<in> carrier_vec n" 
+  "\<And> i. i < m \<Longrightarrow> gso fs i \<in> carrier_vec n" 
+  "length fs = m"
+  using assms gs.lin_indpt_list_def gs.gso_carrier'[of _ "RAT fs"] 
+  unfolding fs_int_def split gs.reduced_def set_conv_nth by (auto)
+
+lemma of_int_Gramian_determinant:
+  assumes "k \<le> length F" "\<And>i. i < length F \<Longrightarrow> dim_vec (F ! i) = n"
+  shows "gs.Gramian_determinant (map of_int_hom.vec_hom F) k = of_int (gs.Gramian_determinant F k)"
+  unfolding gs.Gramian_determinant_def of_int_hom.hom_det[symmetric]
+proof (rule arg_cong[of _ _ det])
+  let ?F = "map of_int_hom.vec_hom F"
+  have cong: "\<And> a b c d. a = b \<Longrightarrow> c = d \<Longrightarrow> a * c = b * d" by auto
+  show "gs.Gramian_matrix ?F k = map_mat of_int (gs.Gramian_matrix F k)" 
+    unfolding gs.Gramian_matrix_def Let_def
+  proof (subst of_int_hom.mat_hom_mult[of _ k n _ k], (auto)[2], rule cong)
+    show id: "mat k n (\<lambda> (i,j). ?F ! i $ j) = map_mat of_int (mat k n (\<lambda> (i, j). F ! i $ j))" (is "?L = map_mat _ ?R")
+    proof (rule eq_matI, goal_cases)
+      case (1 i j)
+      hence ij: "i < k" "j < n" "i < length F" "dim_vec (F ! i) = n" using assms by auto
+      show ?case using ij by simp 
+    qed auto
+    show "?L\<^sup>T = map_mat of_int ?R\<^sup>T" unfolding id by (rule eq_matI, auto)
+  qed
+qed
+
+lemma Gramian_determinant: assumes finv: "fs_int fs" 
+  and k: "k \<le> m" 
+shows "of_int (gs.Gramian_determinant fs k) = (\<Prod> j<k. sq_norm (gso fs j))" (is ?g1)
+  "gs.Gramian_determinant fs k > 0" (is ?g2)
+proof -
+  note inv = fs_intD[OF finv]
+  have hom: "gs.Gramian_determinant (RAT fs) k = of_int (gs.Gramian_determinant fs k)" 
+    by (rule of_int_Gramian_determinant[of _ fs, unfolded inv(6), OF k], insert inv(4-6) k, auto)
+  show ?g1 ?g2 using gs.Gramian_determinant[OF inv(1-2) k] 
+    unfolding hom using k by auto
+qed
+
+lemma fs_int_d_pos [intro]: assumes inv: "fs_int fs" 
+  and k: "k \<le> m" 
+shows "d fs k > 0"
+  unfolding d_def using Gramian_determinant[OF inv k] by auto
+
+lemma fs_int_d_Suc: assumes "fs_int fs" 
+  and k: "k < m" 
+shows "of_int (d fs (Suc k)) = sq_norm (gso fs k) * of_int (d fs k)" 
+proof -
+  note det = Gramian_determinant(1)[OF assms(1)]
+  from k have k: "k \<le> m" "Suc k \<le> m" by auto
+  show ?thesis unfolding det[OF k(1)] det[OF k(2)] d_def
+    by (subst prod.remove[of _ k], force+, rule arg_cong[of _ _ "\<lambda> x. _ * x"], rule prod.cong, auto)
+qed
+
+lemma fs_int_D_pos: assumes inv: "fs_int fs" 
+shows "D fs > 0"
+proof -
+  have "(\<Prod> j < m. d fs j) > 0"
+    by (rule prod_pos, insert fs_int_d_pos[OF inv], auto)
+  thus ?thesis unfolding D_def by auto
+qed
+
+definition "d\<mu> fs i j = int_of_rat (of_int (d fs (Suc j)) * \<mu> fs i j)" 
+
+lemma fs_int_mu_d_Z: assumes inv: "fs_int fs" 
+  and j: "j \<le> ii" and ii: "ii < m" 
+shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
+proof -
+  note * = fs_intD[OF inv]
+  have id: "gs.Gramian_determinant (RAT fs) (Suc j) = of_int (d fs (Suc j))" 
+    unfolding d_def
+    by (rule of_int_Gramian_determinant, insert j ii *(4,6), auto)
+  show ?thesis
+    by (rule gs.Gramian_determinant_mu_ints[OF *(1-2) _ j ii, unfolded id], insert *(4,6), force)
+qed
+
+context fixes fs :: "int vec list" 
+  assumes lin_indep: "lin_indep fs" 
+  and len: "length fs = m" 
+begin
+
+lemma sq_norm_fs_via_sum_mu_gso: assumes i: "i < m" 
+  shows "of_int \<parallel>fs ! i\<parallel>\<^sup>2 = (\<Sum>j\<leftarrow>[0..<Suc i]. (\<mu> fs i j)\<^sup>2 * \<parallel>gso fs j\<parallel>\<^sup>2)" 
+proof -
+  let ?G = "map (gso fs) [0 ..< m]" 
+  let ?gso = "\<lambda> fs j. ?G ! j"
+  have "of_int \<parallel>fs ! i\<parallel>\<^sup>2 = \<parallel>RAT fs ! i\<parallel>\<^sup>2" unfolding sq_norm_of_int[symmetric] using insert i len by auto
+  also have "RAT fs ! i = gs.sumlist (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i])" 
+    using gs.fi_is_sum_of_mu_gso[OF lin_indep _ i] len by auto
+  also have id: "map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i] = map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v ?gso fs j) [0..<Suc i]" 
+    by (rule nth_equalityI, insert i, auto simp: nth_append)
+  also have "sq_norm (gs.sumlist \<dots>) = sum_list (map sq_norm (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i]))" 
+    unfolding map_map o_def sq_norm_smult_vec
+    unfolding sq_norm_vec_as_cscalar_prod cscalar_prod_is_scalar_prod conjugate_id
+  proof (subst gs.scalar_prod_lincomb_orthogonal)
+    show "Suc i \<le> length ?G" using i by auto
+    show "set ?G \<subseteq> Rn" using gs.gso_carrier[OF lin_indep, of m] len by auto
+    show "orthogonal ?G" using gs.orthogonal_gso[OF lin_indep, of m] len by auto
+  qed (rule arg_cong[of _ _ sum_list], intro nth_equalityI, insert i, auto simp: nth_append)
+  also have "map sq_norm (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i]) = map (\<lambda>j. (\<mu> fs i j)^2 * sq_norm (gso fs j)) [0..<Suc i]" 
+    unfolding map_map o_def sq_norm_smult_vec by (rule map_cong, auto simp: power2_eq_square)
+  finally show ?thesis . 
+qed
+
+end
+
+lemma d\<mu>: assumes inv: "fs_int fs" "j \<le> ii" "ii < m" 
+  shows "of_int (d\<mu> fs ii j) = of_int (d fs (Suc j)) * \<mu> fs ii j" 
+  unfolding d\<mu>_def using fs_int_mu_d_Z[OF inv] by auto
+
+lemma d_sq_norm_comparison: assumes inv: "fs_int fs" 
+  and quot: "quotient_of \<alpha> = (num,denom)" 
+  and i: "i < m" 
+  and i0: "i \<noteq> 0" 
+  shows "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
+   = (sq_norm (gso fs (i - 1)) \<le> \<alpha> * sq_norm (gso fs i))" 
+proof -
+  let ?r = "rat_of_int" 
+  let ?x = "sq_norm (gso fs (i - 1))" 
+  let ?y = "\<alpha> * sq_norm (gso fs i)" 
+  from i have le: "i - 1 \<le> m" " i \<le> m" "Suc i \<le> m" by auto
+  note pos = fs_int_d_pos[OF inv le(1)] fs_int_d_pos[OF inv le(2)] quotient_of_denom_pos[OF quot]
+  have "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
+    = (?r (d fs i * d fs i * denom) \<le> ?r (num * d fs (i - 1) * d fs (Suc i)))" (is "?cond = _") by presburger
+  also have "\<dots> = (?r (d fs i) * ?r (d fs i) * ?r denom \<le> ?r num * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" by simp
+  also have "\<dots> = (?r (d fs i) * ?r (d fs i) \<le> \<alpha> * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" 
+    using pos unfolding quotient_of_div[OF quot] by (auto simp: field_simps)
+  also have "\<dots> = (?r (d fs i) / ?r (d fs (i - 1)) \<le> \<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)))" 
+    using pos by (auto simp: field_simps)
+  also have "?r (d fs i) / ?r (d fs (i - 1)) = ?x" using fs_int_d_Suc[OF inv, of "i - 1"] pos i i0
+    by (auto simp: field_simps)
+  also have "\<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)) = ?y" using fs_int_d_Suc[OF inv i] pos i i0
+    by (auto simp: field_simps)
+  finally show "?cond = (?x \<le> ?y)" .
+qed
+
+lemma floor_ceil_num_denom_d\<mu>_d: assumes inv: "fs_int fs"
+  and j: "j \<le> i" and i: "i < m"  
+shows "floor_ceil_num_denom (d\<mu> fs i j) (d fs (Suc j)) = floor_ceil (\<mu> fs i j)" 
+proof -
+  from j i have sj: "Suc j \<le> m" by auto
+  note pos = fs_int_d_pos[OF inv sj]
+  show ?thesis unfolding floor_ceil_num_denom[OF pos]
+    by (rule arg_cong[of _ _ floor_ceil], subst d\<mu>[OF inv j i], insert pos, auto)
+qed
+
+
+
+
+end
 
 end

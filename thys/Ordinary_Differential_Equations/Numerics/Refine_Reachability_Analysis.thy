@@ -1,9 +1,9 @@
 theory Refine_Reachability_Analysis
 imports
   Affine_Arithmetic.Print
-  "HOL-ODE-Refinement.Weak_Set"
-  "HOL-ODE-Refinement.Refine_String"
-  "HOL-ODE-Refinement.Refine_Folds"
+  "../Refinement/Weak_Set"
+  "../Refinement/Refine_String"
+  "../Refinement/Refine_Folds"
   Ordinary_Differential_Equations.Flow
   Refine_Rigorous_Numerics
   "HOL-Decision_Procs.Approximation"
@@ -718,7 +718,7 @@ next
   show "(\<lambda>xa. \<Sum>i\<in>Basis. blinfun_scaleR (blinfun_inner_left i) (blinfun_apply (ode_d (Suc 0) x i) xa)) = ode_d (Suc 0) x"
     apply (rule ext)
     apply (auto intro!: ext euclidean_eqI[where 'a='a] blinfun_euclidean_eqI
-        simp: blinfun.bilinear_simps inner_sum_left inner_Basis if_distrib cond_application_beta
+        simp: blinfun.bilinear_simps inner_sum_left inner_Basis if_distrib if_distribR
         sum.delta' cong: if_cong)
     apply (rule arg_cong[where f="\<lambda>x. x \<bullet> b" for b])
   proof goal_cases
@@ -1172,7 +1172,7 @@ schematic_goal mk_safe_impl:
   shows "(nres_of ?f, mk_safe $ (R::'a::executable_euclidean_space set)) \<in> \<langle>appr_rel\<rangle>nres_rel"
   unfolding autoref_tag_defs
   unfolding mk_safe_def
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition mk_safe_impl for Ri uses mk_safe_impl
 
 lemma sappr_rel_nres_relI:
@@ -1218,7 +1218,7 @@ schematic_goal mk_safe_coll_impl:
   shows "(nres_of (?f::?'c dres), mk_safe_coll IS)\<in>?R"
   unfolding mk_safe_coll_def
   by (subst rel_ANNOT_eq[of "sets_of_coll X" "\<langle>\<langle>appr_rel\<rangle>list_wset_rel\<rangle>nres_rel" for X])
-    (autoref_monadic)
+    autoref_monadic
 
 concrete_definition mk_safe_coll_impl for ISi uses mk_safe_coll_impl
 lemma mk_safe_coll_impl_refine[autoref_rules]:
@@ -1316,7 +1316,7 @@ lemma fderiv2[derivative_intros]:
 
 lemma derivative_within_safe[derivative_intros]:
   "(g has_derivative h) (at x) \<Longrightarrow> (g has_derivative h) (at x within Csafe)"
-  by (rule has_derivative_at_within)
+  by (rule has_derivative_at_withinI)
 
 lemma cont_fderiv: "continuous_on (Csafe) ode_d1"
   by (rule has_derivative_continuous_on) (auto intro!: derivative_intros)
@@ -1482,7 +1482,7 @@ schematic_goal Picard_step_ivl_impl:
   unfolding autoref_tag_defs
   unfolding Picard_step_ivl_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition Picard_step_ivl_impl for X0i t0i hi PHIi uses Picard_step_ivl_impl
 lemmas [autoref_rules] = Picard_step_ivl_impl.refine
 
@@ -1541,7 +1541,7 @@ schematic_goal P_iter_impl:
   shows "(nres_of (?f::?'r dres), P_iter $ X0 $ h $ i $ PHI::'a set option nres) \<in> ?R"
   unfolding P_iter_def uncurry_rec_nat APP_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 
 concrete_definition P_iter_impl for X0i hi i_i PHIi uses P_iter_impl
 lemmas [autoref_rules] = P_iter_impl.refine
@@ -2197,10 +2197,11 @@ schematic_goal rk2_step_impl:
   notes [autoref_rules] = autoref_parameters
   shows "(nres_of (?f::?'r dres), rk2_step $ (X::'a set) $ h) \<in> ?R"
   unfolding one_step_def rk2_step_def[abs_def]
-  by (autoref_monadic)
+  by autoref_monadic
 
 concrete_definition rk2_step_impl for Xi hi uses rk2_step_impl
 lemmas [autoref_rules] = rk2_step_impl.refine
+ML_val \<open>Autoref_Rules.get @{context} |> length\<close>
 
 definition "choose_step = (if method_id optns = 2 then rk2_step else euler_step)"
 sublocale autoref_op_pat_def choose_step .
@@ -2210,8 +2211,8 @@ schematic_goal choose_step_impl:
   assumes [autoref_rules_raw]: "ncc_precond TYPE('a)"
   assumes [autoref_rules]: "(Xi, X) \<in> sappr_rel" "(hi, h) \<in> Id"
   shows "(nres_of (?f::?'r dres), choose_step $ (X::'a set) $ h) \<in> ?R"
-  unfolding choose_step_def autoref_tag_defs cond_application_beta ncc_precond_def
-  by (autoref_monadic)
+  unfolding choose_step_def autoref_tag_defs if_distribR ncc_precond_def
+  by autoref_monadic
 
 concrete_definition choose_step_impl for Xi hi uses choose_step_impl
 lemmas [autoref_rules] = choose_step_impl.refine
@@ -2381,7 +2382,8 @@ proof -
     apply auto
     apply (subst matrix_vector_mul_assoc[symmetric])
     apply (subst matrix_works)
-    subgoal by (auto intro!: bounded_linear.linear blinfun.bounded_linear_right)
+    subgoal by (auto simp: linear_matrix_vector_mul_eq
+          intro!: bounded_linear.linear blinfun.bounded_linear_right)
     apply (subst einterpret_mmult_fa[where 'n='n and 'm = 'n and 'l='n])
     subgoal by (simp add: wdD[OF \<open>wd _\<close>])
     subgoal by (simp add: length_concat o_def sum_list_distinct_conv_sum_set wdD[OF \<open>wd _\<close>])
@@ -2490,7 +2492,7 @@ proof (rule var.existence_ivl_maximal_segment)
         apply (rule refl)
         apply (rule refl)
         apply (rule refl)
-       apply (rule has_derivative_at_within)
+       apply (rule has_derivative_at_withinI)
        apply (rule Dflow_has_derivative)
        apply force
       apply (rule refl)
@@ -2509,7 +2511,7 @@ next
   then show "(flow0 x 0, matrix (blinfun_apply (Dflow x 0)) ** W) = (x, W)"
     apply (auto )
     apply (vector matrix_def matrix_matrix_mult_def axis_def)
-    by (auto simp:  if_distrib cond_application_beta cong: if_cong)
+    by (auto simp:  if_distrib if_distribR cong: if_cong)
 qed auto
 
 theorem var_existence_ivl0_eq_existence_ivl0:
@@ -2593,9 +2595,7 @@ context includes blinfun.lifting begin
 lemma flow1_of_vec1_vec1_of_flow1[simp]:
   "flow1_of_vec1 (vec1_of_flow1 X) = X"
   unfolding vec1_of_flow1_def flow1_of_vec1_def
-  apply (transfer)
-  apply (auto simp: matrix_of_matrix_vector_mul)
-  using linear_conv_bounded_linear matrix_vector_mul by fastforce
+  by (transfer) auto
 end
 
 lemma
@@ -2821,7 +2821,7 @@ schematic_goal intersects_sctns_spec_impl:
   unfolding autoref_tag_defs
   apply (rule nres_rel_trans2[OF intersects_sctns_spec_nres])
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 
 concrete_definition intersects_sctns_spec_impl for ai sctnsi uses intersects_sctns_spec_impl
 lemma intersects_sctns_spec_impl_refine[autoref_rules]:
@@ -3605,7 +3605,7 @@ schematic_goal fst_safe_coll_impl:
   unfolding autoref_tag_defs
   unfolding fst_safe_coll_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition fst_safe_coll_impl for XSi uses fst_safe_coll_impl
 lemmas [autoref_rules] = fst_safe_coll_impl.refine
 lemma fst_safe_coll[le, refine_vcg]:
@@ -3681,7 +3681,7 @@ proof -
   also have "(\<Sum>i\<in>insert \<bar>y\<bar> (Basis - {\<bar>y\<bar>}). \<bar>y \<bullet> i\<bar> *\<^sub>R i) = \<bar>y \<bullet> \<bar>y\<bar>\<bar> *\<^sub>R \<bar>y\<bar>"
     apply (subst sum.insert)
     using assms
-    by (auto simp: abs_inner[symmetric] inner_Basis cond_application_beta if_distrib
+    by (auto simp: abs_inner[symmetric] inner_Basis if_distribR if_distrib
         cong: if_cong)
   finally have "\<bar>y\<bar> = \<bar>y \<bullet> \<bar>y\<bar>\<bar> *\<^sub>R \<bar>y\<bar>" by simp
   moreover have "\<dots> = y \<or> \<dots> = - y"
@@ -3724,7 +3724,7 @@ schematic_goal subset_spec_plane_impl:
   assumes [autoref_rules]: "(Xi, X::'a::executable_euclidean_space set) \<in> lvivl_rel" "(sctni, sctn) \<in> \<langle>lv_rel\<rangle>sctn_rel"
   shows "(nres_of ?R, subset_spec_plane $ X $ sctn) \<in> \<langle>bool_rel\<rangle>nres_rel"
   unfolding subset_spec_plane_def
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition subset_spec_plane_impl for Xi sctni uses subset_spec_plane_impl
 lemmas [autoref_rules] = subset_spec_plane_impl.refine
 lemma subset_spec_plane[le, refine_vcg]:
@@ -3832,7 +3832,7 @@ schematic_goal op_eventually_within_sctn_impl:
   assumes [autoref_rules]: "(Xi, X::'a set) \<in> appr_rel" "(sctni, sctn) \<in> \<langle>lv_rel\<rangle>sctn_rel" "(Si, S) \<in> lvivl_rel"
   shows "(nres_of ?R, op_eventually_within_sctn $ X $ sctn $ S) \<in> \<langle>bool_rel\<rangle>nres_rel"
   unfolding op_eventually_within_sctn_def
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition op_eventually_within_sctn_impl for Xi sctni Si uses op_eventually_within_sctn_impl
 lemmas [autoref_rules] = op_eventually_within_sctn_impl.refine
 
@@ -4556,7 +4556,7 @@ schematic_goal split_spec_param1_impl:
   unfolding autoref_tag_defs
   unfolding split_spec_param1_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition split_spec_param1_impl for Xi uses split_spec_param1_impl
 lemma split_spec_param1_refine[autoref_rules]:
   "DIM_precond TYPE('n::enum rvec) D \<Longrightarrow>
@@ -4749,7 +4749,7 @@ schematic_goal split_spec_param1e_impl:
   unfolding autoref_tag_defs
   unfolding split_spec_param1e_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition split_spec_param1e_impl for Xi uses split_spec_param1e_impl
 lemma split_spec_param1e_refine[autoref_rules]:
   "DIM_precond TYPE('n::enum rvec) D \<Longrightarrow>
@@ -4788,7 +4788,7 @@ schematic_goal reduce_spec1_impl:
   if [autoref_rules]: "(Xi, X::'n eucl1 set) \<in> appr1_rel" "(Ci, C) \<in> reducer_rel"
     and [autoref_rules_raw]: "DIM_precond TYPE((real, 'n::enum) vec) D"
   unfolding reduce_spec1_def
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition reduce_spec1_impl for Ci Xi uses reduce_spec1_impl
 lemma reduce_spec1_impl_refine[autoref_rules]:
   "(\<lambda>C x. nres_of (reduce_spec1_impl C x), reduce_spec1::_\<Rightarrow>'n eucl1 set\<Rightarrow>_) \<in>
@@ -4811,7 +4811,7 @@ schematic_goal reduce_spec1e_impl:
   and [autoref_rules_raw]: "DIM_precond TYPE((real, 'n::enum) vec) D"
   unfolding reduce_spec1e_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition reduce_spec1e_impl for Ci Xi uses reduce_spec1e_impl
 lemma reduce_spec1e_impl_refine[autoref_rules]:
   "(\<lambda>C x. nres_of (reduce_spec1e_impl C x), reduce_spec1e::_\<Rightarrow>'n eucl1 set\<Rightarrow>_) \<in>
@@ -4846,7 +4846,7 @@ schematic_goal split_under_threshold_impl:
   unfolding autoref_tag_defs
   unfolding split_under_threshold_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition split_under_threshold_impl for ti thi Xi uses split_under_threshold_impl
 lemmas [autoref_rules] = split_under_threshold_impl.refine
 
@@ -5216,7 +5216,7 @@ schematic_goal pre_intersection_step_impl:
     \<langle>clw_rel (iinfo_rel appr1e_rel) \<times>\<^sub>r clw_rel appr_rel \<times>\<^sub>r clw_rel (iinfo_rel appr1e_rel)\<rangle>nres_rel"
   unfolding pre_intersection_step_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition pre_intersection_step_impl for roptnsi Xi hi uses pre_intersection_step_impl
 lemmas [autoref_rules] = pre_intersection_step_impl.refine
 
@@ -5623,7 +5623,7 @@ schematic_goal subset_iplane_coll_impl:
   shows "(nres_of ?r, subset_iplane_coll $ x $ ics) \<in> \<langle>bool_rel\<rangle>nres_rel"
   unfolding subset_iplane_coll_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition subset_iplane_coll_impl uses subset_iplane_coll_impl
 lemmas [autoref_rules] = subset_iplane_coll_impl.refine
 
@@ -5645,7 +5645,7 @@ schematic_goal subsets_iplane_coll_impl:
   shows "(nres_of ?r, subsets_iplane_coll $ x $ ics) \<in> \<langle>bool_rel\<rangle>nres_rel"
   unfolding subsets_iplane_coll_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition subsets_iplane_coll_impl uses subsets_iplane_coll_impl
 lemmas [autoref_rules] = subsets_iplane_coll_impl.refine
 
@@ -5976,7 +5976,7 @@ schematic_goal leaves_halfspace_impl:
   shows "(nres_of ?r, leaves_halfspace $ S $ X) \<in> \<langle>\<langle>\<langle>lv_rel\<rangle>sctn_rel\<rangle>option_rel\<rangle>nres_rel"
   unfolding leaves_halfspace_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition leaves_halfspace_impl for Si Xi uses leaves_halfspace_impl
 lemmas [autoref_rules] = leaves_halfspace_impl.refine
 
@@ -6778,7 +6778,7 @@ schematic_goal op_enlarge_ivl_sctn_impl:
   shows "(nres_of ?R, op_enlarge_ivl_sctn $ ivl $ sctn $ d) \<in> \<langle>lvivl_rel\<rangle>nres_rel"
   unfolding op_enlarge_ivl_sctn_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition op_enlarge_ivl_sctn_impl for ivli sctni di uses op_enlarge_ivl_sctn_impl
 lemmas [autoref_rules] = op_enlarge_ivl_sctn_impl.refine
 
@@ -6882,7 +6882,7 @@ schematic_goal resolve_ivlplanes_impl:
   unfolding autoref_tag_defs
   unfolding resolve_ivlplanes_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition resolve_ivlplanes_impl for guardsi ivlplanesi XSi uses resolve_ivlplanes_impl
 lemmas [autoref_rules] = resolve_ivlplanes_impl.refine
 
@@ -7288,7 +7288,7 @@ schematic_goal poincare_onto2_impl:
   unfolding autoref_tag_defs
   unfolding poincare_onto2_def
     including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition poincare_onto2_impl for guardsi XSi uses poincare_onto2_impl
 lemmas [autoref_rules] = poincare_onto2_impl.refine
 
@@ -7858,7 +7858,7 @@ schematic_goal op_single_inter_ivl_impl:
   assumes [autoref_rules]: "(FXSi, FXS) \<in> clw_rel lvivl_rel" "(Ai, A::'n::enum rvec set) \<in> lvivl_rel"
   shows "(nres_of ?r, op_single_inter_ivl A FXS) \<in> \<langle>clw_rel lvivl_rel\<rangle>nres_rel"
   unfolding op_single_inter_ivl_def
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition op_single_inter_ivl_impl for Ai FXSi uses op_single_inter_ivl_impl
 lemma op_single_inter_ivl_impl_refine[autoref_rules]:
   "DIM_precond TYPE((real, 'a::enum) vec) D \<Longrightarrow>
@@ -7985,7 +7985,7 @@ schematic_goal vec1repse_impl:
   shows "(nres_of ?r, vec1repse X) \<in> \<langle>\<langle>clw_rel appre_rel\<rangle>option_rel\<rangle>nres_rel"
   unfolding vec1repse_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition vec1repse_impl for Xi uses vec1repse_impl
 lemmas vec1repse_impl_refine[autoref_rules] = vec1repse_impl.refine[autoref_higher_order_rule]
 
@@ -8119,7 +8119,7 @@ schematic_goal reduce_ivl_impl:
   unfolding autoref_tag_defs
   unfolding reduce_ivl_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition reduce_ivl_impl for Yi bi uses reduce_ivl_impl
 lemmas [autoref_rules] = reduce_ivl_impl.refine
 
@@ -8259,7 +8259,7 @@ schematic_goal reduce_ivle_impl:
   unfolding autoref_tag_defs
   unfolding reduce_ivle_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition reduce_ivle_impl for Yi bi uses reduce_ivle_impl
 lemmas [autoref_rules] = reduce_ivle_impl.refine
 
@@ -9100,7 +9100,7 @@ schematic_goal poincare_onto_from_impl:
   unfolding autoref_tag_defs
   unfolding poincare_onto_from_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 
 concrete_definition poincare_onto_from_impl for symstartd Si guardsi ivli sctni roi XSi uses poincare_onto_from_impl
 lemmas [autoref_rules] = poincare_onto_from_impl.refine
@@ -9221,7 +9221,7 @@ schematic_goal subset_spec1_impl:
     "(dPi, dP) \<in> \<langle>lvivl_rel\<rangle>(default_rel UNIV)"
   unfolding subset_spec1_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 lemmas [autoref_rules] = subset_spec1_impl[autoref_higher_order_rule]
 
 lemma subset_spec1[refine_vcg]: "subset_spec1 R P dP \<le> SPEC (\<lambda>b. b \<longrightarrow> R \<subseteq> flow1_of_vec1 ` (P \<times> dP))"
@@ -9449,7 +9449,7 @@ schematic_goal one_step_until_time_ivl_impl:
   shows "(nres_of ?r, one_step_until_time_ivl $ X0 $ ph $ t1 $ t2) \<in> \<langle>appr1e_rel \<times>\<^sub>r \<langle>clw_rel appr_rel\<rangle>phantom_rel\<rangle>nres_rel"
   unfolding one_step_until_time_ivl_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition one_step_until_time_ivl_impl for X0i phi t1i t2i uses one_step_until_time_ivl_impl
 lemmas [autoref_rules] = one_step_until_time_ivl_impl.refine
 
@@ -9584,7 +9584,7 @@ schematic_goal init_ode_solver_autoref:
   unfolding autoref_tag_defs
   unfolding init_ode_solver_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition init_ode_solveri uses init_ode_solver_autoref
 lemmas [autoref_rules] = init_ode_solveri.refine
 
@@ -9714,7 +9714,7 @@ schematic_goal solve_one_step_until_time_autoref:
   unfolding autoref_tag_defs
   unfolding solve_one_step_until_timea_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition solve_one_step_until_time for X0i CXi t1i t2i uses solve_one_step_until_time_autoref
 lemmas solve_one_step_until_time_refine[autoref_rules] = solve_one_step_until_time.refine
 
@@ -9887,7 +9887,7 @@ schematic_goal poincare_onto_from_in_ivl_impl:
   unfolding autoref_tag_defs
   unfolding poincare_onto_from_in_ivl_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition poincare_onto_from_in_ivl_impl for symstarti Si guardsi ivli sctni roi XSi Pimpl dPi
   uses poincare_onto_from_in_ivl_impl
 lemmas [autoref_rules] = poincare_onto_from_in_ivl_impl.refine
@@ -10053,7 +10053,7 @@ schematic_goal one_step_until_time_ivl_in_ivl_impl:
   shows "(nres_of ?r, one_step_until_time_ivl_in_ivl X0 t1 t2 R dR) \<in> \<langle>bool_rel\<rangle>nres_rel"
   unfolding one_step_until_time_ivl_in_ivl_def
   including art
-  by (autoref_monadic)
+  by autoref_monadic
 concrete_definition one_step_until_time_ivl_in_ivl_impl for X0i t1i t2i Ri dRi uses one_step_until_time_ivl_in_ivl_impl
 lemmas one_step_until_time_ivl_in_ivl_impl_refine[autoref_rules] = one_step_until_time_ivl_in_ivl_impl.refine
 

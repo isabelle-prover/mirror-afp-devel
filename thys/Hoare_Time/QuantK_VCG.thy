@@ -12,11 +12,10 @@ lemma mydivcode: "k>0 \<Longrightarrow> D\<ge>k \<Longrightarrow> mydiv D k = Su
   using dvd_minus_self by auto 
     
 lemma mydivcode1: "mydiv 0 k = 0"  
-  unfolding mydiv_def by (auto  ) 
+  unfolding mydiv_def by auto 
     
 lemma mydivcode2: "k>0 \<Longrightarrow> 0<D \<Longrightarrow> D<k \<Longrightarrow> mydiv D k = Suc 0"  
-  unfolding mydiv_def apply auto
-  using nat_dvd_not_less by blast 
+  unfolding mydiv_def by auto
     
 lemma mydiv_mono: "a\<le>b \<Longrightarrow> mydiv a k \<le> mydiv b k" unfolding mydiv_def
   apply(cases "k dvd a")

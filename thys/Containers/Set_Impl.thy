@@ -86,20 +86,20 @@ lemma sorted_quicksort_acc:
 proof(induction ac xs and ac x lts eqs gts zs rule: quicksort_acc_quicksort_part.induct)
   case 1 thus ?case by simp
 next
-  case 2 thus ?case by(auto simp add: sorted_Cons)
+  case 2 thus ?case by(auto)
 next
   case 3 thus ?case by simp
 next
   case (4 ac x lts eqs gts)
   note ac_greater = `\<forall>y\<in>set lts \<union> {x} \<union> set eqs \<union> set gts \<union> set []. \<forall>a\<in>set ac. y < a`
   have "sorted eqs" "set eqs \<subseteq> {x}" using `\<forall>y\<in>set eqs. y = x` 
-    by(induct eqs)(simp_all add: sorted_Cons)
+    by(induct eqs)(simp_all)
   moreover have "\<forall>y \<in> set ac \<union> set gts. x \<le> y"
     using `\<forall>a\<in>set gts. x < a` ac_greater by auto
   moreover have "sorted (quicksort_acc ac gts)" 
     using `sorted ac` ac_greater by(auto intro: "4.IH")
   ultimately have "sorted (eqs @ x # quicksort_acc ac gts)"
-    by(auto simp add: sorted_append sorted_Cons)
+    by(auto simp add: sorted_append)
   moreover have "\<forall>y\<in>set lts. \<forall>a\<in>set (eqs @ x # quicksort_acc ac gts). y < a"
     using `\<forall>y\<in>set lts. y < x` ac_greater `\<forall>a\<in>set gts. x < a` `\<forall>y\<in>set eqs. y = x`
     by fastforce
@@ -235,13 +235,13 @@ lemma [simp]:
   assumes "sorted xs"
   shows sorted_remdups_sorted: "sorted (remdups_sorted xs)"
   and set_remdups_sorted: "set (remdups_sorted xs) = set xs"
-using assms by(induct xs rule: remdups_sorted.induct)(auto simp add: sorted_Cons)
+using assms by(induct xs rule: remdups_sorted.induct)(auto)
 
 lemma distinct_remdups_sorted [simp]: "sorted xs \<Longrightarrow> distinct (remdups_sorted xs)"
-by(induct xs rule: remdups_sorted.induct)(auto simp add: sorted_Cons)
+by(induct xs rule: remdups_sorted.induct)(auto)
 
 lemma remdups_sorted_conv_remdups: "sorted xs \<Longrightarrow> remdups_sorted xs = remdups xs"
-by(induct xs rule: remdups_sorted.induct)(auto simp add: sorted_Cons)
+by(induct xs rule: remdups_sorted.induct)(auto)
 
 end
 
@@ -1214,7 +1214,7 @@ lemma sorted_list_subset_correct:
   "\<lbrakk> sorted xs; distinct xs; sorted ys; distinct ys \<rbrakk> 
   \<Longrightarrow> sorted_list_subset (=) xs ys \<longleftrightarrow> set xs \<subseteq> set ys"
 apply(induct "(=) :: 'a \<Rightarrow> 'a \<Rightarrow> bool" xs ys rule: sorted_list_subset.induct)
-apply(auto 6 2 simp add: sorted_Cons)
+apply(auto 6 2)
 apply auto
 by (metis eq_iff insert_iff set_mp)
 

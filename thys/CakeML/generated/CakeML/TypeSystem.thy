@@ -736,8 +736,8 @@ by pat_completeness auto
 (*val check_ctor_tenv : tenv_abbrev -> list (list tvarN * typeN * list (conN * list t)) -> bool*)
 definition check_ctor_tenv  :: "((modN),(typeN),((tvarN)list*t))namespace \<Rightarrow>((tvarN)list*typeN*(conN*(t)list)list)list \<Rightarrow> bool "  where 
      " check_ctor_tenv tenvT tds = (
-  check_dup_ctors tds \<and>  
-(((\<forall> x \<in> (set tds).  ( \<lambda>x .  
+  check_dup_ctors tds \<and>
+  (((\<forall> x \<in> (set tds).  ( \<lambda>x .  
   (case  x of
       (tvs,tn,ctors) =>
   Lem_list.allDistinct tvs \<and>
@@ -952,8 +952,8 @@ type_e tenv tenvE (Raise e) t0 "
 type_e tenv tenvE e t0 \<and> (\<not> (pes = []) \<and>
 ((\<forall> (p,e) \<in>  
   List.set pes. ( \<exists> bindings. 
-   Lem_list.allDistinct (pat_bindings p []) \<and>   
-(type_p (num_tvs tenvE) tenv p Texn bindings \<and>
+   Lem_list.allDistinct (pat_bindings p []) \<and>
+   (type_p (num_tvs tenvE) tenv p Texn bindings \<and>
    type_e tenv (bind_var_list(( 0 :: nat)) bindings tenvE) e t0)))))
 ==>
 type_e tenv tenvE (Handle e pes) t0 "
@@ -1024,8 +1024,8 @@ type_e tenv tenvE (If e1 e2 e3) t0 "
 type_e tenv tenvE e t1 \<and> (\<not> (pes = []) \<and>
 ((\<forall> (p,e) \<in>  
   List.set pes.  ( \<exists> bindings. 
-   Lem_list.allDistinct (pat_bindings p []) \<and>   
-(type_p (num_tvs tenvE) tenv p t1 bindings \<and>
+   Lem_list.allDistinct (pat_bindings p []) \<and>
+   (type_p (num_tvs tenvE) tenv p t1 bindings \<and>
    type_e tenv (bind_var_list(( 0 :: nat)) bindings tenvE) e t2)))))
 ==>
 type_e tenv tenvE (Mat e pes) t2 "
@@ -1126,21 +1126,21 @@ definition type_pe_determ  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow
   \<forall> t1. 
   \<forall> tenv1. 
   \<forall> t2. 
-  \<forall> tenv2.     
-(type_p(( 0 :: nat)) tenv p t1 tenv1 \<and> (type_e tenv tenvE e t1 \<and>    
-(type_p(( 0 :: nat)) tenv p t2 tenv2 \<and> type_e tenv tenvE e t2)))
-    \<longrightarrow>    
-(tenv1 = tenv2)))"
+  \<forall> tenv2. 
+    (type_p(( 0 :: nat)) tenv p t1 tenv1 \<and> (type_e tenv tenvE e t1 \<and>
+    (type_p(( 0 :: nat)) tenv p t2 tenv2 \<and> type_e tenv tenvE e t2)))
+    \<longrightarrow>
+    (tenv1 = tenv2)))"
 
 
 (*val tscheme_inst : (nat * t) -> (nat * t) -> bool*)
 fun tscheme_inst  :: " nat*t \<Rightarrow> nat*t \<Rightarrow> bool "  where 
      " tscheme_inst (tvs_spec, t_spec) (tvs_impl, t_impl) = ((
-  \<exists> subst.     
-(List.length subst = tvs_impl) \<and>    
-(check_freevars tvs_impl [] t_impl \<and>    
-(((\<forall> x \<in> (set subst).  (check_freevars tvs_spec []) x)) \<and>    
-(deBruijn_subst(( 0 :: nat)) subst t_impl = t_spec)))))"
+  \<exists> subst. 
+    (List.length subst = tvs_impl) \<and>
+    (check_freevars tvs_impl [] t_impl \<and>
+    (((\<forall> x \<in> (set subst).  (check_freevars tvs_spec []) x)) \<and>
+    (deBruijn_subst(( 0 :: nat)) subst t_impl = t_spec)))))"
 
 
 inductive
@@ -1151,9 +1151,9 @@ is_value e \<and>
 (Lem_list.allDistinct (pat_bindings p []) \<and>
 (type_p tvs tenv p t0 bindings \<and>
 (type_e tenv (bind_tvar tvs Empty) e t0 \<and>
-(extra_checks \<longrightarrow>  
-((\<forall> tvs'. \<forall> bindings'. \<forall> t'.     
-(type_p tvs' tenv p t' bindings' \<and>
+(extra_checks \<longrightarrow>
+  ((\<forall> tvs'. \<forall> bindings'. \<forall> t'. 
+    (type_p tvs' tenv p t' bindings' \<and>
     type_e tenv (bind_tvar tvs' Empty) e t') \<longrightarrow>
       list_all2 tscheme_inst (List.map snd (tenv_add_tvs tvs' bindings')) (List.map snd (tenv_add_tvs tvs bindings))))))))
 ==>
@@ -1179,8 +1179,8 @@ type_d extra_checks mn decls tenv (Dlet locs p e)
 
 "dletrec" : " \<And> extra_checks mn tenv funs bindings tvs decls locs.
 type_funs tenv (bind_var_list(( 0 :: nat)) bindings (bind_tvar tvs Empty)) funs bindings \<and>
-(extra_checks \<longrightarrow>  
-((\<forall> tvs'. \<forall> bindings'. 
+(extra_checks \<longrightarrow>
+  ((\<forall> tvs'. \<forall> bindings'. 
     type_funs tenv (bind_var_list(( 0 :: nat)) bindings' (bind_tvar tvs' Empty)) funs bindings' \<longrightarrow>
       list_all2 tscheme_inst (List.map snd (tenv_add_tvs tvs' bindings')) (List.map snd (tenv_add_tvs tvs bindings)))))
 ==>
@@ -1329,19 +1329,19 @@ type_specs mn tenvT (Stype_opq tvs tn # specs)
 
 (*val weak_decls : decls -> decls -> bool*)
 definition weak_decls  :: " decls \<Rightarrow> decls \<Rightarrow> bool "  where 
-     " weak_decls decls_impl decls_spec = (  
-((defined_mods0   decls_impl) =(defined_mods0   decls_spec)) \<and>
-  (((defined_types0   decls_spec) \<subseteq>(defined_types0   decls_impl)) \<and>  
-((defined_exns   decls_spec) \<subseteq>(defined_exns   decls_impl))))"
+     " weak_decls decls_impl decls_spec = (
+  ((defined_mods0   decls_impl) =(defined_mods0   decls_spec)) \<and>
+  (((defined_types0   decls_spec) \<subseteq>(defined_types0   decls_impl)) \<and>
+  ((defined_exns   decls_spec) \<subseteq>(defined_exns   decls_impl))))"
 
 
 (*val weak_tenvT : id modN typeN -> (list tvarN * t) -> (list tvarN * t) -> bool*)
 fun weak_tenvT  :: "((modN),(typeN))id0 \<Rightarrow>(string)list*t \<Rightarrow>(string)list*t \<Rightarrow> bool "  where 
-     " weak_tenvT n (tvs_spec, t_spec) (tvs_impl, t_impl) = (  
-(
+     " weak_tenvT n (tvs_spec, t_spec) (tvs_impl, t_impl) = (
+  (
   (* For simplicity, we reject matches that differ only by renaming of bound type variables *)tvs_spec = tvs_impl) \<and>
-  ((t_spec = t_impl) \<or>   
-(
+  ((t_spec = t_impl) \<or>
+   (
    (* The specified type is opaque *)t_spec = Tapp (List.map Tvar tvs_spec) (TC_name n))))"
 
 
@@ -1352,8 +1352,8 @@ definition tscheme_inst2  :: " 'a \<Rightarrow> nat*t \<Rightarrow> nat*t \<Righ
 (*val weak_tenv : type_env -> type_env -> bool*)
 definition weak_tenv  :: " type_env \<Rightarrow> type_env \<Rightarrow> bool "  where 
      " weak_tenv tenv_impl tenv_spec = (
-  nsSub tscheme_inst2(v0   tenv_spec)(v0   tenv_impl) \<and>  
-(nsSub ( \<lambda>x .  
+  nsSub tscheme_inst2(v0   tenv_spec)(v0   tenv_impl) \<and>
+  (nsSub ( \<lambda>x .  
   (case  x of _ => \<lambda> x y .  x = y ))(c0   tenv_spec)(c0   tenv_impl) \<and>
   nsSub weak_tenvT(t   tenv_spec)(t   tenv_impl)))"
 

@@ -398,7 +398,7 @@ proof -
       by (rule integrable_on_superset) (auto simp: f_def)
   next
     fix n :: nat
-    show "\<forall>x\<in>{a..}. norm (f n x) \<le> of_real (1/12) * (1 / x^2)"
+    show "norm (f n x) \<le> of_real (1/12) * (1 / x^2)" if "x \<in> {a..}" for x
       using a P_ge_0 P_upper_bound by (auto simp: f_def)
   next
     show "(\<lambda>x::real. of_real (1/12) * (1 / x^2)) integrable_on {a..}"
@@ -483,8 +483,9 @@ next
 qed
 
 private lemma Gamma_asymp_equiv_aux: 
-  "Gamma \<sim> (\<lambda>x. exp c * x powr (x - 1/2) / exp x)"
+  "Gamma \<sim>[at_top] (\<lambda>x. exp c * x powr (x - 1/2) / exp x)"
 proof (rule asymp_equiv_sandwich)
+  include asymp_equiv_notation
   show "eventually (\<lambda>x. exp c * x powr (x - 1/2) / exp x \<le> Gamma x) at_top"
        "eventually (\<lambda>x. exp c * x powr (x - 1/2) / exp x * exp (1/(12*x)) \<ge> Gamma x) at_top"
     using eventually_ge_at_top[of "1::real"]
@@ -505,8 +506,9 @@ private lemma exp_1_powr_real [simp]: "exp (1::real) powr x = exp x"
   by (simp add: powr_def)
 
 private lemma fact_asymp_equiv_aux:
-  "fact \<sim> (\<lambda>x. exp c * sqrt (real x) * (real x / exp 1) powr real x)"
+  "fact \<sim>[at_top] (\<lambda>x. exp c * sqrt (real x) * (real x / exp 1) powr real x)"
 proof -
+  include asymp_equiv_notation
   have "fact \<sim> (\<lambda>n. Gamma (real (Suc n)))" by (simp add: Gamma_fact)
   also have "eventually (\<lambda>n. Gamma (real (Suc n)) = real n * Gamma (real n)) at_top"
     using eventually_gt_at_top[of "0::nat"]
@@ -538,6 +540,7 @@ private lemma exp_mult_2: "exp (y * 2 :: real) = exp y * exp y"
 
 private lemma exp_c: "exp c = sqrt (2*pi)"
 proof -
+  include asymp_equiv_notation
   define p where "p = (\<lambda>n. \<Prod>k=1..n. (4*real k^2) / (4*real k^2 - 1))"
 
   have p_0 [simp]: "p 0 = 1" by (simp add: p_def)
@@ -691,7 +694,7 @@ next
 qed
 
 theorem Gamma_asymp_equiv: 
-  "Gamma \<sim> (\<lambda>x. sqrt (2*pi/x) * (x / exp 1) powr x :: real)"
+  "Gamma \<sim>[at_top] (\<lambda>x. sqrt (2*pi/x) * (x / exp 1) powr x :: real)"
 proof -
   note Gamma_asymp_equiv_aux
   also have "eventually (\<lambda>x. exp c * x powr (x - 1/2) / exp x = 
@@ -707,7 +710,7 @@ proof -
 qed
 
 theorem fact_asymp_equiv: 
-  "fact \<sim> (\<lambda>n. sqrt (2*pi*n) * (n / exp 1) ^ n :: real)"
+  "fact \<sim>[at_top] (\<lambda>n. sqrt (2*pi*n) * (n / exp 1) ^ n :: real)"
 proof -
   note fact_asymp_equiv_aux
   also have "eventually (\<lambda>n. exp c * sqrt (real n) = sqrt (2 * pi * real n)) at_top"

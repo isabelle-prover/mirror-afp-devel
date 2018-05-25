@@ -70,12 +70,12 @@ proof -
     next
       case (Suc nn)
       with Cons(2) obtain mm where m: "m = Suc mm" and mm: "mm \<in> {nn, Suc nn}" by auto
-      from Cons(3) have sort: "sorted xs" by (simp add: sorted_Cons)
+      from Cons(3) have sort: "sorted xs" by (simp)
       note IH = Cons(1)[OF mm]
       show ?thesis
       proof (cases "d \<le> x")
         case True
-        with Cons(3)[unfolded sorted_Cons] have ins: "insort d (x # xs) = d # insort x xs"
+        with Cons(3) have ins: "insort d (x # xs) = d # insort x xs"
           by (cases xs, auto) 
         show ?thesis unfolding ins Suc m using IH[OF sort] by auto
       next
@@ -208,7 +208,7 @@ proof -
         where bef: "bef = b1 @ b # b2" and sub: "mset ds \<subseteq># (mset (b1 @ b2) + mset (a1 @ a2))" by auto
       from Cons(3) have len_b: "length ds \<le> length (b1 @ b2)" unfolding bef by auto
       from Cons(5)[unfolded bef aft] have sort: "sorted ( (b1 @ b2) @ (a1 @ a2))" 
-        unfolding sorted_append sorted_Cons by auto
+        unfolding sorted_append by auto
       note IH = Cons(1)[OF sub len_b len_a sort]
       show ?thesis using IH unfolding aft by simp
     next
@@ -223,7 +223,7 @@ proof -
         by (auto simp: ac_simps)
       from Cons(4) have len_a: "length ds \<le> length (a1 @ a2)" unfolding aft by auto
       from Cons(5)[unfolded bef aft] have sort: "sorted ( (b1 @ b2) @ (a1 @ a2))" and ad: "d \<le> a"
-        unfolding sorted_append sorted_Cons by auto
+        unfolding sorted_append by auto
       note IH = Cons(1)[OF sub len_b len_a sort]
       show ?thesis using IH ad unfolding aft by simp
     qed

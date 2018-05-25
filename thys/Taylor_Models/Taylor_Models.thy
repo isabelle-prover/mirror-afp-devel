@@ -429,7 +429,7 @@ proof-
          interpret_floatarith (deriv_rec (Cos (Var 0)) (Suc n)) (xs[0:=t]))
          (at t within S)"
     using n_mod_4_cases assms
-    by (auto simp add: mod_Suc_eq_Suc_mod[of n 4] Sin_sin field_differentiable_minus
+    by (auto simp add: mod_Suc Sin_sin field_differentiable_minus
         intro!: derivative_eq_intros)
 next
   assume f_def: "f = Inverse (Var 0)" and "isDERIV 0 f (xs[0:=t])"
@@ -439,24 +439,9 @@ next
     fix n::nat and x::real
     assume "x \<noteq> 0"
     moreover have "(n mod 2 = 0 \<and> Suc n mod 2 = 1) \<or> (n mod 2 = 1 \<and> Suc n mod 2 = 0)"
-      apply(simp)
-      apply(safe)
-         apply(simp_all)
-      by (presburger)+
+      by (cases n rule: parity_cases) auto
     ultimately have "interpret_floatarith (deriv_rec f n) (xs[0:=x]) = fact n * (-1::real)^n / (x^Suc n)"
-      apply(safe)
-       apply(simp_all add: f_def field_simps)
-       apply(safe)
-      using fact_real_float_equiv assms
-        apply simp_all
-    proof(goal_cases)
-      case (1 q)
-      hence n_decomp: "n = (q-1) * 2 + 1"
-        by simp
-      thus ?case
-        using fact_real_float_equiv
-        by simp
-    qed
+      using assms by (auto simp add: f_def field_simps fact_real_float_equiv)
   }
   note closed_formula = this
 

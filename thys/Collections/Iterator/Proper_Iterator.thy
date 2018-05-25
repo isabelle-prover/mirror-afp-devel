@@ -234,17 +234,17 @@ subsubsection {* Optimizing Folds *}
     assumes A: "map_iterator_genord (it s) m (\<lambda>(k,_) (k',_). R k k')"
     shows "map_of (it_to_list it s) = m
       \<and> distinct (map fst (it_to_list it s))
-      \<and> sorted_by_rel R ((map fst (it_to_list it s)))"
+      \<and> sorted_wrt R ((map fst (it_to_list it s)))"
     unfolding it_to_list_def
     apply (rule map_iterator_genord_rule_insert_P[OF A, where I="
       \<lambda>it l. map_of l = m |` it 
         \<and> distinct (map fst l) 
-        \<and> sorted_by_rel R ((map fst l))
+        \<and> sorted_wrt R ((map fst l))
       "])
     apply auto
-    apply (auto intro!: ext simp: restrict_map_def) []
+    apply (auto simp: restrict_map_def) []
     apply (metis Some_eq_map_of_iff restrict_map_eq(2))
-    apply (auto simp add: sorted_by_rel_append)
+    apply (auto simp add: sorted_wrt_append)
     by (metis (lifting) restrict_map_eq(2) weak_map_of_SomeI)
 
   lemma (in linorder) map_it_to_list_linord_correct:
@@ -254,7 +254,7 @@ subsubsection {* Optimizing Folds *}
       \<and> sorted ((map fst (it_to_list it s)))"
     using map_it_to_list_genord_correct[where it=it,
       OF A[unfolded set_iterator_map_linord_def]]
-    by simp
+    by (simp add: sorted_sorted_wrt)
 
   lemma (in linorder) map_it_to_list_rev_linord_correct:
     assumes A: "map_iterator_rev_linord (it s) m"

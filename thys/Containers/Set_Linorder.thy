@@ -339,14 +339,14 @@ using set_less_aux_rec[of B A]
 by(cases "B = {}")(simp_all add: empty_set_less_aux_finite_iff)
 
 lemma sorted_Cons_Min: "sorted (x # xs) \<Longrightarrow> Min (insert x (set xs)) = x"
-by(auto simp add: sorted_Cons intro: Min_eqI)
+by(auto simp add: intro: Min_eqI)
 
 lemma set_less_aux_code:
   "\<lbrakk> sorted xs; distinct xs; sorted ys; distinct ys \<rbrakk>
   \<Longrightarrow> set xs \<sqsubset>' set ys \<longleftrightarrow> ord.lexordp (>) xs ys"
 apply(induct xs ys rule: splice.induct)
 apply(simp_all add: empty_set_less_aux_finite_iff sorted_Cons_Min set_less_aux_rec neq_Nil_conv)
-apply(auto simp add: sorted_Cons cong: conj_cong)
+apply(auto simp add: cong: conj_cong)
 done
 
 lemma set_less_eq_aux_code:
@@ -720,10 +720,10 @@ proof -
       hence x_ao: "x \<in> above ao" and y_ao: "y \<in> above ao" by simp_all
       note yys = `sorted (y # ys)` `distinct (y # ys)`
       hence ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y' \<in> set ys. y < y'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
       note xxs = `sorted (x # xs)` `distinct (x # xs)`
       hence xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x' \<in> set xs. x < x'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
       let ?lhs = "set (x # xs)" and ?rhs = "- set (y # ys) \<inter> above ao"
       show ?case
       proof(cases "x < y")
@@ -809,7 +809,7 @@ proof -
       case (2 ao y ys)
       from `sorted (y # ys)` `distinct (y # ys)`
       have ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y' \<in> set ys. y < y'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
       show ?case
       proof(cases "proper_interval ao (Some y)")
         case True 
@@ -839,7 +839,7 @@ proof -
       case (3 ao x xs)
       from `sorted (x # xs)` `distinct (x # xs)`
       have xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x'\<in>set xs. x < x'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
       show ?case
       proof(cases "proper_interval ao (Some x)")
         case True
@@ -865,10 +865,10 @@ proof -
       hence x_ao: "x \<in> above ao" and y_ao: "y \<in> above ao" by simp_all
       note xxs = `sorted (x # xs)` `distinct (x # xs)`
       hence xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x'\<in>set xs. x < x'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
       note yys = `sorted (y # ys)` `distinct (y # ys)`
       hence ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y'\<in>set ys. y < y'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
       let ?lhs = "- set (x # xs) \<inter> above ao" and ?rhs = "set (y # ys)"
       show ?case
       proof(cases "x < y")
@@ -1046,7 +1046,7 @@ next
   case (2 x y ys)
   from `sorted (y # ys)` `distinct (y # ys)`
   have ys: "sorted ys" "distinct ys" and y: "\<forall>y'\<in>set ys. y < y'"
-    by(auto simp add: sorted_Cons less_le)
+    by(auto simp add: less_le)
   hence "exhaustive_above y ys = (set ys = {z. y < z})" by(rule "2.IH")
   moreover from `\<forall>y'\<in>set (y # ys). x < y'` have "x < y" by simp
   ultimately show ?case using y 
@@ -1062,7 +1062,7 @@ next
   case Cons
   show ?thesis using assms unfolding Cons exhaustive.simps
     apply(subst exhaustive_above_iff)
-    apply(auto simp add: sorted_Cons less_le proper_interval_simps not_less)
+    apply(auto simp add: less_le proper_interval_simps not_less)
     by (metis List.set_simps(2) UNIV_I eq_iff set_ConsD)
 qed
 
@@ -1078,17 +1078,17 @@ proof -
     case 1 thus ?case by simp
   next
     case (2 y ys)
-    hence "\<forall>y'\<in>set ys. y < y'" by(auto simp add: sorted_Cons less_le)
+    hence "\<forall>y'\<in>set ys. y < y'" by(auto simp add: less_le)
     thus ?case
       by(cases ys)(auto simp add: proper_interval_simps set_less_aux_singleton_iff intro: psubset_finite_imp_set_less_aux)
   next
     case (3 x xs y ys)
     from `sorted (x # xs)` `distinct (x # xs)`
     have xs: "sorted xs" "distinct xs" and x: "\<forall>x'\<in>set xs. x < x'"
-      by(auto simp add: sorted_Cons less_le)
+      by(auto simp add: less_le)
     from `sorted (y # ys)` `distinct (y # ys)`
     have ys: "sorted ys" "distinct ys" and y: "\<forall>y'\<in>set ys. y < y'"
-      by(auto simp add: sorted_Cons less_le)
+      by(auto simp add: less_le)
     have Minxxs: "Min (set (x # xs)) = x" and xnxs: "x \<notin> set xs"
       using x by(auto intro!: Min_eqI)
     have Minyys: "Min (set (y # ys)) = y" and ynys: "y \<notin> set ys" 
@@ -1356,10 +1356,10 @@ proof -
               by(clarsimp simp add: proper_interval_simps)
             have "last (y # ys) \<in> set (y # ys)" by(rule last_in_set) simp
             with ys z' have "z' \<in> above ao" "z' \<notin> set (y # ys)"
-              by(auto simp del: last.simps intro: above_upclosed dest: sorted_last)
+              by(auto simp del: last.simps sorted.simps(2) intro: above_upclosed dest: sorted_last)
             with eq_z have "z = z'" by fastforce
             from z' have "\<And>x. x \<in> set (y # ys) \<Longrightarrow> x < z'" using ys
-              by(auto dest: sorted_last)
+              by(auto dest: sorted_last simp del: sorted.simps(2))
             with eq_z `z = z'`
             have "\<And>x. x \<in> above ao \<Longrightarrow> x \<le> z'" by(fastforce)
             with `A \<sqsubset>' {z}` nempty `z = z'` subset
@@ -1464,10 +1464,10 @@ proof -
               by(clarsimp simp add: proper_interval_simps)
             have "last (x # xs) \<in> set (x # xs)" by(rule last_in_set) simp
             with xs z' have "z' \<in> above ao" "z' \<notin> set (x # xs)"
-              by(auto simp del: last.simps intro: above_upclosed dest: sorted_last)
+              by(auto simp del: last.simps sorted.simps(2) intro: above_upclosed dest: sorted_last)
             with z have "z = z'" by fastforce
             from z' have y_less: "\<And>y. y \<in> set (x # xs) \<Longrightarrow> y < z'" using xs
-              by(auto dest: sorted_last)
+              by(auto simp del: sorted.simps(2) dest: sorted_last)
             with z `z = z'` have "\<And>y. y \<in> above ao \<Longrightarrow> y \<le> z'" by(fastforce)
             
             from lessA subset obtain y where y: "y \<in> A" "y \<in> above ao" "y \<notin> set (x # xs)"
@@ -1501,9 +1501,9 @@ proof -
         and xxs_above = `set (x # xs) \<subseteq> above ao`
         and yys_above = `set (y # ys) \<subseteq> above ao`
       from xxs have xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x'\<in>set xs. x < x'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
       from yys have ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y'\<in>set ys. y < y'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
 
       have len_xs: "length xs = card (set xs)"
         using xs by(auto simp add: List.card_set intro: sym)
@@ -1522,15 +1522,15 @@ proof -
           case True
           then obtain z where z: "z \<in> above ao" "z < x"
             by(clarsimp simp add: proper_interval_Some2)
-          moreover with xxs have "\<forall>x'\<in>set xs. z < x'" by(auto simp add: sorted_Cons)
+          moreover with xxs have "\<forall>x'\<in>set xs. z < x'" by(auto)
           ultimately have "set (x # xs) \<sqsubset>' {z}"
             by(auto simp add: set_less_aux_def intro!: bexI[where x=z])
           moreover {
             from z yys `x < y` have "z < y" "\<forall>y'\<in>set ys. z < y'"
-              by(auto simp add: sorted_Cons)
+              by(auto)
             hence subset: "{z} \<subseteq> - set (y # ys) \<inter> above ao"
               using ys `x < y` z by auto
-            moreover have "x \<in> \<dots>" using yys xxs `x < y` xxs_above by(auto simp add: sorted_Cons)
+            moreover have "x \<in> \<dots>" using yys xxs `x < y` xxs_above by(auto)
             ultimately have "{z} \<subset> \<dots>" using `z < x` by fastforce
             hence "{z} \<sqsubset>' \<dots>"
               by(fastforce intro: psubset_finite_imp_set_less_aux) }
@@ -1638,7 +1638,7 @@ proof -
             case True
             then obtain z where z: "z \<in> above ao" "z < y"
               by(clarsimp simp add: proper_interval_Some2)
-            from xxs `y < x` have "\<forall>x'\<in>set (x # xs). y < x'" by(auto simp add: sorted_Cons)
+            from xxs `y < x` have "\<forall>x'\<in>set (x # xs). y < x'" by(auto)
             hence less_A: "set (x # xs) \<sqsubset>' {y}" 
               by(auto simp add: set_less_aux_def intro!: bexI[where x=y])
 
@@ -1861,10 +1861,10 @@ proof -
       case (1 ao x xs y ys)
       note xxs = `sorted (x # xs)` `distinct (x # xs)`
       hence xs: "sorted xs" "distinct xs" and x_Min: "\<forall>x' \<in> set xs. x < x'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
       note yys = `sorted (y # ys)` `distinct (y # ys)`
       hence ys: "sorted ys" "distinct ys" and y_Min: "\<forall>y'\<in>set ys. y < y'"
-        by(auto simp add: sorted_Cons less_le)
+        by(auto simp add: less_le)
       note xxs_above = `set (x # xs) \<subseteq> above ao`
       note yys_above = `set (y # ys) \<subseteq> above ao`
 
@@ -2048,7 +2048,7 @@ proof -
                 with `?lhs'` obtain x' xs' where xs_eq: "xs = x' # xs'"
                   by(auto simp add: neq_Nil_conv)
                 with xs have x'_Min: "\<forall>x'' \<in> set xs'. x' < x''"
-                  by(auto simp add: sorted_Cons less_le)
+                  by(auto simp add: less_le)
                 let ?A = "- set (x # xs')"
                 have "- set (x # xs) \<inter> above ao \<subseteq> ?A \<inter> above ao"
                   using xs_eq by auto
@@ -2150,32 +2150,42 @@ lemma proper_interval_natural_simps [code]:
   "proper_interval (Some x) (Some y) \<longleftrightarrow> y - x > 1"
 by(transfer, simp)+
 
-lemma char_less_iff_nat_of_char: "x < y \<longleftrightarrow> nat_of_char x < nat_of_char y"
+lemma char_less_iff_nat_of_char: "x < y \<longleftrightarrow> of_char x < (of_char y :: nat)"
   by (fact less_char_def)
 
-lemma nat_of_char_inject [simp]: "nat_of_char x = nat_of_char y \<longleftrightarrow> x = y"
-  by (fact nat_of_char_eq_iff)
+lemma nat_of_char_inject [simp]: "of_char x = (of_char y :: nat) \<longleftrightarrow> x = y"
+  by (fact of_char_eq_iff)
 
-lemma char_le_iff_nat_of_char: "x \<le> y \<longleftrightarrow> nat_of_char x \<le> nat_of_char y"
+lemma char_le_iff_nat_of_char: "x \<le> y \<longleftrightarrow> of_char x \<le> (of_char y :: nat)"
   by (fact less_eq_char_def)
 
-instantiation char :: proper_interval begin
+instantiation char :: proper_interval
+begin
+
 fun proper_interval_char :: "char proper_interval" where
   "proper_interval_char None None \<longleftrightarrow> True"
-| "proper_interval_char None (Some x) \<longleftrightarrow> x \<noteq> 0"
+| "proper_interval_char None (Some x) \<longleftrightarrow> x \<noteq> CHR 0x00"
 | "proper_interval_char (Some x) None \<longleftrightarrow> x \<noteq> CHR 0xFF"
-| "proper_interval_char (Some x) (Some y) \<longleftrightarrow> nat_of_char y - nat_of_char x > 1"
-instance
-proof intro_classes
+| "proper_interval_char (Some x) (Some y) \<longleftrightarrow> of_char y - of_char x > (1 :: nat)"
+
+instance proof
   fix y :: char
-  { assume "y \<noteq> 0"
-    hence "0 < y" 
-      by (simp add: char_less_iff_nat_of_char nat_of_char_eq_iff [symmetric]) }
+  { assume "y \<noteq> CHR 0x00"
+    have "CHR 0x00 < y" 
+    proof (rule ccontr)
+      assume "\<not> CHR 0x00 < y"
+      then have "of_char y = (of_char CHR 0x00 :: nat)"
+        by (simp add: not_less char_le_iff_nat_of_char)
+      then have "y = CHR 0x00"
+        using nat_of_char_inject [of y "CHR 0x00"] by simp
+      with \<open>y \<noteq> CHR 0x00\<close> show False
+        by simp
+    qed }
   moreover
   { fix z :: char
-    assume "z < 0"
+    assume "z < CHR 0x00"
     hence False
-      by (simp add: char_less_iff_nat_of_char nat_of_char_eq_iff [symmetric]) }
+      by (simp add: char_less_iff_nat_of_char of_char_eq_iff [symmetric]) }
   ultimately show "proper_interval None (Some y) = (\<exists>z. z < y)"
     by auto
 
@@ -2193,19 +2203,22 @@ proof intro_classes
         (insert nat_of_char_less_256 [of z], simp) }
   ultimately show "proper_interval (Some x) None = (\<exists>z. x < z)" by auto
 
-  { assume gt: "nat_of_char y - nat_of_char x > 1"
-    let ?z = "char_of_nat (nat_of_char x + 1)"
-    from gt nat_of_char_less_256[of y]
-    have 255: "nat_of_char x < 255" by arith
+  { assume gt: "of_char y - of_char x > (1 :: nat)"
+    let ?z = "char_of (of_char x + (1 :: nat))"
+    from gt nat_of_char_less_256 [of y]
+    have 255: "of_char x < (255 :: nat)" by arith
     with gt have "x < ?z" "?z < y"
       by (simp_all add: char_less_iff_nat_of_char)
     hence "\<exists>z. x < z \<and> z < y" by blast }
   moreover
   { fix z
     assume "x < z" "z < y"
-    hence "1 < nat_of_char y - nat_of_char x" by(simp add: char_less_iff_nat_of_char) }
-  ultimately show "proper_interval (Some x) (Some y) = (\<exists>z>x. z < y)" by auto
+    hence "(1 :: nat) < of_char y - of_char x"
+      by (simp add: char_less_iff_nat_of_char) }
+  ultimately show "proper_interval (Some x) (Some y) = (\<exists>z>x. z < y)"
+    by auto
 qed simp
+
 end
 
 instantiation Enum.finite_1 :: proper_interval begin

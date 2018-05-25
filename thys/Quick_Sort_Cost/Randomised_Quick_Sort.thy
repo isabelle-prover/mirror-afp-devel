@@ -416,23 +416,23 @@ proof -
 qed
 
 (* TODO Move *)
-lemma asymp_equiv_harm [asymp_equiv_intros]: "harm \<sim> (\<lambda>n. ln (real n))"
+lemma asymp_equiv_harm [asymp_equiv_intros]: "harm \<sim>[at_top] (\<lambda>n. ln (real n))"
 proof -
   have "(\<lambda>n. harm n - ln (real n)) \<in> O(\<lambda>_. 1)" using euler_mascheroni_LIMSEQ
     by (intro bigoI_tendsto[where c = euler_mascheroni]) simp_all
   also have "(\<lambda>_. 1) \<in> o(\<lambda>n. ln (real n))" by auto
-  finally have "(\<lambda>n. ln (real n) + (harm n - ln (real n))) \<sim> (\<lambda>n. ln (real n))"
+  finally have "(\<lambda>n. ln (real n) + (harm n - ln (real n))) \<sim>[at_top] (\<lambda>n. ln (real n))"
     by (subst asymp_equiv_add_right) simp_all
   thus ?thesis by simp
 qed
   
-corollary rqs_cost_exp_asymp_equiv: "rqs_cost_exp \<sim> (\<lambda>n. 2 * n * ln n)"
+corollary rqs_cost_exp_asymp_equiv: "rqs_cost_exp \<sim>[at_top] (\<lambda>n. 2 * n * ln n)"
 proof -
   have "rqs_cost_exp = (\<lambda>n. 2 * real (n + 1) * harm n - 4 * real n)" using rqs_cost_exp_eq ..
   also have "\<dots> = (\<lambda>n. 2 * real n * harm n + (2 * harm n - 4 * real n))"
     by (simp add: algebra_simps)
-  finally have "rqs_cost_exp \<sim> \<dots>" by simp
-  also have "\<dots> \<sim> (\<lambda>n. 2 * real n * harm n)"
+  finally have "rqs_cost_exp \<sim>[at_top] \<dots>" by simp
+  also have "\<dots> \<sim>[at_top] (\<lambda>n. 2 * real n * harm n)"
   proof (subst asymp_equiv_add_right)
     have "(\<lambda>x. 1 * harm x) \<in> o(\<lambda>x. real x * harm x)" 
       by (intro landau_o.small_big_mult smallo_real_nat_transfer) simp_all
@@ -443,7 +443,7 @@ proof -
     ultimately show "(\<lambda>n. 2 * harm n - 4 * real n) \<in> o(\<lambda>n. 2 * real n * harm n)"
       by (intro sum_in_smallo) simp_all
   qed simp_all
-  also have "\<dots> \<sim> (\<lambda>n. 2 * real n * ln (real n))" by (intro asymp_equiv_intros)
+  also have "\<dots> \<sim>[at_top] (\<lambda>n. 2 * real n * ln (real n))" by (intro asymp_equiv_intros)
   finally show ?thesis .
 qed
 

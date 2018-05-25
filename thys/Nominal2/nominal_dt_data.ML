@@ -1,6 +1,6 @@
 (* Author: Christian Urban
 
-   data about nominal datatypes 
+   data about nominal datatypes
 *)
 
 signature NOMINAL_DT_DATA =
@@ -20,7 +20,7 @@ sig
 
   val get_all_info: Proof.context -> (string * info) list
   val get_info: Proof.context -> string -> info option
-  val the_info: Proof.context -> string -> info 
+  val the_info: Proof.context -> string -> info
   val register_info: (string * info) -> Context.generic -> Context.generic
   val mk_infos: string list -> thm list -> thm list -> thm list -> thm list -> (string * info) list
 
@@ -34,6 +34,7 @@ sig
 
   datatype raw_dt_info = RawDtInfo of
     {raw_dt_names         : string list,
+     raw_fp_sugars        : BNF_FP_Def_Sugar.fp_sugar list,
      raw_dts              : Old_Datatype.spec list,
      raw_tys              : typ list,
      raw_ty_args          : (string * sort) list,
@@ -57,18 +58,18 @@ sig
      alpha_intros     : thm list,
      alpha_cases      : thm list,
      alpha_raw_induct : thm}
-   
+
 end
 
 structure Nominal_Dt_Data: NOMINAL_DT_DATA =
 struct
 
 
-(* term              - is constant of the bn-function 
+(* term              - is constant of the bn-function
    int               - is datatype number over which the bn-function is defined
    int * term option - is number of the corresponding argument with possibly
-                       recursive call with bn-function term 
-*)  
+                       recursive call with bn-function term
+*)
 type bn_info = term * int * (int * term option) list list
 
 datatype bmode = Lst | Res | Set
@@ -103,7 +104,7 @@ let
     (ty_name, {inject = inject,
                distinct = distinct,
                strong_inducts = strong_inducts,
-               strong_exhaust = strong_exhaust 
+               strong_exhaust = strong_exhaust
               })
 in
   map aux ty_names
@@ -120,6 +121,7 @@ datatype user_data = UserData of
 
 datatype raw_dt_info = RawDtInfo of
   {raw_dt_names         : string list,
+   raw_fp_sugars        : BNF_FP_Def_Sugar.fp_sugar list,
    raw_dts              : Old_Datatype.spec list,
    raw_tys              : typ list,
    raw_ty_args          : (string * sort) list,

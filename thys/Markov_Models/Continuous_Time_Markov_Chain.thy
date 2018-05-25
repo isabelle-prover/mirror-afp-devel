@@ -1188,20 +1188,22 @@ proof -
       (\<integral>\<^sup>+u. indicator {0<..t} u *\<^sub>R (LINT s'|J s. p s' s'' (t - u)) \<partial>exponential (escape_rate s))"
     by (simp add: measure_pmf.integrable_const_bound[of _ 1] nn_integral_eq_integral ennreal_mult ennreal_indicator)
   also have "\<dots> = (LINT u:{0<..t}|exponential (escape_rate s). (LINT s'|J s. p s' s'' (t - u)))"
+    unfolding set_lebesgue_integral_def
     by (intro nn_integral_eq_integral E.integrable_const_bound[of _ 1] AE_I2)
        (auto intro!: mult_le_one measure_pmf.integral_le_const measure_pmf.integrable_const_bound[of _ 1])
   also have "\<dots> = (LINT u:{0<..t}|lborel. escape_rate s * exp (- escape_rate s * u) * (LINT s'|J s. p s' s'' (t - u)))"
-    unfolding exponential_def
+    unfolding exponential_def set_lebesgue_integral_def
     by (subst integral_density)
        (auto simp: ac_simps exponential_density_def fun_eq_iff split: split_indicator
              simp del: integral_mult_right integral_mult_right_zero intro!: arg_cong2[where f="integral\<^sup>L"])
   also have "\<dots> = (LINT u:{0..t}|lborel. escape_rate s * exp (- escape_rate s * (t - u)) * (LINT s'|J s. p s' s'' u))"
-    using AE_lborel_singleton[of 0] AE_lborel_singleton[of t]
+    using AE_lborel_singleton[of 0] AE_lborel_singleton[of t] unfolding set_lebesgue_integral_def
     by (subst lborel_integral_real_affine[where t=t and c="-1"])
        (auto intro!: integral_cong_AE split: split_indicator)
   also have "\<dots> = exp (- t * escape_rate s) * escape_rate s * (LINT u:{0..t}|lborel. exp (escape_rate s * u) * (LINT s'|J s. p s' s'' u))"
     by (simp add: field_simps exp_diff exp_minus)
   finally show "p s s'' t = (of_bool (s = s'') + (LBINT u:{0..t}. escape_rate s * exp (escape_rate s * u) * (LINT s'|J s. p s' s'' u))) / exp (t * escape_rate s)"
+    unfolding set_lebesgue_integral_def
     by (simp del: ennreal_plus add: ennreal_plus[symmetric] exp_minus field_simps)
 qed
 
@@ -1220,7 +1222,7 @@ proof -
       then have "0 \<le> x \<Longrightarrow> x \<le> t \<Longrightarrow> exp (x * escape_rate s) * (LINT s''|J s. p s'' s' x) \<le> exp (t * escape_rate s) * 1" for x
         by (intro mult_mono) (auto intro!: mult_mono measure_pmf.integral_le_const measure_pmf.integrable_const_bound[of _ 1])
       with t show "set_integrable lborel {0..t} ?I"
-        using escape_rate_pos[of s]
+        using escape_rate_pos[of s] unfolding set_integrable_def
         by (intro integrableI_bounded_set_indicator[where B="escape_rate s * exp (escape_rate s * t)"])
            (auto simp: field_simps)
     qed auto
@@ -1249,7 +1251,7 @@ proof -
       have "0 \<le> x \<Longrightarrow> x \<le> t \<Longrightarrow> exp (x * escape_rate s) * (LINT s''|J s. p s'' s' x) \<le> exp (t * escape_rate s) * 1" for x
         by (intro mult_mono) (auto intro!: mult_mono measure_pmf.integral_le_const measure_pmf.integrable_const_bound[of _ 1])
       with \<open>0\<le>t\<close> show "set_integrable lborel {0..t} ?I"
-        using escape_rate_pos[of s]
+        using escape_rate_pos[of s] unfolding set_integrable_def
         by (intro integrableI_bounded_set_indicator[where B="escape_rate s * exp (escape_rate s * t)"])
            (auto simp: field_simps)
     qed

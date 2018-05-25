@@ -150,8 +150,8 @@ proof -
        (simp_all add: field_simps)
   then have "\<And>x. \<phi> (l', i') x * \<phi> (l, i) x = 0"
     unfolding \<phi>_zero_iff mult_eq_0_iff by blast
-  then show ?thesis 
-    by (simp add: l2_\<phi>_def del: mult_eq_0_iff)
+  then show ?thesis
+    by (simp add: l2_\<phi>_def del: mult_eq_0_iff vector_space_over_itself.scale_eq_0_iff)
 qed
 
 lemma l2_commutative: "l2_\<phi> p q = l2_\<phi> q p"

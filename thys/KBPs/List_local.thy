@@ -293,7 +293,7 @@ declare odlist_equal.simps [code]
 lemma equal_odlist_equal[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> odlist_equal xs ys \<longleftrightarrow> (xs = ys)"
-  by (induct xs ys rule: odlist_equal.induct) (auto iff: sorted_Cons)
+  by (induct xs ys rule: odlist_equal.induct) (auto)
 
 fun
   difference :: "('a :: linorder) list \<Rightarrow> 'a list \<Rightarrow> 'a list"
@@ -310,12 +310,12 @@ declare difference.simps [code]
 lemma set_difference[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> set (difference xs ys) = set xs - set ys"
-  by (induct xs ys rule: difference.induct) (auto iff: sorted_Cons)
+  by (induct xs ys rule: difference.induct) (auto)
 
 lemma distinct_sorted_difference[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> distinct (difference xs ys) \<and> sorted (difference xs ys)"
-  by (induct xs ys rule: difference.induct) (auto iff: sorted_Cons)
+  by (induct xs ys rule: difference.induct) (auto)
 
 fun
   intersection :: "('a :: linorder) list \<Rightarrow> 'a list \<Rightarrow> 'a list"
@@ -332,12 +332,12 @@ declare intersection.simps [code]
 lemma set_intersection[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> set (intersection xs ys) = set xs \<inter> set ys"
-  by (induct xs ys rule: intersection.induct) (auto iff: sorted_Cons)
+  by (induct xs ys rule: intersection.induct) (auto)
 
 lemma distinct_sorted_intersection[simp]:
   "\<lbrakk> distinct xs; distinct ys; sorted xs; sorted ys \<rbrakk>
      \<Longrightarrow> distinct (intersection xs ys) \<and> sorted (intersection xs ys)"
-  by (induct xs ys rule: intersection.induct) (auto iff: sorted_Cons)
+  by (induct xs ys rule: intersection.induct) (auto)
 
 (* This is a variant of zipWith *)
 fun
@@ -355,13 +355,13 @@ declare image.simps [code]
 lemma set_image[simp]:
   "\<lbrakk> distinct R; distinct xs; sorted R; sorted xs \<rbrakk>
      \<Longrightarrow> set (image R xs) = set R `` set xs"
-  by (induct R xs rule: image.induct) (auto iff: less_eq_prod_def simp: sorted_Cons)
+  by (induct R xs rule: image.induct) (auto iff: less_eq_prod_def)
 
 (* Extra lemmas that really belong in List.thy *)
 
 lemma sorted_filter[simp]:
   "sorted xs \<Longrightarrow> sorted (filter P xs)"
-  by (induct xs) (auto iff: sorted_Cons)
+  by (induct xs) (auto)
 
 lemma map_prod_eq:
   assumes f: "map fst xs = map fst ys"

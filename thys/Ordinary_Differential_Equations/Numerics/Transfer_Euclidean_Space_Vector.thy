@@ -139,13 +139,13 @@ lemma auto_ll_on_open_transfer[transfer_rule]:
   by transfer_prover
 
 lemma additive_transfer[transfer_rule]:
-  "((B ===> A) ===> (=)) Real_Vector_Spaces.additive Real_Vector_Spaces.additive"
+  "((B ===> A) ===> (=)) Modules.additive Modules.additive"
   if [transfer_rule]:
     "bi_unique A"
     "bi_total B"
     "(A ===> A ===> A) (+) (+)"
     "(B ===> B ===> B) (+) (+)"
-  unfolding Real_Vector_Spaces.additive_def
+  unfolding Modules.additive_def
   by transfer_prover
 
 lemma linear_transfer[transfer_rule]: "((B ===> A) ===> (=)) linear linear"
@@ -156,7 +156,7 @@ lemma linear_transfer[transfer_rule]: "((B ===> A) ===> (=)) linear linear"
     "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
     "(B ===> B ===> B) (+) (+)"
     "((=) ===> B ===> B) ( *\<^sub>R) ( *\<^sub>R)"
-  unfolding linear_def linear_axioms_def
+  unfolding linear_iff
   by transfer_prover
 
 lemma bounded_linear_transfer[transfer_rule]: "((B ===> A) ===> (=)) bounded_linear bounded_linear"

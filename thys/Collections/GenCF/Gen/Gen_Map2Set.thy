@@ -110,7 +110,7 @@ proof -
 
     unfolding it_to_sorted_list_def
     apply (simp add: map_to_set_dom)
-    apply (simp add: sorted_by_rel_map key_rel_def[abs_def])
+    apply (simp add: sorted_wrt_map key_rel_def[abs_def])
     done
 qed
 

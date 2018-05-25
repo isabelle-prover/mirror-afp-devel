@@ -57,7 +57,7 @@ lemma has_bochner_integral_imp_has_integral:
   "has_bochner_integral lebesgue (\<lambda>x. indicator S x *\<^sub>R f x) I \<Longrightarrow> 
      (f has_integral (I :: 'b :: euclidean_space)) S"
   using has_integral_set_lebesgue[of S f] 
-  by (auto simp: has_bochner_integral_iff)
+  by (simp add: has_bochner_integral_iff set_integrable_def set_lebesgue_integral_def) 
     
 lemma has_bochner_integral_imp_has_integral':
   "has_bochner_integral lborel (\<lambda>x. indicator S x *\<^sub>R f x) I \<Longrightarrow> 
@@ -410,17 +410,21 @@ proof -
   let ?f = "\<lambda>t::real. exp (-t\<^sup>2)"
   have "(\<lambda>n. set_lebesgue_integral lborel {0..real n} ?f)
           \<longlonglongrightarrow> set_lebesgue_integral lborel (\<Union>n. {0..real n}) ?f"
-    using has_bochner_integral_erf_aux
+    using has_bochner_integral_erf_aux     
     by (intro set_integral_cont_up )
-       (insert *, auto simp: incseq_def has_bochner_integral_iff)
+       (insert *, auto simp: incseq_def has_bochner_integral_iff set_integrable_def)
   also note *
-  also have "(\<lambda>n. set_lebesgue_integral lborel {0..real n} ?f) =
-               (\<lambda>n. integral {0..real n} ?f)"
-    by (intro set_borel_integral_eq_integral ext borel_integrable_compact)
-       (auto intro!: continuous_intros)
+  also have "(\<lambda>n. set_lebesgue_integral lborel {0..real n} ?f) = (\<lambda>n. integral {0..real n} ?f)"
+  proof -
+    have "\<And>n. set_integrable lborel {0..real n} (\<lambda>x. exp (- x\<^sup>2))"
+      unfolding set_integrable_def
+      by (intro borel_integrable_compact) (auto intro!: continuous_intros)
+    then show ?thesis
+      by (intro set_borel_integral_eq_integral ext)
+  qed
   also have "\<dots> = (\<lambda>n. sqrt pi / 2 * erf (real n))" by (simp add: erf_real_altdef_nonneg)
   also have "set_lebesgue_integral lborel {0..} ?f = sqrt pi / 2"
-    using has_bochner_integral_erf_aux by (simp add: has_bochner_integral_iff)
+    using has_bochner_integral_erf_aux by (simp add: has_bochner_integral_iff set_lebesgue_integral_def)
   finally have "(\<lambda>n. 2 / sqrt pi * (sqrt pi / 2 * erf (real n))) \<longlonglongrightarrow> 
                   (2 / sqrt pi) * (sqrt pi / 2)" by (intro tendsto_intros)
   hence "(\<lambda>n. erf (real n)) \<longlonglongrightarrow> 1" by simp
@@ -529,7 +533,7 @@ lemma integrable_exp_minus_squared:
 proof -
   show ?thesis1 
     by (rule set_integrable_subset[of _ "{0..}"]) 
-       (insert assms has_bochner_integral_erf_aux, auto simp: has_bochner_integral_iff)
+       (insert assms has_bochner_integral_erf_aux, auto simp: has_bochner_integral_iff set_integrable_def)
   thus ?thesis2 by (rule set_borel_integral_eq_integral)
 qed
 
@@ -540,7 +544,7 @@ lemma
 proof -
   let ?f = "\<lambda>t::real. exp (-t\<^sup>2)"
   have int: "set_integrable lborel {0..} ?f"
-    using has_bochner_integral_erf_aux by (simp add: has_bochner_integral_iff)
+    using has_bochner_integral_erf_aux by (simp add: has_bochner_integral_iff set_integrable_def)
   from assms have *: "{(0::real)..} = {0..x} \<union> {x..}" by auto
   have "set_lebesgue_integral lborel ({0..x} \<union> {x..}) ?f = 
                set_lebesgue_integral lborel {0..x} ?f + set_lebesgue_integral lborel {x..} ?f"
@@ -548,7 +552,7 @@ proof -
        (insert assms AE_lborel_singleton[of x], auto elim!: eventually_mono)
   also note * [symmetric]
   also have "set_lebesgue_integral lborel {0..} ?f = sqrt pi / 2"
-    using has_bochner_integral_erf_aux by (simp add: has_bochner_integral_iff)
+    using has_bochner_integral_erf_aux by (simp add: has_bochner_integral_iff set_lebesgue_integral_def)
   also have "set_lebesgue_integral lborel {0..x} ?f = sqrt pi / 2 * erf x"
     by (subst set_borel_integral_eq_integral(2)[OF set_integrable_subset[OF int]])
        (insert assms, auto simp: erf_real_altdef_nonneg)

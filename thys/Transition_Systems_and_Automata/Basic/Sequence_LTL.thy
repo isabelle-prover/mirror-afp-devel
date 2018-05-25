@@ -8,7 +8,7 @@ begin
 
   subsection {* Basics *}
 
-  (* these destroy the holds constant too eagerly *)
+  text {* Avoid destroying the constant @{term holds} prematurely. *}
   lemmas [simp del] = holds.simps holds_eq1 holds_eq2 not_holds_eq
 
   lemma holds_smap[iff]: "holds P (smap f w) \<longleftrightarrow> holds (P \<circ> f) w" unfolding holds.simps by simp

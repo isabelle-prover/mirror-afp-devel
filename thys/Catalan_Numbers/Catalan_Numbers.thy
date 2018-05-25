@@ -30,7 +30,7 @@ lemma Gamma_minus_one_half_real:
 
 lemma gbinomial_asymptotic':
   assumes "z \<notin> \<nat>"
-  shows   "(\<lambda>n. z gchoose (n + k)) \<sim>
+  shows   "(\<lambda>n. z gchoose (n + k)) \<sim>[at_top]
              (\<lambda>n. (-1)^(n+k) / (Gamma (-z) * of_nat n powr (z + 1)) :: real)"
 proof -
   from assms have [simp]: "Gamma (-z) \<noteq> 0"
@@ -38,14 +38,14 @@ proof -
   have "filterlim (\<lambda>n. n + k) at_top at_top"
     by (intro filterlim_subseq strict_mono_add)
   from asymp_equivI'_const[OF gbinomial_asymptotic[of z]] assms
-    have "(\<lambda>n. z gchoose n) \<sim> (\<lambda>n. (-1)^n / (Gamma (-z) * exp ((z+1) * ln (real n))))"
+    have "(\<lambda>n. z gchoose n) \<sim>[at_top] (\<lambda>n. (-1)^n / (Gamma (-z) * exp ((z+1) * ln (real n))))"
     by (simp add: Gamma_eq_zero_iff uminus_in_nonpos_Ints_iff field_simps)
   also have "eventually (\<lambda>n. exp ((z+1) * ln (real n)) = real n powr (z+1)) at_top"
     using eventually_gt_at_top[of 0] by eventually_elim (simp add: powr_def)
-  finally have "(\<lambda>x. z gchoose (x + k)) \<sim>
+  finally have "(\<lambda>x. z gchoose (x + k)) \<sim>[at_top]
                   (\<lambda>x. (- 1) ^ (x + k) / (Gamma (- z) * real (x + k) powr (z + 1)))"
     by (rule asymp_equiv_compose') (simp add: filterlim_subseq strict_mono_add)
-  also have "(\<lambda>x. real (x + k) powr (z + 1)) \<sim> (\<lambda>x. real x powr (z + 1))"
+  also have "(\<lambda>x. real (x + k) powr (z + 1)) \<sim>[at_top] (\<lambda>x. real x powr (z + 1))"
     by (rule asymp_equiv_powr_real) (simp_all add: asymp_equiv_plus_const_right)
   finally show ?thesis by - (simp_all add: asymp_equiv_intros)
 qed
@@ -361,11 +361,11 @@ text \<open>
   Catalan numbers:
 \<close>
 theorem catalan_asymptotics:
-  "catalan \<sim> (\<lambda>n. 4 ^ n / (sqrt pi * n powr (3/2)))"
+  "catalan \<sim>[at_top] (\<lambda>n. 4 ^ n / (sqrt pi * n powr (3/2)))"
 proof -
-  have "catalan \<sim> (\<lambda>n. 2 * (- 4) ^ n * (1/2 gchoose (n+1)))"
+  have "catalan \<sim>[at_top] (\<lambda>n. 2 * (- 4) ^ n * (1/2 gchoose (n+1)))"
     by (subst catalan_closed_form_gbinomial) simp_all
-  also have "(\<lambda>n. 1/2 gchoose (n+1)) \<sim> (\<lambda>n. (-1)^(n+1) / (Gamma (-(1/2)) * real n powr (1/2 + 1)))"
+  also have "(\<lambda>n. 1/2 gchoose (n+1)) \<sim>[at_top] (\<lambda>n. (-1)^(n+1) / (Gamma (-(1/2)) * real n powr (1/2 + 1)))"
     using fraction_not_in_nats[of 2 1] by (intro asymp_equiv_intros gbinomial_asymptotic') simp_all
   also have "(\<lambda>n. 2 * (- 4) ^ n * \<dots> n) = (\<lambda>n. 4 ^ n / (sqrt pi * n powr (3/2)))"
     by (intro ext) (simp add: Gamma_minus_one_half_real power_mult_distrib [symmetric])

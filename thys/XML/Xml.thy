@@ -170,26 +170,8 @@ lemma is_letter_code [code]:
     CHR ''a'' \<le> c \<and> c \<le> CHR ''z'' \<or>
     CHR ''A'' \<le> c \<and> c \<le> CHR ''Z'' \<or>
     CHR ''0'' \<le> c \<and> c \<le> CHR ''9'' \<or>
-    c \<in> set ''_&;:-''" (is "_ \<longleftrightarrow> ?rhs")
-proof (cases c)
-  case (char_of_nat n)
-  then have [simp]: "n mod 256 = n" by simp
-  have [simp]: "n > 0 \<Longrightarrow> {m..<n} = {m..n - 1}" for m n :: nat
-    by auto
-  have "is_letter c \<longleftrightarrow> c \<in> set letters"
-    by (simp add: is_letter_def)
-  also have "\<dots> \<longleftrightarrow> n \<in> set (map nat_of_char letters)"
-    by (auto intro!: image_eqI simp add: char_of_nat)
-  also have "map nat_of_char letters =
-    [97..<123] @ [65..<91] @ [95] @ [48..<58] @ [38, 59, 58, 45]" (is "_ = ?I")
-    by (simp add: letters_def)
-  also have "n \<in> set ?I \<longleftrightarrow>
-    n \<in> {97..122} \<union> {65..90} \<union> {95} \<union> {48..57} \<union> {38, 59, 58, 45}" (is "_ \<longleftrightarrow> _ \<in> ?J")
-    by (simp only: set_append set_upt) simp
-  also have "\<dots> \<longleftrightarrow> ?rhs"
-    by (auto simp add: char_of_nat Char_def less_eq_char_def)
-  finally show ?thesis .
-qed
+    c \<in> set ''_&;:-''"
+  by (cases c) (simp add: is_letter_def letters_def)
 
 definition many_letters :: "string parser"
 where

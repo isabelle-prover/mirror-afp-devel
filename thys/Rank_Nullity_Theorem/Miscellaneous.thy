@@ -7,12 +7,19 @@
 section{*Miscellaneous*}
 
 theory Miscellaneous
-imports 
-  Generalizations
+  imports
+  "HOL-Analysis.Determinants"
   "HOL-Library.Bit"
   Mod_Type
   "HOL-Library.Function_Algebras"
 begin
+
+context Vector_Spaces.linear begin
+sublocale vector_space_pair by unfold_locales\<comment>\<open>TODO: (re)move?\<close>
+end
+
+hide_const (open) Real_Vector_Spaces.linear
+abbreviation "linear \<equiv> Vector_Spaces.linear"
 
 text{*In this file, we present some basic definitions and lemmas about linear algebra and matrices.*}
 
@@ -48,18 +55,8 @@ lemma finite_rows: "finite (rows A)"
 lemma finite_columns: "finite (columns A)"
   using finite_Atleast_Atmost_nat[of "\<lambda>i. column i A"] unfolding columns_def .
 
-lemma matrix_vector_zero: "A *v 0 = 0"
-  unfolding matrix_vector_mult_def by (simp add: zero_vec_def)
-
-lemma vector_matrix_zero: "0 v* A = 0"
-  unfolding vector_matrix_mult_def by (simp add: zero_vec_def)
-
-lemma vector_matrix_zero': "x v* 0 = 0"
-  unfolding vector_matrix_mult_def by (simp add: zero_vec_def)
-
 lemma transpose_vector: "x v* A = transpose A *v x"
-  by (unfold matrix_vector_mult_def vector_matrix_mult_def transpose_def, auto)
-
+  by simp
 
 lemma transpose_zero[simp]: "(transpose A = 0) = (A = 0)"
   unfolding transpose_def zero_vec_def vec_eq_iff by auto
@@ -71,36 +68,13 @@ text{*The following theorems and definitions have been obtained from the AFP
 @{url "http://isa-afp.org/browser_info/current/HOL/Tarskis_Geometry/Linear_Algebra2.html"}.
 I have removed some restrictions over the type classes.*}
 
-lemma vector_matrix_left_distrib:
-  (*fixes x y :: "real^('n::finite)" and A :: "real^('m::finite)^'n"*)
-  shows "(x + y) v* A = x v* A + y v* A"
-  unfolding vector_matrix_mult_def
-  by (simp add: algebra_simps sum.distrib vec_eq_iff)
-
-lemma matrix_vector_right_distrib:
-  (*fixes v w :: "real^('n::finite)" and M :: "real^'n^('m::finite)"*)
-  shows "M *v (v + w) = M *v v + M *v w"
-proof -
-  have "M *v (v + w) = (v + w) v* transpose M" by (metis transpose_transpose transpose_vector)
-  also have "\<dots> = v v* transpose M + w v* transpose M"
-    by (rule vector_matrix_left_distrib [of v w "transpose M"])
-  finally show "M *v (v + w) = M *v v + M *v w" by (metis transpose_transpose transpose_vector)
-qed
-
-
-lemma scalar_vector_matrix_assoc:
-  fixes k :: "'a::{field}" and x :: "'a::{field}^'n" and A :: "'a^'m^'n"
-  shows "(k *s x) v* A = k *s (x v* A)"
-  unfolding vector_matrix_mult_def unfolding vec_eq_iff 
-  by (auto simp add: sum_distrib_left, rule sum.cong, simp_all) 
- 
 
 lemma vector_scalar_matrix_ac:
   fixes k :: "'a::{field}" and x :: "'a::{field}^'n" and A :: "'a^'m^'n"
   shows "x v* (k *k A) = k *s (x v* A)"
   using scalar_vector_matrix_assoc 
-  unfolding vector_matrix_mult_def matrix_scalar_mult_def vec_eq_iff 
-  by (auto simp add: sum_distrib_left)
+  unfolding vector_matrix_mult_def matrix_scalar_mult_def vec_eq_iff
+  by (auto simp add: sum_distrib_left vector_space_over_itself.scale_scale)
 
 lemma transpose_scalar: "transpose (k *k A) = k *k transpose A"
   unfolding transpose_def 
@@ -109,26 +83,12 @@ lemma transpose_scalar: "transpose (k *k A) = k *k transpose A"
 lemma scalar_matrix_vector_assoc:
   fixes A :: "'a::{field}^'m^'n"
   shows "k *s (A *v v) = k *k A *v v"
-proof -
-  have "k *s (A *v v) = k *s (v v* transpose A)" by (metis transpose_transpose transpose_vector)
-  also have "\<dots> = v v* (k *k transpose A)"
-    by (rule vector_scalar_matrix_ac [symmetric])
-  also have "\<dots> = v v* transpose (k *k A)" unfolding transpose_scalar ..
-  finally show "k *s (A *v v) = k *k A *v v" by (metis transpose_transpose transpose_vector)
-qed
+  by (metis transpose_scalar vector_scalar_matrix_ac vector_transpose_matrix)
 
 lemma matrix_scalar_vector_ac:
   fixes A :: "'a::{field}^'m^'n"
   shows "A *v (k *s v) = k *k A *v v"
-proof -
-  have "A *v (k *s v) = k *s (v v* transpose A)" 
-    by (metis transpose_transpose scalar_vector_matrix_assoc transpose_vector)
-  also have "\<dots> = v v* (k *k transpose A)"
-    by (subst vector_scalar_matrix_ac) simp
-  also have "\<dots> = v v* transpose (k *k A)" by (subst transpose_scalar) simp
-  also have "\<dots> = k *k A *v v" by (metis transpose_transpose transpose_vector)
-  finally show "A *v (k *s v) = k *k A *v v" .
-qed
+  by (simp add: Miscellaneous.scalar_matrix_vector_assoc vec.scale)
 
 
 definition
@@ -198,83 +158,64 @@ begin
 text{*This theorem is the reciprocal theorem of @{thm "indep_card_eq_dim_span"}*}
 
 lemma card_eq_dim_span_indep:
-(*fixes A :: "('n::euclidean_space) set"*)
-assumes "dim (span A) = card A" and "finite A"
-shows "independent A" 
-by (metis assms card_le_dim_spanning dim_subset equalityE span_inc)
+  assumes "dim (span A) = card A" and "finite A"
+  shows "independent A" 
+  by (metis assms card_le_dim_spanning dim_subset equalityE span_superset)
 
 lemma dim_zero_eq:
-(*fixes A::"'a::euclidean_space set"*)
-assumes dim_A: "dim A = 0"
-shows "A = {} \<or> A = {0}"
-proof -
-obtain B where ind_B: "independent B" and A_in_span_B: "A \<subseteq> span B" 
-  and card_B: "card B = 0" using basis_exists[of A] unfolding dim_A by blast
-have finite_B: "finite B" using indep_card_eq_dim_span[OF ind_B] by simp
-hence B_eq_empty: "B={}" using card_B unfolding card_eq_0_iff by simp
-have "A \<subseteq> {0}" using A_in_span_B unfolding B_eq_empty span_empty .
-thus ?thesis by blast
-qed
+  assumes dim_A: "dim A = 0"
+  shows "A = {} \<or> A = {0}"
+  using dim_A local.card_ge_dim_independent local.independent_empty by force
 
 lemma dim_zero_eq': 
-  (*fixes A::"'a::euclidean_space set"*)
   assumes A: "A = {} \<or> A = {0}"
   shows "dim A = 0"
-proof -
-have "card ({}::'b set) = dim A"
-  proof (rule basis_card_eq_dim[THEN conjunct2, of "{}::'b set" A])
-     show "{} \<subseteq> A" by simp
-     show "A \<subseteq> span {}" using A by fastforce
-     show "independent {}" by (rule independent_empty)
-  qed
-thus ?thesis by simp
-qed
-
+using assms local.dim_span local.indep_card_eq_dim_span local.independent_empty by fastforce
 
 lemma dim_zero_subspace_eq:
-(*  fixes A::"'a::euclidean_space set"*)
-assumes subs_A: "subspace A"
-shows "(dim A = 0) = (A = {0})" using dim_zero_eq dim_zero_eq' subspace_0[OF subs_A] by auto
+  assumes subs_A: "subspace A"
+  shows "(dim A = 0) = (A = {0})" 
+  by (metis dim_zero_eq dim_zero_eq' subspace_0[OF subs_A] empty_iff)
 
 lemma span_0_imp_set_empty_or_0:
-assumes "span A = {0}"
-shows "A = {} \<or> A = {0}" by (metis assms span_inc subset_singletonD)
+  assumes "span A = {0}"
+  shows "A = {} \<or> A = {0}" by (metis assms span_superset subset_singletonD)
+
 end
 
-context linear
+context Vector_Spaces.linear
 begin
 
 lemma linear_injective_ker_0:
-shows "inj f = ({x. f x = 0} = {0})"
-unfolding linear_injective_0
-using linear_0 by blast
+  shows "inj f = ({x. f x = 0} = {0})"
+  using inj_iff_eq_0 by auto
 
 end
 
 lemma snd_if_conv:
-shows "snd (if P then (A,B) else (C,D))=(if P then B else D)" by simp
+  shows "snd (if P then (A,B) else (C,D))=(if P then B else D)" by simp
 
 subsection{*Basic properties about matrix multiplication*}
 
 lemma row_matrix_matrix_mult:
-fixes A::"'a::{comm_ring_1}^'n^'m"
-shows "(P $ i) v* A = (P ** A) $ i"
-unfolding vec_eq_iff
-unfolding vector_matrix_mult_def unfolding matrix_matrix_mult_def
-by (auto intro!: sum.cong)
+  fixes A::"'a::{comm_ring_1}^'n^'m"
+  shows "(P $ i) v* A = (P ** A) $ i"
+  unfolding vec_eq_iff
+  unfolding vector_matrix_mult_def unfolding matrix_matrix_mult_def
+  by (auto intro!: sum.cong)
 
 corollary row_matrix_matrix_mult':
-fixes A::"'a::{comm_ring_1}^'n^'m"
-shows "(row i P) v* A = row i (P ** A)"
-using row_matrix_matrix_mult unfolding row_def vec_nth_inverse .
+  fixes A::"'a::{comm_ring_1}^'n^'m"
+  shows "(row i P) v* A = row i (P ** A)"
+  using row_matrix_matrix_mult unfolding row_def vec_nth_inverse .
 
 lemma column_matrix_matrix_mult:
-shows "column i (P**A) = P *v (column i A)"
-unfolding column_def matrix_vector_mult_def matrix_matrix_mult_def by fastforce
+  shows "column i (P**A) = P *v (column i A)"
+  unfolding column_def matrix_vector_mult_def matrix_matrix_mult_def by fastforce
 
 lemma matrix_matrix_mult_inner_mult:
-shows "(A ** B) $ i $ j = row i A \<bullet> column j B"
-unfolding inner_vec_def matrix_matrix_mult_def row_def column_def by auto
+  shows "(A ** B) $ i $ j = row i A \<bullet> column j B"
+  unfolding inner_vec_def matrix_matrix_mult_def row_def column_def by auto
 
 
 lemma matrix_vmult_column_sum:
@@ -309,37 +250,10 @@ subsection{*Properties about invertibility*}
 lemma matrix_inv:
   assumes "invertible M"
   shows matrix_inv_left: "matrix_inv M ** M = mat 1"
-  and matrix_inv_right: "M ** matrix_inv M = mat 1"
+    and matrix_inv_right: "M ** matrix_inv M = mat 1"
   using `invertible M` and someI_ex [of "\<lambda> N. M ** N = mat 1 \<and> N ** M = mat 1"]
   unfolding invertible_def and matrix_inv_def
   by simp_all
-
-lemma invertible_mult:
-  assumes inv_A: "invertible A"
-  and inv_B: "invertible B"
-  shows "invertible (A**B)"
-proof -
-  obtain A' where AA': "A ** A' = mat 1" and A'A: "A' ** A = mat 1" 
-    using inv_A unfolding invertible_def by blast
-  obtain B' where BB': "B ** B' = mat 1" and B'B: "B' ** B = mat 1" 
-    using inv_B unfolding invertible_def by blast
-  show ?thesis
-  proof (unfold invertible_def, rule exI[of _ "B'**A'"], rule conjI)
-    have "A ** B ** (B' ** A') = A ** (B ** (B' ** A'))" 
-      using matrix_mul_assoc[of A B "(B' ** A')", symmetric] .
-    also have "... = A ** (B ** B' ** A')" unfolding matrix_mul_assoc[of B "B'" "A'"] ..
-    also have "... = A ** (mat 1 ** A')" unfolding BB' ..
-    also have "... = A ** A'" unfolding matrix_mul_lid ..
-    also have "... = mat 1" unfolding AA' ..
-    finally show "A ** B ** (B' ** A') = mat (1::'a)" .    
-    have "B' ** A' ** (A ** B) = B' ** (A' ** (A ** B))" using matrix_mul_assoc[of B' A' "(A ** B)", symmetric] .
-    also have "... =  B' ** (A' ** A ** B)" unfolding matrix_mul_assoc[of A' A B] ..
-    also have "... =  B' ** (mat 1 ** B)" unfolding A'A ..
-    also have "... = B' ** B"  unfolding matrix_mul_lid ..
-    also have "... = mat 1" unfolding B'B ..
-    finally show "B' ** A' ** (A ** B) = mat 1" .
-  qed
-qed
 
 
 text{*In the library, @{thm "matrix_inv_def"} allows the use of non squary matrices.
@@ -348,45 +262,29 @@ text{*In the library, @{thm "matrix_inv_def"} allows the use of non squary matri
 lemma matrix_inv_unique:
   fixes A::"'a::{semiring_1}^'n^'n"
   assumes AB: "A ** B = mat 1" and BA: "B ** A = mat 1"
-  shows "matrix_inv A = B" 
-proof (unfold matrix_inv_def, rule some_equality)
-  show "A ** B = mat (1::'a) \<and> B ** A = mat (1::'a)" using AB BA by simp
-  fix C assume "A ** C = mat (1::'a) \<and> C ** A = mat (1::'a)"
-  hence AC: "A ** C = mat (1::'a)" and CA: "C ** A = mat (1::'a)" by auto  
-  have "B = B ** (mat 1)" unfolding matrix_mul_rid ..
-  also have "... = B ** (A**C)" unfolding AC ..
-  also have "... = B ** A ** C" unfolding matrix_mul_assoc ..
-  also have "... = C" unfolding BA matrix_mul_lid ..
-  finally show "C = B" ..
-qed
+  shows "matrix_inv A = B"
+  by (metis AB BA invertible_def matrix_inv_right matrix_mul_assoc matrix_mul_lid) 
 
 
 lemma matrix_vector_mult_zero_eq:
-assumes P: "invertible P"
-shows "((P**A)*v x = 0) = (A *v x = 0)"
+  assumes P: "invertible P"
+  shows "((P**A)*v x = 0) = (A *v x = 0)"
 proof (rule iffI)
-assume "P ** A *v x = 0" 
-hence "matrix_inv P *v (P ** A *v x) = matrix_inv P *v 0" by simp
-hence "matrix_inv P *v (P ** A *v x) =  0" by (metis matrix_vector_zero)
-hence "(matrix_inv P ** P ** A) *v x =  0" by (metis matrix_vector_mul_assoc)
-thus "A *v x =  0" by (metis assms matrix_inv_left matrix_mul_lid)
+  assume "P ** A *v x = 0" 
+  hence "matrix_inv P *v (P ** A *v x) = matrix_inv P *v 0" by simp
+  hence "matrix_inv P *v (P ** A *v x) =  0" by (metis matrix_vector_mult_0_right)
+  hence "(matrix_inv P ** P ** A) *v x =  0" by (metis matrix_vector_mul_assoc)
+  thus "A *v x =  0" by (metis assms matrix_inv_left matrix_mul_lid)
 next
-assume "A *v x = 0" 
-thus "P ** A *v x = 0" by (metis matrix_vector_mul_assoc matrix_vector_zero)
+  assume "A *v x = 0" 
+  thus "P ** A *v x = 0" by (metis matrix_vector_mul_assoc matrix_vector_mult_0_right)
 qed
 
-lemma inj_matrix_vector_mult:
-fixes P::"'a::{field}^'n^'m"
-assumes P: "invertible P"
-shows "inj (( *v) P)"
-unfolding vec.linear_injective_0
-using matrix_left_invertible_ker[of P] P unfolding invertible_def by blast
-
 lemma independent_image_matrix_vector_mult:
-fixes P::"'a::{field}^'n^'m"
-assumes ind_B: "vec.independent B" and inv_P: "invertible P"
-shows "vec.independent ((( *v) P)` B)"
-proof (rule vec.independent_inj_on_image)
+  fixes P::"'a::{field}^'n^'m"
+  assumes ind_B: "vec.independent B" and inv_P: "invertible P"
+  shows "vec.independent ((( *v) P)` B)"
+proof (rule vec.independent_injective_image)
   show "vec.independent B" using ind_B .
   show "inj_on (( *v) P) (vec.span B)" 
     using inj_matrix_vector_mult[OF inv_P] unfolding inj_on_def by simp

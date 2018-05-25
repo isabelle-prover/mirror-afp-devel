@@ -144,10 +144,9 @@ proof -
   interpret a: linorder "(\<sqsubseteq>\<^sub>a)" "(\<sqsubset>\<^sub>a)" by(fact lin_a)
 
   note [simp] = 
-    linorder.sorted.simps(1)[OF linorder_prod] linorder.sorted_Cons[OF linorder_prod]
+    linorder.sorted.simps(1)[OF linorder_prod] linorder.sorted.simps(2)[OF linorder_prod]
     linorder.sorted_append[OF linorder_prod]
-    linorder.sorted_Cons[OF lin_b]
-    linorder.sorted_Cons[OF lin_a]
+    linorder.sorted.simps(2)[OF lin_b]
 
   show ?thesis using xs
   proof(induction xs)

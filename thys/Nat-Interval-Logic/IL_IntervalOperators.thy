@@ -1062,7 +1062,7 @@ done
 
 lemma iMOD_mult_div_right_inj_on2: "
   m mod k = 0 \<Longrightarrow> inj_on (\<lambda>x. x div k) [r, mod m]"
-by (clarsimp simp add: iMOD_mult_div_right_inj_on)
+  by (auto simp add: iMOD_mult_div_right_inj_on)
 
 lemma iMODb_div_right_strict_mono_on: "
   \<lbrakk> 0 < k; k \<le> m \<rbrakk> \<Longrightarrow> strict_mono_on (\<lambda>x. x div k) [r, mod m, c]"
@@ -1078,7 +1078,7 @@ by (rule subset_inj_on[OF iMOD_mult_div_right_inj_on iMODb_iMOD_subset_same])
 
 corollary iMODb_mult_div_right_inj_on2: "
   m mod k = 0 \<Longrightarrow> inj_on (\<lambda>x. x div k) [r, mod m, c]"
-by (clarsimp simp:  iMODb_mult_div_right_inj_on)
+  by (auto simp add: iMODb_mult_div_right_inj_on)
 
 
 definition iT_Div :: "iT \<Rightarrow> Time \<Rightarrow> iT" (infixl "\<oslash>" 55)
@@ -1233,9 +1233,7 @@ corollary mod_partition_iT_Div_Int2: "
   \<lbrakk> 0 < k; 0 < d; n mod k = 0; d mod k = 0 \<rbrakk> \<Longrightarrow> 
   (A \<inter> [n\<dots>,d - Suc 0]) \<oslash> k =  
   (A \<oslash> k) \<inter> ([n\<dots>,d - Suc 0] \<oslash> k)"
-apply (clarsimp simp: mult.commute[of k])
-apply (simp add: mod_partition_iT_Div_Int)
-done
+  by (auto simp add: ac_simps mod_partition_iT_Div_Int elim!: dvdE)
 
 corollary mod_partition_iT_Div_Int_one_segment: "
   0 < k \<Longrightarrow> 
@@ -1245,6 +1243,7 @@ by (insert mod_partition_iT_Div_Int[where d=1], simp)
 corollary mod_partition_iT_Div_Int_one_segment2: "
   \<lbrakk> 0 < k; n mod k = 0 \<rbrakk> \<Longrightarrow>
   (A \<inter> [n\<dots>,k - Suc 0]) \<oslash> k = (A \<oslash> k) \<inter> ([n\<dots>,k - Suc 0] \<oslash> k)"
+  using mod_partition_iT_Div_Int2[where k=k and d=k and n=n]
 by (insert mod_partition_iT_Div_Int2[where k=k and d=k and n=n], simp)
 
 
@@ -1258,9 +1257,7 @@ lemma iT_Mult_Div_self: "0 < k \<Longrightarrow> I \<otimes> k \<oslash> k = I"
 by (simp add: iT_Mult_def iT_Div_def image_image)
 lemma iT_Mult_Div: "
   \<lbrakk> 0 < d;  k mod d = 0 \<rbrakk> \<Longrightarrow> I \<otimes> k \<oslash> d = I \<otimes> (k div d)"
-apply (clarsimp simp: mult.commute[of d])
-apply (simp add: iT_Mult_assoc[symmetric] iT_Mult_Div_self)
-done
+  by (auto simp add: ac_simps iT_Mult_assoc[symmetric] iT_Mult_Div_self)
 
 lemma iT_Div_Mult_self: "
   0 < k \<Longrightarrow> I \<oslash> k \<otimes> k = {y. \<exists>x \<in> I. y = x - x mod k}"
@@ -1406,7 +1403,7 @@ apply (simp add: div_le_conv add.commute[of k])
 apply (subst diff_add_assoc, simp)+
 apply (simp add: div_mult_cancel[symmetric] del: add_diff_assoc)
 apply (case_tac "x * k mod m = 0")
- apply clarsimp
+ apply (clarsimp elim!: dvdE)
  apply (drule sym)
  apply (simp add: mult.commute[of m])
  apply (blast intro: div_less order_less_le_trans mod_less_divisor)
@@ -1436,8 +1433,9 @@ lemma iMOD_div: "
   \<lbrakk> 0 < k; m mod k = 0 \<rbrakk> \<Longrightarrow> 
   [r, mod m] \<oslash> k = [r div k, mod (m div k) ]"
 apply (case_tac "m = 0")
- apply (simp add: iMOD_0 iIN_0 iT_Div_singleton)
-apply (clarsimp, rename_tac q)
+   apply (simp add: iMOD_0 iIN_0 iT_Div_singleton)
+  apply (clarsimp elim!: dvdE)
+apply (rename_tac q)
 apply hypsubst_thin
 apply (cut_tac r="r div k" and k=k and m=q in iMOD_mult)
 apply (drule arg_cong[where f="\<lambda>x. x \<oplus> (r mod k)"])
@@ -1507,7 +1505,7 @@ apply (subst iTILL_iT_Div_Int)
   apply (drule mod_eq_mod_0_imp_mod_eq, simp+)
 apply (simp add: iMOD_div iTILL_div)
 apply (simp add: iMOD_iTILL_iMODb_conv div_le_mono)
-apply (clarsimp simp: mult.assoc iMODb_mod_0 iMOD_0)
+apply (clarsimp simp: mult.assoc iMODb_mod_0 iMOD_0 elim!: dvdE)
 done
 
 lemmas iT_div =
@@ -1705,7 +1703,7 @@ lemma iT_Mult_cut_less: "
   0 < k \<Longrightarrow> (I \<otimes> k) \<down>< t = 
     (if t mod k = 0 then (I \<down>< (t div k)) else I \<down>< Suc (t div k)) \<otimes> k"
 apply (case_tac "t mod k = 0")
- apply (clarsimp simp add: mult.commute[of k] iT_Mult_cut_less2)
+ apply (clarsimp simp add: mult.commute[of k] iT_Mult_cut_less2 elim!: dvdE)
 apply (clarsimp simp: set_eq_iff iT_Mult_mem_iff cut_less_mem_iff)
 apply (rule conj_cong, simp)+
 apply (subst less_Suc_eq_le)
@@ -1731,7 +1729,7 @@ lemma iT_Mult_cut_ge: "
   0 < k \<Longrightarrow> (I \<otimes> k) \<down>\<ge> t = 
     (if t mod k = 0 then (I \<down>\<ge> (t div k)) else I \<down>\<ge> Suc (t div k)) \<otimes> k"
 apply (case_tac "t mod k = 0")
- apply (clarsimp simp add: mult.commute[of k] iT_Mult_cut_ge2)
+ apply (clarsimp simp add: mult.commute[of k] iT_Mult_cut_ge2 elim!: dvdE)
 apply (clarsimp simp: set_eq_iff iT_Mult_mem_iff cut_ge_mem_iff)
 apply (rule conj_cong, simp)+
 apply (rule iffI)
@@ -1906,7 +1904,7 @@ apply (case_tac "I = {}")
 apply (case_tac "k = 0")
  apply (simp add: iT_Mult_0 iTILL_0 inext_singleton)
 apply (case_tac "n mod k = 0")
- apply (clarsimp simp: mult.commute[of k] iT_Mult_inext)
+ apply (clarsimp simp: mult.commute[of k] iT_Mult_inext elim!: dvdE)
 apply (simp add: not_in_inext_fix iT_Mult_mem_iff)
 done
 
@@ -1917,7 +1915,7 @@ apply (case_tac "I = {}")
 apply (case_tac "k = 0")
  apply (simp add: iT_Mult_0 iTILL_0 iprev_singleton)
 apply (case_tac "n mod k = 0")
- apply (clarsimp simp: mult.commute[of k] iT_Mult_iprev)
+ apply (clarsimp simp: mult.commute[of k] iT_Mult_iprev elim!: dvdE)
 apply (simp add: not_in_iprev_fix iT_Mult_mem_iff)
 done
 
@@ -2500,7 +2498,7 @@ apply (intro conjI impI)
  apply (simp add: mod_0_imp_sub_1_div_conv)
  apply (subgoal_tac "d \<le> card I")
  prefer 2
-  apply clarsimp
+  apply (clarsimp elim!: dvdE)
  apply (drule div_le_mono[of d _ d])
  apply simp
 apply (case_tac "d = Suc 0", simp)
@@ -3292,7 +3290,7 @@ done
 lemma 
   divisor_mod_0_imp_iMOD_in_i_set_mult: "m mod k = 0 \<Longrightarrow> [r, mod m] \<in> i_set_mult k" and
   divisor_mod_0_imp_iMODb_in_i_set_mult: "m mod k = 0 \<Longrightarrow> [r, mod m, c] \<in> i_set_mult k"
-by (clarsimp simp: mult.commute[of k])+
+  by (auto simp add: ac_simps)
 
 lemma iMOD_in_i_set_mult__divisor_mod_0_conv: "
   m \<noteq> Suc 0 \<Longrightarrow> ([r, mod m] \<in> i_set_mult k) = (m mod k = 0)"
@@ -3322,8 +3320,8 @@ done
 
 lemma mod_0_imp_i_set_mult_subset: "
   a mod b = 0 \<Longrightarrow> i_set_mult a \<subseteq> i_set_mult b"
-apply (clarsimp simp: mult.commute[of b], rename_tac q)
-apply (rule_tac a=x and k="q * b" in i_set_mult.cases)
+  apply (auto simp add: ac_simps elim!: dvdE)
+apply (rule_tac a=x and k="k * b" in i_set_mult.cases)
 apply (simp_all add: i_set_mult.intros mult.assoc[symmetric])
 done
 
@@ -3365,7 +3363,7 @@ lemma i_set_mod_0_mult_in_i_set_mult: "
   \<lbrakk> I \<in> i_set; m mod k = 0 \<rbrakk> \<Longrightarrow> I \<otimes> m \<in> i_set_mult k"
 apply (case_tac "m = 0")
  apply (simp add: iT_Mult_0 i_set_imp_not_empty i_set_mult.intros)
-apply (clarsimp simp: mult.commute[of k])
+apply (clarsimp simp: mult.commute[of k] elim!: dvdE)
 apply (simp add: i_set_i_set_ind_eq)
 apply (rule_tac a=I in i_set_ind.cases)
 apply (simp_all add: iT_mult mult.assoc[symmetric] i_set_mult.intros)

@@ -532,7 +532,8 @@ proof (rule real_cond_exp_charact)
   then have [measurable]: "A \<in> sets M" using Invariants_in_sets by blast
   then have ind_meas [measurable]: "((indicator A)::('a \<Rightarrow> real)) \<in> borel_measurable Invariants" by auto
 
-  have "set_lebesgue_integral M A (f \<circ> (T^^n)) = (\<integral>x. indicator A x * f((T^^n) x) \<partial>M)" using comp_def by auto
+  have "set_lebesgue_integral M A (f \<circ> (T^^n)) = (\<integral>x. indicator A x * f((T^^n) x) \<partial>M)"
+    by (auto simp: comp_def set_lebesgue_integral_def)
   also have "... = (\<integral>x. indicator A ((T^^n) x) * f ((T^^n) x) \<partial>M)"
     by (rule Bochner_Integration.integral_cong, auto simp add: Invariants_func_is_invariant_n[OF ind_meas])
   also have "... = (\<integral>x. indicator A x * f x \<partial>M)"
@@ -540,7 +541,7 @@ proof (rule real_cond_exp_charact)
   also have "... = (\<integral>x. indicator A x * real_cond_exp M Invariants f x \<partial>M)"
     apply (rule real_cond_exp_intg(2)[symmetric]) using integrable_mult_indicator[OF \<open>A \<in> sets M\<close> assms] by auto
   also have "... = set_lebesgue_integral M A (real_cond_exp M Invariants f)"
-    by auto
+    by (auto simp: set_lebesgue_integral_def)
   finally show "set_lebesgue_integral M A (f \<circ> (T^^n)) = set_lebesgue_integral M A (real_cond_exp M Invariants f)"
     by simp
 qed (auto simp add: assms real_cond_exp_int Tn_integral_preserving(1)[OF assms] comp_def)
