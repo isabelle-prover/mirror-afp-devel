@@ -261,6 +261,7 @@ Noninterference_Ipurge_Unwinding
 Noninterference_Sequential_Composition
 NormByEval
 Open_Induction
+OpSets
 Optics
 Orbit_Stabiliser
 Ordered_Resolution_Prover
