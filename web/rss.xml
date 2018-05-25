@@ -9,7 +9,26 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>23 May 2018 00:00:00 +0000</pubDate>
+    <pubDate>24 May 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Probabilistic Timed Automata</title>
+              <link>https://www.isa-afp.org/entries/Probabilistic_Timed_Automata.html</link>
+       <guid>https://www.isa-afp.org/entries/Probabilistic_Timed_Automata.html</guid>
+       <dc:creator> Simon Wimmer, Johannes Hölzl       </dc:creator>
+       <pubDate>24 May 2018 00:00:00 +0000</pubDate>
+       <description>
+We present a formalization of probabilistic timed automata (PTA) for
+which we try to follow the formula MDP + TA = PTA as far as possible:
+our work starts from our existing formalizations of Markov decision
+processes (MDP) and timed automata (TA) and combines them modularly.
+We prove the fundamental result for probabilistic timed automata: the
+region construction that is known from timed automata carries over to
+the probabilistic setting. In particular, this allows us to prove that
+minimum and maximum reachability probabilities can be computed via a
+reduction to MDP model checking, including the case where one wants to
+disregard unrealizable behavior. Further information can be found in
+our ITP paper [2].</description>
+    </item>
     <item>
        <title>Axiom Systems for Category Theory in Free Logic</title>
               <link>https://www.isa-afp.org/entries/AxiomaticCategoryTheory.html</link>
@@ -534,21 +553,6 @@ accepts exactly those words for which there is an odd
 ranking.&lt;/li&gt; &lt;li&gt;Verified implementation of the
 complement automaton using the Isabelle Collections
 Framework.&lt;/li&gt; &lt;/ol&gt;</description>
-    </item>
-    <item>
-       <title>Evaluate winding numbers through Cauchy indices</title>
-              <link>https://www.isa-afp.org/entries/Winding_Number_Eval.html</link>
-       <guid>https://www.isa-afp.org/entries/Winding_Number_Eval.html</guid>
-       <dc:creator> Wenda Li       </dc:creator>
-       <pubDate>17 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-In complex analysis, the winding number measures the number of times a
-path (counterclockwise) winds around a point, while the Cauchy index
-can approximate how the path winds. This entry provides a
-formalisation of the Cauchy index, which is then shown to be related
-to the winding number. In addition, this entry also offers a tactic
-that enables users to evaluate the winding number by calculating
-Cauchy indices.</description>
     </item>
   </channel>
 </rss>

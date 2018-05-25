@@ -3958,6 +3958,25 @@ abstract =
   on a number of representative dynamic programming problems. A detailed
   description of our work can be found in the accompanying paper [2].
 
+[Probabilistic_Timed_Automata]
+title = Probabilistic Timed Automata
+author = Simon Wimmer <http://in.tum.de/~wimmers>, Johannes Hölzl <http://home.in.tum.de/~hoelzl>
+topic = Mathematics/Probability Theory,  Computer Science/Automata and Formal Languages
+date = 2018-05-24
+notify = wimmers@in.tum.de, hoelzl@in.tum.de
+abstract =
+  We present a formalization of probabilistic timed automata (PTA) for
+  which we try to follow the formula MDP + TA = PTA as far as possible:
+  our work starts from our existing formalizations of Markov decision
+  processes (MDP) and timed automata (TA) and combines them modularly.
+  We prove the fundamental result for probabilistic timed automata: the
+  region construction that is known from timed automata carries over to
+  the probabilistic setting. In particular, this allows us to prove that
+  minimum and maximum reachability probabilities can be computed via a
+  reduction to MDP model checking, including the case where one wants to
+  disregard unrealizable behavior. Further information can be found in
+  our ITP paper [2].
+
 [ArrowImpossibilityGS]
 title = Arrow and Gibbard-Satterthwaite
 author = Tobias Nipkow <http://www.in.tum.de/~nipkow/>
@@ -6761,7 +6780,7 @@ author = Christoph Benzmüller <http://christoph-benzmueller.de>, Dana Scott <ht
 topic = Mathematics/Category Theory
 date = 2018-05-23
 notify = c.benzmueller@gmail.com
-abstract = 
+abstract =
   This document provides a concise overview on the core results of our
   previous work on the exploration of axioms systems for category
   theory. Extending the previous studies
@@ -6779,7 +6798,7 @@ author = Martin Kleppmann <mailto:mk428@cl.cam.ac.uk>, Victor B. F. Gomes <mailt
 topic = Computer Science/Algorithms/Distributed, Computer Science/Data Structures
 date = 2018-05-10
 notify = vb358@cam.ac.uk
-abstract = 
+abstract =
   We introduce OpSets, an executable framework for specifying and
   reasoning about the semantics of replicated datatypes that provide
   eventual consistency in a distributed system, and for mechanically
