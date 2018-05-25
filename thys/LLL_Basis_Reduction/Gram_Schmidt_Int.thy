@@ -10,11 +10,45 @@ text \<open>This theory implements the Gram-Schmidt algorithm on integer vectors
   using purely integer arithmetic. The formalization is based on \cite{GS_EKM}.\<close>
 
 theory Gram_Schmidt_Int
-  imports LLL_Integer_Equations
+  imports 
+    LLL_Integer_Equations
+    More_IArray
 begin
 
 no_notation test_bit (infixl "!!" 100)
- 
+
+context fixes
+  fs :: "int vec iarray" and m :: nat
+begin 
+fun sigma_array where
+  "sigma_array dmus dmusi dmusj dll l = (if l = 0 then dmusi !! l * dmusj !! l
+      else let l1 = l - 1; dll1 = dmus !! l1 !! l1 in
+      (dll * sigma_array dmus dmusi dmusj dll1 l1 + dmusi !! l * dmusj !! l) div 
+          dll1)"
+
+declare sigma_array.simps[simp del]
+
+partial_function(tailrec) dmu_array_row_main where
+  [code]: "dmu_array_row_main fi i dmus j = (if j = i then dmus
+     else let sj = Suc j; 
+       dmus_i = dmus !! i;
+       djj = dmus !! j !! j;
+       dmu_ij = djj * (fi \<bullet> fs !! sj) - sigma_array dmus dmus_i (dmus !! sj) djj j;
+       dmus' = iarray_update dmus i (iarray_append dmus_i dmu_ij)
+      in dmu_array_row_main fi i dmus' sj)" 
+
+definition dmu_array_row where
+  "dmu_array_row dmus i = (let fi = fs !! i in 
+      dmu_array_row_main fi i (iarray_append dmus (IArray [fi \<bullet> fs !! 0])) 0)" 
+
+partial_function (tailrec) dmu_array where 
+  [code]: "dmu_array dmus i = (if i = m then dmus else 
+    let dmus' = dmu_array_row dmus i 
+      in dmu_array dmus' (Suc i))"
+end
+
+definition d\<mu>_impl :: "int vec list \<Rightarrow> int iarray iarray" where
+  "d\<mu>_impl fs = dmu_array (IArray fs) (length fs) (IArray []) 0" 
 context gram_schmidt
 begin
 
@@ -547,54 +581,6 @@ end (* fs_int *)
 end (* fs m *)
 end (* gram_schmidt_rat *)
 
-(* TODO move *)
-definition iarray_update :: "'a iarray \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a iarray" where
-  "iarray_update a i x = IArray.of_fun (\<lambda> j. if j = i then x else a !! j) (IArray.length a)" 
-
-lemma iarray_of_fun_cong: "(\<And> i. i < n \<Longrightarrow> f i = g i) \<Longrightarrow> IArray.of_fun f n = IArray.of_fun g n" 
-  unfolding IArray.of_fun_def by auto
-
-lemma iarray_length_of_fun[simp]: "IArray.length (IArray.of_fun f n) = n" by simp
-
-fun iarray_append where "iarray_append (IArray xs) x = IArray (xs @ [x])" 
-lemma iarray_append_code[code]: "iarray_append xs x = IArray (IArray.list_of xs @ [x])" 
-  by (cases xs, auto)
-(* END TODO MOVE *)
-
-
-context fixes
-  fs :: "int vec iarray" and m :: nat
-begin 
-fun sigma_array where
-  "sigma_array dmus dmusi dmusj dll l = (if l = 0 then dmusi !! l * dmusj !! l
-      else let l1 = l - 1; dll1 = dmus !! l1 !! l1 in
-      (dll * sigma_array dmus dmusi dmusj dll1 l1 + dmusi !! l * dmusj !! l) div 
-          dll1)"
-
-declare sigma_array.simps[simp del]
-
-partial_function(tailrec) dmu_array_row_main where
-  [code]: "dmu_array_row_main fi i dmus j = (if j = i then dmus
-     else let sj = Suc j; 
-       dmus_i = dmus !! i;
-       djj = dmus !! j !! j;
-       dmu_ij = djj * (fi \<bullet> fs !! sj) - sigma_array dmus dmus_i (dmus !! sj) djj j;
-       dmus' = iarray_update dmus i (iarray_append dmus_i dmu_ij)
-      in dmu_array_row_main fi i dmus' sj)" 
-
-definition dmu_array_row where
-  "dmu_array_row dmus i = (let fi = fs !! i in 
-      dmu_array_row_main fi i (iarray_append dmus (IArray [fi \<bullet> fs !! 0])) 0)" 
-
-partial_function (tailrec) dmu_array where 
-  [code]: "dmu_array dmus i = (if i = m then dmus else 
-    let dmus' = dmu_array_row dmus i 
-      in dmu_array dmus' (Suc i))"
-end
-
-definition d\<mu>_impl :: "int vec list \<Rightarrow> int iarray iarray" where
-  "d\<mu>_impl fs = dmu_array (IArray fs) (length fs) (IArray []) 0" 
-
 context LLL (* TODO: think of locale structure: Gram_Schmidt should not depend on LLL,
   but currently d\<mu> is defined in locale LLL *)
 begin
@@ -689,7 +675,7 @@ qed
 
 lemma sigma_array: assumes mm: "mm \<le> m" and j: "j < mm" 
   shows "l \<le> j \<Longrightarrow> sigma_array (IArray.of_fun (\<lambda>i. IArray.of_fun (\<mu>' i) (if i = mm then Suc j else Suc i)) (Suc mm))
-     (IArray (map (\<mu>' mm) [0..<Suc j])) (IArray.of_fun (\<mu>' (Suc j)) (if Suc j = mm then Suc j else Suc (Suc j))) (\<mu>' l l) l =
+     (IArray.of_fun (\<mu>' mm) (Suc j)) (IArray.of_fun (\<mu>' (Suc j)) (if Suc j = mm then Suc j else Suc (Suc j))) (\<mu>' l l) l =
     \<sigma>s l mm (Suc j)"
 proof (induct l)
   case 0
@@ -703,14 +689,13 @@ next
     "Suc l < (if Suc l = mm then Suc j else Suc (Suc l))" 
     "Suc l < (if Suc j = mm then Suc j else Suc (Suc j))" 
     "l < (if l = mm then Suc j else Suc l)" 
+    "Suc l < Suc j" 
     using mm l j by auto
   note IH = Suc(1)[OF l(2)]
   show ?case unfolding sigma_array.simps[of _ _ _ _ "Suc l"] id if_False Let_def IH
     of_fun_nth[OF ineq(1)] of_fun_nth[OF ineq(2)] of_fun_nth[OF ineq(3)] 
-    of_fun_nth[OF ineq(4)] of_fun_nth[OF ineq(5)] 
-    unfolding \<sigma>s.simps
-    by (rule arg_cong[of _ _ "\<lambda> x. (_ + x * _) div _"], insert l mm j, 
-      unfold IArray.sub_def IArray.list_of.simps, subst nth_map_upt, auto)
+    of_fun_nth[OF ineq(4)] of_fun_nth[OF ineq(5)] of_fun_nth[OF ineq(6)]
+    unfolding \<sigma>s.simps by simp
 qed
 
 lemma dmu_array_row_main: assumes mm: "mm \<le> m" shows
@@ -736,8 +721,8 @@ next
       of_fun_nth[OF le(3)] of_fun_nth[OF le(4)]
       of_fun_nth[OF le(5)]  
       sigma_array[OF mm j le_refl, folded id2]
-      iarray_length_of_fun iarray_update_def
-  proof (rule arg_cong[of _ _ "\<lambda> x. dmu_array_row_main _ _ _ x _"], rule iarray_of_fun_cong, goal_cases)
+      iarray_length_of_fun iarray_update_of_fun iarray_append_of_fun
+  proof (rule arg_cong[of _ _ "\<lambda> x. dmu_array_row_main _ _ _ x _"], rule iarray_cong', goal_cases)
     case (1 i)
     show ?case unfolding of_fun_nth[OF 1] using j 1
       by (cases "i = mm", auto simp: \<mu>'.simps[of _ "Suc j"])
@@ -774,7 +759,7 @@ proof (induct mm rule: wf_induct[OF wf_measure[of "\<lambda> mm. m - mm"]])
     note IH = 1(1)[rule_format, OF prems]
     show ?thesis unfolding dmu_array.simps[of _ _ _ mm] id if_False Let_def 
       unfolding dmu_array_row[OF mm] IH[symmetric]
-      by (rule arg_cong[of _ _ "\<lambda> x. dmu_array _ _ x _"], rule iarray_of_fun_cong, auto)
+      by (rule arg_cong[of _ _ "\<lambda> x. dmu_array _ _ x _"], rule iarray_cong, auto)
   qed
 qed
 

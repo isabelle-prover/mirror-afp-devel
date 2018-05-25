@@ -304,7 +304,7 @@ next
        (\<lambda>jj. if jj < j then dmu_ij_state state i jj - ?c * dmu_ij_state state j jj
              else if jj = j then dmu_ij_state state i jj - ?d fs j * ?c else dmu_ij_state state i jj) i" 
     have mu': "?mu' = IArray.of_fun (d\<mu> fs'' i) i" (is "_ = ?mu'i")
-    proof (rule iarray_of_fun_cong, goal_cases)
+    proof (rule iarray_cong', goal_cases)
       case (1 jj)
       from 1 j i have jm: "j < m" by auto
       show ?case unfolding dmu_ij_state[OF impl Linv state 1 i] using dmu_ij_state[OF impl Linv state _ jm]
@@ -316,7 +316,7 @@ next
       hence "(IArray.of_fun (\<lambda>i. IArray.of_fun (d\<mu> fs i) i) m) !! ii
         = IArray.of_fun (d\<mu> fs ii) ii" by auto
       also have "\<dots> = IArray.of_fun (d\<mu> fs'' ii) ii" 
-      proof (rule iarray_of_fun_cong, goal_cases)
+      proof (rule iarray_cong', goal_cases)
         case (1 j)
         with ii have j: "Suc j \<le> m" by auto
         show ?case unfolding updates(2)[OF ii(1) 1] using ii by auto
@@ -326,8 +326,8 @@ next
     } note ii = this
     let ?mu'' = "iarray_update mu i (IArray.of_fun (d\<mu> fs'' i) i)" 
     have new_array: "?mu'' = IArray.of_fun (\<lambda> i. IArray.of_fun (d\<mu> fs'' i) i) m" 
-      unfolding iarray_update_def iarray_length_of_fun to_mu_repr[OF impl Linv state, unfolded mu_repr_def]
-      by (rule iarray_of_fun_cong, insert ii, auto)
+      unfolding iarray_update_of_fun to_mu_repr[OF impl Linv state, unfolded mu_repr_def]
+      by (rule iarray_cong', insert ii, auto)
     have d': "(map (?d fs) (rev [0..<j])) = (map (?d fs'') (rev [0..<j]))" 
       by (rule nth_equalityI, force, intro allI impI, simp, subst updates(1), insert j i, auto
         simp: nth_rev)
@@ -353,7 +353,7 @@ next
         show "list_repr i (update_i f (fs'' ! i)) (map ((!) fs'') [0..<m])" 
           using update_i[OF list_repr(1), unfolded length_map, OF ii] unfolding repr_id[symmetric] .
         show "d_repr ds fs''" unfolding to_d_repr[OF impl Linv state, unfolded d_repr_def] d_repr_def
-          by (rule iarray_of_fun_cong, subst step(6), auto)
+          by (rule iarray_cong', subst step(6), auto)
       qed (auto simp: mu_repr_def)
     qed (insert i j, auto)
   qed
@@ -459,10 +459,10 @@ proof -
   show ?g1 unfolding fs_id LLL_impl_inv.simps res
   proof (intro conjI f_repr)
     show "d_repr (iarray_update ds i ?d'i) fs''" 
-      unfolding d_repr[unfolded d_repr_def] iarray_update_def d_repr_def iarray_length_of_fun dmu_ii
-      by (rule iarray_of_fun_cong, subst updates(1), auto simp: nth_append intro: arg_cong)
+      unfolding d_repr[unfolded d_repr_def] d_repr_def iarray_update_of_fun dmu_ii
+      by (rule iarray_cong', subst updates(1), auto simp: nth_append intro: arg_cong)
     show "mu_repr ?dmu_repr' fs''" unfolding mu_repr_def swap_mu_def Let_def dmu_ii 
-    proof (rule iarray_of_fun_cong, goal_cases)
+    proof (rule iarray_cong', goal_cases)
       case ii: (1 ii) 
       show ?case
       proof (cases "ii < i - 1")
@@ -471,13 +471,13 @@ proof -
         have mu: "mu !! ii = IArray.of_fun (d\<mu> fs ii) ii" 
           using ii unfolding mu_def by auto
         show ?thesis unfolding id if_True if_False mu
-          by (rule iarray_of_fun_cong, insert small ii i i0, subst updates(2), simp_all, linarith) 
+          by (rule iarray_cong', insert small ii i i0, subst updates(2), simp_all, linarith) 
       next
         case False
         hence iFalse: "(ii < i - 1) = False" by auto
         show ?thesis unfolding iFalse if_False if_distrib[of "\<lambda> f. IArray.of_fun f ii", symmetric]
           dmu_ij_state.simps[of f mu ds, folded state, symmetric] 
-        proof (rule iarray_of_fun_cong, goal_cases)
+        proof (rule iarray_cong', goal_cases)
           case j: (1 j)
           note upd = updates(2)[OF ii j] dmu_ii dmu_ij_state[OF j ii] if_distrib[of "\<lambda> x. x j"]
           note simps = dmu_ij_state[OF _ ii] dmu_ij_state[OF _ im1] dmu_ij_state[OF _ i]
@@ -610,10 +610,10 @@ proof -
   have 0: "0 = m - j" unfolding j_def by auto
   have mu_repr: "mu_repr (IArray.of_fun (\<lambda>i. IArray.of_fun ((!!) (d\<mu>_impl fs_init !! i)) i) m) fs_init" 
     unfolding d\<mu>_impl[OF lin_dep len] mu_repr_def 
-    by (intro iarray_of_fun_cong, simp only: of_fun_nth)
+    by (intro iarray_cong', simp only: of_fun_nth)
   have d_repr: "d_repr (IArray.of_fun (\<lambda>i. if i = 0 then 1 else d\<mu>_impl fs_init !! (i - 1) !! (i - 1)) (Suc m)) fs_init" 
     unfolding d\<mu>_impl[OF lin_dep len] d_repr_def 
-  proof (intro iarray_of_fun_cong, goal_cases)
+  proof (intro iarray_cong', goal_cases)
     case (1 i)
     show ?case
     proof (cases "i = 0")
