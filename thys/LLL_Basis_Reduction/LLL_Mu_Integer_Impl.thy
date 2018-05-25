@@ -11,6 +11,8 @@ theory LLL_Mu_Integer_Impl
    Gram_Schmidt_Int
 begin
 
+hide_fact (open) Word.inc_i
+
 type_synonym LLL_dmu_d_state = "int vec list_repr \<times> int iarray iarray \<times> int iarray"
 
 fun fi_state :: "LLL_dmu_d_state \<Rightarrow> int vec" where
@@ -271,7 +273,7 @@ next
   have id: "Suc j - 1 = j" by simp
   note mu = dmu_ij_state[OF impl Linv state j i]
   let ?c = "floor_ceil (\<mu> fs i j)" 
-  note floor = floor_ceil_num_denom_d\<mu>_d[OF Linv jj i]
+  note floor = floor_ceil_num_denom_d\<mu>_d[OF LLL_invariant_fs_int[OF Linv] jj i]
   from LLL_d_pos[OF Linv] j i have dj: "d fs (Suc j) > 0" by auto
   note updates = d_d\<mu>_add_row[OF Linv i j refl refl Suc(4)]
   note d_state = d_state[OF impl Linv state]
@@ -424,8 +426,8 @@ proof -
   let ?dmus = "dmu_ij_state state" 
   let ?ds = "d_state state" 
   note swap = basis_reduction_swap[OF inv i i0 cond refl, unfolded fs'']
-  note dmu = d\<mu>[OF inv]
-  note dmu' = d\<mu>[OF swap(1)]
+  note dmu = d\<mu>[OF LLL_invariant_fs_int[OF inv]]
+  note dmu' = d\<mu>[OF LLL_invariant_fs_int[OF swap(1)]]
   note inv' = LLL_invD[OF inv]
   have fi: "fs ! (i - 1) = fs'' ! i" "fs ! i = fs'' ! (i - 1)" 
     unfolding fs''[symmetric] using inv'(6) i i0 by auto
@@ -546,7 +548,7 @@ proof (atomize(full), goal_cases)
     from i have le: "i - 1 \<le> m" " i \<le> m" "Suc i \<le> m" by auto
     note d_state = d_state[OF le(1)] d_state[OF le(2)] d_state[OF le(3)]
     note res = res[unfolded def id if_False Let_def state'' quot split d_state 
-        d_sq_norm_comparison[OF inv quot i False]] 
+        d_sq_norm_comparison[OF LLL_invariant_fs_int[OF inv] quot i False]] 
     note pos = LLL_d_pos[OF inv le(1)] LLL_d_pos[OF inv le(2)] quotient_of_denom_pos[OF quot]
     from False have sim1: "Suc (i - 1) = i" by simp
     let ?r = "rat_of_int" 

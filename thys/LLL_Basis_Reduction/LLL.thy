@@ -35,11 +35,6 @@ begin
 
 subsection \<open>Core Definitions, Invariants, and Theorems for Basic Version\<close>
 
-definition floor_ceil where "floor_ceil x = floor (x + 1/2)" 
-
-lemma floor_ceil: "\<bar>x - rat_of_int (floor_ceil x)\<bar> \<le> inverse 2" 
-  unfolding floor_ceil_def by (metis (no_types, hide_lams) abs_divide abs_neg_one round_def
-      div_by_1 div_minus_right inverse_eq_divide minus_diff_eq of_int_round_abs_le)
 
 locale LLL = fs_int +
   fixes \<alpha> :: rat (* approximation factor *)

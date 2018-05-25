@@ -11,7 +11,7 @@ text \<open>This theory implements the Gram-Schmidt algorithm on integer vectors
 
 theory Gram_Schmidt_Int
   imports 
-    LLL_Integer_Equations
+    Gram_Schmidt_2
     More_IArray
 begin
 
@@ -581,11 +581,9 @@ end (* fs_int *)
 end (* fs m *)
 end (* gram_schmidt_rat *)
 
-context LLL (* TODO: think of locale structure: Gram_Schmidt should not depend on LLL,
+context fs_int (* TODO: think of locale structure: Gram_Schmidt should not depend on LLL,
   but currently d\<mu> is defined in locale LLL *)
 begin
-
-sublocale gs: gram_schmidt_rat n .
 
 context
   fixes fs :: "int vec list"
@@ -658,14 +656,12 @@ lemma \<mu>': assumes "i < m" "j \<le> i"
    "j = i \<Longrightarrow> \<mu>' i j = d fs (Suc i)"  
 proof -
   let ?r = rat_of_int
-  interpret other: LLL n m fs \<alpha> .
-  (* TODO: here is currently the point where we need LLL. And this part is ugly *)
-  have inv: "other.LLL_invariant True 0 fs" 
-    by (intro other.LLL_invI, insert fs_carrier len indep, auto simp: other.L_def gs.reduced_def gs.weakly_reduced_def)
-  note d\<mu> = other.d\<mu>[OF inv assms(2,1)]
+  have "fs_int fs"
+    unfolding fs_int_def using indep len by simp
+  note d\<mu> = d\<mu>[OF this assms(2,1)]
   have "?r (\<mu>' i j) = gs.\<mu>' (RAT fs) i j" by (rule \<sigma>s_\<mu>'(2)[OF assms])
   also have "\<dots> = ?r (d\<mu> fs i j)" unfolding gs.\<mu>'_def[OF indep lenR] d\<mu>
-    by (subst of_int_Gramian_determinant, insert assms len fs_carrier, auto simp: other.d_def)
+    by (subst of_int_Gramian_determinant, insert assms len fs_carrier, auto simp: d_def)
   finally show 1: "\<mu>' i j = d\<mu> fs i j" by simp
   assume j: "j = i" 
   have "?r (\<mu>' i j) = ?r (d\<mu> fs i j)" unfolding 1 ..
