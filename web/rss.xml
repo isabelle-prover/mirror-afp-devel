@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>24 May 2018 00:00:00 +0000</pubDate>
+    <pubDate>25 May 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Hidden Markov Models</title>
+              <link>https://www.isa-afp.org/entries/Hidden_Markov_Models.html</link>
+       <guid>https://www.isa-afp.org/entries/Hidden_Markov_Models.html</guid>
+       <dc:creator> Simon Wimmer       </dc:creator>
+       <pubDate>25 May 2018 00:00:00 +0000</pubDate>
+       <description>
+This entry contains a formalization of hidden Markov models [3] based
+on Johannes Hölzl&#39;s formalization of discrete time Markov chains
+[1]. The basic definitions are provided and the correctness of two
+main (dynamic programming) algorithms for hidden Markov models is
+proved: the forward algorithm for computing the likelihood of an
+observed sequence, and the Viterbi algorithm for decoding the most
+probable hidden state sequence. The Viterbi algorithm is made
+executable including memoization.  Hidden markov models have various
+applications in natural language processing. For an introduction see
+Jurafsky and Martin [2].</description>
+    </item>
     <item>
        <title>Probabilistic Timed Automata</title>
               <link>https://www.isa-afp.org/entries/Probabilistic_Timed_Automata.html</link>
@@ -536,23 +554,6 @@ useful theorems, from basic path manipulation rules to coinduction and
 run construction rules, are proven in this abstract transition system
 context. The library comes with instantiations for DFAs, NFAs, and
 Büchi automata.</description>
-    </item>
-    <item>
-       <title>Büchi Complementation</title>
-              <link>https://www.isa-afp.org/entries/Buchi_Complementation.html</link>
-       <guid>https://www.isa-afp.org/entries/Buchi_Complementation.html</guid>
-       <dc:creator> Julian Brunner       </dc:creator>
-       <pubDate>19 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a verified implementation of rank-based Büchi
-Complementation. The verification is done in three steps: &lt;ol&gt;
-&lt;li&gt;Definition of odd rankings and proof that an automaton
-rejects a word iff there exists an odd ranking for it.&lt;/li&gt;
-&lt;li&gt;Definition of the complement automaton and proof that it
-accepts exactly those words for which there is an odd
-ranking.&lt;/li&gt; &lt;li&gt;Verified implementation of the
-complement automaton using the Isabelle Collections
-Framework.&lt;/li&gt; &lt;/ol&gt;</description>
     </item>
   </channel>
 </rss>

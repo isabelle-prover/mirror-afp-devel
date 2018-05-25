@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Monadification, Memoization and Dynamic Programming - Archive of Formal Proofs
+<title>Hidden Markov Models - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,15 +61,11 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">M</font>onadification,
+  <h1>          <font class="first">H</font>idden
   
-          <font class="first">M</font>emoization
+          <font class="first">M</font>arkov
   
-          and
-  
-          <font class="first">D</font>ynamic
-  
-          <font class="first">P</font>rogramming
+          <font class="first">M</font>odels
   
 </h1>
   <p>&nbsp;</p>
@@ -78,17 +74,15 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Monadification, Memoization and Dynamic Programming</td>
+  <td class="data" width="80%">Hidden Markov Models</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                      <a href="http://in.tum.de/~wimmers">Simon Wimmer</a>,
-                Shuwei Hu (shuwei /dot/ hu /at/ tum /dot/ de) and
-          <a href="https://www.in.tum.de/~nipkow">Tobias Nipkow</a>
+              <a href="http://in.tum.de/~wimmers">Simon Wimmer</a>
       </td>
 </tr>
 
@@ -96,35 +90,35 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-05-22</td>
+  <td class="data">2018-05-25</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We present a lightweight framework for the automatic verified
-(functional or imperative) memoization of recursive functions. Our
-tool can turn a pure Isabelle/HOL function definition into a
-monadified version in a state monad or the Imperative HOL heap monad,
-and prove a correspondence theorem. We provide a variety of memory
-implementations for the two types of monads. A number of simple
-techniques allow us to achieve bottom-up computation and
-space-efficient memoization. The framework’s utility is demonstrated
-on a number of representative dynamic programming problems. A detailed
-description of our work can be found in the accompanying paper [2].</td>
+This entry contains a formalization of hidden Markov models [3] based
+on Johannes Hölzl's formalization of discrete time Markov chains
+[1]. The basic definitions are provided and the correctness of two
+main (dynamic programming) algorithms for hidden Markov models is
+proved: the forward algorithm for computing the likelihood of an
+observed sequence, and the Viterbi algorithm for decoding the most
+probable hidden state sequence. The Viterbi algorithm is made
+executable including memoization.  Hidden markov models have various
+applications in natural language processing. For an introduction see
+Jurafsky and Martin [2].</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Monad_Memo_DP-AFP,
-  author  = {Simon Wimmer and Shuwei Hu and Tobias Nipkow},
-  title   = {Monadification, Memoization and Dynamic Programming},
+        <pre>@article{Hidden_Markov_Models-AFP,
+  author  = {Simon Wimmer},
+  title   = {Hidden Markov Models},
   journal = {Archive of Formal Proofs},
   month   = may,
   year    = 2018,
-  note    = {\url{http://isa-afp.org/entries/Monad_Memo_DP.html},
+  note    = {\url{http://isa-afp.org/entries/Hidden_Markov_Models.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -135,10 +129,10 @@ description of our work can be found in the accompanying paper [2].</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Hidden_Markov_Models.html">Hidden_Markov_Models</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Markov_Models.html">Markov_Models</a>, <a href="Monad_Memo_DP.html">Monad_Memo_DP</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -150,17 +144,17 @@ description of our work can be found in the accompanying paper [2].</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Monad_Memo_DP/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Monad_Memo_DP/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Hidden_Markov_Models/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Hidden_Markov_Models/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Monad_Memo_DP/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Hidden_Markov_Models/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Monad_Memo_DP-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Hidden_Markov_Models-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
