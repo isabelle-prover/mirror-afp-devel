@@ -32,7 +32,6 @@ context LLL_with_assms
 begin
 
 context
-  fixes arith_cost :: nat
   assumes \<alpha>_gt: "\<alpha> > 4/3" and m0: "m \<noteq> 0" 
 begin
 
@@ -375,12 +374,75 @@ function dmu_array_row_main_cost where
 
 termination by (relation "measure (\<lambda> (fi,i,dmus,j). i - j)", auto)
 
+declare dmu_array_row_main_cost.simps[simp del]
+
+lemma dmu_array_row_main_cost: assumes "j \<le> i" 
+  shows "result (dmu_array_row_main_cost fi i dmus j) = dmu_array_row_main fs fi i dmus j"
+  "cost (dmu_array_row_main_cost fi i dmus j) \<le> (\<Sum> jj \<in> {j ..< i}. 2 * n + 2 + 4 * jj + 1)" 
+  using assms
+proof (atomize(full), induct "i - j" arbitrary: j dmus)
+  case (0 j dmus)
+  hence j: "j = i" by auto
+  thus ?case unfolding dmu_array_row_main_cost.simps[of _ _ _ j] 
+    dmu_array_row_main.simps[of _ _ _ _ j]
+    by (simp add: cost_simps)
+next
+  case (Suc l j dmus)
+  from Suc(2) have id: "(i \<le> j) = False" "(j = i) = False" by auto
+  let ?sl = "Suc l" 
+  let ?dll = "dmus !! (Suc l - 1) !! (Suc l - 1)" 
+  obtain sig c_sig where 
+    sig_c: "sigma_array_cost dmus (dmus !! i) (dmus !! Suc j) (dmus !! j !! j) j = (sig,c_sig)" by force
+  from sigma_array_cost[of dmus "dmus !! i" "dmus !! Suc j" "dmus !! j !! j" j, unfolded sig_c cost_simps]
+  have sig: "sigma_array dmus (dmus !! i) (dmus !! Suc j) (dmus !! j !! j) j = sig" 
+    and c_sig: "c_sig \<le> 4 * j + 1" by auto
+  obtain dmus' where 
+    dmus': "iarray_update dmus i (iarray_append (dmus !! i) (dmus !! j !! j * (fi \<bullet> fs !! Suc j) - sig)) = dmus'" 
+    by auto
+  obtain res c_rec where rec_c: "dmu_array_row_main_cost fi i dmus' (Suc j) = (res, c_rec)" by force
+  let ?c = "\<lambda> j. 2 * n + 2 + 4 * j + 1" 
+  from Suc(2-3) have "l = i - Suc j" "Suc j \<le> i" by auto
+  from Suc(1)[OF this, of dmus', unfolded rec_c cost_simps]
+  have rec: "dmu_array_row_main fs fi i dmus' (Suc j) = res" 
+   and c_rec: "c_rec \<le> (\<Sum>jj = Suc j..<i. ?c jj)" by auto
+  have "c_rec + c_sig + 2 * n + 2 \<le> ?c j + (\<Sum>jj = Suc j..<i. ?c jj)" 
+    using c_rec c_sig by auto
+  also have "\<dots> = (\<Sum>jj = j..<i. ?c jj)" 
+    by (subst (2) sum.remove[of _ j], insert Suc(2-), auto intro: sum.cong)
+  finally have cost: "c_rec + c_sig + 2 * n + 2 \<le> (\<Sum>jj = j..<i. ?c jj)" by auto
+  thus ?case unfolding dmu_array_row_main_cost.simps[of _ _ _ j] dmu_array_row_main.simps[of _ _ _ _ j] Let_def
+    id if_False sig_c split sig dmus' rec rec_c cost_simps by auto
+qed
+
 definition dmu_array_row_cost where
   "dmu_array_row_cost dmus i = (let fi = fs !! i;
       sp = fi \<bullet> fs !! 0 \<comment> \<open>2n arith. operations\<close>;
       local_cost = 2 * n;
       (res, main_cost) = dmu_array_row_main_cost fi i (iarray_append dmus (IArray [sp])) 0 in 
       (res, local_cost + main_cost))" 
+
+lemma dmu_array_row_cost: 
+   "result (dmu_array_row_cost dmus i) = dmu_array_row fs dmus i"  
+   "cost (dmu_array_row_cost dmus i) \<le> 2 * n + (2 * n + 1 + 2 * i) * i" 
+proof (atomize(full), goal_cases)
+  case 1
+  let ?fi = "fs !! i"
+  let ?arr = "iarray_append dmus (IArray [?fi \<bullet> fs !! 0])" 
+  obtain res c_main where res_c: "dmu_array_row_main_cost ?fi i ?arr 0 = (res, c_main)" by force
+  from dmu_array_row_main_cost[of 0 i ?fi ?arr, unfolded res_c cost_simps]
+  have res: "dmu_array_row_main fs ?fi i ?arr 0 = res" 
+    and c_main: "c_main \<le> (\<Sum>jj = 0..<i. 2 * n + 2 + 4 * jj + 1)" by auto
+  have "2 * n + c_main \<le> 2 * n + (\<Sum>jj = 0..<i. 2 * n + 2 + 4 * jj + 1)" using c_main by auto
+  also have "\<dots> = 2 * n + (2 * n + 3) * i + 2 * (\<Sum>jj < i. 2 * jj)" 
+    unfolding sum.distrib by (auto simp: sum_distrib_left field_simps intro: sum.cong)
+  also have "(\<Sum>jj < i. 2 * jj) = i * (i - 1)" 
+    by (induct i, force, rename_tac i, case_tac i, auto)
+  finally have "2 * n + c_main \<le> 2 * n + (2 * n + 3 + 2 * (i - 1)) * i" by (simp add: field_simps)
+  also have "\<dots> = 2 * n + (2 * n + 1 + 2 * i) * i" by (cases i, auto simp: field_simps)
+  finally have "2 * n + c_main \<le> 2 * n + (2 * n + 1 + 2 * i) * i" .
+  thus ?case unfolding dmu_array_row_cost_def Let_def dmu_array_row_def res_c res split cost_simps 
+    by auto
+qed
 
 function dmu_array_cost where 
   "dmu_array_cost dmus i = (if i \<ge> m then (dmus,0) else 
@@ -391,7 +453,76 @@ function dmu_array_cost where
 
 termination by (relation "measure (\<lambda> (dmus, i). m - i)", auto)
 
+declare dmu_array_cost.simps[simp del]
 
+lemma dmu_array_cost: assumes "i \<le> m" 
+  shows "result (dmu_array_cost dmus i) = dmu_array fs m dmus i"  
+   "cost (dmu_array_cost dmus i) \<le> (\<Sum> ii \<in> {i ..< m}. 2 * n + (2 * n + 1 + 2 * ii) * ii)" 
+  using assms
+proof (atomize(full), induct "m - i" arbitrary: i dmus)
+  case (0 i dmus)
+  hence i: "i = m" by auto
+  thus ?case unfolding dmu_array_cost.simps[of _ i] 
+    dmu_array.simps[of _ _ _ i]
+    by (simp add: cost_simps)
+next
+  case (Suc k i dmus)
+  obtain dmus' c_row where row_c: "dmu_array_row_cost dmus i = (dmus',c_row)" by force
+  from dmu_array_row_cost[of dmus i, unfolded row_c cost_simps]
+  have row: "dmu_array_row fs dmus i = dmus'" 
+    and c_row: "c_row \<le> 2 * n + (2 * n + 1 + 2 * i) * i" (is "_ \<le> ?c i") by auto
+  from Suc have "k = m - Suc i" "Suc i \<le> m" 
+    and id: "(m \<le> i) = False" "(i = m) = False" by auto
+  note IH = Suc(1)[OF this(1-2), of dmus']
+  obtain res c_rec where rec_c: "dmu_array_cost dmus' (Suc i) = (res, c_rec)" by force
+  from IH[unfolded rec_c cost_simps]
+  have rec: "dmu_array fs m dmus' (Suc i) = res" 
+    and c_rec: "c_rec \<le> (\<Sum>ii = Suc i..<m. ?c ii)" by auto
+  have "c_row + c_rec \<le> ?c i + (\<Sum>ii = Suc i..<m. ?c ii)" using c_rec c_row by auto
+  also have "\<dots> = (\<Sum>ii = i..<m. ?c ii)" 
+    by (subst (2) sum.remove[of _ i], insert Suc(2-), auto intro: sum.cong)
+  finally show ?case unfolding dmu_array_cost.simps[of _ i] 
+    dmu_array.simps[of _ _ _ i] id if_False Let_def rec_c row_c row rec split cost_simps by auto
+qed  
+end (* fs *)
+
+definition d\<mu>_impl_cost :: "int vec list \<Rightarrow> int iarray iarray cost" where
+  "d\<mu>_impl_cost fs = dmu_array_cost (IArray fs) (IArray []) 0"  
+
+lemma d\<mu>_impl_cost: "result (d\<mu>_impl_cost fs_init) = d\<mu>_impl fs_init" 
+  "cost (d\<mu>_impl_cost fs_init) \<le> m * (m * (m + n + 2) + 2 * n + 1)" 
+proof (atomize(full), goal_cases)
+  case 1
+  let ?fs = "IArray fs_init" 
+  let ?dmus = "IArray []" 
+  obtain res cost where res_c: "dmu_array_cost ?fs ?dmus 0 = (res, cost)" by force
+  from dmu_array_cost[of 0 ?fs ?dmus, unfolded res_c cost_simps]
+  have res: "dmu_array ?fs m ?dmus 0 = res" 
+    and cost: "cost \<le> (\<Sum>ii = 0..<m. 2 * n + (2 * n + 1 + 2 * ii) * ii) " by auto 
+  note cost
+  also have "(\<Sum>ii = 0..<m. 2 * n + (2 * n + 1 + 2 * ii) * ii) 
+     = 2 * n * m + (2 * n + 1) * (\<Sum>ii = 0..<m.  ii) + 2 * (\<Sum>ii = 0..<m. ii * ii)" 
+    by (auto simp: field_simps sum.distrib sum_distrib_left intro: sum.cong)
+  also have "\<dots> \<le> 2 * n * m + (2 * n + 2) * (\<Sum>ii = 0..<m.  ii) + 2 * (\<Sum>ii = 0..<m. ii * ii)" 
+    by auto
+  also have "(2 * n + 2) * (\<Sum>ii = 0..<m.  ii) = (n + 1) * (2 * (\<Sum>ii = 0..<m.  ii))" by auto
+  also have "2 * (\<Sum>ii = 0..<m.  ii) = m * (m - 1)" 
+    by (induct m, force, rename_tac i, case_tac i, auto)
+  also have "2 * (\<Sum>ii = 0..<m.  ii * ii) = (6 * (\<Sum>ii = 0..<m.  ii * ii)) div 3" by simp
+  also have "6 * (\<Sum>ii = 0..<m.  ii * ii) = 2 * (m - 1)*(m-1)*(m-1) + 3 * (m - 1) * (m - 1) + (m - 1)" 
+    by (induct m, simp, rename_tac i, case_tac i, auto simp: field_simps)
+  finally have "cost \<le> 2 * n * m + (n + 1) * (m * (m - 1)) 
+    + (2 * (m - 1) * (m - 1) * (m - 1) + 3 * (m - 1) * (m - 1) + (m - 1)) div 3" .
+  also have "\<dots> \<le> 2 * n * m + (n + 1) * (m * m) + (3 * m * m * m + 3 * m * m + 3 * m) div 3" 
+    by (intro add_mono div_le_mono mult_mono, auto)  
+  also have "\<dots> = 2 * n * m + (n + 1) * (m * m) + (m * m * m + m * m + m)" 
+    by simp
+  also have "\<dots> = m * (m * (m + n + 2) + 2 * n + 1)" 
+    by (simp add: algebra_simps)
+  finally 
+  show ?case unfolding d\<mu>_impl_cost_def d\<mu>_impl_def len res res_c cost_simps by simp
+qed
+  
 
 (* TODO: integrate cost for initial_state: below is the calculation for the GSO-based initial state
 
