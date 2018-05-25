@@ -9,7 +9,103 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>07 May 2018 00:00:00 +0000</pubDate>
+    <pubDate>25 May 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Hidden Markov Models</title>
+              <link>https://www.isa-afp.org/entries/Hidden_Markov_Models.html</link>
+       <guid>https://www.isa-afp.org/entries/Hidden_Markov_Models.html</guid>
+       <dc:creator> Simon Wimmer       </dc:creator>
+       <pubDate>25 May 2018 00:00:00 +0000</pubDate>
+       <description>
+This entry contains a formalization of hidden Markov models [3] based
+on Johannes Hölzl&#39;s formalization of discrete time Markov chains
+[1]. The basic definitions are provided and the correctness of two
+main (dynamic programming) algorithms for hidden Markov models is
+proved: the forward algorithm for computing the likelihood of an
+observed sequence, and the Viterbi algorithm for decoding the most
+probable hidden state sequence. The Viterbi algorithm is made
+executable including memoization.  Hidden markov models have various
+applications in natural language processing. For an introduction see
+Jurafsky and Martin [2].</description>
+    </item>
+    <item>
+       <title>Probabilistic Timed Automata</title>
+              <link>https://www.isa-afp.org/entries/Probabilistic_Timed_Automata.html</link>
+       <guid>https://www.isa-afp.org/entries/Probabilistic_Timed_Automata.html</guid>
+       <dc:creator> Simon Wimmer, Johannes Hölzl       </dc:creator>
+       <pubDate>24 May 2018 00:00:00 +0000</pubDate>
+       <description>
+We present a formalization of probabilistic timed automata (PTA) for
+which we try to follow the formula MDP + TA = PTA as far as possible:
+our work starts from our existing formalizations of Markov decision
+processes (MDP) and timed automata (TA) and combines them modularly.
+We prove the fundamental result for probabilistic timed automata: the
+region construction that is known from timed automata carries over to
+the probabilistic setting. In particular, this allows us to prove that
+minimum and maximum reachability probabilities can be computed via a
+reduction to MDP model checking, including the case where one wants to
+disregard unrealizable behavior. Further information can be found in
+our ITP paper [2].</description>
+    </item>
+    <item>
+       <title>Axiom Systems for Category Theory in Free Logic</title>
+              <link>https://www.isa-afp.org/entries/AxiomaticCategoryTheory.html</link>
+       <guid>https://www.isa-afp.org/entries/AxiomaticCategoryTheory.html</guid>
+       <dc:creator> Christoph Benzmüller, Dana Scott       </dc:creator>
+       <pubDate>23 May 2018 00:00:00 +0000</pubDate>
+       <description>
+This document provides a concise overview on the core results of our
+previous work on the exploration of axioms systems for category
+theory. Extending the previous studies
+(http://arxiv.org/abs/1609.01493) we include one further axiomatic
+theory in our experiments. This additional theory has been suggested
+by Mac Lane in 1948. We show that the axioms proposed by Mac Lane are
+equivalent to the ones we studied before, which includes an axioms set
+suggested by Scott in the 1970s and another axioms set proposed by
+Freyd and Scedrov in 1990, which we slightly modified to remedy a
+minor technical issue.</description>
+    </item>
+    <item>
+       <title>Monadification, Memoization and Dynamic Programming</title>
+              <link>https://www.isa-afp.org/entries/Monad_Memo_DP.html</link>
+       <guid>https://www.isa-afp.org/entries/Monad_Memo_DP.html</guid>
+       <dc:creator> Simon Wimmer, Shuwei Hu, Tobias Nipkow       </dc:creator>
+       <pubDate>22 May 2018 00:00:00 +0000</pubDate>
+       <description>
+We present a lightweight framework for the automatic verified
+(functional or imperative) memoization of recursive functions. Our
+tool can turn a pure Isabelle/HOL function definition into a
+monadified version in a state monad or the Imperative HOL heap monad,
+and prove a correspondence theorem. We provide a variety of memory
+implementations for the two types of monads. A number of simple
+techniques allow us to achieve bottom-up computation and
+space-efficient memoization. The framework’s utility is demonstrated
+on a number of representative dynamic programming problems. A detailed
+description of our work can be found in the accompanying paper [2].</description>
+    </item>
+    <item>
+       <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
+              <link>https://www.isa-afp.org/entries/OpSets.html</link>
+       <guid>https://www.isa-afp.org/entries/OpSets.html</guid>
+       <dc:creator> Martin Kleppmann, Victor B. F. Gomes, Dominic P. Mulligan, Alastair R. Beresford       </dc:creator>
+       <pubDate>10 May 2018 00:00:00 +0000</pubDate>
+       <description>
+We introduce OpSets, an executable framework for specifying and
+reasoning about the semantics of replicated datatypes that provide
+eventual consistency in a distributed system, and for mechanically
+verifying algorithms that implement these datatypes. Our approach is
+simple but expressive, allowing us to succinctly specify a variety of
+abstract datatypes, including maps, sets, lists, text, graphs, trees,
+and registers. Our datatypes are also composable, enabling the
+construction of complex data structures. To demonstrate the utility of
+OpSets for analysing replication algorithms, we highlight an important
+correctness property for collaborative text editing that has
+traditionally been overlooked; algorithms that do not satisfy this
+property can exhibit awkward interleaving of text. We use OpSets to
+specify this correctness property and prove that although one existing
+replication algorithm satisfies this property, several other published
+algorithms do not.</description>
+    </item>
     <item>
        <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</title>
               <link>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</link>
@@ -471,89 +567,6 @@ stochastic matrices, link the formalization to the existing AFP-entry
 on Markov chains, and apply the Perron&amp;ndash;Frobenius theorem to
 prove that stationary distributions always exist, and they are unique
 if the stochastic matrix is irreducible.</description>
-    </item>
-    <item>
-       <title>The IMAP CmRDT</title>
-              <link>https://www.isa-afp.org/entries/IMAP-CRDT.html</link>
-       <guid>https://www.isa-afp.org/entries/IMAP-CRDT.html</guid>
-       <dc:creator> Tim Jungnickel, Lennart Oldenburg, Matthias Loibl       </dc:creator>
-       <pubDate>09 Nov 2017 00:00:00 +0000</pubDate>
-       <description>
-We provide our Isabelle/HOL formalization of a Conflict-free
-Replicated Datatype for Internet Message Access Protocol commands.
-We show that Strong Eventual Consistency (SEC) is guaranteed
-by proving the commutativity of concurrent operations. We base our
-formalization on the recently proposed &#34;framework for
-establishing Strong Eventual Consistency for Conflict-free Replicated
-Datatypes&#34; (AFP.CRDT) from Gomes et al. Hence, we provide an
-additional example of how the recently proposed framework can be used
-to design and prove CRDTs.</description>
-    </item>
-    <item>
-       <title>Hybrid Multi-Lane Spatial Logic</title>
-              <link>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</guid>
-       <dc:creator> Sven Linker       </dc:creator>
-       <pubDate>06 Nov 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a semantic embedding of a spatio-temporal multi-modal
-logic, specifically defined to reason about motorway traffic, into
-Isabelle/HOL. The semantic model is an abstraction of a motorway,
-emphasising local spatial properties, and parameterised by the types
-of sensors deployed in the vehicles. We use the logic to define
-controller constraints to ensure safety, i.e., the absence of
-collisions on the motorway. After proving safety with a restrictive
-definition of sensors, we relax these assumptions and show how to
-amend the controller constraints to still guarantee safety.</description>
-    </item>
-    <item>
-       <title>The Kuratowski Closure-Complement Theorem</title>
-              <link>https://www.isa-afp.org/entries/Kuratowski_Closure_Complement.html</link>
-       <guid>https://www.isa-afp.org/entries/Kuratowski_Closure_Complement.html</guid>
-       <dc:creator> Peter Gammie, Gianpaolo Gioiosa       </dc:creator>
-       <pubDate>26 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-We discuss a topological curiosity discovered by Kuratowski (1922):
-the fact that the number of distinct operators on a topological space
-generated by compositions of closure and complement never exceeds 14,
-and is exactly 14 in the case of R. In addition, we prove a theorem
-due to Chagrov (1982) that classifies topological spaces according to
-the number of such operators they support.</description>
-    </item>
-    <item>
-       <title>Transition Systems and Automata</title>
-              <link>https://www.isa-afp.org/entries/Transition_Systems_and_Automata.html</link>
-       <guid>https://www.isa-afp.org/entries/Transition_Systems_and_Automata.html</guid>
-       <dc:creator> Julian Brunner       </dc:creator>
-       <pubDate>19 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a very abstract theory of transition systems that
-can be instantiated to express various types of automata. A transition
-system is typically instantiated by providing a set of initial states,
-a predicate for enabled transitions, and a transition execution
-function. From this, it defines the concepts of finite and infinite
-paths as well as the set of reachable states, among other things. Many
-useful theorems, from basic path manipulation rules to coinduction and
-run construction rules, are proven in this abstract transition system
-context. The library comes with instantiations for DFAs, NFAs, and
-Büchi automata.</description>
-    </item>
-    <item>
-       <title>Büchi Complementation</title>
-              <link>https://www.isa-afp.org/entries/Buchi_Complementation.html</link>
-       <guid>https://www.isa-afp.org/entries/Buchi_Complementation.html</guid>
-       <dc:creator> Julian Brunner       </dc:creator>
-       <pubDate>19 Oct 2017 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a verified implementation of rank-based Büchi
-Complementation. The verification is done in three steps: &lt;ol&gt;
-&lt;li&gt;Definition of odd rankings and proof that an automaton
-rejects a word iff there exists an odd ranking for it.&lt;/li&gt;
-&lt;li&gt;Definition of the complement automaton and proof that it
-accepts exactly those words for which there is an odd
-ranking.&lt;/li&gt; &lt;li&gt;Verified implementation of the
-complement automaton using the Isabelle Collections
-Framework.&lt;/li&gt; &lt;/ol&gt;</description>
     </item>
   </channel>
 </rss>

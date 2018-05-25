@@ -3972,6 +3972,61 @@ topic = Mathematics/Number Theory
 abstract = In 1975, Pratt introduced a proof system for certifying primes. He showed that a number <i>p</i> is prime iff a primality certificate for <i>p</i> exists. By showing a logarithmic upper bound on the length of the certificates in size of the prime number, he concluded that the decision problem for prime numbers is in NP. This work formalizes soundness and completeness of Pratt's proof system as well as an upper bound for the size of the certificate.
 notify = noschinl@in.tum.de, simon.wimmer@tum.de
 
+[Monad_Memo_DP]
+title = Monadification, Memoization and Dynamic Programming
+author = Simon Wimmer <http://home.in.tum.de/~wimmers/>, Shuwei Hu <mailto:shuwei.hu@tum.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow/>
+topic = Computer Science/Programming Languages/Transformations, Computer Science/Algorithms, Computer Science/Functional Programming
+date = 2018-05-22
+notify = wimmers@in.tum.de
+abstract =
+  We present a lightweight framework for the automatic verified
+  (functional or imperative) memoization of recursive functions. Our
+  tool can turn a pure Isabelle/HOL function definition into a
+  monadified version in a state monad or the Imperative HOL heap monad,
+  and prove a correspondence theorem. We provide a variety of memory
+  implementations for the two types of monads. A number of simple
+  techniques allow us to achieve bottom-up computation and
+  space-efficient memoization. The framework’s utility is demonstrated
+  on a number of representative dynamic programming problems. A detailed
+  description of our work can be found in the accompanying paper [2].
+
+[Probabilistic_Timed_Automata]
+title = Probabilistic Timed Automata
+author = Simon Wimmer <http://in.tum.de/~wimmers>, Johannes Hölzl <http://home.in.tum.de/~hoelzl>
+topic = Mathematics/Probability Theory,  Computer Science/Automata and Formal Languages
+date = 2018-05-24
+notify = wimmers@in.tum.de, hoelzl@in.tum.de
+abstract =
+  We present a formalization of probabilistic timed automata (PTA) for
+  which we try to follow the formula MDP + TA = PTA as far as possible:
+  our work starts from our existing formalizations of Markov decision
+  processes (MDP) and timed automata (TA) and combines them modularly.
+  We prove the fundamental result for probabilistic timed automata: the
+  region construction that is known from timed automata carries over to
+  the probabilistic setting. In particular, this allows us to prove that
+  minimum and maximum reachability probabilities can be computed via a
+  reduction to MDP model checking, including the case where one wants to
+  disregard unrealizable behavior. Further information can be found in
+  our ITP paper [2].
+
+[Hidden_Markov_Models]
+title = Hidden Markov Models
+author = Simon Wimmer <http://in.tum.de/~wimmers>
+topic = Mathematics/Probability Theory, Computer Science/Algorithms
+date = 2018-05-25
+notify = wimmers@in.tum.de
+abstract =
+  This entry contains a formalization of hidden Markov models [3] based
+  on Johannes Hölzl's formalization of discrete time Markov chains
+  [1]. The basic definitions are provided and the correctness of two
+  main (dynamic programming) algorithms for hidden Markov models is
+  proved: the forward algorithm for computing the likelihood of an
+  observed sequence, and the Viterbi algorithm for decoding the most
+  probable hidden state sequence. The Viterbi algorithm is made
+  executable including memoization.  Hidden markov models have various
+  applications in natural language processing. For an introduction see
+  Jurafsky and Martin [2].
+
 [ArrowImpossibilityGS]
 title = Arrow and Gibbard-Satterthwaite
 author = Tobias Nipkow <http://www21.in.tum.de/~nipkow>
@@ -6851,12 +6906,52 @@ author = Oliver Bračevac <mailto:bracevac@st.informatik.tu-darmstadt.de>, Richa
 topic = Computer Science/Security
 date = 2018-05-07
 notify = tasch@mais.informatik.tu-darmstadt.de
-abstract = 
+abstract =
   The "Modular Assembly Kit for Security Properties" (MAKS) is
   a framework for both the definition and verification of possibilistic
   information-flow security properties at the specification-level. MAKS
   supports the uniform representation of a wide range of possibilistic
   information-flow properties and provides support for the verification
   of such properties via unwinding results and compositionality results.
-  We provide a formalization of this framework in Isabelle/HOL.  
+  We provide a formalization of this framework in Isabelle/HOL.
 
+[AxiomaticCategoryTheory]
+title = Axiom Systems for Category Theory in Free Logic
+author = Christoph Benzmüller <http://christoph-benzmueller.de>, Dana Scott <http://www.cs.cmu.edu/~scott/>
+topic = Mathematics/Category Theory
+date = 2018-05-23
+notify = c.benzmueller@gmail.com
+abstract =
+  This document provides a concise overview on the core results of our
+  previous work on the exploration of axioms systems for category
+  theory. Extending the previous studies
+  (http://arxiv.org/abs/1609.01493) we include one further axiomatic
+  theory in our experiments. This additional theory has been suggested
+  by Mac Lane in 1948. We show that the axioms proposed by Mac Lane are
+  equivalent to the ones we studied before, which includes an axioms set
+  suggested by Scott in the 1970s and another axioms set proposed by
+  Freyd and Scedrov in 1990, which we slightly modified to remedy a
+  minor technical issue.
+
+[OpSets]
+title = OpSets: Sequential Specifications for Replicated Datatypes
+author = Martin Kleppmann <mailto:mk428@cl.cam.ac.uk>, Victor B. F. Gomes <mailto:vb358@cl.cam.ac.uk>, Dominic P. Mulligan <mailto:Dominic.Mulligan@arm.com>, Alastair R. Beresford <mailto:arb33@cl.cam.ac.uk>
+topic = Computer Science/Algorithms/Distributed, Computer Science/Data Structures
+date = 2018-05-10
+notify = vb358@cam.ac.uk
+abstract =
+  We introduce OpSets, an executable framework for specifying and
+  reasoning about the semantics of replicated datatypes that provide
+  eventual consistency in a distributed system, and for mechanically
+  verifying algorithms that implement these datatypes. Our approach is
+  simple but expressive, allowing us to succinctly specify a variety of
+  abstract datatypes, including maps, sets, lists, text, graphs, trees,
+  and registers. Our datatypes are also composable, enabling the
+  construction of complex data structures. To demonstrate the utility of
+  OpSets for analysing replication algorithms, we highlight an important
+  correctness property for collaborative text editing that has
+  traditionally been overlooked; algorithms that do not satisfy this
+  property can exhibit awkward interleaving of text. We use OpSets to
+  specify this correctness property and prove that although one existing
+  replication algorithm satisfies this property, several other published
+  algorithms do not.

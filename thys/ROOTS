@@ -19,6 +19,7 @@ Architectural_Design_Patterns
 ArrowImpossibilityGS
 AutoFocus-Stream
 Automatic_Refinement
+AxiomaticCategoryTheory
 BDD
 BNF_Operations
 Bell_Numbers_Spivey
@@ -162,6 +163,7 @@ HRB-Slicing
 Heard_Of
 HereditarilyFinite
 Hermite
+Hidden_Markov_Models
 Hoare_Time
 HotelKeyCards
 Huffman
@@ -241,6 +243,7 @@ Minimal_SSA
 Minkowskis_Theorem
 Modal_Logics_for_NTS
 Modular_Assembly_Kit_Security
+Monad_Memo_DP
 Monad_Normalisation
 MonoBoolTranAlgebra
 MonoidalCategory
@@ -263,6 +266,7 @@ Noninterference_Ipurge_Unwinding
 Noninterference_Sequential_Composition
 NormByEval
 Open_Induction
+OpSets
 Optics
 Orbit_Stabiliser
 Ordered_Resolution_Prover
@@ -294,6 +298,7 @@ Prime_Harmonic_Series
 Priority_Queue_Braun
 Probabilistic_Noninterference
 Probabilistic_System_Zoo
+Probabilistic_Timed_Automata
 Probabilistic_While
 Program-Conflict-Analysis
 Promela

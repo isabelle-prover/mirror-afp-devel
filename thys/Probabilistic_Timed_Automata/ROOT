@@ -1,0 +1,17 @@
+chapter AFP
+
+session PTA_library (AFP) = "Markov_Models" +
+  options [ timeout = 600, document = false ]
+  sessions
+    "Timed_Automata"
+  theories
+    "library/Lib"
+
+session Probabilistic_Timed_Automata (AFP) = "PTA_library" +
+  options [timeout = 200]
+  theories
+    "PTA"
+    "PTA_Reachability"
+  document_files
+    "root.tex"
+    "root.bib"
