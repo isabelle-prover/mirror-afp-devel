@@ -14,17 +14,11 @@ text \<open>In this section we define a version of the LLL algorithm which expli
   The cost model counts the number of arithmetic operations that occur in vector-addition, scalar-products,
   and scalar multiplication and we prove a polynomial bound on this number.\<close>
 
-theory LLL_Complexity
-  imports LLL_GSO_Impl
+theory LLL_GSO_Impl_Complexity
+  imports 
+    LLL_GSO_Impl
+    Cost
 begin
-
-type_synonym 'a cost = "'a \<times> nat" 
-
-definition cost :: "'a cost \<Rightarrow> nat" where "cost = snd" 
-definition result :: "'a cost \<Rightarrow> 'a" where "result = fst" 
-
-lemma cost_simps: "cost (a,c) = c" "result (a,c) = a" 
-  unfolding cost_def result_def by auto
 
 context LLL_with_assms
 begin
