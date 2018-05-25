@@ -8,7 +8,7 @@ abbrevs
 
 begin
  (*Begin: some useful parameter settings*)
-  declare [[ smt_solver = cvc4 ]]
+  declare [[ smt_solver = cvc4, smt_oracle = true ]]
   nitpick_params[user_axioms, show_all, format = 2, expect = genuine]
  (*End: some useful parameter settings*)
 (*>*)
