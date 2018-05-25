@@ -329,6 +329,70 @@ proof -
   finally show ?g2 .
 qed
 
+
+context fixes
+  fs :: "int vec iarray" 
+begin 
+fun sigma_array_cost where
+  "sigma_array_cost dmus dmusi dmusj dll l = (if l = 0 then (dmusi !! l * dmusj !! l, 1)
+      else let l1 = l - 1; dll1 = dmus !! l1 !! l1;
+        (sig, cost_rec) = sigma_array_cost dmus dmusi dmusj dll1 l1;
+        res = (dll * sig + dmusi !! l * dmusj !! l) div dll1; \<comment> \<open>4 arith. operations\<close>
+        local_cost = (4 :: nat)
+        in
+      (res, local_cost + cost_rec))"
+
+declare sigma_array_cost.simps[simp del]
+
+lemma sigma_array_cost: 
+  "result (sigma_array_cost dmus dmusi dmusj dll l) = sigma_array dmus dmusi dmusj dll l"
+  "cost (sigma_array_cost dmus dmusi dmusj dll l) \<le> 4 * l + 1" 
+proof (atomize(full), induct l arbitrary: dll)
+  case 0
+  show ?case unfolding sigma_array_cost.simps[of _ _ _ _ 0] sigma_array.simps[of _ _ _ _ 0]
+    by (simp add: cost_simps)
+next
+  case (Suc l)
+  let ?sl = "Suc l" 
+  let ?dll = "dmus !! (Suc l - 1) !! (Suc l - 1)" 
+  show ?case unfolding sigma_array_cost.simps[of _ _ _ _ ?sl] sigma_array.simps[of _ _ _ _ ?sl] Let_def
+    using Suc[of ?dll]
+    by (auto split: prod.splits simp: cost_simps)
+qed
+
+function dmu_array_row_main_cost where
+  "dmu_array_row_main_cost fi i dmus j = (if j \<ge> i then (dmus, 0)
+     else let sj = Suc j; 
+       dmus_i = dmus !! i;
+       djj = dmus !! j !! j;
+       (sigma, cost_sigma) = sigma_array_cost dmus dmus_i (dmus !! sj) djj j;
+       dmu_ij = djj * (fi \<bullet> fs !! sj) - sigma; \<comment> \<open>2n + 2 arith. operations\<close>
+       dmus' = iarray_update dmus i (iarray_append dmus_i dmu_ij);
+       (res, cost_rec) = dmu_array_row_main_cost fi i dmus' sj;
+       local_cost = 2 * n + 2
+      in (res, cost_rec + cost_sigma + local_cost))" 
+  by pat_completeness auto
+
+termination by (relation "measure (\<lambda> (fi,i,dmus,j). i - j)", auto)
+
+definition dmu_array_row_cost where
+  "dmu_array_row_cost dmus i = (let fi = fs !! i;
+      sp = fi \<bullet> fs !! 0 \<comment> \<open>2n arith. operations\<close>;
+      local_cost = 2 * n;
+      (res, main_cost) = dmu_array_row_main_cost fi i (iarray_append dmus (IArray [sp])) 0 in 
+      (res, local_cost + main_cost))" 
+
+function dmu_array_cost where 
+  "dmu_array_cost dmus i = (if i \<ge> m then (dmus,0) else 
+    let (dmus', cost_row) = dmu_array_row_cost dmus i;
+        (res, cost_rec) = dmu_array_cost dmus' (Suc i)
+     in (res, cost_row + cost_rec))"
+  by pat_completeness auto
+
+termination by (relation "measure (\<lambda> (dmus, i). m - i)", auto)
+
+
+
 (* TODO: integrate cost for initial_state: below is the calculation for the GSO-based initial state
 
 definition "initial_gso_cost = (4 * m + 3) * m * n * arith_cost" 
