@@ -23,6 +23,8 @@ theory Missing_Lemmas
     Berlekamp_Zassenhaus.Berlekamp_Hensel (* for unique_factorization_m_factor *)
 begin
 
+no_notation test_bit (infixl "!!" 100)
+
 hide_const(open) module.smult up_ring.monom up_ring.coeff
 
 (**** The following lemmas that could be moved to HOL/Finite_Set.thy  ****)

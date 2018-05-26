@@ -15,8 +15,6 @@ theory Gram_Schmidt_Int
     More_IArray
 begin
 
-no_notation test_bit (infixl "!!" 100)
-
 context fixes
   fs :: "int vec iarray" and m :: nat
 begin 
