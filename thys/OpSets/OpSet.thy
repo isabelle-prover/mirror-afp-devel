@@ -217,7 +217,7 @@ proof -
   have "sorted (map fst (x # xs))" and "distinct (map fst (x # xs))"
     using assms spec_ops_def by blast+
   moreover from this have "sorted (map fst xs)"
-    by (simp add: sorted_Cons)
+    by simp
   moreover have "\<forall>oid oper ref. (oid, oper) \<in> set xs \<and> ref \<in> deps oper \<longrightarrow> ref < oid"
     by (meson assms set_subset_Cons spec_ops_def subsetCE)
   ultimately show "spec_ops xs deps"
@@ -329,8 +329,8 @@ next
     from IH have "sorted (map fst (xs @ [(oid, oper)] @ ys))"
       using spec_ops_def by blast
     hence "sorted (map fst (xs @ [(oid, oper)] @ ys) @ [yi])"
-      using yi_biggest sorted_append
-      by (metis (no_types, lifting) append_Nil2 order_less_imp_le set_ConsD sorted_single)
+      using yi_biggest
+      by (simp add: sorted_append dual_order.strict_implies_order)
     thus "sorted (map fst (xs @ [(oid, oper)] @ ys @ [y]))"
       by (simp add: y_pair)
   qed
@@ -572,7 +572,7 @@ lemma crdt_ops_unique_last:
 lemma crdt_ops_unique_mid:
   assumes "crdt_ops (xs @ [(oid, oper)] @ ys) deps"
   shows "oid \<notin> set (map fst xs) \<and> oid \<notin> set (map fst ys)"
-  using assms proof(induction ys rule: rev_induct)  
+  using assms proof(induction ys rule: rev_induct)
   case Nil
   then show "oid \<notin> set (map fst xs) \<and> oid \<notin> set (map fst [])"
     by (metis crdt_ops_unique_last Nil_is_map_conv append_Nil2 empty_iff empty_set)
@@ -658,7 +658,7 @@ next
       using y_pair crdt_ops_intro by (metis append.assoc)
   qed
   moreover have "oid \<notin> fst ` set (xs @ ys @ [y])"
-    using crdt_ops_unique_mid by (metis (no_types, lifting) UnE image_Un 
+    using crdt_ops_unique_mid by (metis (no_types, lifting) UnE image_Un
         image_set set_append snoc.prems(1))
   moreover have "\<And>r. r \<in> deps oper \<Longrightarrow> r \<in> fst ` set (xs @ ys @ [y])"
     using crdt_ops_ref_exists
