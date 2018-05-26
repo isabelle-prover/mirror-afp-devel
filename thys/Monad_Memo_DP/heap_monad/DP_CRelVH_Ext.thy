@@ -23,7 +23,7 @@ lemma crel_vs1_executeD:
   using assms unfolding crel_vs1_def by (cases "execute b heap") auto
 
 lemma rel_state_state_of:
-  "rel_state op = (state_of b) b" if "crel_vs1 R a b"
+  "rel_state (=) (state_of b) b" if "crel_vs1 R a b"
   unfolding rel_state_def state_of_def
   by (auto split: option.split elim: crel_vs1_execute_Some[OF that])
 
@@ -32,14 +32,14 @@ lemma crel_vs1_state_of:
   unfolding state_dp_consistency.crel_vs_def state_of_def by (auto elim: crel_vs1_executeD[OF that])
 
 lemma crel_vs1_alt_def:
-  "crel_vs1 R = (state_dp_consistency.crel_vs R OO rel_state (op =))"
+  "crel_vs1 R = (state_dp_consistency.crel_vs R OO rel_state (=))"
 proof (intro ext)
   fix a b
-  have "(state_dp_consistency.crel_vs R OO rel_state (op =)) a b" if "crel_vs1 R a b"
+  have "(state_dp_consistency.crel_vs R OO rel_state (=)) a b" if "crel_vs1 R a b"
     using that by - (rule relcomppI; erule crel_vs1_state_of rel_state_state_of)
-  moreover have "crel_vs1 R a b" if "(state_dp_consistency.crel_vs R OO rel_state (op =)) a b"
+  moreover have "crel_vs1 R a b" if "(state_dp_consistency.crel_vs R OO rel_state (=)) a b"
     using that by (auto 4 3 elim: state_dp_consistency.crel_vs_elim rel_state_elim simp: crel_vs1_def)
-  ultimately show "crel_vs1 R a b = (state_dp_consistency.crel_vs R OO rel_state (op =)) a b" ..
+  ultimately show "crel_vs1 R a b = (state_dp_consistency.crel_vs R OO rel_state (=)) a b" ..
 qed
 
 context
@@ -56,7 +56,7 @@ lemma crel_vs_return1:
 term 0 (**)
 
 lemma crel_vs_rel_state:
-  "(R0 ===> state_dp_consistency.crel_vs R1) x (state_of o y)" if "(R0 ===> state_dp_consistency.crel_vs R1 OO rel_state op =) x y"
+  "(R0 ===> state_dp_consistency.crel_vs R1) x (state_of o y)" if "(R0 ===> state_dp_consistency.crel_vs R1 OO rel_state (=)) x y"
   using that
   unfolding state_of_def
   apply -
@@ -87,7 +87,7 @@ lemma crel_vs_rel_state:
   done
 
 lemma bind_transfer1:
-  "(crel_vs1 R0 ===> (R0 ===> crel_vs1 R1) ===> crel_vs1 R1) (\<lambda>v f. f v) (op \<bind>)"
+  "(crel_vs1 R0 ===> (R0 ===> crel_vs1 R1) ===> crel_vs1 R1) (\<lambda>v f. f v) (\<bind>)"
   if "\<And> x. R0 x x"
   unfolding crel_vs1_alt_def
   apply (rule rel_fun_comp2')

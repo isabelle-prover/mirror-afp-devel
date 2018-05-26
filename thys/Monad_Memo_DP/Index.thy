@@ -195,7 +195,7 @@ fun idx :: "'a option bound \<Rightarrow> 'a option \<Rightarrow> nat" where
 
 end
 
-locale nat_index_def = ord "op \<le> :: nat \<Rightarrow> nat \<Rightarrow> bool" "op <"
+locale nat_index_def = ord "(\<le>) :: nat \<Rightarrow> nat \<Rightarrow> bool" "(<)"
 begin
 
 fun idx :: "nat bound \<Rightarrow> nat \<Rightarrow> nat" where
@@ -204,14 +204,14 @@ fun idx :: "nat bound \<Rightarrow> nat \<Rightarrow> nat" where
 fun size :: "nat bound \<Rightarrow> nat" where
   "size (Bound l r) = r - l"
 
-sublocale index_locale "op \<le>" "op <" idx size
+sublocale index_locale "(\<le>)" "(<)" idx size
 proof qed (auto simp: in_bound_def split: bound.splits) 
 
 end
 
-locale nat_index = nat_index_def + order "op \<le> :: nat \<Rightarrow> nat \<Rightarrow> bool" "op <"
+locale nat_index = nat_index_def + order "(\<le>) :: nat \<Rightarrow> nat \<Rightarrow> bool" "(<)"
 
-locale int_index_def = ord "op \<le> :: int \<Rightarrow> int \<Rightarrow> bool" "op <"
+locale int_index_def = ord "(\<le>) :: int \<Rightarrow> int \<Rightarrow> bool" "(<)"
 begin
 
 fun idx :: "int bound \<Rightarrow> int \<Rightarrow> nat" where
@@ -220,12 +220,12 @@ fun idx :: "int bound \<Rightarrow> int \<Rightarrow> nat" where
 fun size :: "int bound \<Rightarrow> nat" where
   "size (Bound l r) = nat (r - l)"
 
-sublocale index_locale "op \<le>" "op <" idx size
+sublocale index_locale "(\<le>)" "(<)" idx size
 proof qed (auto simp: in_bound_def split: bound.splits) 
 
 end
 
-locale int_index = int_index_def + order "op \<le> :: int \<Rightarrow> int \<Rightarrow> bool" "op <"
+locale int_index = int_index_def + order "(\<le>) :: int \<Rightarrow> int \<Rightarrow> bool" "(<)"
 
 class index =
   fixes less_eq less :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -257,8 +257,8 @@ begin
 interpretation nat_index ..
 thm index_locale_axioms
 
-definition [simp]: "less_eq_nat \<equiv> op \<le> :: nat \<Rightarrow> nat \<Rightarrow> bool"
-definition [simp]: "less_nat \<equiv> op < :: nat \<Rightarrow> nat \<Rightarrow> bool"
+definition [simp]: "less_eq_nat \<equiv> (\<le>) :: nat \<Rightarrow> nat \<Rightarrow> bool"
+definition [simp]: "less_nat \<equiv> (<) :: nat \<Rightarrow> nat \<Rightarrow> bool"
 definition [simp]: "idx_nat \<equiv> idx"
 definition [simp]: "size_nat \<equiv> size"
 
@@ -272,8 +272,8 @@ begin
 interpretation int_index ..
 thm index_locale_axioms
 
-definition [simp]: "less_eq_int \<equiv> op \<le> :: int \<Rightarrow> int \<Rightarrow> bool"
-definition [simp]: "less_int \<equiv> op < :: int \<Rightarrow> int \<Rightarrow> bool"
+definition [simp]: "less_eq_int \<equiv> (\<le>) :: int \<Rightarrow> int \<Rightarrow> bool"
+definition [simp]: "less_int \<equiv> (<) :: int \<Rightarrow> int \<Rightarrow> bool"
 definition [simp]: "idx_int \<equiv> idx"
 definition [simp]: "size_int \<equiv> size"
 

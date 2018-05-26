@@ -594,7 +594,7 @@ definition "move12' k \<equiv> do {
 interpretation heap_mem_defs inv_pair_weak lookup_pair update_pair .
 
 lemma rel_state_ofI:
-  "rel_state op = (state_of m) m" if
+  "rel_state (=) (state_of m) m" if
   "\<forall> heap. inv_pair_weak heap \<longrightarrow> success m heap"
   "lift_p inv_pair_weak m"
   using that unfolding rel_state_def
@@ -616,7 +616,7 @@ lemma lift_p_success:
   by (auto simp: success_def split: option.split)
 
 lemma rel_state_ofI2:
-  "rel_state op = (state_of m) m" if
+  "rel_state (=) (state_of m) m" if
   "\<forall> heap. inv_pair_weak heap \<longrightarrow> success m heap"
   "DP_CRelVS.lift_p inv_pair_weak (state_of m)"
   using that by (blast intro: rel_state_ofI lift_p_success)
@@ -626,7 +626,7 @@ context
 begin
 
 lemma [transfer_rule]:
-  "(op = ===> rel_state op =) move12 move12'"
+  "((=) ===> rel_state (=)) move12 move12'"
   unfolding move12_def move12'_def
   apply (intro rel_funI)
   apply simp
@@ -641,7 +641,7 @@ lemma [transfer_rule]:
   done
 
 lemma [transfer_rule]:
-  "(op = ===> rel_state (rel_option op =)) lookup1 mem_lookup1"
+  "((=) ===> rel_state (rel_option (=))) lookup1 mem_lookup1"
   unfolding lookup1_def mem_lookup1_def
   apply (intro rel_funI)
   apply (simp add: option.rel_eq)
@@ -656,7 +656,7 @@ lemma [transfer_rule]:
   done
 
 lemma [transfer_rule]:
-  "(op = ===> rel_state (rel_option op =)) lookup2 mem_lookup2"
+  "((=) ===> rel_state (rel_option (=))) lookup2 mem_lookup2"
   unfolding lookup2_def mem_lookup2_def
   apply (intro rel_funI)
   apply (simp add: option.rel_eq)
@@ -671,7 +671,7 @@ lemma [transfer_rule]:
   done
 
 lemma [transfer_rule]:
-  "rel_state (op =) get_k1 get_k1'"
+  "rel_state (=) get_k1 get_k1'"
   unfolding get_k1_def get_k1'_def
   apply (rule rel_state_ofI2)
   subgoal
@@ -681,7 +681,7 @@ lemma [transfer_rule]:
   done
 
 lemma [transfer_rule]:
-  "rel_state (op =) get_k2 get_k2'"
+  "rel_state (=) get_k2 get_k2'"
   unfolding get_k2_def get_k2'_def
   apply (rule rel_state_ofI2)
   subgoal
@@ -691,7 +691,7 @@ lemma [transfer_rule]:
   done
 
 lemma [transfer_rule]:
-  "(op = ===> op = ===> rel_state (op =)) update1 update1'"
+  "((=) ===> (=) ===> rel_state (=)) update1 update1'"
   unfolding update1_def update1'_def
   apply (intro rel_funI)
   apply simp
@@ -706,7 +706,7 @@ lemma [transfer_rule]:
   done
 
 lemma [transfer_rule]:
-  "(op = ===> op = ===> rel_state (op =)) update2 update2'"
+  "((=) ===> (=) ===> rel_state (=)) update2 update2'"
   unfolding update2_def update2'_def
   apply (intro rel_funI)
   apply simp
@@ -721,7 +721,7 @@ lemma [transfer_rule]:
   done
 
 lemma [transfer_rule]:
-  "(op = ===> rel_state (rel_option op =)) lookup1 mem_lookup1"
+  "((=) ===> rel_state (rel_option (=))) lookup1 mem_lookup1"
   unfolding lookup1_def mem_lookup1_def
   apply (intro rel_funI)
   apply (simp add: option.rel_eq)
@@ -736,7 +736,7 @@ lemma [transfer_rule]:
   done
 
 lemma rel_state_lookup:
-  "(op = ===> rel_state op =) pair.lookup_pair lookup_pair"
+  "((=) ===> rel_state (=)) pair.lookup_pair lookup_pair"
   unfolding pair.lookup_pair_def lookup_pair_def
   unfolding
     mem_lookup1_def[symmetric] mem_lookup2_def[symmetric]
@@ -745,7 +745,7 @@ lemma rel_state_lookup:
   by transfer_prover
 
 lemma rel_state_update:
-  "(op = ===> op = ===> rel_state op =) pair.update_pair update_pair"
+  "((=) ===> (=) ===> rel_state (=)) pair.update_pair update_pair"
   unfolding pair.update_pair_def update_pair_def
   unfolding move12'_def[symmetric]
   unfolding
@@ -761,8 +761,8 @@ lemma inv_pairD:
   using that unfolding pair.inv_pair_def by (auto simp: Let_def)
 
 lemma mem_rel_state_ofI:
-  "mem.rel_state op = m' m" if
-  "rel_state op = m' m"
+  "mem.rel_state (=) m' m" if
+  "rel_state (=) m' m"
   "\<And> heap. pair.inv_pair heap \<Longrightarrow>
     (case State_Monad.run_state m' heap of (_, heap) \<Rightarrow> inv_pair_weak heap \<longrightarrow> pair.inv_pair heap)"
 proof -
@@ -781,8 +781,8 @@ proof -
 qed
 
 lemma mem_rel_state_ofI':
-  "mem.rel_state op = m' m" if
-  "rel_state op = m' m"
+  "mem.rel_state (=) m' m" if
+  "rel_state (=) m' m"
   "DP_CRelVS.lift_p pair.inv_pair m'"
   using that by (auto elim: DP_CRelVS.lift_p_P intro: mem_rel_state_ofI)
 
@@ -794,7 +794,7 @@ interpretation mem_correct pair.lookup_pair pair.update_pair pair.inv_pair
   by (rule mem_correct_pair[OF keys])
 
 lemma rel_state_lookup':
-  "(op = ===> mem.rel_state op =) pair.lookup_pair lookup_pair"
+  "((=) ===> mem.rel_state (=)) pair.lookup_pair lookup_pair"
   apply (intro rel_funI)
   apply simp
   apply (rule mem_rel_state_ofI')
@@ -803,7 +803,7 @@ lemma rel_state_lookup':
   by (rule lookup_inv)
 
 lemma rel_state_update':
-  "(op = ===> op = ===> mem.rel_state op =) pair.update_pair update_pair"
+  "((=) ===> (=) ===> mem.rel_state (=)) pair.update_pair update_pair"
   apply (intro rel_funI)
   apply simp
   apply (rule mem_rel_state_ofI')
@@ -818,7 +818,7 @@ lemmas heap_correct_pairI = heap_correct_axioms
 
 (* TODO: Generalize *)
 lemma mem_rel_state_resultD:
-  "result_of m heap = fst (run_state m' heap)" if "mem.rel_state op = m' m" "pair.inv_pair heap"
+  "result_of m heap = fst (run_state m' heap)" if "mem.rel_state (=) m' m" "pair.inv_pair heap"
   by (metis (mono_tags, lifting) mem.rel_state_elim option.sel that)
 
 lemma map_of_heap_eq:

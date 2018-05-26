@@ -28,7 +28,7 @@ term iter_heap
 term crel_vs
 
 lemma crel_vs_iterate_state:
-  "crel_vs op = () (iter_heap f x)" if "(op = ===> crel_vs R) g f"
+  "crel_vs (=) () (iter_heap f x)" if "((=) ===> crel_vs R) g f"
   using wellfounded
 proof induction
   case (less x)
@@ -51,7 +51,7 @@ proof -
 qed
 
 lemma crel_vs_iter_and_compute:
-  assumes "(op = ===> crel_vs R) g f"
+  assumes "((=) ===> crel_vs R) g f"
   shows "crel_vs R (g x) (do {iter_heap f y; f x})"
   by (rule
         crel_vs_bind_ignore crel_vs_iterate_state HOL.refl

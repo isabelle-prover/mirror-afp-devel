@@ -90,7 +90,7 @@ named_theorems dp_match_rule
 
 thm if_cong
 lemma if\<^sub>T_cong2:
-  assumes "Rel op= b c" "c \<Longrightarrow> Rel (crel_vs R) x x\<^sub>T" "\<not>c \<Longrightarrow> Rel (crel_vs R) y y\<^sub>T"
+  assumes "Rel (=) b c" "c \<Longrightarrow> Rel (crel_vs R) x x\<^sub>T" "\<not>c \<Longrightarrow> Rel (crel_vs R) y y\<^sub>T"
   shows "Rel (crel_vs R) (if (Wrap b) then x else y) (State_Monad_Ext.if\<^sub>T \<langle>c\<rangle> x\<^sub>T y\<^sub>T)"
   using assms unfolding State_Monad_Ext.if\<^sub>T_def bind_left_identity Rel_def Wrap_def
   by (auto split: if_split)
@@ -156,7 +156,7 @@ lemma crel_vs_return_app_return:
 
 thm option.case_cong[no_vars]
 lemma option_case_cong':
-"Rel op= option' option \<Longrightarrow>
+"Rel (=) option' option \<Longrightarrow>
 (option = None \<Longrightarrow> Rel R f1 g1) \<Longrightarrow>
 (\<And>x2. option = Some x2 \<Longrightarrow> Rel R (f2 x2) (g2 x2)) \<Longrightarrow>
 Rel R (case option' of None \<Rightarrow> f1 | Some x2 \<Rightarrow> f2 x2)
@@ -165,7 +165,7 @@ Rel R (case option' of None \<Rightarrow> f1 | Some x2 \<Rightarrow> f2 x2)
 
 thm prod.case_cong[no_vars]
 lemma prod_case_cong': fixes prod prod' shows
-"Rel op= prod prod' \<Longrightarrow>
+"Rel (=) prod prod' \<Longrightarrow>
 (\<And>x1 x2. prod' = (x1, x2) \<Longrightarrow> Rel R (f x1 x2) (g x1 x2)) \<Longrightarrow>
 Rel R (case prod of (x1, x2) \<Rightarrow> f x1 x2)
 (case prod' of (x1, x2) \<Rightarrow> g x1 x2)"
@@ -173,7 +173,7 @@ Rel R (case prod of (x1, x2) \<Rightarrow> f x1 x2)
 
 thm nat.case_cong[no_vars]
 lemma nat_case_cong': fixes nat nat' shows
-"Rel op= nat nat' \<Longrightarrow>
+"Rel (=) nat nat' \<Longrightarrow>
 (nat' = 0 \<Longrightarrow> Rel R f1 g1) \<Longrightarrow>
 (\<And>x2. nat' = Suc x2 \<Longrightarrow> Rel R (f2 x2) (g2 x2)) \<Longrightarrow>
 Rel R (case nat of 0 \<Rightarrow> f1 | Suc x2 \<Rightarrow> f2 x2) (case nat' of 0 \<Rightarrow> g1 | Suc x2 \<Rightarrow> g2 x2)"

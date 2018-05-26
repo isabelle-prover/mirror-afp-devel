@@ -41,7 +41,7 @@ lemma OPT_0:
 subsubsection \<open>Functional Correctness\<close>
 
 lemma Max_add_left:
-  "(x :: nat) + Max S = Max ((op + x) ` S)" (is "?A = ?B") if "finite S" "S \<noteq> {}"
+  "(x :: nat) + Max S = Max (((+) x) ` S)" (is "?A = ?B") if "finite S" "S \<noteq> {}"
 proof -
   have "?A \<le> ?B"
     using that by (force intro: Min.boundedI)

@@ -102,7 +102,7 @@ abbreviation rel_fun_lifted :: "('a \<Rightarrow> 'c \<Rightarrow> bool) \<Right
 term 0 (**)
 
 definition consistentDP :: "('param == 'mem \<Longrightarrow> 'result) \<Rightarrow> bool" where
-  "consistentDP \<equiv> (op = ===> crel_vs op =) dp"
+  "consistentDP \<equiv> ((=) ===> crel_vs (=)) dp"
 term 0 (**)
   
   (* cmem *)
@@ -136,7 +136,7 @@ term 0 (**)
   
   (* consistentDP *)
 lemma consistentDP_intro:
-  assumes "\<And>param. Transfer.Rel (crel_vs op=) (dp param) (dp\<^sub>T param)"
+  assumes "\<And>param. Transfer.Rel (crel_vs (=)) (dp param) (dp\<^sub>T param)"
   shows "consistentDP dp\<^sub>T"
   using assms unfolding consistentDP_def Rel_def by blast
   
@@ -170,12 +170,12 @@ private lemma crel_vs_set:
 term 0 (**)
   
 private lemma crel_vs_bind_eq:
-  "\<lbrakk>crel_vs op = v s; crel_vs R (f v) (sf v)\<rbrakk> \<Longrightarrow> crel_vs R (f v) (s \<bind> sf)"
+  "\<lbrakk>crel_vs (=) v s; crel_vs R (f v) (sf v)\<rbrakk> \<Longrightarrow> crel_vs R (f v) (s \<bind> sf)"
   unfolding State_Monad.bind_def rel_fun_def by (fastforce intro: crel_vs_intro elim: crel_vs_elim split: prod.split)
 term 0 (**)
 
 lemma bind_transfer[transfer_rule]:
-  "(crel_vs R0 ===> (R0 ===>\<^sub>T R1) ===> crel_vs R1) (\<lambda>v f. f v) (op \<bind>)"
+  "(crel_vs R0 ===> (R0 ===>\<^sub>T R1) ===> crel_vs R1) (\<lambda>v f. f v) (\<bind>)"
   unfolding State_Monad.bind_def rel_fun_def by (fastforce intro: crel_vs_intro elim: crel_vs_elim split: prod.split)
 
 private lemma cmem_lookup:
@@ -191,7 +191,7 @@ lemma crel_vs_lookup:
   by (auto elim: cmem_elim intro: cmem_lookup crel_vs_intro P_lookup split: option.split)
 
 lemma crel_vs_update:
-  "crel_vs op = () (update param (dp param))"
+  "crel_vs (=) () (update param (dp param))"
   by (auto intro: cmem_upd crel_vs_intro P_upd)
 
 private lemma crel_vs_checkmem:
@@ -216,7 +216,7 @@ lemma return_transfer[transfer_rule]:
   unfolding rel_fun_def by (metis crel_vs_return Rel_def)
 
 lemma fun_app_lifted_transfer[transfer_rule]:
-  "(crel_vs (R0 ===>\<^sub>T R1) ===> crel_vs R0 ===> crel_vs R1) App (op .)"
+  "(crel_vs (R0 ===>\<^sub>T R1) ===> crel_vs R0 ===> crel_vs R1) App (.)"
   unfolding App_def fun_app_lifted_def by transfer_prover
     
 lemma crel_vs_fun_app:
@@ -225,7 +225,7 @@ lemma crel_vs_fun_app:
 
   (* HOL *)
 lemma if\<^sub>T_transfer[transfer_rule]:
-  "(crel_vs op = ===> crel_vs R ===> crel_vs R ===> crel_vs R) If State_Monad_Ext.if\<^sub>T"
+  "(crel_vs (=) ===> crel_vs R ===> crel_vs R ===> crel_vs R) If State_Monad_Ext.if\<^sub>T"
   unfolding State_Monad_Ext.if\<^sub>T_def by transfer_prover
 end (* Lifting Syntax *)
 

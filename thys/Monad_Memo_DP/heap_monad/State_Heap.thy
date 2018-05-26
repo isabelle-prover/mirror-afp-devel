@@ -148,7 +148,7 @@ lemma fun_app_lifted_transfer:
   unfolding State_Monad_Ext.fun_app_lifted_def Heap_Monad_Ext.fun_app_lifted_def by transfer_prover
 
 lemma transfer_get[transfer_rule]:
-  "rel_state op = State_Monad.get heap_get"
+  "rel_state (=) State_Monad.get heap_get"
   unfolding State_Monad.get_def heap_get_def by (auto intro: rel_state_intro)
 
 end (* Lifting Syntax *)
@@ -161,11 +161,11 @@ locale heap_inv = heap_mem_defs _ lookup for lookup :: "'k \<Rightarrow> 'v opti
 begin
 
 lemma rel_state_lookup:
-  "rel_state (op =) (lookup' k) (lookup k)"
+  "rel_state (=) (lookup' k) (lookup k)"
   unfolding rel_state_def lookup'_def using lookup_inv[of k] by (auto intro: lift_p_P')
 
 lemma rel_state_update:
-  "rel_state (op =) (update' k v) (update k v)"
+  "rel_state (=) (update' k v) (update k v)"
   unfolding rel_state_def update'_def using update_inv[of k v] by (auto intro: lift_p_P')
 
 context
@@ -173,15 +173,15 @@ context
 begin
 
 lemma transfer_lookup:
-  "(op = ===> rel_state (op =)) lookup' lookup"
+  "((=) ===> rel_state (=)) lookup' lookup"
   unfolding rel_fun_def by (auto intro: rel_state_lookup)
 
 lemma transfer_update:
-  "(op = ===> op = ===> rel_state (op =)) update' update"
+  "((=) ===> (=) ===> rel_state (=)) update' update"
   unfolding rel_fun_def by (auto intro: rel_state_update)
 
 lemma transfer_checkmem:
-  "(op = ===> rel_state op = ===> rel_state op =)
+  "((=) ===> rel_state (=) ===> rel_state (=))
     (state_mem_defs.checkmem lookup' update') checkmem"
   supply [transfer_rule] = transfer_lookup transfer_update
   unfolding state_mem_defs.checkmem_def checkmem_def by transfer_prover
@@ -231,8 +231,8 @@ begin
 
 lemma mem_correct_heap_correct:
   assumes correct: "mem_correct lookup\<^sub>s update\<^sub>s P"
-    and lookup: "(op = ===> rel_state op =) lookup\<^sub>s lookup"
-    and update: "(op = ===> op = ===> rel_state op =) update\<^sub>s update"
+    and lookup: "((=) ===> rel_state (=)) lookup\<^sub>s lookup"
+    and update: "((=) ===> (=) ===> rel_state (=)) update\<^sub>s update"
   shows "heap_correct P update lookup"
 proof -
   interpret mem: mem_correct lookup\<^sub>s update\<^sub>s P

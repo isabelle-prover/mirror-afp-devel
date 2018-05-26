@@ -33,7 +33,7 @@ lemma subseq_append_single_right:
 
 (* TODO: Move, generalize *)
 lemma Max_nat_plus:
-  "Max ((op + n) ` S) = (n :: nat) + Max S" if "finite S" "S \<noteq> {}"
+  "Max (((+) n) ` S) = (n :: nat) + Max S" if "finite S" "S \<noteq> {}"
   using that by (auto intro!: Max_ge Max_in Max_eqI)
 
 

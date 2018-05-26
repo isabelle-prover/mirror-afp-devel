@@ -9,9 +9,9 @@ locale dp_heap =
   for P Q :: "heap \<Rightarrow> bool" and dp :: "'k \<Rightarrow> 'v" and lookup :: "'k \<Rightarrow> 'v option Heap"
   and lookup_st update update_st +
   assumes
-    rel_state_lookup: "rel_fun op = (rel_state op =) lookup_st lookup"
+    rel_state_lookup: "rel_fun (=) (rel_state (=)) lookup_st lookup"
       and
-    rel_state_update: "rel_fun op = (rel_fun op = (rel_state op =)) update_st update"
+    rel_state_update: "rel_fun (=) (rel_fun (=) (rel_state (=))) update_st update"
 begin
 
 context
@@ -31,10 +31,10 @@ abbreviation rel_fun_lifted :: "('a \<Rightarrow> 'c \<Rightarrow> bool) \<Right
 
 
 definition consistentDP :: "('k \<Rightarrow> 'v Heap) \<Rightarrow> bool" where
-  "consistentDP \<equiv> (op = ===> crel_vs op =) dp"
+  "consistentDP \<equiv> ((=) ===> crel_vs (=)) dp"
 
 lemma consistentDP_intro:
-  assumes "\<And>param. Transfer.Rel (crel_vs op=) (dp param) (dp\<^sub>T param)"
+  assumes "\<And>param. Transfer.Rel (crel_vs (=)) (dp param) (dp\<^sub>T param)"
   shows "consistentDP dp\<^sub>T"
   using assms unfolding consistentDP_def Rel_def by blast
 
@@ -58,13 +58,13 @@ lemma crel_vs_success:
   shows "success b heap"
   using assms unfolding success_def by (auto elim: crel_vs_executeD)
 
-lemma crel_vsI: "crel_vs R a b" if "(state_dp_consistency.crel_vs R OO rel_state (op =)) a b"
+lemma crel_vsI: "crel_vs R a b" if "(state_dp_consistency.crel_vs R OO rel_state (=)) a b"
   using that by (auto 4 3 elim: state_dp_consistency.crel_vs_elim rel_state_elim simp: crel_vs_def)
 
 lemma transfer'_return[transfer_rule]:
   "(R ===> crel_vs R) Wrap return"
 proof -
-  have "(R ===> (state_dp_consistency.crel_vs R OO rel_state (op =))) Wrap return"
+  have "(R ===> (state_dp_consistency.crel_vs R OO rel_state (=))) Wrap return"
     by (rule rel_fun_comp1 state_dp_consistency.return_transfer transfer_return)+ auto
   then show ?thesis
     by (blast intro: rel_fun_mono crel_vsI)
@@ -80,13 +80,13 @@ lemma crel_vs_return_ext:
 term 0 (**)
 
 lemma bind_transfer[transfer_rule]:
-  "(crel_vs R0 ===> (R0 ===> crel_vs R1) ===> crel_vs R1) (\<lambda>v f. f v) (op \<bind>)"
+  "(crel_vs R0 ===> (R0 ===> crel_vs R1) ===> crel_vs R1) (\<lambda>v f. f v) (\<bind>)"
   unfolding rel_fun_def bind_def
   by safe (subst crel_vs_def, auto 4 4 elim: crel_vs_execute_Some elim!: crel_vs_executeD)
 
 
 lemma crel_vs_update:
-  "crel_vs op = () (update param (dp param))"
+  "crel_vs (=) () (update param (dp param))"
   by (rule
       crel_vsI relcomppI state_dp_consistency.crel_vs_update
       rel_state_update[unfolded rel_fun_def, rule_format] HOL.refl
@@ -101,11 +101,11 @@ lemma crel_vs_lookup:
      )+
 
 lemma crel_vs_eq_eq_onp:
-  "crel_vs (eq_onp (\<lambda> x. x = v)) v s" if "crel_vs op = v s"
+  "crel_vs (eq_onp (\<lambda> x. x = v)) v s" if "crel_vs (=) v s"
   using that unfolding crel_vs_def by (auto split: option.split simp: eq_onp_def)
 
 lemma crel_vs_bind_eq:
-  "\<lbrakk>crel_vs op = v s; crel_vs R (f v) (sf v)\<rbrakk> \<Longrightarrow> crel_vs R (f v) (s \<bind> sf)"
+  "\<lbrakk>crel_vs (=) v s; crel_vs R (f v) (sf v)\<rbrakk> \<Longrightarrow> crel_vs R (f v) (s \<bind> sf)"
   by (erule bind_transfer[unfolded rel_fun_def, rule_format, OF crel_vs_eq_eq_onp])
      (auto simp: eq_onp_def)
 

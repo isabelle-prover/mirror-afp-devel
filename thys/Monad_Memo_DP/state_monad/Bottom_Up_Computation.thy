@@ -76,7 +76,7 @@ context
 begin
 
 lemma crel_vs_iterate_state:
-  "crel_vs op = () (iterate_state f xs)" if "(op = ===>\<^sub>T R) g f"
+  "crel_vs (=) () (iterate_state f xs)" if "((=) ===>\<^sub>T R) g f"
 proof (induction xs)
   case Nil
   then show ?case
@@ -102,7 +102,7 @@ proof -
 qed
 
 lemma crel_vs_iterate_and_compute:
-  assumes "(op = ===>\<^sub>T R) g f"
+  assumes "((=) ===>\<^sub>T R) g f"
   shows "crel_vs R (g x) (do {iterate_state f xs; f x})"
   by (rule
         crel_vs_bind_ignore crel_vs_iterate_state HOL.refl
@@ -120,13 +120,13 @@ locale dp_consistency_iterator =
 begin
 
 lemma crel_vs_iter_and_compute:
-  assumes "(op = ===>\<^sub>T R) g f"
+  assumes "((=) ===>\<^sub>T R) g f"
   shows "crel_vs R (g x) (do {iter_state f y; f x})"
   unfolding iter_state_iterate_state using crel_vs_iterate_and_compute[OF assms] .
 
 lemma consistentDP_iter_and_compute:
   assumes "consistentDP f"
-  shows "crel_vs op = (dp x) (do {iter_state f y; f x})"
+  shows "crel_vs (=) (dp x) (do {iter_state f y; f x})"
   using assms unfolding consistentDP_def by (rule crel_vs_iter_and_compute)
 
 end (* Consistency + Iterator *)

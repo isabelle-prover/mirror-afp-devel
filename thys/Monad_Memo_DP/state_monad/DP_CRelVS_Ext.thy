@@ -57,7 +57,7 @@ lemma rel_fun2:
 
 thm if_cong
 lemma if\<^sub>T_cong2:
-  assumes "Rel op= b c" "c \<Longrightarrow> Rel (crel_vs R) x x\<^sub>T" "\<not>c \<Longrightarrow> Rel (crel_vs R) y y\<^sub>T"
+  assumes "Rel (=) b c" "c \<Longrightarrow> Rel (crel_vs R) x x\<^sub>T" "\<not>c \<Longrightarrow> Rel (crel_vs R) y y\<^sub>T"
   shows "Rel (crel_vs R) (if (Wrap b) then x else y) (if\<^sub>T \<langle>c\<rangle> x\<^sub>T y\<^sub>T)"
   using assms unfolding if\<^sub>T_def left_identity Rel_def Wrap_def
   by (auto split: if_split)
