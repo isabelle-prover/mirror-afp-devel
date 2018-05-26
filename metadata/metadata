@@ -6832,3 +6832,17 @@ abstract =
   specify this correctness property and prove that although one existing
   replication algorithm satisfies this property, several other published
   algorithms do not.
+
+[Irrationality_J_Hancl]
+title = Irrational Rapidly Convergent Series
+author = Angeliki Koutsoukou Argyraki <http://www.cl.cam.ac.uk/~ak2110/>, Wenda Li <http://www.cl.cam.ac.uk/~wl302/>
+topic = Mathematics/Number Theory, Mathematics/Analysis
+date = 2018-05-23
+notify = ak2110@cam.ac.uk, wl302@cam.ac.uk
+abstract = 
+  We formalize with Isabelle/HOL a proof of a theorem by J. Hancl asserting the
+  irrationality of the sum of a series consisting of rational numbers, built up
+  by sequences that fulfill certain properties. Even though the criterion is a
+  number theoretic result, the proof makes use only of analytical arguments. We
+  also formalize a corollary of the theorem for a specific series fulfilling the
+  assumptions of the theorem.
