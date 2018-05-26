@@ -201,7 +201,7 @@ proof(case_tac "\<exists>P'. P \<longmapsto>\<tau> \<prec> P' \<and> P' \<approx
   thus ?thesis by simp
 next
   assume "\<not>(\<exists>P'. P \<longmapsto>\<tau> \<prec> P' \<and> P' \<approx> Q)"
-  hence L1: "\<And>P'. P\<longmapsto>\<tau> \<prec> P' \<Longrightarrow> \<not>(Q \<approx> P')" by(auto intro: Weak_Late_Bisim.symetric)
+  hence L1: "\<And>P'. P\<longmapsto>\<tau> \<prec> P' \<Longrightarrow> \<not>(Q \<approx> P')" by(auto intro: Weak_Late_Bisim.symmetric)
   show ?thesis
   proof(case_tac "\<exists>Q'. Q \<longmapsto>\<tau> \<prec> Q' \<and> Q' \<approx> P")
     assume "\<exists>Q'. Q \<longmapsto>\<tau> \<prec> Q' \<and> Q' \<approx> P"
@@ -220,7 +220,7 @@ next
     thus ?thesis by simp
   next
     assume "\<not>(\<exists>Q'. Q \<longmapsto>\<tau> \<prec> Q' \<and> Q' \<approx> P)"
-    hence L2: "\<And>Q'. Q\<longmapsto>\<tau> \<prec> Q' \<Longrightarrow> \<not>(P \<approx> Q')" by(auto intro: Weak_Late_Bisim.symetric)
+    hence L2: "\<And>Q'. Q\<longmapsto>\<tau> \<prec> Q' \<Longrightarrow> \<not>(P \<approx> Q')" by(auto intro: Weak_Late_Bisim.symmetric)
 
     have "P \<leadsto><weakBisim> Q"
     proof -
@@ -260,7 +260,7 @@ proof -
   next
     assume "P''' \<noteq> \<tau>.(P)"
     with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'''"
-      by(blast dest: tauChainUnfold)
+      by (auto elim: converse_rtranclE)
     from PTrans have "P = P''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
     with P''Chain P'''Trans P''''Chain show ?thesis
@@ -292,7 +292,7 @@ proof -
   next
     assume "P''' \<noteq> \<tau>.(P)"
     with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'''"
-      by(blast dest: tauChainUnfold)
+      by (auto elim: converse_rtranclE)
     from PTrans have "P = P''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
     with P''Chain P'''Trans P''''Chain show ?thesis
@@ -322,7 +322,7 @@ proof -
   next
     assume "P''' \<noteq> \<tau>.(P)"
     with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'''"
-      by(blast dest: tauChainUnfold)
+      by (auto elim: converse_rtranclE)
     from PTrans have "P = P''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
     with P''Chain P'''Trans P''''Chain show ?thesis
@@ -349,13 +349,13 @@ proof -
     with P'''Trans have "P = P''''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
     with P''''Chain PineqP' obtain P'' where PTrans: "P \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'"
-      by(blast dest: tauChainUnfold)
+      by (auto elim: converse_rtranclE)
     moreover have "P \<Longrightarrow>\<^sub>\<tau> P" by simp
     ultimately show ?thesis by(rule_tac Weak_Late_Step_Semantics.transitionI)
   next
     assume "P''' \<noteq> \<tau>.(P)"
     with PChain obtain P'' where PTrans: "\<tau>.(P) \<longmapsto>\<tau> \<prec> P''" and P''Chain: "P'' \<Longrightarrow>\<^sub>\<tau> P'''"
-      by(blast dest: tauChainUnfold)
+      by (auto elim: converse_rtranclE)
     from PTrans have "P = P''"
       by(force elim: tauCases simp add: pi.inject residual.inject)
     with P''Chain P'''Trans P''''Chain show ?thesis
@@ -373,7 +373,7 @@ lemma sim4:
   shows "P \<leadsto>\<^sup>^<Rel> Q"
 proof(induct rule: Weak_Late_Sim.simCases)
   case(Bound Q' a x)
-  have QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact
+  have QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact+
 
   with PSimQ obtain P' where PTrans: "\<tau>.(P) \<Longrightarrow>\<^sub>la<\<nu>x> \<prec> P'"
                          and P'RelQ': "(P', Q') \<in> Rel" by(auto dest: simE)
@@ -383,7 +383,7 @@ proof(induct rule: Weak_Late_Sim.simCases)
   with P'RelQ' show ?case by blast
 next
   case(Input Q' a x)
-  have QTrans: "Q \<longmapsto>a<x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact
+  have QTrans: "Q \<longmapsto>a<x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact+
   with PSimQ obtain P'' where PSim: "\<forall>u. \<exists>P'. \<tau>.(P) \<Longrightarrow>\<^sub>lu in P'' \<rightarrow> a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"
     by(auto dest: simE)
   have "\<forall>u. \<exists>P'. P \<Longrightarrow>\<^sub>lu in P''\<rightarrow>a<x> \<prec> P' \<and> (P', Q'[x::=u]) \<in> Rel"
@@ -440,7 +440,7 @@ proof -
   show ?thesis
   proof(induct rule: Weak_Late_Sim.simCases)
     case(Bound Q' a x)
-    have QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact
+    have QTrans: "Q \<longmapsto>a<\<nu>x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact+
     from PChain xFreshP have xFreshP': "x \<sharp> P'" by(rule freshChain)
 
     with P'SimQ QTrans obtain P'' where P''Trans: "P' \<Longrightarrow>\<^sub>l\<^sup>^a<\<nu>x> \<prec> P''"
@@ -450,7 +450,7 @@ proof -
     with P''RelQ' show ?case by blast
   next
     case(Input Q' a x)
-    have QTrans: "Q \<longmapsto>a<x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact
+    have QTrans: "Q \<longmapsto>a<x> \<prec> Q'" and xFreshP: "x \<sharp> P" by fact+
     from PChain xFreshP have xFreshP': "x \<sharp> P'" by(rule freshChain)
     with P'SimQ QTrans obtain P''' where PSim: "\<forall>u. \<exists>P''. P' \<Longrightarrow>\<^sub>lu in P''' \<rightarrow> a<x> \<prec> P'' \<and> (P'', Q'[x::=u]) \<in> Rel"
       by(auto dest: Weak_Late_Sim.simE)
@@ -523,10 +523,10 @@ lemma hennessy:
   shows "P \<approx> Q = (\<tau>.(P) \<simeq> Q \<or> P \<simeq> Q \<or> P \<simeq> \<tau>.(Q))"
 proof(rule iffI)
   assume "P \<approx> Q"
-  show "\<tau>.(P) \<simeq> Q \<or> P \<simeq> Q \<or> P \<simeq> \<tau>.(Q)" by(rule hennessyLeft)
+  then show "\<tau>.(P) \<simeq> Q \<or> P \<simeq> Q \<or> P \<simeq> \<tau>.(Q)" by(rule hennessyLeft)
 next
   assume "\<tau>.(P) \<simeq> Q \<or> P \<simeq> Q \<or> P \<simeq> \<tau>.(Q)"
-  thus "P \<approx> Q" by(rule hennessyRight)
+  then show "P \<approx> Q" by(rule hennessyRight)
 qed
 
 end
