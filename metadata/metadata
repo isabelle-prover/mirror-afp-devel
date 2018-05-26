@@ -6784,6 +6784,9 @@ abstract =
   pattern is modeled as an instance of the publisher subscriber pattern.
   In general, this entry provides the first steps towards an overall
   theory of architectural design patterns.
+extra-history =
+	Change history:
+		[2018-05-25]: changing the major assumption for blockchain architectures from alternative minings to relative mining frequencies (revision 5043c5c71685)
 
 [Weight_Balanced_Trees]
 title = Weight-Balanced Trees

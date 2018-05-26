@@ -1,6 +1,8 @@
 (*
   Title:      Configuration_Traces.thy
   Author:     Diego Marmsoler
+
+  TODOs: Change concrete syntax for latest/next activation.
 *)
 section "A Theory of Dynamic Architectures"
 text {*
@@ -1064,6 +1066,13 @@ lemma nxtActLe:
   shows "n \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
   by (simp add: assms nxtActI)
 
+lemma nxtAct_eq:
+  assumes "n'\<ge>n"
+    and "\<parallel>c\<parallel>\<^bsub>t n'\<^esub>"
+    and "\<forall>n''\<ge>n. n''<n' \<longrightarrow> \<not> \<parallel>c\<parallel>\<^bsub>t n''\<^esub>"
+  shows "n' = \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
+  by (metis assms(1) assms(2) assms(3) nxtActI linorder_neqE_nat nxtActLe)
+
 lemma nxtAct_active:
   fixes i::nat
     and t::"nat \<Rightarrow> cnf"
@@ -1117,7 +1126,7 @@ next
   hence "i>n" using nAct_strict_mono_back[of c n "inf_llist t" i] by simp
   with `\<parallel>c\<parallel>\<^bsub>t i\<^esub>` show ?thesis by (meson dual_order.strict_implies_order leI nxtActI)
 qed
-  
+
 lemma nAct_same:
   assumes "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" and "n' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
   shows "the_enat (\<langle>c #\<^bsub>enat n'\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n\<^esub> inf_llist t\<rangle>)"
@@ -1147,6 +1156,79 @@ proof -
     ultimately show ?thesis using nAct_not_active_same[of n "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by auto
   qed
   ultimately show ?thesis by simp
+qed
+
+subsection "Latest Activation"
+text {*
+  In the following, we introduce an operator to obtain the latest point in time when a component is activated.
+*}
+
+abbreviation latestAct_cond:: "'id \<Rightarrow> trace \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
+  where "latestAct_cond c t n n' \<equiv> n'<n \<and> \<parallel>c\<parallel>\<^bsub>t n'\<^esub>"
+
+definition latestAct:: "'id \<Rightarrow> trace \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>")
+  where "latestAct c t n = (GREATEST n'. latestAct_cond c t n n')"
+
+lemma latestActEx:
+  assumes "\<exists>n'<n. \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>"
+  shows "\<exists>n'. latestAct_cond nid t n n' \<and> (\<forall>n''. latestAct_cond nid t n n'' \<longrightarrow> n'' \<le> n')"
+proof -
+  from assms obtain n' where "latestAct_cond nid t n n'" by auto
+  moreover have "\<forall>n''>n. \<not> latestAct_cond nid t n n''" by simp
+  ultimately obtain n' where "latestAct_cond nid t n n' \<and> (\<forall>n''. latestAct_cond nid t n n'' \<longrightarrow> n'' \<le> n')"
+    using boundedGreatest[of "latestAct_cond nid t n" n'] by blast
+  thus ?thesis ..
+qed
+
+lemma latestAct_prop:
+  assumes "\<exists>n'<n. \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>"
+  shows "\<parallel>nid\<parallel>\<^bsub>t (latestAct nid t n)\<^esub>" and "latestAct nid t n<n"
+proof -
+  from assms latestActEx have "latestAct_cond nid t n (GREATEST x. latestAct_cond nid t n x)"
+    using GreatestI_ex_nat[of "latestAct_cond nid t n"] by blast
+  thus "\<parallel>nid\<parallel>\<^bsub>t \<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" and "latestAct nid t n<n" using latestAct_def by auto
+qed
+
+lemma latestAct_less:
+  assumes "latestAct_cond nid t n n'"
+  shows "n' \<le> \<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+proof -
+  from assms latestActEx have "n' \<le> (GREATEST x. latestAct_cond nid t n x)"
+    using Greatest_le_nat[of "latestAct_cond nid t n"] by blast
+  thus ?thesis using latestAct_def by auto
+qed
+
+lemma latestActNxt:
+  assumes "\<exists>n'<n. \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>"
+  shows "\<langle>nid \<rightarrow> t\<rangle>\<^bsub>\<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>=\<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+  using assms latestAct_prop(1) nxtAct_active by auto
+
+lemma latestActNxtAct:
+  assumes "\<exists>n'\<ge>n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
+    and "\<exists>n'<n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
+  shows "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> > \<langle>tid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+  by (meson assms latestAct_prop(2) less_le_trans nxtActI zero_le)
+
+lemma latestActless:
+  assumes "\<exists>n'\<ge>n\<^sub>s. n'<n \<and> \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>"
+  shows "\<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n\<^sub>s"
+  by (meson assms dual_order.trans latestAct_less)
+
+lemma latestActEq:
+  fixes nid::'id
+  assumes "\<parallel>nid\<parallel>\<^bsub>t n'\<^esub>" and "\<not>(\<exists>n''>n'. n''<n \<and> \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>)" and "n'<n"
+  shows "\<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> = n'"
+  using latestAct_def
+proof
+  have "(GREATEST n'. latestAct_cond nid t n n') = n'"
+  proof (rule Greatest_equality[of "latestAct_cond nid t n" n'])
+    from assms(1) assms (3) show "latestAct_cond nid t n n'" by simp
+  next
+    fix y assume "latestAct_cond nid t n y"
+    hence "\<parallel>nid\<parallel>\<^bsub>t y\<^esub>" and "y<n" by auto
+    thus "y \<le> n'" using assms(1) assms (2) leI by blast
+  qed
+  thus "n' = (GREATEST n'. latestAct_cond nid t n n')" by simp
 qed
   
 subsection "Last Activation"
@@ -1481,7 +1563,7 @@ proof (rule ccontr)
     using "cnf2bhv_bhv2cnf" by simp
   with assms show False by simp
 qed
-  
+
 end
 
 end

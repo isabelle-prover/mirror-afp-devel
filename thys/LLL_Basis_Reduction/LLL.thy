@@ -35,30 +35,13 @@ begin
 
 subsection \<open>Core Definitions, Invariants, and Theorems for Basic Version\<close>
 
-definition floor_ceil where "floor_ceil x = floor (x + 1/2)" 
 
-lemma floor_ceil: "\<bar>x - rat_of_int (floor_ceil x)\<bar> \<le> inverse 2" 
-  unfolding floor_ceil_def by (metis (no_types, hide_lams) abs_divide abs_neg_one round_def
-      div_by_1 div_minus_right inverse_eq_divide minus_diff_eq of_int_round_abs_le)
-
-locale LLL =
-  fixes n :: nat (* n-dimensional vectors, *) and m :: nat (* number of vectors *)
-   and fs_init :: "int vec list" (* initial basis *) and \<alpha> :: rat (* approximation factor *)
+locale LLL = fs_int +
+  fixes \<alpha> :: rat (* approximation factor *)
 begin
 
-sublocale vec_module "TYPE(int)" n.
-
-                   
-sublocale gs: gram_schmidt n "TYPE(rat)" .
-
-abbreviation RAT where "RAT \<equiv> map (map_vec rat_of_int)" 
-abbreviation \<mu> where "\<mu> fs \<equiv> gs.\<mu> (RAT fs)" 
-abbreviation gso where "gso fs \<equiv> gs.gso (RAT fs)" 
-abbreviation SRAT where "SRAT xs \<equiv> set (RAT xs)" 
-abbreviation Rn where "Rn \<equiv> carrier_vec n :: rat vec set" 
 abbreviation reduced where "reduced fs i \<equiv> gs.reduced \<alpha> i (map (gso fs) [0..<m]) (\<mu> fs)" 
 abbreviation weakly_reduced where "weakly_reduced fs i \<equiv> gs.weakly_reduced \<alpha> i (map (gso fs) [0..<m])" 
-abbreviation lin_indep where "lin_indep fs \<equiv> gs.lin_indpt_list (RAT fs)" 
   
 text \<open>lattice of initial basis\<close>
 definition "L = lattice_of fs_init" 
@@ -110,6 +93,9 @@ lemma LLL_invI: assumes
 shows "LLL_invariant upw i fs" 
   unfolding LLL_invariant_def Let_def split using assms by auto
 
+lemma LLL_invariant_fs_int: "LLL_invariant upw i fs \<Longrightarrow> fs_int fs"
+  unfolding LLL_invariant_def fs_int_def by auto
+
 lemma gso_cong: assumes "\<And> i. i \<le> x \<Longrightarrow> f1 ! i = f2 ! i"
    "x < length f1" "x < length f2" 
   shows "gso f1 x = gso f2 x"
@@ -123,9 +109,7 @@ lemma \<mu>_cong: assumes "\<And> k. j < i \<Longrightarrow> k \<le> j \<Longrig
     
 definition reduction where "reduction = (4+\<alpha>)/(4*\<alpha>)"
 
-definition d :: "int vec list \<Rightarrow> nat \<Rightarrow> int" where "d fs k = gs.Gramian_determinant fs k"
 
-definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < m. d fs i)" 
 
 definition logD :: "int vec list \<Rightarrow> nat"
   where "logD fs = (if \<alpha> = 4/3 then (D fs) else nat (floor (log (1 / of_rat reduction) (D fs))))" 
@@ -133,37 +117,12 @@ definition logD :: "int vec list \<Rightarrow> nat"
 definition LLL_measure :: "nat \<Rightarrow> int vec list \<Rightarrow> nat" where 
   "LLL_measure i fs = (2 * logD fs + m - i)" 
 
-lemma of_int_Gramian_determinant:
-  assumes "k \<le> length F" "\<And>i. i < length F \<Longrightarrow> dim_vec (F ! i) = n"
-  shows "gs.Gramian_determinant (map of_int_hom.vec_hom F) k = of_int (gs.Gramian_determinant F k)"
-  unfolding gs.Gramian_determinant_def of_int_hom.hom_det[symmetric]
-proof (rule arg_cong[of _ _ det])
-  let ?F = "map of_int_hom.vec_hom F"
-  have cong: "\<And> a b c d. a = b \<Longrightarrow> c = d \<Longrightarrow> a * c = b * d" by auto
-  show "gs.Gramian_matrix ?F k = map_mat of_int (gs.Gramian_matrix F k)" 
-    unfolding gs.Gramian_matrix_def Let_def
-  proof (subst of_int_hom.mat_hom_mult[of _ k n _ k], (auto)[2], rule cong)
-    show id: "mat k n (\<lambda> (i,j). ?F ! i $ j) = map_mat of_int (mat k n (\<lambda> (i, j). F ! i $ j))" (is "?L = map_mat _ ?R")
-    proof (rule eq_matI, goal_cases)
-      case (1 i j)
-      hence ij: "i < k" "j < n" "i < length F" "dim_vec (F ! i) = n" using assms by auto
-      show ?case using ij by simp 
-    qed auto
-    show "?L\<^sup>T = map_mat of_int ?R\<^sup>T" unfolding id by (rule eq_matI, auto)
-  qed
-qed
 
 lemma Gramian_determinant: assumes Linv: "LLL_invariant upw i fs" 
   and k: "k \<le> m" 
 shows "of_int (gs.Gramian_determinant fs k) = (\<Prod> j<k. sq_norm (gso fs j))" (is ?g1)
   "gs.Gramian_determinant fs k > 0" (is ?g2)
-proof -
-  note inv = LLL_invD[OF Linv]
-  have hom: "gs.Gramian_determinant (RAT fs) k = of_int (gs.Gramian_determinant fs k)" 
-    by (rule of_int_Gramian_determinant[of _ fs, unfolded inv(6), OF k], insert inv(4-6) k, auto)
-  show ?g1 ?g2 using gs.Gramian_determinant[OF inv(1-2) k] 
-    unfolding hom using k by auto
-qed
+  using assms Gramian_determinant LLL_invariant_fs_int by auto
    
 lemma LLL_d_pos [intro]: assumes inv: "LLL_invariant upw i fs" 
   and k: "k \<le> m" 
@@ -173,20 +132,11 @@ shows "d fs k > 0"
 lemma LLL_d_Suc: assumes "LLL_invariant upw i fs" 
   and k: "k < m" 
 shows "of_int (d fs (Suc k)) = sq_norm (gso fs k) * of_int (d fs k)" 
-proof -
-  note det = Gramian_determinant(1)[OF assms(1)]
-  from k have k: "k \<le> m" "Suc k \<le> m" by auto
-  show ?thesis unfolding det[OF k(1)] det[OF k(2)] d_def
-    by (subst prod.remove[of _ k], force+, rule arg_cong[of _ _ "\<lambda> x. _ * x"], rule prod.cong, auto)
-qed
+  using assms fs_int_d_Suc LLL_invariant_fs_int by auto
 
 lemma LLL_D_pos: assumes inv: "LLL_invariant upw i fs" 
-shows "D fs > 0"
-proof -
-  have "(\<Prod> j < m. d fs j) > 0"
-    by (rule prod_pos, insert LLL_d_pos[OF inv], auto)
-  thus ?thesis unfolding D_def by auto
-qed
+  shows "D fs > 0"
+  using assms fs_int_D_pos LLL_invariant_fs_int by auto
 
 text \<open>Condition when we can increase the value of $i$\<close>
 

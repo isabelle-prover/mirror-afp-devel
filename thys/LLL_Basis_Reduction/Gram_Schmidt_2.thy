@@ -11,12 +11,32 @@
 section \<open>Gram-Schmidt\<close>
 
 theory Gram_Schmidt_2
-  imports Jordan_Normal_Form.Gram_Schmidt
+  imports 
+    Perron_Frobenius.HMA_Connect
+    Jordan_Normal_Form.Gram_Schmidt
     Jordan_Normal_Form.Show_Matrix
     Jordan_Normal_Form.Matrix_Impl
     Norms
     Int_Rat_Operations
 begin
+
+(* TODO: Documentation and add references to computer algebra book *)
+
+hide_const (open) Determinants.det
+hide_const (open) Finite_Cartesian_Product.mat
+hide_const (open) Finite_Cartesian_Product.row
+hide_const (open) Finite_Cartesian_Product.rows
+hide_const (open) Finite_Cartesian_Product.vec
+hide_const (open) Path_Connected.outside
+hide_const (open) Linear_Algebra.orthogonal
+hide_type (open) Finite_Cartesian_Product.vec
+
+hide_fact (open) Linear_Algebra.real_inner_class.orthogonal_def
+hide_fact (open) Finite_Cartesian_Product.rows_def
+hide_fact (open) Determinants.det_transpose
+
+no_notation Inner_Product.real_inner_class.inner (infix "\<bullet>" 70)
+no_notation Finite_Cartesian_Product.vec.vec_nth (infixl "$" 90)
 
 (* TODO: move *)
 lemma map_mat_transpose: "(map_mat f A)\<^sup>T = map_mat f A\<^sup>T"
@@ -2322,5 +2342,576 @@ proof -
   then show ?thesis
     unfolding norms_mus_rat_def gram_schmidt.norms_mus_def by auto
 qed
+
+
+
+definition "replace_col_hma A b k = (\<chi> i j. if j = k then b $h i else A $h i $h j)"
+
+
+definition "replace_col A b k = mat (dim_row A) (dim_col A) (\<lambda> (i,j). if j = k then b $ i else A $$ (i,j))" 
+
+lemma HMA_M_replace_col[transfer_rule]: 
+  "(HMA_M ===> HMA_V ===> HMA_I ===> HMA_M) replace_col replace_col_hma" 
+  unfolding rel_fun_def replace_col_def replace_col_hma_def HMA_M_def HMA_V_def HMA_I_def
+  by (auto simp: from_hma\<^sub>m_def from_hma\<^sub>v_def to_nat_from_nat_id intro!: eq_matI)
+
+lemma cramer_lemma_real: fixes A :: "real mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  and x: "x \<in> carrier_vec n" 
+  and k: "k < n" 
+shows "det (replace_col A (A *\<^sub>v x) k) = x $v k * det A" 
+  using cramer_lemma[folded replace_col_hma_def, untransferred, cancel_card_constraint] assms
+  by auto
+
+lemma cramer_lemma_rat: fixes A :: "rat mat" 
+  assumes A: "A \<in> carrier_mat n n" 
+  and x: "x \<in> carrier_vec n" 
+  and k: "k < n" 
+shows "det (replace_col A (A *\<^sub>v x) k) = x $v k * det A"
+proof -
+  let ?r = real_of_rat
+  let ?hM = "map_mat ?r"
+  let ?hV = "map_vec ?r" 
+  let ?A = "?hM A" 
+  let ?x = "?hV x" 
+  have AA: "?A \<in> carrier_mat n n" using A by auto
+  have xx: "?x \<in> carrier_vec n" using x by auto
+  from cramer_lemma_real[OF AA xx k]
+  have "det (replace_col ?A (?A *\<^sub>v ?x) k) = ?x $v k * det ?A" .
+  also have "\<dots> = ?r (x $v k * det A)" using x k by (simp add: of_rat_mult)
+  also have "?A *\<^sub>v ?x = ?hV (A *\<^sub>v x)" using A x
+    by (metis of_rat_hom.mult_mat_vec_hom)
+  also have "replace_col ?A \<dots> k = ?hM (replace_col A (A *\<^sub>v x) k)" 
+    using A x k unfolding replace_col_def
+    by (intro eq_matI, auto)
+  also have "det \<dots> = ?r (det (replace_col A (A *\<^sub>v x) k))" by simp
+  finally show ?thesis by simp
+qed
+
+lemma rat_of_int_dvd:
+  assumes "b \<noteq> 0" "rat_of_int a / rat_of_int b \<in> \<int>"
+  shows "b dvd a"
+  using assms apply(elim Ints_cases)
+  unfolding dvd_def
+  by (metis nonzero_mult_div_cancel_left of_int_0_eq_iff of_int_eq_iff of_int_simps(4) times_divide_eq_right)
+
+lemma denom_dvd_ints:
+  fixes i::int
+  assumes "quotient_of r = (z, n)" "of_int i * r \<in> \<int>"
+  shows "n dvd i"
+proof -
+  have "rat_of_int i * (rat_of_int z / rat_of_int n) \<in> \<int>"
+    using assms quotient_of_div by blast
+  then have "n dvd i * z"
+    using quotient_of_denom_pos assms by (auto intro!: rat_of_int_dvd)
+  then show "n dvd i"
+    using assms algebraic_semidom_class.coprime_commute 
+      quotient_of_coprime coprime_dvd_mult_left_iff by blast
+qed
+
+lemma quotient_of_bounds: 
+  assumes "quotient_of r = (n, d)" "rat_of_int i * r \<in> \<int>" "0 < i" "\<bar>r\<bar> \<le> b"
+  shows "of_int \<bar>n\<bar> \<le> of_int i * b" "d \<le> i" 
+proof -
+  show ni: "d \<le> i"
+    using assms denom_dvd_ints  by (intro zdvd_imp_le) blast+
+  have "\<bar>r\<bar> = \<bar>rat_of_int n / rat_of_int d\<bar>"
+    using assms quotient_of_div by blast
+  also have "\<dots> = rat_of_int \<bar>n\<bar> / rat_of_int d"
+    using assms using quotient_of_denom_pos by force
+  finally have "of_int \<bar>n\<bar> = rat_of_int d * \<bar>r\<bar>"
+    using assms by auto
+  also have "\<dots> \<le> rat_of_int d * b"
+    using assms quotient_of_denom_pos by auto
+  also have "\<dots> \<le> rat_of_int i * b"
+    using ni assms of_int_le_iff by (auto intro!: mult_right_mono)
+  finally show "rat_of_int \<bar>n\<bar> \<le> rat_of_int i * b" 
+    by simp
+qed
+    
+context gram_schmidt
+begin
+
+context
+  fixes m::nat
+begin
+
+context
+  fixes fs
+  assumes indep: "lin_indpt_list fs"
+   and len_fs: "length fs = m" 
+begin
+
+(* Lemma 16.17 *) 
+
+lemma ex_\<rho>:
+  assumes "k < m"
+  shows "\<exists>\<rho>. gso fs k = fs ! k + sumlist (map (\<lambda>j. \<rho> j \<cdot>\<^sub>v fs ! j) [0 ..< k])" (is "\<exists> \<rho>. ?Prop k \<rho>")
+  using assms proof (induction k rule: less_induct)
+  case (less k)
+  then have "\<exists>\<rho>. ?Prop i \<rho>" if "i < k" for i
+    using that by (intro less) auto
+  hence "\<forall>i. \<exists>\<rho>. i < k \<longrightarrow> ?Prop i \<rho>"
+    by blast
+  from choice[OF this] obtain \<rho> where \<rho>_def: "?Prop i (\<rho> i)" if "i < k" for i
+    by auto
+  have "gso fs k = fs ! k + M.sumlist (map (\<lambda>i. - \<mu> fs k i \<cdot>\<^sub>v gso fs i) [0..<k])"
+    by (subst gso.simps) simp
+  also have "map (\<lambda>i. - \<mu> fs k i \<cdot>\<^sub>v gso fs i) [0..<k] = 
+   map (\<lambda>i. - \<mu> fs k i \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. \<rho> i j \<cdot>\<^sub>v fs ! j) [0..<i]))) [0..<k]"
+    by (auto intro: map_cong simp add: \<rho>_def)
+  finally have *: "gso fs k = fs ! k + 
+    M.sumlist (map (\<lambda>i. (- \<mu> fs k i) \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. \<rho> i j \<cdot>\<^sub>v fs ! j) [0..<i])))
+              [0..<k])"
+    by simp
+  define \<gamma> where "\<gamma> = (\<lambda>x j. (if j < x then \<rho> x j else 0))"
+  define \<rho>'::"nat \<Rightarrow> 'a" where "\<rho>' = (\<lambda>x. - \<mu> fs k x - (\<Sum>xa = 0..<k. \<mu> fs k xa * \<gamma> xa x))"
+  have "gso fs k $ i = (fs ! k + M.sumlist (map (\<lambda>j. \<rho>' j \<cdot>\<^sub>v fs ! j) [0..<k])) $ i" if "i < n" for i
+  proof -
+    (* get rid of sumlist *)
+    have 1: "gso fs k $ i = fs ! k $ i +
+      (\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + (\<Sum>j = 0..<x. (\<rho> x j * fs ! j $v i)))))"
+    proof -
+      have "gso fs k $ i =  fs ! k $ i + 
+    M.sumlist (map (\<lambda>i. (- \<mu> fs k i) \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. \<rho> i j \<cdot>\<^sub>v fs ! j) [0..<i])))
+              [0..<k]) $ i"
+        using that gso_dim indep len_fs less by (fastforce simp add: *)
+      also have "\<dots> = fs ! k $ i + (\<Sum>j = 0..<k. (- \<mu> fs k j \<cdot>\<^sub>v (fs ! j + M.sumlist (map (\<lambda>ja. \<rho> j ja \<cdot>\<^sub>v fs ! ja) [0..<j]))) $v i)"
+        using assms less indep len_fs that by (subst sumlist_nth) (auto intro!: dim_sumlist) 
+      also have "(\<Sum>j = 0..<k. (- \<mu> fs k j \<cdot>\<^sub>v (fs ! j + M.sumlist (map (\<lambda>ja. \<rho> j ja \<cdot>\<^sub>v fs ! ja) [0..<j]))) $v i) =
+      (\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + M.sumlist (map (\<lambda>ja. \<rho> x ja \<cdot>\<^sub>v fs ! ja) [0..<x]) $v i)))"
+        using assms less indep len_fs that by (intro sum.cong) (auto simp add: dim_sumlist)
+      also have "\<dots> = (\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + (\<Sum>j = 0..<x. (\<rho> x j \<cdot>\<^sub>v fs ! j) $v i))))"
+        using assms less indep len_fs that by (intro sum.cong) (auto simp add: dim_sumlist sumlist_nth)
+      finally show ?thesis
+        using assms less indep len_fs that by (auto simp add: dim_sumlist sumlist_nth)
+    qed
+    also have "(\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i)))) =
+(\<Sum>x = 0..<k. - \<mu> fs k x * fs ! x $v i - \<mu> fs k x * (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i))"
+      by (auto simp add: field_simps)
+    also have "\<dots> = (\<Sum>x = 0..<k. - \<mu> fs k x * fs ! x $v i) - (\<Sum>x = 0..<k. \<mu> fs k x * (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i))"
+      using sum_subtractf by fast
+    also have "(\<Sum>x = 0..<k. \<mu> fs k x * (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i)) = (\<Sum>x = 0..<k. \<mu> fs k x * (\<Sum>j = 0..<k. \<gamma> x j * fs ! j $v i))"
+    proof -
+      have "(\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i) = (\<Sum>j = 0..<k. \<gamma> x j * fs ! j $v i)" if "x < k" for x
+      proof -
+        let ?f = "(\<lambda>j. \<gamma> x j * fs ! j $v i)"
+        have "{0..<x} \<union> {x..<k} = {0..<k}"
+          using that by auto
+        then show ?thesis
+          using that sum.union_disjoint[of "{0..<x}" "{x..<k}" ?f] by (auto simp add: \<gamma>_def)
+      qed
+      then show ?thesis
+        by (auto intro: sum.cong)
+    qed
+    also have "(\<Sum>x = 0..<k. \<mu> fs k x * (\<Sum>j = 0..<k. \<gamma> x j * fs ! j $v i)) = (\<Sum>x = 0..<k. (\<Sum>j = 0..<k. \<mu> fs k x * \<gamma> x j * fs ! j $v i))"
+      by (auto simp add: sum_distrib_left field_simps)
+    also have "\<dots> = (\<Sum>j = 0..<k. (\<Sum>x = 0..<k. \<mu> fs k x * \<gamma> x j) * fs ! j $v i)"
+      using sum.swap by (subst sum_distrib_right) fast
+    also have "((\<Sum>x = 0..<k. - \<mu> fs k x * fs ! x $v i) - (\<Sum>j = 0..<k. (\<Sum>x = 0..<k. \<mu> fs k x * \<gamma> x j) * fs ! j $v i))
+    = (\<Sum>x = 0..<k. \<rho>' x * fs ! x $v i)" 
+      by (auto simp add: sum_subtractf field_simps \<rho>'_def)
+    finally show ?thesis
+      using assms less indep len_fs that by (auto simp add: dim_sumlist sumlist_nth)
+  qed
+  then show ?case
+    using less indep len_fs by (intro exI[of _ \<rho>'] eq_vecI) (auto simp add: dim_sumlist) 
+qed
+
+definition \<rho>_SOME_def:
+  "\<rho> = (SOME \<rho>. \<forall>k<m. gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> k l \<cdot>\<^sub>v fs ! l) [0..<k]))"
+
+lemma \<rho>_def:
+  assumes "k < m"
+  shows "gso fs k = fs ! k + M.sumlist (map (\<lambda>j. \<rho> k j \<cdot>\<^sub>v fs ! j) [0..<k])"
+proof -
+  from ex_\<rho> have "\<forall>k. \<exists>\<rho>. k < m \<longrightarrow> gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> l \<cdot>\<^sub>v fs ! l) [0..<k])"
+    by blast
+  from choice[OF this] have "\<exists>\<rho>. \<forall>k<m. gso fs k = fs ! k + M.sumlist (map (\<lambda>l. \<rho> k l \<cdot>\<^sub>v fs ! l) [0..<k])"
+    by blast
+  from someI_ex[OF this] show ?thesis
+    unfolding \<rho>_SOME_def using assms by blast
+qed
+end (* fs *)
+
+end (* m *)
+
+end (* gram_schmidt *)
+
+lemma Ints_sum:
+  assumes "\<And>a. a \<in> A \<Longrightarrow> f a \<in> \<int>"
+  shows "sum f A \<in> \<int>"
+  using assms by (induction A rule: infinite_finite_induct) auto
+
+lemma Ints_prod:
+  assumes "\<And>a. a \<in> A \<Longrightarrow> f a \<in> \<int>"
+  shows "prod f A \<in> \<int>"
+using assms by (induction A rule: infinite_finite_induct) auto
+
+lemma Ints_scalar_prod: 
+  "v \<in> carrier_vec n \<Longrightarrow> w \<in> carrier_vec n
+   \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> v $ i \<in> \<int>) \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> w $ i \<in> \<int>) \<Longrightarrow> v \<bullet> w \<in> \<int>" 
+  unfolding scalar_prod_def  by (intro Ints_sum Ints_mult, auto)
+
+locale gram_schmidt_rat = gram_schmidt n "TYPE(rat)"
+  for n :: nat 
+begin
+
+context
+  fixes fs and m::nat
+  assumes con_assms: "lin_indpt_list fs" "length fs = m"
+begin
+
+context
+  assumes fs_int: "\<And>i j. i < n \<Longrightarrow> j < m \<Longrightarrow> fs ! j $v i \<in> \<int>"
+begin
+
+lemma fs_scalar_Ints:
+  assumes "i < m" "j < m"
+  shows "fs ! i \<bullet> fs ! j \<in> \<int>"
+  by (rule Ints_scalar_prod[of _ n], insert fs_int assms con_assms, auto)
+
+lemma Gramian_matrix_alt_alt_def:
+  assumes "k < m"
+  shows "Gramian_matrix fs k = mat k k (\<lambda>(i,j). fs ! i \<bullet> fs ! j)"
+proof -
+  have *: "vec n (($v) (fs ! i)) = fs ! i" if "i < m" for i
+    using that con_assms by auto
+  then show ?thesis
+    unfolding Gramian_matrix_def using con_assms assms
+    by (intro eq_matI) (auto simp add: Let_def)
+qed
+
+lemma Gramian_determinant_times_gso_Ints:
+  assumes "i < n" "k < m"
+  shows "(Gramian_determinant fs k \<cdot>\<^sub>v (gso fs k)) $ i \<in> \<int>"
+proof -
+  let ?\<rho> = "\<rho> m fs" 
+  have [intro!]: "(?\<rho> k i) * Gramian_determinant fs k \<in> \<int>" if "i < k" for i
+  proof -
+    have "- (fs ! k \<bullet> fs ! i) = (\<Sum>j = 0..<k. fs ! i \<bullet> fs ! j * ?\<rho>  k j)" if "i < k" for i
+    proof -
+      have "0 = gso fs k \<bullet> fs ! i"
+        using gso_scalar_zero assms con_assms that by (auto simp add: gso_scalar_zero)
+      also have "gso fs k = fs ! k + M.sumlist (map (\<lambda>j. ?\<rho>  k j \<cdot>\<^sub>v fs ! j) [0..<k])"
+        using con_assms assms \<rho>_def by auto
+      also have "\<dots> \<bullet> fs ! i = fs ! k \<bullet> fs ! i + M.sumlist (map (\<lambda>j. ?\<rho>  k j \<cdot>\<^sub>v fs ! j) [0..<k]) \<bullet> fs ! i"
+        using assms con_assms that by (auto intro!: sumlist_carrier add_scalar_prod_distrib[of _ n])
+      also have "M.sumlist (map (\<lambda>j. ?\<rho>  k j \<cdot>\<^sub>v fs ! j) [0..<k]) \<bullet> fs ! i = 
+                 sum_list (map ((\<lambda>v. v \<bullet> fs ! i) \<circ> (\<lambda>j. ?\<rho>  k j \<cdot>\<^sub>v fs ! j)) [0..<k])"
+        using con_assms assms that
+        by (subst scalar_prod_left_sum_distrib) (auto intro!: sumlist_carrier)
+      also have "\<dots> = (\<Sum>j\<leftarrow>[0..<k]. (?\<rho>  k j \<cdot>\<^sub>v fs ! j) \<bullet> fs ! i)"
+        by (auto intro: arg_cong[where f=sum_list])
+      also have "\<dots> = (\<Sum>j = 0..<k. fs ! i \<bullet> fs ! j * ?\<rho>  k j)"
+        using con_assms assms that f_carrier 
+        by(subst sum_set_upt_conv_sum_list_nat[symmetric], intro sum.cong)
+          (auto simp add: comm_scalar_prod[of _ n])
+      finally show ?thesis
+        by simp
+    qed
+    then have a: "Gramian_matrix fs k *\<^sub>v (vec k (\<lambda>i. ?\<rho> k i)) = (vec k (\<lambda>i. - (fs ! k \<bullet> fs ! i)))"
+      using con_assms assms by (auto simp add: Gramian_matrix_alt_alt_def scalar_prod_def)
+    moreover have "det (replace_col (Gramian_matrix fs k) (vec k (\<lambda>i. - (fs ! k \<bullet> fs ! i))) i) \<in> \<int>" if "i < k" for i
+    proof -
+      have "\<sigma> i < length fs" if "\<sigma> permutes {0..<k}" "i < k" for \<sigma> i
+        using that assms con_assms order.strict_trans permutes_less by blast
+      then show ?thesis
+        using con_assms assms permutes_less(1) 
+        by(subst det_col[of _ k])
+          (auto simp add: Gramian_matrix_alt_alt_def replace_col_def signof_def
+            intro!: Ints_sum Ints_mult Ints_prod Ints_minus fs_scalar_Ints)
+    qed
+    then have "det (replace_col (Gramian_matrix fs k) (Gramian_matrix fs k *\<^sub>v vec k (\<rho> m fs k)) i) \<in> \<int>" if "i < k" for i
+      using that by (subst a) auto
+    then have "vec k (?\<rho>  k) $v i * Gramian_determinant fs k \<in> \<int>" if "i < k" for i
+      using that unfolding Gramian_determinant_def
+      by (subst cramer_lemma_rat[of _ k,symmetric]) (auto simp add: Gramian_matrix_def Let_def)
+    then show ?thesis
+      using that by simp
+  qed
+  then have "( ?\<rho> k j * Gramian_determinant fs k) * fs ! j $v i \<in> \<int>" if "j < k" for j
+    using that fs_int assms by (auto intro!: Ints_mult)
+  moreover have "( ?\<rho> k j * Gramian_determinant fs k) * fs ! j $v i =
+                 Gramian_determinant fs k *  ?\<rho> k j * fs ! j $v i" for j
+    by (auto simp add: field_simps)
+  ultimately have "Gramian_determinant fs k * (\<Sum>j = 0..<k. \<rho> (length fs) fs k j * fs ! j $v i) \<in> \<int>"
+    using con_assms by (subst sum_distrib_left) (auto simp add: field_simps intro!: Ints_sum)
+  moreover have "(gso fs k) $v i = fs ! k $v i + sum (\<lambda>j. (?\<rho> k j \<cdot>\<^sub>v fs ! j) $v i) {0..<k}"
+  proof -
+    have " i < dim_vec (M.sumlist (map (\<lambda>j. \<rho> (length fs) fs k j \<cdot>\<^sub>v fs ! j) [0..<k]))"
+      using con_assms assms by (subst sumlist_dim) auto
+    then show ?thesis
+      using assms con_assms by (auto simp add: sumlist_nth sumlist_dim \<rho>_def)
+  qed
+  ultimately show ?thesis
+    using con_assms assms
+    by (auto simp add: distrib_left Gramian_determinant_Ints fs_int intro!: Ints_mult Ints_add)
+qed
+
+lemma Gramian_determinant_div:
+  assumes "l < m"
+  shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>gso fs l\<parallel>\<^sup>2"
+proof -
+  have "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = 
+             (\<Prod>j<Suc l. \<parallel>gso fs j\<parallel>\<^sup>2) / (\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2)"
+    using con_assms assms by (auto simp add: Gramian_determinant)
+  also have "(\<Prod>j<Suc l. \<parallel>gso fs j\<parallel>\<^sup>2) = (\<Prod>j \<in> {0..<l} \<union> {l}. \<parallel>gso fs j\<parallel>\<^sup>2)"
+    using assms by (intro prod.cong) (auto)
+  also have "\<dots> = (\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2) * \<parallel>gso fs l\<parallel>\<^sup>2"
+    using assms by (subst prod_Un) (auto simp add: atLeast0LessThan)
+  also have "(\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2) * \<parallel>gso fs l\<parallel>\<^sup>2 / (\<Prod>j<l. \<parallel>gso fs j\<parallel>\<^sup>2) = \<parallel>gso fs l\<parallel>\<^sup>2"
+  proof -
+    have "0 < \<parallel>gso fs j\<parallel>\<^sup>2" if "j < l" for j
+      using assms con_assms that by (intro sq_norm_pos[of _ m]) (auto)
+    then show ?thesis
+      using assms by (fastforce simp add: field_simps)
+  qed
+  finally show ?thesis
+    by simp
+qed
+
+lemma Gramian_determinant_mu_ints:
+  assumes "l \<le> k" "k < m"
+  shows "Gramian_determinant fs (Suc l) * \<mu> fs k l \<in> \<int>"
+proof (cases "l < k")
+  case True
+  have ll: "Gramian_determinant fs l * gso fs l $v i = (Gramian_determinant fs l \<cdot>\<^sub>v gso fs l) $v i" if "i < n" for i
+    using that assms con_assms by auto
+  have "Gramian_determinant fs (Suc l) * \<mu> fs k l = Gramian_determinant fs (Suc l) * (fs ! k \<bullet> gso fs l) / \<parallel>gso fs l\<parallel>\<^sup>2 "
+    using assms True unfolding \<mu>.simps by simp
+  also have "\<dots> = fs ! k \<bullet> (Gramian_determinant fs l \<cdot>\<^sub>v gso fs l)"
+    using assms con_assms Gramian_determinant(2)[of fs m "Suc l"]
+    by (subst Gramian_determinant_div[symmetric]) (auto)
+  also have "\<dots> \<in> \<int>"
+  proof -
+    have "Gramian_determinant fs l * gso fs l $v i \<in> \<int>" if "i < n" for i
+      using assms Gramian_determinant_times_gso_Ints that ll by (simp)
+    then show ?thesis
+     using con_assms assms by (auto intro!: Ints_sum simp add: con_assms fs_int scalar_prod_def)
+ qed
+ finally show ?thesis
+   by simp
+next
+  case False
+  with assms have l: "l = k" by auto
+  show ?thesis unfolding l \<mu>.simps using Gramian_determinant_Ints[OF con_assms fs_int] assms by simp
+qed
+
+end (* fs_int *)
+
+end (* fixes fs *)
+
+end (* gram_schmidt_rat *)
+
+lemma vec_hom_Ints:
+  assumes "i < n" "xs \<in> carrier_vec n"
+  shows "of_int_hom.vec_hom xs $v i \<in> \<int>"
+  using assms by auto
+
+definition floor_ceil where "floor_ceil x = floor (x + 1/2)" 
+
+lemma floor_ceil: "\<bar>x - rat_of_int (floor_ceil x)\<bar> \<le> inverse 2" 
+  unfolding floor_ceil_def by (metis (no_types, hide_lams) abs_divide abs_neg_one round_def
+      div_by_1 div_minus_right inverse_eq_divide minus_diff_eq of_int_round_abs_le)
+
+lemma division_to_div: "(of_int x  :: 'a :: floor_ceiling) = of_int y / of_int z \<Longrightarrow> x = y div z" 
+  by (metis floor_divide_of_int_eq floor_of_int)
+
+lemma exact_division: assumes "of_int x / (of_int y  :: 'a :: floor_ceiling) \<in> \<int>"
+  shows "of_int (x div y) = of_int x / (of_int y :: 'a)" 
+  using assms by (metis Ints_cases division_to_div)
+
+lemma int_via_rat_eqI: "rat_of_int x = rat_of_int y \<Longrightarrow> x = y" by auto
+
+
+definition floor_ceil_num_denom :: "int \<Rightarrow> int \<Rightarrow> int" where
+  "floor_ceil_num_denom n d = ((2 * n + d) div (2 * d))" 
+
+lemma floor_ceil_num_denom: "denom > 0 \<Longrightarrow> floor_ceil_num_denom num denom = 
+  floor_ceil (of_int num / rat_of_int denom)" 
+  unfolding floor_ceil_def floor_ceil_num_denom_def
+  unfolding floor_divide_of_int_eq[where ?'a = rat, symmetric]
+  by (rule arg_cong[of _ _ floor], simp add: add_divide_distrib)
+
+locale fs_int =
+  fixes
+    n :: nat (* n-dimensional vectors, *) and
+    m :: nat (* number of vectors *) and
+    fs_init :: "int vec list" (* initial basis *)
+begin
+
+sublocale vec_module "TYPE(int)" n.
+               
+sublocale gs: gram_schmidt_rat n .
+
+abbreviation RAT where "RAT \<equiv> map (map_vec rat_of_int)" 
+abbreviation \<mu> where "\<mu> fs \<equiv> gs.\<mu> (RAT fs)" 
+abbreviation gso where "gso fs \<equiv> gs.gso (RAT fs)" 
+abbreviation SRAT where "SRAT xs \<equiv> set (RAT xs)" 
+abbreviation Rn where "Rn \<equiv> carrier_vec n :: rat vec set" 
+abbreviation lin_indep where "lin_indep fs \<equiv> gs.lin_indpt_list (RAT fs)" 
+
+definition d :: "int vec list \<Rightarrow> nat \<Rightarrow> int" where "d fs k = gs.Gramian_determinant fs k"
+
+definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < m. d fs i)" 
+
+definition fs_int :: "int vec list \<Rightarrow> bool" where 
+  "fs_int fs \<equiv> gs.lin_indpt_list (RAT fs) \<and> length fs = m" 
+
+lemma fs_intD: assumes "fs_int fs"
+  shows 
+  "lin_indep fs" 
+  "length (RAT fs) = m" 
+  "set fs \<subseteq> carrier_vec n"
+  "\<And> i. i < m \<Longrightarrow> fs ! i \<in> carrier_vec n" 
+  "\<And> i. i < m \<Longrightarrow> gso fs i \<in> carrier_vec n" 
+  "length fs = m"
+  using assms gs.lin_indpt_list_def gs.gso_carrier'[of _ "RAT fs"] 
+  unfolding fs_int_def split gs.reduced_def set_conv_nth by (auto)
+
+lemma of_int_Gramian_determinant:
+  assumes "k \<le> length F" "\<And>i. i < length F \<Longrightarrow> dim_vec (F ! i) = n"
+  shows "gs.Gramian_determinant (map of_int_hom.vec_hom F) k = of_int (gs.Gramian_determinant F k)"
+  unfolding gs.Gramian_determinant_def of_int_hom.hom_det[symmetric]
+proof (rule arg_cong[of _ _ det])
+  let ?F = "map of_int_hom.vec_hom F"
+  have cong: "\<And> a b c d. a = b \<Longrightarrow> c = d \<Longrightarrow> a * c = b * d" by auto
+  show "gs.Gramian_matrix ?F k = map_mat of_int (gs.Gramian_matrix F k)" 
+    unfolding gs.Gramian_matrix_def Let_def
+  proof (subst of_int_hom.mat_hom_mult[of _ k n _ k], (auto)[2], rule cong)
+    show id: "mat k n (\<lambda> (i,j). ?F ! i $ j) = map_mat of_int (mat k n (\<lambda> (i, j). F ! i $ j))" (is "?L = map_mat _ ?R")
+    proof (rule eq_matI, goal_cases)
+      case (1 i j)
+      hence ij: "i < k" "j < n" "i < length F" "dim_vec (F ! i) = n" using assms by auto
+      show ?case using ij by simp 
+    qed auto
+    show "?L\<^sup>T = map_mat of_int ?R\<^sup>T" unfolding id by (rule eq_matI, auto)
+  qed
+qed
+
+lemma Gramian_determinant: assumes finv: "fs_int fs" 
+  and k: "k \<le> m" 
+shows "of_int (gs.Gramian_determinant fs k) = (\<Prod> j<k. sq_norm (gso fs j))" (is ?g1)
+  "gs.Gramian_determinant fs k > 0" (is ?g2)
+proof -
+  note inv = fs_intD[OF finv]
+  have hom: "gs.Gramian_determinant (RAT fs) k = of_int (gs.Gramian_determinant fs k)" 
+    by (rule of_int_Gramian_determinant[of _ fs, unfolded inv(6), OF k], insert inv(4-6) k, auto)
+  show ?g1 ?g2 using gs.Gramian_determinant[OF inv(1-2) k] 
+    unfolding hom using k by auto
+qed
+
+lemma fs_int_d_pos [intro]: assumes inv: "fs_int fs" 
+  and k: "k \<le> m" 
+shows "d fs k > 0"
+  unfolding d_def using Gramian_determinant[OF inv k] by auto
+
+lemma fs_int_d_Suc: assumes "fs_int fs" 
+  and k: "k < m" 
+shows "of_int (d fs (Suc k)) = sq_norm (gso fs k) * of_int (d fs k)" 
+proof -
+  note det = Gramian_determinant(1)[OF assms(1)]
+  from k have k: "k \<le> m" "Suc k \<le> m" by auto
+  show ?thesis unfolding det[OF k(1)] det[OF k(2)] d_def
+    by (subst prod.remove[of _ k], force+, rule arg_cong[of _ _ "\<lambda> x. _ * x"], rule prod.cong, auto)
+qed
+
+lemma fs_int_D_pos: assumes inv: "fs_int fs" 
+shows "D fs > 0"
+proof -
+  have "(\<Prod> j < m. d fs j) > 0"
+    by (rule prod_pos, insert fs_int_d_pos[OF inv], auto)
+  thus ?thesis unfolding D_def by auto
+qed
+
+definition "d\<mu> fs i j = int_of_rat (of_int (d fs (Suc j)) * \<mu> fs i j)" 
+
+lemma fs_int_mu_d_Z: assumes inv: "fs_int fs" 
+  and j: "j \<le> ii" and ii: "ii < m" 
+shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
+proof -
+  note * = fs_intD[OF inv]
+  have id: "gs.Gramian_determinant (RAT fs) (Suc j) = of_int (d fs (Suc j))" 
+    unfolding d_def
+    by (rule of_int_Gramian_determinant, insert j ii *(4,6), auto)
+  show ?thesis
+    by (rule gs.Gramian_determinant_mu_ints[OF *(1-2) _ j ii, unfolded id], insert *(4,6), force)
+qed
+
+context fixes fs :: "int vec list" 
+  assumes lin_indep: "lin_indep fs" 
+  and len: "length fs = m" 
+begin
+
+lemma sq_norm_fs_via_sum_mu_gso: assumes i: "i < m" 
+  shows "of_int \<parallel>fs ! i\<parallel>\<^sup>2 = (\<Sum>j\<leftarrow>[0..<Suc i]. (\<mu> fs i j)\<^sup>2 * \<parallel>gso fs j\<parallel>\<^sup>2)" 
+proof -
+  let ?G = "map (gso fs) [0 ..< m]" 
+  let ?gso = "\<lambda> fs j. ?G ! j"
+  have "of_int \<parallel>fs ! i\<parallel>\<^sup>2 = \<parallel>RAT fs ! i\<parallel>\<^sup>2" unfolding sq_norm_of_int[symmetric] using insert i len by auto
+  also have "RAT fs ! i = gs.sumlist (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i])" 
+    using gs.fi_is_sum_of_mu_gso[OF lin_indep _ i] len by auto
+  also have id: "map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i] = map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v ?gso fs j) [0..<Suc i]" 
+    by (rule nth_equalityI, insert i, auto simp: nth_append)
+  also have "sq_norm (gs.sumlist \<dots>) = sum_list (map sq_norm (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i]))" 
+    unfolding map_map o_def sq_norm_smult_vec
+    unfolding sq_norm_vec_as_cscalar_prod cscalar_prod_is_scalar_prod conjugate_id
+  proof (subst gs.scalar_prod_lincomb_orthogonal)
+    show "Suc i \<le> length ?G" using i by auto
+    show "set ?G \<subseteq> Rn" using gs.gso_carrier[OF lin_indep, of m] len by auto
+    show "orthogonal ?G" using gs.orthogonal_gso[OF lin_indep, of m] len by auto
+  qed (rule arg_cong[of _ _ sum_list], intro nth_equalityI, insert i, auto simp: nth_append)
+  also have "map sq_norm (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i]) = map (\<lambda>j. (\<mu> fs i j)^2 * sq_norm (gso fs j)) [0..<Suc i]" 
+    unfolding map_map o_def sq_norm_smult_vec by (rule map_cong, auto simp: power2_eq_square)
+  finally show ?thesis . 
+qed
+
+end
+
+lemma d\<mu>: assumes inv: "fs_int fs" "j \<le> ii" "ii < m" 
+  shows "of_int (d\<mu> fs ii j) = of_int (d fs (Suc j)) * \<mu> fs ii j" 
+  unfolding d\<mu>_def using fs_int_mu_d_Z[OF inv] by auto
+
+lemma d_sq_norm_comparison: assumes inv: "fs_int fs" 
+  and quot: "quotient_of \<alpha> = (num,denom)" 
+  and i: "i < m" 
+  and i0: "i \<noteq> 0" 
+  shows "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
+   = (sq_norm (gso fs (i - 1)) \<le> \<alpha> * sq_norm (gso fs i))" 
+proof -
+  let ?r = "rat_of_int" 
+  let ?x = "sq_norm (gso fs (i - 1))" 
+  let ?y = "\<alpha> * sq_norm (gso fs i)" 
+  from i have le: "i - 1 \<le> m" " i \<le> m" "Suc i \<le> m" by auto
+  note pos = fs_int_d_pos[OF inv le(1)] fs_int_d_pos[OF inv le(2)] quotient_of_denom_pos[OF quot]
+  have "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
+    = (?r (d fs i * d fs i * denom) \<le> ?r (num * d fs (i - 1) * d fs (Suc i)))" (is "?cond = _") by presburger
+  also have "\<dots> = (?r (d fs i) * ?r (d fs i) * ?r denom \<le> ?r num * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" by simp
+  also have "\<dots> = (?r (d fs i) * ?r (d fs i) \<le> \<alpha> * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" 
+    using pos unfolding quotient_of_div[OF quot] by (auto simp: field_simps)
+  also have "\<dots> = (?r (d fs i) / ?r (d fs (i - 1)) \<le> \<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)))" 
+    using pos by (auto simp: field_simps)
+  also have "?r (d fs i) / ?r (d fs (i - 1)) = ?x" using fs_int_d_Suc[OF inv, of "i - 1"] pos i i0
+    by (auto simp: field_simps)
+  also have "\<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)) = ?y" using fs_int_d_Suc[OF inv i] pos i i0
+    by (auto simp: field_simps)
+  finally show "?cond = (?x \<le> ?y)" .
+qed
+
+lemma floor_ceil_num_denom_d\<mu>_d: assumes inv: "fs_int fs"
+  and j: "j \<le> i" and i: "i < m"  
+shows "floor_ceil_num_denom (d\<mu> fs i j) (d fs (Suc j)) = floor_ceil (\<mu> fs i j)" 
+proof -
+  from j i have sj: "Suc j \<le> m" by auto
+  note pos = fs_int_d_pos[OF inv sj]
+  show ?thesis unfolding floor_ceil_num_denom[OF pos]
+    by (rule arg_cong[of _ _ floor_ceil], subst d\<mu>[OF inv j i], insert pos, auto)
+qed
+
+
+
+
+end
 
 end

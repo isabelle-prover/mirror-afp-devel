@@ -14,74 +14,14 @@ text \<open>We provide equations how to implement the LLL-algorithm by storing t
   Moreover, we show how to check condition like the one on norms via the integer values.\<close>
 
 theory LLL_Integer_Equations
-  imports LLL
+  imports
+   LLL
    LLL_Number_Bounds
 begin
 
-lemma division_to_div: "(of_int x  :: 'a :: floor_ceiling) = of_int y / of_int z \<Longrightarrow> x = y div z" 
-  by (metis floor_divide_of_int_eq floor_of_int)
-
-lemma exact_division: assumes "of_int x / (of_int y  :: 'a :: floor_ceiling) \<in> \<int>"
-  shows "of_int (x div y) = of_int x / (of_int y :: 'a)" 
-  using assms by (metis Ints_cases division_to_div)
-
-lemma int_via_rat_eqI: "rat_of_int x = rat_of_int y \<Longrightarrow> x = y" by auto
-
-hide_fact (open) Word.inc_i
-
-definition floor_ceil_num_denom :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "floor_ceil_num_denom n d = ((2 * n + d) div (2 * d))" 
-
-lemma floor_ceil_num_denom: "denom > 0 \<Longrightarrow> floor_ceil_num_denom num denom = 
-  floor_ceil (of_int num / rat_of_int denom)" 
-  unfolding floor_ceil_def floor_ceil_num_denom_def
-  unfolding floor_divide_of_int_eq[where ?'a = rat, symmetric]
-  by (rule arg_cong[of _ _ floor], simp add: add_divide_distrib)
 
 context LLL
 begin
-
-definition "d\<mu> fs i j = int_of_rat (of_int (d fs (Suc j)) * \<mu> fs i j)" 
-
-lemma d\<mu>: assumes inv: "LLL_invariant upw i fs" "j \<le> ii" "ii < m" 
-  shows "of_int (d\<mu> fs ii j) = of_int (d fs (Suc j)) * \<mu> fs ii j" 
-  unfolding d\<mu>_def using LLL_mu_d_Z[OF inv] by auto
-
-lemma d_sq_norm_comparison: assumes inv: "LLL_invariant upw k fs" 
-  and quot: "quotient_of \<alpha> = (num,denom)" 
-  and i: "i < m" 
-  and i0: "i \<noteq> 0" 
-  shows "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
-   = (sq_norm (gso fs (i - 1)) \<le> \<alpha> * sq_norm (gso fs i))" 
-proof -
-  let ?r = "rat_of_int" 
-  let ?x = "sq_norm (gso fs (i - 1))" 
-  let ?y = "\<alpha> * sq_norm (gso fs i)" 
-  from i have le: "i - 1 \<le> m" " i \<le> m" "Suc i \<le> m" by auto
-  note pos = LLL_d_pos[OF inv le(1)] LLL_d_pos[OF inv le(2)] quotient_of_denom_pos[OF quot]
-  have "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
-    = (?r (d fs i * d fs i * denom) \<le> ?r (num * d fs (i - 1) * d fs (Suc i)))" (is "?cond = _") by presburger
-  also have "\<dots> = (?r (d fs i) * ?r (d fs i) * ?r denom \<le> ?r num * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" by simp
-  also have "\<dots> = (?r (d fs i) * ?r (d fs i) \<le> \<alpha> * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" 
-    using pos unfolding quotient_of_div[OF quot] by (auto simp: field_simps)
-  also have "\<dots> = (?r (d fs i) / ?r (d fs (i - 1)) \<le> \<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)))" 
-    using pos by (auto simp: field_simps)
-  also have "?r (d fs i) / ?r (d fs (i - 1)) = ?x" using LLL_d_Suc[OF inv, of "i - 1"] pos i i0
-    by (auto simp: field_simps)
-  also have "\<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)) = ?y" using LLL_d_Suc[OF inv i] pos i i0
-    by (auto simp: field_simps)
-  finally show "?cond = (?x \<le> ?y)" .
-qed
-
-lemma floor_ceil_num_denom_d\<mu>_d: assumes inv: "LLL_invariant upw k fs"
-  and j: "j \<le> i" and i: "i < m"  
-shows "floor_ceil_num_denom (d\<mu> fs i j) (d fs (Suc j)) = floor_ceil (\<mu> fs i j)" 
-proof -
-  from j i have sj: "Suc j \<le> m" by auto
-  note pos = LLL_d_pos[OF inv sj]
-  show ?thesis unfolding floor_ceil_num_denom[OF pos]
-    by (rule arg_cong[of _ _ floor_ceil], subst d\<mu>[OF inv j i], insert pos, auto)
-qed
 
 lemma d_d\<mu>_add_row: assumes Linv: "LLL_invariant True i fs"
   and i: "i < m"  and j: "j < i" 
@@ -101,7 +41,10 @@ shows
        else d\<mu> fs i' j')"
     (is "\<And> i' j'. _ \<Longrightarrow> _ \<Longrightarrow> _ = ?new_mu i' j'")
 proof -
+  note fs_int = LLL_invariant_fs_int[OF Linv]
   note add = basis_reduction_add_row_main[OF Linv i j c fs' mu_small]
+  then have fs_int': "fs_int fs'"
+    using LLL_invariant_fs_int by auto
   show d: "\<And> ii. ii \<le> m \<Longrightarrow> d fs' ii = d fs ii" by fact
   fix i' j'
   assume i': "i' < m" and j': "j' < i'"    
@@ -117,9 +60,9 @@ proof -
     show ?thesis
       by (rule int_via_rat_eqI, 
           unfold if_distrib[of rat_of_int] of_int_diff of_int_mult updates id' 
-          d\<mu>[OF add(1) j'' i'] d\<mu>[OF Linv j'' i'] 
+          d\<mu>[OF fs_int' j'' i'] d\<mu>[OF fs_int j'' i'] 
           if_distrib[of "( * ) (rat_of_int (d fs (Suc j')))"] ring_distribs,
-          insert True i' j' i j d\<mu>[OF Linv], auto simp: gs.\<mu>.simps[of _ x x for x]) 
+          insert True i' j' i j d\<mu>[OF fs_int], auto simp: gs.\<mu>.simps[of _ x x for x]) 
   qed
 qed
 
@@ -162,8 +105,8 @@ proof -
   let ?dn' = "\<lambda> i. ?r (d fs' i * d fs' i) * ?n' i" 
   let ?dmu = "\<lambda> i j. ?r (d fs (Suc j)) * \<mu> fs i j" 
   let ?dmu' = "\<lambda> i j. ?r (d fs' (Suc j)) * \<mu> fs' i j" 
-  note dmu = d\<mu>[OF inv]
-  note dmu' = d\<mu>[OF swap(1)]
+  note dmu = d\<mu>[OF LLL_invariant_fs_int[OF inv]]
+  note dmu' = d\<mu>[OF LLL_invariant_fs_int[OF swap(1)]]
   note inv' = LLL_invD[OF inv]
   have nim1: "?n i + square_rat (\<mu> fs i (i - 1)) * ?n (i - 1) = 
     ?n' (i - 1)" by (subst swap(4), insert i, auto)
@@ -175,9 +118,9 @@ proof -
     unfolding fs'_def using inv'(6) i i0 by auto
   let ?d'i = "(d fs (Suc i) * d fs (i - 1) + d\<mu> fs i (i - 1) * d\<mu> fs i (i - 1)) div (d fs i)" 
   have rat': "ii < m \<Longrightarrow> j < ii \<Longrightarrow> ?r (d\<mu> fs' ii j) = ?dmu' ii j" for ii j 
-    using d\<mu>[OF swap(1), of j ii] by simp
+    using dmu'[of j ii] by simp
   have rat: "ii < m \<Longrightarrow> j < ii \<Longrightarrow> ?r (d\<mu> fs ii j) = ?dmu ii j"
-      for ii j using d\<mu>[OF inv, of j ii] by simp
+      for ii j using dmu[of j ii] by simp
   from i0 i have sim1: "Suc (i - 1) = i" and im1: "i - 1 < m" by auto
   from LLL_d_Suc[OF inv im1, unfolded sim1] 
   have dn_im1: "?dn (i - 1) = ?r (d fs i) * ?r (d fs (i - 1))" by simp

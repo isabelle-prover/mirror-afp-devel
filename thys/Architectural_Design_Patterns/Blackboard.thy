@@ -1,3 +1,9 @@
+(*
+  Title:      Blackboard.thy
+  Author:     Diego Marmsoler
+
+  TODOs: Remove Reference to Metrid.
+*)
 section "A Theory of Blackboard Architectures"
 text{*
   In the following, we formalize the specification of the blackboard pattern as described in~\cite{Marmsoler2018c}.

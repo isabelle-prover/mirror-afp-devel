@@ -10,11 +10,13 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
     List_Representation
     Norms
     Missing_Lemmas
+    More_IArray
     Gram_Schmidt_2
     LLL    
     LLL_GSO_Impl    
+    LLL_GSO_Impl_Complexity
     LLL_Mu_Integer_Impl    
-    LLL_Complexity
+    LLL_Mu_Integer_Impl_Complexity    
     LLL_Number_Bounds
   document_files
     "root.tex"

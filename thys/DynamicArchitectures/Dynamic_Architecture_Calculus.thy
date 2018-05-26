@@ -1438,6 +1438,18 @@ next
   with `\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>` `\<not>(\<exists>i\<ge>n'. \<parallel>c\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using validCI_cont by blast
 qed
 
+lemma globEANow:
+  fixes c t t' n i \<gamma>
+  assumes "n \<le> i"
+    and "\<parallel>c\<parallel>\<^bsub>t i\<^esub>"
+    and "eval c t t' n (\<box>\<gamma>)"
+  shows "eval c t t' i \<gamma>"
+proof -
+  from \<open>\<parallel>c\<parallel>\<^bsub>t i\<^esub>\<close> \<open>n \<le> i\<close> have "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>" by auto
+  moreover from \<open>n \<le> i\<close> have "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> i" using dual_order.trans lNactLe by blast
+  ultimately show ?thesis using globEA[of n c t t' \<gamma> i] \<open>eval c t t' n (\<box>\<gamma>)\<close> by simp
+qed
+
 lemma globEN[elim]:
   fixes c::'id
     and t::"nat \<Rightarrow> cnf"
