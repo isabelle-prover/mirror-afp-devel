@@ -744,7 +744,7 @@ next
   interpret ll:ll_on_open_it UNIV "(\<lambda>_. ODE_sem I (OSing vid1 (f0 fid1)))" "UNIV" 0
     apply(standard)
         apply(auto)
-     unfolding local_lipschitz_def f0_def empty_def sterm_sem.simps apply(safe)
+     unfolding local_lipschitz_def f0_def empty_def sterm_sem.simps 
      using gt_ex lipschitz_on_constant by blast
   have eq_UNIV:"ll.existence_ivl 0 (sol 0) = UNIV"
     apply(rule ll.existence_ivl_eq_domain)
