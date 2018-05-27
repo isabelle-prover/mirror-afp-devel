@@ -207,8 +207,7 @@ proof (induction rule: dfree.induct[OF free])
                           (\<chi> ia. extendf_deriv I i (args ia) \<nu> x b)))"
           using eq apply simp by presburger
         qed
-    apply simp
-    by(rule continuous_intros)
+    by simp
 next
   case (4 \<theta>\<^sub>1 \<theta>\<^sub>2)
   assume free1:"dfree \<theta>\<^sub>1"
