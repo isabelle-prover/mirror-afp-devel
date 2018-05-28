@@ -566,7 +566,7 @@ proof -
 qed
 
 lemma has_line_integral_on_reverse_path:
-  assumes "valid_path g"
+  assumes g: "valid_path g" and int:
     "((\<lambda>x. \<Sum>b\<in>basis. F (g x) \<bullet> b * (vector_derivative g (at x within {0..1}) \<bullet> b)) has_integral c){0..1}"
   shows  "((\<lambda>x. \<Sum>b\<in>basis. F ((reversepath g) x) \<bullet> b * (vector_derivative (reversepath g) (at x within {0..1}) \<bullet> b)) has_integral -c){0..1}"
 proof -
@@ -590,16 +590,13 @@ proof -
         by (auto simp: vector_derivative_at_within_ivl [OF mf'] vector_derivative_at_within_ivl [OF f'])
     qed
   } note * = this
-  have 01: "{0..1::real} = cbox 0 1"
-    by simp
-  show ?thesis using assms
-    apply (auto simp add: valid_path_def)
-    apply (drule has_integral_affinity01 [where m= "-1" and c=1])
-     apply (auto simp: reversepath_def piecewise_C1_differentiable_on_def)
-    apply (drule has_integral_neg)
-    apply (rule_tac S = "(\<lambda>x. 1 - x) ` s" in has_integral_spike_finite)
-      apply (auto simp: * Groups_Big.sum_negf)
-    done
+  obtain S where "continuous_on {0..1} g" "finite S" "g C1_differentiable_on {0..1} - S"
+    using g
+    by (auto simp: valid_path_def piecewise_C1_differentiable_on_def)
+  then show ?thesis 
+    using has_integral_affinity01 [OF int, where m= "-1" and c=1]
+    unfolding reversepath_def
+    by (rule_tac S = "(\<lambda>x. 1 - x) ` S" in has_integral_spike_finite) (auto simp: * has_integral_neg Groups_Big.sum_negf)
 qed
 
 lemma line_integral_on_reverse_path:

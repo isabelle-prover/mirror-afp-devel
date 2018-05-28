@@ -54,12 +54,12 @@ lemma bisimSubstInputPres:
 
   shows "\<Psi> \<rhd> M\<lparr>\<lambda>*xvec N\<rparr>.P \<approx>\<^sub>s M\<lparr>\<lambda>*xvec N\<rparr>.Q"
 proof(rule_tac closeSubstI)
-  fix yvec Tvec
-  assume "length(yvec::name list) = length (Tvec::'a list)" and "distinct yvec"
-  obtain p where "(p \<bullet> xvec) \<sharp>* yvec" and "(p \<bullet> xvec) \<sharp>* Tvec"
-             and "(p \<bullet> xvec) \<sharp>* P" and "(p \<bullet> xvec) \<sharp>* Q" and "(p \<bullet> xvec) \<sharp>* \<Psi>" and "(p \<bullet> xvec) \<sharp>* N"
-             and S: "set p \<subseteq> set xvec \<times> set (p \<bullet> xvec)"
-      by(rule_tac c="(yvec, Tvec, P, Q, \<Psi>, N)" in name_list_avoiding) auto
+  fix \<sigma> :: "(name list \<times> 'a list) list"
+  assume "wellFormedSubst \<sigma>"
+  obtain p where "(p \<bullet> xvec) \<sharp>* \<sigma>"
+           and "(p \<bullet> xvec) \<sharp>* P" and "(p \<bullet> xvec) \<sharp>* Q" and "(p \<bullet> xvec) \<sharp>* \<Psi>" and "(p \<bullet> xvec) \<sharp>* N"
+           and S: "set p \<subseteq> set xvec \<times> set (p \<bullet> xvec)"
+    by(rule_tac c="(\<sigma>, P, Q, \<Psi>, N)" in name_list_avoiding) auto
     
   from `\<Psi> \<rhd> P \<approx>\<^sub>s Q` have "(p \<bullet> \<Psi>) \<rhd> (p \<bullet> P) \<approx>\<^sub>s (p \<bullet> Q)"
     by(rule weakBisimSubstClosed)
@@ -68,27 +68,24 @@ proof(rule_tac closeSubstI)
 
   {
     fix Tvec' :: "'a list"
-
-    note  `\<Psi> \<rhd> (p \<bullet> P) \<approx>\<^sub>s (p \<bullet> Q)`
-    moreover assume "length xvec = length Tvec'"
-    with `length yvec = length Tvec` have "length(yvec@(p \<bullet> xvec)) = length(Tvec@Tvec')"
-      by auto
-    moreover from `distinct xvec` `distinct yvec` `(p \<bullet> xvec) \<sharp>* yvec` have "distinct(yvec@(p \<bullet> xvec))"
-      by(auto simp add: fresh_star_def fresh_def name_list_supp)
-    ultimately have "\<Psi> \<rhd> (p \<bullet> P)[(yvec@(p \<bullet> xvec))::=(Tvec@Tvec')] \<approx> (p \<bullet> Q)[(yvec@(p \<bullet> xvec))::=(Tvec@Tvec')]"
-      by(rule closeSubstE)
-    with `length yvec = length Tvec` `length xvec = length Tvec'` `distinct xvec` `distinct yvec` `(p \<bullet> xvec) \<sharp>* yvec` `(p \<bullet> xvec) \<sharp>* Tvec` have "\<Psi> \<rhd> ((p \<bullet> P)[yvec::=Tvec])[(p \<bullet> xvec)::=Tvec'] \<approx> ((p \<bullet> Q)[yvec::=Tvec])[(p \<bullet> xvec)::=Tvec']"
-      by(subst subst5[symmetric], auto)+
+    assume "length (p \<bullet> xvec) = length Tvec'"
+    with `wellFormedSubst \<sigma>` `distinct xvec` have "wellFormedSubst (\<sigma> @ [(p \<bullet> xvec,Tvec')])"
+      by simp
+    with `\<Psi> \<rhd> (p \<bullet> P) \<approx>\<^sub>s (p \<bullet> Q)` have "\<Psi> \<rhd> (p \<bullet> P)[<(\<sigma> @ [(p \<bullet> xvec,Tvec')])>] \<approx> (p \<bullet> Q)[<(\<sigma> @ [(p \<bullet> xvec,Tvec')])>]"
+      by (rule closeSubstE)
+    then have "\<Psi> \<rhd> ((p \<bullet> P)[<\<sigma>>])[(p \<bullet> xvec)::=Tvec'] \<approx> ((p \<bullet> Q)[<\<sigma>>])[(p \<bullet> xvec)::=Tvec']"
+      by (metis seqSubsCons seqSubsNil seqSubsTermAppend)
   }
 
-  with `(p \<bullet> xvec) \<sharp>* yvec` `(p \<bullet> xvec) \<sharp>* Tvec`
-  have "\<Psi> \<rhd> (M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P))[yvec::=Tvec] \<approx> (M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> Q))[yvec::=Tvec]"
-    by(force intro: weakBisimInputPres)
-  moreover from `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* P` S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P) = M\<lparr>\<lambda>*xvec N\<rparr>.P" 
-    apply(simp add: psi.inject) by(rule inputChainAlpha[symmetric]) auto
+  then have "\<Psi> \<rhd> M[<\<sigma>>]\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)[<\<sigma>>]\<rparr>.((p \<bullet> P)[<\<sigma>>]) \<approx> M[<\<sigma>>]\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)[<\<sigma>>]\<rparr>.((p \<bullet> Q)[<\<sigma>>])"
+    using weakBisimInputPres by metis
+  with `(p \<bullet> xvec) \<sharp>* \<sigma>` have "\<Psi> \<rhd> (M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P))[<\<sigma>>] \<approx> (M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> Q))[<\<sigma>>]"
+    by (metis seqSubstInputChain seqSubstSimps(3))
+  moreover from `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* P` S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> P) = M\<lparr>\<lambda>*xvec N\<rparr>.P"
+    apply (simp add: psi.inject) by (rule inputChainAlpha[symmetric]) auto
   moreover from `(p \<bullet> xvec) \<sharp>* N` `(p \<bullet> xvec) \<sharp>* Q` S have "M\<lparr>\<lambda>*(p \<bullet> xvec) (p \<bullet> N)\<rparr>.(p \<bullet> Q) = M\<lparr>\<lambda>*xvec N\<rparr>.Q"
-    apply(simp add: psi.inject) by(rule inputChainAlpha[symmetric]) auto
-  ultimately show "\<Psi> \<rhd> (M\<lparr>\<lambda>*xvec N\<rparr>.P)[yvec::=Tvec] \<approx> (M\<lparr>\<lambda>*xvec N\<rparr>.Q)[yvec::=Tvec]"
+    apply (simp add: psi.inject) by (rule inputChainAlpha[symmetric]) auto
+  ultimately show "\<Psi> \<rhd> (M\<lparr>\<lambda>*xvec N\<rparr>.P)[<\<sigma>>] \<approx> (M\<lparr>\<lambda>*xvec N\<rparr>.Q)[<\<sigma>>]"
     by force
 qed
 (*
@@ -228,24 +225,24 @@ lemma weakBisimSubstResPres:
   and     "x \<sharp> \<Psi>"
 
   shows "\<Psi> \<rhd> \<lparr>\<nu>x\<rparr>P \<approx>\<^sub>s \<lparr>\<nu>x\<rparr>Q"
-proof(rule_tac closeSubstI)
-  fix xvec Tvec
-  assume "length(xvec::name list) = length(Tvec::'a list)" and "distinct xvec"
-  obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> xvec" and "y \<sharp> Tvec"
-    by(generate_fresh "name") (auto simp add: fresh_prod)
+proof(rule closeSubstI)
+  fix \<sigma> :: "(name list \<times> 'a list) list"
+  assume "wellFormedSubst \<sigma>"
+  obtain y::name where "y \<sharp> \<Psi>" and "y \<sharp> P" and "y \<sharp> Q" and "y \<sharp> \<sigma>"
+    by (generate_fresh "name") auto
 
   from `\<Psi> \<rhd> P \<approx>\<^sub>s Q` have "([(x, y)] \<bullet> \<Psi>) \<rhd> ([(x, y)] \<bullet> P) \<approx>\<^sub>s ([(x, y)] \<bullet> Q)"
-    by(rule weakBisimSubstClosed)
+    by (rule weakBisimSubstClosed)
   with `x \<sharp> \<Psi>` `y \<sharp> \<Psi>` have "\<Psi> \<rhd> ([(x, y)] \<bullet> P) \<approx>\<^sub>s ([(x, y)] \<bullet> Q)"
     by simp
-  hence "\<Psi> \<rhd> ([(x, y)] \<bullet> P)[xvec::=Tvec] \<approx> ([(x, y)] \<bullet> Q)[xvec::=Tvec]" using `length xvec = length Tvec` `distinct xvec`
-    by(rule closeSubstE)
-  hence "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> P)[xvec::=Tvec]) \<approx> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> Q)[xvec::=Tvec])" using `y \<sharp> \<Psi>`
-    by(rule weakBisimResPres)
-  with `y \<sharp> P` `y \<sharp> Q` `y \<sharp> xvec` `y \<sharp> Tvec` 
-  show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>P)[xvec::=Tvec] \<approx> (\<lparr>\<nu>x\<rparr>Q)[xvec::=Tvec]"
-    by(simp add: alphaRes)
+  hence "\<Psi> \<rhd> ([(x, y)] \<bullet> P)[<\<sigma>>] \<approx> ([(x, y)] \<bullet> Q)[<\<sigma>>]"
+    using `wellFormedSubst \<sigma>` by (rule closeSubstE)
+  hence "\<Psi> \<rhd> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> P)[<\<sigma>>]) \<approx> \<lparr>\<nu>y\<rparr>(([(x, y)] \<bullet> Q)[<\<sigma>>])"
+    using `y \<sharp> \<Psi>` by (rule weakBisimResPres)
+  with `y \<sharp> P` `y \<sharp> Q` `y \<sharp> \<sigma>` show "\<Psi> \<rhd> (\<lparr>\<nu>x\<rparr>P)[<\<sigma>>] \<approx> (\<lparr>\<nu>x\<rparr>Q)[<\<sigma>>]"
+    by (simp add: alphaRes)
 qed
+
 (*
 lemma bisimSubstBangPres:
   fixes \<Psi> :: 'b

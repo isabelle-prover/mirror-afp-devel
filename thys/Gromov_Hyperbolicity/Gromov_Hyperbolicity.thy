@@ -1432,14 +1432,14 @@ proof -
           unfolding Km_def apply (rule compact_has_closed_thickening)
           apply (rule compact_continuous_image)
           apply (rule continuous_on_subset[OF \<open>continuous_on {A..B} d\<close>])
-          using tm \<open>ty \<in> {A..B}\<close> by (auto, intro continuous_intros)
+          using tm \<open>ty \<in> {A..B}\<close> by (auto)
         then show "closed (Km \<inter> {c A--c B})" by (rule topological_space_class.closed_Int, auto)
 
         have "closed KM"
           unfolding KM_def apply (rule compact_has_closed_thickening)
           apply (rule compact_continuous_image)
           apply (rule continuous_on_subset[OF \<open>continuous_on {A..B} d\<close>])
-          using tM \<open>ty \<in> {A..B}\<close> by (auto, intro continuous_intros)
+          using tM \<open>ty \<in> {A..B}\<close> by (auto)
         then show "closed (KM \<inter> {c A--c B})" by (rule topological_space_class.closed_Int, auto)
 
         show "connected {c A--c B}" by simp
