@@ -183,7 +183,7 @@ lemma ev_sdropD:
 
 (* TODO: Move *)
 lemma pred_stream_sconst:
-  "pred_stream (op = x) (sconst x)"
+  "pred_stream ((=) x) (sconst x)"
   by coinduction simp
 
 (* TODO: Move *)

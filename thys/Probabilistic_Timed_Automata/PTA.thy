@@ -85,7 +85,7 @@ proof -
         eq: "map_pmf fst p = K x" "map_pmf snd p = K x'"
         by (auto simp: pmf.in_rel)
       let ?S = "stream_space (count_space UNIV)"
-      have *: "(op ##) y -` smap f -` sstart (f ` A) (z # zs) = (if f y = z then smap f -` sstart (f ` A) zs else {})" for y z zs
+      have *: "(##) y -` smap f -` sstart (f ` A) (z # zs) = (if f y = z then smap f -` sstart (f ` A) zs else {})" for y z zs
         by auto
       have **: "?D x (sstart (f ` A) (z # zs)) = (\<integral>\<^sup>+ y'. (if f y' = z then ?D y' (sstart (f ` A) zs) else 0) \<partial>K x)" for x
         apply (simp add: emeasure_distr)
@@ -139,7 +139,7 @@ proof -
         by (auto intro!: D_eq_D[OF \<open>R i j\<close>] g)
     qed
 
-    have ***: "?D x = measure_pmf (L y) \<bind> (\<lambda>y. distr (?D (g y)) K.S ((op ##) y))"
+    have ***: "?D x = measure_pmf (L y) \<bind> (\<lambda>y. distr (?D (g y)) K.S ((##) y))"
       apply (subst K.T_eq_bind)
       apply (subst distr_bind[of _ _ K.S])
          apply (rule measurable_distr2[of _  _ "K.S"])
@@ -321,7 +321,11 @@ proof -
     with R'(1,2) \<open>u \<in> R\<close> obtain t where "t \<ge> 0" "u \<oplus> t \<in> R'" by auto
     with \<open>R \<in> \<R>\<close> \<open>R' \<in> \<R>\<close> \<open>u \<in> R\<close> have "R' \<in> Succ \<R> R" by (intro SuccI3)
     moreover have "(\<forall> u \<in> R. \<forall> t \<ge> 0. (u \<oplus> t) \<notin> R \<longrightarrow> (\<exists> t' \<le> t. (u \<oplus> t') \<in> R' \<and> 0 \<le> t'))"
-    using R'(1) by (force simp: cval_add_def)
+      using R'(1) unfolding cval_add_def
+      apply clarsimp
+      subgoal for u t
+        by (cases "t = 0") auto
+      done
     ultimately have *: "?succ R'" using neq by auto
     have "succ \<R> R = R'" unfolding succ_def
     proof (simp add: \<open>\<not> is_upper_right R\<close>, intro the_equality, rule *, goal_cases)
@@ -588,7 +592,7 @@ locale Probabilistic_Timed_Automaton =
   assumes admissible_targets:
     "(l, g, \<mu>) \<in> trans_of A \<Longrightarrow> (X, l') \<in> \<mu> \<Longrightarrow> \<lbrace>g\<rbrace>\<^bsub>X \<rightarrow> 0\<^esub> \<subseteq> \<lbrace>inv_of A l'\<rbrace>"
     "(l, g, \<mu>) \<in> trans_of A \<Longrightarrow> (X, l') \<in> \<mu> \<Longrightarrow> X \<subseteq> clocks A"
-  -- "Not necessarily what we want to have"
+  \<comment> \<open>Not necessarily what we want to have\<close>
 begin
 
 subsection \<open>Syntactic Definition\<close> text_raw \<open> \label{sem:mdp} \<close>
@@ -602,12 +606,12 @@ definition "S \<equiv> {(l, u) . l \<in> L \<and> (\<forall> x \<in> \<X>. u x \
 inductive_set
   K :: "('s * ('c, 't) cval) \<Rightarrow> ('s * ('c, 't) cval) pmf set" for st :: "('s * ('c, 't) cval)"
 where
-  -- "Passage of time" delay:
+  \<comment> \<open>Passage of time\<close> delay:
   "st \<in> S \<Longrightarrow> st = (l, u) \<Longrightarrow> t \<ge> 0 \<Longrightarrow> u \<oplus> t \<turnstile> inv_of A l \<Longrightarrow> return_pmf (l, u \<oplus> t) \<in> K st" |
-  -- "Discrete transitions" action:
+  \<comment> \<open>Discrete transitions\<close> action:
   "st \<in> S \<Longrightarrow> st = (l, u) \<Longrightarrow> (l, g, \<mu>) \<in> trans_of A \<Longrightarrow> u \<turnstile> g
   \<Longrightarrow> map_pmf (\<lambda> (X, l). (l, ([X := 0]u))) \<mu> \<in> K st" |
-  -- "Self loops -- Note that this does not assume \<open>st \<in> S\<close>" loop:
+  \<comment> \<open>Self loops -- Note that this does not assume \<open>st \<in> S\<close>\<close> loop:
   "return_pmf st \<in> K st"
 
 declare K.intros[intro]
@@ -621,7 +625,7 @@ section \<open>Constructing the Corresponding Finite MDP on Regions\<close>
 locale Probabilistic_Timed_Automaton_Regions =
   Probabilistic_Timed_Automaton A + Regions \<X>
   for A :: "('c, t, 's) pta" +
-  -- "The following are necessary to obtain a \<open>finite\<close> MDP"
+  \<comment> \<open>The following are necessary to obtain a \<open>finite\<close> MDP\<close>
   assumes finite: "finite \<X>" "finite L" "finite (trans_of A)"
   assumes not_trivial: "\<exists> l \<in> L. \<exists> u \<in> V. u \<turnstile> inv_of A l"
   assumes valid: "valid_abstraction A \<X> k"
@@ -649,12 +653,12 @@ where
   -- "Passage of time" delay:
   "st \<in> \<S> \<Longrightarrow> st = (l,R) \<Longrightarrow> succ \<R> R \<subseteq> \<lbrace>inv_of A l\<rbrace> \<Longrightarrow> return_pmf (l, succ \<R> R) \<in> \<K> st" |
   *)
-   -- "Passage of time" delay:
+   \<comment> \<open>Passage of time\<close> delay:
   "st \<in> \<S> \<Longrightarrow> st = (l,R) \<Longrightarrow> R' \<in> Succ \<R> R \<Longrightarrow> R' \<subseteq> \<lbrace>inv_of A l\<rbrace> \<Longrightarrow> return_pmf (l, R') \<in> \<K> st" |
-  -- "Discrete transitions" action:
+  \<comment> \<open>Discrete transitions\<close> action:
   "st \<in> \<S> \<Longrightarrow> st = (l, R ) \<Longrightarrow> (l, g, \<mu>) \<in> trans_of A \<Longrightarrow> R \<subseteq> \<lbrace>g\<rbrace>
   \<Longrightarrow> map_pmf (\<lambda> (X, l). (l, region_set' R (SOME r. set r = X) 0)) \<mu> \<in> \<K> st" |
-  -- "Self loops -- Note that this does not assume \<open>st \<in> \<S>\<close>" loop:
+  \<comment> \<open>Self loops -- Note that this does not assume \<open>st \<in> \<S>\<close>\<close> loop:
   "return_pmf st \<in> \<K> st"
 
 lemmas [intro] = \<K>.intros
@@ -2367,7 +2371,7 @@ next
     show ?case unfolding M'_def by (rule MDP.MC.T.prob_space_distr, simp)
   next
     case 5
-    have *: "smap absc \<circ> op ## (repc' cfg') = op ## cfg' \<circ> smap absc"
+    have *: "smap absc \<circ> (##) (repc' cfg') = (##) cfg' \<circ> smap absc"
     if "cfg' \<in> set_pmf (K_cfg cfg)" for cfg'
     proof -
       from K_cfg_rept_action[OF prems that] have
@@ -2376,7 +2380,7 @@ next
       with prems that have *:
         "absc (repc' cfg') = cfg'"
       unfolding repc'_def by (subst absc_repcs_id, auto)
-      then show "(smap absc \<circ> op ## (repc' cfg')) = (op ## cfg' \<circ> smap absc)" by auto
+      then show "(smap absc \<circ> (##) (repc' cfg')) = ((##) cfg' \<circ> smap absc)" by auto
     qed
     from prems show ?case unfolding M'_def
       apply (subst distr_distr)
@@ -2468,9 +2472,9 @@ lemma path_measure_eq_absc1_new:
   shows
     "emeasure (R_G.T cfg') X = emeasure (MDP.T cfg) Y"
 proof -
-  have *: "stream_all2 (\<lambda>s. op = (absc s)) x y = stream_all2 (op =) (smap absc x) y" for x y
+  have *: "stream_all2 (\<lambda>s. (=) (absc s)) x y = stream_all2 (=) (smap absc x) y" for x y
     by simp
-  have *: "stream_all2 (\<lambda>s t. t = absc s) x y = stream_all2 (op =) y (smap absc x)" for x y
+  have *: "stream_all2 (\<lambda>s t. t = absc s) x y = stream_all2 (=) y (smap absc x)" for x y
     using stream.rel_conversep[of "\<lambda>s t. t = absc s"]
     by (simp add: conversep_iff[abs_def])
 
@@ -2524,7 +2528,7 @@ lemma path_measure_eq_repcs1_new:
   shows
     "emeasure (R_G.T cfg) X = emeasure (MDP.T cfg') Y"
 proof -
-  have *: "stream_all2 (\<lambda>s t. t = absc s) x y = stream_all2 (op =) y (smap absc x)" for x y
+  have *: "stream_all2 (\<lambda>s t. t = absc s) x y = stream_all2 (=) y (smap absc x)" for x y
     using stream.rel_conversep[of "\<lambda>s t. t = absc s"]
     by (simp add: conversep_iff[abs_def])
   from P X have

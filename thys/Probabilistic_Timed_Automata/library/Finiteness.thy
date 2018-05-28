@@ -1,5 +1,5 @@
 theory Finiteness
-  imports Main "~~/src/HOL/Eisbach/Eisbach_Tools"
+  imports Main "HOL-Eisbach.Eisbach_Tools"
 begin
 
 section \<open>Two Eisbach proof methods for finiteness of sets\<close>

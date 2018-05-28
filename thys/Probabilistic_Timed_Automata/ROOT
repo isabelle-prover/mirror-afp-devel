@@ -4,6 +4,7 @@ session PTA_library (AFP) = "Markov_Models" +
   options [ timeout = 600, document = false ]
   sessions
     "Timed_Automata"
+    "HOL-Eisbach"
   theories
     "library/Lib"
 

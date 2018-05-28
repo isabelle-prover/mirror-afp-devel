@@ -443,7 +443,7 @@ proof -
   also have "\<dots> = dur xs i"
     using assms
     by (rewrite in "dur (sdrop _ _) _" dur_zero[where \<omega> = "sdrop i \<omega>"])
-       (auto dest: prop_nth_sdrop_pair[of eq_elapsed] prop_nth_sdrop prop_nth_sdrop_pair[of "op \<in>"])
+       (auto dest: prop_nth_sdrop_pair[of eq_elapsed] prop_nth_sdrop prop_nth_sdrop_pair[of "(\<in>)"])
   finally show ?thesis .
 qed
 
@@ -1681,7 +1681,7 @@ lemma AE_alw_ev_same_loc_iff:
   proof -
     show ?thesis (is "(?x = 1) = (?y = 1)")
     proof -
-      have *: "stream_all2 (\<lambda>s t. t = absc s) x y = stream_all2 (op =) y (smap absc x)" for x y
+      have *: "stream_all2 (\<lambda>s t. t = absc s) x y = stream_all2 (=) y (smap absc x)" for x y
         by (subst stream_all2_flip) simp
       have "?x = ?y"
         apply (rule T_eq_rel_half[where f = absc and S = valid_cfg, OF HOL.refl, rotated 2])
@@ -1949,7 +1949,7 @@ proof -
     "AE \<omega> in MDP.MC.T ?cfg. \<forall>u. (\<forall>c\<in>\<X>. real (k c) < u c) \<longrightarrow>
                           \<not> ev (alw (\<lambda>xs. shd xs = u)) (smap (snd \<circ> state) \<omega>)"
     by (rule repcs_unbounded_AE_non_loop_end_strong)
-  -- "Move to lower level"
+  \<comment> \<open>Move to lower level\<close>
   moreover from *(2,3) have "AE \<omega> in MDP.MC.T ?cfg. \<R>_div (smap (snd \<circ> state) (smap absc \<omega>))"
     unfolding R_G_div_cfg_def
     by (subst (asm) R_G_trace_space_distr_eq[OF \<open>cfg \<in> R_G.valid_cfg\<close>]; simp add: AE_distr_iff)
