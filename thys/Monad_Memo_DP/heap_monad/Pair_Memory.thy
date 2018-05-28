@@ -248,7 +248,7 @@ lemma mem_correct_pair:
   "mem_correct lookup_pair update_pair inv_pair"
   if injective: "\<forall> k k'. key1 k = key1 k' \<and> key2 k = key2 k' \<longrightarrow> k = k'"
 proof (standard, goal_cases)
-  case (1 k) -- "Lookup invariant"
+  case (1 k) \<comment> \<open>Lookup invariant\<close>
   show ?case
     unfolding lookup_pair_def Let_def
     by (auto 4 4
@@ -258,7 +258,7 @@ proof (standard, goal_cases)
         split: if_split_asm prod.split_asm
         )
 next
-  case (2 k v) -- "Update invariant"
+  case (2 k v) \<comment> \<open>Update invariant\<close>
   show ?case
     unfolding update_pair_def Let_def
     apply (auto 4 4
@@ -517,7 +517,7 @@ lemma inv_pair_domD[intro]:
 lemma mem_correct_pair:
   "mem_correct lookup_pair update_pair inv_pair"
 proof (standard, goal_cases)
-  case (1 k) -- "Lookup invariant"
+  case (1 k) \<comment> \<open>Lookup invariant\<close>
   with lookup_inv[of k] show ?case
     unfolding lookup_pair_def Let_def
     by (auto intro!: lift_pI split: pair_storage.split_asm if_split_asm prod.split_asm)
@@ -525,7 +525,7 @@ proof (standard, goal_cases)
          (force dest!: lookup_correct[of _ k] map_le_implies_dom_le)+
        )
 next
-  case (2 k v) -- "Update invariant"
+  case (2 k v) \<comment> \<open>Update invariant\<close>
   with update_inv[of k v] update_correct[OF P_empty, of k v] P_empty show ?case
     unfolding update_pair_def Let_def
     by (auto intro!: lift_pI split: pair_storage.split_asm if_split_asm prod.split_asm)

@@ -159,8 +159,8 @@ lemma dp_consistency_iterator_emptyI:
      )
 
 context
-  fixes m :: nat -- "Width of a row"
-    and n :: nat -- "Number of rows"
+  fixes m :: nat \<comment> \<open>Width of a row\<close>
+    and n :: nat \<comment> \<open>Number of rows\<close>
 begin
 
 lemma table_iterator_up:

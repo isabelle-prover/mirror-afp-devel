@@ -260,7 +260,7 @@ thm index_locale_axioms
 definition [simp]: "less_eq_nat \<equiv> (\<le>) :: nat \<Rightarrow> nat \<Rightarrow> bool"
 definition [simp]: "less_nat \<equiv> (<) :: nat \<Rightarrow> nat \<Rightarrow> bool"
 definition [simp]: "idx_nat \<equiv> idx"
-definition [simp]: "size_nat \<equiv> size"
+definition size_nat where [simp]: "size_nat \<equiv> size"
 
 instance by (standard, simp, fact index_locale_axioms)
 

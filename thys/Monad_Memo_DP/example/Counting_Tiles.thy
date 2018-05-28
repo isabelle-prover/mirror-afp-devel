@@ -382,7 +382,7 @@ value "lcount 50 150"
 value "lcount 50 163"
 value "lcount 50 166"
 value "lcount 50 167"
-value "lcount 50 168" -- \<open>The solution\<close>
+value "lcount 50 168" \<comment> \<open>The solution\<close>
 value "lcount 50 169"
 value "lcount 50 175"
 value "lcount 50 200"

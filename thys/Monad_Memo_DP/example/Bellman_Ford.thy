@@ -47,7 +47,7 @@ context
 begin
 
 context
-  fixes t :: nat -- "Final node"
+  fixes t :: nat \<comment> \<open>Final node\<close>
 begin
 
 text \<open>

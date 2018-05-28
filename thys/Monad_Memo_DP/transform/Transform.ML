@@ -2,7 +2,7 @@ structure Transform_DP = struct
 
 fun dp_interpretation standard_proof locale_name instance qualifier dp_term lthy =
   lthy
-  |> Interpretation.isar_interpretation ([(locale_name, ((qualifier, true), Expression.Named (("dp", dp_term) :: instance)))], []) []
+  |> Interpretation.isar_interpretation ([(locale_name, ((qualifier, true), (Expression.Named (("dp", dp_term) :: instance), [])))], [])
   |> (if standard_proof then Proof.global_default_proof else Proof.global_immediate_proof)
 
 fun prep_params (((scope, tm_str), def_thms_opt), mem_locale_opt) lthy =
