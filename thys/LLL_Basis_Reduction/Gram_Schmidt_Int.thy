@@ -91,7 +91,7 @@ proof -
   have fi: "fs ! i \<in> carrier_vec n" using assms by auto
   have "\<beta> i = gso fs i \<bullet> gso fs i"
     unfolding \<beta>_def
-    using assms assm by (auto simp add: Gramian_determinant_div sq_norm_vec_as_cscalar_prod)
+    using assms assm dist by (auto simp add: Gramian_determinant_div sq_norm_vec_as_cscalar_prod)
   also have "\<dots> = (fs ! i + ?S) \<bullet> (fs ! i + ?S)"
     by (subst gso.simps, subst (2) gso.simps) auto
   also have "\<dots> = fs ! i \<bullet> fs ! i + ?S \<bullet> fs ! i + fs ! i \<bullet> ?S + ?S \<bullet> ?S"
@@ -106,14 +106,14 @@ proof -
       using assms S by (auto simp add: minus_scalar_prod_distrib[of _ n] scalar_prod_minus_distrib[of _ n])
   qed
   also have "?S \<bullet> gso fs i = 0"
-    using assms orthogonal[OF assm]
+    using assms orthogonal[OF fs_carrier len_fs dist]
     by(subst scalar_prod_left_sum_distrib)
       (auto intro!: sum_list_neutral M.sumlist_carrier gso_carrier)
   also have "?S \<bullet> ?S = (\<Sum>j = 0..<i. (\<mu> fs i j)\<^sup>2 * (gso fs j \<bullet> gso fs j))"
-    using assms assm by (subst scalar_prod_lincomb_gso)
+    using assms assm dist by (subst scalar_prod_lincomb_gso)
        (auto simp add: power2_eq_square interv_sum_list_conv_sum_set_nat)
   also have "\<dots> =  (\<Sum>j = 0..<i. (\<mu> fs i j)\<^sup>2 * \<beta> j)"
-    using assms assm
+    using assms assm dist
     by (auto simp add: \<beta>_def Gramian_determinant_div sq_norm_vec_as_cscalar_prod
         intro!: sum.cong)
   finally show ?thesis
@@ -124,7 +124,7 @@ lemma gso_norm_beta:
   assumes "j < m"
   shows "\<beta> j = sq_norm (gso fs j)"
   unfolding \<beta>_def
-  using assms assm by (auto simp add: Gramian_determinant_div sq_norm_vec_as_cscalar_prod)
+  using assms assm dist by (auto simp add: Gramian_determinant_div sq_norm_vec_as_cscalar_prod)
 
 lemma mu_Gramian_beta_def:
   assumes "j < i" "i < m"
@@ -145,7 +145,7 @@ proof -
     using assms unfolding fi_def
     by (subst scalar_prod_add_distrib [of _ n]) (auto intro!: M.sumlist_carrier gso_carrier)
   also have "fs ! i = gso fs i + M.sumlist ?list "
-    by (rule fs_by_gso_def[OF indep len_fs assms(2)])
+    by (rule fs_by_gso_def[OF fs_carrier len_fs assms(2)])
   also have "... \<bullet> ?neg_sum = gso fs i \<bullet> ?neg_sum + M.sumlist ?list \<bullet> ?neg_sum"
     using assms by (subst add_scalar_prod_distrib [of _ n]) (auto intro!: M.sumlist_carrier gso_carrier)
   also have " M.sumlist ?list = M.sumlist (map (\<lambda>ja. \<mu> fs i ja \<cdot>\<^sub>v gso fs ja) [0..<j]) 
@@ -153,13 +153,13 @@ proof -
     unfolding list_id
     by (subst M.sumlist_append[symmetric], insert gso_carrier assms, auto)
   also have "gso fs i \<bullet> ?neg_sum = 0"
-    by (rule orthogonal_sumlist, insert gso_carrier assms assm orthogonal, auto)
+    by (rule orthogonal_sumlist, insert gso_carrier dist assms assm orthogonal, auto)
   also have " (?sumj + ?sumi) \<bullet> ?neg_sum = ?sumj \<bullet> ?neg_sum + ?sumi \<bullet> ?neg_sum"
     using assms
     by (subst add_scalar_prod_distrib [of _ n], auto intro!: M.sumlist_carrier gso_carrier)
   also have " ?sumj \<bullet> ?neg_sum = (\<Sum>l = 0..<j. (\<mu> fs i l) * (-\<mu> fs j l) * (gso fs l \<bullet> gso fs l)) "
-    using assms scalar_prod_lincomb_gso
-    by (subst scalar_prod_lincomb_gso[OF indep len_fs]) (auto simp add: interv_sum_list_conv_sum_set_nat)
+    using assms scalar_prod_lincomb_gso dist
+    by (subst scalar_prod_lincomb_gso[OF fs_carrier len_fs]) (auto simp add: interv_sum_list_conv_sum_set_nat)
   also have "\<dots> = - (\<Sum>l = 0..<j. (\<mu> fs i l) * (\<mu> fs j l) * (gso fs l \<bullet> gso fs l)) " (is "_ = - ?sum")
     by (auto simp add: sum_negf)
   also have "?sum = (\<Sum>l = 0..<j. (\<mu> fs j l) * (\<mu> fs i l) * \<beta> l)" 
@@ -168,7 +168,7 @@ proof -
   also have "?sumi \<bullet> ?neg_sum = 0"
     apply (rule orthogonal_sumlist, insert gso_carrier assms orthogonal, auto intro!: M.sumlist_carrier gso_carrier)
     apply (subst comm_scalar_prod[of _ n], auto intro!: M.sumlist_carrier)
-    by (rule orthogonal_sumlist, use assm in auto)
+    by (rule orthogonal_sumlist, use dist assm in auto)
   also have "sq_norm (gso fs j) = \<beta> j"
     using assms assm
     by (subst gso_norm_beta, auto)
@@ -239,7 +239,7 @@ proof (induct l)
   from Suc(2-) have lj: "l \<le> m" by auto
   note IH = Suc(1)[OF lj]
   let ?f = "\<lambda> k. \<mu> fs i k * \<mu> fs j k * \<beta> fs k" 
-  have dl0: "d l > 0" using lj Gramian_determinant[OF indpt len] using lj by auto
+  have dl0: "d l > 0" using lj Gramian_determinant dist indpt len unfolding lin_indpt_list_def  by auto
   have "\<sigma> (Suc l) i j = (d (Suc l) * \<sigma> l i j + \<mu>' i l * \<mu>' j l) / d l" by simp
   also have "\<dots> = (d (Suc l) * \<sigma> l i j) / d l + (\<mu>' i l * \<mu>' j l) / d l" using dl0 
     by (simp add: field_simps)
@@ -256,7 +256,8 @@ lemma \<mu>': assumes j: "j \<le> i" and i: "i < m"
   shows "\<mu>' i j = d j * (fs ! i \<bullet> fs ! j) - \<sigma> j i j" 
 proof (cases "j < i")
   case j: True
-  have dsj: "d (Suc j) > 0" using j i Gramian_determinant[OF indpt len] by auto
+  have dsj: "d (Suc j) > 0"
+    using j i Gramian_determinant dist indpt len unfolding lin_indpt_list_def  by auto
   let ?sum = " (\<Sum>k = 0..<j. \<mu> fs j k * \<mu> fs i k * \<beta> fs k)" 
   have "\<mu>' i j = (fs ! i \<bullet> fs ! j - ?sum) * (d (Suc j) / \<beta> fs j)"     
     unfolding mu_Gramian_beta_def[OF indpt len j i] \<mu>'_def by simp
@@ -269,7 +270,8 @@ proof (cases "j < i")
 next
   case False
   with j have j: "j = i" by auto
-  have dsi: "d (Suc i) > 0" "d i > 0" using i i Gramian_determinant[OF indpt len] by auto
+  have dsi: "d (Suc i) > 0" "d i > 0"
+    using i Gramian_determinant dist indpt len unfolding lin_indpt_list_def  by auto
   let ?sum = " (\<Sum>k = 0..<i. \<mu> fs i k * \<mu> fs i k * \<beta> fs k)" 
   have bzero: "\<beta> fs i \<noteq> 0" unfolding \<beta>_def using dsi by auto
   have "\<mu>' i i = d (Suc i)" by (simp add: \<mu>.simps \<mu>'_def)
@@ -402,7 +404,7 @@ proof -
                 M.sumlist (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [l..<Suc i])"
     by simp
   moreover have "\<dots> \<bullet> (fs ! j) = 0"
-    using assms gso_carrier indpt len assms 
+    using assms gso_carrier indpt len assms unfolding lin_indpt_list_def
     by (subst scalar_prod_left_sum_distrib)
        (auto simp add: algebra_simps dim_sumlist gso_scalar_zero intro!: sum_list_zero)
   ultimately show ?thesis using assms by auto
@@ -478,8 +480,8 @@ proof -
     have *: "t<l \<Longrightarrow> (?A *\<^sub>v vec l (\<kappa> i l)) $ t \<in> \<int>" for t
       using assms
       apply(subst Gramian_matrix_times_\<kappa>, force, force)
-      using fs_int 
-      by (auto intro!: fs_scalar_Ints[OF indpt len] Ints_minus)
+      using fs_int fs_carrier[OF indpt]
+      by (auto intro!: fs_scalar_Ints[OF _ len] Ints_minus)
 
     define B where "B = ?B"
 
@@ -507,7 +509,7 @@ proof -
 qed
 
 lemma \<beta>_pos : "i < m \<Longrightarrow> \<beta> fs i > 0" 
-  using Gramian_determinant(2)[OF indpt len] unfolding \<beta>_def by auto
+  using Gramian_determinant(2)[OF _ len] using indpt unfolding lin_indpt_list_def \<beta>_def by auto
 
 lemma \<beta>_zero : "i < m \<Longrightarrow> \<beta> fs i \<noteq> 0" 
   using \<beta>_pos[of i] by simp
