@@ -1,3 +1,7 @@
+(*
+  Title:      Singleton.thy
+  Author:     Diego Marmsoler
+*)
 section "A Theory of Singletons"
 text{*
   In the following, we formalize the specification of the singleton pattern as described in~\cite{Marmsoler2018c}.
@@ -55,7 +59,7 @@ qed
   
 lemma lNact_active[simp]:
   fixes cid t n
-  shows "\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n\<^esub> = n"
+  shows "\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> = n"
   using lNact_active the_active by auto
 
 lemma lNxt_active[simp]:
@@ -80,11 +84,11 @@ lemma evtE[elim]:
 proof -
   have "\<parallel>the_singleton\<parallel>\<^bsub>t n\<^esub>" by simp
   with assms obtain n' where "n'\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" and "(\<exists>i\<ge>n'. \<parallel>the_singleton\<parallel>\<^bsub>t i\<^esub> \<and>
-    (\<forall>n''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>)) \<or>
+    (\<forall>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>)) \<or>
     \<not> (\<exists>i\<ge>n'. \<parallel>the_singleton\<parallel>\<^bsub>t i\<^esub>) \<and> eval the_singleton t t' n' \<gamma>" using evtEA[of n "the_singleton" t] by blast
   moreover have "\<parallel>the_singleton\<parallel>\<^bsub>t n'\<^esub>" by simp
   ultimately have
-    "\<forall>n''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>" by auto
+    "\<forall>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>" by auto
   hence "eval the_singleton t t' n' \<gamma>" by simp
   moreover from `n'\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>` have "n'\<ge>n" by (simp add: nxtAct_active)
   ultimately show ?thesis by auto
@@ -98,7 +102,7 @@ proof
   fix n' show "n \<le> n' \<longrightarrow> eval the_singleton t t' n' \<gamma>"
   proof
     assume "n\<le>n'"
-    hence "\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" by simp
+    hence "\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" by simp
     moreover have "\<parallel>the_singleton\<parallel>\<^bsub>t n\<^esub>" by simp
     ultimately show "eval the_singleton t t' n' \<gamma>"
       using `eval the_singleton t t' n (glob \<gamma>)` globEA by blast
@@ -116,17 +120,17 @@ lemma untilI[intro]:
   shows "eval the_singleton t t' n (\<gamma>' \<UU> \<gamma>)"
 proof -
   have "\<parallel>the_singleton\<parallel>\<^bsub>t n\<^esub>" by simp 
-  moreover from `n'\<ge>n` have "\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" by simp
+  moreover from `n'\<ge>n` have "\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" by simp
   moreover have "\<parallel>the_singleton\<parallel>\<^bsub>t n'\<^esub>" by simp
   moreover have
-    "\<exists>n''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<and> eval the_singleton t t' n'' \<gamma> \<and>
-    (\<forall>n'''\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. n''' < \<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n''\<^esub> \<longrightarrow>
-      (\<exists>n''''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'''\<^esub>. n'''' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'''\<^esub> \<and> eval the_singleton t t' n'''' \<gamma>'))"
+    "\<exists>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<and> eval the_singleton t t' n'' \<gamma> \<and>
+    (\<forall>n'''\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. n''' < \<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n''\<^esub> \<longrightarrow>
+      (\<exists>n''''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'''\<^esub>. n'''' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'''\<^esub> \<and> eval the_singleton t t' n'''' \<gamma>'))"
   proof -
-    have "n'\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>" by simp
+    have "n'\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>" by simp
     moreover have "n' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub>" by simp
-    moreover from assms(3) have "(\<forall>n''\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < \<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow>
-      (\<exists>n'''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n''\<^esub>. n''' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n''\<^esub> \<and> eval the_singleton t t' n''' \<gamma>'))"
+    moreover from assms(3) have "(\<forall>n''\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < \<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow>
+      (\<exists>n'''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n''\<^esub>. n''' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n''\<^esub> \<and> eval the_singleton t t' n''' \<gamma>'))"
       by auto
     ultimately show ?thesis using `eval the_singleton t t' n' \<gamma>` by auto
   qed
@@ -141,15 +145,15 @@ proof -
   have "\<parallel>the_singleton\<parallel>\<^bsub>t n\<^esub>" by simp
   with `eval the_singleton t t' n (until \<gamma>' \<gamma>)` obtain n' where "n'\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" and
    "(\<exists>i\<ge>n'. \<parallel>the_singleton\<parallel>\<^bsub>t i\<^esub>) \<and>
-   (\<forall>n''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>) \<and>
-   (\<forall>n''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < \<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>') \<or>
+   (\<forall>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>) \<and>
+   (\<forall>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < \<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>') \<or>
    \<not> (\<exists>i\<ge>n'. \<parallel>the_singleton\<parallel>\<^bsub>t i\<^esub>) \<and>
-   eval the_singleton t t' n' \<gamma> \<and> (\<forall>n''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < n' \<longrightarrow> eval the_singleton t t' n'' \<gamma>')"
+   eval the_singleton t t' n' \<gamma> \<and> (\<forall>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < n' \<longrightarrow> eval the_singleton t t' n'' \<gamma>')"
   using untilEA[of n "the_singleton" t t' \<gamma>' \<gamma>] by auto
   moreover have "\<parallel>the_singleton\<parallel>\<^bsub>t n'\<^esub>" by simp
   ultimately have
-    "(\<forall>n''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>) \<and>
-    (\<forall>n''\<ge>\<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < \<langle>the_singleton \<leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>')" by auto
+    "(\<forall>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>) \<and>
+    (\<forall>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < \<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>')" by auto
   hence "eval the_singleton t t' n' \<gamma>" and "(\<forall>n''\<ge>n. n'' < n' \<longrightarrow> eval the_singleton t t' n'' \<gamma>')" by auto
   with `eval the_singleton t t' n' \<gamma>` `n'\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>` show ?thesis by auto
 qed

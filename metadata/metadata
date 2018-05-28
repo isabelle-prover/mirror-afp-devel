@@ -5253,7 +5253,10 @@ extra-history =
         Change history:
         [2017-10-18]:
         added Perron-Frobenius theorem for irreducible matrices with generalization 
-        (revision bda1f1ce8a1c)
+        (revision bda1f1ce8a1c)<br/>
+        [2018-05-17]:
+        prove conjecture of CPP'18 paper: Jordan blocks of spectral radius have maximum size
+        (revision ffdb3794e5d5)
 
 [Stochastic_Matrices]
 title = Stochastic Matrices and the Perron-Frobenius Theorem
@@ -6732,10 +6735,10 @@ abstract =
 
 [LLL_Basis_Reduction]
 title = A verified LLL algorithm
-author = Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
+author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
 topic = Computer Science/Algorithms, Mathematics/Algebra
 date = 2018-02-02
-notify = jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
+notify = ralph@bottesch.uibk.ac.at, jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
 abstract =
   The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
   LLL algorithm, is an algorithm to find a basis with short, nearly
@@ -6752,7 +6755,8 @@ abstract =
   textbook by von zur Gathen and Gerhard.
 extra-history =
         Change history:
-        [2018-04-16]: Haslbeck integrated formal complexity bounds and was therefore added as author
+        [2018-04-16]: Integrated formal complexity bounds (Haslbeck, Thiemann)
+        [2018-05-25]: Integrated much faster LLL implementation based on integer arithmetic (Bottesch, Haslbeck, Thiemann) 
 
 [LLL_Factorization]
 title = A verified factorization algorithm for integer polynomials with polynomial complexity
