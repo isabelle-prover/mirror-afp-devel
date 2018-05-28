@@ -2,11 +2,12 @@ theory Tracing
   imports
     "../heap_monad/Heap_Main"
     "HOL-Library.Code_Target_Numeral"
+    Show.Show_Instances
 begin
 
 text \<open>NB:
-  There is also the more complete entry \<^url>\<open>https://www.isa-afp.org/entries/Show.html\<close>,
-  but we avoid the dependency of the AFP here.
+  A more complete solution could be built by using the following entry:
+  \<^url>\<open>https://www.isa-afp.org/entries/Show.html\<close>.
 \<close>
 
 definition writeln :: "String.literal \<Rightarrow> unit" where
@@ -42,16 +43,13 @@ lemma (in heap_mem_defs) checkmem_checkmem_trace:
   "checkmem param calc = checkmem_trace trace_key param (\<lambda>_. calc)"
   unfolding checkmem_trace_def checkmem_def trace_alt_def ..
 
-fun nat_to_string :: "nat \<Rightarrow> String.literal" where
-  "nat_to_string 0 = STR ''''" |
-  "nat_to_string (Suc i) = STR ''I'' + nat_to_string i"
+definition nat_to_string :: "nat \<Rightarrow> String.literal" where
+  "nat_to_string x = String.implode (show x)"
 
 definition nat_pair_to_string :: "nat \<times> nat \<Rightarrow> String.literal" where
-  "nat_pair_to_string = (\<lambda> (m, n).
-    STR ''('' + nat_to_string m + STR '', '' + nat_to_string n + STR '')'')"
+  "nat_pair_to_string x = String.implode (show x)"
 
-code_printing
-  constant nat_to_string \<rightharpoonup> (SML) "Int.toString (case _ of Nat x => x)"
+value "show (3 :: nat)"
 
 paragraph \<open>Code Setup\<close>
 
