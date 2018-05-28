@@ -972,6 +972,22 @@ proof-
   from vs_zero_lin_dep[OF _ this] assms[unfolded lin_indpt_list_def] show zero: "0\<^sub>v n \<notin> set G" by auto
 qed
 
+lemma is_oc_projection_eq:
+  assumes ispr:"is_oc_projection a S v" "is_oc_projection b S v" 
+    and carr: "S \<subseteq> carrier_vec n" "v \<in> carrier_vec n"
+  shows "a = b"
+proof -
+  from carr have c2:"span S \<subseteq> carrier_vec n" "v \<in> carrier_vec n" by auto
+  have a:"v - (v - a) = a" using carr ispr by auto
+  have b:"v - (v - b) = b" using carr ispr by auto
+  have "(v - a) = (v - b)" 
+    apply(rule oc_projection_alt_def[OF c2])
+    using ispr a b unfolding in_orthogonal_complement_span[OF carr(1)]
+    unfolding orthogonal_complement_def is_oc_projection_def by auto
+  hence "v - (v - a) = v - (v - b)" by metis
+  thus ?thesis unfolding a b.
+qed
+
 
 context
   fixes fs :: "'a vec list" 
@@ -1144,17 +1160,10 @@ begin
 definition M where "M \<equiv> mat m m (\<lambda> (i,j). \<mu> i j)"
 
 context
-  assumes indep: "lin_indpt_list fs"
+  assumes fs_carrier[simp]: "set fs \<subseteq> carrier_vec n "
    and len_fs: "length fs = m" 
 begin
 
-lemma fs_carrier[simp]: "set fs \<subseteq> carrier_vec n" 
-  and dist: "distinct fs"
-  and lin_indpt: "lin_indpt (set fs)" 
-  using indep[unfolded lin_indpt_list_def] by auto
-
-lemmas assm = len_fs fs_carrier
-  
 lemma f_carrier[simp]: "i < m \<Longrightarrow> fs ! i \<in> carrier_vec n" 
   using fs_carrier len_fs unfolding set_conv_nth by force
 
@@ -1163,16 +1172,6 @@ lemma gso_carrier[simp]: "i < m \<Longrightarrow> gso i \<in> carrier_vec n"
 
 lemma gso_dim[simp]: "i < m \<Longrightarrow> dim_vec (gso i) = n" by auto
 lemma f_dim[simp]: "i < m \<Longrightarrow> dim_vec (fs ! i) = n" by auto
-
-lemma mn: "m \<le> n" 
-proof -
-  have n: "n = dim" by (simp add: dim_is_n)
-  have m: "m = card (set fs)" unfolding len_fs[symmetric] 
-    using distinct_card[OF dist] by simp
-  from m n have mn: "m \<le> n \<longleftrightarrow> card (set fs) \<le> dim" by simp
-  show ?thesis unfolding mn
-    by (rule li_le_dim[OF _ fs_carrier lin_indpt], simp)
-qed
 
 lemma fs_by_gso_def : 
 assumes i: "i < m"
@@ -1198,23 +1197,39 @@ proof -
   finally show ?thesis by auto
 qed
 
-lemma main_connect: 
-  "gram_schmidt n fs = map gso [0..<m]"
+
+lemma mn: 
+  assumes "lin_indpt (set fs)" "distinct fs"
+  shows "m \<le> n"
+proof -
+  have n: "n = dim" by (simp add: dim_is_n)
+  have m: "m = card (set fs)" unfolding len_fs[symmetric] 
+    using distinct_card assms by metis
+  from m n have mn: "m \<le> n \<longleftrightarrow> card (set fs) \<le> dim" by simp
+  show ?thesis unfolding mn
+    by (rule li_le_dim, use assms in auto)
+qed
+
+lemma main_connect:
+  assumes "m \<le> n"
+  shows "gram_schmidt n fs = map gso [0..<m]"
 proof -
   obtain vs where snd_main: "snd (main fs) = vs" by auto
   have "gram_schmidt_sub2 n [] fs = snd (sub2_wit [] fs) \<and> snd (sub2_wit [] fs) = map gso [0..<length fs]
         \<and> wits = map (\<lambda>i. map (\<mu> i) [0..<i]) [0..<length fs]" 
     if "wits = fst (sub2_wit [] fs)" for wits
-    using len_fs mn that by (intro  sub2_wit) (auto simp add: map_nth) 
+    using len_fs assms that by (intro  sub2_wit) (auto simp add: map_nth) 
   then have "gram_schmidt_sub2 n [] fs = vs \<and> vs = map gso [0..<m]"
-    using assm snd_main main_def by auto
+    using len_fs snd_main main_def by auto
   thus "gram_schmidt n fs = map gso [0..<m]" by (auto simp: gram_schmidt_code)
 qed
 
-lemma span_gso: "span (gso ` {0..<m}) = span (set fs)" 
+lemma
+  assumes "distinct fs" "lin_indpt (set fs)"
+shows span_gso: "span (gso ` {0..<m}) = span (set fs)"
   and orthogonal_gso: "orthogonal (map gso [0..<m])" 
-  and dist_gso: "distinct (map gso [0..<m])" 
-  using gram_schmidt_result[OF fs_carrier dist lin_indpt main_connect[symmetric]] by auto  
+  and dist_gso: "distinct (map gso [0..<m])"
+  using gram_schmidt_result[OF fs_carrier _ _ main_connect[symmetric]] assms mn by auto
 
 lemma reduced_gso_E: "weakly_reduced \<alpha> k (map gso [0..<m]) \<Longrightarrow> k \<le> m \<Longrightarrow> Suc i < k \<Longrightarrow> 
   sq_norm (gso i) \<le> \<alpha> * sq_norm (gso (Suc i))" 
@@ -1224,15 +1239,15 @@ abbreviation (input) FF where "FF \<equiv> mat_of_rows n fs"
 abbreviation (input) Fs where "Fs \<equiv> mat_of_rows n (map gso [0..<m])" 
   
 lemma FF_dim[simp]: "dim_row FF = m" "dim_col FF = n" "FF \<in> carrier_mat m n" 
-  unfolding mat_of_rows_def by (auto simp: assm len_fs)
+  unfolding mat_of_rows_def by (auto simp: len_fs)
 
 lemma Fs_dim[simp]: "dim_row Fs = m" "dim_col Fs = n" "Fs \<in> carrier_mat m n" 
-  unfolding mat_of_rows_def by (auto simp: assm main_connect)
+  unfolding mat_of_rows_def by (auto simp: len_fs main_connect)
 
 lemma M_dim[simp]: "dim_row M = m" "dim_col M = m" "M \<in> carrier_mat m m" unfolding M_def by auto
     
 lemma FF_index[simp]: "i < m \<Longrightarrow> j < n \<Longrightarrow> FF $$ (i,j) = fs ! i $ j" 
-  unfolding mat_of_rows_def using assm by auto
+  unfolding mat_of_rows_def using len_fs by auto
 
 lemma M_index[simp]:"i < m \<Longrightarrow> j < m \<Longrightarrow> M $$ (i,j) = \<mu> i j"
   unfolding M_def by auto
@@ -1243,7 +1258,7 @@ proof -
   let ?P = "M * Fs" 
   have dim: "dim_row FF = m" "dim_col FF = n" "dim_row ?P = m" "dim_col ?P = n" "dim_row M = m" "dim_col M = m" 
       "dim_row Fs = m" "dim_col Fs = n" 
-    by (auto simp: assm mat_of_rows_def mat_of_rows_list_def main_connect len_fs)
+    by (auto simp: len_fs mat_of_rows_def mat_of_rows_list_def main_connect len_fs)
   show ?thesis 
   proof (rule eq_matI; unfold dim)
     fix i j
@@ -1313,7 +1328,8 @@ proof -
   qed simp
 qed
 
-lemma gi_is_fi_minus_sum_mu_gso: assumes i: "i < m" 
+lemma gi_is_fi_minus_sum_mu_gso:
+  assumes i: "i < m" 
   shows "gso i = fs ! i - sumlist (map (\<lambda> j. \<mu> i j \<cdot>\<^sub>v gso j) [0 ..< i])" (is "_ = _ - ?sum")
 proof -
   have sum: "?sum \<in> carrier_vec n" 
@@ -1323,15 +1339,20 @@ proof -
 qed
 
 lemma gso_inj[intro]:
-  shows "i < m \<Longrightarrow> inj_on gso {0..<i}"
-proof
-  fix x y assume assms:"i < m" "x \<in> {0..<i}" "y \<in> {0..<i}" "gso x = gso y"
+  assumes "distinct fs" "lin_indpt (set fs)" "i < m"
+  shows "inj_on gso {0..<i}"
+proof -
+  { fix x y assume assms': "i < m" "x \<in> {0..<i}" "y \<in> {0..<i}" "gso x = gso y"
   have "distinct (map gso [0..<m])" "x < length (map gso [0..<m])" "y < length (map gso [0..<m])" 
-    using dist_gso assm assms by auto
-  from nth_eq_iff_index_eq[OF this] assms show "x = y" by auto
+    using dist_gso assms mn assms' by (auto intro!: dist_gso)
+  from nth_eq_iff_index_eq[OF this] assms' have "x = y" by auto }
+  then show ?thesis
+    using assms by (intro inj_onI) auto
 qed
 
-lemma partial_span: assumes i: "i \<le> m" shows "span (gso ` {0 ..< i}) = span (set (take i fs))" 
+lemma partial_span:
+  assumes dist: "distinct fs" and lin_indpt: "lin_indpt (set fs)" and i: "i \<le> m" 
+  shows "span (gso ` {0 ..< i}) = span (set (take i fs))" 
 proof -
   let ?f = "\<lambda> i. fs ! i" 
   let ?us = "take i fs" 
@@ -1343,14 +1364,16 @@ proof -
   from lin_indpt have indpt: "lin_indpt (set ?us)" 
     using supset_ld_is_ld[of "set ?us", of "set (?us @ drop i fs)"] 
     by (auto simp: set_take_subset)
-  from partial_connect[OF len_fs i mn us main refl fs_carrier]
+  from partial_connect[OF len_fs i mn us main refl fs_carrier] assms
   have gso: "vi = gram_schmidt n ?us" and vi: "vi = map gso [0 ..< i]" by auto
   from cof_vec_space.gram_schmidt_result(1)[OF us dist indpt gso, unfolded vi]
   show ?thesis by auto
 qed
 
-lemma partial_span': assumes i: "i \<le> m" shows "span (gso ` {0 ..< i}) = span ((\<lambda> j. fs ! j) ` {0 ..< i})" 
-  unfolding partial_span[OF i]
+lemma partial_span': 
+  assumes dist: "distinct fs" and lin_indpt: "lin_indpt (set fs)" and i: "i \<le> m" 
+  shows "span (gso ` {0 ..< i}) = span ((\<lambda> j. fs ! j) ` {0 ..< i})"
+  unfolding partial_span[OF assms]
   by (rule arg_cong[of _ _ span], subst nth_image, insert i len_fs, auto)
 
 (* Theorem 16.5 (iv) *)  
@@ -1360,16 +1383,21 @@ lemma det: assumes m: "m = n" shows "det FF = det Fs"
   apply (subst det_lower_triangular[OF _ M_dim(3)]) 
   by (subst M_index, (auto simp: \<mu>.simps)[3], unfold prod_list_diag_prod, auto simp: \<mu>.simps) 
 
-(* Theorem 16.5 (iii) *)  
-lemma orthogonal: "i < m \<Longrightarrow> j < m \<Longrightarrow> i \<noteq> j \<Longrightarrow> gso i \<bullet> gso j = 0" 
-  using orthogonal_gso[unfolded orthogonal_def] by auto
+(* Theorem 16.5 (iii) *)
+lemma orthogonal: 
+  assumes "distinct fs" "lin_indpt (set fs)"
+  shows "i < m \<Longrightarrow> j < m \<Longrightarrow> i \<noteq> j \<Longrightarrow> gso i \<bullet> gso j = 0"
+  using assms mn orthogonal_gso[unfolded orthogonal_def] by auto
 
 (* Theorem 16.5 (i) not in full general form *)  
-lemma same_base: "span (set fs) = span (gso ` {0..<m})" 
-  using span_gso by simp
+lemma same_base:
+  assumes "distinct fs" "lin_indpt (set fs)"
+  shows "span (set fs) = span (gso ` {0..<m})" 
+  using span_gso assms by simp
 
 (* Theorem 16.5 (ii), second half *)
-lemma sq_norm_gso_le_f: assumes i: "i < m"
+lemma sq_norm_gso_le_f: assumes 
+  "distinct fs" "lin_indpt (set fs)" and i: "i < m"
   shows "sq_norm (gso i) \<le> sq_norm (fs ! i)"
 proof -
   have id: "[0 ..< Suc i] = [0 ..< i] @ [i]" by simp
@@ -1399,7 +1427,7 @@ proof -
     from j i have gsoj: "gso j \<in> carrier_vec n" by auto
     have "x = \<mu> i j * (gso j \<bullet> gso i)" using gsoi gsoj unfolding x by simp
     also have "gso j \<bullet> gso i = 0" 
-      by (rule orthogonal, insert j i, auto)
+      by (rule orthogonal, insert j i assms, auto)
     finally show "x = 0" by simp
   qed
   finally show ?thesis by simp
@@ -1407,7 +1435,7 @@ qed
 
 (* Theorem 16.5 (ii), first half *)
 lemma oc_projection_exist:
-  assumes "i < m" 
+  assumes "distinct fs" "lin_indpt (set fs)" and i: "i < m" 
   shows "fs ! i - gso i \<in> span (gso ` {0..<i})"
 proof
   let ?A = "gso ` {0..<i}"
@@ -1415,8 +1443,8 @@ proof
   have carA[intro!]:"?A \<subseteq> carrier_vec n" using gso_dim assms by auto
   let "?a v" = "\<Sum>n\<leftarrow>[0..<i]. if v = gso n then \<mu> i n else 0"
   have d:"(sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<i])) \<in> carrier_vec n"
-    using gso.simps[of i] gso_dim[OF assms] unfolding carrier_vec_def by auto
-  note [intro] = f_carrier[OF assms] gso_carrier[OF assms] d
+    using gso.simps[of i] gso_dim[OF i] unfolding carrier_vec_def by auto
+  note [intro] = f_carrier[OF i] gso_carrier[OF i] d
   have [intro!]:"(\<lambda>v. ?a v \<cdot>\<^sub>v v) \<in> gso ` {0..<i} \<rightarrow> carrier_vec n"
      using gso_carrier assms by auto
   {fix ia assume ia[intro]:"ia < n"
@@ -1448,7 +1476,7 @@ proof
 qed auto
 
 lemma oc_projection_unique:
-  assumes "i < m" 
+  assumes "distinct fs" "lin_indpt (set fs)" "i < m" 
           "v \<in> carrier_vec n"
           "\<And> x. x \<in> gso ` {0..<i} \<Longrightarrow> v \<bullet> x = 0"
           "fs ! i - v \<in> span (gso ` {0..<i})"
@@ -1457,46 +1485,47 @@ proof -
   from assms have carr_span:"span (gso ` {0..<i}) \<subseteq> carrier_vec n" by(intro span_is_subset2) auto
   from assms have carr: "gso ` {0..<i} \<subseteq> carrier_vec n" by auto
   from assms have eq:"fs ! i - (fs ! i - v) = v" for v by auto
-  from orthocompl_span[OF assms(3) carr assms(2)]
+  from orthocompl_span[OF assms(5) carr assms(4)]
   have "y \<in> span (gso ` {0..<i}) \<Longrightarrow> v \<bullet> y = 0" for y by auto
   hence oc1:"fs ! i - (fs ! i - v) \<in> orthogonal_complement (span (gso ` {0..< i}))"
     unfolding eq orthogonal_complement_def using assms by auto
   have "x \<in> gso ` {0..<i} \<Longrightarrow> gso i \<bullet> x = 0" for x using assms orthogonal by auto
   hence "y \<in> span (gso ` {0..<i}) \<Longrightarrow> gso i \<bullet> y = 0" for y
-    by (rule orthocompl_span[OF _ carr gso_carrier[OF assms(1)],rule_format])
+    by (rule orthocompl_span[OF _ carr gso_carrier[OF assms(3)],rule_format])
   hence oc2:"fs ! i - (fs ! i - gso i) \<in> orthogonal_complement (span (gso ` {0..< i}))"
     unfolding eq orthogonal_complement_def using assms by auto
   note pe= oc_projection_exist[OF assms(1)]
-  note prerec = carr_span f_carrier[OF assms(1)] assms(4) oc1 oc_projection_exist[OF assms(1)] oc2
+  note prerec = carr_span f_carrier[OF assms(3)] assms(6) oc1 oc_projection_exist[OF assms(1)] oc2
   have gsoi: "gso i \<in> carrier_vec n" "fs ! i \<in> carrier_vec n" by (rule gso_carrier[OF \<open>i < m\<close>], rule f_carrier[OF \<open>i < m\<close>])
-  note main = arg_cong[OF oc_projection_alt_def[OF carr_span f_carrier[OF assms(1)] assms(4) oc1 pe oc2], 
+  note main = arg_cong[OF oc_projection_alt_def[OF carr_span f_carrier[OF assms(3)] assms(6) oc1 pe oc2], 
      of "\<lambda> v. - v $ j + fs ! i $ j" for j]
+  note main = main[OF assms(2) assms(3)]
   show "v = gso i" 
   proof (intro eq_vecI)
     fix j
     show "j < dim_vec (gso i) \<Longrightarrow> v $ j = gso i $ j" 
-      using assms(2) gsoi main[of j] by auto
-  qed (insert assms(2) gsoi, auto)
+      using assms(4) gsoi main[of j] by auto
+  qed (insert assms(4) gsoi, auto)
 qed
 
 lemma gso_oc_projection:
-  assumes "i < m"
+  assumes "i < m" "distinct fs" "lin_indpt (set fs)"
   shows "gso i = oc_projection (gso ` {0..<i}) (fs ! i)"
   unfolding oc_projection_def is_oc_projection_def
-proof (rule some_equality[symmetric,OF _ oc_projection_unique[OF assms]])
+proof (rule some_equality[symmetric,OF _ oc_projection_unique[OF assms(2) assms(3) assms(1)]])
   have orthogonal:"\<And> xa. xa < i \<Longrightarrow> gso i \<bullet> gso xa = 0" by (rule orthogonal,insert assms, auto)
   show "gso i \<in> carrier_vec n \<and>
         fs ! i - gso i \<in> span (gso ` {0..<i}) \<and>
         (\<forall>x. x \<in> gso ` {0..<i} \<longrightarrow> gso i \<bullet> x = 0)"
-    using gso_carrier[OF assms] oc_projection_exist[OF assms] orthogonal by auto
+    using gso_carrier oc_projection_exist assms orthogonal by auto
 qed auto
 
 lemma gso_oc_projection_span:
-  assumes "i < m"
+  assumes "i < m" "distinct fs" "lin_indpt (set fs)"
   shows "gso i = oc_projection (span (gso ` {0..<i})) (fs ! i)"
     and "is_oc_projection (gso i) (span (gso ` {0..<i})) (fs ! i)"
   unfolding oc_projection_def is_oc_projection_def
-proof (rule some_equality[symmetric,OF _ oc_projection_unique[OF assms]])
+proof (rule some_equality[symmetric,OF _ oc_projection_unique[OF assms(2) assms(3) assms(1)]])
   let "?P v" = "v \<in> carrier_vec n \<and> fs ! i - v \<in> span (span (gso ` {0..<i})) 
     \<and> (\<forall>x. x \<in> span (gso ` {0..<i}) \<longrightarrow> v \<bullet> x = 0)"
   have carr:"gso ` {0..<i} \<subseteq> carrier_vec n" using assms by auto
@@ -1504,7 +1533,7 @@ proof (rule some_equality[symmetric,OF _ oc_projection_unique[OF assms]])
   have orthogonal:"\<And>x. x \<in> span (gso ` {0..<i}) \<Longrightarrow> gso i \<bullet> x = 0"
     apply(rule orthocompl_span) using assms * by auto
   show "?P (gso i)" "?P (gso i)" unfolding span_span[OF carr]
-    using gso_carrier[OF assms] oc_projection_exist[OF assms] orthogonal by auto
+    using gso_carrier oc_projection_exist assms orthogonal by auto
   fix v assume p:"?P v"
   then show "v \<in> carrier_vec n" by auto
   from p show "fs ! i - v \<in> span (gso ` {0..<i})" unfolding span_span[OF carr] by auto
@@ -1513,32 +1542,18 @@ proof (rule some_equality[symmetric,OF _ oc_projection_unique[OF assms]])
   thus "v \<bullet> xa = 0" using p by auto
 qed
 
-lemma is_oc_projection_eq:
-  assumes ispr:"is_oc_projection a S v" "is_oc_projection b S v" 
-    and carr: "S \<subseteq> carrier_vec n" "v \<in> carrier_vec n"
-  shows "a = b"
-proof -
-  from carr have c2:"span S \<subseteq> carrier_vec n" "v \<in> carrier_vec n" by auto
-  have a:"v - (v - a) = a" using carr ispr by auto
-  have b:"v - (v - b) = b" using carr ispr by auto
-  have "(v - a) = (v - b)" 
-    apply(rule oc_projection_alt_def[OF c2])
-    using ispr a b unfolding in_orthogonal_complement_span[OF carr(1)]
-    unfolding orthogonal_complement_def is_oc_projection_def by auto
-  hence "v - (v - a) = v - (v - b)" by metis
-  thus ?thesis unfolding a b.
-qed
+
 
 lemma gso_is_oc_projection:
-  assumes "i < m"
+  assumes "i < m" "distinct fs" "lin_indpt (set fs)"
   shows "is_oc_projection (gso i) (set (take i fs)) (fs ! i)"
 proof -
   have [simp]: "v \<in> carrier_vec n" if "v \<in> set (take i fs)" for v
-    using that by (meson in_set_takeD indep lin_indpt_list_def subsetCE subsetI)
+    using that by (meson contra_subsetD fs_carrier in_set_takeD)
   have "span (gso ` {0..<i}) = span (set (take i fs))"
-    by (rule partial_span) (auto simp add: assms len_fs less_or_eq_imp_le indep)
+    by (rule partial_span) (auto simp add: assms len_fs less_or_eq_imp_le)
   moreover have "is_oc_projection (gso i) (span (gso ` {0..<i})) (fs ! i)"
-    by (rule gso_oc_projection_span) (auto simp add: assms len_fs less_or_eq_imp_le indep)
+    by (rule gso_oc_projection_span) (auto simp add: assms len_fs less_or_eq_imp_le)
   ultimately have "is_oc_projection (gso i) (span (set (take i fs))) (fs ! i)"
     by auto
   moreover have "set (take i fs) \<subseteq> span (set (take i fs))"
@@ -1547,7 +1562,10 @@ proof -
     unfolding is_oc_projection_def by (subst (asm) span_span) (auto)
 qed
 
-lemma fi_scalar_prod_gso: assumes i: "i < m" and j: "j < m" 
+lemma fi_scalar_prod_gso:
+  assumes
+    "distinct fs" "lin_indpt (set fs)"
+    and i: "i < m" and j: "j < m" 
   shows "fs ! i \<bullet> gso j = \<mu> i j * \<parallel>gso j\<parallel>\<^sup>2" 
 proof -
   let ?mu = "\<lambda>j. \<mu> i j \<cdot>\<^sub>v gso j" 
@@ -1558,29 +1576,30 @@ proof -
   have "fs ! i \<bullet> gso j = sumlist (map ?mu [0..<Suc i]) \<bullet> gso j" 
     unfolding fi_is_sum_of_mu_gso[OF i] by simp
   also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..<Suc i]. v \<bullet> gso j) + 0" 
-    by (subst scalar_prod_left_sum_distrib, insert gso_carrier i j, auto)
+    by (subst scalar_prod_left_sum_distrib, insert gso_carrier assms, auto)
   also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..<Suc i]. v \<bullet> gso j) + (\<Sum>v\<leftarrow>map ?mu [Suc i..<m]. v \<bullet> gso j)" 
-    by (subst (3) sum_list_neutral, insert i j gso_carrier, auto intro!: orthogonal simp: \<mu>.simps)
+    by (subst (3) sum_list_neutral, insert assms gso_carrier, auto intro!: orthogonal simp: \<mu>.simps)
   also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..< m]. v \<bullet> gso j)" 
     unfolding list1 by simp
   also have "\<dots> = (\<Sum>v\<leftarrow>map ?mu [0..< j]. v \<bullet> gso j) + ?mu j \<bullet> gso j + (\<Sum>v\<leftarrow>map ?mu [Suc j..< m]. v \<bullet> gso j)" 
     unfolding list2 by simp
   also have "(\<Sum>v\<leftarrow>map ?mu [0..< j]. v \<bullet> gso j) = 0" 
-    by (rule sum_list_neutral, insert i j gso_carrier, auto intro!: orthogonal)
+    by (rule sum_list_neutral, insert assms gso_carrier, auto intro!: orthogonal)
   also have "(\<Sum>v\<leftarrow>map ?mu [Suc j..< m]. v \<bullet> gso j) = 0" 
-    by (rule sum_list_neutral, insert i j gso_carrier, auto intro!: orthogonal)
+    by (rule sum_list_neutral, insert assms gso_carrier, auto intro!: orthogonal)
   also have "?mu j \<bullet> gso j = \<mu> i j * sq_norm (gso j)" 
     using gso_carrier[OF j] by (simp add: sq_norm_vec_as_cscalar_prod)  
   finally show ?thesis by simp
 qed
 
 lemma gso_scalar_zero:
-  assumes "k < m" "i < k"
+  assumes "distinct fs" "lin_indpt (set fs)" "k < m" "i < k"
   shows "(gso k) \<bullet> (fs ! i) = 0"
   by (subst comm_scalar_prod[OF gso_carrier]; (subst fi_scalar_prod_gso)?,
   insert assms, auto simp: \<mu>.simps)
 
-lemma scalar_prod_lincomb_gso: assumes k: "k \<le> m"
+lemma scalar_prod_lincomb_gso:
+  assumes "distinct fs" "lin_indpt (set fs)" and k: "k \<le> m"
   shows "sumlist (map (\<lambda> i. g i \<cdot>\<^sub>v gso i) [0 ..< k]) \<bullet> sumlist (map (\<lambda> i. h i \<cdot>\<^sub>v gso i) [0 ..< k])
     = sum_list (map (\<lambda> i. g i * h i * (gso i \<bullet> gso i)) [0 ..< k])" 
 proof -
@@ -1594,7 +1613,7 @@ proof -
     using that assms unfolding gs_def by auto
   have "M.sumlist (map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<k]) \<bullet> M.sumlist (map (\<lambda>i. h i \<cdot>\<^sub>v gs ! i) [0..<k]) = 
         (\<Sum>i\<leftarrow>[0..<k]. g i * h i * (gs ! i \<bullet> gs ! i))"
-    unfolding gs_def using assm assms  orthogonal_gso 
+    unfolding gs_def using  assms  orthogonal_gso 
     by (intro scalar_prod_lincomb_orthogonal) auto
   also have "map (\<lambda>i. g i \<cdot>\<^sub>v gs ! i) [0..<k] = map (\<lambda>i. g i \<cdot>\<^sub>v gso i) [0..<k]"
     using gs_gso by (intro map_cong) (auto)
@@ -1606,18 +1625,19 @@ proof -
 qed
 
 lemma gso_times_self_is_norm:
-  assumes "j < m" shows "fs ! j \<bullet> gso j = sq_norm (gso j)"
+  assumes "j < m" "distinct fs" "lin_indpt (set fs)" shows "fs ! j \<bullet> gso j = sq_norm (gso j)"
   by (subst fi_scalar_prod_gso, insert assms, auto simp: \<mu>.simps)
 
 (* Lemma 16.7 *)
-lemma gram_schmidt_short_vector: assumes in_L: "h \<in> lattice_of fs - {0\<^sub>v n}" 
-shows "\<exists> i < m. \<parallel>h\<parallel>\<^sup>2 \<ge> \<parallel>gso i\<parallel>\<^sup>2"
+lemma gram_schmidt_short_vector: 
+  assumes "distinct fs" "lin_indpt (set fs)" and in_L: "h \<in> lattice_of fs - {0\<^sub>v n}" 
+  shows "\<exists> i < m. \<parallel>h\<parallel>\<^sup>2 \<ge> \<parallel>gso i\<parallel>\<^sup>2"
 proof -
   from in_L have non_0: "h \<noteq> 0\<^sub>v n" by auto
   from in_L[unfolded lattice_of_def] obtain lam where 
     h: "h =  sumlist (map (\<lambda> i. of_int (lam i) \<cdot>\<^sub>v fs ! i) [0 ..< length fs])" 
     by auto
-  have in_L: "h = sumlist (map (\<lambda> i. of_int (lam i) \<cdot>\<^sub>v fs ! i) [0 ..< m])" unfolding assm length_map h
+  have in_L: "h = sumlist (map (\<lambda> i. of_int (lam i) \<cdot>\<^sub>v fs ! i) [0 ..< m])" unfolding length_map h
     by (rule arg_cong[of _ _ sumlist], rule map_cong, auto simp: len_fs)
   let ?n = "[0 ..< m]" 
   let ?f = "(\<lambda> i. of_int (lam i) \<cdot>\<^sub>v fs ! i)" 
@@ -1772,7 +1792,7 @@ proof -
   also have "of_int (l * l) = hh k * hh k" unfolding hh_def by auto
   also have "(\<Sum>i\<leftarrow>[0..<k]. hh i * hh i * (gso i \<bullet> gso i)) + hh k * hh k * (gso k \<bullet> gso k)
      = (\<Sum>i\<leftarrow>[0..<Suc k]. hh i * hh i * (gso i \<bullet> gso i))" by simp
-  also have "\<dots> = ?hh \<bullet> ?hh" by (rule sym, rule scalar_prod_lincomb_gso, insert kn, auto)
+  also have "\<dots> = ?hh \<bullet> ?hh" by (rule sym, rule scalar_prod_lincomb_gso, insert kn assms, auto)
   also have "\<dots> = ?ff \<bullet> ?ff" by (simp add: ffhh)
   also have "\<dots> = h \<bullet> h" unfolding h ..
   finally show ?thesis using kn unfolding sq_norm_vec_as_cscalar_prod by auto
@@ -1785,11 +1805,13 @@ lemma fs0_gso0: "0 < m \<Longrightarrow> fs ! 0 = gso 0"
 (* Theorem 16.9 
   (bound in textbook looks better as it uses 2^((n-1)/2), but this difference
   is caused by the fact that we here we look at the squared norms) *)
-lemma weakly_reduced_imp_short_vector: assumes "weakly_reduced \<alpha> m (map gso [0..<m])"
+lemma weakly_reduced_imp_short_vector: 
+  assumes "distinct fs" "lin_indpt (set fs)" and
+    "weakly_reduced \<alpha> m (map gso [0..<m])"
   and in_L: "h \<in> lattice_of fs - {0\<^sub>v n}" and \<alpha>_pos:"\<alpha> \<ge> 1"
 shows "fs \<noteq> [] \<and> sq_norm (fs ! 0) \<le> \<alpha>^(m-1) * sq_norm h"
 proof -
-  from gram_schmidt_short_vector[OF in_L] obtain i where 
+  from gram_schmidt_short_vector assms obtain i where 
     i: "i < m" and le: "sq_norm (gso i) \<le> sq_norm h" by auto
   have small: "sq_norm (fs ! 0) \<le> \<alpha>^i * sq_norm (gso i)" using i
   proof (induct i)
@@ -1799,27 +1821,29 @@ proof -
     case (Suc i)
     hence "sq_norm (fs ! 0) \<le> \<alpha>^i * sq_norm (gso i)" by auto
     also have "\<dots> \<le> \<alpha>^i * (\<alpha> * (sq_norm (gso (Suc i))))" 
-      using reduced_gso_E[OF assms(1) le_refl Suc(2)] \<alpha>_pos by auto
+      using reduced_gso_E[OF assms(3) le_refl Suc(2)] \<alpha>_pos by auto
     finally show ?case unfolding class_semiring.nat_pow_Suc[of \<alpha> i] by auto
   qed
   also have "\<dots> \<le> \<alpha>^(m-1) * sq_norm h" 
     by (rule mult_mono[OF power_increasing le], insert i \<alpha>_pos, auto)
-  finally show ?thesis using i assm by (cases fs, auto)
+  finally show ?thesis using i by (cases fs, use len_fs in auto)
 qed
 
-lemma sq_norm_pos: assumes j: "j < m" 
+lemma sq_norm_pos: 
+  assumes "distinct fs" "lin_indpt (set fs)" and j: "j < m" 
   shows "sq_norm (gso j) > 0" 
 proof -
   from j have jj: "j < m - 0" by simp
-  from orthogonalD[OF orthogonal_gso, unfolded length_map length_upt, OF jj jj]
+  from orthogonalD[OF orthogonal_gso, unfolded length_map length_upt, OF _ _ jj jj] assms
   have "sq_norm (gso j) \<noteq> 0" using j by (simp add: sq_norm_vec_as_cscalar_prod)    
   moreover have "sq_norm (gso j) \<ge> 0" by auto
   ultimately show "0 < sq_norm (gso j)" by auto
 qed
 
-lemma Gramian_determinant: assumes k: "k \<le> m" 
-shows "Gramian_determinant fs k = (\<Prod> j<k. sq_norm (gso j))"
-  "Gramian_determinant fs k > 0" 
+lemma Gramian_determinant: 
+  assumes "distinct fs" "lin_indpt (set fs)" and k: "k \<le> m" 
+  shows "Gramian_determinant fs k = (\<Prod> j<k. sq_norm (gso j))"
+    "Gramian_determinant fs k > 0" 
 proof -
   define Gk where "Gk = mat k n (\<lambda> (i,j). fs ! i $ j)" 
   have Gk: "Gk \<in> carrier_mat k n" unfolding Gk_def by auto
@@ -1912,7 +1936,7 @@ proof -
       thus ?thesis by (simp add: sq_norm_vec_as_cscalar_prod) 
     next
       assume "i \<noteq> j" 
-      from \<open>i \<noteq> j\<close> orthogonalD[OF orthogonal_gso] ijn
+      from \<open>i \<noteq> j\<close> orthogonalD[OF orthogonal_gso] ijn assms
       show ?thesis by auto
     qed
     also have "\<dots> = ?M $$ (i,j)" using ij by simp
@@ -1925,23 +1949,23 @@ proof -
     by (subst prod.distinct_set_conv_list[symmetric], force, rule prod.cong, auto) 
   finally show "Gramian_determinant fs k = (\<Prod>j<k. \<parallel>gso j\<parallel>\<^sup>2)" .
   also have "\<dots> > 0" 
-    by (rule prod_pos, intro ballI sq_norm_pos, insert k, auto)
+    by (rule prod_pos, intro ballI sq_norm_pos, insert k assms, auto)
   finally show "0 < Gramian_determinant fs k" by auto
 qed
 
 lemma Gramian_determinant_div:
-  assumes "l < m"
+  assumes "distinct fs" "lin_indpt (set fs)" "l < m"
   shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>gso l\<parallel>\<^sup>2"
 proof -
-  note con_assms = indep len_fs
-  note gram = Gramian_determinant(1)[symmetric]
+  note con_assms = assms len_fs
+  note gram = Gramian_determinant(1)[symmetric, OF assms(1,2)]
   from assms have le: "Suc l \<le> m" "l \<le> m" by auto
   have "(\<Prod>j<Suc l. \<parallel>gso j\<parallel>\<^sup>2) = (\<Prod>j \<in> {0..<l} \<union> {l}. \<parallel>gso j\<parallel>\<^sup>2)"
     using assms by (intro prod.cong) (auto)
   also have "\<dots> = (\<Prod>j<l. \<parallel>gso j\<parallel>\<^sup>2) * \<parallel>gso l\<parallel>\<^sup>2"
     using assms by (subst prod_Un) (auto simp add: atLeast0LessThan)
   finally show ?thesis unfolding gram[OF le(1)] gram[OF le(2)]
-    using Gramian_determinant(2)[OF le(2)] by auto 
+    using Gramian_determinant(2)[OF _ _ le(2)] assms by auto 
 qed
 
 context
@@ -1968,7 +1992,7 @@ qed
 
 
 lemma Gramian_determinant_ge1:
-  assumes "k \<le> m"
+  assumes "distinct fs" "lin_indpt (set fs)" "k \<le> m"
   shows "1 \<le> Gramian_determinant fs k"
 proof -
   have "0 < Gramian_determinant fs k"
@@ -1980,10 +2004,10 @@ proof -
 qed
 
 lemma mu_bound_Gramian_determinant:
-  assumes "l < k" "k < m"
+  assumes "distinct fs" "lin_indpt (set fs)" "l < k" "k < m"
   shows "(\<mu> k l)\<^sup>2 \<le> Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2"
 proof -
-  note con_assms = indep len_fs 
+  note con_assms = assms len_fs 
   have "(\<mu> k l)\<^sup>2  = (fs ! k \<bullet> gso l)\<^sup>2 / (\<parallel>gso l\<parallel>\<^sup>2)\<^sup>2"
     using assms by (simp add: power_divide \<mu>.simps)
   also have "\<dots> \<le> (\<parallel>fs ! k\<parallel>\<^sup>2 * \<parallel>gso l\<parallel>\<^sup>2) / (\<parallel>gso l\<parallel>\<^sup>2)\<^sup>2"
@@ -2090,8 +2114,13 @@ proof -
     with us len have basis: "gso.basis_list ?us" unfolding gso.basis_list_def by auto
     note in_dep = gso.basis_list_imp_lin_indpt_list[OF basis]
     note conn = in_dep len
-    note ortho = gso.orthogonal_gso[OF conn]
-    note vs = gso.gso_carrier[OF conn]
+    have lin_indpt: "set (map (row A) [0..<n]) \<subseteq> carrier_vec n" "distinct (map (row A) [0..<n])"
+      "gso.lin_indpt (set (map (row A) [0..<n]))"
+      using conn unfolding  gso.lin_indpt_list_def by auto
+    have ortho: "orthogonal (map (gso.gso (map (row A) [0..<n])) [0..<n])"
+      using conn gso.orthogonal_gso unfolding  gso.lin_indpt_list_def by auto
+    have vs: "gso.gso (map (row A) [0..<n]) i \<in> carrier_vec n" if "i < n" for i
+      using that conn gso.orthogonal_gso unfolding  gso.lin_indpt_list_def by auto
     have last: "0 \<le> prod_list (map sq_norm ?vs) \<and> prod_list (map sq_norm ?vs) \<le> prod_list (map sq_norm ?us)" 
     proof (rule prod_list_le_mono, force, unfold length_map length_upt)
       fix i
@@ -2100,14 +2129,14 @@ proof -
       have vsi: "map sq_norm ?vs ! i = sq_norm (?vs ! i)" using vs i by simp
       have usi: "map sq_norm ?us ! i = sq_norm (row A i)" using i by simp
       have zero: "0 \<le> sq_norm (?vs ! i)" by auto
-      have le: "sq_norm (?vs ! i) \<le> sq_norm (row A i)" using gso.sq_norm_gso_le_f[OF conn i]
-        unfolding vs using i by simp
+      have le: "sq_norm (?vs ! i) \<le> sq_norm (row A i)" using gso.sq_norm_gso_le_f[OF _ len]
+        unfolding vs using lin_indpt i by simp
       show "0 \<le> map sq_norm ?vs ! i \<and> map sq_norm ?vs ! i \<le> map sq_norm ?us ! i" 
         unfolding vsi usi using zero le by auto
     qed
     have Fs: "gso.FF ?us \<in> carrier_mat n n" by auto
     have A_Fs: "A = gso.FF ?us" 
-      by (rule eq_matI, subst gso.FF_index[OF conn], insert A, auto)
+      by (rule eq_matI, subst gso.FF_index, insert A, auto)
     hence "abs (det A) = abs (det (gso.FF ?us))" by simp
     (* the following three steps are based on a discussion with Bertram Felgenhauer *)
     also have "\<dots> = abs (sqrt (det (gso.FF ?us) * det (gso.FF ?us)))" by simp
@@ -2118,8 +2147,8 @@ proof -
     also have "\<dots> = gso.Gramian_determinant ?us n" 
       unfolding gso.Gramian_matrix_def gso.Gramian_determinant_def Let_def A_Fs[symmetric]
       by (rule arg_cong[of _ _ det], rule arg_cong2[of _ _ _ _ "( * )"], insert A, auto)
-    also have "\<dots> = (\<Prod>j \<in> set [0 ..< n]. \<parallel>?vs ! j\<parallel>\<^sup>2)" unfolding gso.Gramian_determinant[OF conn le_refl] 
-      by (rule prod.cong, auto)
+    also have "\<dots> = (\<Prod>j \<in> set [0 ..< n]. \<parallel>?vs ! j\<parallel>\<^sup>2)"
+      using lin_indpt by (subst gso.Gramian_determinant) (auto intro!: prod.cong)
     also have "\<dots> = prod_list (map (\<lambda> i. sq_norm (?vs ! i)) [0 ..< n])"
       by (subst prod.distinct_set_conv_list, auto)
     also have "map (\<lambda> i. sq_norm (?vs ! i)) [0 ..< n] = map sq_norm ?vs" 
@@ -2437,8 +2466,8 @@ context
 begin
 
 context
-  fixes fs
-  assumes indep: "lin_indpt_list fs"
+  fixes fs::"'a vec list"
+  assumes carrier_vec_fs: "set fs \<subseteq> carrier_vec n"
    and len_fs: "length fs = m" 
 begin
 
@@ -2475,16 +2504,16 @@ lemma ex_\<rho>:
       have "gso fs k $ i =  fs ! k $ i + 
     M.sumlist (map (\<lambda>i. (- \<mu> fs k i) \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. \<rho> i j \<cdot>\<^sub>v fs ! j) [0..<i])))
               [0..<k]) $ i"
-        using that gso_dim indep len_fs less by (fastforce simp add: *)
+        using that gso_dim carrier_vec_fs len_fs less by (fastforce simp add: *)
       also have "\<dots> = fs ! k $ i + (\<Sum>j = 0..<k. (- \<mu> fs k j \<cdot>\<^sub>v (fs ! j + M.sumlist (map (\<lambda>ja. \<rho> j ja \<cdot>\<^sub>v fs ! ja) [0..<j]))) $v i)"
-        using assms less indep len_fs that by (subst sumlist_nth) (auto intro!: dim_sumlist) 
+        using assms less carrier_vec_fs len_fs that by (subst sumlist_nth) (auto intro!: dim_sumlist) 
       also have "(\<Sum>j = 0..<k. (- \<mu> fs k j \<cdot>\<^sub>v (fs ! j + M.sumlist (map (\<lambda>ja. \<rho> j ja \<cdot>\<^sub>v fs ! ja) [0..<j]))) $v i) =
       (\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + M.sumlist (map (\<lambda>ja. \<rho> x ja \<cdot>\<^sub>v fs ! ja) [0..<x]) $v i)))"
-        using assms less indep len_fs that by (intro sum.cong) (auto simp add: dim_sumlist)
+        using assms less carrier_vec_fs len_fs that by (intro sum.cong) (auto simp add: dim_sumlist)
       also have "\<dots> = (\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + (\<Sum>j = 0..<x. (\<rho> x j \<cdot>\<^sub>v fs ! j) $v i))))"
-        using assms less indep len_fs that by (intro sum.cong) (auto simp add: dim_sumlist sumlist_nth)
+        using assms less carrier_vec_fs len_fs that by (intro sum.cong) (auto simp add: dim_sumlist sumlist_nth)
       finally show ?thesis
-        using assms less indep len_fs that by (auto simp add: dim_sumlist sumlist_nth)
+        using assms less carrier_vec_fs len_fs that by (auto simp add: dim_sumlist sumlist_nth)
     qed
     also have "(\<Sum>x = 0..<k. - (\<mu> fs k x * (fs ! x $v i + (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i)))) =
 (\<Sum>x = 0..<k. - \<mu> fs k x * fs ! x $v i - \<mu> fs k x * (\<Sum>j = 0..<x. \<rho> x j * fs ! j $v i))"
@@ -2512,10 +2541,10 @@ lemma ex_\<rho>:
     = (\<Sum>x = 0..<k. \<rho>' x * fs ! x $v i)" 
       by (auto simp add: sum_subtractf field_simps \<rho>'_def)
     finally show ?thesis
-      using assms less indep len_fs that by (auto simp add: dim_sumlist sumlist_nth)
+      using assms less carrier_vec_fs len_fs that by (auto simp add: dim_sumlist sumlist_nth)
   qed
   then show ?case
-    using less indep len_fs by (intro exI[of _ \<rho>'] eq_vecI) (auto simp add: dim_sumlist) 
+    using less carrier_vec_fs len_fs by (intro exI[of _ \<rho>'] eq_vecI) (auto simp add: dim_sumlist) 
 qed
 
 definition \<rho>_SOME_def:
@@ -2558,8 +2587,8 @@ locale gram_schmidt_rat = gram_schmidt n "TYPE(rat)"
 begin
 
 context
-  fixes fs and m::nat
-  assumes con_assms: "lin_indpt_list fs" "length fs = m"
+  fixes fs::"rat vec list" and m::nat
+  assumes con_assms: "set fs \<subseteq> carrier_vec n" "length fs = m"
 begin
 
 context
@@ -2583,7 +2612,7 @@ proof -
 qed
 
 lemma Gramian_determinant_times_gso_Ints:
-  assumes "i < n" "k < m"
+  assumes "i < n" "k < m" "distinct fs" "lin_indpt (set fs)" 
   shows "(Gramian_determinant fs k \<cdot>\<^sub>v (gso fs k)) $ i \<in> \<int>"
 proof -
   let ?\<rho> = "\<rho> m fs" 
@@ -2650,7 +2679,7 @@ proof -
 qed
 
 lemma Gramian_determinant_div:
-  assumes "l < m"
+  assumes "l < m" "distinct fs" "lin_indpt (set fs)" 
   shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>gso fs l\<parallel>\<^sup>2"
 proof -
   have "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = 
@@ -2672,7 +2701,7 @@ proof -
 qed
 
 lemma Gramian_determinant_mu_ints:
-  assumes "l \<le> k" "k < m"
+  assumes "l \<le> k" "k < m" "distinct fs" "lin_indpt (set fs)" 
   shows "Gramian_determinant fs (Suc l) * \<mu> fs k l \<in> \<int>"
 proof (cases "l < k")
   case True
@@ -2767,8 +2796,7 @@ lemma fs_intD: assumes "fs_int fs"
   "\<And> i. i < m \<Longrightarrow> fs ! i \<in> carrier_vec n" 
   "\<And> i. i < m \<Longrightarrow> gso fs i \<in> carrier_vec n" 
   "length fs = m"
-  using assms gs.lin_indpt_list_def gs.gso_carrier'[of _ "RAT fs"] 
-  unfolding fs_int_def split gs.reduced_def set_conv_nth by (auto)
+  using assms gs.lin_indpt_list_def by (auto simp add: fs_int_def gs.reduced_def set_conv_nth)
 
 lemma of_int_Gramian_determinant:
   assumes "k \<le> length F" "\<And>i. i < length F \<Longrightarrow> dim_vec (F ! i) = n"
@@ -2798,8 +2826,12 @@ proof -
   note inv = fs_intD[OF finv]
   have hom: "gs.Gramian_determinant (RAT fs) k = of_int (gs.Gramian_determinant fs k)" 
     by (rule of_int_Gramian_determinant[of _ fs, unfolded inv(6), OF k], insert inv(4-6) k, auto)
-  show ?g1 ?g2 using gs.Gramian_determinant[OF inv(1-2) k] 
-    unfolding hom using k by auto
+  show ?g1
+    using inv unfolding hom[symmetric] gs.lin_indpt_list_def by (auto simp add: gs.Gramian_determinant[OF _ _ _ _ k])
+  have "0 < gs.Gramian_determinant (RAT fs) k"
+    using inv unfolding hom[symmetric] gs.lin_indpt_list_def by (auto intro!: gs.Gramian_determinant[OF _ _ _ _ k])
+  then show ?g2
+    using hom by auto
 qed
 
 lemma fs_int_d_pos [intro]: assumes inv: "fs_int fs" 
@@ -2832,11 +2864,14 @@ lemma fs_int_mu_d_Z: assumes inv: "fs_int fs"
 shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
 proof -
   note * = fs_intD[OF inv]
-  have id: "gs.Gramian_determinant (RAT fs) (Suc j) = of_int (d fs (Suc j))" 
+  have id: "of_int (d fs (Suc j)) = gs.Gramian_determinant (RAT fs) (Suc j)" 
     unfolding d_def
-    by (rule of_int_Gramian_determinant, insert j ii *(4,6), auto)
-  show ?thesis
-    by (rule gs.Gramian_determinant_mu_ints[OF *(1-2) _ j ii, unfolded id], insert *(4,6), force)
+    by (rule of_int_Gramian_determinant[symmetric], insert j ii *(4,6), auto)
+  have "of_int_hom.vec_hom (fs ! j) $v i \<in> \<int>" if "i < n" "j < length fs" for i j
+     using that * by (intro vec_hom_Ints) auto
+  then show ?thesis
+    unfolding id using * j ii unfolding gs.lin_indpt_list_def 
+    by (intro gs.Gramian_determinant_mu_ints) (auto)
 qed
 
 context fixes fs :: "int vec list" 
@@ -2851,7 +2886,7 @@ proof -
   let ?gso = "\<lambda> fs j. ?G ! j"
   have "of_int \<parallel>fs ! i\<parallel>\<^sup>2 = \<parallel>RAT fs ! i\<parallel>\<^sup>2" unfolding sq_norm_of_int[symmetric] using insert i len by auto
   also have "RAT fs ! i = gs.sumlist (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i])" 
-    using gs.fi_is_sum_of_mu_gso[OF lin_indep _ i] len by auto
+    using gs.fi_is_sum_of_mu_gso[OF _ _ i] lin_indep len unfolding gs.lin_indpt_list_def by auto
   also have id: "map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i] = map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v ?gso fs j) [0..<Suc i]" 
     by (rule nth_equalityI, insert i, auto simp: nth_append)
   also have "sq_norm (gs.sumlist \<dots>) = sum_list (map sq_norm (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i]))" 
@@ -2859,8 +2894,8 @@ proof -
     unfolding sq_norm_vec_as_cscalar_prod cscalar_prod_is_scalar_prod conjugate_id
   proof (subst gs.scalar_prod_lincomb_orthogonal)
     show "Suc i \<le> length ?G" using i by auto
-    show "set ?G \<subseteq> Rn" using gs.gso_carrier[OF lin_indep, of m] len by auto
-    show "orthogonal ?G" using gs.orthogonal_gso[OF lin_indep, of m] len by auto
+    show "set ?G \<subseteq> Rn" using gs.gso_carrier[of _ m] len lin_indep unfolding gs.lin_indpt_list_def by auto
+    show "orthogonal ?G" using gs.orthogonal_gso[of _ m] len lin_indep unfolding gs.lin_indpt_list_def by auto
   qed (rule arg_cong[of _ _ sum_list], intro nth_equalityI, insert i, auto simp: nth_append)
   also have "map sq_norm (map (\<lambda>j. \<mu> fs i j \<cdot>\<^sub>v gso fs j) [0..<Suc i]) = map (\<lambda>j. (\<mu> fs i j)^2 * sq_norm (gso fs j)) [0..<Suc i]" 
     unfolding map_map o_def sq_norm_smult_vec by (rule map_cong, auto simp: power2_eq_square)
@@ -2913,5 +2948,6 @@ qed
 
 
 end
+
 
 end

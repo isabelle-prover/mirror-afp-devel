@@ -421,7 +421,8 @@ qed
 lemma initial_state: "LLL_impl_inv (initial_state n fs_init) 0 fs_init" 
 proof -
   have id: "gram_schmidt n (RAT fs_init) = map (gso fs_init) [0..<m]" 
-    using gs.main_connect[OF lin_dep, unfolded length_map, OF len] by auto
+    apply(rule gs.main_connect)
+    using len lin_dep unfolding gs.lin_indpt_list_def by (auto intro!: gs.mn)
   show ?thesis unfolding initial_state_def Let_def LLL_impl_inv_def list_repr_def gram_schmidt_triv id
     by (simp, intro nth_equalityI, auto simp: len)
 qed

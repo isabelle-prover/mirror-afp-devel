@@ -7,6 +7,7 @@ theory Dirichlet_Theorem
 imports
   Dirichlet_L_Functions
   Bertrands_Postulate.Bertrand
+  Landau_Symbols.Landau_More
 begin
 
 text \<open>

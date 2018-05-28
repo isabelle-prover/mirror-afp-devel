@@ -5,12 +5,13 @@ session Dirichlet_L (AFP) = "Dirichlet_Series" +
   sessions
     "HOL-Analysis"
     "HOL-Algebra"
+    "HOL-Library"
     "Landau_Symbols"
     "Dirichlet_Series"
     "Zeta_Function"
     "Bertrands_Postulate"
   theories [document = false]
-    "Landau_Symbols.Landau_Symbols"
+    "HOL-Library.Landau_Symbols"
     "Zeta_Function.Zeta_Function"
     "HOL-Number_Theory.Residues"
     "Dirichlet_Series.Multiplicative_Function"

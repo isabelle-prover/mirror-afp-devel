@@ -10,6 +10,7 @@ theory Comparison_Sort_Lower_Bound
     Complex_Main 
     Linorder_Relations
     Stirling_Formula.Stirling_Formula
+    "Landau_Symbols.Landau_More"
 begin
   
 subsection \<open>Abstract description of sorting algorithms\<close>

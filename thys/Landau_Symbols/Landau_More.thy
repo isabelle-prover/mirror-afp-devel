@@ -5,7 +5,9 @@
   Some more facts about Landau symbols.
 *)
 theory Landau_More
-imports Landau_Simprocs
+imports
+  "HOL-Library.Landau_Symbols"
+  Landau_Simprocs
 begin
 
 (* Additional theorems, contributed by Andreas Lochbihler and adapted by Manuel Eberl *)

@@ -7,7 +7,7 @@
 section {* Simplification procedures *}
 
 theory Landau_Simprocs
-imports Landau_Symbols_Definition Landau_Real_Products Asymptotic_Equivalence
+imports Landau_Real_Products
 begin
 
 subsection {* Simplification under Landau symbols *}

@@ -6,7 +6,7 @@
 *)
 section \<open>The complex and real error function\<close>
 theory Error_Function
-  imports "HOL-Analysis.Analysis" "Landau_Symbols.Landau_Symbols"
+  imports "HOL-Analysis.Analysis" "HOL-Library.Landau_Symbols"
 begin
 
 subsection \<open>Auxiliary Facts\<close>

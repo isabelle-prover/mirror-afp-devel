@@ -6,7 +6,7 @@ section \<open>Dirichlet $L$-functions\<close>
 theory Dirichlet_L_Functions
 imports 
   Dirichlet_Characters
-  "Landau_Symbols.Landau_Symbols"
+  "HOL-Library.Landau_Symbols"
   "Zeta_Function.Zeta_Function"
 begin
 

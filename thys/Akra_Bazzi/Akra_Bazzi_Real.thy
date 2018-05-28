@@ -9,7 +9,6 @@ section {* The continuous Akra-Bazzi theorem *}
 theory Akra_Bazzi_Real
 imports
   Complex_Main
-  Landau_Symbols.Landau_Symbols
   Akra_Bazzi_Asymptotics
 begin
 

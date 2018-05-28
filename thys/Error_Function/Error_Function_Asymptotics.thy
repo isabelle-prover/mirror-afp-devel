@@ -6,7 +6,7 @@
 *)
 subsection \<open>Asymptotics\<close>
 theory Error_Function_Asymptotics
-  imports Error_Function "Landau_Symbols.Landau_Symbols"
+  imports Error_Function Landau_Symbols.Landau_More
 begin
 
 lemma real_powr_eq_powerI:

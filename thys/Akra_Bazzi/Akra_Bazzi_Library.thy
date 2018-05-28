@@ -9,7 +9,7 @@ section {* Auxiliary lemmas *}
 theory Akra_Bazzi_Library
 imports 
   Complex_Main
-  Landau_Symbols.Landau_Symbols
+  "Landau_Symbols.Landau_More"
 begin
 
 (* TODO: Move? *)

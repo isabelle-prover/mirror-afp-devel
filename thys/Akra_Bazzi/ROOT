@@ -1,9 +1,10 @@
 chapter AFP
 
-session Akra_Bazzi (AFP) = "Landau_Analysis" +
+session Akra_Bazzi (AFP) = "HOL-Analysis" +
   options [timeout = 600]
   sessions
     "HOL-Decision_Procs"
+    Landau_Symbols
   theories
     Akra_Bazzi
     Master_Theorem

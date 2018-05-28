@@ -78,8 +78,8 @@ lemma LLL_invD: assumes "LLL_invariant upw i fs"
   "reduced fs i" 
   "upw \<or> \<mu>_small fs i"
   "i = m \<Longrightarrow> upw"
-  using assms gs.lin_indpt_list_def gs.gso_carrier'[of _ "RAT fs"] 
-  unfolding LLL_invariant_def split gs.reduced_def set_conv_nth by auto
+  using assms gs.lin_indpt_list_def 
+   by (auto simp add: LLL_invariant_def gs.reduced_def set_conv_nth)
 
 lemma LLL_invI: assumes  
   "set fs \<subseteq> carrier_vec n"
@@ -256,15 +256,20 @@ proof -
   also have "?F1 = RAT fs'" unfolding fs' using i len Fij' **
     by (auto simp: map_update)
   finally have indep_F1: "lin_indep fs'" .
-  note conn1 = inv(1-2)
-  note conn2 = indep_F1 F1'(1) 
+  have conn1: "set (RAT fs) \<subseteq> carrier_vec n"  "length (RAT fs) = m" "distinct (RAT fs)"
+    "gs.lin_indpt (set (RAT fs))"
+    using inv unfolding gs.lin_indpt_list_def by auto
+  have conn2: "set (RAT fs') \<subseteq> carrier_vec n"  "length (RAT fs') = m" "distinct (RAT fs')"
+    "gs.lin_indpt (set (RAT fs'))"
+    using indep_F1 F1' unfolding gs.lin_indpt_list_def by auto
+  note gs.span_gso gs.gso_carrier
   let ?G = "map ?g [0 ..< m]" 
   let ?G' = "map ?g' [0 ..< m]" 
 (*  from gs.main_connect[OF conn1] gs.main_connect[OF conn2]
   have G_def: "gram_schmidt n (RAT fs) = ?G" 
      and G1_def: "gram_schmidt n (RAT fs') = ?G'"
     by auto *)
-  from gs.span_gso[OF conn1] gs.span_gso[OF conn2] gs.gso_carrier[OF conn1] gs.gso_carrier[OF conn2] span_F_F1 len 
+  from gs.span_gso gs.span_gso gs.gso_carrier gs.gso_carrier conn1 conn2 span_F_F1 len 
   have span_G_G1: "gs.span (set ?G) = gs.span (set ?G')"
    and lenG: "length ?G = m" 
    and Gi: "i < length ?G \<Longrightarrow> ?G ! i \<in> Rn"
@@ -320,8 +325,8 @@ proof -
     have "?g' i \<bullet> ?g' x = 0" by auto
   }
   hence G1_G: "?g' i = ?g i"
-    apply(intro gram_schmidt.oc_projection_unique[OF conn1 i gs.gso_carrier[OF conn2 i]])
-    using in_span by (auto simp: eq_part[symmetric])
+    apply(intro gram_schmidt.oc_projection_unique[OF conn1(1) _ _ _ i gs.gso_carrier[OF conn2(1)]])
+    using in_span conn1 conn2 i by (auto simp: eq_part[symmetric])
   show eq_fs:"x < m \<Longrightarrow> ?g' x = ?g x"
     for x proof(induct x rule:nat_less_induct[rule_format])
     case (1 x)
@@ -356,9 +361,9 @@ proof -
   finally have HEG: "?mat (RAT fs') = E * ?mat (RAT fs)" . (* lemma 16.12(i), part 1 *)
   have "(E * M') * ?mat ?G = E * (M' * ?mat ?G)" 
     by (rule assoc_mult_mat[OF E M Gs])
-  also have "M' * ?GsM = ?mat (RAT fs)" using gs.matrix_equality[OF conn1] M'_def by simp
+  also have "M' * ?GsM = ?mat (RAT fs)" using gs.matrix_equality conn1 M'_def by simp
   also have "E * \<dots> = ?mat (RAT fs')" unfolding HEG ..
-  also have "\<dots> = N' * ?mat ?G'" using gs.matrix_equality[OF conn2] N'_def by simp
+  also have "\<dots> = N' * ?mat ?G'" using gs.matrix_equality conn2 N'_def by simp
   also have "?mat ?G' = ?GsM" unfolding Hs ..
   finally have "(E * M') * ?GsM = N' * ?GsM" .
   from arg_cong[OF this, of "\<lambda> x. x * ?GsM\<^sup>T"] E M N 
@@ -368,8 +373,12 @@ proof -
     unfolding gs.Gramian_determinant_def
     by (subst gs.Gramian_matrix_alt_def, auto simp: Let_def)
   also have "\<dots> > 0" 
-    by (rule gs.Gramian_determinant(2)[OF gs.orthogonal_imp_lin_indpt_list \<open>length ?G = m\<close>],
-      insert gs.orthogonal_gso[OF conn1] gs.gso_carrier[OF conn1], auto)
+  proof -
+    have "gs.lin_indpt_list ?G"
+      using conn1 gs.orthogonal_gso gs.gso_carrier by (intro gs.orthogonal_imp_lin_indpt_list) (auto)
+    then show ?thesis
+      unfolding gs.lin_indpt_list_def by (intro gs.Gramian_determinant(2)) auto
+  qed
   finally have "det (?GsM * ?GsM\<^sup>T) \<noteq> 0" by simp
   from vec_space.det_nonzero_congruence[OF EMN this _ _ N] Gs E M
   have EMN: "E * M' = N'" by auto (* lemma 16.12(i), part 2 *) 
@@ -430,6 +439,8 @@ proof -
     by (rule floor_ceil)
   from this[unfolded mudiff] 
   have mu'_2: "abs (?mu' i j) \<le> inverse 2" .
+  have lin_indpt_list_fs: "gs.lin_indpt_list (RAT fs')"
+    unfolding gs.lin_indpt_list_def using conn2 by auto
   show "\<mu>_small_row i fs' j" 
     unfolding \<mu>_small_row_def 
   proof (intro allI, goal_cases)
@@ -439,7 +450,7 @@ proof -
   qed
 
   show Linv': "LLL_invariant True i fs'" 
-    by (intro LLL_invI[OF F1 lattice \<open>i \<le> m\<close> conn2(1) sred], auto)
+    by (intro LLL_invI[OF F1 lattice \<open>i \<le> m\<close> lin_indpt_list_fs sred], auto)
   {
     fix i
     assume i: "i \<le> m"
@@ -641,8 +652,12 @@ proof -
   with len' fs' span' indepH have indepH': "lin_indep fs'" unfolding fs'_def using i i0
     by (auto simp: gs.lin_indpt_list_def)
   have lenR': "length (RAT fs') = m" using len' by auto
-  note conn1 = inv(1-2)
-  note conn2 = indepH' lenR' 
+  have conn1: "set (RAT fs) \<subseteq> carrier_vec n"  "length (RAT fs) = m" "distinct (RAT fs)"
+    "gs.lin_indpt (set (RAT fs))"
+    using inv unfolding gs.lin_indpt_list_def by auto
+  have conn2: "set (RAT fs') \<subseteq> carrier_vec n"  "length (RAT fs') = m" "distinct (RAT fs')"
+    "gs.lin_indpt (set (RAT fs'))"
+    using indepH' lenR'  unfolding gs.lin_indpt_list_def by auto
   have fs'_fs: "k < i - 1 \<Longrightarrow> fs' ! k = fs ! k" for k unfolding fs'_def by auto
   { 
     fix k
@@ -674,9 +689,9 @@ proof -
   have norm_zero2: "j < m \<Longrightarrow> ?n2 j \<noteq> 0" for j using norm_pos2[of j] by linarith
   have norm_zero1: "j < m \<Longrightarrow> ?n1 j \<noteq> 0" for j using norm_pos1[of j] by linarith
   have gs: "\<And> j. j < m \<Longrightarrow> ?g1 j \<in> Rn" using inv by blast
-  have gs2: "\<And> j. j < m \<Longrightarrow> ?g2 j \<in> Rn" using gs.gso_carrier[OF conn2] .
+  have gs2: "\<And> j. j < m \<Longrightarrow> ?g2 j \<in> Rn" using gs.gso_carrier conn2 by auto
   have g: "\<And> j. j < m \<Longrightarrow> ?f1 j \<in> Rn" using inv by auto
-  have g2: "\<And> j. j < m \<Longrightarrow> ?f2 j \<in> Rn" using gs.f_carrier[OF conn2] .
+  have g2: "\<And> j. j < m \<Longrightarrow> ?f2 j \<in> Rn" using gs.f_carrier conn2 by blast
   let ?fs1 = "?f1 ` {0..< (i - 1)}" 
   have G: "?fs1 \<subseteq> Rn" using g i by auto
   let ?gs1 = "?g1 ` {0..< (i - 1)}" 
@@ -686,7 +701,7 @@ proof -
   have S'S: "?S' = ?S" 
     by (rule gs.partial_span'[OF conn1], insert i, auto)
   have "gs.is_oc_projection (?g2 (i - 1)) (gs.span (?g2 ` {0..< (i - 1)})) (?f2 (i - 1))" 
-    by (rule gs.gso_oc_projection_span(2)[OF conn2 \<open>i - 1 < m\<close>])
+    by (rule gs.gso_oc_projection_span(2)[OF _ _ \<open>i - 1 < m\<close>], insert conn2, auto)
   also have "?f2 (i - 1) = ?f1 i" unfolding fs'_def using len i by auto
   also have "gs.span (?g2 ` {0 ..< (i - 1)}) = gs.span (?f2 ` {0 ..< (i - 1)})" 
     by (rule gs.partial_span'[OF conn2], insert i, auto)
@@ -697,11 +712,12 @@ proof -
     "[0..< Suc i] = [0..< i] @ [i]" "map f [x] = [f x]" for f x using i by auto
   (* f1i_sum is claim 2 *)
   have f1i_sum: "?f1 i = gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i]) + ?g1 i" (is "_ = ?sum + _") 
-    unfolding gs.fi_is_sum_of_mu_gso[OF conn1 i] map_append list_id
-    by (subst gs.M.sumlist_snoc, insert i gs, auto simp: gs.\<mu>.simps)
-
+    apply(subst gs.fi_is_sum_of_mu_gso[OF _ _ i], insert conn1, force, force)
+    unfolding map_append list_id
+    by (subst gs.M.sumlist_snoc, insert i gs conn1, auto simp: gs.\<mu>.simps)
   have f1im1_sum: "?f1 (i - 1) = gs.sumlist (map (\<lambda>j. ?mu1 (i - 1) j \<cdot>\<^sub>v ?g1 j) [0..<i - 1]) + ?g1 (i - 1)" (is "_ = ?sum1 + _")
-    unfolding gs.fi_is_sum_of_mu_gso[OF conn1 \<open>i - 1 < m\<close>] map_append list_id
+    apply(subst gs.fi_is_sum_of_mu_gso[OF _ _ \<open>i - 1 < m\<close>], insert conn1, force, force)
+    unfolding map_append list_id
     by (subst gs.M.sumlist_snoc, insert i gs, auto simp: gs.\<mu>.simps)
 
   have sum: "?sum \<in> Rn" by (rule gs.sumlist_carrier, insert gs i, auto)
@@ -721,7 +737,7 @@ proof -
 
   (* new value of g (i-1) *)
   have g2_im1: "?g2 (i - 1) = ?g1 i + ?mu1 i (i - 1) \<cdot>\<^sub>v ?g1 (i - 1)" (is "_ = _ + ?mu_f1")
-  proof (rule gs.is_oc_projection_eq[OF conn1 claim1 _ S g[OF i]])
+  proof (rule gs.is_oc_projection_eq[OF  claim1 _ S g[OF i]])
     show "gs.is_oc_projection (?g1 i + ?mu_f1) ?S (?f1 i)" unfolding gs.is_oc_projection_def
     proof (intro conjI allI impI)
       let ?sum' = "gs.sumlist (map (\<lambda>j. ?mu1 i j \<cdot>\<^sub>v ?g1 j) [0 ..< i - 1])" 
@@ -775,7 +791,7 @@ proof -
     assume kn: "k < m" 
       and ki: "k \<noteq> i" "k \<noteq> i - 1"
     have "?g2 k = gs.oc_projection (gs.span (?g2 ` {0..<k})) (?f2 k)" 
-      by (rule gs.gso_oc_projection_span[OF conn2 kn])
+      by (rule gs.gso_oc_projection_span[OF _ _  kn], insert conn2, auto)
     also have "gs.span (?g2 ` {0..<k}) = gs.span (?f2 ` {0..<k})" 
       by (rule gs.partial_span'[OF conn2], insert kn, auto)
     also have "?f2 ` {0..<k} = ?f1 ` {0..<k}"
@@ -795,7 +811,7 @@ proof -
       by (rule sym, rule gs.partial_span'[OF conn1], insert kn, auto)
     also have "?f2 k = ?f1 k" using ki kn len unfolding fs'_def by auto
     also have "gs.oc_projection (gs.span (?g1 ` {0..<k})) \<dots> = ?g1 k" 
-      by (subst gs.gso_oc_projection_span[OF conn1 kn], auto)
+      by (subst gs.gso_oc_projection_span[OF _ _ kn], insert conn1, auto)
     finally have "?g2 k = ?g1 k" . 
   } note g2_g1_identical = this
 
@@ -819,11 +835,11 @@ proof -
 
   (* calculation of new value of g_i *)
   let ?g2_im1 = "?g2 (i - 1)" 
-  have g2_im1_Rn: "?g2_im1 \<in> Rn" using i by (auto intro!: gs.gso_carrier[OF conn2])
+  have g2_im1_Rn: "?g2_im1 \<in> Rn" using i conn2 by (auto intro!: gs.gso_carrier)
   {
     let ?mu2_f2 = "\<lambda> j. - ?mu2 i j \<cdot>\<^sub>v ?g2 j" 
     let ?sum = "gs.sumlist (map (\<lambda>j. - ?mu1 (i - 1) j \<cdot>\<^sub>v ?g1 j) [0 ..< i - 1])" 
-    have mhs: "?mu2_f2 (i - 1) \<in> Rn" using i by (auto intro!: gs.gso_carrier[OF conn2])
+    have mhs: "?mu2_f2 (i - 1) \<in> Rn" using i conn2 by (auto intro!: gs.gso_carrier)
     have sum': "?sum \<in> Rn" by (rule gs.sumlist_carrier, insert gs i, auto)
     have gim1: "?f1 (i - 1) \<in> Rn" using g i by auto
     have "?g2 i = ?f2 i + gs.sumlist (map ?mu2_f2 [0 ..< i-1] @ [?mu2_f2 (i-1)])" 
@@ -1055,6 +1071,9 @@ proof -
     finally have "sq_norm (?g2 (i - 1)) < reduction * sq_norm (?g1 (i - 1))" .
   } note g_reduction = this (* Lemma 16.13 (ii) *)
 
+  have lin_indpt_list_fs': "gs.lin_indpt_list (RAT fs')"
+    unfolding gs.lin_indpt_list_def using conn2 by auto
+
   have mu_small: "\<mu>_small fs' (i - 1)" 
     unfolding \<mu>_small_def
   proof (intro allI impI, goal_cases)
@@ -1064,7 +1083,7 @@ proof -
       
   (* invariant is established *)
   show newInv: "LLL_invariant False (i - 1) fs'"
-    by (rule LLL_invI, insert conn2 mu_small span' lattice fs' sred i, auto)
+    by (rule LLL_invI, insert lin_indpt_list_fs' conn2 mu_small span' lattice fs' sred i, auto)
 
   (* show decrease in measure *)
   { (* 16.16 (ii), the decreasing case *)
@@ -1208,9 +1227,9 @@ proof -
     with lattice_of_of_int[OF H h(1)]
     have "?h \<in> gs.lattice_of ?F - {0\<^sub>v n}" by auto
   } 
-  from gs.weakly_reduced_imp_short_vector[OF basis _ red this a1] lenH
+  from gs.weakly_reduced_imp_short_vector[OF _ _ _ _ red this a1] lenH
   show "h \<in> L - {0\<^sub>v n} \<Longrightarrow> ?r (sq_norm v) \<le> \<alpha> ^ (m - 1) * ?r (sq_norm h)"
-    unfolding L v by (auto simp: sq_norm_of_int)
+    using basis unfolding L v gs.lin_indpt_list_def  by (auto simp: sq_norm_of_int)
   from m0 H lenH show vn: "v \<in> carrier_vec n" unfolding v by (cases fs, auto)
   have vL: "v \<in> L" unfolding L[symmetric] v using m0 H lenH
     by (intro basis_in_latticeI, cases fs, auto)
@@ -1340,8 +1359,9 @@ proof -
       using sq_norm_vec_ge_0[of "fs_init ! i"] by auto
     also have "\<dots> = sq_norm (RAT fs_init ! i)" unfolding sq_norm_of_int[symmetric] using fs_init len i by auto
     finally have "sq_norm (RAT fs_init ! i) \<le> rat_of_nat A" .
-    with gs.sq_norm_gso_le_f[OF lin_dep _ i] len
-    have g_bnd: "\<parallel>gs.gso (RAT fs_init) i\<parallel>\<^sup>2 \<le> rat_of_nat A" by simp
+    with gs.sq_norm_gso_le_f[OF _ _ _ _ i] len lin_dep
+    have g_bnd: "\<parallel>gs.gso (RAT fs_init) i\<parallel>\<^sup>2 \<le> rat_of_nat A"
+      unfolding gs.lin_indpt_list_def by fastforce
     note f_bnd g_bnd
   }
   thus "g_bound fs_init" unfolding g_bound_def by auto
