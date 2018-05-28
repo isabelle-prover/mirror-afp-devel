@@ -1,8 +1,6 @@
 (*
   Title:      Blackboard.thy
   Author:     Diego Marmsoler
-
-  TODOs: Remove Reference to Metrid.
 *)
 section "A Theory of Blackboard Architectures"
 text{*
@@ -79,7 +77,7 @@ locale blackboard = publisher_subscriber bbactive bbcmp ksactive kscmp bbrp bbcs
     and conn2: "\<And>k kid. ksactive kid k
       \<Longrightarrow> ksop (kscmp kid k) = (\<Union>bid\<in>{bid. bbactive bid k}. bbop (bbcmp bid k))"
 begin
-  notation pb.lNAct ("\<langle>_ \<leftarrow> _\<rangle>\<^bsub>_\<^esub>")
+  notation pb.lNAct ("\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>")
   notation pb.nxtAct ("\<langle>_ \<rightarrow> _\<rangle>\<^bsub>_\<^esub>")
 
   subsubsection "The Blackboard Component"

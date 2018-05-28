@@ -1,8 +1,6 @@
 (*
   Title:      Configuration_Traces.thy
   Author:     Diego Marmsoler
-
-  TODOs: Change concrete syntax for latest/next activation.
 *)
 section "A Theory of Dynamic Architectures"
 text {*
@@ -940,22 +938,22 @@ text {*
   In the following, we introduce an operator to obtain the least point in time before a certain point in time where a component was deactivated.
 *}
 
-definition lNAct :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<leftarrow> _\<rangle>\<^bsub>_\<^esub>")
-  where "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<equiv> (LEAST n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)))"
+definition lNAct :: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>")
+  where "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<equiv> (LEAST n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)))"
 
 lemma lNact0[simp]:
-  "\<langle>c \<leftarrow> t\<rangle>\<^bsub>0\<^esub> = 0"
+  "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>0\<^esub> = 0"
   by (simp add: lNAct_def)
     
 lemma lNact_least:
   assumes "n=n' \<or> n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
-  shows "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
+  shows "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
 using Least_le[of "\<lambda>n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>))" n'] lNAct_def using assms by auto
     
-lemma lNAct_ex: "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>=n \<or> \<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub><n \<and> (\<nexists>k. k\<ge>\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
+lemma lNAct_ex: "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>=n \<or> \<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub><n \<and> (\<nexists>k. k\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
 proof -
   let ?P="\<lambda>n'. n=n' \<or> n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>)"
-  from lNAct_def have "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> = (LEAST n'. ?P n')" by simp
+  from lNAct_def have "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> = (LEAST n'. ?P n')" by simp
   moreover have "?P n" by simp
   with LeastI have "?P (LEAST n'. ?P n')" .
   ultimately show ?thesis by auto
@@ -963,39 +961,39 @@ qed
     
 lemma lNact_notActive:
   fixes c t n k
-  assumes "k\<ge>\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+  assumes "k\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>"
     and "k<n"
   shows "\<not>\<parallel>c\<parallel>\<^bsub>t k\<^esub>"
   by (metis assms lNAct_ex leD)
     
 lemma lNactGe:
   fixes c t n n'
-  assumes "n' \<ge> \<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" 
+  assumes "n' \<ge> \<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>" 
     and "\<parallel>c\<parallel>\<^bsub>t n'\<^esub>"
   shows "n' \<ge> n"
   using assms lNact_notActive leI by blast
 
 lemma lNactLe[simp]:
   fixes n n'
-  shows "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n"
+  shows "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n"
   using lNAct_ex less_or_eq_imp_le by blast
     
 lemma lNactLe_nact:
   fixes n n'
   assumes "n'=n \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>))"
-  shows "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
+  shows "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
   using assms lNAct_def Least_le[of "\<lambda>n'. n=n' \<or> (n'<n \<and> (\<nexists>k. k\<ge>n' \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>))"] by auto
     
 lemma lNact_active:
   fixes cid t n
   assumes "\<forall>k<n. \<parallel>cid\<parallel>\<^bsub>t k\<^esub>"
-  shows "\<langle>cid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> = n"
+  shows "\<langle>cid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> = n"
   using assms lNAct_ex by blast
     
 lemma nAct_mono_back:
   fixes c t and n and n'
   assumes "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> \<ge> \<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>"
-  shows "n'\<ge>\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+  shows "n'\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>"
 proof cases
   assume "\<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle> = \<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>"
   thus ?thesis
@@ -1017,13 +1015,13 @@ next
 qed
   
 lemma nAct_mono_lNact:
-  assumes "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
+  assumes "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'"
   shows "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle> \<le> \<langle>c #\<^bsub>n'\<^esub> inf_llist t\<rangle>"
 proof -
-  have "\<nexists>k. k\<ge>\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>" using lNact_notActive by auto
+  have "\<nexists>k. k\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<and> k<n \<and> \<parallel>c\<parallel>\<^bsub>t k\<^esub>" using lNact_notActive by auto
   moreover have "enat n - 1 < llength (inf_llist t)" by (simp add: one_enat_def)
-  moreover from `\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'` have "enat \<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> enat n" by simp
-  ultimately have "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>=\<langle>c #\<^bsub>\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>" using nAct_not_active_same by simp
+  moreover from `\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'` have "enat \<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> enat n" by simp
+  ultimately have "\<langle>c #\<^bsub>n\<^esub> inf_llist t\<rangle>=\<langle>c #\<^bsub>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub> inf_llist t\<rangle>" using nAct_not_active_same by simp
   thus ?thesis using nAct_mono assms by simp
 qed
  
@@ -1094,10 +1092,10 @@ qed
   
 lemma nxt_geq_lNact[simp]:
   assumes "\<exists>i\<ge>n. \<parallel>c\<parallel>\<^bsub>t i\<^esub>"
-  shows "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+  shows "\<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>"
 proof -
   from assms have "n \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" using nxtActLe by simp
-  moreover have "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<le>n" by simp
+  moreover have "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<le>n" by simp
   ultimately show ?thesis by arith
 qed
   
@@ -1128,7 +1126,7 @@ next
 qed
 
 lemma nAct_same:
-  assumes "\<langle>c \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" and "n' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
+  assumes "\<langle>c \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" and "n' \<le> \<langle>c \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"
   shows "the_enat (\<langle>c #\<^bsub>enat n'\<^esub> inf_llist t\<rangle>) = the_enat (\<langle>c #\<^bsub>enat n\<^esub> inf_llist t\<rangle>)"
 proof cases
   assume "n \<le> n'"
@@ -1166,7 +1164,7 @@ text {*
 abbreviation latestAct_cond:: "'id \<Rightarrow> trace \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool"
   where "latestAct_cond c t n n' \<equiv> n'<n \<and> \<parallel>c\<parallel>\<^bsub>t n'\<^esub>"
 
-definition latestAct:: "'id \<Rightarrow> trace \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<Leftarrow> _\<rangle>\<^bsub>_\<^esub>")
+definition latestAct:: "'id \<Rightarrow> trace \<Rightarrow> nat \<Rightarrow> nat" ("\<langle>_ \<leftarrow> _\<rangle>\<^bsub>_\<^esub>")
   where "latestAct c t n = (GREATEST n'. latestAct_cond c t n n')"
 
 lemma latestActEx:
@@ -1186,12 +1184,12 @@ lemma latestAct_prop:
 proof -
   from assms latestActEx have "latestAct_cond nid t n (GREATEST x. latestAct_cond nid t n x)"
     using GreatestI_ex_nat[of "latestAct_cond nid t n"] by blast
-  thus "\<parallel>nid\<parallel>\<^bsub>t \<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" and "latestAct nid t n<n" using latestAct_def by auto
+  thus "\<parallel>nid\<parallel>\<^bsub>t \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" and "latestAct nid t n<n" using latestAct_def by auto
 qed
 
 lemma latestAct_less:
   assumes "latestAct_cond nid t n n'"
-  shows "n' \<le> \<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+  shows "n' \<le> \<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"
 proof -
   from assms latestActEx have "n' \<le> (GREATEST x. latestAct_cond nid t n x)"
     using Greatest_le_nat[of "latestAct_cond nid t n"] by blast
@@ -1200,24 +1198,24 @@ qed
 
 lemma latestActNxt:
   assumes "\<exists>n'<n. \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>"
-  shows "\<langle>nid \<rightarrow> t\<rangle>\<^bsub>\<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>=\<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+  shows "\<langle>nid \<rightarrow> t\<rangle>\<^bsub>\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>=\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"
   using assms latestAct_prop(1) nxtAct_active by auto
 
 lemma latestActNxtAct:
   assumes "\<exists>n'\<ge>n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
     and "\<exists>n'<n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>"
-  shows "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> > \<langle>tid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>"
+  shows "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> > \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"
   by (meson assms latestAct_prop(2) less_le_trans nxtActI zero_le)
 
 lemma latestActless:
   assumes "\<exists>n'\<ge>n\<^sub>s. n'<n \<and> \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>"
-  shows "\<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n\<^sub>s"
+  shows "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<ge>n\<^sub>s"
   by (meson assms dual_order.trans latestAct_less)
 
 lemma latestActEq:
   fixes nid::'id
   assumes "\<parallel>nid\<parallel>\<^bsub>t n'\<^esub>" and "\<not>(\<exists>n''>n'. n''<n \<and> \<parallel>nid\<parallel>\<^bsub>t n'\<^esub>)" and "n'<n"
-  shows "\<langle>nid \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> = n'"
+  shows "\<langle>nid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> = n'"
   using latestAct_def
 proof
   have "(GREATEST n'. latestAct_cond nid t n n') = n'"

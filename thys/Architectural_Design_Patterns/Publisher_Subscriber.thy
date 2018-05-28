@@ -1,3 +1,7 @@
+(*
+  Title:      Publisher_Subscriber.thy
+  Author:     Diego Marmsoler
+*)
 section "A Theory of Publisher-Subscriber Architectures"
 text{*
   In the following, we formalize the specification of the publisher subscriber pattern as described in~\cite{Marmsoler2018c}.
