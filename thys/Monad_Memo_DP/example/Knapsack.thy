@@ -122,7 +122,7 @@ theorem knapsack_correct:
 
 subsubsection \<open>Functional Memoization\<close>
 
-memoize_fun knapsack\<^sub>m: knapsack with_memory dp_consistency_rbt monadifies (state) knapsack.simps
+memoize_fun knapsack\<^sub>m: knapsack with_memory dp_consistency_mapping monadifies (state) knapsack.simps
 
 text \<open>Generated Definitions\<close>
 context includes state_monad_syntax begin
@@ -196,7 +196,7 @@ lemma su_correct:
 
 subsubsection \<open>Memoization\<close>
 
-memoize_fun su\<^sub>m: su with_memory dp_consistency_rbt monadifies (state) su.simps
+memoize_fun su\<^sub>m: su with_memory dp_consistency_mapping monadifies (state) su.simps
 
 text \<open>Generated Definitions\<close>
 context includes state_monad_syntax begin

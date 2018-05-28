@@ -2,6 +2,7 @@ theory Counting_Tiles
   imports
     "HOL-Library.Code_Target_Numeral"
     "HOL-Library.Product_Lexorder"
+    "HOL-Library.RBT_Mapping"
     "../state_monad/State_Main" 
     Example_Misc
 begin
@@ -354,7 +355,7 @@ qed
 
 subsubsection \<open>Memoization\<close>
 
-memoize_fun lcount\<^sub>m: lcount with_memory dp_consistency_rbt monadifies (state) lcount.simps
+memoize_fun lcount\<^sub>m: lcount with_memory dp_consistency_mapping monadifies (state) lcount.simps
 
 memoize_correct
   by memoize_prover

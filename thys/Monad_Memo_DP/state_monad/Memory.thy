@@ -3,7 +3,7 @@ section \<open>Memoization\<close>
 subsection \<open>Memory Implementations for the State Monad\<close>
 
 theory Memory
-  imports "DP_CRelVS" "HOL-Library.RBT_Mapping"
+  imports "DP_CRelVS" "HOL-Library.Mapping"
 begin
 
 lemma lift_pI[intro?]:
@@ -96,7 +96,7 @@ sublocale dp_consistency_empty
 
 end (* DP Consistency Default *)
 
-locale dp_consistency_rbt =
+locale dp_consistency_mapping =
   fixes dp :: "'param \<Rightarrow> 'result"
 begin
 
@@ -160,17 +160,17 @@ lemma mem_correct_tracing_empty:
 
 end
 
-locale dp_consistency_rbt_tracing =
+locale dp_consistency_mapping_tracing =
   fixes dp :: "'param \<Rightarrow> 'result"
 begin
 
-interpretation rbt: dp_consistency_rbt .
+interpretation mapping: dp_consistency_mapping .
 
 sublocale dp_consistency_empty
-  rbt.lookup_trace rbt.update_trace "(\<lambda> _. True) o snd" dp "([], Mapping.empty)"
+  mapping.lookup_trace mapping.update_trace "(\<lambda> _. True) o snd" dp "([], Mapping.empty)"
   by (rule
       dp_consistency_empty.intro dp_consistency.intro
-      rbt.mem_correct_tracing_empty mem_correct_empty.axioms(1)
+      mapping.mem_correct_tracing_empty mem_correct_empty.axioms(1)
      )+
 
 end (* DP Consistency RBT *)

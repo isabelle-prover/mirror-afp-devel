@@ -1,8 +1,18 @@
 section \<open>Example\<close>
 
 theory HMM_Example
-  imports HMM_Implementation
+  imports
+    HMM_Implementation
+    "HOL-Library.AList_Mapping"
 begin
+
+text \<open>
+  We would like to implement mappings as red-black trees
+  but they require the key type to be linearly ordered.
+  Unfortunately, \<open>HOL-Analysis\<close> fixes the product order to the element-wise order
+  and thus we cannot restore a linear order,
+  and the red-black tree implementation (from \<open>HOL-Library\<close>) cannot be used.
+\<close>
 
 text \<open>The ice cream example from Jurafsky and Martin \cite{Jurafsky}.\<close>
 

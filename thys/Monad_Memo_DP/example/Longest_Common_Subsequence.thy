@@ -6,6 +6,7 @@ theory Longest_Common_Subsequence
     "HOL-Library.IArray"
     "HOL-Library.Code_Target_Numeral"
     "HOL-Library.Product_Lexorder"
+    "HOL-Library.RBT_Mapping"
     "../state_monad/State_Main"
 begin
 
@@ -139,7 +140,7 @@ lemma lcs_lcs_ia:
   "lcs xs ys i j = lcs_ia i j" if "A = IArray xs" "B = IArray ys"
   by (induction i j rule: lcs_ia.induct; simp; simp add: that)
 
-memoize_fun lcs\<^sub>m: lcs_ia with_memory dp_consistency_rbt monadifies (state) lcs_ia.simps
+memoize_fun lcs\<^sub>m: lcs_ia with_memory dp_consistency_mapping monadifies (state) lcs_ia.simps
 
 memoize_correct
   by memoize_prover

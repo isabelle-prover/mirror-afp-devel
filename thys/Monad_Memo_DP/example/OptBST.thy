@@ -115,7 +115,7 @@ end
 end (* Bound *)
 
 context begin
-memoize_fun min_wpl\<^sub>m: min_wpl with_memory dp_consistency_rbt monadifies (state) min_wpl.simps
+memoize_fun min_wpl\<^sub>m: min_wpl with_memory dp_consistency_mapping monadifies (state) min_wpl.simps
 thm min_wpl\<^sub>m'.simps
 
 memoize_correct

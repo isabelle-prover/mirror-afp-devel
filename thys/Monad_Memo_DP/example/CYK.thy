@@ -5,6 +5,7 @@ imports
   "HOL-Library.IArray"
   "HOL-Library.Code_Target_Numeral"
   "HOL-Library.Product_Lexorder"
+  "HOL-Library.RBT_Mapping"
   "../state_monad/State_Main"
   "../heap_monad/Heap_Default"
   Example_Misc
@@ -177,7 +178,7 @@ qed
 
 subsubsection \<open>Functional Memoization\<close>
 
-memoize_fun cyk_ix\<^sub>m: cyk_ix with_memory dp_consistency_rbt monadifies (state) cyk_ix.simps
+memoize_fun cyk_ix\<^sub>m: cyk_ix with_memory dp_consistency_mapping monadifies (state) cyk_ix.simps
 thm cyk_ix\<^sub>m'.simps
 
 memoize_correct

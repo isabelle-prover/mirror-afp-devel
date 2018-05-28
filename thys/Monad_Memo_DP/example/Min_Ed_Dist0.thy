@@ -5,6 +5,7 @@ imports
   "HOL-Library.IArray"
   "HOL-Library.Code_Target_Numeral"
   "HOL-Library.Product_Lexorder"
+  "HOL-Library.RBT_Mapping"
   "../state_monad/State_Main"
   "../heap_monad/Heap_Main"
   Example_Misc
@@ -239,7 +240,7 @@ termination by(relation "measure(\<lambda>(i,j). (m - i) + (n - j))") auto
 
 subsubsection \<open>Functional Memoization\<close>
 
-memoize_fun min_ed_ix\<^sub>m: min_ed_ix with_memory dp_consistency_rbt monadifies (state) min_ed_ix.simps
+memoize_fun min_ed_ix\<^sub>m: min_ed_ix with_memory dp_consistency_mapping monadifies (state) min_ed_ix.simps
 thm min_ed_ix\<^sub>m'.simps
 
 memoize_correct

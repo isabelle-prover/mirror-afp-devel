@@ -6,6 +6,7 @@ theory Bellman_Ford
     "HOL-Library.IArray"
     "HOL-Library.Code_Target_Numeral"
     "HOL-Library.Product_Lexorder"
+    "HOL-Library.RBT_Mapping"
     "../state_monad/State_Main"
     "../heap_monad/Heap_Main"
     Example_Misc
@@ -240,7 +241,7 @@ qed
 
 subsubsection \<open>Functional Memoization\<close>
 
-memoize_fun bf\<^sub>m: bf with_memory dp_consistency_rbt monadifies (state) bf.simps
+memoize_fun bf\<^sub>m: bf with_memory dp_consistency_mapping monadifies (state) bf.simps
 
 text \<open>Generated Definitions\<close>
 context includes state_monad_syntax begin

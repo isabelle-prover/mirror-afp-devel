@@ -4,7 +4,6 @@ theory HMM_Implementation
   imports
     Hidden_Markov_Model
     "Monad_Memo_DP.State_Main"
-    Simple_List_Memory
 begin
 
 subsection \<open>The Forward Algorithm\<close>
@@ -36,9 +35,9 @@ termination
 text \<open>Memoization\<close>
 
 memoize_fun forward_ix\<^sub>m: forward_ix_rec
-  with_memory dp_consistency_list
+  with_memory dp_consistency_mapping
   monadifies (state) forward_ix_rec.simps[unfolded Let_def]
-
+  term forward_ix\<^sub>m'
 memoize_correct
   by memoize_prover
 
@@ -89,7 +88,7 @@ text \<open>
   Uses the memoized version of \<open>forward_ix\<close>.
 \<close>
 lemma (in HMM4) forward_code [code]:
-  "forward s t os = fst (run_state (forward_ix\<^sub>m' (IArray os) s t 0) [])"
+  "forward s t os = fst (run_state (forward_ix\<^sub>m' (IArray os) s t 0) Mapping.empty)"
   by (simp only:
       forward_ix_def forward_ix\<^sub>m.memoized_correct forward_ix_forward[symmetric]
       states_distinct
@@ -130,7 +129,7 @@ termination
 text \<open>Memoization\<close>
 
 memoize_fun viterbi_ix\<^sub>m: viterbi_ix_rec
-  with_memory dp_consistency_list
+  with_memory dp_consistency_mapping
   monadifies (state) viterbi_ix_rec.simps[unfolded Let_def]
 
 memoize_correct
@@ -174,7 +173,7 @@ next
 qed
 
 lemma viterbi_code [code]:
-  "viterbi s t os = fst (run_state (viterbi_ix\<^sub>m' (IArray os) s t 0) [])"
+  "viterbi s t os = fst (run_state (viterbi_ix\<^sub>m' (IArray os) s t 0) Mapping.empty)"
   by (simp only: viterbi_ix_def viterbi_ix\<^sub>m.memoized_correct viterbi_ix_viterbi[symmetric])
 
 end (* Hidden Markov Model 3 *)
