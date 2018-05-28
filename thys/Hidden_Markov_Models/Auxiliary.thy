@@ -4,12 +4,6 @@ begin
 
 section \<open>Auxiliary Material\<close>
 
-syntax
-  "_MAX" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b \<Rightarrow> 'b"  ("(3MAX_\<in>_./ _)" [0, 0, 10] 10)
-
-translations
-  "MAX x\<in>A. B"  \<rightleftharpoons> "CONST Max ((\<lambda>x. B) ` A)"
-
 context
   fixes S :: "'s set"
   assumes "finite S"

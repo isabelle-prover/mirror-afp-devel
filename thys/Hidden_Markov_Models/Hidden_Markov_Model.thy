@@ -251,19 +251,35 @@ lemma forward_split:
   subgoal for a os1 s
     apply simp
     apply (subst sum_distrib_right)
-    apply (subst sum.commute)
+    apply (subst sum.swap)
     apply (simp add: sum_distrib_left algebra_simps)
     done
   done
+
+lemma (in -)
+  "(\<Sum>t \<in> S. f t) = f t" if "finite S" "t \<in> S" "\<forall> s \<in> S - {t}. f s = 0"
+  thm sum.empty sum.insert sum.mono_neutral_right[of S "{t}"]
+  apply (subst sum.mono_neutral_right[of S "{t}"])
+  using that
+     apply auto
+  done
+(*
+  oops
+  by (metis add.right_neutral empty_iff finite.intros(1) insert_iff subsetI sum.empty sum.insert sum.mono_neutral_right that)
+
+  using that
+  apply auto
+*)
 
 lemma forward_backward:
   "(\<Sum>t \<in> \<S>. forward s t os) = backward s os" if "s \<in> \<S>"
   using \<open>s \<in> \<S>\<close>
   apply (induction os arbitrary: s)
   subgoal for s
-    by (auto intro: sum_single[where k = s, OF states_finite])
+    by (subst sum.mono_neutral_right[of \<S> "{s}", OF states_finite])
+       (auto split: if_split_asm simp: indicator_def)
   subgoal for a os s
-    apply (simp add: sum.commute sum_distrib_left[symmetric])
+    apply (simp add: sum.swap sum_distrib_left[symmetric])
     apply (subst nn_integral_measure_pmf_support[where A = \<S>])
     using states_finite states_closed by (auto simp: algebra_simps)
   done
