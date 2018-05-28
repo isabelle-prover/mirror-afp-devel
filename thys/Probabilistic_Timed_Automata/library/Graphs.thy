@@ -6,9 +6,9 @@ theory Graphs
     Instantiate_Existentials
 begin
 
-chapter \<open>Graphs\<close>
+section \<open>Graphs\<close>
 
-section \<open>Basic Definitions and Theorems\<close>
+subsection \<open>Basic Definitions and Theorems\<close>
 
 locale Graph_Defs =
   fixes E :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -382,7 +382,7 @@ lemmas graphI =
 end (* Graph Defs *)
 
 
-section \<open>Graphs with a Start Node\<close>
+subsection \<open>Graphs with a Start Node\<close>
 
 locale Graph_Start_Defs = Graph_Defs +
   fixes s\<^sub>0 :: 'a
@@ -500,9 +500,9 @@ lemmas graph_startI =
 end (* Graph Start Defs *)
 
 
-section \<open>Subgraphs\<close>
+subsection \<open>Subgraphs\<close>
 
-subsection \<open>Edge-induced Subgraphs\<close>
+subsubsection \<open>Edge-induced Subgraphs\<close>
 
 locale Subgraph_Defs = G: Graph_Defs +
   fixes E' :: "'a \<Rightarrow> 'a \<Rightarrow> bool"
@@ -573,7 +573,7 @@ lemma reachable:
 
 end (* Subgraph Start *)
 
-subsection \<open>Node-induced Subgraphs\<close>
+subsubsection \<open>Node-induced Subgraphs\<close>
 
 locale Subgraph_Node_Defs = Graph_Defs +
   fixes V :: "'a \<Rightarrow> bool"
@@ -627,7 +627,7 @@ notation G'.reaches1 ("_ \<rightarrow>\<^sup>+ _" [100, 100] 40)
 end (* Subgraph_Node_Defs_Notation *)
 
 
-subsection \<open>The Reachable Subgraph\<close>
+subsubsection \<open>The Reachable Subgraph\<close>
 
 context Graph_Start_Defs
 begin
@@ -673,7 +673,7 @@ lemma reachable_steps_equiv:
 end (* Graph Start Defs *)
 
 
-section \<open>Bundles\<close>
+subsection \<open>Bundles\<close>
 
 bundle graph_automation
 begin
@@ -708,7 +708,7 @@ lemmas [dest]  = Subgraph_Node_Defs.subgraphD
 end (* Bundle *)
 
 
-section \<open>Simulations and Bisimulations\<close>
+subsection \<open>Simulations and Bisimulations\<close>
 
 locale Graph_Invariant = Graph_Defs +
   fixes P :: "'a \<Rightarrow> bool"
