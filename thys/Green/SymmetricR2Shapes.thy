@@ -14,21 +14,20 @@ proof (intro conjI)
     using assms
     using continuous_on_Pair continuous_on_componentwise[where f = "(\<lambda>x. (f x, g x))"]
     by (auto simp add: real_pair_basis valid_path_def piecewise_C1_differentiable_on_def)
-  show "\<exists>s. finite s \<and> (\<lambda>x. (g x, f x)) C1_differentiable_on {0..1} - s"
+  show "\<exists>S. finite S \<and> (\<lambda>x. (g x, f x)) C1_differentiable_on {0..1} - S"
   proof -
-    obtain s where s: "finite s" "(\<lambda>x. (f x, g x)) C1_differentiable_on {0..1} - s"
+    obtain S where "finite S" and S: "(\<lambda>x. (f x, g x)) C1_differentiable_on {0..1} - S"
       using assms
       by (auto simp add: real_pair_basis valid_path_def piecewise_C1_differentiable_on_def)
-    have 0: "f C1_differentiable_on {0..1} - s" using s(2) assms
-      using C1_diff_components_2[where f = "(\<lambda>x. (f x, g x))"] 
-      apply(auto simp add: real_pair_basis algebra_simps)
-      using real_pair_basis by fastforce
-    have 1: "g C1_differentiable_on {0..1} - s" using s(2) assms
-      using C1_diff_components_2 real_pair_basis by fastforce
-    have *: "(\<lambda>x. (g x, f x)) C1_differentiable_on {0..1} - s"
+    have 0: "f C1_differentiable_on {0..1} - S" using S assms
+      using C1_diff_components_2[of "(1,0)" "(\<lambda>x. (f x, g x))"] 
+      by (auto simp add: real_pair_basis algebra_simps)
+    have 1: "g C1_differentiable_on {0..1} - S" using S assms
+      using C1_diff_components_2 [of "(0,1)", OF _ S] real_pair_basis by fastforce
+    have *: "(\<lambda>x. (g x, f x)) C1_differentiable_on {0..1} - S"
       using 0 1 C1_differentiable_on_components[where f = "(\<lambda>x. (g x, f x))"]
       by (auto simp add: real_pair_basis valid_path_def piecewise_C1_differentiable_on_def)
-    then show ?thesis using s(1) by auto
+    then show ?thesis using \<open>finite S\<close> by auto
   qed
 qed
 
