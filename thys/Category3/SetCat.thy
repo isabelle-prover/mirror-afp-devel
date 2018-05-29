@@ -78,10 +78,10 @@ begin
      * However, the differences were not that significant, so I went with the
      * former.
      *)
-    definition comp :: "'a arr \<Rightarrow> 'a arr \<Rightarrow> 'a arr"
-    where "comp g f = (if Arr f \<and> Arr g \<and> Cod f = Dom g then
-                         (compose (Dom f) (Fun g) (Fun f), (Dom f, Cod g))
-                       else Null)"
+    definition comp :: "'a arr \<Rightarrow> 'a arr \<Rightarrow> 'a arr"      (infixr "\<cdot>" 55)
+    where "g \<cdot> f = (if Arr f \<and> Arr g \<and> Cod f = Dom g then
+                      (compose (Dom f) (Fun g) (Fun f), (Dom f, Cod g))
+                    else Null)"
 
     text{*
       Our first objective is to develop just enough properties of the preceding
@@ -102,7 +102,7 @@ begin
 
     lemma comp_Id_Dom:
     assumes "Arr f"
-    shows "comp f (Id (Dom f)) = f"
+    shows "f \<cdot> Id (Dom f) = f"
     proof -
       have "\<And>F A. F \<in> extensional A \<Longrightarrow> compose A F (\<lambda>x \<in> A. x) = F"
         using compose_extensional extensional_arb by fastforce
@@ -113,7 +113,7 @@ begin
 
     lemma comp_Cod_Id:
     assumes "Arr f"
-    shows "comp (Id (Cod f)) f = f"
+    shows "Id (Cod f) \<cdot> f = f"
     proof -
       have 1: "Fun f \<in> Dom f \<rightarrow> Cod f"
         by (metis (no_types) Arr_def IntD2 assms)
@@ -127,14 +127,14 @@ begin
 
     lemma Arr_comp:
     assumes "Arr f" and "Arr g" and "Cod f = Dom g"
-    shows "Arr (comp g f)"
+    shows "Arr (g \<cdot> f)"
     proof -
       have "\<forall>x. x \<in> Dom g \<longrightarrow> Fun g x \<in> Cod g"
         using assms(2) Arr_def by fast
       moreover have "\<forall>x. x \<in> Dom f \<longrightarrow> Fun f x \<in> Cod f"
         using assms(1) Arr_def by fast
-      moreover have "comp g f = (compose (Dom f) (Fun g) (Fun f), Dom f, Cod g)"
-        by (simp add: assms(1) assms(2) assms(3) comp_def)
+      moreover have "g \<cdot> f = (compose (Dom f) (Fun g) (Fun f), Dom f, Cod g)"
+        by (simp add: assms(1-3) comp_def)
       ultimately show ?thesis by (simp add: Arr_def assms(3))
     qed
 
@@ -144,51 +144,102 @@ begin
 
     interpretation partial_magma comp
     proof
-      show "\<exists>!n. \<forall>f. comp n f = n \<and> comp f n = n"
+      show "\<exists>!n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n"
       proof
-        let ?P = "\<lambda>n. \<forall>f. comp n f = n \<and> comp f n = n"
+        let ?P = "\<lambda>n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n"
         show 1: "?P Null" using comp_def not_Arr_Null by metis
-        thus "\<And>n. \<forall>f. comp n f = n \<and> comp f n = n \<Longrightarrow> n = Null" by metis
+        thus "\<And>n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n \<Longrightarrow> n = Null" by metis
       qed
     qed
-      
+
+    notation in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+
     lemma null_char:
     shows "null = Null"
       using comp_def not_Arr_Null ex_un_null by (metis comp_null(2))
 
-    lemma unit_Id:
-    shows "unit (Id A)"
-      unfolding unit_def
-      using comp_def null_char comp_Id_Dom Cod_Id comp_Cod_Id Dom_Id by metis
+    lemma ide_Id:
+    shows "ide (Id A)"
+    proof -
+      have "Id A \<cdot> Id A = Id A"
+        unfolding comp_def apply (auto simp add: Arr_Id Dom_Id Cod_Id)
+        unfolding Id_def by auto
+      moreover have "\<And>f. f \<cdot> Id A \<noteq> null \<Longrightarrow> f \<cdot> Id A = f"
+        by (metis Cod_Id comp_Id_Dom comp_def null_char)
+      moreover have "\<And>f. Id A \<cdot> f \<noteq> null \<Longrightarrow> Id A \<cdot> f = f"
+        by (metis Dom_Id comp_Cod_Id comp_def null_char)
+      ultimately show ?thesis
+        unfolding ide_def
+        using null_char not_Arr_Null Arr_Id by metis
+    qed
 
-    lemma has_dom_char:
-    shows "has_dom f \<longleftrightarrow> Arr f"
-      unfolding has_dom_def
-      using comp_def null_char unit_Id comp_Id_Dom not_Arr_Null by metis
-    
-    lemma has_cod_char:
-    shows "has_cod f \<longleftrightarrow> Arr f"
-      unfolding has_cod_def
-      using comp_def null_char unit_Id comp_Cod_Id not_Arr_Null by metis
+    lemma has_domain_char:
+    shows "Arr f \<Longrightarrow> Id (Dom f) \<in> domains f"
+    and "domains f \<noteq> {} \<Longrightarrow> Arr f"
+    proof -
+      assume f: "domains f \<noteq> {}"
+      obtain x where x: "x \<in> domains f"
+        using f by blast
+      have "f \<cdot> x \<noteq> null"
+        using x by (simp add: domains_def)
+      thus "Arr f"
+        using comp_def null_char by metis
+      next
+      assume f: "Arr f"
+      have "f \<noteq> null"
+        by (metis f not_Arr_Null null_char)
+      hence "Id (Dom f) \<in> {p. ide p \<and> comp f p \<noteq> null}"
+        by (simp add: f comp_Id_Dom ide_Id)
+      thus "Id (Dom f) \<in> domains f"
+        using domains_def by blast
+    qed
+
+    lemma has_codomain_char:
+    shows "Arr f \<Longrightarrow> Id (Cod f) \<in> codomains f"
+    and "codomains f \<noteq> {} \<Longrightarrow> Arr f"
+    proof -
+      assume f: "codomains f \<noteq> {}"
+      obtain x where x: "x \<in> codomains f"
+        using f by blast
+      have "x \<cdot> f \<noteq> null"
+        using x by (simp add: codomains_def)
+      thus "Arr f"
+        using comp_def null_char by metis
+      next
+      assume f: "Arr f"
+      have "f \<noteq> null"
+        by (metis f not_Arr_Null null_char)
+      hence "Id (Cod f) \<in> {p. ide p \<and> comp p f \<noteq> null}"
+        by (simp add: f comp_Cod_Id ide_Id)
+      thus "Id (Cod f) \<in> codomains f"
+        using codomains_def by blast
+    qed
+
+    lemma arr_char:
+    shows "arr f \<longleftrightarrow> Arr f"
+      using has_domain_char has_codomain_char arr_def by blast
 
     lemma comp_assoc:
-    assumes "comp g f \<noteq> null" and "comp h g \<noteq> null"
-    shows "comp h (comp g f) = comp (comp h g) f"
+    assumes "g \<cdot> f \<noteq> null" and "h \<cdot> g \<noteq> null"
+    shows "h \<cdot> g \<cdot> f = (h \<cdot> g) \<cdot> f"
     proof -
       have 1: "Arr f \<and> Arr g \<and> Cod f = Dom g"
         using assms(1) comp_def null_char by metis
       have 2: "Arr g \<and> Arr h \<and> Cod g = Dom h"
         using assms(2) comp_def null_char by metis
-      have 3: "Arr (comp g f) \<and> comp g f = (compose (Dom f) (Fun g) (Fun f), (Dom f, Cod g))"
+      have 3: "Arr (comp g f) \<and>
+               comp g f = (compose (Dom f) (Fun g) (Fun f), (Dom f, Cod g))"
         using 1 comp_def Arr_comp by metis
-      have 4: "Arr (comp h g) \<and> comp h g = (compose (Dom g) (Fun h) (Fun g), (Dom g, Cod h))"
+      have 4: "Arr (comp h g) \<and>
+               comp h g = (compose (Dom g) (Fun h) (Fun g), (Dom g, Cod h))"
         using 2 comp_def Arr_comp by metis
-      have "comp h (comp g f) =
-               (compose (Dom f) (Fun h) (compose (Dom f) (Fun g) (Fun f)), (Dom f, Cod h))"
+      have "h \<cdot> g \<cdot> f =
+            (compose (Dom f) (Fun h) (compose (Dom f) (Fun g) (Fun f)), (Dom f, Cod h))"
         using 1 2 3 comp_def by (metis (no_types, lifting) fst_conv snd_conv)
-      also have "... = (compose (Dom f) (compose (Dom g) (Fun h) (Fun g)) (Fun f), (Dom f, Cod h))"
+      also have
+          "... = (compose (Dom f) (compose (Dom g) (Fun h) (Fun g)) (Fun f), (Dom f, Cod h))"
         using 1 2 unfolding Arr_def using compose_assoc by fastforce
-      also have "... = comp (comp h g) f"
+      also have "... = (h \<cdot> g) \<cdot> f"
         using 1 2 4 comp_def by (metis (no_types) fst_conv snd_conv)
       finally show ?thesis by auto
     qed
@@ -197,33 +248,21 @@ begin
     shows "category comp"
     proof
       fix f g h :: "'a arr"
-      assume hg: "comp h g \<noteq> null" and hgf: "comp (comp h g) f \<noteq> null"
-      show "comp g f \<noteq> null"
-        using hg hgf null_char comp_def [of h g] comp_def [of g f] comp_def [of "comp h g" f]
-              Arr_comp not_Arr_Null fst_conv snd_conv
-        by metis
-      next
-      fix f g h :: "'a arr"
-      assume gf: "comp g f \<noteq> null" and hgf: "comp h (comp g f) \<noteq> null"
-      show "comp h g \<noteq> null"
-        using gf hgf null_char comp_def [of g f] comp_def [of h g] comp_def [of h "comp g f"]
-        by (metis setcat.Arr_comp setcat.not_Arr_Null sndI)
-      next
-      fix f g h :: "'a arr"
-      assume gf: "comp g f \<noteq> null" and hg: "comp h g \<noteq> null"
-      show 1: "comp (comp h g) f \<noteq> null"
-        using gf hg null_char comp_def [of g f] comp_def [of h g] comp_def [of "comp h g" f]
-        by (metis fst_conv setcat.Arr_comp setcat.not_Arr_Null snd_conv)
-      show "comp h (comp g f) \<noteq> null"
-        using 1 gf hg null_char  comp_def [of g f] comp_def [of h g] comp_def [of h "comp g f"]
-              comp_assoc
-        by fastforce
-      show "comp h (comp g f) = comp (comp h g) f"
-        using gf hg comp_assoc by metis
-      next
-      fix f :: "'a arr"
-      show "has_dom f \<longleftrightarrow> has_cod f"
-        using has_dom_char has_cod_char by blast
+      show "g \<cdot> f \<noteq> null \<Longrightarrow> seq g f"
+        using null_char comp_def Arr_comp arr_char by metis
+      show "(domains f \<noteq> {}) = (codomains f \<noteq> {})"
+        using has_domain_char has_codomain_char by blast
+      show "seq h g \<Longrightarrow> seq (h \<cdot> g) f \<Longrightarrow> seq g f"
+        using Arr_comp arr_char comp_def [of h g] comp_def [of g f] comp_def [of "comp h g" f]
+        by (metis fst_conv snd_conv)
+      show "seq h (g \<cdot> f) \<Longrightarrow> seq g f \<Longrightarrow> seq h g"
+        using Arr_comp arr_char comp_def [of h g] comp_def [of g f] comp_def [of h "comp g f"]
+        by (metis snd_conv)
+      show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> seq (h \<cdot> g) f"
+        using Arr_comp arr_char comp_def [of h g] comp_def [of g f] comp_def [of "comp h g" f]
+        by (metis fst_conv snd_conv)
+      show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
+        using comp_assoc not_arr_null by metis
     qed
 
     interpretation category comp
@@ -234,38 +273,44 @@ begin
       locale in terms of the concrete structure.
     *}
 
-    lemma arr_char:
-    shows "arr f \<longleftrightarrow> Arr f"
-      using arr_def has_dom_char has_cod_char by metis
+    lemma dom_simp:
+    assumes "arr f"
+    shows "dom f = Id (Dom f)"
+      using assms has_domain_char domain_unique dom_in_domains has_domain_iff_arr
+      by blast
+
+    lemma cod_simp:
+    assumes "arr f"
+    shows "cod f = Id (Cod f)"
+      using assms has_codomain_char codomain_unique cod_in_codomains has_codomain_iff_arr
+      by blast
 
     lemma dom_char:
     shows "dom f = (if arr f then (\<lambda>x \<in> Dom f. x, (Dom f, Dom f)) else null)"
-      using arr_char null_char dom_def Id_def unit_Id Arr_Id Cod_Id Arr_comp not_Arr_Null
-      by (metis (mono_tags, lifting) arr_def dom_simp)
+      using Id_def dom_simp has_domain_iff_arr dom_def by metis
   
     lemma cod_char:
     shows "cod f = (if arr f then (\<lambda>x \<in> Cod f. x, (Cod f, Cod f)) else null)"
-      using arr_char null_char cod_def Id_def unit_Id not_Arr_Null cod_simp
-      by (metis (mono_tags, lifting) arr_def comp_Cod_Id)
-    
+      using Id_def cod_simp has_codomain_iff_arr cod_def by metis
+
     lemma ide_char:
     shows "ide a \<longleftrightarrow> Dom a = Cod a \<and> Fun a = (\<lambda>x \<in> Dom a. x)"
-      using arr_char dom_char Arr_Id Id_def
-      by (metis ideI_dom fst_conv ideD(1) ideD(2) prod.collapse Cod_Id)
+      using dom_char in_homE [of a a a] arr_char dom_char ide_dom Arr_Id Id_def ide_in_hom
+      by (metis fst_conv snd_conv prod.collapse)
 
     lemma seq_char:
     shows "seq g f \<longleftrightarrow> Arr f \<and> Arr g \<and> Cod f = Dom g"
     proof -
       have "seq g f \<longrightarrow> snd (snd f) = fst (snd g)"
-        by (simp add: cod_char dom_char)
+        by (metis not_arr_null comp_def null_char)
       thus ?thesis
-        by (metis (no_types) arr_char cod_char dom_char)
+        using arr_char dom_char cod_char seqI seqE by metis
     qed
     
     lemma comp_char:
-    shows "comp g f = (if seq g f then
-                         (compose (Dom f) (Fun g) (Fun f), (Dom f, Cod g))
-                       else Null)"
+    shows "g \<cdot> f = (if seq g f then
+                      (compose (Dom f) (Fun g) (Fun f), (Dom f, Cod g))
+                    else Null)"
       using seq_char comp_def null_char by metis
    
   end
@@ -288,23 +333,24 @@ begin
   context begin
 
     interpretation SC: setcat .
+    no_notation SC.comp      (infixr "\<cdot>" 55)
 
     typedef 'a arr = "UNIV :: (('a \<Rightarrow> 'a) * ('a set * 'a set)) set" ..
 
     interpretation AC: abstracted_category SC.comp Abs_arr Rep_arr UNIV
-      using Rep_arr_inverse Abs_arr_inverse apply unfold_locales by auto
+      using Rep_arr_inverse Abs_arr_inverse by (unfold_locales, auto)
 
     definition comp
     where "comp \<equiv> AC.comp"
 
     lemma is_category:
     shows "category comp"
-    proof -
-      have "category AC.comp" ..
-      thus "category comp" using comp_def by metis
-    qed
+      using comp_def AC.category_axioms by metis
 
     interpretation category comp using is_category by auto
+
+    notation comp      (infixr "\<cdot>" 55)
+    notation in_hom    ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
     text{*
       To be able to accomplish anything with the category we just defined,
@@ -349,19 +395,15 @@ begin
 
     private lemma dom_char:
     shows "dom f = (if arr f then MkArr (Dom f) (Dom f) id else null)"
-    proof -
-      have "Abs_arr (\<lambda>x\<in>Dom f. x, Dom f, Dom f) = MkArr (Dom f) (Dom f) id"
-        using MkArr_def id_apply by (metis restrict_ext)
-      thus ?thesis using comp_def AC.dom_char AC.arr_char SC.dom_char Dom_def by metis
-    qed
+      using MkArr_def id_apply restrict_ext comp_def AC.dom_char AC.arr_char SC.dom_char
+            Dom_def
+      by metis
    
     private lemma cod_char:
     shows "cod f = (if arr f then MkArr (Cod f) (Cod f) id else null)"
-    proof -
-      have "Abs_arr (\<lambda>x\<in>Cod f. x, Cod f, Cod f) = MkArr (Cod f) (Cod f) id"
-        using MkArr_def id_apply by (metis restrict_ext)
-      thus ?thesis using comp_def AC.cod_char AC.arr_char SC.cod_char Cod_def by metis
-    qed
+      using MkArr_def id_apply restrict_ext comp_def AC.cod_char AC.arr_char SC.cod_char
+            Cod_def
+      by metis
 
     private lemma ide_char:
     shows "ide f = (Dom f = Cod f \<and> Fun f = (\<lambda>x \<in> Dom f. x))"
@@ -369,26 +411,27 @@ begin
 
     private lemma seq_char:
     shows "seq g f = (arr f \<and> arr g \<and> Cod f = Dom g)"
-      using dom_char cod_char Dom_MkArr by metis
+      using dom_char cod_char Dom_MkArr seqI seqE by metis
 
     private lemma comp_char:
-    shows "comp g f = (if seq g f then
-                         MkArr (Dom f) (Cod g) (compose (Dom f) (Fun g) (Fun f))
-                       else null)"
+    shows "g \<cdot> f = (if seq g f then
+                      MkArr (Dom f) (Cod g) (compose (Dom f) (Fun g) (Fun f))
+                    else null)"
     proof (cases "seq g f")
       show "\<not>seq g f \<Longrightarrow> ?thesis"
         using comp_def AC.comp_char by metis
       show "seq g f \<Longrightarrow> ?thesis"
       proof -
         assume gf: "seq g f"
-        have "comp g f = Abs_arr (compose (Dom f) (Fun g) (Fun f), Dom f, Cod g)"
-          by (metis (no_types) AC.comp_char Cod_def Dom_def Fun_def SetCat.comp_def arr_comp
-              gf not_arr_null null_char setcat.comp_char)
+        have "g \<cdot> f = Abs_arr (compose (Dom f) (Fun g) (Fun f), Dom f, Cod g)"
+          using gf
+          by (metis (no_types, lifting) AC.comp_char Cod_def Dom_def Fun_def
+              comp_def has_codomain_iff_arr null_char setcat.comp_def codomains_null)
         also have "... = MkArr (Dom f) (Cod g) (compose (Dom f) (Fun g) (Fun f))"
           using MkArr_def [of "Dom f" "Cod g" "compose (Dom f) (Fun g) (Fun f)"]
-                compose_def [of "Dom f" "Fun g" "Fun f"]
+                compose_def
           by simp
-        finally have "comp g f = MkArr (Dom f) (Cod g) (compose (Dom f) (Fun g) (Fun f))"
+        finally have "g \<cdot> f = MkArr (Dom f) (Cod g) (compose (Dom f) (Fun g) (Fun f))"
           by auto
         thus ?thesis using gf by auto
       qed
@@ -397,10 +440,7 @@ begin
     private lemma arr_MkArr:
     assumes "F \<in> A \<rightarrow> B"
     shows "arr (MkArr A B F)"
-    proof -
-      have "restrict F A \<in> extensional A \<inter> (A \<rightarrow> B)" using assms by blast
-      thus ?thesis using arr_char Fun_MkArr Dom_MkArr Cod_MkArr by metis
-    qed
+      using assms arr_char Fun_MkArr Dom_MkArr Cod_MkArr by force
 
     private lemma MkArr_Fun:
     assumes "arr f"
@@ -421,23 +461,23 @@ begin
     private lemma Id_Dom:
     assumes "ide a"
     shows "Id (Dom a) = a"
-      using assms ide_char dom_char ideD(1) ideD(2) by metis
+      using assms dom_char ide_in_hom by (metis in_homE)
 
     private lemma Id_Cod:
     assumes "ide a"
     shows "Id (Cod a) = a"
-      using assms ide_char dom_char ideD(1) ideD(2) by metis
+      using assms ide_char by (metis Id_Dom)
 
     private lemma MkArr_in_hom:
     assumes "F \<in> A \<rightarrow> B"
-    shows "MkArr A B F \<in> hom (Id A) (Id B)"
+    shows "\<guillemotleft>MkArr A B F : Id A \<rightarrow> Id B\<guillemotright>"
     proof -
-      have 1: "arr (MkArr A B F)" using assms arr_MkArr by auto
-      have 2: "dom (MkArr A B F) = Id A"
+      have 1: "arr (MkArr A B F)" using assms arr_MkArr by blast
+      moreover have "dom (MkArr A B F) = Id A"
         using 1 dom_char Dom_MkArr by metis
-      have 3: "cod (MkArr A B F) = Id B"
+      moreover have "cod (MkArr A B F) = Id B"
         using 1 cod_char Cod_MkArr by metis
-      show ?thesis using 1 2 3 by blast
+      ultimately show ?thesis by blast
     qed
 
     private lemma terminal_char:
@@ -449,33 +489,28 @@ begin
         from this obtain x where x: "a = Id {x}" by blast
         have "terminal (Id {x})"
         proof
-          show 1: "ide (Id {x})" using ide_char Id_def
-            by (simp add: Id_def arr_char category.ideI_dom dom_char is_category)
-          show "\<And>a. ide a \<Longrightarrow> \<exists>!f. f \<in> hom a (Id {x})"
+          show 1: "ide (Id {x})"
+            using ide_Id by metis
+          show "\<And>a. ide a \<Longrightarrow> \<exists>!f. \<guillemotleft>f : a \<rightarrow> Id {x}\<guillemotright>"
           proof
             fix a :: "'a arr"
             assume a: "ide a"
-            show 2: "MkArr (Dom a) {x} (\<lambda>_ \<in> Dom a. x) \<in> hom a (Id {x})"
-              using a 1 MkArr_in_hom Id_Dom
-              by (metis (no_types, lifting) mem_Collect_eq restrictI singletonI)
+            show "\<guillemotleft>MkArr (Dom a) {x} (\<lambda>_\<in>Dom a. x) : a \<rightarrow> Id {x}\<guillemotright>"
+              using a Id_Dom MkArr_in_hom
+              by (metis restrictI singletonI)
             fix f :: "'a arr"
-            assume f: "f \<in> hom a (Id {x})"
+            assume f: "\<guillemotleft>f : a \<rightarrow> Id {x}\<guillemotright>"
             show "f = MkArr (Dom a) {x} (\<lambda>_ \<in> Dom a. x)"
             proof -
-              have 1: "Dom f = Dom a \<and> Cod f = {x}"
-              proof -
-                have "arr f \<and> local.dom f = a \<and> cod f = local.Id {x}"
-                  using f by fastforce
-                thus ?thesis
-                  by (metis Cod_MkArr a cod_char dom_char ide_char)
-              qed
+              have 2: "Dom f = Dom a \<and> Cod f = {x}"
+                using a f Dom_MkArr dom_char cod_char in_homE by metis
               moreover have "Fun f = (\<lambda>_ \<in> Dom a. x)"
               proof
                 fix z
                 have "z \<notin> Dom a \<Longrightarrow> Fun f z = (\<lambda>_ \<in> Dom a. x) z"
-                  using f 1 arr_char [of f] extensional_arb [of "Fun f" "Dom a"] by simp
+                  by (metis f 2 Fun_MkArr MkArr_Fun in_homE restrict_def)
                 moreover have "z \<in> Dom a \<Longrightarrow> Fun f z = (\<lambda>_ \<in> Dom a. x) z"
-                  using f 1 arr_char [of f] by auto
+                  using f 2 arr_char [of f] by auto
                 ultimately show "Fun f z = (\<lambda>_ \<in> Dom a. x) z" by auto
               qed
               ultimately show ?thesis
@@ -493,33 +528,29 @@ begin
         proof -
           have "Dom a = {} \<Longrightarrow> \<not>terminal a"
           proof -
-            assume 1: "Dom a = {}"
-            hence 2: "a = Id {}" using `ide a` Id_Dom by force
+            assume "Dom a = {}"
+            hence 1: "a = Id {}" using `ide a` Id_Dom by force
             have "\<And>f. f \<in> hom (Id {undefined}) (Id {}) \<Longrightarrow> Fun f \<in> {undefined} \<rightarrow> {}"
-            proof -
-              fix f :: "'b arr"
-              assume "f \<in> hom (Id {undefined}) (Id {})"
-              hence "arr f \<and> dom f = Id {undefined} \<and> cod f = Id {}" by blast
-              thus "Fun f \<in> {undefined} \<rightarrow> {}"
-                by (metis (no_types) Cod_MkArr IntD2 arr_char cod_char dom_char)
-            qed
-            hence "hom (Id {undefined}) a = {}" using 2 by auto
+              by (metis Cod_MkArr CollectD IntD2 arrI arr_char cod_char dom_char in_homE)
+            hence "hom (Id {undefined}) a = {}" using 1 by auto
             moreover have "ide (Id {undefined})" using ide_Id by auto
-            ultimately show "\<not>terminal a" using terminal_def by fast
+            ultimately show "\<not>terminal a" by auto
           qed
           moreover have "\<And>x x'. x \<in> Dom a \<and> x' \<in> Dom a \<and> x \<noteq> x' \<Longrightarrow> \<not>terminal a"
           proof -
             fix x x'
             assume 1: "x \<in> Dom a \<and> x' \<in> Dom a \<and> x \<noteq> x'"
-            have "MkArr {undefined} (Dom a) (\<lambda>_. x) \<in> hom (Id {undefined}) a"
+            have "\<guillemotleft>MkArr {undefined} (Dom a) (\<lambda>_. x) : Id {undefined} \<rightarrow> a\<guillemotright>"
               using 1 MkArr_in_hom [of "\<lambda>_. x" "{undefined}" "Dom a"] Id_Dom [of a] `ide a`
               by simp
-            moreover have "MkArr {undefined} (Dom a) (\<lambda>_. x') \<in> hom (Id {undefined}) a"
+            moreover have "\<guillemotleft>MkArr {undefined} (Dom a) (\<lambda>_. x') : Id {undefined} \<rightarrow> a\<guillemotright>"
               using 1 MkArr_in_hom [of "\<lambda>_. x'" "{undefined}" "Dom a"] Id_Dom [of a] `ide a`
               by simp
-            moreover have "MkArr {undefined} (Dom a) (\<lambda>_. x) \<noteq> MkArr {undefined} (Dom a) (\<lambda>_. x')"
+            moreover have
+                "MkArr {undefined} (Dom a) (\<lambda>_. x) \<noteq> MkArr {undefined} (Dom a) (\<lambda>_. x')"
               using 1 Fun_MkArr restrict_apply by (metis singletonI)
-            ultimately show "\<not>terminal a" using terminal_arr_unique by fastforce
+            ultimately show "\<not>terminal a"
+              using terminal_arr_unique by (metis arrI in_homE)
           qed
           ultimately show ?thesis
             using a by auto
@@ -602,7 +633,7 @@ begin
     *}
 
     private lemma Img_point:
-    assumes "p \<in> hom unity a"
+    assumes "\<guillemotleft>p : unity \<rightarrow> a\<guillemotright>"
     shows "Img \<in> hom unity a \<rightarrow> Univ"
     and "Img p = (UP o Fun p o DOWN) unity"
     proof -
@@ -615,15 +646,11 @@ begin
           by (metis (no_types, lifting) Dom_terminal image_empty image_insert terminal_unity)
         hence "Id (Fun x ` Dom unity) \<in> Univ" by simp
         moreover have "Id (Fun x ` Dom unity) = Img x"
-        proof -
-          have "Dom x = Dom unity"
-            using x dom_char by (metis (mono_tags, lifting) CollectD Dom_MkArr)
-          thus ?thesis using Img_def by metis
-        qed
+          using x dom_char Dom_MkArr Img_def in_homE by (metis CollectD)
         ultimately show "Img x \<in> Univ" by auto
       qed
       have 1: "Dom p = Dom unity"
-        using assms dom_char Dom_MkArr by (metis (mono_tags, lifting) CollectD)
+        using assms dom_char Dom_MkArr by (metis in_homE)
       have "Img p = Id (Fun p ` Dom p)" using Img_def by blast
       also have "... = Id (Fun p ` {U})"
         using 1 terminal_unity Dom_terminal by metis
@@ -642,7 +669,7 @@ begin
 
     private lemma MkElem_in_hom:
     assumes "arr f" and "x \<in> Dom f"
-    shows "MkElem (UP x) (dom f) \<in> hom unity (dom f)"
+    shows "\<guillemotleft>MkElem (UP x) (dom f) : unity \<rightarrow> dom f\<guillemotright>"
     proof -
       have "(\<lambda>_ \<in> {U}. DOWN (UP x)) \<in> {U} \<rightarrow> Dom (dom f)"
         using assms dom_char [of f] by fastforce
@@ -651,32 +678,26 @@ begin
       moreover have "Id (Dom (dom f)) = dom f"
         using assms by (simp add: dom_char)
       ultimately show ?thesis
-        using assms MkArr_in_hom [of "\<lambda>_ \<in> {U}. DOWN (UP x)" "{U}" "Dom (dom f)"] by simp
+        using assms MkArr_in_hom [of "\<lambda>_ \<in> {U}. DOWN (UP x)" "{U}" "Dom (dom f)"] by metis
     qed
 
     private lemma MkElem_Img:
     assumes "p \<in> hom unity a"
     shows "MkElem (Img p) a = p"
     proof -
-      have 0: "Img p = UP (Fun p U)" using assms Img_point by fastforce
+      have 0: "Img p = UP (Fun p U)"
+        using assms Img_point(2) by auto
       have 1: "Dom p = {U}"
         using assms dom_char Dom_MkArr terminal_unity Dom_terminal
-        by (metis (mono_tags, lifting) CollectD ide_char terminal_def)
+        by (metis in_homE CollectD)
       moreover have "Cod p = Dom a"
-        using assms cod_char Cod_MkArr
-        by (metis (mono_tags, lifting) CollectD Dom_MkArr)
+        using assms cod_char by (metis Dom_MkArr in_homE CollectD)
       moreover have "Fun p = (\<lambda>_ \<in> {U}. DOWN (Img p))"
       proof
         fix e
         show "Fun p e = (\<lambda>_ \<in> {U}. DOWN (Img p)) e"
-        proof -
-          have "e \<noteq> U \<Longrightarrow> ?thesis"
-            using assms 1 arr_char extensional_arb CollectD IntE restrict_apply singletonD
-            by fastforce
-          moreover have "e = U \<Longrightarrow> ?thesis"
-            using 0 restrict_apply' by simp
-          ultimately show ?thesis by auto
-        qed
+          using assms 0 1 Fun_MkArr MkArr_Fun in_homE
+          by (metis DOWN_UP restrict_apply singleton_iff CollectD)
       qed
       ultimately show "MkElem (Img p) a = p"
         using assms arr_eqI Dom_MkArr Cod_MkArr Fun_MkArr MkArr_Fun CollectD by fastforce
@@ -685,18 +706,7 @@ begin
     private lemma inj_Img:
     assumes "ide a"
     shows "inj_on Img (hom unity a)"
-    proof -
-      have "\<And>p p'. p \<in> hom unity a \<and> p' \<in> hom unity a \<and> Img p = Img p' \<Longrightarrow> p = p'"
-      proof -
-        fix p p'
-        assume pp': "p \<in> hom unity a \<and> p' \<in> hom unity a \<and> Img p = Img p'"
-        have "MkElem (Img p) a = p" using assms pp' MkElem_Img by blast
-        moreover have "MkElem (Img p') a = p'" using assms pp' MkElem_Img by blast
-        moreover have "MkElem (Img p) a = MkElem (Img p') a" using pp' by simp
-        ultimately show "p = p'" by presburger
-      qed
-      thus ?thesis using inj_onI [of "hom unity a" Img] by blast
-    qed
+      using assms MkElem_Img inj_onI [of "hom unity a" Img] by metis
 
     private lemma set_char:
     assumes "ide a"
@@ -706,19 +716,15 @@ begin
       proof
         fix t
         assume "t \<in> set a"
-        from this obtain p where p: "p \<in> hom unity a \<and> t = Img p"
+        from this obtain p where p: "\<guillemotleft>p : unity \<rightarrow> a\<guillemotright> \<and> t = Img p"
           using set_def by blast
         have 1: "Dom p = Dom unity"
-          using p dom_char Dom_MkArr by (metis (mono_tags, lifting) CollectD)
+          using p dom_char Dom_MkArr by (metis in_homE)
         have "t = (UP o Fun p o DOWN) unity"
           using p Img_point(2) by blast
         moreover have "(Fun p o DOWN) unity \<in> Dom a"
-        proof -
-          have "Fun p \<in> Dom unity \<rightarrow> Cod p" using 1 p arr_char by fast
-          moreover have "U \<in> Dom unity" using terminal_unity Dom_terminal by fast
-          moreover have "Cod p = Dom a" using p dom_char [of a] cod_char [of p] by force
-          ultimately show ?thesis by auto
-        qed
+          using 1 p arr_char Dom_terminal terminal_unity cod_char
+          by (metis Dom_MkArr IntD2 PiE comp_apply in_homE singletonI)
         ultimately show "t \<in> UP ` Dom a" by simp
       qed
       show "UP ` Dom a \<subseteq> set a"
@@ -728,8 +734,8 @@ begin
         from this obtain x where x: "x \<in> Dom a \<and> t = UP x" by blast
         let ?p = "MkElem (UP x) a"
         have p: "?p \<in> hom unity a"
-          using assms x MkElem_in_hom [of "dom a"] by simp
-        moreover have "Img ?p = t" using p x Img_point by fastforce
+          using assms x MkElem_in_hom [of "dom a"] by auto
+        moreover have "Img ?p = t" using p x Img_point by force
         ultimately show "t \<in> set a" using set_def by blast
       qed
     qed
@@ -747,17 +753,18 @@ begin
               Fun f x = restrict (\<lambda>x. Fun (comp f (MkElem (UP x) (dom f))) U) (Dom f) x"
       proof -
         assume x: "x \<in> Dom f"
-        have "MkElem (UP x) (dom f) \<in> hom unity (dom f)"
-          using assms x MkElem_in_hom [of f x] by auto
-        hence "comp f (MkElem (UP x) (dom f)) =
-                  MkArr {U} (Cod f) (compose {U} (Fun f) (\<lambda>_ \<in> {U}. x))"
-          using assms MkArr_Fun by (simp add: comp_char)
-        hence "Fun (comp f (MkElem (UP x) (dom f))) = compose {U} (Fun f) (\<lambda>_ \<in> {U}. x)"
+        have "\<guillemotleft>MkElem (UP x) (dom f) : unity \<rightarrow> dom f\<guillemotright>"
+          using assms x MkElem_in_hom by auto
+        hence "f \<cdot> MkElem (UP x) (dom f) =
+               MkArr {U} (Cod f) (compose {U} (Fun f) (\<lambda>_ \<in> {U}. x))"
+          using assms MkArr_Fun comp_char [of f "MkElem (UP x) (dom f)"] by auto
+        hence "Fun (f \<cdot> MkElem (UP x) (dom f)) = compose {U} (Fun f) (\<lambda>_ \<in> {U}. x)"
            by (simp add: extensional_restrict)
         thus ?thesis
           using x by (simp add: compose_eq restrict_apply' singletonI)
       qed
-      ultimately show "Fun f x = restrict (\<lambda>x. Fun (comp f (MkElem (UP x) (dom f))) U) (Dom f) x"
+      ultimately show
+            "Fun f x = restrict (\<lambda>x. Fun (f \<cdot> MkElem (UP x) (dom f)) U) (Dom f) x"
         by auto
     qed
     
@@ -794,39 +801,36 @@ begin
             let ?a = "MkArr (DOWN ` A) (DOWN ` A) (\<lambda>x. x)"
             show "ide ?a \<and> set ?a = A"
             proof
-              show 1: "ide ?a" using ide_char by fastforce
+              show 1: "ide ?a"
+                using ide_char by fastforce
               show "set ?a = A"
-                using 1 A set_char [of ?a] by force
+              proof -
+                have 2: "\<And>x. x \<in> A \<Longrightarrow> x = UP (DOWN x)"
+                  using A UP_DOWN by force
+                hence "UP ` DOWN ` A = A"
+                  using A UP_DOWN by auto
+                thus ?thesis
+                  using 1 A set_char [of ?a] by simp
+              qed
             qed
           qed
           next
           fix a b :: "'a arr"
           assume a: "ide a" and b: "ide b" and ab: "set a = set b"
           show "a = b"
-          proof -
-            have "UP ` Dom a = UP ` Dom b" using a b ab set_char by blast
-            hence "Dom a = Dom b" using inj_UP inj_image_eq_iff by metis
-            thus "a = b"
-              using ide_char by (metis a b dom_char ideD(1) ideD(2))
-          qed
+            using a b ab set_char inj_UP inj_image_eq_iff dom_char in_homE ide_in_hom by metis
           next
           fix f f' :: "'a arr"
-          assume par: "par f f'" and ff': "\<And>x. x \<in> hom unity (dom f) \<Longrightarrow> comp f x = comp f' x"
+          assume par: "par f f'" and ff': "\<And>x. \<guillemotleft>x : unity \<rightarrow> dom f\<guillemotright> \<Longrightarrow> f \<cdot> x = f' \<cdot> x"
           have 1: "Dom f = Dom f' \<and> Cod f = Cod f'"
             using par dom_char cod_char Dom_MkArr by (metis (no_types, lifting))
           moreover have "Fun f = Fun f'"
-          proof
-            fix x
-            show "Fun f x = Fun f' x"
-              using 1 par ff' [of "MkElem (UP x) (dom f)"] MkElem_in_hom [of f x]
-                    Fun_via_comp [of f] Fun_via_comp [of f']
-              by simp
-          qed
+            using 1 par ff' MkElem_in_hom Fun_via_comp Fun_via_comp by fastforce
           ultimately show "f = f'" using par arr_eqI by auto
           next
           fix a b :: "'a arr" and F :: "'a arr \<Rightarrow> 'a arr"
           assume a: "ide a" and b: "ide b" and F: "F \<in> hom unity a \<rightarrow> hom unity b"
-          show "\<exists>f. f \<in> hom a b \<and> (\<forall>x. x \<in> hom unity a \<longrightarrow> comp f x = F x)"
+          show "\<exists>f. \<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<and> (\<forall>x. \<guillemotleft>x : unity \<rightarrow> dom f\<guillemotright> \<longrightarrow> f \<cdot> x = F x)"
           proof
             let ?f = "MkArr (Dom a) (Dom b) (\<lambda>x. Fun (F (MkElem (UP x) a)) U)"
             have "(\<lambda>x. Fun (F (MkElem (UP x) a)) U) \<in> Dom a \<rightarrow> Dom b"
@@ -834,101 +838,98 @@ begin
               fix x
               assume x: "x \<in> Dom a"
               have "MkElem (UP x) a \<in> hom unity a"
-                using x a MkElem_in_hom by force
-              hence "F (MkElem (UP x) a) \<in> hom unity b"
+                using x a MkElem_in_hom [of a x] ide_char by force
+              hence 1: "F (MkElem (UP x) a) \<in> hom unity b"
                 using F by auto
-              moreover have "\<And>f. arr f \<Longrightarrow> Dom f = Dom (dom f)"
-                by (metis arr_dom_iff_arr cod_dom ide_char ide_dom seq_char)
-              moreover have "\<And>f. arr f \<Longrightarrow> Cod f = Dom (cod f)"
-                by (metis arr_cod_iff_arr dom_cod seq_char)
+              moreover have "Dom (F (MkElem (UP x) a)) = {U}"
+                using 1 by (metis Dom_MkArr MkElem_Img)
+              moreover have "Cod (F (MkElem (UP x) a)) = Dom b"
+                using 1 by (metis Dom_MkArr cod_char in_homE CollectD)
               ultimately have "Fun (F (MkElem (UP x) a)) \<in> {U} \<rightarrow> Dom b"
-                using arr_char [of "F (MkElem (UP x) a)"] Dom_terminal terminal_unity
-                by fastforce
+                using arr_char [of "F (MkElem (UP x) a)"] by blast
               thus "Fun (F (MkElem (UP x) a)) U \<in> Dom b" by blast
             qed
-            hence 1: "?f \<in> hom a b"
-              using a b Id_Dom
-                    MkArr_in_hom [of "\<lambda>x. Fun (F (MkElem (UP x) a)) U" "Dom a" "Dom b"]
-              by auto
-            have "\<And>x. x \<in> hom unity a \<Longrightarrow> comp ?f x = F x"
+            hence 1: "\<guillemotleft>?f : a \<rightarrow> b\<guillemotright>"
+              using a b Id_Dom MkArr_in_hom by metis
+            have "\<And>x. \<guillemotleft>x : unity \<rightarrow> dom ?f\<guillemotright> \<Longrightarrow> ?f \<cdot> x = F x"
             proof -
               fix x
-              assume x: "x \<in> hom unity a"
+              assume x: "\<guillemotleft>x : unity \<rightarrow> dom ?f\<guillemotright>"
               have 2: "x = MkElem (Img x) a"
-                using a x MkElem_Img [of x a] by simp
-              moreover have "Dom x = {U} \<and> Cod x = Dom a \<and> Fun x = (\<lambda>_ \<in> {U}. DOWN (Img x))"
+                using a x 1 MkElem_Img [of x a] by auto
+              moreover have 5: "Dom x = {U} \<and> Cod x = Dom a \<and>
+                                Fun x = (\<lambda>_ \<in> {U}. DOWN (Img x))"
                 using x 2 Dom_MkArr [of "{U}" "Dom a" "\<lambda>_ \<in> {U}. DOWN (Img x)"]
                       Cod_MkArr [of "{U}" "Dom a" "\<lambda>_ \<in> {U}. DOWN (Img x)"]
                       Fun_MkArr [of "{U}" "Dom a" "\<lambda>_ \<in> {U}. DOWN (Img x)"]
                 by simp
               moreover have "Cod ?f = Dom b" using 1 by simp
               ultimately have
-                   3: "comp ?f x =
-                          MkArr {U} (Dom b) (compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)))"
+                   3: "?f \<cdot> x =
+                       MkArr {U} (Dom b) (compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)))"
                 using 1 x comp_char [of ?f "MkElem (Img x) a"] Dom_MkArr Cod_MkArr Fun_MkArr
-                by simp
+                by fastforce
               have 4: "compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) = Fun (F x)"
               proof
                 fix y
-                have "y \<notin> {U} \<Longrightarrow> compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = Fun (F x) y"
+                have "y \<notin> {U} \<Longrightarrow>
+                        compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = Fun (F x) y"
                 proof -
                   assume y: "y \<notin> {U}"
                   have "compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = undefined"
                     using y compose_def extensional_arb by simp
                   also have "... = Fun (F x) y"
                   proof -
-                    have 1: "F x \<in> hom unity b" using x F by auto
+                    have 5: "F x \<in> hom unity b" using x F 1 by fastforce
                     hence "Dom (F x) = {U}"
-                      using dom_char [of "F x"] terminal_unity Dom_terminal [of unity] Dom_MkArr
-                      by (metis (mono_tags, lifting) CollectD)
+                      by (metis Dom_MkArr MkElem_Img)
                     thus ?thesis
-                      using y 1 arr_char [of "F x"] extensional_arb [of "Fun (F x)" "{U}" y]
-                      by simp
+                      using y 5 arr_char [of "F x"] extensional_arb by fastforce
                   qed
                   ultimately show ?thesis by auto
                 qed
                 moreover have
-                    "y \<in> {U} \<Longrightarrow> compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = Fun (F x) y"
+                    "y \<in> {U} \<Longrightarrow>
+                       compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = Fun (F x) y"
                 proof -
                   assume y: "y \<in> {U}"
-                  have "compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = Fun ?f (DOWN (Img x))"
+                  have "compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y =
+                        Fun ?f (DOWN (Img x))"
                     using y by (simp add: compose_eq restrict_apply')
                   also have "... = (\<lambda>x. Fun (F (MkElem (UP x) a)) U) (DOWN (Img x))"
                   proof -
                     have "DOWN (Img x) \<in> Dom a"
-                      using x a
-                      by (metis (no_types, lifting) "2" Cod_MkArr Dom_MkArr Fun_MkArr Int_iff
-                          Pi_iff arr_char mem_Collect_eq restrict_apply' y)
+                      using x y a 5 arr_char in_homE restrict_apply
+                      by (metis (no_types, lifting) IntD2 PiE)
                     thus ?thesis
                       using Fun_MkArr restrict_apply by simp
                   qed
-                  also have "... = Fun (F (MkElem (Img x) a)) U" by simp
-                  also have "... = Fun (F x) U"
-                    using x MkElem_Img [of x a] by simp
                   also have "... = Fun (F x) y"
-                    using y by simp
-                  finally show "compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = Fun (F x) y"
+                    using x y 1 MkElem_Img [of x a] by auto
+                  finally show
+                      "compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = Fun (F x) y"
                     by auto
                 qed
-                ultimately show "compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = Fun (F x) y"
+                ultimately show
+                    "compose {U} (Fun ?f) (\<lambda>_ \<in> {U}. DOWN (Img x)) y = Fun (F x) y"
                   by auto
               qed
-              show "comp ?f x = F x"
+              show "?f \<cdot> x = F x"
               proof (intro arr_eqI)
-                have 5: "comp ?f x \<in> hom unity b" using 1 x by auto
-                have 6: "F x \<in> hom unity b" using x F by auto
+                have 5: "?f \<cdot> x \<in> hom unity b" using 1 x by auto
+                have 6: "F x \<in> hom unity b" using x F 1 by force
                 show "arr (comp ?f x)" using 5 by auto
                 show "arr (F x)" using 6 by auto
                 show "Dom (comp ?f x) = Dom (F x)"
-                  by (metis (mono_tags, lifting) 5 6 CollectD Dom_MkArr dom_char)
+                  using 5 6 Dom_MkArr MkElem_Img by metis
                 show "Cod (comp ?f x) = Cod (F x)"
-                  by (metis (mono_tags, lifting) 5 6 CollectD Dom_MkArr cod_char)
+                  using 5 6 Cod_MkArr MkElem_Img by metis
                 show "Fun (comp ?f x) = Fun (F x)"
-                  using 3 4 Fun_MkArr [of "{U}" "Dom b"]
+                  using 3 4 Fun_MkArr
                   by (metis compose_def extensional_restrict restrict_extensional)
               qed
             qed
-            thus "?f \<in> hom a b \<and> (\<forall>x. x \<in> hom unity a \<longrightarrow> comp ?f x = F x)"
+            thus "\<guillemotleft>?f : a \<rightarrow> b\<guillemotright> \<and> (\<forall>x. \<guillemotleft>x : unity \<rightarrow> dom ?f\<guillemotright> \<longrightarrow> comp ?f x = F x)"
               using 1 by blast
           qed
         qed
@@ -988,6 +989,9 @@ begin
         show "inj_on UP S.Univ" by (metis injD inj_UP inj_onI)
       qed
     qed
+
+    no_notation comp      (infixr "\<cdot>" 55)
+    no_notation in_hom    ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
   end
   

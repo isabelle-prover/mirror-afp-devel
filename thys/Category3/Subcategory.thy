@@ -18,24 +18,27 @@ begin
 
   locale subcategory =
     C: category C
-    for C :: "'a comp"
+    for C :: "'a comp"      (infixr "\<cdot>\<^sub>C" 55)
     and Arr :: "'a \<Rightarrow> bool" +
-    assumes Arr_implies_arr: "Arr f \<Longrightarrow> C.arr f"
+    assumes inclusion: "Arr f \<Longrightarrow> C.arr f"
     and dom_closed: "Arr f \<Longrightarrow> Arr (C.dom f)"
     and cod_closed: "Arr f \<Longrightarrow> Arr (C.cod f)"
-    and comp_closed: "\<lbrakk> Arr f; Arr g; C.cod f = C.dom g \<rbrakk> \<Longrightarrow> Arr (C g f)"
+    and comp_closed: "\<lbrakk> Arr f; Arr g; C.cod f = C.dom g \<rbrakk> \<Longrightarrow> Arr (g \<cdot>\<^sub>C f)"
   begin
 
-    definition comp
-    where "comp g f = (if Arr f \<and> Arr g \<and> C.cod f = C.dom g then C g f else C.null)"
+    no_notation C.in_hom    ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation C.in_hom       ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
+
+    definition comp         (infixr "\<cdot>" 55)
+    where "g \<cdot> f = (if Arr f \<and> Arr g \<and> C.cod f = C.dom g then g \<cdot>\<^sub>C f else C.null)"
 
     interpretation partial_magma comp
     proof
-      show "\<exists>!n. \<forall>f. comp n f = n \<and> comp f n = n"
+      show "\<exists>!n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n"
       proof
-        show 1: "\<forall>f. comp C.null f = C.null \<and> comp f C.null = C.null"
-          by (simp add: comp_def)
-        show "\<And>n. \<forall>f. comp n f = n \<and> comp f n = n \<Longrightarrow> n = C.null"
+        show 1: "\<forall>f. C.null \<cdot> f = C.null \<and> f \<cdot> C.null = C.null"
+          by (metis C.comp_null(1) C.ex_un_null comp_def)
+        show "\<And>n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n \<Longrightarrow> n = C.null"
           using 1 C.ex_un_null by metis
       qed
     qed
@@ -43,132 +46,167 @@ begin
     lemma null_char [simp]:
     shows "null = C.null"
     proof -
-      have "\<forall>f. comp C.null f = C.null \<and> comp f C.null = C.null"
-        by (simp add: comp_def)
+      have "\<forall>f. C.null \<cdot> f = C.null \<and> f \<cdot> C.null = C.null"
+        by (metis C.comp_null(1) C.ex_un_null comp_def)
       thus ?thesis using ex_un_null by (metis comp_null(2))
     qed
 
-    lemma unit_if_Arr_and_C_unit:
-    shows "Arr a \<and> C.unit a \<Longrightarrow> unit a"
-      using unit_def C.unit_def comp_def by simp
+    lemma unitI:
+    assumes "Arr a" and "C.ide a"
+    shows "ide a"
+      unfolding ide_def
+      using assms null_char C.ide_def comp_def by auto
 
-    lemma has_dom_char:
-    shows "has_dom f \<longleftrightarrow> Arr f"
+    lemma Arr_iff_dom_in_domain:
+    shows "Arr f \<longleftrightarrow> C.dom f \<in> domains f"
     proof
-      assume F: "has_dom f"
-      thus "Arr f" using F has_dom_def unit_if_Arr_and_C_unit comp_def null_char by metis
-      next
-      assume F: "Arr f"
-      hence "C.has_dom f"
-        using Arr_implies_arr by (metis C.dom_def C.not_arr_null dom_closed)
-      hence "unit (C.dom f) \<and> comp f (C.dom f) \<noteq> null"
-        using F unit_def comp_def dom_closed unit_if_Arr_and_C_unit null_char
-              Arr_implies_arr C.has_dom_def by fastforce
-      thus "has_dom f" using has_dom_def by auto
+      show "C.dom f \<in> domains f \<Longrightarrow> Arr f"
+        using domains_def comp_def ide_def by fastforce
+      show "Arr f \<Longrightarrow> C.dom f \<in> domains f"
+      proof -
+        assume f: "Arr f"
+        have "ide (C.dom f)"
+          using f inclusion C.dom_in_domains C.has_domain_iff_arr C.domains_def
+                dom_closed unitI
+          by auto
+        moreover have "f \<cdot> C.dom f \<noteq> null"
+          using f comp_def dom_closed null_char inclusion C.comp_arr_dom by force
+        ultimately show ?thesis
+          using domains_def by simp
+      qed
     qed
 
-    lemma has_cod_char:
-    shows "has_cod f \<longleftrightarrow> Arr f"
+    lemma Arr_iff_cod_in_codomain:
+    shows "Arr f \<longleftrightarrow> C.cod f \<in> codomains f"
     proof
-      assume F: "has_cod f"
-      thus "Arr f" using F has_cod_def unit_if_Arr_and_C_unit comp_def null_char by metis
-      next
-      assume F: "Arr f"
-      hence "C.has_cod f"
-        using Arr_implies_arr by (metis C.cod_def C.not_arr_null cod_closed)
-      hence "unit (C.cod f) \<and> comp (C.cod f) f \<noteq> null"
-        using F unit_def comp_def Arr_implies_arr C.has_codD(1) C.has_cod_def cod_closed
-        by auto
-      thus "has_cod f" using has_cod_def by auto
+      show "C.cod f \<in> codomains f \<Longrightarrow> Arr f"
+        using codomains_def comp_def ide_def by fastforce
+      show "Arr f \<Longrightarrow> C.cod f \<in> codomains f"
+      proof -
+        assume f: "Arr f"
+        have "ide (C.cod f)"
+          using f inclusion C.cod_in_codomains C.has_codomain_iff_arr C.codomains_def
+                cod_closed unitI
+          by auto
+        moreover have "C.cod f \<cdot> f \<noteq> null"
+          using f comp_def cod_closed null_char inclusion C.comp_cod_arr by force
+        ultimately show ?thesis
+          using codomains_def by simp
+      qed
     qed
 
     lemma arr_char [iff]:
     shows "arr f \<longleftrightarrow> Arr f"
-      using arr_def has_dom_char has_cod_char by blast
+    proof
+      show "Arr f \<Longrightarrow> arr f"
+        using arr_def comp_def Arr_iff_dom_in_domain Arr_iff_cod_in_codomain by auto
+      show "arr f \<Longrightarrow> Arr f"
+      proof -
+        assume f: "arr f"
+        obtain a where a: "a \<in> domains f \<or> a \<in> codomains f"
+          using f arr_def by auto
+        have "f \<cdot> a \<noteq> C.null \<or> a \<cdot> f \<noteq> C.null"
+          using a domains_def codomains_def null_char by auto
+        thus "Arr f"
+          using comp_def by metis
+      qed
+    qed
 
     interpretation category comp
+      using comp_def null_char inclusion comp_closed dom_closed cod_closed
       apply unfold_locales
-      using Arr_implies_arr C.dom_comp C.not_arr_null comp_closed null_char comp_def
-           apply (metis (full_types))
-      using Arr_implies_arr C.cod_comp C.not_arr_null comp_closed null_char comp_def
-          apply (metis (full_types))
+           apply auto[1]
+          apply (metis Arr_iff_dom_in_domain Arr_iff_cod_in_codomain arr_char arr_def emptyE)
     proof -
       fix f g h
-      assume gf: "comp g f \<noteq> null" and hg: "comp h g \<noteq> null"
-      have 1: "C.seq g f \<and> C.seq h g \<and> comp (comp h g) f = C (C h g) f
-                 \<and> comp h (comp g f) = C h (C g f)"
-      proof -
-        have "C.seq g f \<and> C.seq h g"
-          using gf hg null_char comp_def Arr_implies_arr by metis
-        moreover have "comp (comp h g) f = C (C h g) f "
-          using gf hg null_char comp_def comp_closed Arr_implies_arr by auto
-        moreover have "comp h (comp g f) = C h (C g f)"
-          using gf hg null_char comp_def comp_closed Arr_implies_arr by auto
-        ultimately show ?thesis by auto
-      qed
-      show "comp (comp h g) f \<noteq> null"
-        using 1 null_char C.not_arr_null by force
-      show "comp h (comp g f) \<noteq> null"
-        using 1 null_char C.not_arr_null by force
-      show "comp h (comp g f) = comp (comp h g) f"
-        using 1 by simp
-     next
-     fix f
-     show "has_dom f \<longleftrightarrow> has_cod f"
-       using has_dom_char has_cod_char by presburger
+      assume gf: "seq g f" and hg: "seq h g"
+      show 1: "seq (h \<cdot> g) f"
+        using gf hg inclusion comp_closed comp_def by auto
+      show "(h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
+        using gf hg 1 C.not_arr_null inclusion comp_def arr_char
+        by (metis (full_types) C.cod_comp C.comp_assoc)
+      next
+      fix f g h
+      assume hg: "seq h g" and hgf: "seq (h \<cdot> g) f"
+      show "seq g f"
+        using hg hgf comp_def null_char inclusion arr_char comp_closed
+        by (metis (full_types) C.dom_comp)
+      next
+      fix f g h
+      assume hgf: "seq h (g \<cdot> f)" and gf: "seq g f"
+      show "seq h g"
+        using hgf gf comp_def null_char arr_char comp_closed
+        by (metis C.seqE C.ext C.match_2)
     qed
 
     theorem is_category:
     shows "category comp" ..
 
+    notation in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+
     lemma dom_simp [simp]:
     assumes "arr f"
     shows "dom f = C.dom f"
     proof -
-      have "unit (C.dom f)"
-        using assms unit_if_Arr_and_C_unit C.dom_def C.has_domD(2) not_arr_null dom_closed
-        by force
-      moreover have "comp f (C.dom f) \<noteq> null"
-        using assms Arr_implies_arr comp_def null_char dom_closed not_arr_null by auto
-      ultimately show ?thesis using dom_simp by auto
+      have "ide (C.dom f)"
+        using assms unitI
+        by (meson C.ide_dom arr_char dom_closed inclusion)
+      moreover have "f \<cdot> C.dom f \<noteq> null"
+        using assms inclusion comp_def null_char dom_closed not_arr_null C.comp_arr_dom
+        by auto
+      ultimately show ?thesis
+        using dom_eqI ext by blast
     qed
 
     lemma dom_char:
-    shows "dom f = (if arr f then C.dom f else C.null)"
-      using dom_simp dom_def has_dom_char by auto
+    shows "dom f = (if Arr f then C.dom f else C.null)"
+      using dom_simp dom_def arr_def by auto
 
     lemma cod_simp [simp]:
     assumes "arr f"
     shows "cod f = C.cod f"
     proof -
-      have "unit (C.cod f)"
-        using assms unit_if_Arr_and_C_unit C.cod_def C.has_codD(2) not_arr_null cod_closed
-        by force
-      moreover have "comp (C.cod f) f \<noteq> null"
-        using assms Arr_implies_arr comp_def null_char cod_closed not_arr_null by auto
-      ultimately show ?thesis using cod_simp by auto
+      have "ide (C.cod f)"
+        using assms unitI
+        by (meson C.ide_cod arr_char cod_closed inclusion)
+      moreover have "C.cod f \<cdot> f \<noteq> null"
+        using assms inclusion comp_def null_char cod_closed not_arr_null C.comp_cod_arr
+        by auto
+      ultimately show ?thesis
+        using cod_eqI ext by blast
     qed
 
     lemma cod_char:
     shows "cod f = (if arr f then C.cod f else C.null)"
-      using cod_simp cod_def has_cod_char by auto
+      using cod_simp cod_def arr_def by auto
 
-    lemma hom_char [iff]:
-    shows "f \<in> hom a b \<longleftrightarrow> Arr a \<and> Arr b \<and> Arr f \<and> f \<in> C.hom a b"
-      using Arr_implies_arr arr_def cod_closed dom_closed has_cod_char has_dom_char by force
+    lemma in_hom_char:
+    shows "\<guillemotleft>a : b \<rightarrow> f\<guillemotright> \<longleftrightarrow> arr a \<and> arr b \<and> arr f \<and> \<guillemotleft>a : b \<rightarrow>\<^sub>C f\<guillemotright>"
+      using inclusion arr_char cod_closed dom_closed
+      by (metis C.arr_iff_in_hom C.in_homE arr_iff_in_hom cod_simp dom_simp in_homE)
 
-    lemma ide_char [iff]:
-    shows "ide f \<longleftrightarrow> arr f \<and> C.ide f"
-      by (metis C.ideI_dom C.ideD(2) dom_simp ideI_dom ideD(1) ideD(2) Arr_implies_arr arr_char)
+    lemma ide_char:
+    shows "ide a \<longleftrightarrow> arr a \<and> C.ide a"
+      using ide_in_hom C.ide_in_hom in_hom_char by simp
+
+    lemma seq_char:
+    shows "seq g f \<longleftrightarrow> arr f \<and> arr g \<and> C.seq g f"
+    proof
+      show "arr f \<and> arr g \<and> C.seq g f \<Longrightarrow> seq g f"
+        using arr_char dom_char cod_char by (intro seqI, auto)
+      show "seq g f \<Longrightarrow> arr f \<and> arr g \<and> C.seq g f"
+        apply (elim seqE, auto)
+        using inclusion by (intro C.seqI, auto)
+    qed
 
     lemma comp_char:
-    shows "comp g f = (if seq g f then C g f else C.null)"
-      using Arr_implies_arr comp_def by auto
+    shows "g \<cdot> f = (if arr f \<and> arr g \<and> C.seq g f then g \<cdot>\<^sub>C f else C.null)"
+      using arr_char comp_def comp_closed C.ext by fastforce
 
-    lemma comp_simp [simp]:
+    lemma comp_simp:
     assumes "seq g f"
-    shows "comp g f = C g f"
-      using assms comp_char by auto
+    shows "g \<cdot> f = g \<cdot>\<^sub>C f"
+      using assms comp_char seq_char by metis
 
   end
 
@@ -181,7 +219,7 @@ begin
     C: category C
     for C :: "'a comp"
     and Ide :: "'a \<Rightarrow> bool" +
-    assumes Ide_implies_Ide: "Ide f \<Longrightarrow> C.ide f"
+    assumes inclusion: "Ide f \<Longrightarrow> C.ide f"
 
   sublocale full_subcategory \<subseteq> subcategory C "\<lambda>f. C.arr f \<and> Ide (C.dom f) \<and> Ide (C.cod f)"
       by (unfold_locales; simp)
@@ -198,23 +236,27 @@ begin
     proof
       assume f: "iso f"
       obtain g where g: "inverse_arrows f g" using f by blast
-      have "C.inverse_arrows f g"
-        using g inverse_arrows_def [of f g] by auto
-      thus "arr f \<and> C.iso f" using g by auto
+      show "arr f \<and> C.iso f"
+      proof -
+        have "C.inverse_arrows f g"
+          using g apply (elim inverse_arrowsE, intro C.inverse_arrowsI)
+          using comp_simp ide_char by auto
+        thus ?thesis
+          using f iso_is_arr by blast
+      qed
       next
       assume f: "arr f \<and> C.iso f"
       obtain g where g: "C.inverse_arrows f g" using f by blast
       have "inverse_arrows f g"
       proof
-        have "antipar f g" using f g by auto
         show "ide (comp g f)"
-          using f g ide_char
-          by (metis (no_types, lifting) C.comp_inv_arr \<open>antipar f g\<close> arr_comp cod_comp
-              comp_simp dom_simp ideI_cod)
+          using f g
+          by (metis (no_types, lifting) C.seqE C.ide_compE C.inverse_arrowsE
+              arr_char dom_simp ide_dom comp_def)
         show "ide (comp f g)"
-          using f g ide_char
-          by (metis (no_types, lifting) C.comp_arr_inv \<open>antipar f g\<close> arr_comp comp_simp
-              dom_comp dom_simp ideI_dom)
+          using f g C.inverse_arrows_sym [of f g]
+          by (metis (no_types, lifting) C.seqE C.ide_compE C.inverse_arrowsE
+              arr_char dom_simp ide_dom comp_def)
       qed
       thus "iso f" by auto
     qed
@@ -236,10 +278,11 @@ begin
   begin
 
     interpretation "functor" S.comp C S.map
+      using S.map_def S.arr_char S.inclusion S.dom_char S.cod_char
+            S.dom_closed S.cod_closed S.comp_closed S.arr_char S.comp_char
       apply unfold_locales
-      using S.arr_char S.Arr_implies_arr S.dom_char S.cod_char S.ide_dom S.ide_cod S.comp_char
-            S.arr_comp
-      by auto
+          apply auto[4]
+      by (elim S.seqE, auto)
 
     lemma is_functor:
     shows "functor S.comp C S.map" ..
@@ -281,7 +324,9 @@ begin
   begin
 
     interpretation full_functor S.comp C S.map
-      apply unfold_locales by auto
+      apply unfold_locales
+      using S.ide_in_hom
+      by (metis (no_types, lifting) C.in_homE S.arr_char S.in_hom_char S.map_simp)
 
     lemma is_full_functor:
     shows "full_functor S.comp C S.map" ..

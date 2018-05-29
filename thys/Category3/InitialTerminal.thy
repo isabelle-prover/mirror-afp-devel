@@ -19,101 +19,79 @@ begin
   begin
 
     definition initial
-    where "initial a \<equiv> ide a \<and> (\<forall>b. ide b \<longrightarrow> (\<exists>!f. f \<in> hom a b))"
+    where "initial a \<equiv> ide a \<and> (\<forall>b. ide b \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> b\<guillemotright>))"
 
     definition terminal
-    where "terminal b \<equiv> ide b \<and> (\<forall>a. ide a \<longrightarrow> (\<exists>!f. f \<in> hom a b))"
+    where "terminal b \<equiv> ide b \<and> (\<forall>a. ide a \<longrightarrow> (\<exists>!f. \<guillemotleft>f : a \<rightarrow> b\<guillemotright>))"
     
-    abbreviation is_initial_arr
-    where "is_initial_arr f \<equiv> arr f \<and> initial (dom f)"
+    abbreviation initial_arr
+    where "initial_arr f \<equiv> arr f \<and> initial (dom f)"
     
-    abbreviation is_terminal_arr
-    where "is_terminal_arr f \<equiv> arr f \<and> terminal (cod f)"
+    abbreviation terminal_arr
+    where "terminal_arr f \<equiv> arr f \<and> terminal (cod f)"
     
     abbreviation point
     where "point f \<equiv> arr f \<and> terminal (dom f)"
 
+    lemma initial_arr_unique:
+    assumes "initial_arr f" and "initial_arr f'" and "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>f' : a' \<rightarrow> b'\<guillemotright>"
+    and "a = a'" and "b = b'"
+    shows "f = f'"
+      using assms in_homI initial_def ide_cod by blast
+
     lemma initialI [intro]:
-    assumes "ide a" and "\<And>b. ide b \<Longrightarrow> \<exists>!f. f \<in> hom a b"
+    assumes "ide a" and "\<And>b. ide b \<Longrightarrow> \<exists>!f. \<guillemotleft>f : a \<rightarrow> b\<guillemotright>"
     shows "initial a"
       using assms initial_def by auto
 
-    lemma initial_arr_exists:
+    lemma initialE [elim]:
     assumes "initial a" and "ide b"
-    obtains f where "f \<in> hom a b"
-      using assms initial_def by blast
+    obtains f where "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<And>f'. \<guillemotleft>f' : a \<rightarrow> b\<guillemotright> \<Longrightarrow> f' = f"
+      using assms initial_def initial_arr_unique by meson
       
-    lemma initial_arr_unique:
-    assumes "par f f'" and "is_initial_arr f" and "is_initial_arr f'"
+    lemma terminal_arr_unique:
+    assumes "terminal_arr f" and "terminal_arr f'" and "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>f' : a' \<rightarrow> b'\<guillemotright>"
+    and "a = a'" and "b = b'"
     shows "f = f'"
-    proof -
-      have "\<exists>!i. i \<in> hom (dom f) (cod f)" using assms initial_def by simp
-      thus ?thesis using assms by auto
-    qed
+      using assms in_homI terminal_def ide_dom by blast
 
     lemma terminalI [intro]:
-    assumes "ide b" and "\<And>a. ide a \<Longrightarrow> \<exists>!f. f \<in> hom a b"
+    assumes "ide b" and "\<And>a. ide a \<Longrightarrow> \<exists>!f. \<guillemotleft>f : a \<rightarrow> b\<guillemotright>"
     shows "terminal b"
       using assms terminal_def by auto
 
-    lemma terminal_arr_exists:
-    assumes "ide a" and "terminal b"
-    obtains f where "f \<in> hom a b"
-      using assms terminal_def by blast
-
-    lemma terminal_arr_unique:
-    assumes "par f f'" and "is_terminal_arr f" and "is_terminal_arr f'"
-    shows "f = f'"
-    proof -
-      have "\<exists>!t. t \<in> hom (dom f) (cod f)" using assms terminal_def by simp
-      thus ?thesis using assms by auto
-    qed
-
-    lemma terminal_section_retraction:
-    assumes "antipar f f'" and "terminal (dom f)"
-    shows "section_retraction f f'"
-    proof
-      have "C f' f \<in> hom (dom f) (dom f) \<and> dom f \<in> hom (dom f) (dom f)"
-        using assms(1) assms(2) by auto
-      thus "ide (C f' f)"
-        using assms terminal_def by metis
-    qed
+    lemma terminalE [elim]:
+    assumes "terminal b" and "ide a"
+    obtains f where "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<And>f'. \<guillemotleft>f' : a \<rightarrow> b\<guillemotright> \<Longrightarrow> f' = f"
+      using assms terminal_def terminal_arr_unique by meson
 
     theorem terminal_objs_isomorphic:
     assumes "terminal a" and "terminal b"
     shows "isomorphic a b"
     proof -
-      from assms obtain f where f: "f \<in> hom a b" using terminal_def by blast
-      from assms obtain f' where f': "f' \<in> hom b a" using terminal_def by blast
-      have 1: "antipar f f' \<and> dom f = a \<and> dom f' = b"
-        using f f' by auto
-      hence "section_retraction f f' \<and> section_retraction f' f"
-        using assms terminal_section_retraction by force
-      hence "iso f" by fastforce
-      thus ?thesis using isomorphicI 1 by force
-    qed
-
-    lemma initial_section_retraction:
-    assumes "antipar f f'" and "initial (dom f)"
-    shows "section_retraction f f'"
-    proof
-      have "C f' f \<in> hom (dom f) (dom f) \<and> dom f \<in> hom (dom f) (dom f)"
-        using assms(1) assms(2) by auto
-      thus "ide (C f' f)" using assms initial_def by metis
+      from assms obtain f where f: "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>"
+        using terminal_def by meson
+      from assms obtain g where g: "\<guillemotleft>g : b \<rightarrow> a\<guillemotright>"
+        using terminal_def by meson
+      have "iso f"
+        using assms f g
+        by (metis (no_types, lifting) iso_iff_section_and_retraction retractionI sectionI
+            terminal_def comp_in_homI ide_in_hom)
+      thus ?thesis using f by auto
     qed
 
     theorem initial_objs_isomorphic:
     assumes "initial a" and "initial b"
     shows "isomorphic a b"
     proof -
-       from assms obtain f where f: "f \<in> hom a b" using initial_def by blast
-       from assms obtain f' where f': "f' \<in> hom b a" using initial_def by blast
-       have 1: "antipar f f' \<and> dom f = a \<and> dom f' = b"
-         using f f' by auto
-       hence "section_retraction f f' \<and> section_retraction f' f"
-             using assms initial_section_retraction by force
-       hence "iso f" by fastforce
-       thus ?thesis using isomorphicI 1 by force
+      from assms obtain f where f: "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" using initial_def by auto
+      from assms obtain g where g: "\<guillemotleft>g : b \<rightarrow> a\<guillemotright>" using initial_def by auto
+      have "iso f"
+        using assms f g
+        by (metis iso_iff_section_and_retraction retractionI sectionI
+            initial_def comp_in_homI ide_in_hom)
+      thus ?thesis
+        using f by auto
     qed
 
     lemma point_is_mono:
@@ -121,11 +99,11 @@ begin
     shows "mono f"
     proof -
       have "ide (cod f)" using assms by auto
-      from this obtain t where "t \<in> hom (cod f) (dom f)"
+      from this obtain t where t: "\<guillemotleft>t: cod f \<rightarrow> dom f\<guillemotright>"
         using assms terminal_def by blast
-      hence "section_retraction f t"
-        using assms terminal_section_retraction by simp
-      thus ?thesis using section_is_mono by auto
+      thus ?thesis
+        using assms terminal_def monoI
+        by (metis seqE in_homI dom_comp ide_dom terminal_def)
     qed
       
   end

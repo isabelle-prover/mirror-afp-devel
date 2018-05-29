@@ -48,12 +48,16 @@ begin
     Cop: dual_category C +
     CopxC: product_category Cop.comp C +
     S: set_category S
-  for C :: "'c comp"
-  and S :: "'s comp"
+  for C :: "'c comp"      (infixr "\<cdot>" 55)
+  and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's" +
   assumes maps_arr_to_Univ: "C.arr f \<Longrightarrow> \<phi> (C.dom f, C.cod f) f \<in> S.Univ"
   and local_inj: "\<lbrakk> C.ide b; C.ide a \<rbrakk> \<Longrightarrow> inj_on (\<phi> (b, a)) (C.hom b a)"
   begin
+
+    notation S.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
+    notation CopxC.comp   (infixr "\<odot>" 55)
+    notation CopxC.in_hom ("\<guillemotleft>_ : _ \<rightleftharpoons> _\<guillemotright>")
 
     definition set
     where "set ba \<equiv> \<phi> (fst ba, snd ba) ` C.hom (fst ba) (snd ba)"
@@ -77,9 +81,9 @@ begin
       using assms set_def \<psi>_def local_inj by auto
 
     lemma \<psi>_\<phi> [simp]:
-    assumes "f \<in> C.hom b a"
+    assumes "\<guillemotleft>f : b \<rightarrow> a\<guillemotright>"
     shows "\<psi> (b, a) (\<phi> (b, a) f) = f"
-      using assms local_inj \<psi>_def by auto
+      using assms local_inj [of b a] \<psi>_def by fastforce
 
     lemma \<phi>_\<psi> [simp]:
     assumes "C.ide b" and "C.ide a"
@@ -94,8 +98,8 @@ begin
 
     text{*
       A hom-functor maps each arrow @{term "(g, f)"} of @{term "CopxC"}
-      to the arrow of the set category @{term S} corresponding to the function that takes
-      an arrow @{term h} of @{term C} to the arrow @{term "C f (C h g)"} of @{term C}
+      to the arrow of the set category @{term[source=true] S} corresponding to the function
+      that takes an arrow @{term h} of @{term C} to the arrow @{term "C f (C h g)"} of @{term C}
       obtained by precomposing with @{term g} and postcomposing with @{term f}.
     *}
 
@@ -103,16 +107,18 @@ begin
     where "map gf =
              (if CopxC.arr gf then
                 S.mkArr (set (CopxC.dom gf)) (set (CopxC.cod gf))
-                        (\<phi> (CopxC.cod gf) o (\<lambda>h. C (snd gf) (C h (fst gf))) o \<psi> (CopxC.dom gf))
+                        (\<phi> (CopxC.cod gf) o (\<lambda>h. snd gf \<cdot> h \<cdot> fst gf) o \<psi> (CopxC.dom gf))
               else S.null)"
 
     lemma arr_map:
     assumes "CopxC.arr gf"
     shows "S.arr (map gf)"
     proof -
-      have "\<phi> (CopxC.cod gf) o (\<lambda>h. C (snd gf) (C h (fst gf))) o \<psi> (CopxC.dom gf)
+      have "\<phi> (CopxC.cod gf) o (\<lambda>h. snd gf \<cdot> h \<cdot> fst gf) o \<psi> (CopxC.dom gf)
               \<in> set (CopxC.dom gf) \<rightarrow> set (CopxC.cod gf)"
-        using assms set_def map_def [of gf] \<phi>_mapsto \<psi>_mapsto by fastforce
+        using assms \<phi>_mapsto [of "fst (CopxC.cod gf)" "snd (CopxC.cod gf)"]
+              \<psi>_mapsto [of "fst (CopxC.dom gf)" "snd (CopxC.dom gf)"]
+        by fastforce
       thus ?thesis
         using assms map_def set_subset_Univ by auto
     qed
@@ -122,21 +128,17 @@ begin
     shows "map (b, a) = S.mkIde (set (b, a))"
     proof -
       have "map (b, a) = S.mkArr (set (b, a)) (set (b, a))
-                                 (\<phi> (b, a) o (\<lambda>h. C a (C h b)) o \<psi> (b, a))"
-        using assms map_def by simp
+                                 (\<phi> (b, a) o (\<lambda>h. a \<cdot> h \<cdot> b) o \<psi> (b, a))"
+        using assms map_def by auto
       also have "... = S.mkArr (set (b, a)) (set (b, a)) (\<lambda>h. h)"
       proof -
         have "S.mkArr (set (b, a)) (set (b, a)) (\<lambda>h. h) = ..."
-        proof (intro S.mkArr_eqI')
-          show "S.arr (S.mkArr (set (b, a)) (set (b, a)) (\<lambda>h. h))"
-            using assms S.arr_mkArr set_subset_Univ by simp
-          show "\<And>x. x \<in> set (b, a) \<Longrightarrow> x = (\<phi> (b, a) o (\<lambda>h. C a (C h b)) o \<psi> (b, a)) x"
-            using assms set_def \<psi>_mapsto [of b a] by auto
-        qed
+          using assms S.arr_mkArr set_subset_Univ set_def C.comp_arr_dom C.comp_cod_arr
+          by (intro S.mkArr_eqI', simp, fastforce)
         thus ?thesis by auto
       qed
-       also have "... = S.mkIde (set (b, a))"
-        using assms S.mkIde_as_mkArr [of "set (b, a)"] set_subset_Univ by simp
+      also have "... = S.mkIde (set (b, a))"
+        using assms S.mkIde_as_mkArr set_subset_Univ by simp
       finally show ?thesis by auto
     qed
 
@@ -161,101 +163,100 @@ begin
       show "S.dom (map gf) = map (CopxC.dom gf)"
       proof -
         have "S.dom (map gf) = S.mkArr (set (CopxC.dom gf)) (set (CopxC.dom gf)) (\<lambda>x. x)"
-          using gf arr_map [of gf] map_def [of gf] by simp
+          using gf arr_map map_def by simp
         also have "... = S.mkArr (set (CopxC.dom gf)) (set (CopxC.dom gf))
-                                 (\<phi> (CopxC.dom gf) o (\<lambda>h. C (snd (CopxC.dom gf))
-                                                            (C h (fst (CopxC.dom gf))))
-                                                   o \<psi> (CopxC.dom gf))"
-          apply (intro S.mkArr_eqI')
-          using gf set_subset_Univ \<psi>_mapsto [of "fst (CopxC.dom gf)" "snd (CopxC.dom gf)"]
-                map_def set_def
-          by auto
-        also have "... = map (CopxC.dom gf)" using gf map_def by simp
+                                 (\<phi> (CopxC.dom gf) o
+                                  (\<lambda>h. snd (CopxC.dom gf) \<cdot> h \<cdot> fst (CopxC.dom gf)) o
+                                  \<psi> (CopxC.dom gf))"
+          using gf set_subset_Univ \<psi>_mapsto map_def set_def
+          apply (intro S.mkArr_eqI', auto)
+          by (metis C.comp_arr_dom C.comp_cod_arr C.in_homE)
+        also have "... = map (CopxC.dom gf)"
+          using gf map_def C.arr_dom_iff_arr C.arr_cod_iff_arr by simp
         finally show ?thesis by auto
       qed
       show "S.cod (map gf) = map (CopxC.cod gf)"
       proof -
         have "S.cod (map gf) = S.mkArr (set (CopxC.cod gf)) (set (CopxC.cod gf)) (\<lambda>x. x)"
-          using gf map_def [of gf] arr_map [of gf] by simp
+          using gf map_def arr_map by simp
         also have "... = S.mkArr (set (CopxC.cod gf)) (set (CopxC.cod gf))
-                                 (\<phi> (CopxC.cod gf) o (\<lambda>h. C (snd (CopxC.cod gf))
-                                                            (C h (fst (CopxC.cod gf))))
-                                                   o \<psi> (CopxC.cod gf))"
-          apply (intro S.mkArr_eqI')
-          using gf S.arr_mkArr set_subset_Univ set_def
-                \<psi>_mapsto [of "fst (CopxC.cod gf)" "snd (CopxC.cod gf)"]
-          by auto
+                                 (\<phi> (CopxC.cod gf) o
+                                  (\<lambda>h. snd (CopxC.cod gf) \<cdot> h \<cdot> fst (CopxC.cod gf)) o
+                                  \<psi> (CopxC.cod gf))"
+          using gf set_subset_Univ \<psi>_mapsto map_def set_def
+          apply (intro S.mkArr_eqI', auto)
+          by (metis C.comp_arr_dom C.comp_cod_arr C.in_homE)
         also have "... = map (CopxC.cod gf)" using gf map_def by simp
         finally show ?thesis by auto
       qed
-      fix gf'
-      assume gf': "gf' \<in> CopxC.hom (CopxC.cod gf) (CopxC.cod gf')"
-      hence S: "CopxC.cod gf = CopxC.dom gf'" by auto
+      next
+      fix gf gf'
+      assume gf': "CopxC.seq gf' gf"
+      hence seq: "C.arr (fst gf) \<and> C.arr (snd gf) \<and> C.dom (snd gf') = C.cod (snd gf) \<and>
+                  C.arr (fst gf') \<and> C.arr (snd gf') \<and> C.dom (fst gf) = C.cod (fst gf')"
+        by (elim CopxC.seqE C.seqE, auto)
       have 0: "S.arr (map (CopxC.comp gf' gf))"
-        using gf gf' S arr_map by simp
-      have 1: "map (CopxC.comp gf' gf) =
+        using gf' arr_map by blast
+      have 1: "map (gf' \<odot> gf) =
                     S.mkArr (set (CopxC.dom gf)) (set (CopxC.cod gf'))
-                            (\<phi> (CopxC.cod gf') o (\<lambda>h. C (snd (CopxC.comp gf' gf))
-                                                        (C h (fst (CopxC.comp gf' gf))))
+                            (\<phi> (CopxC.cod gf') o (\<lambda>h. snd (gf' \<odot> gf) \<cdot> h \<cdot> fst (gf' \<odot> gf))
                                                o \<psi> (CopxC.dom gf))"
-        using gf gf' map_def by auto
+        using gf' map_def using CopxC.cod_comp CopxC.dom_comp by auto
       also have "... = S.mkArr (set (CopxC.dom gf)) (set (CopxC.cod gf'))
-                               ((\<phi> (CopxC.cod gf') o (\<lambda>h. C (snd gf') (C h (fst gf')))
-                                                   o \<psi> (CopxC.dom gf'))
-                                 o (\<phi> (CopxC.cod gf) o (\<lambda>h. C (snd gf) (C h (fst gf)))
-                                                     o \<psi> (CopxC.dom gf)))"
+                               (\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd gf' \<cdot> h \<cdot> fst gf') \<circ> \<psi> (CopxC.dom gf')
+                                \<circ>
+                               (\<phi> (CopxC.cod gf) \<circ> (\<lambda>h. snd gf \<cdot> h \<cdot> fst gf) \<circ> \<psi> (CopxC.dom gf)))"
       proof (intro S.mkArr_eqI')
         show "S.arr (S.mkArr (set (CopxC.dom gf)) (set (CopxC.cod gf'))
-                             (\<phi> (CopxC.cod gf') o (\<lambda>h. C (snd (CopxC.comp gf' gf))
-                                                         (C h (fst (CopxC.comp gf' gf))))
-                                                 o \<psi> (CopxC.dom gf)))"
+                             (\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd (gf' \<odot> gf) \<cdot> h \<cdot> fst (gf' \<odot> gf))
+                                                \<circ> \<psi> (CopxC.dom gf)))"
           using 0 1 by simp
         show "\<And>x. x \<in> set (CopxC.dom gf) \<Longrightarrow>
-                     (\<phi> (CopxC.cod gf') o (\<lambda>h. C (snd (CopxC.comp gf' gf))
-                                                 (C h (fst (CopxC.comp gf' gf))))
-                                        o \<psi> (CopxC.dom gf)) x
-                      = ((\<phi> (CopxC.cod gf') o (\<lambda>h. C (snd gf') (C h (fst gf')))
-                                            o \<psi> (CopxC.dom gf'))
-                                 o (\<phi> (CopxC.cod gf) o (\<lambda>h. C (snd gf) (C h (fst gf)))
-                                                     o \<psi> (CopxC.dom gf))) x"
+                     (\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd (gf' \<odot> gf) \<cdot> h \<cdot> fst (gf' \<odot> gf)) \<circ>
+                      \<psi> (CopxC.dom gf)) x =
+                     (\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd gf' \<cdot> h \<cdot> fst gf') \<circ> \<psi> (CopxC.dom gf') \<circ>
+                      (\<phi> (CopxC.cod gf) \<circ> (\<lambda>h. snd gf \<cdot> h \<cdot> fst gf) \<circ> \<psi> (CopxC.dom gf))) x"
         proof -
           fix x
-          assume x: "x \<in> set (CopxC.dom gf)"
-          show "(\<phi> (CopxC.cod gf') o (\<lambda>h. C (snd (CopxC.comp gf' gf))
-                                            (C h (fst (CopxC.comp gf' gf))))
-                                   o \<psi> (CopxC.dom gf)) x
-                      = ((\<phi> (CopxC.cod gf') o (\<lambda>h. C (snd gf') (C h (fst gf')))
-                                            o \<psi> (CopxC.dom gf'))
-                                 o (\<phi> (CopxC.cod gf) o (\<lambda>h. C (snd gf) (C h (fst gf)))
-                                                     o \<psi> (CopxC.dom gf))) x"
+          assume "x \<in> set (CopxC.dom gf)"
+          hence x: "x \<in> set (C.cod (fst gf), C.dom (snd gf))"
+            using gf' CopxC.seqE by (elim CopxC.seqE, fastforce)
+          show "(\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd (gf' \<odot> gf) \<cdot> h \<cdot> fst (gf' \<odot> gf)) \<circ>
+                 \<psi> (CopxC.dom gf)) x =
+                (\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd gf' \<cdot> h \<cdot> fst gf') \<circ> \<psi> (CopxC.dom gf') \<circ>
+                 (\<phi> (CopxC.cod gf) \<circ> (\<lambda>h. snd gf \<cdot> h \<cdot> fst gf) \<circ> \<psi> (CopxC.dom gf))) x"
           proof -
-            have "(\<phi> (CopxC.cod gf') o (\<lambda>h. C (snd (CopxC.comp gf' gf))
-                                              (C h (fst (CopxC.comp gf' gf))))
+            have "(\<phi> (CopxC.cod gf') o (\<lambda>h. snd (gf' \<odot> gf) \<cdot> h \<cdot> fst (gf' \<odot> gf))
                                      o \<psi> (CopxC.dom gf)) x =
-                  \<phi> (CopxC.cod gf')
-                    (C (snd (CopxC.comp gf' gf))
-                       (C (\<psi> (CopxC.dom gf) x) (fst (CopxC.comp gf' gf))))"
+                  \<phi> (CopxC.cod gf') (snd (gf' \<odot> gf) \<cdot> \<psi> (CopxC.dom gf) x \<cdot> fst (gf' \<odot> gf))"
               by simp
             also have "... = \<phi> (CopxC.cod gf')
-                               ((((\<lambda>h. C (snd gf') (C h (fst gf'))) o \<psi> (CopxC.dom gf'))
-                                 o (\<phi> (CopxC.dom gf') o (\<lambda>h. C (snd gf) (C h (fst gf)))))
+                               (((\<lambda>h. snd gf' \<cdot> h \<cdot> fst gf') \<circ> \<psi> (CopxC.dom gf') \<circ>
+                                 (\<phi> (CopxC.dom gf') \<circ> (\<lambda>h. snd gf \<cdot> h \<cdot> fst gf)))
                                 (\<psi> (CopxC.dom gf) x))"
-              using x gf gf' S arr_map set_def by auto
-            also have "... = ((\<phi> (CopxC.cod gf') o (\<lambda>h. C (snd gf') (C h (fst gf')))
-                                                 o \<psi> (CopxC.dom gf'))
-                                 o (\<phi> (CopxC.dom gf') o (\<lambda>h. C (snd gf) (C h (fst gf)))
-                                                      o \<psi> (CopxC.dom gf))) x"
+            proof -
+              have "C.ide (C.cod (fst gf)) \<and> C.ide (C.dom (snd gf))"
+                using gf' by (elim CopxC.seqE, auto)
+              hence "\<guillemotleft>\<psi> (C.cod (fst gf), C.dom (snd gf)) x : C.cod (fst gf) \<rightarrow> C.dom (snd gf)\<guillemotright>"
+                using x \<psi>_mapsto by auto
+              hence "\<guillemotleft>snd gf \<cdot> \<psi> (C.cod (fst gf), C.dom (snd gf)) x \<cdot> fst gf :
+                        C.cod (fst gf') \<rightarrow> C.dom (snd gf')\<guillemotright>"
+                using x seq by auto
+              thus ?thesis
+                using seq \<psi>_\<phi> by (elim C.in_homE C.seqE, auto)
+            qed
+            also have "... = (\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd gf' \<cdot> h \<cdot> fst gf') \<circ> \<psi> (CopxC.dom gf') \<circ>
+                              (\<phi> (CopxC.dom gf') \<circ> (\<lambda>h. snd gf \<cdot> h \<cdot> fst gf) \<circ> \<psi> (CopxC.dom gf)))
+                              x"
               by auto
-            finally show ?thesis using S by auto
+            finally show ?thesis using seq by simp
           qed
         qed
       qed
-      also have "... = S (map gf') (map gf)"
-        using S gf gf' map_def [of gf] map_def [of gf'] arr_map [of gf] arr_map [of gf']
-              S.comp_mkArr
-        by simp
-      finally show "map (CopxC.comp gf' gf) = S (map gf') (map gf)"
-        using S gf gf' by auto
+      also have "... = map gf' \<cdot>\<^sub>S map gf"
+        using seq gf' map_def arr_map [of gf] arr_map [of gf'] S.comp_mkArr by auto
+      finally show "map (gf' \<odot> gf) = map gf' \<cdot>\<^sub>S map gf"
+        using seq gf' by auto
     qed
 
     interpretation binary_functor Cop.comp C S map ..
@@ -283,26 +284,26 @@ begin
 
     lemma \<phi>_natural:
     assumes "C.arr g" and "C.arr f" and "h \<in> C.hom (C.cod g) (C.dom f)"
-    shows "\<phi> (C.dom g, C.cod f) (C f (C h g)) = S.Fun (map (g, f)) (\<phi> (C.cod g, C.dom f) h)"
+    shows "\<phi> (C.dom g, C.cod f) (f \<cdot> h \<cdot> g) = S.Fun (map (g, f)) (\<phi> (C.cod g, C.dom f) h)"
     proof -
       let ?\<phi>h = "\<phi> (C.cod g, C.dom f) h"
       have \<phi>h: "?\<phi>h \<in> set (C.cod g, C.dom f)"
         using assms \<phi>_mapsto set_def by simp
       have gf: "CopxC.arr (g, f)" using assms by simp
-      hence "map (g, f) =
+      have "map (g, f) =
                S.mkArr (set (C.cod g, C.dom f)) (set (C.dom g, C.cod f))
-                       (\<phi> (C.dom g, C.cod f) \<circ> (\<lambda>h. C f (C h g)) \<circ> \<psi> (C.cod g, C.dom f))"
-        using map_def [of "(g, f)"] by simp
+                       (\<phi> (C.dom g, C.cod f) \<circ> (\<lambda>h. f \<cdot> h \<cdot> g) \<circ> \<psi> (C.cod g, C.dom f))"
+        using assms map_def by simp
       moreover have "S.arr (map (g, f))" using gf by simp
       ultimately have
           "S.Fun (map (g, f)) =
-               restrict (\<phi> (C.dom g, C.cod f) \<circ> (\<lambda>h. C f (C h g)) \<circ> \<psi> (C.cod g, C.dom f))
+               restrict (\<phi> (C.dom g, C.cod f) \<circ> (\<lambda>h. f \<cdot> h \<cdot> g) \<circ> \<psi> (C.cod g, C.dom f))
                         (set (C.cod g, C.dom f))"
         using S.Fun_mkArr by simp
       hence "S.Fun (map (g, f)) ?\<phi>h =
-                (\<phi> (C.dom g, C.cod f) \<circ> (\<lambda>h. C f (C h g)) \<circ> \<psi> (C.cod g, C.dom f)) ?\<phi>h"
+                (\<phi> (C.dom g, C.cod f) \<circ> (\<lambda>h. f \<cdot> h \<cdot> g) \<circ> \<psi> (C.cod g, C.dom f)) ?\<phi>h"
         using \<phi>h by simp
-      also have "... = \<phi> (C.dom g, C.cod f) (C f (C h g))"
+      also have "... = \<phi> (C.dom g, C.cod f) (f \<cdot> h \<cdot> g)"
         using assms(3) by simp
       finally show ?thesis by auto
     qed
@@ -320,35 +321,9 @@ begin
     lemma Fun_map:
     assumes "C.arr g" and "C.arr f"
     shows "S.Fun (map (g, f)) =
-             restrict (\<phi> (C.dom g, C.cod f) o (\<lambda>h. C f (C h g)) o \<psi> (C.cod g, C.dom f))
+             restrict (\<phi> (C.dom g, C.cod f) o (\<lambda>h. f \<cdot> h \<cdot> g) o \<psi> (C.cod g, C.dom f))
                       (set (C.cod g, C.dom f))"
-    proof
-      fix x
-      have "x \<notin> set (C.cod g, C.dom f) \<Longrightarrow>
-              S.Fun (map (g, f)) x =
-                restrict (\<phi> (C.dom g, C.cod f) o (\<lambda>h. C f (C h g)) o \<psi> (C.cod g, C.dom f))
-                         (set (C.cod g, C.dom f)) x"
-      proof -
-        have "S.arr (map (g, f))"
-          using assms preserves_arr by fastforce
-        thus ?thesis
-          using assms map_def [of "(g, f)"] S.Fun_mapsto [of "map (g, f)"]
-                extensional_arb [of "S.Fun (map (g, f))" "S.Dom (map (g, f))"]
-          by force
-      qed
-      moreover have "x \<in> set (C.cod g, C.dom f) \<Longrightarrow>
-              S.Fun (map (g, f)) x =
-                restrict (\<phi> (C.dom g, C.cod f) o (\<lambda>h. C f (C h g)) o \<psi> (C.cod g, C.dom f))
-                         (set (C.cod g, C.dom f)) x"
-        using assms preserves_arr map_def \<psi>_mapsto [of "C.cod g" "C.dom f"]
-              \<phi>_natural [of f g "\<psi> (C.cod g, C.dom f) x"]
-        by force
-      ultimately show
-          "S.Fun (map (g, f)) x =
-                restrict (\<phi> (C.dom g, C.cod f) o (\<lambda>h. C f (C h g)) o \<psi> (C.cod g, C.dom f))
-                         (set (C.cod g, C.dom f)) x"
-        by auto
-    qed
+      using assms map_def preserves_arr by force
 
     lemma map_simp_1:
     assumes "C.arr g" and "C.ide a"
@@ -356,12 +331,13 @@ begin
                                 (\<phi> (C.dom g, a) o Cop.comp g o \<psi> (C.cod g, a))"
     proof -
       have 1: "map (g, a) = S.mkArr (set (C.cod g, a)) (set (C.dom g, a))
-                                    (\<phi> (C.dom g, a) o (\<lambda>h. C a (C h g)) o \<psi> (C.cod g, a))"
+                                    (\<phi> (C.dom g, a) o (\<lambda>h. a \<cdot> h \<cdot> g) o \<psi> (C.cod g, a))"
         using assms map_def by force
       also have "... = S.mkArr (set (C.cod g, a)) (set (C.dom g, a))
                                (\<phi> (C.dom g, a) o Cop.comp g o \<psi> (C.cod g, a))"
-        using assms 1 preserves_arr [of "(g, a)"] \<psi>_mapsto [of "C.cod g" a] by force
-      finally show ?thesis by auto
+        using assms 1 preserves_arr [of "(g, a)"] set_def C.in_homI C.comp_cod_arr
+        by (intro S.mkArr_eqI, auto)
+     finally show ?thesis by auto
     qed
 
     lemma map_simp_2:
@@ -370,11 +346,12 @@ begin
                                 (\<phi> (b, C.cod f) o C f o \<psi> (b, C.dom f))"
     proof -
       have 1: "map (b, f) = S.mkArr (set (b, C.dom f)) (set (b, C.cod f))
-                                    (\<phi> (b, C.cod f) o (\<lambda>h. C f (C h b)) o \<psi> (b, C.dom f))"
+                                    (\<phi> (b, C.cod f) o (\<lambda>h. f \<cdot> h \<cdot> b) o \<psi> (b, C.dom f))"
         using assms map_def by force
       also have "... = S.mkArr (set (b, C.dom f)) (set (b, C.cod f))
                                (\<phi> (b, C.cod f) o C f o \<psi> (b, C.dom f))"
-        using assms 1 preserves_arr [of "(b, f)"] \<psi>_mapsto [of b "C.dom f"] by force
+        using assms 1 preserves_arr [of "(b, f)"] set_def C.in_homI C.comp_arr_dom
+        by (intro S.mkArr_eqI, auto)
       finally show ?thesis by auto
     qed
 
@@ -395,8 +372,8 @@ begin
       using SetCat.is_set_category by auto
     interpretation Hom: hom_functor C "SetCat.comp :: 'a SetCat.arr comp" "\<lambda>_. UP"
       apply unfold_locales
-      (* 2 *) using UP_mapsto apply auto[1]
-      (* 1 *) using inj_UP by (metis (no_types, lifting) injD inj_onI)
+      using UP_mapsto apply auto[1]
+      using inj_UP injD inj_onI by metis
 
     lemma has_hom_functor:
     shows "hom_functor C (SetCat.comp :: 'a SetCat.arr comp) (\<lambda>_. UP)" ..
@@ -471,10 +448,12 @@ begin
     Hom: hom_functor C S \<phi> +
     Cop_S: functor_category Cop.comp S +
     curried_functor' Cop.comp C S Hom.map
-  for C :: "'c comp"
-  and S :: "'s comp"
+  for C :: "'c comp"      (infixr "\<cdot>" 55)
+  and S :: "'s comp"      (infixr "\<cdot>\<^sub>S" 55)
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   begin
+
+    notation Cop_S.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] _\<guillemotright>")
 
     abbreviation \<psi>
     where "\<psi> \<equiv> Hom.\<psi>"
@@ -482,10 +461,10 @@ begin
     text{*
       An arrow of the functor category @{text "[Cop, S]"} consists of a natural transformation
       bundled together with its domain and codomain functors.  However, when considering
-      a Yoneda functor from @{term C} to @{text "[Cop, S]"} we generally are only interested
-      in the mapping @{term Y} that takes each arrow @{term f} of @{term C} to the corresponding
-      natural transformation @{term "Y f"}.  The domain and codomain functors are then the identity
-      transformations @{term "Y (C.dom f)"} and @{term "Y (C.cod f)"}.
+      a Yoneda functor from @{term[source=true] C} to @{text "[Cop, S]"} we generally are only
+      interested in the mapping @{term Y} that takes each arrow @{term f} of @{term[source=true] C}
+      to the corresponding natural transformation @{term "Y f"}.  The domain and codomain functors
+      are then the identity transformations @{term "Y (C.dom f)"} and @{term "Y (C.cod f)"}.
     *}
 
     definition Y
@@ -494,46 +473,46 @@ begin
     lemma Y_simp [simp]:
     assumes "C.arr f"
     shows "Y f = (\<lambda>g. Hom.map (g, f))"
-      using assms preserves_hom Y_def [of f] by auto
+      using assms preserves_arr Y_def by simp
 
     lemma Y_ide_is_functor:
     assumes "C.ide a"
     shows "functor Cop.comp S (Y a)"
-      using assms Y_def by (simp add: Hom.fixing_ide_gives_functor_2)
+      using assms Y_def Hom.fixing_ide_gives_functor_2 by force
 
     lemma Y_arr_is_transformation:
     assumes "C.arr f"
     shows "natural_transformation Cop.comp S (Y (C.dom f)) (Y (C.cod f)) (Y f)"
       using assms Y_def [of f] map_def Hom.fixing_arr_gives_natural_transformation_2
-            preserves_dom preserves_cod by simp
+            preserves_dom preserves_cod by fastforce
 
     lemma Y_ide_arr [simp]:
-    assumes a: "C.ide a" and "g \<in> C.hom b' b"
-    shows "Y a g \<in> S.hom (Hom.map (b, a)) (Hom.map (b', a))"
-    and "Y a g = S.mkArr (Hom.set (b, a)) (Hom.set (b', a)) (\<phi> (b', a) o Cop.comp g o \<psi> (b, a))"
-      using assms apply simp
-      using assms Hom.map_simp_1 [of g a] by simp
+    assumes a: "C.ide a" and "\<guillemotleft>g : b' \<rightarrow> b\<guillemotright>"
+    shows "\<guillemotleft>Y a g : Hom.map (b, a) \<rightarrow>\<^sub>S Hom.map (b', a)\<guillemotright>"
+    and "Y a g =
+         S.mkArr (Hom.set (b, a)) (Hom.set (b', a)) (\<phi> (b', a) o Cop.comp g o \<psi> (b, a))"
+      using assms Hom.map_simp_1 by (fastforce, auto)
 
     lemma Y_arr_ide [simp]:
-    assumes "C.ide b" and "f \<in> C.hom a a'"
-    shows "Y f b \<in> S.hom (Hom.map (b, a)) (Hom.map (b, a'))"
+    assumes "C.ide b" and "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright>"
+    shows "\<guillemotleft>Y f b : Hom.map (b, a) \<rightarrow>\<^sub>S Hom.map (b, a')\<guillemotright>"
     and "Y f b = S.mkArr (Hom.set (b, a)) (Hom.set (b, a')) (\<phi> (b, a') o C f o \<psi> (b, a))"
-      using assms apply simp
-      using assms Hom.map_simp_2 [of b f] by simp
+      using assms apply fastforce
+      using assms Hom.map_simp_2 by auto
 
   end
 
   locale yoneda_functor_fixed_object =
     yoneda_functor C S \<phi>
-  for C :: "'c comp"
-  and S :: "'s comp"
+  for C :: "'c comp" (infixr "\<cdot>" 55)
+  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
   and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
   and a :: 'c +
   assumes ide_a: "C.ide a"
   
-  sublocale yoneda_functor_fixed_object \<subseteq> "functor" Cop.comp S "Y a"
+  sublocale yoneda_functor_fixed_object \<subseteq> "functor" Cop.comp S "(Y a)"
     using ide_a Y_ide_is_functor by auto
-  sublocale yoneda_functor_fixed_object \<subseteq> set_valued_functor Cop.comp S "Y a" ..
+  sublocale yoneda_functor_fixed_object \<subseteq> set_valued_functor Cop.comp S "(Y a)" ..
 
   text{*
     The Yoneda lemma states that, given a category @{term C} and a functor @{term F}
@@ -564,11 +543,11 @@ begin
     S: set_category S +
     F: set_valued_functor Cop.comp S F +
     yoneda_functor_fixed_object C S \<phi> a
-    for C :: "'c comp"
-    and S :: "'s comp"
-    and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
-    and F :: "'c \<Rightarrow> 's"
-    and a :: 'c
+  for C :: "'c comp" (infixr "\<cdot>" 55)
+  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
+  and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
+  and F :: "'c \<Rightarrow> 's"
+  and a :: 'c
   begin
 
     text{*
@@ -582,8 +561,8 @@ begin
 
     text{*
       The mapping that takes an element @{term e} of @{term "F.SET a"} and produces
-      a map on objects of @{term C} whose value at @{term b} is the arrow of @{term S}
-      corresponding to the function
+      a map on objects of @{term[source=true] C} whose value at @{term b} is the arrow of
+      @{term[source=true] S} corresponding to the function
       @{term "(\<lambda>x. F.FUN (\<psi> (b, a) x) e) \<in> Hom.set (b, a) \<rightarrow> F.SET b"}.
     *}
 
@@ -592,7 +571,7 @@ begin
 
     lemma \<T>o_e_ide:
     assumes e: "e \<in> S.set (F a)" and b: "C.ide b"
-    shows "\<T>o e b \<in> S.hom (Y a b) (F b)"
+    shows "\<guillemotleft>\<T>o e b : Y a b \<rightarrow>\<^sub>S F b\<guillemotright>"
     and "\<T>o e b = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. F.FUN (\<psi> (b, a) x) e)"
     proof -
       show "\<T>o e b = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. F.FUN (\<psi> (b, a) x) e)"
@@ -601,14 +580,14 @@ begin
       proof
         fix x
         assume x: "x \<in> Hom.set (b, a)"
-        hence "\<psi> (b, a) x \<in> C.hom b a" using assms ide_a Hom.\<psi>_mapsto [of b a] by auto
-        hence "F (\<psi> (b, a) x) \<in> S.hom (F a) (F b)" by simp
+        hence "\<guillemotleft>\<psi> (b, a) x : b \<rightarrow> a\<guillemotright>" using assms ide_a Hom.\<psi>_mapsto by auto
         hence "F.FUN (\<psi> (b, a) x) \<in> F.SET a \<rightarrow> F.SET b"
-          using S.Fun_mapsto [of "F (\<psi> (b, a) x)"] by simp
+          using S.Fun_mapsto [of "F (\<psi> (b, a) x)"] by fastforce
         thus "F.FUN (\<psi> (b, a) x) e \<in> F.SET b" using e by auto
       qed
-      ultimately show "\<T>o e b \<in> S.hom (Y a b) (F b)"
-        using ide_a b S.mkArr_in_hom Hom.set_subset_Univ by simp
+      ultimately show "\<guillemotleft>\<T>o e b : Y a b \<rightarrow>\<^sub>S F b\<guillemotright>"
+        using ide_a b S.mkArr_in_hom [of "Hom.set (b, a)" "F.SET b"] Hom.set_subset_Univ
+        by auto
     qed
 
     text{*
@@ -622,22 +601,19 @@ begin
     proof
       fix b :: 'c
       assume b: "Cop.ide b"
-      show "\<T>o e b \<in> S.hom (Y a b) (F b)" using ide_a b e \<T>o_e_ide by blast
+      show "\<guillemotleft>\<T>o e b : Y a b \<rightarrow>\<^sub>S F b\<guillemotright>"
+        using ide_a b e \<T>o_e_ide by simp
       next
       fix g :: 'c
       assume g: "Cop.arr g"
       let ?b = "Cop.dom g"
       let ?b' = "Cop.cod g"
-      show "S (\<T>o e ?b') (Y a g) = S (F g) (\<T>o e ?b)"
+      show "\<T>o e (Cop.cod g) \<cdot>\<^sub>S Y a g = F g \<cdot>\<^sub>S \<T>o e (Cop.dom g)"
       proof -
-        have 1: "S (\<T>o e ?b') (Y a g)
+        have 1: "\<T>o e (Cop.cod g) \<cdot>\<^sub>S Y a g
                    = S.mkArr (Hom.set (?b, a)) (F.SET ?b')
                              ((\<lambda>x. F.FUN (\<psi> (?b', a) x) e)
                                 o (\<phi> (?b', a) o Cop.comp g o \<psi> (?b, a)))"
-          using S.comp_mkArr [of "Hom.set (?b, a)" "Hom.set (?b', a)"
-                                 "\<phi> (?b', a) o Cop.comp g o \<psi> (?b, a)"
-                                 "F.SET ?b'" "\<lambda>x. F.FUN (\<psi> (?b', a) x) e"]
-                Y_ide_arr [of a g ?b' ?b] \<T>o_e_ide [of e ?b'] ide_a e g
         proof -
           have "S.arr (S.mkArr (Hom.set (Cop.cod g, a)) (F.SET (Cop.cod g))
                       (\<lambda>s. F.FUN (\<psi> (Cop.cod g, a) s) e)) \<and>
@@ -645,18 +621,16 @@ begin
                       (\<lambda>s. F.FUN (\<psi> (Cop.cod g, a) s) e)) = Y a (Cop.cod g) \<and>
                 S.cod (S.mkArr (Hom.set (Cop.cod g, a)) (F.SET (Cop.cod g))
                       (\<lambda>s. F.FUN (\<psi> (Cop.cod g, a) s) e)) = F (Cop.cod g)"
-            using Cop.cod_char \<T>o_e_ide [of e ?b'] \<T>o_e_ide [of e ?b'] e g
-            by force
+            using Cop.cod_char \<T>o_e_ide [of e ?b'] \<T>o_e_ide [of e ?b'] e g by force
           moreover have "Y a g = S.mkArr (Hom.set (Cop.dom g, a)) (Hom.set (Cop.cod g, a))
                                          (\<phi> (Cop.cod g, a) \<circ> Cop.comp g \<circ> \<psi> (Cop.dom g, a))"
-            using Y_ide_arr [of a g ?b' ?b] ide_a g by simp
+            using Y_ide_arr [of a g ?b' ?b] ide_a g by auto
           ultimately show ?thesis
-            using ide_a e g Y_ide_arr [of a g] Cop.cod_char
+            using ide_a e g Y_ide_arr Cop.cod_char \<T>o_e_ide
                   S.comp_mkArr [of "Hom.set (?b, a)" "Hom.set (?b', a)"
                                    "\<phi> (?b', a) o Cop.comp g o \<psi> (?b, a)"
                                    "F.SET ?b'" "\<lambda>x. F.FUN (\<psi> (?b', a) x) e"]
-                  \<T>o_e_ide [of e ?b']
-            by simp
+            by (metis C.ide_dom Cop.arr_char preserves_arr)
         qed
         also have "... = S.mkArr (Hom.set (?b, a)) (F.SET ?b')
                                  (F.FUN g o (\<lambda>x. F.FUN (\<psi> (?b, a) x) e))"
@@ -665,7 +639,8 @@ begin
                    o (\<phi> (?b', a) o Cop.comp g o \<psi> (?b, a)) \<in> Hom.set (?b, a) \<rightarrow> F.SET ?b'"
           proof -
             have "S.arr (S (\<T>o e ?b') (Y a g))"
-              using ide_a e g \<T>o_e_ide [of e ?b'] by simp
+              using ide_a e g \<T>o_e_ide [of e ?b'] Y_ide_arr(1) [of a "C.dom g" "C.cod g" g]
+              by auto
             thus ?thesis using 1 by simp
           qed
           thus "S.arr (S.mkArr (Hom.set (?b, a)) (F.SET ?b')
@@ -684,10 +659,15 @@ begin
               by simp
             also have "... = (F.FUN g o (F.FUN o \<psi> (?b, a)) x) e"
             proof -
-              have "\<psi> (?b, a) x \<in> C.hom ?b a"
+              have 1: "\<guillemotleft>\<psi> (Cop.dom g, a) x : Cop.dom g \<rightarrow> a\<guillemotright>"
                 using ide_a x g Hom.\<psi>_mapsto [of ?b a] by auto
-              thus ?thesis
-                using assms ide_a x g F.preserves_comp by simp
+              moreover have "S.seq (F g) (F (\<psi> (C.cod g, a) x))"
+                using 1 g by (intro S.seqI', auto)
+              moreover have "\<psi> (C.dom g, a) (\<phi> (C.dom g, a) (C (\<psi> (C.cod g, a) x) g)) =
+                             C (\<psi> (C.cod g, a) x) g"
+                using g 1 Hom.\<psi>_\<phi> [of "C (\<psi> (?b, a) x) g" ?b' a] by fastforce
+              ultimately show ?thesis
+                using assms F.preserves_comp by fastforce
             qed
             also have "... = (F.FUN g o (\<lambda>x. F.FUN (\<psi> (?b, a) x) e)) x" by fastforce
             finally show "((\<lambda>x. F.FUN (\<psi> (?b', a) x) e)
@@ -696,16 +676,18 @@ begin
               by simp
           qed
         qed
-        also have "... = S (F g) (\<T>o e ?b)"
+        also have "... = F g \<cdot>\<^sub>S \<T>o e (Cop.dom g)"
         proof -
           have "S.arr (F g) \<and> F g = S.mkArr (F.SET ?b) (F.SET ?b') (F.FUN g)"
             using g S.mkArr_Fun [of "F g"] by simp
-          moreover have "S.arr (\<T>o e ?b) \<and>
-                         \<T>o e ?b = S.mkArr (Hom.set (?b, a)) (F.SET ?b) (\<lambda>x. F.FUN (\<psi> (?b, a) x) e)"
-            using e g \<T>o_e_ide by simp
+          moreover have
+              "S.arr (\<T>o e ?b) \<and>
+               \<T>o e ?b = S.mkArr (Hom.set (?b, a)) (F.SET ?b) (\<lambda>x. F.FUN (\<psi> (?b, a) x) e)"
+            using e g \<T>o_e_ide
+            by (metis C.ide_cod Cop.arr_char Cop.dom_char S.in_homE)
           ultimately show ?thesis
             using S.comp_mkArr [of "Hom.set (?b, a)" "F.SET ?b" "\<lambda>x. F.FUN (\<psi> (?b, a) x) e"
-                                     "F.SET ?b'" "F.FUN g"]
+                                   "F.SET ?b'" "F.FUN g"]
             by metis
         qed
         finally show ?thesis by blast
@@ -719,13 +701,13 @@ begin
 
   locale yoneda_lemma_fixed_e =
     yoneda_lemma C S \<phi> F a
-    for C :: "'c comp"
-    and S :: "'s comp"
-    and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
-    and F :: "'c \<Rightarrow> 's"
-    and a :: 'c
-    and e :: 's +
-    assumes E: "e \<in> F.SET a"
+  for C :: "'c comp" (infixr "\<cdot>" 55)
+  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
+  and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
+  and F :: "'c \<Rightarrow> 's"
+  and a :: 'c
+  and e :: 's +
+  assumes E: "e \<in> F.SET a"
   begin
 
     interpretation \<T>e: transformation_by_components Cop.comp S "Y a" F "\<T>o e"
@@ -738,19 +720,20 @@ begin
     assumes "Cop.ide b"
     shows "S.arr (\<T> e b)"
     and "\<T> e b = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. F.FUN (\<psi> (b, a) x) e)"
-      using assms E \<T>o_e_ide \<T>e.map_simp_ide \<T>o_def by auto
+      using assms apply fastforce
+      using assms \<T>o_def by auto
 
   end
 
   locale yoneda_lemma_fixed_\<tau> =
     yoneda_lemma C S \<phi> F a +
     \<tau>: set_valued_transformation Cop.comp S "Y a" F \<tau>
-    for C :: "'c comp"
-    and S :: "'s comp"
-    and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
-    and F :: "'c \<Rightarrow> 's"
-    and a :: 'c
-    and \<tau> :: "'c \<Rightarrow> 's"
+  for C :: "'c comp" (infixr "\<cdot>" 55)
+  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
+  and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
+  and F :: "'c \<Rightarrow> 's"
+  and a :: 'c
+  and \<tau> :: "'c \<Rightarrow> 's"
   begin
 
     text{*
@@ -764,86 +747,79 @@ begin
                          (\<lambda>x. (F.FUN (\<psi> (b, a) x) (\<tau>.FUN a (\<phi> (a, a) a))))"
     proof -
       let ?\<phi>a = "\<phi> (a, a) a"
-      have \<phi>a: "\<phi> (a, a) a \<in> Hom.set (a, a)" using ide_a Hom.\<phi>_mapsto [of a a] by auto
+      have \<phi>a: "\<phi> (a, a) a \<in> Hom.set (a, a)" using ide_a Hom.\<phi>_mapsto [of a a] by fastforce
       have 1: "\<tau> b = S.mkArr (Hom.set (b, a)) (F.SET b) (\<tau>.FUN b)"
-        using ide_a b S.mkArr_Fun [of "\<tau> b"] Hom.set_map by simp
-      also have "... = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. (F.FUN (\<psi> (b, a) x) (\<tau>.FUN a ?\<phi>a)))"
+        using ide_a b S.mkArr_Fun [of "\<tau> b"] Hom.set_map by auto
+      also have
+          "... = S.mkArr (Hom.set (b, a)) (F.SET b) (\<lambda>x. (F.FUN (\<psi> (b, a) x) (\<tau>.FUN a ?\<phi>a)))"
       proof (intro S.mkArr_eqI')
         show "S.arr (S.mkArr (Hom.set (b, a)) (F.SET b) (\<tau>.FUN b))"
-          using ide_a b S.mkArr_Fun [of "\<tau> b"] Hom.set_map by simp
+          using ide_a b 1 S.mkArr_Fun [of "\<tau> b"] Hom.set_map by auto
         show "\<And>x. x \<in> Hom.set (b, a) \<Longrightarrow> \<tau>.FUN b x = (F.FUN (\<psi> (b, a) x) (\<tau>.FUN a ?\<phi>a))"
         proof -
           fix x
           assume x: "x \<in> Hom.set (b, a)"
           let ?\<psi>x = "\<psi> (b, a) x"
-          have \<psi>x: "?\<psi>x \<in> C.hom b a" using ide_a b x Hom.\<psi>_mapsto [of b a] by auto
+          have \<psi>x: "\<guillemotleft>?\<psi>x : b \<rightarrow> a\<guillemotright>"
+            using ide_a b x Hom.\<psi>_mapsto [of b a] by auto
           show "\<tau>.FUN b x = (F.FUN (\<psi> (b, a) x) (\<tau>.FUN a ?\<phi>a))"
           proof -
-            have "\<tau>.FUN b x = S.Fun (S (\<tau> b) (Y a ?\<psi>x)) ?\<phi>a"
+            have "\<tau>.FUN b x = S.Fun (\<tau> b \<cdot>\<^sub>S Y a ?\<psi>x) ?\<phi>a"
             proof -
               have "\<tau>.FUN b x = \<tau>.FUN b ((\<phi> (b, a) o Cop.comp ?\<psi>x) a)"
-                using ide_a b x \<psi>x by force
-              also have "... = S.Fun (S (\<tau> b) (Y a ?\<psi>x)) ?\<phi>a"
+                using ide_a b x \<psi>x Hom.\<phi>_\<psi>
+               by (metis C.comp_cod_arr C.in_homE C.ide_dom Cop.comp_def comp_apply)
+              also have "\<tau>.FUN b ((\<phi> (b, a) o Cop.comp ?\<psi>x) a)
+                           = (\<tau>.FUN b o (\<phi> (b, a) o Cop.comp ?\<psi>x o \<psi> (a, a))) ?\<phi>a"
+                using ide_a b C.ide_in_hom by simp
+              also have "... = S.Fun (\<tau> b \<cdot>\<^sub>S Y a ?\<psi>x) ?\<phi>a"
               proof -
-                have "\<tau>.FUN b ((\<phi> (b, a) o Cop.comp ?\<psi>x) a)
-                        = (\<tau>.FUN b o (\<phi> (b, a) o Cop.comp ?\<psi>x o \<psi> (a, a))) ?\<phi>a"
-                  using ide_a b by simp
-                also have "... = S.Fun (S (\<tau> b) (Y a ?\<psi>x)) ?\<phi>a"
-                proof -
-                  have "S.arr (Y a ?\<psi>x)"
-                    using ide_a \<psi>x preserves_arr by blast
-                  hence "S.arr (Y a ?\<psi>x) \<and>
-                         Y a ?\<psi>x = S.mkArr (Hom.set (a, a)) (SET b)
-                                           (\<phi> (b, a) \<circ> Cop.comp ?\<psi>x \<circ> \<psi> (a, a))"
-                    using ide_a b \<psi>x preserves_hom [of ?\<psi>x a b] Y_ide_arr [of a ?\<psi>x b a]
-                    by auto
-                  moreover have "S.arr (\<tau> b) \<and> \<tau> b = S.mkArr (SET b) (F.SET b) (\<tau>.FUN b)"
-                    using ide_a b S.mkArr_Fun [of "\<tau> b"] by simp
-                  ultimately have "S.arr (S (\<tau> b) (Y a ?\<psi>x)) \<and>
-                        S (\<tau> b) (Y a ?\<psi>x) =
-                           S.mkArr (Hom.set (a, a)) (F.SET b)
-                                   (\<tau>.FUN b o (\<phi> (b, a) \<circ> Cop.comp ?\<psi>x \<circ> \<psi> (a, a)))"
-                    using 1 S.comp_mkArr [of "Hom.set (a, a)" "SET b"
-                                             "\<phi> (b, a) \<circ> Cop.comp ?\<psi>x \<circ> \<psi> (a, a)"
-                                             "F.SET b" "\<tau>.FUN b"]
-                    by (metis S.arr_comp S.cod_mkArr S.dom_mkArr)
-                  thus ?thesis
-                    using ide_a b x Hom.\<phi>_mapsto [of a a]
-                          S.Fun_mkArr [of "Hom.set (a, a)" "F.SET b"
-                                         "\<tau>.FUN b o (\<phi> (b, a) \<circ> Cop.comp ?\<psi>x \<circ> \<psi> (a, a))"]
-                    by auto
-                qed
-                finally show ?thesis by auto
+                have "S.arr (Y a ?\<psi>x)"
+                  using ide_a \<psi>x preserves_arr by (elim C.in_homE, auto)
+                moreover have "Y a ?\<psi>x = S.mkArr (Hom.set (a, a)) (SET b)
+                                                 (\<phi> (b, a) \<circ> Cop.comp ?\<psi>x \<circ> \<psi> (a, a))"
+                  using ide_a b \<psi>x preserves_hom Y_ide_arr Hom.set_map C.arrI by auto
+                moreover have "S.arr (\<tau> b) \<and> \<tau> b = S.mkArr (SET b) (F.SET b) (\<tau>.FUN b)"
+                  using ide_a b S.mkArr_Fun [of "\<tau> b"] by simp
+                ultimately have
+                     "S.seq (\<tau> b) (Y a ?\<psi>x) \<and>
+                      \<tau> b \<cdot>\<^sub>S Y a ?\<psi>x =
+                         S.mkArr (Hom.set (a, a)) (F.SET b)
+                                 (\<tau>.FUN b o (\<phi> (b, a) \<circ> Cop.comp ?\<psi>x \<circ> \<psi> (a, a)))"
+                  using 1 S.comp_mkArr S.seqI
+                  by (metis S.cod_mkArr S.dom_mkArr)
+                thus ?thesis
+                  using ide_a b x Hom.\<phi>_mapsto S.Fun_mkArr by force
               qed
-              finally show ?thesis by simp
+              finally show ?thesis by auto
             qed
-            also have "... = S.Fun (S (F ?\<psi>x) (\<tau> a)) ?\<phi>a"
-              using ide_a b \<psi>x \<tau>.is_natural_1 [of ?\<psi>x] \<tau>.is_natural_2 [of ?\<psi>x] by force
+            also have "... = S.Fun (F ?\<psi>x \<cdot>\<^sub>S \<tau> a) ?\<phi>a"
+              using ide_a b \<psi>x \<tau>.naturality [of ?\<psi>x] by force
             also have "... = F.FUN ?\<psi>x (\<tau>.FUN a ?\<phi>a)"
             proof -
-              have "restrict (S.Fun (S (F ?\<psi>x) (\<tau> a))) (Hom.set (a, a))
+              have "restrict (S.Fun (F ?\<psi>x \<cdot>\<^sub>S \<tau> a)) (Hom.set (a, a))
                                = restrict (F.FUN (\<psi> (b, a) x) o \<tau>.FUN a) (Hom.set (a, a))"
               proof -
-                have "S.arr (S (F ?\<psi>x) (\<tau> a))
-                      \<and> S (F ?\<psi>x) (\<tau> a) = S.mkArr (Hom.set (a, a)) (F.SET b) (F.FUN ?\<psi>x o \<tau>.FUN a)"
+                have
+                  "S.arr (F ?\<psi>x \<cdot>\<^sub>S \<tau> a) \<and>
+                   F ?\<psi>x \<cdot>\<^sub>S \<tau> a = S.mkArr (Hom.set (a, a)) (F.SET b) (F.FUN ?\<psi>x o \<tau>.FUN a)"
                 proof
-                  have 1: "S.seq (F ?\<psi>x) (\<tau> a)"
-                    using \<psi>x ide_a \<tau>.preserves_cod F.preserves_dom by auto
-                  thus "S.arr (S (F ?\<psi>x) (\<tau> a))" by auto
+                  show 1: "S.seq (F ?\<psi>x) (\<tau> a)"
+                    using \<psi>x ide_a \<tau>.preserves_cod F.preserves_dom by (elim C.in_homE, auto)
                   have "\<tau> a = S.mkArr (Hom.set (a, a)) (F.SET a) (\<tau>.FUN a)"
-                    using ide_a 1 S.mkArr_Fun [of "\<tau> a"] Hom.set_map by simp
+                    using ide_a 1 S.mkArr_Fun [of "\<tau> a"] Hom.set_map by auto
                   moreover have "F ?\<psi>x = S.mkArr (F.SET a) (F.SET b) (F.FUN ?\<psi>x)"
-                    using x \<psi>x 1 S.mkArr_Fun [of "F ?\<psi>x"] by simp
-                  ultimately show "S (F ?\<psi>x) (\<tau> a) =
-                                     S.mkArr (Hom.set (a, a)) (F.SET b) (F.FUN ?\<psi>x o \<tau>.FUN a)"
+                    using x \<psi>x 1 S.mkArr_Fun [of "F ?\<psi>x"] by fastforce
+                  ultimately show "F ?\<psi>x \<cdot>\<^sub>S \<tau> a =
+                                   S.mkArr (Hom.set (a, a)) (F.SET b) (F.FUN ?\<psi>x o \<tau>.FUN a)"
                     using 1 S.comp_mkArr [of "Hom.set (a, a)" "F.SET a" "\<tau>.FUN a"
                                              "F.SET b" "F.FUN ?\<psi>x"]
-                    by simp
+                    by (elim S.seqE, auto)
                 qed
                 thus ?thesis by force
               qed
-              thus "S.Fun (S (F (\<psi> (b, a) x)) (\<tau> a)) ?\<phi>a = F.FUN ?\<psi>x (\<tau>.FUN a ?\<phi>a)"
-                 using ide_a \<phi>a restr_eqE [of "S.Fun (S (F ?\<psi>x) (\<tau> a))"
+              thus "S.Fun (F (\<psi> (b, a) x) \<cdot>\<^sub>S \<tau> a) ?\<phi>a = F.FUN ?\<psi>x (\<tau>.FUN a ?\<phi>a)"
+                 using ide_a \<phi>a restr_eqE [of "S.Fun (F ?\<psi>x \<cdot>\<^sub>S \<tau> a)"
                                            "Hom.set (a, a)" "F.FUN ?\<psi>x o \<tau>.FUN a"]
                  by simp
             qed
@@ -888,14 +864,15 @@ begin
     shows "natural_transformation Cop.comp S (Y a) F (\<T> e)" and "\<E> (\<T> e) = e"
     proof -
       interpret yoneda_lemma_fixed_e C S \<phi> F a e
-        apply (unfold_locales) using assms apply auto done
+        using assms by (unfold_locales, auto)
       interpret \<T>e: natural_transformation Cop.comp S "Y a" F "\<T> e"
         using natural_transformation_\<T>e by auto
       show "natural_transformation Cop.comp S (Y a) F (\<T> e)" ..
       show "\<E> (\<T> e) = e"
-        using assms \<E>_def ide_a \<T>e_ide S.Fun_mkArr Hom.\<phi>_mapsto Hom.\<psi>_\<phi> ide_a
-              F.preserves_ide [of a] S.Fun_ide [of "F a"] restrict_apply
-        by fastforce 
+        unfolding \<E>_def
+        using assms \<T>e_ide S.Fun_mkArr Hom.\<phi>_mapsto Hom.\<psi>_\<phi> ide_a
+              F.preserves_ide S.Fun_ide restrict_apply C.ide_in_hom
+        by (auto simp add: Pi_iff)
     qed
 
     lemma \<E>\<tau>_in_Fa:
@@ -907,11 +884,11 @@ begin
       show ?thesis
       proof (unfold \<E>_def)
         have "S.arr (\<tau> a) \<and> S.Dom (\<tau> a) = Hom.set (a, a) \<and> S.Cod (\<tau> a) = F.SET a"
-          using ide_a Hom.set_map by simp
+          using ide_a Hom.set_map by auto
         hence "\<tau>.FUN a \<in> Hom.set (a, a) \<rightarrow> F.SET a"
-          using S.Fun_mapsto by auto
+          using S.Fun_mapsto by blast
         thus "\<tau>.FUN a (\<phi> (a, a) a) \<in> F.SET a"
-          using ide_a Hom.\<phi>_mapsto [of a a] by auto
+          using ide_a Hom.\<phi>_mapsto by fastforce
       qed
     qed
 
@@ -930,7 +907,7 @@ begin
       interpret yoneda_lemma_fixed_\<tau> C S \<phi> F a \<tau> ..
       show 1: "\<E> \<tau> \<in> F.SET a" using assms \<E>\<tau>_in_Fa by auto
       interpret yoneda_lemma_fixed_e C S \<phi> F a "\<E> \<tau>"
-        apply (unfold_locales) using 1 by auto
+        using 1 by (unfold_locales, auto)
       interpret \<T>e: natural_transformation Cop.comp S "Y a" F "\<T> (\<E> \<tau>)"
         using natural_transformation_\<T>e by auto
       show "\<T> (\<E> \<tau>) = \<tau>"
@@ -946,8 +923,8 @@ begin
     *}
 
     theorem yoneda_lemma:
-    shows "bij_betw \<T> (F.SET a) (Collect (natural_transformation Cop.comp S (Y a) F))"
-      using \<T>_is_injection \<T>_is_surjection apply (intro bij_betwI) by auto
+    shows "bij_betw \<T> (F.SET a) {\<tau>. natural_transformation Cop.comp S (Y a) F \<tau>}"
+      using \<T>_is_injection \<T>_is_surjection by (intro bij_betwI, auto)
 
   end
 
@@ -967,13 +944,13 @@ begin
     yoneda_functor_fixed_object C S \<phi> a +
     Ya': yoneda_functor_fixed_object C S \<phi> a' +
     yoneda_lemma C S \<phi> "Y a'" a
-    for C :: "'c comp"
-    and S :: "'s comp"
-    and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
-    and F :: "'c \<Rightarrow> 's"
-    and a :: 'c
-    and a' :: 'c +
-    assumes ide_a': "C.ide a'"
+  for C :: "'c comp" (infixr "\<cdot>" 55)
+  and S :: "'s comp" (infixr "\<cdot>\<^sub>S" 55)
+  and \<phi> :: "'c * 'c \<Rightarrow> 'c \<Rightarrow> 's"
+  and F :: "'c \<Rightarrow> 's"
+  and a :: 'c
+  and a' :: 'c +
+  assumes ide_a': "C.ide a'"
   begin
 
     text{*
@@ -987,13 +964,12 @@ begin
     shows "\<T> e = Y (\<psi> (a, a') e)"
     proof -
       let ?\<psi>e = "\<psi> (a, a') e"
-      have \<psi>e: "?\<psi>e \<in> C.hom a a'" using ide_a ide_a' e Hom.\<psi>_mapsto [of a a'] by auto
-      have 1: "C.dom ?\<psi>e = a \<and> C.cod ?\<psi>e = a'" using \<psi>e by auto
+      have \<psi>e: "\<guillemotleft>?\<psi>e : a \<rightarrow> a'\<guillemotright>" using ide_a ide_a' e Hom.\<psi>_mapsto [of a a'] by auto
       interpret Ye: natural_transformation Cop.comp S "Y a" "Y a'" "Y ?\<psi>e"
-        using Y_arr_is_transformation [of ?\<psi>e] \<psi>e 1 by simp
+        using Y_arr_is_transformation [of ?\<psi>e] \<psi>e by (elim C.in_homE, auto)
       interpret yoneda_lemma_fixed_e C S \<phi> "Y a'" a e
-        apply (unfold_locales)
-        using ide_a ide_a' e S.set_mkIde [of "Hom.set (a, a')"] Hom.set_map by simp
+        using ide_a ide_a' e S.set_mkIde Hom.set_map
+        by (unfold_locales, simp_all)
       interpret \<T>e: natural_transformation Cop.comp S "Y a" "Y a'" "\<T> e"
         using natural_transformation_\<T>e by auto
       interpret yoneda_lemma_fixed_\<tau> C S \<phi> "Y a'" a "\<T> e" ..
@@ -1002,13 +978,14 @@ begin
       moreover have "\<T> e a = Y ?\<psi>e a"
       proof -
         have 1: "S.arr (\<T> e a)"
-          using ide_a E \<T>e.preserves_arr by simp
+          using ide_a e \<T>e.preserves_reflects_arr by simp
         have 2: "\<T> e a = S.mkArr (Hom.set (a, a)) (Ya'.SET a) (\<lambda>x. Ya'.FUN (\<psi> (a, a) x) e)"
-          using ide_a \<T>o_def [of e a] \<T>e_ide [of a] by simp
-        also have "... = S.mkArr (Hom.set (a, a)) (Hom.set (a, a')) (\<phi> (a, a') o C ?\<psi>e o \<psi> (a, a))"
+          using ide_a \<T>o_def \<T>e_ide by simp
+        also have
+            "... = S.mkArr (Hom.set (a, a)) (Hom.set (a, a')) (\<phi> (a, a') o C ?\<psi>e o \<psi> (a, a))"
         proof (intro S.mkArr_eqI)
           show "S.arr (S.mkArr (Hom.set (a, a)) (Ya'.SET a) (\<lambda>x. Ya'.FUN (\<psi> (a, a) x) e))"
-            using ide_a E 1 2 by simp
+            using ide_a e 1 2 by simp
           show "Hom.set (a, a) = Hom.set (a, a)" ..
           show 3: "Ya'.SET a = Hom.set (a, a')"
             using ide_a ide_a' Y_simp Hom.set_map by simp
@@ -1017,44 +994,44 @@ begin
           proof -
             fix x
             assume x: "x \<in> Hom.set (a, a)"
-            have \<psi>x: "\<psi> (a, a) x \<in> C.hom a a" using ide_a x Hom.\<psi>_mapsto [of a a] by auto
+            have \<psi>x: "\<guillemotleft>\<psi> (a, a) x : a \<rightarrow> a\<guillemotright>" using ide_a x Hom.\<psi>_mapsto [of a a] by auto
             have "S.arr (Y a' (\<psi> (a, a) x)) \<and>
                   Y a' (\<psi> (a, a) x) = S.mkArr (Hom.set (a, a')) (Hom.set (a, a'))
                                               (\<phi> (a, a') \<circ> Cop.comp (\<psi> (a, a) x) \<circ> \<psi> (a, a'))"
-              using Y_ide_arr [of a' "\<psi> (a, a) x" a a] ide_a ide_a' \<psi>x by blast
+              using Y_ide_arr ide_a ide_a' \<psi>x by blast
             hence "Ya'.FUN (\<psi> (a, a) x) e = (\<phi> (a, a') \<circ> Cop.comp (\<psi> (a, a) x) \<circ> \<psi> (a, a')) e"
-              using E 3 S.Fun_mkArr [of "Hom.set (a, a')" "Hom.set (a, a')"
-                                       "\<phi> (a, a') \<circ> Cop.comp (\<psi> (a, a) x) \<circ> \<psi> (a, a')"]
-              by auto
+              using e 3 S.Fun_mkArr Ya'.preserves_reflects_arr [of "\<psi> (a, a) x"] by simp
             also have "... = (\<phi> (a, a') o C ?\<psi>e o \<psi> (a, a)) x" by simp
             finally show "Ya'.FUN (\<psi> (a, a) x) e = (\<phi> (a, a') o C ?\<psi>e o \<psi> (a, a)) x" by auto
           qed
         qed
         also have "... = Y ?\<psi>e a"
-          using ide_a ide_a' \<psi>e Y_arr_ide [of a ?\<psi>e a a'] by auto
+          using ide_a ide_a' Y_arr_ide \<psi>e by simp
         finally show "\<T> e a = Y ?\<psi>e a" by auto
       qed
       ultimately show ?thesis using eqI by auto
     qed
 
     lemma Y_injective_on_homs:
-    assumes "f \<in> C.hom a a'" and "f' \<in> C.hom a a'" and "map f = map f'"
+    assumes "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright>" and "\<guillemotleft>f' : a \<rightarrow> a'\<guillemotright>" and "map f = map f'"
     shows "f = f'"
     proof -
       have "f = \<psi> (a, a') (\<phi> (a, a') f)"
-        using assms ide_a Hom.\<psi>_\<phi> [of a a'] by simp
+        using assms ide_a Hom.\<psi>_\<phi> by simp
       also have "... = \<psi> (a, a') (\<E> (\<T> (\<phi> (a, a') f)))"
-        using ide_a assms(1) \<T>_is_injection Hom.\<phi>_mapsto [of a a'] Hom.set_map by fastforce
+        using ide_a ide_a' assms(1) \<T>_is_injection Hom.\<phi>_mapsto Hom.set_map
+        by (elim C.in_homE, simp add: Pi_iff)
       also have "... = \<psi> (a, a') (\<E> (Y (\<psi> (a, a') (\<phi> (a, a') f))))"
         using assms Hom.\<phi>_mapsto [of a a'] \<T>_equals_Yo\<psi> [of "\<phi> (a, a') f"] by force
       also have "... = \<psi> (a, a') (\<E> (\<T> (\<phi> (a, a') f')))"
-        using assms Hom.\<phi>_mapsto [of a a'] ide_a Hom.\<psi>_\<phi> [of a a'] Y_def
+        using assms Hom.\<phi>_mapsto [of a a'] ide_a Hom.\<psi>_\<phi> Y_def
               \<T>_equals_Yo\<psi> [of "\<phi> (a, a') f'"]
         by fastforce
       also have "... = \<psi> (a, a') (\<phi> (a, a') f')"
-        using ide_a assms(2) \<T>_is_injection Hom.\<phi>_mapsto [of a a'] Hom.set_map by fastforce
+        using ide_a ide_a' assms(2) \<T>_is_injection Hom.\<phi>_mapsto Hom.set_map
+        by (elim C.in_homE, simp add: Pi_iff)
       also have "... = f'"
-        using assms ide_a Hom.\<psi>_\<phi> [of a a'] by simp
+        using assms ide_a Hom.\<psi>_\<phi> by simp
       finally show "f = f'" by auto
     qed
 
@@ -1076,10 +1053,10 @@ begin
       show "f = f'"
       proof -
         interpret Ya': yoneda_functor_fixed_object C S \<phi> "C.cod f"
-          apply (unfold_locales) using par by auto
+          using par by (unfold_locales, auto)
         interpret yoneda_lemma_for_hom C S \<phi> "Y (C.cod f)" "C.dom f" "C.cod f"
-          apply (unfold_locales) using par by auto
-        show "f = f'" using par ff' Y_injective_on_homs [of f f'] by simp
+          using par by (unfold_locales, auto)
+        show "f = f'" using par ff' Y_injective_on_homs [of f f'] by fastforce
       qed
     qed
 
@@ -1088,56 +1065,35 @@ begin
     proof
       fix a :: 'c and a' :: 'c and t
       assume a: "C.ide a" and a': "C.ide a'"
-      assume t: "t \<in> Cop_S.hom (map a) (map a')"
-      show "\<exists>e. e \<in> C.hom a a' \<and> (map e) = t"
+      assume t: "\<guillemotleft>t : map a \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] map a'\<guillemotright>"
+      show "\<exists>e. \<guillemotleft>e : a \<rightarrow> a'\<guillemotright> \<and> map e = t"
       proof
         interpret Ya': yoneda_functor_fixed_object C S \<phi> a'
-          apply (unfold_locales) using a' by auto
+          using a' by (unfold_locales, auto)
         interpret yoneda_lemma_for_hom C S \<phi> "Y a'" a a'
-          apply (unfold_locales) using a a' by auto
+          using a a' by (unfold_locales, auto)
         have NT: "natural_transformation Cop.comp S (Y a) (Y a') (Cop_S.Fun t)"
-        proof -
-          have "Cop_S.Dom t = Y a"
-            using t Y_def Cop_S.Fun_dom mem_Collect_eq Cop_S.dom_simp by fastforce
-          moreover have "Cop_S.Cod t = Y a'"
-            using t a' Y_def Cop_S.Fun_cod mem_Collect_eq Cop_S.cod_simp by fastforce
-          ultimately show ?thesis
-            using t Cop_S.arr_char by auto
-        qed
+          using t a' Y_def Cop_S.Fun_dom Cop_S.Fun_cod Cop_S.dom_simp Cop_S.cod_simp
+                Cop_S.arr_char Cop_S.in_homE
+          by metis
         hence 1: "\<E> (Cop_S.Fun t) \<in> Hom.set (a, a')"
           using \<E>\<tau>_in_Fa ide_a ide_a' Hom.set_map by simp
         moreover have "map (\<psi> (a, a') (\<E> (Cop_S.Fun t))) = t"
         proof (intro Cop_S.arr_eqI)
-          have 2: "map (\<psi> (a, a') (\<E> (Cop_S.Fun t))) \<in> Cop_S.hom (map a) (map a')"
-            (*
-             * There is an odd namespace behavior here that makes it impossible to name the
-             * "top-level" preserves_hom fact by writing "preserves_hom" or "local.preserves_hom".
-             * Instead, I get local.\<tau>.preserves_hom, which refers to an eponymous fact in
-             * natural_transformation.  So I obtained the desired fact through inference by the
-             * "garden path" below.
-             *
-             * It seems to be that the preserves_hom fact inherited by yoneda_functor from
-             * the super-locale curried_functor_2 becomes hidden by the preserves_hom fact
-             * for \<tau> in yoneda_lemma_fixed_\<tau>.  It might be useful to try to extract a minimal
-             * situation that exercises this.
-             *)
-            using 1 functor.preserves_hom [of C Cop_S.comp map] is_functor Hom.\<psi>_mapsto [of a a']
-                  ide_a ide_a'
-            by blast
+          have 2: "\<guillemotleft>map (\<psi> (a, a') (\<E> (Cop_S.Fun t))) : map a \<rightarrow>\<^sub>[\<^sub>C\<^sub>o\<^sub>p\<^sub>,\<^sub>S\<^sub>] map a'\<guillemotright>"
+            using 1 ide_a ide_a' Hom.\<psi>_mapsto [of a a'] by blast
           show "Cop_S.arr t" using t by blast
           show "Cop_S.arr (map (\<psi> (a, a') (\<E> (Cop_S.Fun t))))" using 2 by blast
           show 3: "Cop_S.Fun (map (\<psi> (a, a') (\<E> (Cop_S.Fun t)))) = Cop_S.Fun t"
             using NT Y_surjective_on_homs Y_def by simp
           show 4: "Cop_S.Dom (map (\<psi> (a, a') (\<E> (Cop_S.Fun t)))) = Cop_S.Dom t"
-            using 2 natural_transformation_axioms
-            by (metis (mono_tags, lifting) Cop_S.Fun_dom mem_Collect_eq t)
+            using t 2 natural_transformation_axioms Cop_S.Fun_dom by (metis Cop_S.in_homE)
           show "Cop_S.Cod (map (\<psi> (a, a') (\<E> (Cop_S.Fun t)))) = Cop_S.Cod t"
-            using 2 3 4 t
-            by (metis (mono_tags, lifting) Cop_S.Fun_cod mem_Collect_eq)
+            using 2 3 4 t Cop_S.Fun_cod by (metis Cop_S.in_homE)
         qed
-        ultimately show "\<psi> (a, a') (\<E> (Cop_S.Fun t)) \<in> C.hom a a' \<and>
+        ultimately show "\<guillemotleft>\<psi> (a, a') (\<E> (Cop_S.Fun t)) : a \<rightarrow> a'\<guillemotright> \<and>
                          map (\<psi> (a, a') (\<E> (Cop_S.Fun t))) = t"
-          using ide_a ide_a' Hom.\<psi>_mapsto [of a a'] by auto
+          using ide_a ide_a' Hom.\<psi>_mapsto by auto
       qed
     qed
 

@@ -20,37 +20,37 @@ begin
     G: "functor" C D G +
     \<eta>: natural_isomorphism D D D.map "G o F" \<eta> +
     \<epsilon>: natural_isomorphism C C "F o G" C.map \<epsilon>
-  for C :: "'c comp"
-  and D :: "'d comp"
+  for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
+  and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
   and F :: "'d \<Rightarrow> 'c"
   and G :: "'c \<Rightarrow> 'd"
   and \<eta> :: "'d \<Rightarrow> 'd"
   and \<epsilon> :: "'c \<Rightarrow> 'c"
   begin
 
+    notation C.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
+    notation D.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+
     lemma C_arr_expansion:
     assumes "C.arr f"
-    shows "C (\<epsilon> (C.cod f)) (C (F (G f)) (C.inv (\<epsilon> (C.dom f)))) = f"
-    and "C (C.inv (\<epsilon> (C.cod f))) (C f (\<epsilon> (C.dom f))) = F (G f)"
+    shows "\<epsilon> (C.cod f) \<cdot>\<^sub>C F (G f) \<cdot>\<^sub>C C.inv (\<epsilon> (C.dom f)) = f"
+    and "C.inv (\<epsilon> (C.cod f)) \<cdot>\<^sub>C f \<cdot>\<^sub>C \<epsilon> (C.dom f) = F (G f)"
     proof -
       have \<epsilon>_dom: "C.inverse_arrows (\<epsilon> (C.dom f)) (C.inv (\<epsilon> (C.dom f)))"
-        using assms \<epsilon>.components_are_iso C.inv_is_inverse by auto
+        using assms C.inv_is_inverse by auto
       have \<epsilon>_cod: "C.inverse_arrows (\<epsilon> (C.cod f)) (C.inv (\<epsilon> (C.cod f)))"
-        using assms \<epsilon>.components_are_iso C.inv_is_inverse by auto
-      have "C (\<epsilon> (C.cod f)) (C (F (G f)) (C.inv (\<epsilon> (C.dom f))))
-              = C (C (\<epsilon> (C.cod f)) (F (G f))) (C.inv (\<epsilon> (C.dom f)))"
-        using assms \<epsilon>.preserves_hom C.inv_in_hom \<epsilon>.components_are_iso by force
-      also have "... = C (C f (\<epsilon> (C.dom f))) (C.inv (\<epsilon> (C.dom f)))"
-        using assms \<epsilon>.is_natural_1 \<epsilon>.is_natural_2 by simp
-      also have "... = f"
-        using assms \<epsilon>_dom \<epsilon>.preserves_hom C.inv_in_hom \<epsilon>.components_are_iso C.comp_arr_inv
-        by force
-      finally show "C (\<epsilon> (C.cod f)) (C (F (G f)) (C.inv (\<epsilon> (C.dom f)))) = f" by blast
-      show "C (C.inv (\<epsilon> (C.cod f))) (C f (\<epsilon> (C.dom f))) = F (G f)"
-        using assms \<epsilon>_cod \<epsilon>.preserves_hom C.inv_in_hom \<epsilon>.components_are_iso C.comp_inv_arr
-              F.preserves_hom G.preserves_hom \<epsilon>.is_natural_1 \<epsilon>.is_natural_2
-              C.comp_assoc [of "F (G f)" "\<epsilon> (C.cod f)" "C.inv (\<epsilon> (C.cod f))"]
-        by force
+        using assms C.inv_is_inverse by auto
+      have "\<epsilon> (C.cod f) \<cdot>\<^sub>C F (G f) \<cdot>\<^sub>C C.inv (\<epsilon> (C.dom f)) =
+            (\<epsilon> (C.cod f) \<cdot>\<^sub>C F (G f)) \<cdot>\<^sub>C C.inv (\<epsilon> (C.dom f))"
+        using assms by force
+      also have 1: "... = (f \<cdot>\<^sub>C \<epsilon> (C.dom f)) \<cdot>\<^sub>C C.inv (\<epsilon> (C.dom f))"
+        using assms \<epsilon>.naturality by simp
+      also have 2: "... = f"
+        using assms \<epsilon>_dom C.comp_arr_inv C.comp_arr_dom by force
+      finally show "\<epsilon> (C.cod f) \<cdot>\<^sub>C F (G f) \<cdot>\<^sub>C C.inv (\<epsilon> (C.dom f)) = f" by blast
+      show "C.inv (\<epsilon> (C.cod f)) \<cdot>\<^sub>C f \<cdot>\<^sub>C \<epsilon> (C.dom f) = F (G f)"
+        using assms 1 2 \<epsilon>_dom \<epsilon>_cod C.invert_side_of_triangle C.isoI C.iso_inv_iso
+        by metis
     qed
 
     lemma G_is_faithful:
@@ -60,28 +60,20 @@ begin
       assume par: "C.par f f'" and eq: "G f = G f'"
       show "f = f'"
       proof -
-        have 1: "C.inv (\<epsilon> (C.cod f)) \<in> C.hom (C.cod f) (F (G (C.cod f))) \<and>
-                 C.iso (C.inv (\<epsilon> (C.cod f)))"
-          using par C.inv_in_hom \<epsilon>.components_are_iso C.iso_inv_iso
-         by auto
-        have 2: "\<epsilon> (C.dom f) \<in> C.hom (F (G (C.dom f))) (C.dom f) \<and>
-                 C.iso (\<epsilon> (C.dom f))"
-          using par \<epsilon>.preserves_hom [of "C.dom f" "C.dom f" "C.dom f"]
-                \<epsilon>.components_are_iso [of "C.dom f"]
-          by auto
-        have 3: "C (C.inv (\<epsilon> (C.cod f))) (C f (\<epsilon> (C.dom f)))
-                   = C (C.inv (\<epsilon> (C.cod f))) (C f' (\<epsilon> (C.dom f)))"
-          using par C_arr_expansion eq by metis
-        have 4: "C f (\<epsilon> (C.dom f)) = C f' (\<epsilon> (C.dom f))"
-          using 1 2 3 par C.iso_is_section [of "C.inv (\<epsilon> (C.cod f))"]
-                  C.section_is_mono [of "C.inv (\<epsilon> (C.cod f))"]
-                  C.monoE [of "C.inv (\<epsilon> (C.cod f))" "C f (\<epsilon> (C.dom f))" "C f' (\<epsilon> (C.dom f))"]
-          by simp
+        have "C.inv (\<epsilon> (C.cod f)) \<in> C.hom (C.cod f) (F (G (C.cod f))) \<and>
+              C.iso (C.inv (\<epsilon> (C.cod f)))"
+          using par C.iso_inv_iso by auto
+        moreover have 1: "\<epsilon> (C.dom f) \<in> C.hom (F (G (C.dom f))) (C.dom f) \<and>
+                          C.iso (\<epsilon> (C.dom f))"
+          using par by auto
+        ultimately have 2: "f \<cdot>\<^sub>C \<epsilon> (C.dom f) = f' \<cdot>\<^sub>C \<epsilon> (C.dom f)"
+          using par C_arr_expansion eq C.iso_is_section C.section_is_mono
+          by (metis C_arr_expansion(1) eq)
         show ?thesis
         proof -
           have "C.epi (\<epsilon> (C.dom f))"
-            using 2 par C.iso_is_retraction C.retraction_is_epi by blast
-          thus ?thesis using 1 2 4 par by fastforce
+            using 1 par C.iso_is_retraction C.retraction_is_epi by blast
+          thus ?thesis using 2 par by auto
         qed
       qed
     qed
@@ -94,10 +86,14 @@ begin
         fix b
         assume b: "D.ide b"
         show "C.ide (F b) \<and> D.isomorphic (G (F b)) b"
-        proof (unfold D.isomorphic_def)
-          have "C.ide (F b) \<and> D.inv (\<eta> b) \<in> D.hom (G (F b)) b \<and> D.iso (D.inv (\<eta> b))"
-            using b \<eta>.components_are_iso D.inv_in_hom D.iso_inv_iso by simp
-          thus "C.ide (F b) \<and> (\<exists>f. f \<in> D.hom (G (F b)) b \<and> D.iso f)" by blast
+        proof
+          show "C.ide (F b)" using b by simp
+          show "D.isomorphic (G (F b)) b"
+          proof (unfold D.isomorphic_def)
+            have "\<guillemotleft>D.inv (\<eta> b) : G (F b) \<rightarrow>\<^sub>D b\<guillemotright> \<and> D.iso (D.inv (\<eta> b))"
+              using b D.iso_inv_iso by auto
+            thus "\<exists>f. \<guillemotleft>f : G (F b) \<rightarrow>\<^sub>D b\<guillemotright> \<and> D.iso f" by blast
+          qed
         qed
       qed
       thus "\<forall>b. D.ide b \<longrightarrow> (\<exists>a. C.ide a \<and> D.isomorphic (G a) b)"
@@ -121,39 +117,36 @@ begin
     proof
       fix a a' g
       assume a: "C.ide a" and a': "C.ide a'"
-      assume g: "g \<in> D.hom (G a) (G a')"
-      show "\<exists>f. f \<in> C.hom a a' \<and> G f = g"
+      assume g: "\<guillemotleft>g : G a \<rightarrow>\<^sub>D G a'\<guillemotright>"
+      show "\<exists>f. \<guillemotleft>f : a \<rightarrow>\<^sub>C a'\<guillemotright> \<and> G f = g"
       proof
         have \<epsilon>a: "C.inverse_arrows (\<epsilon> a) (C.inv (\<epsilon> a))"
-          using a \<epsilon>.components_are_iso C.inv_is_inverse by auto
+          using a C.inv_is_inverse by auto
         have \<epsilon>a': "C.inverse_arrows (\<epsilon> a') (C.inv (\<epsilon> a'))"
-          using a' \<epsilon>.components_are_iso C.inv_is_inverse by auto
-        let ?f = "C (\<epsilon> a') (C (F g) (C.inv (\<epsilon> a)))"
-        have f: "?f \<in> C.hom a a'"
-          using a a' g \<epsilon>.preserves_hom C.inv_in_hom \<epsilon>.components_are_iso by simp
+          using a' C.inv_is_inverse by auto
+        let ?f = "\<epsilon> a' \<cdot>\<^sub>C F g \<cdot>\<^sub>C C.inv (\<epsilon> a)"
+        have f: "\<guillemotleft>?f : a \<rightarrow>\<^sub>C a'\<guillemotright>"
+          using a a' g \<epsilon>a \<epsilon>a' \<epsilon>.preserves_hom [of a' a' a'] \<epsilon>_inv.preserves_hom [of a a a]
+          by fastforce
         moreover have "G ?f = g"
         proof -
           interpret F: faithful_functor D C F
             using F_is_faithful by auto
           have "F (G ?f) = F g"
           proof -
-            have "F (G ?f) = C (C.inv (\<epsilon> a')) (C ?f (\<epsilon> a))"
+            have "F (G ?f) = C.inv (\<epsilon> a') \<cdot>\<^sub>C ?f \<cdot>\<^sub>C \<epsilon> a"
               using f C_arr_expansion(2) [of "?f"] by auto
-            also have "... = C (C (C.inv (\<epsilon> a')) (\<epsilon> a')) (C (C (F g) (C.inv (\<epsilon> a))) (\<epsilon> a))"
-              using a a' g \<epsilon>.preserves_hom C.inv_in_hom \<epsilon>.components_are_iso
-                    C.comp_assoc [of "C (C (F g) (C.inv (\<epsilon> a))) (\<epsilon> a)" "\<epsilon> a'" "C.inv (\<epsilon> a')"]
-              by force
-            also have "... = C (C (C.inv (\<epsilon> a')) (\<epsilon> a')) (C (F g) (C (C.inv (\<epsilon> a)) (\<epsilon> a)))"
-              using a a' g \<epsilon>.preserves_hom C.inv_in_hom \<epsilon>.components_are_iso
-                    C.comp_assoc [of "\<epsilon> a" "C.inv (\<epsilon> a)" "F g"]
-              by auto
+            also have "... = (C.inv (\<epsilon> a') \<cdot>\<^sub>C \<epsilon> a') \<cdot>\<^sub>C F g \<cdot>\<^sub>C C.inv (\<epsilon> a) \<cdot>\<^sub>C \<epsilon> a"
+              using a a' f g by fastforce
             also have "... = F g"
-              using a a' \<epsilon>a \<epsilon>a' C.comp_inv_arr g \<epsilon>.preserves_hom by auto
+              using a a' g \<epsilon>a \<epsilon>a' C.comp_inv_arr C.comp_arr_dom C.comp_cod_arr by auto
             finally show ?thesis by blast
           qed
-          thus ?thesis using f g F.is_faithful [of "G ?f" g] by force
+          moreover have "D.par (G (\<epsilon> a' \<cdot>\<^sub>C F g \<cdot>\<^sub>C C.inv (\<epsilon> a))) g"
+            using f g by fastforce
+          ultimately show ?thesis using f g F.is_faithful by blast
         qed
-        ultimately show "?f \<in> C.hom a a' \<and> G ?f = g" by blast
+        ultimately show "\<guillemotleft>?f : a \<rightarrow>\<^sub>C a'\<guillemotright> \<and> G ?f = g" by blast
       qed
     qed
 
@@ -186,19 +179,19 @@ begin
     C: category C +
     D: category D +
     "functor" C D G
-  for C :: "'c comp"
-  and D :: "'d comp"
+  for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
+  and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
   and G :: "'c \<Rightarrow> 'd" +
   assumes induces_equivalence: "\<exists>F \<eta> \<epsilon>. equivalence_of_categories C D F G \<eta> \<epsilon>"
+  begin
+
+    notation C.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
+    notation D.in_hom    ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+
+  end
 
   sublocale equivalence_of_categories \<subseteq> equivalence_functor C D G
-  proof
-    show "\<exists>F \<eta> \<epsilon>. equivalence_of_categories C D F G \<eta> \<epsilon>"
-    proof -
-      have "equivalence_of_categories C D F G \<eta> \<epsilon>" ..
-      thus ?thesis by blast
-    qed
-  qed
+    using equivalence_of_categories_axioms by (unfold_locales, blast)
 
   text {*
     An equivalence functor is fully faithful and essentially surjective.
@@ -220,7 +213,8 @@ begin
       using induces_equivalence by blast
     interpret equivalence_of_categories C D F G \<eta> \<epsilon>
       using 1 by auto
-    show "essentially_surjective_functor C D G" using G_is_essentially_surjective by auto
+    show "essentially_surjective_functor C D G"
+      using G_is_essentially_surjective by auto
   qed
 
   text {*
@@ -230,7 +224,7 @@ begin
 
   locale endofunctor =
     "functor" A A F
-  for A :: "'a comp"
+  for A :: "'a comp"     (infixr "\<cdot>" 55)
   and F :: "'a \<Rightarrow> 'a"
   begin
 
@@ -245,15 +239,10 @@ begin
       proof -
         interpret \<tau>: horizontal_composite A A A A.map F F F \<phi>'.map F ..
         interpret F\<phi>': natural_transformation A A F "F o F" "F o \<phi>'.map"
-        proof -
-          have "F o A.map = F"
-            using Functor.comp_ide_dom functor_axioms by blast
-          thus "natural_transformation A A F (F o F) (F o \<phi>'.map)"
-            using \<tau>.natural_transformation_axioms by simp
-        qed
+          using comp_identity_functor functor_axioms \<tau>.natural_transformation_axioms by simp
         show "natural_isomorphism A A F (F o F) (F o \<phi>'.map)"
           apply unfold_locales
-          using preserves_iso \<phi>'.components_are_iso by fastforce
+          using \<phi>'.components_are_iso by fastforce
       qed
       interpret F\<phi>'o\<phi>': vertical_composite A A A.map F "F o F" \<phi>'.map "F o \<phi>'.map" ..
       interpret F\<phi>'o\<phi>': natural_isomorphism A A A.map "F o F" F\<phi>'o\<phi>'.map
@@ -275,8 +264,8 @@ begin
     unit_counit_adjunction C D F G \<eta> \<epsilon> +
     \<eta>: natural_isomorphism D D D.map "G o F" \<eta> +
     \<epsilon>: natural_isomorphism C C "F o G" C.map \<epsilon>
-  for C :: "'c comp"
-  and D :: "'d comp"
+  for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
+  and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
   and F :: "'d \<Rightarrow> 'c"
   and G :: "'c \<Rightarrow> 'd"
   and \<eta> :: "'d \<Rightarrow> 'd"
@@ -300,36 +289,20 @@ begin
     assumes "C.ide a"
     shows "D.inverse_arrows (\<eta> (G a)) (G (\<epsilon> a))"
     proof
-      have 1: "D (G (\<epsilon> a)) (\<eta> (G a)) = G a"
+      show "D.ide (G (\<epsilon> a) \<cdot>\<^sub>D \<eta> (G a))"
         using assms triangle_G G\<epsilon>o\<eta>G.map_simp_ide by fastforce
-      thus "D.ide (D (G (\<epsilon> a)) (\<eta> (G a)))"
-        using assms by simp
-      hence "\<eta> (G a) = D.inv (G (\<epsilon> a))"
-        using assms \<epsilon>.components_are_iso G.preserves_iso D.inverse_unique
-              D.section_retraction_of_iso D.section_retractionI
-        by metis
-      thus "D.ide (D (\<eta> (G a)) (G (\<epsilon> a)))"
-        using assms \<epsilon>.components_are_iso G.preserves_iso D.inv_is_inverse
-              D.comp_inv_arr
-        by simp
+      thus "D.ide (\<eta> (G a) \<cdot>\<^sub>D G (\<epsilon> a))"
+        using assms D.section_retraction_of_iso [of "G (\<epsilon> a)" "\<eta> (G a)"] by auto
     qed
 
     lemma triangle_F':
     assumes "D.ide b"
     shows "C.inverse_arrows (F (\<eta> b)) (\<epsilon> (F b))"
     proof
-      have 1: "C (\<epsilon> (F b)) (F (\<eta> b)) = F b"
+     show "C.ide (\<epsilon> (F b) \<cdot>\<^sub>C F (\<eta> b))"
         using assms triangle_F \<epsilon>FoF\<eta>.map_simp_ide by auto
-      thus "C.ide (C (\<epsilon> (F b)) (F (\<eta> b)))"
-        using assms by simp
-      hence "C.inv (\<epsilon> (F b)) = F (\<eta> b)"
-        using assms \<epsilon>.components_are_iso F.preserves_iso C.inverse_unique
-              C.section_retraction_of_iso C.section_retractionI
-        by simp
-      thus "C.ide (C (F (\<eta> b)) (\<epsilon> (F b)))"
-        using assms \<epsilon>.components_are_iso F.preserves_iso C.inv_is_inverse [of "\<epsilon> (F b)"]
-              C.comp_inv_arr
-        by simp
+      thus "C.ide (F (\<eta> b) \<cdot>\<^sub>C \<epsilon> (F b))"
+        using assms C.section_retraction_of_iso [of "\<epsilon> (F b)" "F (\<eta> b)"] by auto
     qed
 
     text {*
@@ -386,7 +359,7 @@ begin
             fix a
             assume a: "C.ide a"
             show "\<eta>'GoG\<epsilon>'.map a = G a"
-              using a \<eta>'GoG\<epsilon>'.map_simp_ide [of a] triangle_G'
+              using a \<eta>'GoG\<epsilon>'.map_simp_ide triangle_G'
                     \<eta>.components_are_iso \<epsilon>.components_are_iso G.preserves_ide
                     \<eta>'.inverts_components \<epsilon>'.inverts_components
                     D.inverse_unique G.preserves_inverse_arrows G\<epsilon>o\<eta>G.map_simp_ide
@@ -405,7 +378,7 @@ begin
             fix b
             assume b: "D.ide b"
             show "F\<eta>'o\<epsilon>'F.map b = F b"
-              using b F\<eta>'o\<epsilon>'F.map_simp_ide [of b] \<epsilon>FoF\<eta>.map_simp_ide triangle_F triangle_F'
+              using b F\<eta>'o\<epsilon>'F.map_simp_ide \<epsilon>FoF\<eta>.map_simp_ide triangle_F triangle_F'
                     \<eta>.components_are_iso \<epsilon>.components_are_iso G.preserves_ide
                     \<eta>'.inverts_components \<epsilon>'.inverts_components F.preserves_ide
                     C.inverse_unique F.preserves_inverse_arrows C.inverse_arrows_sym

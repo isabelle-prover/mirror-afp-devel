@@ -1,5 +1,6 @@
 \documentclass[11pt,notitlepage,a4paper]{report}
-\usepackage{isabelle,isabellesym}
+\usepackage{isabelle,isabellesym,eufrak}
+\usepackage[english]{babel}
 
 % this should be the last package used
 \usepackage{pdfsetup}
@@ -145,10 +146,10 @@ The main stylistic features of the present development are as follows:
 \item  Rules for reasoning about categories, functors, and natural transformations
   are defined so that all ``diagrammatic'' hypotheses reduce to conjunctions of
   assertions, each of which states that a given entity is an arrow, has a particular
-  domain, or has a particular codomain.  A system of introduction and elimination rules
-  is established which permits both ``upward'' reasoning, in which such diagrammatic
-  assertions are established for larger terms using corresponding assertions about
-  the proper subterms, as well as ``downward'' reasoning, in which diagrammatic
+  domain or codomain, or inhabits a particular ``hom-set''.  A system of introduction
+  and elimination rules is established which permits both ``upward'' reasoning,
+  in which such diagrammatic assertions are established for larger terms using corresponding
+  assertions about the proper subterms, as well as ``downward'' reasoning, in which diagrammatic
   assertions about proper subterms are inferred from such assertions about a larger
   term, to be carried out automatically.
 \item  Constructions on categories, functors, and natural transformations are defined
@@ -201,15 +202,32 @@ A brief synopsis of the formal mathematical content of the present development i
   embedding preserves limits.
 \end{itemize}
 
-One thing that is not done in the current development is to introduce any special syntax.
-There are a few reasons for this.  First of all, I haven't found the lack of special syntax
-to be a significant hindrance to creating the formal development.  Second, I wanted to be
-sure that any syntax that I did introduce would actually make the development easier to read
-and write, rather than more difficult.  (I tended to find, for example, that the proliferation
-of special syntax introduced in \cite{Katovsky-AFP10} made the presentation seem less readily
-accessible than if the syntax had been omitted.)  Third, it is easier to introduce syntax
-judiciously and incrementally at a later date than it is to remove or change syntax that
-was introduced prematurely.
+The present (2018) version of this development is a major revision of the original (2016)
+version.  Although the overall organization and content has remained essentially the same,
+the present version revises the axioms used to define a category, and as a consequence
+many proofs required changes.  The purpose of the revision was to obtain a more organized
+set of basic facts which, when annotated for use in automatic proof, would yield behavior more
+understandable than that of the original version.  In particular, as I gained experience with
+the Isabelle simplifier, I was able to understand better how to avoid some of the vexing
+problems of looping simplifications that sometimes cropped up when using the original rules.
+The new version ``feels'' about as powerful as the original version, or perhaps slightly more so.
+However, the new version uses elimination rules in place of some things that were previously
+done by simplification rules, which means that from time to time it becomes necessary
+to provide guidance to the prover as to where the elimination rules should be invoked.
+
+Another difference between the present version of this document and the original is the
+introduction of some notational syntax, which I intentionally avoided in the original.
+An important reason for not introducing syntax in the original version was that at the time
+I did not have much experience with the notational features of Isabelle, and I was afraid
+of introducing hard-to-remove syntax that would make the development more difficult to read
+and write, rather than easier.  (I tended to find, for example, that the proliferation of
+special syntax introduced in \cite{Katovsky-AFP10} made the presentation seem less readily
+accessible than if the syntax had been omitted.)  In the present revision, I have introduced
+syntax for composition of arrows in a category, and for the notion of ``an arrow inhabiting
+a hom-set.''  The notation for composition eases readability by reducing the number of
+required parentheses, and the notation for asserting that an arrow inhabits a particular
+hom-set gives these assertions a more familiar appearance; making it easier to understand
+them at a glance.
 
 % include generated text of all theories
 \input{session}

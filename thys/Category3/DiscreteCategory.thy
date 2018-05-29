@@ -32,8 +32,8 @@ begin
     shows "Null \<notin> Obj"
       using Null_def Obj_not_UNIV someI_ex [of "\<lambda>x. x \<notin> Obj"] by auto
 
-    definition comp :: "'a comp"
-    where "comp y x \<equiv> (if x \<in> Obj \<and> x = y then x else Null)"
+    definition comp :: "'a comp"      (infixr "\<cdot>" 55)
+    where "y \<cdot> x \<equiv> (if x \<in> Obj \<and> x = y then x else Null)"
 
     interpretation partial_magma comp
       apply unfold_locales
@@ -43,20 +43,32 @@ begin
     shows "null = Null"
       using comp_def null_def by auto
 
-    lemma unit_char:
-    shows "unit f \<longleftrightarrow> True"
-      using comp_def null_char unit_def by auto
+    lemma ide_char [iff]:
+    shows "ide f \<longleftrightarrow> f \<in> Obj"
+      using comp_def null_char ide_def Null_not_in_Obj by auto
+
+    lemma domains_char:
+    shows "domains f = {x. x \<in> Obj \<and> x = f}"
+    proof
+      show "{x. x \<in> Obj \<and> x = f} \<subseteq> domains f"
+        unfolding domains_def
+        using ide_char ide_def by fastforce
+      show "domains f \<subseteq> {x. x \<in> Obj \<and> x = f}"
+        unfolding domains_def
+        using ide_char by (simp add: Collect_mono comp_def null_char)
+    qed
 
     theorem is_category:
     shows "category comp"
       using comp_def
       apply unfold_locales
-      (* 6 *) apply (metis null_char)
-      (* 5 *) apply (metis null_char)
-      (* 4 *) apply (metis null_char)
-      (* 3 *) apply (metis null_char)
-      (* 2 *) apply auto[1]
-      (* 1 *) by (metis (no_types, lifting) has_cod_def has_dom_def)
+      using arr_def null_char self_domain_iff_ide ide_char
+           apply fastforce
+      using null_char self_codomain_iff_ide domains_char codomains_def ide_char
+          apply fastforce
+         apply (metis not_arr_null null_char)
+        apply (metis not_arr_null null_char)
+      by auto
 
   end
 
@@ -68,23 +80,20 @@ begin
 
     lemma arr_char [iff]:
     shows "arr f \<longleftrightarrow> f \<in> Obj"
-      using comp_def arr_def has_cod_def has_dom_def null_char unit_char Null_not_in_Obj by metis
+      using comp_def comp_cod_arr
+      by (metis empty_iff has_codomain_iff_arr not_arr_null null_char self_codomain_iff_ide ide_char)
 
-    lemma ide_char [iff]:
-    shows "ide f \<longleftrightarrow> f \<in> Obj"
-      using comp_def arr_char Null_not_in_Obj by (metis comp_cod_arr ideI_cod ideD(1))
-
-    lemma dom_char [iff]:
+    lemma dom_char [simp]:
     shows "dom f = (if f \<in> Obj then f else null)"
-      using comp_def arrI arr_char comp_arr_dom dom_def null_char Null_not_in_Obj by metis
+      using arr_def dom_def arr_char ideD(2) by auto
 
-    lemma cod_char [iff]:
+    lemma cod_char [simp]:
     shows "cod f = (if f \<in> Obj then f else null)"
-      using comp_def arrI arr_char comp_cod_arr cod_def null_char Null_not_in_Obj by metis
+      using arr_def in_homE cod_def ideD(3) by auto
 
-    lemma comp_char [iff]:
+    lemma comp_char [simp]:
     shows "comp g f = (if f \<in> Obj \<and> f = g then f else null)"
-      using comp_def null_char Null_not_in_Obj by presburger
+      using comp_def null_char by auto
 
     lemma is_discrete:
     shows "ide f \<longleftrightarrow> arr f"

@@ -30,7 +30,7 @@ begin
     We then consider the full subcategory @{text "\<F>\<^sub>SC"} of @{text "\<F>C"} whose objects
     are the equivalence classes of diagonal identity terms
     ({\em i.e.}~equivalence classes of lists of identity arrows of @{term C}),
-    and we show that this category is monoidally equivalent to @{text "\<F>\<^sub>SC"}.
+    and we show that this category is monoidally equivalent to @{text "\<F>C"}.
     In addition, we show that @{text "\<F>\<^sub>SC"} is the free strict monoidal category,
     as any functor from @{text C} to a strict monoidal category @{term D} extends uniquely
     to a strict monoidal functor from @{text "\<F>\<^sub>SC"} to @{term D}.
@@ -42,6 +42,9 @@ begin
     monoidal_language C
     for C :: "'c comp"
   begin
+
+    no_notation C.in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation C.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
 
     text {*
       Two terms of the monoidal language of @{term C} are defined to be equivalent if
@@ -125,7 +128,7 @@ begin
       using assms norm_def Can_implies_Arr Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red
             Inv_preserves_Can Diagonalize_preserves_Can red_in_Hom Diagonalize_in_Hom
             Ide_Diagonalize_Can
-      by force
+      by fastforce
 
     text {*
       We now establish various additional properties of normal forms that are consequences
@@ -303,7 +306,7 @@ begin
       using the syntactic constructor @{text Comp}.
     *}
 
-    definition comp  (infixr "\<cdot>" 55)
+    definition comp      (infixr "\<cdot>" 55)
       where "comp f g \<equiv> (if ARR f \<and> ARR g \<and> DOM f = COD g
                          then mkarr ((rep f) \<^bold>\<cdot> (rep g)) else {})"
 
@@ -315,6 +318,8 @@ begin
     interpretation partial_magma comp
       apply unfold_locales
       using comp_def not_ARR_empty by metis
+
+    notation in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
     text {*
       The empty set serves as the null for the composition.
@@ -332,18 +337,18 @@ begin
 
     lemma ARR_comp:
     assumes "ARR f" and "ARR g" and "DOM f = COD g"
-    shows "ARR (comp f g)"
+    shows "ARR (f \<cdot> g)"
       using assms comp_def Arr_rep_ARR ARR_mkarr(1) by simp
 
     lemma DOM_comp [simp]:
     assumes "ARR f" and "ARR g" and "DOM f = COD g"
     shows "DOM (f \<cdot> g) = DOM g"
-      using assms comp_def ARR_comp Arr_rep_ARR DOM_mkarr [of "rep f \<^bold>\<cdot> rep g"] by simp
+      using assms comp_def ARR_comp Arr_rep_ARR DOM_mkarr by simp
 
     lemma COD_comp [simp]:
     assumes "ARR f" and "ARR g" and "DOM f = COD g"
     shows "COD (f \<cdot> g) = COD f"
-      using assms comp_def ARR_comp Arr_rep_ARR COD_mkarr [of "rep f \<^bold>\<cdot> rep g"] by simp
+      using assms comp_def ARR_comp Arr_rep_ARR COD_mkarr by simp
 
     lemma comp_assoc:
     assumes "g \<cdot> f \<noteq> null" and "h \<cdot> g \<noteq> null"
@@ -454,11 +459,18 @@ begin
       ultimately show ?thesis using IDE_def by blast
     qed
 
-    lemma IDE_implies_unit:
+    lemma IDE_implies_ide:
     assumes "IDE a"
-    shows "unit a"
-    proof (unfold unit_def)
-      have "\<And>f. (a \<cdot> f \<noteq> null \<longrightarrow> a \<cdot> f = f) \<and> (f \<cdot> a \<noteq> null \<longrightarrow> f \<cdot> a = f)"
+    shows "ide a"
+    proof (unfold ide_def)
+      have "a \<cdot> a \<noteq> null"
+      proof -
+        have "rep a \<^bold>\<cdot> rep a \<in> a \<cdot> a"
+          using assms IDE_def comp_def Arr_rep_ARR Arr_in_mkarr by simp
+        thus ?thesis
+          using null_char by auto
+      qed
+      moreover have "\<And>f. (f \<cdot> a \<noteq> null \<longrightarrow> f \<cdot> a = f) \<and> (a \<cdot> f \<noteq> null \<longrightarrow> a \<cdot> f = f)"
       proof
         fix f :: "'c arr"
         show "a \<cdot> f \<noteq> null \<longrightarrow> a \<cdot> f = f"
@@ -519,21 +531,22 @@ begin
             using mkarr_memb_ARR comp_def by auto
         qed
       qed
-      thus "\<forall>f. (a \<cdot> f \<noteq> null \<longrightarrow> a \<cdot> f = f) \<and> (f \<cdot> a \<noteq> null \<longrightarrow> f \<cdot> a = f)"
+      ultimately show "a \<cdot> a \<noteq> null \<and>
+                       (\<forall>f. (f \<cdot> a \<noteq> null \<longrightarrow> f \<cdot> a = f) \<and> (a \<cdot> f \<noteq> null \<longrightarrow> a \<cdot> f = f))"
         by blast
     qed
 
-    lemma ARR_iff_has_dom:
-    shows "ARR f \<longleftrightarrow> has_dom f"
+    lemma ARR_iff_has_domain:
+    shows "ARR f \<longleftrightarrow> domains f \<noteq> {}"
     proof
-      assume f: "has_dom f"
-      show "ARR f" using f has_dom_def comp_def null_char by auto
+      assume f: "domains f \<noteq> {}"
+      show "ARR f" using f domains_def comp_def null_char by auto
       next
       assume f: "ARR f"
       have "Ide (DOM f)"
         using f ARR_def by (simp add: Arr_implies_Ide_Dom Arr_rep_ARR)
       hence "IDE (mkarr (DOM f))" using IDE_mkarr_Ide by metis
-      hence "unit (mkarr (DOM f))" using IDE_implies_unit by simp
+      hence "ide (mkarr (DOM f))" using IDE_implies_ide by simp
       moreover have "f \<cdot> mkarr (DOM f) = f"
       proof -
         have 1: "rep f \<^bold>\<cdot> DOM f \<in> f \<cdot> mkarr (DOM f)"
@@ -545,30 +558,30 @@ begin
         proof -
           have 2: "rep f \<in> f" using f rep_in_ARR by simp
           moreover have "equiv (rep f \<^bold>\<cdot> DOM f) (rep f)"
-            using f 1 2 mkarr_memb_ARR mkarr_extensionality \<open>unit (mkarr (DOM f))\<close>
-                  emptyE equiv_iff_eq_norm norm_memb_eq_rep_ARR null_char unit_def
+            using f 1 2 mkarr_memb_ARR mkarr_extensionality \<open>ide (mkarr (DOM f))\<close>
+                  emptyE equiv_iff_eq_norm norm_memb_eq_rep_ARR null_char ide_def
             by metis
           ultimately show ?thesis
-            using f ARR_eqI 1 \<open>unit (mkarr (DOM f))\<close> null_char unit_def by auto
+            using f ARR_eqI 1 \<open>ide (mkarr (DOM f))\<close> null_char ide_def by auto
         qed
         ultimately show ?thesis
-          using f ARR_eqI \<open>unit (mkarr (DOM f))\<close> null_char unit_def by auto
+          using f ARR_eqI \<open>ide (mkarr (DOM f))\<close> null_char ide_def by auto
       qed
-      ultimately show "has_dom f"
-        using has_dom_def f not_ARR_empty null_char by auto
+      ultimately show "domains f \<noteq> {}"
+        using f domains_def not_ARR_empty null_char by auto
     qed
 
-    lemma ARR_iff_has_cod:
-    shows "ARR f \<longleftrightarrow> has_cod f"
+    lemma ARR_iff_has_codomain:
+    shows "ARR f \<longleftrightarrow> codomains f \<noteq> {}"
     proof
-      assume f: "has_cod f"
-      show "ARR f" using f has_cod_def comp_def null_char by auto
+      assume f: "codomains f \<noteq> {}"
+      show "ARR f" using f codomains_def comp_def null_char by auto
       next
       assume f: "ARR f"
       have "Ide (COD f)"
         using f ARR_def by (simp add: Arr_rep_ARR Arr_implies_Ide_Cod)
       hence "IDE (mkarr (COD f))" using IDE_mkarr_Ide by metis
-      hence "unit (mkarr (COD f))" using IDE_implies_unit by simp
+      hence "ide (mkarr (COD f))" using IDE_implies_ide by simp
       moreover have "mkarr (COD f) \<cdot> f = f"
       proof -
         have 1: "COD f \<^bold>\<cdot> rep f \<in> mkarr (COD f) \<cdot> f"
@@ -578,76 +591,18 @@ begin
           by fastforce
         moreover have "COD f \<^bold>\<cdot> rep f \<in> f"
           using 1 null_char norm_rep_ARR norm_memb_eq_rep_ARR mkarr_memb_ARR
-                \<open>unit (mkarr (COD f))\<close> emptyE equiv_iff_eq_norm mkarr_extensionality unit_def
+                \<open>ide (mkarr (COD f))\<close> emptyE equiv_iff_eq_norm mkarr_extensionality ide_def
           by metis
         ultimately show ?thesis
-          using f ARR_eqI \<open>unit (mkarr (COD f))\<close> null_char unit_def by auto
+          using f ARR_eqI \<open>ide (mkarr (COD f))\<close> null_char ide_def by auto
       qed
-      ultimately show "has_cod f"
-        using has_cod_def f not_ARR_empty null_char by auto
-    qed
-
-    text {*
-      Finally, we can show that the composition @{text comp} determines a category.
-    *}
-
-    interpretation category comp
-    proof
-      show "\<And>f. has_dom f \<longleftrightarrow> has_cod f"
-        using ARR_iff_has_dom ARR_iff_has_cod by simp
-      fix f g h
-      assume fg: "g \<cdot> f \<noteq> null"
-      hence 1: "ARR f \<and> ARR g \<and> COD f = DOM g"
-        using comp_def null_char by metis
-      assume gh: "h \<cdot> g \<noteq> null"
-      hence 2: "ARR g \<and> ARR h \<and> COD g = DOM h"
-        using comp_def null_char by metis
-      show "h \<cdot> g \<cdot> f = (h \<cdot> g) \<cdot> f"
-        using fg gh comp_assoc by simp
-      have 3: "ARR (mkarr (rep g \<^bold>\<cdot> rep f))"
-        using fg gh by (simp add: "1" ARR_mkarr Arr_rep_ARR)
-      have 4: "DOM h = COD (mkarr (rep g \<^bold>\<cdot> rep f))"
-        using gh 2 3
-        by (metis COD_mkarr Cod.simps(4) mkarr_extensionality not_ARR_empty)
-      show "h \<cdot> g \<cdot> f \<noteq> null"
-      proof -
-        have "ARR (h \<cdot> g \<cdot> f)"
-          using 1 2 ARR_comp by auto
-        thus ?thesis
-          using null_char not_ARR_empty by auto
-      qed
-      show "(h \<cdot> g) \<cdot> f \<noteq> null"
-      proof -
-        have "ARR ((h \<cdot> g) \<cdot> f)"
-          using 1 2 ARR_comp by auto
-        thus ?thesis
-          using 1 ARR_comp null_char not_ARR_empty by auto
-      qed
-      next
-      fix f g h
-      assume fg: "g \<cdot> f \<noteq> null"
-      hence 1: "ARR f \<and> ARR g \<and> COD f = DOM g"
-        using comp_def null_char by metis
-      assume fgh: "h \<cdot> g \<cdot> f \<noteq> null"
-      hence "ARR (h \<cdot> g)"
-        using comp_def null_char 1 COD_comp ARR_comp by auto
-      thus "h \<cdot> g \<noteq> null"
-        using not_ARR_empty null_char by auto
-      next
-      fix f g h
-      assume gh: "h \<cdot> g \<noteq> null"
-      hence 1: "ARR h \<and> ARR g \<and> COD g = DOM h"
-        using comp_def null_char by metis
-      assume fgh: "(h \<cdot> g) \<cdot> f \<noteq> null"
-      hence "ARR (g \<cdot> f)"
-        using comp_def null_char 1 DOM_comp ARR_comp by auto
-      thus "g \<cdot> f \<noteq> null"
-        using not_ARR_empty null_char by auto
+      ultimately show "codomains f \<noteq> {}"
+        using codomains_def f not_ARR_empty null_char by auto
     qed
 
     lemma arr_iff_ARR:
     shows "arr f \<longleftrightarrow> ARR f"
-      using arr_def ARR_iff_has_dom ARR_iff_has_cod by simp
+      using arr_def ARR_iff_has_domain ARR_iff_has_codomain by simp
 
     text {*
       The arrows of the category are the equivalence classes of formal arrows.
@@ -656,6 +611,51 @@ begin
     lemma arr_char:
     shows "arr f \<longleftrightarrow> f \<noteq> {} \<and> (\<forall>t. t \<in> f \<longrightarrow> f = mkarr t)"
       using arr_iff_ARR ARR_def mkarr_def by simp
+
+    lemma seq_char:
+    shows "seq g f \<longleftrightarrow> g \<cdot> f \<noteq> null"
+    proof
+      show "g \<cdot> f \<noteq> null \<Longrightarrow> seq g f"
+        using comp_def null_char Comp_in_comp_ARR rep_in_ARR ARR_mkarr
+              Arr_rep_ARR arr_iff_ARR
+        by auto
+      show "seq g f \<Longrightarrow> g \<cdot> f \<noteq> null"
+        by auto
+    qed
+
+    lemma seq_char':
+    shows "seq g f \<longleftrightarrow> ARR f \<and> ARR g \<and> DOM g = COD f"
+    proof
+      show "ARR f \<and> ARR g \<and> DOM g = COD f \<Longrightarrow> seq g f"
+        using comp_def null_char Comp_in_comp_ARR rep_in_ARR ARR_mkarr
+              Arr_rep_ARR arr_iff_ARR
+        by auto
+      have "\<not> (ARR f \<and> ARR g \<and> DOM g = COD f) \<Longrightarrow> g \<cdot> f = null"
+        using comp_def null_char by auto
+      thus "seq g f \<Longrightarrow> ARR f \<and> ARR g \<and> DOM g = COD f"
+        using ext by fastforce
+    qed
+
+    text {*
+      Finally, we can show that the composition @{text comp} determines a category.
+    *}
+
+    interpretation category comp
+    proof
+      show "\<And>f. domains f \<noteq> {} \<longleftrightarrow> codomains f \<noteq> {}"
+        using ARR_iff_has_domain ARR_iff_has_codomain by simp
+      show 1: "\<And>f g. g \<cdot> f \<noteq> null \<Longrightarrow> seq g f"
+        using comp_def ARR_comp null_char arr_iff_ARR by metis
+      fix f g h
+      show "seq h g \<Longrightarrow> seq (h \<cdot> g) f \<Longrightarrow> seq g f"
+        using seq_char' by auto
+      show "seq h (g \<cdot> f) \<Longrightarrow> seq g f \<Longrightarrow> seq h g"
+        using seq_char' by auto
+      show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> seq (h \<cdot> g) f"
+        using seq_char' ARR_comp arr_iff_ARR by auto
+      show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
+        using seq_char comp_assoc by auto
+    qed
 
     lemma mkarr_rep [simp]:
     assumes "arr f"
@@ -717,22 +717,23 @@ begin
       moreover have "arr f \<Longrightarrow> ?thesis"
       proof -
         assume f: "arr f"
-        have "unit (mkarr (DOM f)) \<and> f \<cdot> mkarr (DOM f) \<noteq> null"
-        proof -
-          have "Ide (DOM f)"
+        have "dom f = mkarr (DOM f)"
+        proof (intro dom_eqI)
+          have 1: "Ide (DOM f)"
             using f arr_char by (metis Arr_rep Arr_implies_Ide_Dom)
-          hence "IDE (mkarr (DOM f))"
+          hence 2: "IDE (mkarr (DOM f))"
             using IDE_mkarr_Ide by metis
-          hence "unit (mkarr (DOM f))" using IDE_implies_unit by simp
-          moreover have "f \<cdot> mkarr (DOM f) \<noteq> null"
-            using f ARR_def
-            by (metis (mono_tags, lifting) DOM_mkarr IDE_implies_ARR Ide_in_Hom
-                \<open>IDE (mkarr (DOM f))\<close> \<open>Ide (DOM f)\<close> ARR_comp IDE_def ARR_iff_has_cod
-                ARR_iff_has_dom mem_Collect_eq null_char arr_def)
-          ultimately show ?thesis by blast
+          thus "ide (mkarr (DOM f))" using IDE_implies_ide by simp
+          moreover show "seq f (mkarr (DOM f))"
+          proof -
+            have "f \<cdot> mkarr (DOM f) \<noteq> null"
+              using f 1 2 ARR_def DOM_mkarr IDE_implies_ARR Ide_in_Hom ARR_comp IDE_def
+                    ARR_iff_has_codomain ARR_iff_has_domain null_char arr_def
+              by (metis (mono_tags, lifting) mem_Collect_eq)
+            thus ?thesis using seq_char by simp
+          qed
         qed
-        thus ?thesis 
-          using f dom_simp by auto
+        thus ?thesis using f by simp
       qed
       ultimately show ?thesis by blast
     qed
@@ -750,22 +751,23 @@ begin
       moreover have "arr f \<Longrightarrow> ?thesis"
       proof -
         assume f: "arr f"
-        have "unit (mkarr (COD f)) \<and> mkarr (COD f) \<cdot> f \<noteq> null"
-        proof -
-          have "Ide (COD f)"
+        have "cod f = mkarr (COD f)"
+        proof (intro cod_eqI)
+          have 1: "Ide (COD f)"
             using f arr_char by (metis Arr_rep Arr_implies_Ide_Cod)
-          hence "IDE (mkarr (COD f))"
+          hence 2: "IDE (mkarr (COD f))"
             using IDE_mkarr_Ide by metis
-          hence "unit (mkarr (COD f))" using IDE_implies_unit by simp
-          moreover have "mkarr (COD f) \<cdot> f \<noteq> null"
-            using f ARR_def
-            by (metis (mono_tags, lifting) COD_mkarr IDE_implies_ARR Ide_in_Hom
-                \<open>IDE (mkarr (COD f))\<close> \<open>Ide (COD f)\<close> ARR_comp IDE_def ARR_iff_has_cod
-                ARR_iff_has_dom mem_Collect_eq null_char arr_def)
-          ultimately show ?thesis by blast
+          thus "ide (mkarr (COD f))" using IDE_implies_ide by simp
+          moreover show "seq (mkarr (COD f)) f"
+          proof -
+            have "mkarr (COD f) \<cdot> f \<noteq> null"
+              using f 1 2 ARR_def DOM_mkarr IDE_implies_ARR Ide_in_Hom ARR_comp IDE_def
+                    ARR_iff_has_codomain ARR_iff_has_domain null_char arr_def
+              by (metis (mono_tags, lifting) mem_Collect_eq)
+            thus ?thesis using seq_char by simp
+          qed
         qed
-        thus ?thesis 
-          using f cod_simp by auto
+        thus ?thesis using f by simp
       qed
       ultimately show ?thesis by blast
     qed
@@ -797,8 +799,8 @@ begin
 
     lemma mkarr_in_hom:
     assumes "Arr t"
-    shows "mkarr t \<in> hom (mkarr (Dom t)) (mkarr (Cod t))"
-      using assms arr_mkarr dom_mkarr cod_mkarr by simp
+    shows "\<guillemotleft>mkarr t : mkarr (Dom t) \<rightarrow> mkarr (Cod t)\<guillemotright>"
+      using assms arr_mkarr dom_mkarr cod_mkarr by auto
 
     lemma DOM_in_dom [intro]:
     assumes "arr f"
@@ -831,7 +833,7 @@ begin
     shows "Par t u" and "\<^bold>\<lfloor>t\<^bold>\<rfloor> = \<^bold>\<lfloor>u\<^bold>\<rfloor>"
     proof -
       show "Par t u"
-        using assms Cod_memb Dom_memb mkarr_memb(1) by presburger
+        using assms Cod_memb Dom_memb mkarr_memb(1) by metis
       show "\<^bold>\<lfloor>t\<^bold>\<rfloor> = \<^bold>\<lfloor>u\<^bold>\<rfloor>"
         using assms arr_iff_ARR ARR_def by auto
     qed
@@ -847,8 +849,8 @@ begin
     proof -
       have "Arr t \<and> Arr u" using assms mkarr_memb(1) by blast
       moreover have "Dom t = Dom u \<and> Cod t = Cod u"
-        using assms Dom_memb Cod_memb
-        by (metis (full_types) arr_char comp_arr_dom comp_cod_arr comp_def)
+        using assms Dom_memb Cod_memb comp_def arr_char comp_arr_dom comp_cod_arr
+        by (metis (full_types))
       ultimately have "Par t u" by simp
       thus ?thesis
         using assms arr_char by (metis rep_mkarr rep_in_arr equiv_iff_eq_norm)
@@ -856,14 +858,7 @@ begin
 
     lemma comp_char:
     shows "f \<cdot> g = (if seq f g then mkarr (rep f \<^bold>\<cdot> rep g) else null)"
-    proof -
-      have "\<not>seq f g \<Longrightarrow> ?thesis"
-        using comp_def arr_char dom_char cod_char null_char
-        by (metis (no_types, lifting) arr_def ARR_iff_has_dom)
-      moreover have "seq f g \<Longrightarrow> ?thesis"
-        using comp_def arr_char dom_char cod_char null_char by (meson arr_comp)
-      ultimately show ?thesis by blast
-    qed
+      using comp_def seq_char arr_char by meson
 
     text {*
       The mapping that takes identity terms to their equivalence classes is injective.
@@ -880,7 +875,7 @@ begin
     shows "t \<^bold>\<cdot> u \<in> f \<cdot> g"
     proof -
       have "ARR f" using assms arr_iff_ARR by simp
-      moreover have "ARR g" using assms arr_iff_ARR by simp
+      moreover have "ARR g" using assms arr_iff_ARR by auto
       moreover have "DOM f = COD g"
         using assms dom_char cod_char mkarr_inj_on_Ide Arr_implies_Ide_Cod Arr_implies_Ide_Dom
         by force
@@ -950,7 +945,7 @@ begin
               using f can_def Ide_in_Hom by simp
           qed
         qed
-        thus ?thesis using f can_def by auto
+        thus ?thesis using f can_implies_arr ide_dom [of f] by auto
       qed
     qed
 
@@ -979,15 +974,15 @@ begin
     assumes "seq g f"
     shows "Seq (rep g) (rep f)"
       using assms Arr_rep dom_char cod_char mkarr_inj_on_Ide Arr_implies_Ide_Dom
-                Arr_implies_Ide_Cod
+            Arr_implies_Ide_Cod
       by auto
 
     lemma rep_comp:
-    assumes "arr f" and "g \<in> hom (cod f) (cod g)"
+    assumes "seq g f"
     shows "rep (g \<cdot> f) = \<^bold>\<parallel>rep g \<^bold>\<cdot> rep f\<^bold>\<parallel>"
     proof -
       have "rep (g \<cdot> f) = rep (mkarr (rep g \<^bold>\<cdot> rep f))"
-        using assms comp_char by simp
+        using assms comp_char by metis
       also have "... = \<^bold>\<parallel>rep g \<^bold>\<cdot> rep f\<^bold>\<parallel>"
         using assms rep_preserves_seq rep_mkarr by simp
       finally show ?thesis by blast
@@ -1041,7 +1036,7 @@ begin
         using assms rep_in_arr norm_memb_eq_rep equiv_iff_eq_norm
         by (metis (no_types, lifting) arr_eqI)
       thus ?thesis
-        using assms arr_eqI [of f g] rep_in_arr [of f] rep_in_arr [of g] by presburger
+        using assms arr_eqI [of f g] rep_in_arr [of f] rep_in_arr [of g] by metis
     qed
 
     text {*
@@ -1067,29 +1062,29 @@ begin
       have 5: "COD f = Dom ?t"
         using assms can_def Can_red Arr_rep Arr_implies_Ide_Cod by simp
       have 6: "antipar f (mkarr ?t)"
-        using 3 4 5 dom_char cod_char arr_mkarr Can_implies_Arr
-        by (metis assms can_def cod_mkarr dom_mkarr)
+        using assms 3 4 5 dom_char cod_char can_def cod_mkarr dom_mkarr Can_implies_Arr
+        by simp
       show "ide (f \<cdot> mkarr ?t)"
       proof -
         have 7: "par (f \<cdot> mkarr ?t) (dom (f \<cdot> mkarr ?t))"
-          using assms 6 by simp
+          using assms 6 by auto
         moreover have "can (f \<cdot> mkarr ?t)"
         proof -
           have 8: "Comp (rep f) ?t \<in> (f \<cdot> mkarr ?t)"
-            using assms 6 can_implies_arr
-            by (metis "1" "3" "4" Arr_in_mkarr COD_mkarr Comp_in_comp_ARR Can_implies_Arr
-                arr_iff_ARR)
+            using assms 1 3 4 6 can_implies_arr Arr_in_mkarr COD_mkarr Comp_in_comp_ARR
+                  Can_implies_Arr arr_iff_ARR seq_char'
+            by meson
           moreover have "Can (rep f \<^bold>\<cdot> ?t)"
-            by (metis 1 3 7 8 Arr.simps(4) Can.simps(4) mkarr_memb(1))
+            using 1 3 7 8 mkarr_memb(1) by (metis Arr.simps(4) Can.simps(4))
            ultimately show ?thesis
-            using can_mkarr_Can 7 by (metis mkarr_memb(2))
+            using can_mkarr_Can 7 mkarr_memb(2) by metis
         qed
-        moreover have " can (dom (f \<cdot> mkarr ?t))"
-          using 7 ide_implies_can by blast
+        moreover have "can (dom (f \<cdot> mkarr ?t))"
+          using 7 ide_implies_can by force
         ultimately have "f \<cdot> mkarr ?t = dom (f \<cdot> mkarr ?t)"
           using can_coherence by meson
         thus ?thesis
-          using 7 can_implies_arr ide_dom by blast
+          using 7 ide_dom by metis
       qed
       show "ide (mkarr ?t \<cdot> f)"
       proof -
@@ -1098,20 +1093,20 @@ begin
         moreover have "can (mkarr ?t \<cdot> f)"
         proof -
           have 8: "Comp ?t (rep f) \<in> mkarr ?t \<cdot> f"
-            using assms 6
-          by (metis (full_types) 1 3 7 Arr_in_mkarr Comp_in_comp_ARR Can_implies_Arr arr_char
-              comp_def)
+            using assms 1 3 6 7 Arr_in_mkarr Comp_in_comp_ARR Can_implies_Arr arr_char
+                  comp_def
+            by meson
           moreover have "Can (?t \<^bold>\<cdot> rep f)"
-            by (metis 1 3 7 8 Arr.simps(4) Can.simps(4) mkarr_memb(1))
+            using 1 3 7 8 mkarr_memb(1) by (metis Arr.simps(4) Can.simps(4))
           ultimately show ?thesis
-            using can_mkarr_Can 7 by (metis mkarr_memb(2))
+            using can_mkarr_Can 7 mkarr_memb(2) by metis
         qed
         moreover have "can (cod (mkarr ?t \<cdot> f))"
-          using 7 ide_implies_can ideI_cod by blast
+          using 7 ide_implies_can by force
         ultimately have "mkarr ?t \<cdot> f = cod (mkarr ?t \<cdot> f)"
           using can_coherence by meson
         thus ?thesis
-          using 7 can_implies_arr by (metis ide_cod)
+          using 7 can_implies_arr ide_cod by metis
       qed
     qed
 
@@ -1129,7 +1124,7 @@ begin
         proof -
           have "mkarr (Cod t) = mkarr (Comp t (Inv t))"
             using t Inv_in_Hom Ide_in_Hom Diagonalize_Inv Diag_Diagonalize Diagonalize_preserves_Can
-            apply (intro mkarr_eqI) by auto
+            by (intro mkarr_eqI, auto)
           also have "... = mkarr t \<cdot> mkarr (Inv t)"
             using t comp_mkarr Inv_in_Hom by simp
           finally have "mkarr (Cod t) = mkarr t \<cdot> mkarr (Inv t)"
@@ -1140,7 +1135,7 @@ begin
         proof -
           have "mkarr (Dom t) = mkarr (Inv t \<^bold>\<cdot> t)"
             using t Inv_in_Hom Ide_in_Hom Diagonalize_Inv Diag_Diagonalize Diagonalize_preserves_Can
-            apply (intro mkarr_eqI) by auto
+            by (intro mkarr_eqI, auto)
           also have "... = mkarr (Inv t) \<cdot> mkarr t"
             using t comp_mkarr Inv_in_Hom by simp
           finally have "mkarr (Dom t) = mkarr (Inv t) \<cdot> mkarr t"
@@ -1166,26 +1161,27 @@ begin
 
     lemma can_mkcan:
     assumes "ide a" and "ide b" and "\<^bold>\<lfloor>DOM a\<^bold>\<rfloor> = \<^bold>\<lfloor>COD b\<^bold>\<rfloor>"
-    shows "can (mkcan a b)" and "mkcan a b \<in> hom a b"
+    shows "can (mkcan a b)" and "\<guillemotleft>mkcan a b : a \<rightarrow> b\<guillemotright>"
     proof -
       show "can (mkcan a b)"
-        unfolding mkcan_def
-        using assms Arr_rep Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red Inv_preserves_Can
-              can_mkarr_Can
+        using assms mkcan_def Arr_rep Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red
+              Inv_preserves_Can can_mkarr_Can
         by simp
-      show "mkcan a b \<in> hom a b"
-      proof -
-        have "(Inv (COD b\<^bold>\<down>) \<^bold>\<cdot> (DOM a\<^bold>\<down>)) \<in> Hom (DOM a) (COD b)"
-          using assms Arr_rep Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red Inv_in_Hom
-          by force
-        moreover have "mkarr (DOM a) = a"
-          using assms dom_char [of a] mkarr_rep by auto
-        moreover have "mkarr (COD b) = b"
-          using assms cod_char [of b] mkarr_rep by auto
-        ultimately show ?thesis
-          unfolding mkcan_def using mkarr_in_hom can_implies_arr by simp
-      qed
+      show "\<guillemotleft>mkcan a b : a \<rightarrow> b\<guillemotright>"
+        using assms mkcan_def Arr_rep Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red Inv_in_Hom
+              dom_char [of a] cod_char [of b] mkarr_rep mkarr_in_hom can_implies_arr
+        by auto
     qed
+
+    lemma dom_mkcan:
+    assumes "ide a" and "ide b" and "\<^bold>\<lfloor>DOM a\<^bold>\<rfloor> = \<^bold>\<lfloor>COD b\<^bold>\<rfloor>"
+    shows "dom (mkcan a b) = a"
+      using assms can_mkcan by blast
+
+    lemma cod_mkcan:
+    assumes "ide a" and "ide b" and "\<^bold>\<lfloor>DOM a\<^bold>\<rfloor> = \<^bold>\<lfloor>COD b\<^bold>\<rfloor>"
+    shows "cod (mkcan a b) = b"
+      using assms can_mkcan by blast
 
     lemma can_coherence':
     assumes "can f"
@@ -1206,7 +1202,7 @@ begin
               Par_Arr_norm [of "COD f"] Ide_in_Hom
         by auto
       ultimately have "can (mkcan (dom f) (cod f)) \<and> par f (mkcan (dom f) (cod f))"
-        using assms can_implies_arr can_mkcan by simp
+        using assms can_implies_arr can_mkcan dom_mkcan cod_mkcan by simp
       thus ?thesis using assms can_coherence by blast
     qed
 
@@ -1230,18 +1226,18 @@ begin
     shows "Seq \<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
       using assms Diagonalize_DOM Diagonalize_COD Diag_implies_Arr Diag_Diagonalize(1)
             rep_preserves_seq
-      by metis
+      by force
 
     lemma Dom_Diagonalize_rep:
     assumes "arr f"
     shows "Dom \<^bold>\<lfloor>rep f\<^bold>\<rfloor> = \<^bold>\<lfloor>rep (dom f)\<^bold>\<rfloor>"
-      using assms Diagonalize_rep_preserves_seq [of "dom f" f] Ide_Diagonalize_rep_ide Ide_in_Hom
+      using assms Diagonalize_rep_preserves_seq [of f "dom f"] Ide_Diagonalize_rep_ide Ide_in_Hom
       by simp
 
     lemma Cod_Diagonalize_rep:
     assumes "arr f"
     shows "Cod \<^bold>\<lfloor>rep f\<^bold>\<rfloor> = \<^bold>\<lfloor>rep (cod f)\<^bold>\<rfloor>"
-      using assms Diagonalize_rep_preserves_seq [of f "cod f"] Ide_Diagonalize_rep_ide Ide_in_Hom
+      using assms Diagonalize_rep_preserves_seq [of "cod f" f] Ide_Diagonalize_rep_ide Ide_in_Hom
       by simp
 
     lemma mkarr_Diagonalize_rep:
@@ -1250,7 +1246,7 @@ begin
     proof -
       have "mkarr (rep f) = mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
         using assms rep_in_Hom Diagonalize_in_Hom Diag_Diagonalize Diagonalize_Diag
-        by (intro mkarr_eqI) simp_all
+        by (intro mkarr_eqI, simp_all)
       thus ?thesis using assms mkarr_rep by auto
     qed
 
@@ -1258,7 +1254,7 @@ begin
       We define tensor product of arrows via the constructor @{term Tensor} on terms.
     *}
 
-    definition tensor\<^sub>F\<^sub>M\<^sub>C  (infixr "\<otimes>" 53)
+    definition tensor\<^sub>F\<^sub>M\<^sub>C      (infixr "\<otimes>" 53)
       where "f \<otimes> g \<equiv> (if arr f \<and> arr g then mkarr (rep f \<^bold>\<otimes> rep g) else null)"
 
     lemma arr_tensor [simp]:
@@ -1289,9 +1285,8 @@ begin
           thus ?thesis by simp
         qed
         moreover have "\<^bold>\<lfloor>t \<^bold>\<otimes> u\<^bold>\<rfloor> = \<^bold>\<lfloor>rep f \<^bold>\<otimes> rep g\<^bold>\<rfloor>"
-          using assms
-          by (metis 1 Arr.simps(3) Diagonalize.simps(3) mkarr_memb(2) equiv_iff_eq_norm
-              rep_mkarr norm_norm)
+          using assms 1 equiv_iff_eq_norm rep_mkarr norm_norm mkarr_memb(2)
+          by (metis Arr.simps(3) Diagonalize.simps(3))
         ultimately show ?thesis by simp
       qed
       thus ?thesis
@@ -1310,16 +1305,18 @@ begin
       by (metis (no_types, lifting) COD_mkarr Cod.simps(3) mkarr_extensionality arr_char
           arr_tensor assms(1) assms(2) tensor\<^sub>F\<^sub>M\<^sub>C_def)
 
-    lemma tensor_in_hom:
-    assumes "arr f" and "arr g"
-    shows "f \<otimes> g \<in> hom (dom f \<otimes> dom g) (cod f \<otimes> cod g)"
+    lemma tensor_in_hom [simp]:
+    assumes "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>g : c \<rightarrow> d\<guillemotright>"
+    shows "\<guillemotleft>f \<otimes> g : a \<otimes> c \<rightarrow> b \<otimes> d\<guillemotright>"
     proof -
+      have f: "arr f \<and> dom f = a \<and> cod f = b" using assms(1) by auto
+      have g: "arr g \<and> dom g = c \<and> cod g = d" using assms(2) by auto
       have "dom (f \<otimes> g) = dom f \<otimes> dom g"
-        using assms arr_tensor dom_char Tensor_in_tensor [of "dom f" "dom g" "DOM f" "DOM g"]
+        using f g arr_tensor dom_char Tensor_in_tensor [of "dom f" "dom g" "DOM f" "DOM g"]
               DOM_in_dom mkarr_memb(2) DOM_tensor arr_dom_iff_arr
         by metis
       moreover have "cod (f \<otimes> g) = cod f \<otimes> cod g"
-        using assms arr_tensor cod_char Tensor_in_tensor [of "cod f" "cod g" "COD f" "COD g"]
+        using f g arr_tensor cod_char Tensor_in_tensor [of "cod f" "cod g" "COD f" "COD g"]
               COD_in_cod mkarr_memb(2) COD_tensor arr_cod_iff_arr
         by metis
       ultimately show ?thesis using assms arr_tensor by blast
@@ -1328,12 +1325,12 @@ begin
     lemma dom_tensor [simp]:
     assumes "arr f" and "arr g"
     shows "dom (f \<otimes> g) = dom f \<otimes> dom g"
-      using assms tensor_in_hom by simp
+      using assms tensor_in_hom [of f] by blast
 
     lemma cod_tensor [simp]:
     assumes "arr f" and "arr g"
     shows "cod (f \<otimes> g) = cod f \<otimes> cod g"
-      using assms tensor_in_hom by simp
+      using assms tensor_in_hom [of f] by blast
 
     lemma tensor_mkarr [simp]:
     assumes "Arr t" and "Arr u"
@@ -1360,21 +1357,21 @@ begin
     assumes "can f" and "can g" and "dom f = cod g"
     shows "can (f \<cdot> g)"
     proof -
-      have "DOM f = COD g"
-        using assms can_implies_arr
-        by (simp add: Arr_implies_Ide_Cod Arr_implies_Ide_Dom mkarr_inj_on_Ide
-            cod_char dom_char)
+      have 1: "ARR f \<and> ARR g \<and> DOM f = COD g"
+        using assms can_implies_arr arr_iff_ARR Arr_implies_Ide_Cod Arr_implies_Ide_Dom
+              mkarr_inj_on_Ide cod_char dom_char
+        by simp
       hence "Can (rep f \<^bold>\<cdot> rep g)"
         using assms can_implies_arr Can_rep_can by force
       thus ?thesis
-        using assms can_implies_arr comp_char can_mkarr_Can by simp
+        using assms 1 can_implies_arr comp_char can_mkarr_Can seq_char' by simp
     qed
 
     text {*
       The remaining structure required of a monoidal category is also defined syntactically.
     *}
 
-    definition unity\<^sub>F\<^sub>M\<^sub>C :: "'c arr"                                   ("\<I>")
+    definition unity\<^sub>F\<^sub>M\<^sub>C :: "'c arr"                                  ("\<I>")
       where "\<I> = mkarr \<^bold>\<I>" 
 
     definition lunit\<^sub>F\<^sub>M\<^sub>C :: "'c arr \<Rightarrow> 'c arr"                         ("\<l>[_]")
@@ -1394,17 +1391,17 @@ begin
 
     lemma lunit_in_hom:
     assumes "ide a"
-    shows "\<l>[a] \<in> hom (\<I> \<otimes> a) a"
+    shows "\<guillemotleft>\<l>[a] : \<I> \<otimes> a \<rightarrow> a\<guillemotright>"
     proof -
       have "dom \<l>[a] = \<I> \<otimes> a"
         using assms lunit\<^sub>F\<^sub>M\<^sub>C_def unity\<^sub>F\<^sub>M\<^sub>C_def Ide_implies_Arr dom_mkarr dom_char tensor_mkarr
               Arr_rep
         by (metis Arr.simps(2) Arr.simps(5) Arr_implies_Ide_Dom Dom.simps(5)
-            ideD(1) ideD(2))
+                  ideD(1) ideD(2))
       moreover have "cod \<l>[a] = a"
         using assms lunit\<^sub>F\<^sub>M\<^sub>C_def rep_in_arr(1) cod_mkarr cod_char ideD(3) by auto
       ultimately show ?thesis
-        using assms arr_cod_iff_arr by fastforce
+        using assms arr_cod_iff_arr by (intro in_homI, fastforce)
     qed
 
     lemma arr_lunit [simp]:
@@ -1415,12 +1412,12 @@ begin
     lemma dom_lunit [simp]:
     assumes "ide a"
     shows "dom \<l>[a] = \<I> \<otimes> a"
-      using assms lunit_in_hom by simp
+      using assms lunit_in_hom by auto
 
     lemma cod_lunit [simp]:
     assumes "ide a"
     shows "cod \<l>[a] = a"
-      using assms lunit_in_hom by simp
+      using assms lunit_in_hom by auto
 
     lemma can_runit:
     assumes "ide a"
@@ -1430,17 +1427,17 @@ begin
 
     lemma runit_in_hom [simp]:
     assumes "ide a"
-    shows "\<r>[a] \<in> hom (a \<otimes> \<I>) a"
+    shows "\<guillemotleft>\<r>[a] : a \<otimes> \<I> \<rightarrow> a\<guillemotright>"
     proof -
       have "dom \<r>[a] = a \<otimes> \<I>"
         using assms Arr_rep Arr.simps(2) Arr.simps(7) Arr_implies_Ide_Dom Dom.simps(7)
-            Ide_implies_Arr dom_mkarr dom_char ideD(1) ideD(2) runit\<^sub>F\<^sub>M\<^sub>C_def tensor_mkarr
-            unity\<^sub>F\<^sub>M\<^sub>C_def
+              Ide_implies_Arr dom_mkarr dom_char ideD(1) ideD(2) runit\<^sub>F\<^sub>M\<^sub>C_def tensor_mkarr
+              unity\<^sub>F\<^sub>M\<^sub>C_def
         by metis
       moreover have "cod \<r>[a] = a"
         using assms runit\<^sub>F\<^sub>M\<^sub>C_def rep_in_arr(1) cod_mkarr cod_char ideD(3) by auto
       ultimately show ?thesis 
-        using assms arr_cod_iff_arr by fastforce
+        using assms arr_cod_iff_arr by (intro in_homI, fastforce)
     qed
 
     lemma arr_runit [simp]:
@@ -1451,12 +1448,12 @@ begin
     lemma dom_runit [simp]:
     assumes "ide a"
     shows "dom \<r>[a] = a \<otimes> \<I>"
-      using assms runit_in_hom by simp
+      using assms runit_in_hom by blast
 
     lemma cod_runit [simp]:
     assumes "ide a"
     shows "cod \<r>[a] = a"
-      using assms runit_in_hom by simp
+      using assms runit_in_hom by blast
 
     lemma can_assoc:
     assumes "ide a" and "ide b" and "ide c"
@@ -1466,7 +1463,7 @@ begin
 
     lemma assoc_in_hom:
     assumes "ide a" and "ide b" and "ide c"
-    shows "\<a>[a, b, c] \<in> hom ((a \<otimes> b) \<otimes> c) (a \<otimes> (b \<otimes> c))"
+    shows "\<guillemotleft>\<a>[a, b, c] : (a \<otimes> b) \<otimes> c \<rightarrow> a \<otimes> b \<otimes> c\<guillemotright>"
     proof -
       have "dom \<a>[a, b, c] = (a \<otimes> b) \<otimes> c"
       proof -
@@ -1475,24 +1472,24 @@ begin
         also have "... = mkarr ((DOM a \<^bold>\<otimes> DOM b) \<^bold>\<otimes> DOM c)"
           by simp
         also have "... = (a \<otimes> b) \<otimes> c"
-          by (metis mkarr_extensionality arr_tensor assms(1) assms(2) assms(3) dom_char
+          by (metis mkarr_extensionality arr_tensor assms dom_char
               ideD(1) ideD(2) not_arr_null null_char tensor_mkarr)
         finally show ?thesis by blast
       qed
-      moreover have "cod \<a>[a, b, c] = a \<otimes> (b \<otimes> c)"
+      moreover have "cod \<a>[a, b, c] = a \<otimes> b \<otimes> c"
       proof -
         have "cod \<a>[a, b, c] = mkarr (Cod \<^bold>\<a>\<^bold>[rep a, rep b, rep c\<^bold>])"
           using assms assoc\<^sub>F\<^sub>M\<^sub>C_def rep_in_arr(1) by simp
-        also have "... = mkarr (COD a \<^bold>\<otimes> (COD b \<^bold>\<otimes> COD c))"
+        also have "... = mkarr (COD a \<^bold>\<otimes> COD b \<^bold>\<otimes> COD c)"
           by simp
-        also have "... = a \<otimes> (b \<otimes> c)"
+        also have "... = a \<otimes> b \<otimes> c"
           by (metis mkarr_extensionality arr_tensor assms(1) assms(2) assms(3) cod_char
               ideD(1) ideD(3) not_arr_null null_char tensor_mkarr)
         finally show ?thesis by blast
       qed
       moreover have "arr \<a>[a, b, c]"
         using assms assoc\<^sub>F\<^sub>M\<^sub>C_def rep_in_arr(1) arr_mkarr by simp
-      ultimately show ?thesis by simp
+      ultimately show ?thesis by auto
     qed
 
     lemma arr_assoc [simp]:
@@ -1503,17 +1500,17 @@ begin
     lemma dom_assoc [simp]:
     assumes "ide a" and "ide b" and "ide c"
     shows "dom \<a>[a, b, c] = (a \<otimes> b) \<otimes> c"
-      using assms assoc_in_hom by simp
+      using assms assoc_in_hom by blast
 
     lemma cod_assoc [simp]:
     assumes "ide a" and "ide b" and "ide c"
-    shows "cod \<a>[a, b, c] = a \<otimes> (b \<otimes> c)"
-      using assms assoc_in_hom by simp
+    shows "cod \<a>[a, b, c] = a \<otimes> b \<otimes> c"
+      using assms assoc_in_hom by blast
 
     lemma ide_unity [simp]:
     shows "ide \<I>"
-      using ide_char unity\<^sub>F\<^sub>M\<^sub>C_def Arr.simps(2) Dom.simps(2) arr_mkarr dom_mkarr ideI_dom
-      by presburger
+      using unity\<^sub>F\<^sub>M\<^sub>C_def Arr.simps(2) Dom.simps(2) arr_mkarr dom_mkarr ide_dom
+      by metis
 
     lemma Unity_in_unity [simp]:
     shows "\<^bold>\<I> \<in> \<I>"
@@ -1529,7 +1526,7 @@ begin
     proof -
       have "Arr t \<and> Arr (rep f) \<and> Dom t = DOM f \<and> Cod t = COD f \<and> \<^bold>\<lfloor>t\<^bold>\<rfloor> = \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
         using assms
-        by (metis mkarr_memb(1) rep_mkarr rep_in_arr(1) equiv_iff_eq_norm mkarr_memb(2)
+        by (metis mkarr_memb(1) mkarr_memb(2) rep_mkarr rep_in_arr(1) equiv_iff_eq_norm
                   norm_rep)
       thus ?thesis
         by (simp add: mkarr_def lunit\<^sub>F\<^sub>M\<^sub>C_def)
@@ -1541,7 +1538,7 @@ begin
     proof -
       have "Arr t \<and> Arr (rep f) \<and> Dom t = DOM f \<and> Cod t = COD f \<and> \<^bold>\<lfloor>t\<^bold>\<rfloor> = \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
         using assms
-        by (metis mkarr_memb(1) rep_mkarr rep_in_arr(1) equiv_iff_eq_norm mkarr_memb(2)
+        by (metis mkarr_memb(1) mkarr_memb(2) rep_mkarr rep_in_arr(1) equiv_iff_eq_norm
                   norm_rep)
       thus ?thesis
         by (simp add: mkarr_def runit\<^sub>F\<^sub>M\<^sub>C_def)
@@ -1578,22 +1575,16 @@ begin
                           comp tensor\<^sub>F\<^sub>M\<^sub>C unity\<^sub>F\<^sub>M\<^sub>C lunit\<^sub>F\<^sub>M\<^sub>C runit\<^sub>F\<^sub>M\<^sub>C assoc\<^sub>F\<^sub>M\<^sub>C
     proof
       show "ide \<I>" using ide_unity by auto
-      fix a
-      assume a: "ide a"
-      show "\<l>[a] \<in> hom (\<I> \<otimes> a) a" using a lunit_in_hom by auto
-      show "\<r>[a] \<in> hom (a \<otimes> \<I>) a" using a runit_in_hom by auto
-      show "iso \<l>[a]" using a can_lunit iso_can by auto
-      show "iso \<r>[a]" using a can_runit iso_can by auto
-      fix b c
-      assume b: "ide b"
-      assume c: "ide c"
-      show " \<a>[a, b, c] \<in> hom ((a \<otimes> b) \<otimes> c) (a \<otimes> (b \<otimes> c))"
-        using a b c assoc_in_hom by auto
-      show "iso \<a>[a, b, c]" using a b c can_assoc iso_can by auto
-      next
+      show "\<And>a. ide a \<Longrightarrow> \<guillemotleft>\<l>[a] : \<I> \<otimes> a \<rightarrow> a\<guillemotright>" by auto
+      show "\<And>a. ide a \<Longrightarrow> \<guillemotleft>\<r>[a] : a \<otimes> \<I> \<rightarrow> a\<guillemotright>" by auto
+      show "\<And>a. ide a \<Longrightarrow> iso \<l>[a]" using can_lunit iso_can by auto
+      show "\<And>a. ide a  \<Longrightarrow> iso \<r>[a]" using can_runit iso_can by auto
+      show "\<And>a b c. \<lbrakk> ide a; ide b; ide c \<rbrakk> \<Longrightarrow> \<guillemotleft>\<a>[a, b, c] : (a \<otimes> b) \<otimes> c \<rightarrow> a \<otimes> b \<otimes> c\<guillemotright>" by auto
+      show "\<And>a b c. \<lbrakk> ide a; ide b; ide c \<rbrakk> \<Longrightarrow> iso \<a>[a, b, c]" using can_assoc iso_can by auto
+      show "\<And>a b. \<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> ide (a \<otimes> b)" using tensor_preserves_ide by auto
       fix f a b g c d
-      show "\<lbrakk> f \<in> hom a b; g \<in> hom c d \<rbrakk> \<Longrightarrow> f \<otimes> g \<in> hom (a \<otimes> c) (b \<otimes> d)"
-        using tensor_in_hom by simp
+      show "\<lbrakk> \<guillemotleft>f : a \<rightarrow> b\<guillemotright>; \<guillemotleft>g : c \<rightarrow> d\<guillemotright> \<rbrakk> \<Longrightarrow> \<guillemotleft>f \<otimes> g : a \<otimes> c \<rightarrow> b \<otimes> d\<guillemotright>"
+        using tensor_in_hom by auto
       next
       text {* Naturality of left unitor. *}
       fix f
@@ -1601,7 +1592,7 @@ begin
       show "\<l>[cod f] \<cdot> (\<I> \<otimes> f) = f \<cdot> \<l>[dom f]"
       proof (intro arr_eqI)
         show "par (\<l>[cod f] \<cdot> (\<I> \<otimes> f)) (f \<cdot> \<l>[dom f])"
-          using f lunit_in_hom tensor_in_hom ide_unity by simp
+          using f by simp
         show "\<^bold>\<l>\<^bold>[COD f\<^bold>] \<^bold>\<cdot> (\<^bold>\<I> \<^bold>\<otimes> rep f) \<in> \<l>[cod f] \<cdot> (\<I> \<otimes> f)"
           using f by fastforce
         show "rep f \<^bold>\<cdot> \<^bold>\<l>\<^bold>[DOM f\<^bold>] \<in> f \<cdot> \<l>[dom f]"
@@ -1613,7 +1604,7 @@ begin
       show "\<r>[cod f] \<cdot> (f \<otimes> \<I>) = f \<cdot> \<r>[dom f]"
       proof (intro arr_eqI)
         show "par (\<r>[cod f] \<cdot> (f \<otimes> \<I>)) (f \<cdot> \<r>[dom f])"
-          using f lunit_in_hom tensor_in_hom ide_unity by simp
+          using f by simp
         show "\<^bold>\<r>\<^bold>[COD f\<^bold>] \<^bold>\<cdot> (rep f \<^bold>\<otimes> \<^bold>\<I>) \<in> \<r>[cod f] \<cdot> (f \<otimes> \<I>)"
           using f by fastforce
         show "rep f \<^bold>\<cdot> \<^bold>\<r>\<^bold>[DOM f\<^bold>] \<in> f \<cdot> \<r>[dom f]"
@@ -1677,7 +1668,7 @@ begin
               moreover have "\<^bold>\<lfloor>rep (cod f2)\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> \<^bold>\<lfloor>rep f2\<^bold>\<rfloor> = \<^bold>\<lfloor>rep f2\<^bold>\<rfloor>"
                 using f2 b2 CompDiag_Cod_Diag [of "\<^bold>\<lfloor>rep f2\<^bold>\<rfloor>"] Diag_Diagonalize
                 by simp
-              ultimately show ?thesis by presburger
+              ultimately show ?thesis by argo
             qed
             finally show ?thesis by blast
           qed
@@ -1718,17 +1709,13 @@ begin
               moreover have "\<^bold>\<lfloor>rep f2\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> \<^bold>\<lfloor>rep (dom f2)\<^bold>\<rfloor> = \<^bold>\<lfloor>rep f2\<^bold>\<rfloor>"
                 using f2 a2 CompDiag_Diag_Dom [of "Diagonalize (rep f2)"] Diag_Diagonalize
                 by simp
-              ultimately show ?thesis by presburger
+              ultimately show ?thesis by argo
             qed
-            finally show ?thesis by presburger
+            finally show ?thesis by argo
           qed
           finally show ?thesis by blast
         qed
       qed
-      next
-      text {* Tensor preserves identities. *}
-      fix a b
-      show "\<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> ide (a \<otimes> b)" using tensor_preserves_ide by auto
       next
       text {* Tensor preserves composition (interchange). *}
       fix f g f' g'
@@ -1739,11 +1726,11 @@ begin
         show ?thesis
         proof (intro arr_eqI)
           show "par ((g \<otimes> g') \<cdot> (f \<otimes> f')) (g \<cdot> f \<otimes> g' \<cdot> f')"
-            using gf gf' by simp
+            using gf gf' by fastforce
           show "(rep g \<^bold>\<otimes> rep g') \<^bold>\<cdot> (rep f \<^bold>\<otimes> rep f') \<in> (g \<otimes> g') \<cdot> (f \<otimes> f')"
             using gf gf' by force
           show "rep g \<^bold>\<cdot> rep f \<^bold>\<otimes> rep g' \<^bold>\<cdot> rep f' \<in> g \<cdot> f \<otimes> g' \<cdot> f'"
-           using gf gf' by fastforce
+           using gf gf' by force
           show "\<^bold>\<lfloor>(rep g \<^bold>\<otimes> rep g') \<^bold>\<cdot> (rep f \<^bold>\<otimes> rep f')\<^bold>\<rfloor> = \<^bold>\<lfloor>rep g \<^bold>\<cdot> rep f \<^bold>\<otimes> rep g' \<^bold>\<cdot> rep f'\<^bold>\<rfloor>"
           proof -
             have "\<^bold>\<lfloor>(rep g \<^bold>\<otimes> rep g') \<^bold>\<cdot> (rep f \<^bold>\<otimes> rep f')\<^bold>\<rfloor>
@@ -1753,7 +1740,7 @@ begin
               using gf gf' Arr_rep Diagonalize_rep_preserves_seq
                     CompDiag_TensorDiag [of "\<^bold>\<lfloor>rep g\<^bold>\<rfloor>" " \<^bold>\<lfloor>rep g'\<^bold>\<rfloor>" "\<^bold>\<lfloor>rep f\<^bold>\<rfloor>" "\<^bold>\<lfloor>rep f'\<^bold>\<rfloor>"]
                     Diag_Diagonalize Diagonalize_DOM Diagonalize_COD
-              by meson
+              by force
             also have "... = \<^bold>\<lfloor>rep g \<^bold>\<cdot> rep f \<^bold>\<otimes> rep g' \<^bold>\<cdot> rep f'\<^bold>\<rfloor>"
               by auto
             finally show ?thesis by blast
@@ -1768,10 +1755,9 @@ begin
       show "(a \<otimes> \<l>[b]) \<cdot> \<a>[a, \<I>, b] = \<r>[a] \<otimes> b"
       proof -
         have "par ((a \<otimes> \<l>[b]) \<cdot> \<a>[a, \<I>, b]) (\<r>[a] \<otimes> b)"
-          using a b lunit_in_hom assoc_in_hom tensor_in_hom comp_in_hom by simp
+          using a b by simp
         moreover have "can ((a \<otimes> \<l>[b]) \<cdot> \<a>[a, \<I>, b])"
-          using a b ide_implies_can comp_preserves_can tensor_preserves_can can_assoc ide_unity
-                tensor_preserves_ide can_lunit
+          using a b ide_implies_can comp_preserves_can tensor_preserves_can can_assoc can_lunit
           by simp
         moreover have "can (\<r>[a] \<otimes> b)"
           using a b ide_implies_can can_runit tensor_preserves_can by simp
@@ -1790,13 +1776,7 @@ begin
         let ?LHS = "(a \<otimes> \<a>[b, c, d]) \<cdot> \<a>[a, b \<otimes> c, d] \<cdot> (\<a>[a, b, c] \<otimes> d)"
         let ?RHS = "\<a>[a, b, c \<otimes> d] \<cdot> \<a>[a \<otimes> b, c, d]"
         have "par ?LHS ?RHS"
-        proof -
-          have "?LHS \<in> hom (((a \<otimes> b) \<otimes> c) \<otimes> d) (a \<otimes> (b \<otimes> (c \<otimes> d)))"
-            using a b c d can_assoc tensor_in_hom tensor_preserves_ide comp_in_hom by simp
-          moreover have "?RHS \<in> hom (((a \<otimes> b) \<otimes> c) \<otimes> d) (a \<otimes> (b \<otimes> (c \<otimes> d)))"
-           using a b c d can_assoc tensor_in_hom tensor_preserves_ide comp_in_hom by simp
-          ultimately show ?thesis by auto
-        qed
+          using a b c d can_assoc tensor_preserves_ide by auto
         moreover have "can ?LHS"
           using a b c d ide_implies_can comp_preserves_can tensor_preserves_can can_assoc
                 tensor_preserves_ide
@@ -1849,18 +1829,21 @@ begin
     lemma rep_lunit:
     assumes "ide a"
     shows "rep \<l>[a] = \<^bold>\<parallel>\<^bold>\<l>\<^bold>[rep a\<^bold>]\<^bold>\<parallel>"
-      using assms Lunit_in_lunit [of a "rep a"] rep_in_arr norm_memb_eq_rep by force
+      using assms Lunit_in_lunit [of a "rep a"] rep_in_arr norm_memb_eq_rep [of "\<l>[a]"]
+      by simp
 
     lemma rep_runit:
     assumes "ide a"
     shows "rep \<r>[a] = \<^bold>\<parallel>\<^bold>\<r>\<^bold>[rep a\<^bold>]\<^bold>\<parallel>"
-      using assms Runit_in_runit [of a "rep a"] rep_in_arr norm_memb_eq_rep by force
+      using assms Runit_in_runit [of a "rep a"] rep_in_arr norm_memb_eq_rep [of "\<r>[a]"]
+      by simp
 
     lemma rep_assoc:
     assumes "ide a" and "ide b" and "ide c"
     shows "rep \<a>[a, b, c] = \<^bold>\<parallel>\<^bold>\<a>\<^bold>[rep a, rep b, rep c\<^bold>]\<^bold>\<parallel>"
-      using assms Assoc_in_assoc [of a b c "rep a" "rep b" "rep c"] rep_in_arr norm_memb_eq_rep
-      by force
+      using assms Assoc_in_assoc [of a b c "rep a" "rep b" "rep c"] rep_in_arr
+            norm_memb_eq_rep [of "\<a>[a, b, c]"]
+      by simp
 
     lemma mkarr_Unity:
     shows "mkarr \<^bold>\<I> = \<I>"
@@ -1879,10 +1862,8 @@ begin
     shows "mkarr \<^bold>\<l>\<^bold>[t\<^bold>] = \<ll> (mkarr t)"
     proof -
       have "mkarr \<^bold>\<l>\<^bold>[t\<^bold>] = mkarr (t \<^bold>\<cdot> \<^bold>\<l>\<^bold>[\<^bold>\<parallel>Dom t\<^bold>\<parallel>\<^bold>])"
-        using assms Inv_in_Hom Diagonalize_in_Hom rep_mkarr
-              red_in_Hom Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red Ide_in_Hom
-              rep_mkarr Diagonalize_Inv Diagonalize_preserves_Ide Diag_Diagonalize
-              CompDiag_Diag_Ide Par_Arr_norm Diagonalize_norm
+        using assms Arr_implies_Ide_Dom Ide_in_Hom Diagonalize_preserves_Ide
+              Diag_Diagonalize Par_Arr_norm
         by (intro mkarr_eqI) simp_all
       also have "... = mkarr t \<cdot> mkarr \<^bold>\<l>\<^bold>[\<^bold>\<parallel>Dom t\<^bold>\<parallel>\<^bold>]"
         using assms Arr_implies_Ide_Dom Par_Arr_norm Ide_in_Hom by simp
@@ -1891,12 +1872,9 @@ begin
         have "arr \<l>[mkarr (Dom t)]"
           using assms Arr_implies_Ide_Dom ide_mkarr_Ide by simp
         moreover have "\<^bold>\<l>\<^bold>[\<^bold>\<parallel>Dom t\<^bold>\<parallel>\<^bold>] \<in> \<l>[mkarr (Dom t)]"
-          using assms Arr_implies_Ide_Dom arr_mkarr Lunit_in_lunit rep_mkarr
+          using assms Arr_implies_Ide_Dom Lunit_in_lunit rep_mkarr
                 rep_in_arr [of "mkarr (Dom t)"]
           by simp
-        moreover have "mkarr (Dom t) = mkarr \<^bold>\<parallel>Dom t\<^bold>\<parallel>"
-          using assms mkarr_rep rep_mkarr arr_mkarr Ide_implies_Arr Arr_implies_Ide_Dom
-          by metis
         ultimately show ?thesis
           using assms mkarr_memb(2) by simp
       qed
@@ -1910,44 +1888,32 @@ begin
     shows "mkarr \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>] = \<ll>' (mkarr t)"
     proof -
       have "mkarr \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>] = mkarr (\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>] \<^bold>\<cdot> t)"
-        using assms Inv_in_Hom Diagonalize_in_Hom rep_mkarr
-              red_in_Hom Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red Ide_in_Hom
-              Diagonalize_preserves_Ide Diagonalize_Inv Diag_Diagonalize CompDiag_Diag_Ide
-              Par_Arr_norm Diagonalize_norm
+        using assms Arr_implies_Ide_Cod Ide_in_Hom Diagonalize_preserves_Ide
+              Diag_Diagonalize Par_Arr_norm
         by (intro mkarr_eqI) simp_all
       also have "... = mkarr \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>] \<cdot> mkarr t"
-        using assms Arr_implies_Ide_Cod norm_preserves_Can rep_mkarr Ide_in_Hom
-              Par_Arr_norm [of "Cod t"]
-        by simp
+        using assms Arr_implies_Ide_Cod Ide_in_Hom Par_Arr_norm by simp
       also have "... = mkarr (Inv \<^bold>\<l>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>]) \<cdot> mkarr t"
       proof -
         have "mkarr \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>] = mkarr (Inv \<^bold>\<l>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>])"
-          using assms Arr_implies_Ide_Cod Ide_in_Hom Par_Arr_norm [of "Cod t"]
-                Inv_in_Hom Ide_implies_Can norm_preserves_Can
-                Diagonalize_Inv Diagonalize_preserves_Ide
-          by (intro mkarr_eqI) simp_all
-        thus ?thesis by presburger
+          using assms Arr_implies_Ide_Cod Ide_in_Hom Par_Arr_norm Inv_in_Hom
+                Ide_implies_Can norm_preserves_Can Diagonalize_Inv Diagonalize_preserves_Ide
+          by (intro mkarr_eqI, simp_all)
+        thus ?thesis by argo
       qed
       also have "... = \<ll>' (cod (mkarr t)) \<cdot> mkarr t"
       proof -
-        have "mkarr (Inv \<^bold>\<l>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>]) = lunit' (cod (mkarr t))"
-          using assms Arr_implies_Ide_Cod rep_mkarr Par_Arr_norm [of "Cod t"]
-                Ide_in_Hom lunit_def \<ll>'.map_simp comp_mkarr inv_mkarr Inv_Inv
+        have "mkarr (Inv \<^bold>\<l>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>]) \<cdot> mkarr t = lunit' (cod (mkarr t)) \<cdot> mkarr t"
+          using assms Arr_implies_Ide_Cod rep_mkarr Par_Arr_norm inv_mkarr
                 norm_preserves_Can Ide_implies_Can lunit_agreement \<ll>'_ide_simp
                 Can_implies_Arr arr_mkarr cod_mkarr ide_cod lunit\<^sub>F\<^sub>M\<^sub>C_def
           by (metis (no_types, lifting) Can.simps(5))
-        hence "mkarr (Inv \<^bold>\<l>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>]) \<cdot> mkarr t = lunit' (cod (mkarr t)) \<cdot> mkarr t"
-          by simp
         also have "... = \<ll>' (cod (mkarr t)) \<cdot> mkarr t"
-        proof -
-          have "lunit' (cod (mkarr t)) = \<ll>' (cod (mkarr t))"
-            using assms \<ll>'_ide_simp arr_mkarr ide_cod by blast
-          thus ?thesis by presburger
-        qed
+          using assms \<ll>'_ide_simp arr_mkarr ide_cod by presburger
         finally show ?thesis by blast
       qed
       also have "... = \<ll>' (mkarr t)"
-        using assms arr_mkarr \<ll>'.is_natural_2 [of "mkarr t"] by simp
+        using assms \<ll>'.is_natural_2 [of "mkarr t"] by simp
       finally show ?thesis by blast
     qed
 
@@ -1959,11 +1925,8 @@ begin
       proof -
         have "\<not> Diag (Dom t \<^bold>\<otimes> \<^bold>\<I>)" by (cases "Dom t") simp_all
         thus ?thesis 
-          using assms Inv_in_Hom Diagonalize_in_Hom rep_mkarr Par_Arr_norm [of "Dom t"]
-                red_in_Hom Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red Ide_in_Hom
-                red2_in_Hom Diag_Diagonalize Diagonalize_preserves_Ide
-                Diagonalize_Inv CompDiag_Diag_Ide Ide_Diagonalize_Can
-                Par_Arr_norm [of "Runit t"] Diagonalize_norm
+          using assms Par_Arr_norm Arr_implies_Ide_Dom Ide_in_Hom Diag_Diagonalize
+                Diagonalize_preserves_Ide
           by (intro mkarr_eqI) simp_all
       qed
       also have "... = mkarr t \<cdot> mkarr \<^bold>\<r>\<^bold>[\<^bold>\<parallel>Dom t\<^bold>\<parallel>\<^bold>]"
@@ -1973,7 +1936,7 @@ begin
         have "arr \<r>[mkarr (Dom t)]"
           using assms Arr_implies_Ide_Dom ide_mkarr_Ide by simp
         moreover have "\<^bold>\<r>\<^bold>[\<^bold>\<parallel>Dom t\<^bold>\<parallel>\<^bold>] \<in> \<r>[mkarr (Dom t)]"
-          using assms Arr_implies_Ide_Dom arr_mkarr Runit_in_runit rep_mkarr
+          using assms Arr_implies_Ide_Dom Runit_in_runit rep_mkarr
                 rep_in_arr [of "mkarr (Dom t)"]
           by simp
         moreover have "mkarr (Dom t) = mkarr \<^bold>\<parallel>Dom t\<^bold>\<parallel>"
@@ -1995,45 +1958,37 @@ begin
       proof -
         have "\<not> Diag (Cod t \<^bold>\<otimes> \<^bold>\<I>)" by (cases "Cod t") simp_all
         thus ?thesis
-          using assms Inv_in_Hom Diagonalize_in_Hom rep_mkarr Par_Arr_norm [of "Cod t"]
-                Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red Ide_in_Hom
-                Diagonalize_preserves_Ide Diagonalize_Inv Diag_Diagonalize
-                Can_red2 Par_Arr_norm [of "Runit' t"] Diagonalize_norm
+          using assms Par_Arr_norm Arr_implies_Ide_Cod Ide_in_Hom
+                Diagonalize_preserves_Ide Diag_Diagonalize
           by (intro mkarr_eqI) simp_all
       qed
       also have "... = mkarr \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>] \<cdot> mkarr t"
-        using assms Arr_implies_Ide_Cod norm_preserves_Can rep_mkarr Ide_in_Hom
-              Par_Arr_norm [of "Cod t"]
-        by simp
+        using assms Arr_implies_Ide_Cod Ide_in_Hom Par_Arr_norm by simp
       also have "... = mkarr (Inv \<^bold>\<r>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>]) \<cdot> mkarr t"
       proof -
         have "mkarr (Runit' (norm (Cod t))) = mkarr (Inv (Runit (norm (Cod t))))"
-          using assms Arr_implies_Ide_Cod Ide_in_Hom Par_Arr_norm [of "Cod t"]
-                Inv_in_Hom Ide_implies_Can norm_preserves_Can
-                Diagonalize_Inv Diagonalize_preserves_Ide
+          using assms Arr_implies_Ide_Cod Ide_in_Hom Par_Arr_norm Inv_in_Hom
+                Ide_implies_Can norm_preserves_Can Diagonalize_Inv Diagonalize_preserves_Ide
           by (intro mkarr_eqI) simp_all
-        thus ?thesis by presburger
+        thus ?thesis by argo
       qed
       also have "... = \<rho>' (cod (mkarr t)) \<cdot> mkarr t"
       proof -
-        have "mkarr (Inv \<^bold>\<r>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>]) = runit' (cod (mkarr t))"
-          using assms Arr_implies_Ide_Cod rep_mkarr Par_Arr_norm [of "Cod t"]
-                Ide_in_Hom runit_def \<rho>'.map_simp comp_mkarr inv_mkarr Inv_Inv
-                norm_preserves_Can Ide_implies_Can runit_agreement \<rho>'_ide_simp
-                Can_implies_Arr arr_mkarr cod_mkarr ide_cod runit\<^sub>F\<^sub>M\<^sub>C_def
+        have "mkarr (Inv \<^bold>\<r>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>]) \<cdot> mkarr t = runit' (cod (mkarr t)) \<cdot> mkarr t"
+          using assms Arr_implies_Ide_Cod rep_mkarr inv_mkarr norm_preserves_Can
+                Ide_implies_Can runit_agreement Can_implies_Arr arr_mkarr cod_mkarr
+                ide_cod runit\<^sub>F\<^sub>M\<^sub>C_def
           by (metis (no_types, lifting) Can.simps(7))
-        hence "mkarr (Inv \<^bold>\<r>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>\<^bold>]) \<cdot> mkarr t = runit' (cod (mkarr t)) \<cdot> mkarr t"
-          by simp
         also have "... = \<rho>' (cod (mkarr t)) \<cdot> mkarr t"
         proof -
           have "runit' (cod (mkarr t)) = \<rho>' (cod (mkarr t))"
             using assms \<rho>'_ide_simp arr_mkarr ide_cod by blast
-          thus ?thesis by presburger
+          thus ?thesis by argo
         qed
         finally show ?thesis by blast
       qed
       also have "... = \<rho>' (mkarr t)"
-        using assms arr_mkarr \<rho>'.is_natural_2 [of "mkarr t"] by simp
+        using assms \<rho>'.is_natural_2 [of "mkarr t"] by simp
       finally show ?thesis by blast
     qed
 
@@ -2042,23 +1997,14 @@ begin
     shows "mkarr \<^bold>\<a>\<^bold>[t, u, v\<^bold>] = \<alpha> (mkarr t, mkarr u, mkarr v)"
     proof -
       have "mkarr \<^bold>\<a>\<^bold>[t, u, v\<^bold>] = mkarr ((t \<^bold>\<otimes> u \<^bold>\<otimes> v) \<^bold>\<cdot> \<^bold>\<a>\<^bold>[\<^bold>\<parallel>Dom t\<^bold>\<parallel>, \<^bold>\<parallel>Dom u\<^bold>\<parallel>, \<^bold>\<parallel>Dom v\<^bold>\<parallel>\<^bold>])"
-        using assms Arr_implies_Ide_Dom Arr_implies_Ide_Cod Ide_in_Hom Diagonalize_in_Hom
-              Inv_in_Hom red_in_Hom TensorDiag_in_Hom red2_in_Hom Diag_Diagonalize
-              Diagonalize_preserves_Ide TensorDiag_preserves_Ide Ide_implies_Arr Can_implies_Arr
-              Diagonalize_Diag TensorDiag_Diag TensorDiag_preserves_Diag Can_red
-              TensorDiag_assoc Can_red2 Par_Arr_norm Diagonalize_norm
-              Diag_TensorE [of "Dom t" "Dom u"] Diag_TensorE [of "Cod u" "Cod v"]
-              Diag_TensorE [of "Cod t" "Tensor (Cod u) (Cod v)"]
-        apply (intro mkarr_eqI)
-         apply simp
-        using Par_Arr_norm [of "Dom t"] Par_Arr_norm [of "Dom u"] Par_Arr_norm [of "Dom v"]
-              Par_Arr_norm [of "Cod t"] Par_Arr_norm [of "Cod u"] Par_Arr_norm [of "Cod v"]
-              Diagonalize_Inv CompDiag_Ide_Diag CompDiag_Diag_Ide
-        by simp
+        using assms Arr_implies_Ide_Dom Arr_implies_Ide_Cod Ide_in_Hom
+              Diag_Diagonalize Diagonalize_preserves_Ide TensorDiag_preserves_Ide
+              TensorDiag_preserves_Diag TensorDiag_assoc Par_Arr_norm
+        by (intro mkarr_eqI, simp_all)
       also have "... = \<alpha> (mkarr t, mkarr u, mkarr v)"
         using assms Arr_implies_Ide_Dom rep_mkarr Ide_in_Hom assoc\<^sub>F\<^sub>M\<^sub>C_def
               Par_Arr_norm [of "Dom t"] Par_Arr_norm [of "Dom u"] Par_Arr_norm [of "Dom v"]
-              comp_mkarr [of "t \<^bold>\<otimes> u \<^bold>\<otimes> v" "\<^bold>\<a>\<^bold>[\<^bold>\<parallel>Dom t\<^bold>\<parallel>, \<^bold>\<parallel>Dom u\<^bold>\<parallel>, \<^bold>\<parallel>Dom v\<^bold>\<parallel>\<^bold>]"] \<alpha>_simp
+              \<alpha>_simp
         by simp
       finally show ?thesis by blast
     qed
@@ -2068,46 +2014,33 @@ begin
     shows "mkarr \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>] = \<alpha>' (mkarr t, mkarr u, mkarr v)"
     proof -
       have "mkarr \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>] = mkarr (\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>, \<^bold>\<parallel>Cod u\<^bold>\<parallel>, \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>] \<^bold>\<cdot> (t \<^bold>\<otimes> u \<^bold>\<otimes> v))"
-        using assms Inv_in_Hom Diagonalize_in_Hom rep_mkarr Par_Arr_norm
-              red_in_Hom Arr_implies_Ide_Dom Arr_implies_Ide_Cod Can_red Ide_in_Hom
-              Diagonalize_preserves_Ide Diagonalize_Inv Diag_Diagonalize
-              Diagonalize_norm TensorDiag_assoc TensorDiag_preserves_Diag TensorDiag_in_Hom
-              CompDiag_Cod_Diag [of "\<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>u\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>v\<^bold>\<rfloor>"]
-        by (intro mkarr_eqI) simp_all
+        using assms Par_Arr_norm Arr_implies_Ide_Cod Ide_in_Hom Diag_Diagonalize
+              TensorDiag_preserves_Diag CompDiag_Cod_Diag [of "\<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>u\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>v\<^bold>\<rfloor>"]
+        by (intro mkarr_eqI, simp_all)
       also have "... = mkarr \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>, \<^bold>\<parallel>Cod u\<^bold>\<parallel>, \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>] \<cdot> mkarr (t \<^bold>\<otimes> u \<^bold>\<otimes> v)"
-        using assms Arr_implies_Ide_Cod norm_preserves_Can rep_mkarr Ide_in_Hom
-              Par_Arr_norm [of "Cod t"] Par_Arr_norm [of "Cod u"] Par_Arr_norm [of "Cod v"]
-        by simp
+        using assms Arr_implies_Ide_Cod Ide_in_Hom Par_Arr_norm by simp
       also have "... = mkarr (Inv \<^bold>\<a>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>, \<^bold>\<parallel>Cod u\<^bold>\<parallel>, \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>]) \<cdot> mkarr (t \<^bold>\<otimes> u \<^bold>\<otimes> v)"
       proof -
-        have "mkarr \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>, \<^bold>\<parallel>Cod u\<^bold>\<parallel>, \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>] = mkarr (Inv \<^bold>\<a>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>, \<^bold>\<parallel>Cod u\<^bold>\<parallel>, \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>])"
-          using assms Arr_implies_Ide_Cod Ide_in_Hom
-                Par_Arr_norm [of "Cod t"] Par_Arr_norm [of "Cod u"] Par_Arr_norm [of "Cod v"]
-                Inv_in_Hom Ide_implies_Can norm_preserves_Can
-                Diagonalize_Inv Diagonalize_preserves_Ide
-          by (intro mkarr_eqI) simp_all
-        thus ?thesis by presburger
+        have "mkarr \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>, \<^bold>\<parallel>Cod u\<^bold>\<parallel>, \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>] =
+              mkarr (Inv \<^bold>\<a>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>, \<^bold>\<parallel>Cod u\<^bold>\<parallel>, \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>])"
+          using assms Arr_implies_Ide_Cod Ide_in_Hom Par_Arr_norm Inv_in_Hom Ide_implies_Can
+                norm_preserves_Can Diagonalize_Inv Diagonalize_preserves_Ide
+          by (intro mkarr_eqI, simp_all)
+        thus ?thesis by argo
       qed
       also have "... = inv (mkarr \<^bold>\<a>\<^bold>[\<^bold>\<parallel>Cod t\<^bold>\<parallel>, \<^bold>\<parallel>Cod u\<^bold>\<parallel>, \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>]) \<cdot> mkarr (t \<^bold>\<otimes> u \<^bold>\<otimes> v)"
-        using assms Arr_implies_Ide_Cod Ide_in_Hom inv_mkarr
-              Par_Arr_norm [of "Cod t"] Par_Arr_norm [of "Cod u"] Par_Arr_norm [of "Cod v"]
-              Inv_in_Hom Ide_implies_Can norm_preserves_Can
-        by simp
+        using assms Arr_implies_Ide_Cod Ide_implies_Can norm_preserves_Can by simp
       also have "... = \<alpha>' (mkarr t, mkarr u, mkarr v)"
       proof -
         have "mkarr (\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[Inv \<^bold>\<parallel>Cod t\<^bold>\<parallel>, Inv \<^bold>\<parallel>Cod u\<^bold>\<parallel>, Inv \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>] \<^bold>\<cdot> (Cod t \<^bold>\<otimes> Cod u \<^bold>\<otimes> Cod v))
                = mkarr \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[Inv \<^bold>\<parallel>Cod t\<^bold>\<parallel>, Inv \<^bold>\<parallel>Cod u\<^bold>\<parallel>, Inv \<^bold>\<parallel>Cod v\<^bold>\<parallel>\<^bold>]"
           using assms Arr_implies_Ide_Cod Inv_in_Hom norm_preserves_Can Diagonalize_Inv
                 Ide_implies_Can Diag_Diagonalize Ide_in_Hom Diagonalize_preserves_Ide
-                Par_Arr_norm [of "Cod t"] Par_Arr_norm [of "Cod u"] Par_Arr_norm [of "Cod v"]
-                TensorDiag_assoc TensorDiag_preserves_Diag TensorDiag_in_Hom Ide_in_Hom
+                Par_Arr_norm TensorDiag_preserves_Diag
                 CompDiag_Cod_Diag [of "\<^bold>\<lfloor>Cod t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>Cod u\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>Cod v\<^bold>\<rfloor>"]
           by (intro mkarr_eqI) simp_all
         thus ?thesis
-          using assms Arr_implies_Ide_Cod rep_mkarr Ide_in_Hom assoc\<^sub>F\<^sub>M\<^sub>C_def \<alpha>'.map_simp
-                comp_mkarr inv_mkarr Inv_Inv norm_preserves_Can Ide_implies_Can T.ToCT_simp
-                Par_Arr_norm [of "Cod t"] Par_Arr_norm [of "Cod u"] Par_Arr_norm [of "Cod v"]
-          by simp
+          using assms Arr_implies_Ide_Cod rep_mkarr assoc\<^sub>F\<^sub>M\<^sub>C_def \<alpha>'.map_simp by simp
       qed
       finally show ?thesis by blast
     qed
@@ -2121,7 +2054,10 @@ begin
 
     lemma inclusion_is_functor:
     shows "functor C comp inclusion_of_generators"
-      using mkarr_eqI inclusion_of_generators_def by (unfold_locales) simp_all
+      unfolding inclusion_of_generators_def
+      apply unfold_locales
+          apply auto[4]
+      by (elim C.seqE, simp, intro mkarr_eqI, auto)
 
   end
 
@@ -2137,18 +2073,18 @@ begin
     D: monoidal_category D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D +
     evaluation_map C D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D V +
     \<F>C: free_monoidal_category C
-  for C :: "'c comp"                    (infixr "\<cdot>\<^sub>C" 55)
-  and D :: "'d comp"                    (infixr "\<cdot>\<^sub>D" 55)
+  for C :: "'c comp"      (infixr "\<cdot>\<^sub>C" 55)
+  and D :: "'d comp"      (infixr "\<cdot>\<^sub>D" 55)
   and T\<^sub>D :: "'d * 'd \<Rightarrow> 'd"
   and \<alpha>\<^sub>D :: "'d * 'd * 'd \<Rightarrow> 'd"
   and \<iota>\<^sub>D :: "'d"
   and V :: "'c \<Rightarrow> 'd"
   begin
 
-    notation eval                       ("\<guillemotleft>_\<guillemotright>")
+    notation eval         ("\<lbrace>_\<rbrace>")
 
     definition map
-    where "map f \<equiv> if \<F>C.arr f then \<guillemotleft>\<F>C.rep f\<guillemotright> else D.null"
+    where "map f \<equiv> if \<F>C.arr f then \<lbrace>\<F>C.rep f\<rbrace> else D.null"
 
     text {*
       It follows from the coherence theorem that a formal arrow and its normal
@@ -2157,7 +2093,7 @@ begin
 
     lemma eval_norm:
     assumes "Arr t"
-    shows "\<guillemotleft>\<^bold>\<parallel>t\<^bold>\<parallel>\<guillemotright> = \<guillemotleft>t\<guillemotright>"
+    shows "\<lbrace>\<^bold>\<parallel>t\<^bold>\<parallel>\<rbrace> = \<lbrace>t\<rbrace>"
       using assms \<F>C.Par_Arr_norm \<F>C.Diagonalize_norm coherence canonical_factorization
       by simp
 
@@ -2166,15 +2102,16 @@ begin
       fix f
       show "\<not>\<F>C.arr f \<Longrightarrow> map f = D.null" using map_def by simp
       assume f: "\<F>C.arr f"
-      show "D.arr (map f)" using f map_def \<F>C.arr_char eval_in_hom by simp
+      show "D.arr (map f)" using f map_def \<F>C.arr_char by simp
       show "D.dom (map f) = map (\<F>C.dom f)"
-        using f map_def eval_in_hom eval_norm \<F>C.rep_dom Arr_implies_Ide_Dom by auto
+        using f map_def eval_norm \<F>C.rep_dom Arr_implies_Ide_Dom by auto
       show "D.cod (map f) = map (\<F>C.cod f)"
-        using f map_def eval_in_hom eval_norm \<F>C.rep_cod Arr_implies_Ide_Cod by auto
-      fix g
-      assume g: "g \<in> \<F>C.hom (\<F>C.cod f) (\<F>C.cod g)"
+        using f map_def eval_norm \<F>C.rep_cod Arr_implies_Ide_Cod by auto
+      next
+      fix f g
+      assume fg: "\<F>C.seq g f"
       show "map (\<F>C.comp g f) = D (map g) (map f)"
-        using f g map_def \<F>C.rep_comp \<F>C.rep_preserves_seq eval_norm by simp
+        using fg map_def \<F>C.rep_comp \<F>C.rep_preserves_seq eval_norm by auto
     qed
 
     lemma is_functor:
@@ -2188,15 +2125,15 @@ begin
                      \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha> \<F>C.\<iota> D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D map
     proof
       show "map \<F>C.\<iota> = \<iota>\<^sub>D"
-        using \<F>C.\<iota>_def \<F>C.lunit_agreement map_def \<F>C.lunit_in_hom \<F>C.rep_lunit
-              \<F>C.Arr_rep [of \<I>] eval_norm \<F>C.lunit_agreement D.unitor_coincidence
-        by simp
+        using \<F>C.\<iota>_def \<F>C.lunit_agreement map_def \<F>C.rep_lunit \<F>C.Arr_rep [of \<I>]
+              eval_norm \<F>C.lunit_agreement D.unitor_coincidence D.comp_cod_arr D.\<iota>_in_hom
+        by auto
       show "\<And>f g. \<lbrakk> \<F>C.arr f; \<F>C.arr g \<rbrakk> \<Longrightarrow>
                   map (\<F>C.tensor f g) = D.tensor (map f) (map g)"
-        using map_def \<F>C.rep_tensor \<F>C.Arr_rep eval_in_hom eval_norm by simp
+        using map_def \<F>C.rep_tensor \<F>C.Arr_rep eval_norm by simp
       show "\<And>a b c. \<lbrakk> \<F>C.ide a; \<F>C.ide b; \<F>C.ide c \<rbrakk> \<Longrightarrow>
                       map (\<F>C.assoc a b c) = D.assoc (map a) (map b) (map c)"
-        using map_def \<F>C.assoc\<^sub>F\<^sub>M\<^sub>C_def \<F>C.rep_mkarr preserves_ide eval_norm by auto
+        using map_def \<F>C.assoc\<^sub>F\<^sub>M\<^sub>C_def \<F>C.rep_mkarr eval_norm by auto
     qed
 
     lemma is_strict_monoidal_functor:
@@ -2232,11 +2169,11 @@ begin
     V: "functor" C\<^sub>0 D V +
     strict_monoidal_functor C T\<^sub>C \<alpha>\<^sub>C \<iota>\<^sub>C D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D F
   for C\<^sub>0 :: "'c\<^sub>0 comp"
-  and C :: "'c comp"                    (infixr "\<cdot>\<^sub>C" 55)
+  and C :: "'c comp"      (infixr "\<cdot>\<^sub>C" 55)
   and T\<^sub>C :: "'c * 'c \<Rightarrow> 'c"
   and \<alpha>\<^sub>C :: "'c * 'c * 'c \<Rightarrow> 'c"
   and \<iota>\<^sub>C :: "'c"
-  and D :: "'d comp"                    (infixr "\<cdot>\<^sub>D" 55)
+  and D :: "'d comp"      (infixr "\<cdot>\<^sub>D" 55)
   and T\<^sub>D :: "'d * 'd \<Rightarrow> 'd"
   and \<alpha>\<^sub>D :: "'d * 'd * 'd \<Rightarrow> 'd"
   and \<iota>\<^sub>D :: "'d"
@@ -2270,8 +2207,8 @@ begin
     \<F>C: free_monoidal_category C +
     strict_monoidal_extension C \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha> \<F>C.\<iota> D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D
                               \<F>C.inclusion_of_generators V F
-  for C :: "'c comp"
-  and D :: "'d comp"                    (infixr "\<cdot>\<^sub>D" 55)
+  for C :: "'c comp"      (infixr "\<cdot>\<^sub>C" 55)
+  and D :: "'d comp"      (infixr "\<cdot>\<^sub>D" 55)
   and T\<^sub>D :: "'d * 'd \<Rightarrow> 'd"
   and \<alpha>\<^sub>D :: "'d * 'd * 'd \<Rightarrow> 'd"
   and \<iota>\<^sub>D :: "'d"
@@ -2298,7 +2235,7 @@ begin
       show "C.arr f \<Longrightarrow> F (\<F>C.mkarr \<^bold>\<langle>f\<^bold>\<rangle>) = V f"
         using is_extension \<F>C.inclusion_of_generators_def by simp
       show "F (\<F>C.mkarr \<^bold>\<I>) = \<I>\<^sub>D"
-        using \<F>C.mkarr_Unity \<F>C.\<iota>_def strictly_preserves_unity by simp
+        using \<F>C.mkarr_Unity \<F>C.\<iota>_def strictly_preserves_unity \<F>C.\<I>_agreement by auto
       show tensor_case:
            "\<And>t u.\<lbrakk> Arr t; Arr u \<rbrakk> \<Longrightarrow>
                    F (\<F>C.mkarr (t \<^bold>\<otimes> u)) = F (\<F>C.mkarr t) \<otimes>\<^sub>D F (\<F>C.mkarr u)"
@@ -2327,53 +2264,44 @@ begin
         qed
       qed
       show "Arr t \<Longrightarrow> F (\<F>C.mkarr \<^bold>\<l>\<^bold>[t\<^bold>]) = D.\<ll> (F (\<F>C.mkarr t))"
-        using \<F>C.mkarr_Lunit \<F>C.lunit_in_hom Arr_implies_Ide_Dom Ide_in_Hom
-              \<F>C.ide_mkarr_Ide strictly_preserves_lunit \<F>C.lunit_agreement
+        using \<F>C.mkarr_Lunit Arr_implies_Ide_Dom \<F>C.ide_mkarr_Ide strictly_preserves_lunit
         by simp
       show "Arr t \<Longrightarrow> F (\<F>C.mkarr \<^bold>\<r>\<^bold>[t\<^bold>]) = D.\<rho> (F (\<F>C.mkarr t))"
-        using \<F>C.mkarr_Runit \<F>C.runit_in_hom Arr_implies_Ide_Dom Ide_in_Hom
-              \<F>C.ide_mkarr_Ide strictly_preserves_runit \<F>C.runit_agreement
+        using \<F>C.mkarr_Runit Arr_implies_Ide_Dom \<F>C.ide_mkarr_Ide strictly_preserves_runit
         by simp
       show "\<lbrakk> Arr t; Arr u; Arr v \<rbrakk> \<Longrightarrow>
               F (\<F>C.mkarr \<^bold>\<a>\<^bold>[t, u, v\<^bold>])
                 = \<alpha>\<^sub>D (F (\<F>C.mkarr t), F (\<F>C.mkarr u), F (\<F>C.mkarr v))"
-        using \<F>C.mkarr_Assoc \<F>C.assoc_in_hom Arr_implies_Ide_Dom Ide_in_Hom
-              \<F>C.arr_mkarr strictly_preserves_assoc \<F>C.ide_mkarr_Ide tensor_case
+        using \<F>C.mkarr_Assoc strictly_preserves_assoc \<F>C.ide_mkarr_Ide tensor_case
         by simp
       show "Arr t \<Longrightarrow> F (\<F>C.mkarr \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]) = D.\<ll>'.map (F (\<F>C.mkarr t))"
       proof -
         assume t: "Arr t"
         have "F (\<F>C.mkarr \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]) = F (\<F>C.lunit' (\<F>C.mkarr (Cod t))) \<cdot>\<^sub>D F (\<F>C.mkarr t)"
-          using t \<F>C.mkarr_Lunit' \<F>C.lunit'_in_hom Arr_implies_Ide_Dom Arr_implies_Ide_Cod
-                \<F>C.ide_mkarr_Ide \<F>C.\<ll>'.map_simp \<F>C.lunit_agreement
+          using t \<F>C.mkarr_Lunit' Arr_implies_Ide_Cod \<F>C.ide_mkarr_Ide \<F>C.\<ll>'.map_simp
+                \<F>C.comp_cod_arr
           by simp
         also have "... = D.lunit' (D.cod (F (\<F>C.mkarr t))) \<cdot>\<^sub>D F (\<F>C.mkarr t)"
           using t Arr_implies_Ide_Cod \<F>C.ide_mkarr_Ide strictly_preserves_lunit
-                preserves_inv \<F>C.iso_lunit \<F>C.lunit_agreement
+                preserves_inv
           by simp
         also have "... = D.\<ll>'.map (F (\<F>C.mkarr t))"
-          using t \<F>C.arr_mkarr D.\<ll>'.map_simp [of "F (\<F>C.mkarr t)"]
-                D.lunit_in_hom D.comp_cod_arr
-                Arr_implies_Ide_Cod \<F>C.ide_mkarr_Ide
-          by simp
+          using t D.\<ll>'.map_simp D.comp_cod_arr by simp
         finally show ?thesis by blast
       qed
       show "Arr t \<Longrightarrow> F (\<F>C.mkarr \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]) = D.\<rho>'.map (F (\<F>C.mkarr t))"
       proof -
         assume t: "Arr t"
         have "F (\<F>C.mkarr \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]) = F (\<F>C.runit' (\<F>C.mkarr (Cod t))) \<cdot>\<^sub>D F (\<F>C.mkarr t)"
-          using t \<F>C.mkarr_Runit' \<F>C.runit'_in_hom Arr_implies_Ide_Dom Arr_implies_Ide_Cod
-                \<F>C.ide_mkarr_Ide \<F>C.\<rho>'.map_simp \<F>C.runit_agreement
+          using t \<F>C.mkarr_Runit' Arr_implies_Ide_Cod \<F>C.ide_mkarr_Ide \<F>C.\<rho>'.map_simp
+                \<F>C.comp_cod_arr
           by simp
         also have "... = D.runit' (D.cod (F (\<F>C.mkarr t))) \<cdot>\<^sub>D F (\<F>C.mkarr t)"
           using t Arr_implies_Ide_Cod \<F>C.ide_mkarr_Ide strictly_preserves_runit
-                preserves_inv \<F>C.iso_runit \<F>C.runit_agreement
+                preserves_inv
           by simp
         also have "... = D.\<rho>'.map (F (\<F>C.mkarr t))"
-          using t \<F>C.arr_mkarr D.\<rho>'.map_simp [of "F (\<F>C.mkarr t)"]
-                D.runit_in_hom D.comp_cod_arr
-                Arr_implies_Ide_Cod \<F>C.ide_mkarr_Ide
-          by simp
+          using t D.\<rho>'.map_simp D.comp_cod_arr by simp
         finally show ?thesis by blast
       qed
       show "\<lbrakk> Arr t; Arr u; Arr v \<rbrakk> \<Longrightarrow>
@@ -2384,24 +2312,18 @@ begin
         have "F (\<F>C.mkarr \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t, u, v\<^bold>]) =
                 F (\<F>C.assoc' (\<F>C.mkarr (Cod t)) (\<F>C.mkarr (Cod u)) (\<F>C.mkarr (Cod v))) \<cdot>\<^sub>D
                   (F (\<F>C.mkarr t) \<otimes>\<^sub>D F (\<F>C.mkarr u) \<otimes>\<^sub>D F (\<F>C.mkarr v))"
-          using t u v t \<F>C.mkarr_Assoc' \<F>C.assoc'_in_hom Arr_implies_Ide_Dom
-                Arr_implies_Ide_Cod \<F>C.ide_mkarr_Ide \<F>C.\<alpha>'.map_simp tensor_case
+          using t u v \<F>C.mkarr_Assoc' Arr_implies_Ide_Cod \<F>C.ide_mkarr_Ide \<F>C.\<alpha>'.map_simp
+                tensor_case \<F>C.iso_assoc
           by simp
         also have "... = D.assoc' (D.cod (F (\<F>C.mkarr t))) (D.cod (F (\<F>C.mkarr u)))
                                   (D.cod (F (\<F>C.mkarr v))) \<cdot>\<^sub>D
                                   (F (\<F>C.mkarr t) \<otimes>\<^sub>D F (\<F>C.mkarr u) \<otimes>\<^sub>D F (\<F>C.mkarr v))"
             using t u v \<F>C.ide_mkarr_Ide Arr_implies_Ide_Cod preserves_inv \<F>C.iso_assoc
-                  \<F>C.arr_mkarr \<F>C.mkarr_in_hom
                   strictly_preserves_assoc
                     [of "\<F>C.mkarr (Cod t)" "\<F>C.mkarr (Cod u)" "\<F>C.mkarr (Cod v)"]
             by simp
         also have "... = D.\<alpha>'.map (F (\<F>C.mkarr t), F (\<F>C.mkarr u), F (\<F>C.mkarr v))"
-          using t u v D.\<alpha>'.map_simp D.CCC.cod_char D.CC.cod_char D.\<alpha>.preserves_arr
-                D.arr_cod_iff_arr D.comp_cod_arr preserves_arr D.assoc_in_hom
-                Arr_implies_Ide_Cod \<F>C.ide_mkarr_Ide
-                D.comp_cod_arr [of "\<a>\<^sub>D[F (\<F>C.mkarr (Cod t)), F (\<F>C.mkarr (Cod u)),
-                                       F (\<F>C.mkarr (Cod v))]"]
-          by simp
+          using t u v D.\<alpha>'.map_simp by simp
         finally show ?thesis by blast
       qed
     qed
@@ -2432,7 +2354,7 @@ begin
         fix a
         show "Ide a \<Longrightarrow> F (mkarr a) = E.map (mkarr a)"
           using E.strictly_preserves_everything F.strictly_preserves_everything Ide_implies_Arr
-          by (induct a) auto (* 30 sec *)
+          by (induct a, auto)
       qed
       show ?thesis
       proof
@@ -2449,7 +2371,7 @@ begin
             show "Arr t \<Longrightarrow> F (mkarr t) = E.map (mkarr t)"
               using Ide_case E.strictly_preserves_everything F.strictly_preserves_everything
                     Arr_implies_Ide_Dom Arr_implies_Ide_Cod
-              by (induct t) auto (* 80 sec *)
+              by (induct t, auto)
           qed
           ultimately show "F f = E.map f" by metis
         qed
@@ -2478,8 +2400,8 @@ begin
       is a functor from the free monoidal category to the subcategory @{term "\<F>\<^sub>SC"}.
     *}
 
-    definition diagonalize
-    where "diagonalize \<equiv> \<lambda>f. if arr f then mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor> else \<F>\<^sub>SC.null"
+    definition D
+    where "D \<equiv> \<lambda>f. if arr f then mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor> else \<F>\<^sub>SC.null"
 
     text {*
       The arrows of @{text "\<F>\<^sub>SC"} are those equivalence classes whose canonical representative
@@ -2502,24 +2424,24 @@ begin
     *}
 
     lemma strict_arr_char':
-    shows "\<F>\<^sub>SC.arr f \<longleftrightarrow> arr f \<and> diagonalize f = f"
+    shows "\<F>\<^sub>SC.arr f \<longleftrightarrow> arr f \<and> D f = f"
     proof
       fix f
       assume f: "\<F>\<^sub>SC.arr f"
-      show "arr f \<and> diagonalize f = f"
+      show "arr f \<and> D f = f"
       proof
         show "arr f" using f \<F>\<^sub>SC.arr_char by blast
-        show "diagonalize f = f"
-          using f strict_arr_char mkarr_Diagonalize_rep diagonalize_def by simp
+        show "D f = f"
+          using f strict_arr_char mkarr_Diagonalize_rep D_def by simp
       qed
       next
-      assume f: "arr f \<and> diagonalize f = f"
+      assume f: "arr f \<and> D f = f"
       show "\<F>\<^sub>SC.arr f"
       proof -
         have "arr f" using f by simp
         moreover have "Diag (DOM f)"
         proof -
-          have "DOM f = DOM (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)" using f diagonalize_def by auto
+          have "DOM f = DOM (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)" using f D_def by auto
           also have "... = Dom \<^bold>\<parallel>\<^bold>\<lfloor>rep f\<^bold>\<rfloor>\<^bold>\<parallel>"
             using f Arr_rep Diagonalize_in_Hom rep_mkarr by simp
           also have "... = Dom \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
@@ -2529,7 +2451,7 @@ begin
         qed
         moreover have "Diag (COD f)"
         proof -
-          have "COD f = COD (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)" using f diagonalize_def by auto
+          have "COD f = COD (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)" using f D_def by auto
           also have "... = Cod \<^bold>\<parallel>\<^bold>\<lfloor>rep f\<^bold>\<rfloor>\<^bold>\<parallel>"
             using f Arr_rep Diagonalize_in_Hom rep_mkarr by simp
           also have "... = Cod \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
@@ -2541,116 +2463,100 @@ begin
       qed
     qed
 
-    interpretation D: "functor" comp \<F>\<^sub>SC.comp diagonalize
-    proof (unfold_locales)
-      show "\<And>f. \<not> arr f \<Longrightarrow> diagonalize f = \<F>\<^sub>SC.null" using diagonalize_def by simp
-      show 1: "\<And>f. arr f \<Longrightarrow> \<F>\<^sub>SC.arr (diagonalize f)"
-      proof -
-        fix f
-        assume f: "arr f"
-        show "\<F>\<^sub>SC.arr (diagonalize f)"
+    interpretation D: "functor" comp \<F>\<^sub>SC.comp D
+    proof -
+      have 1: "\<And>f. arr f \<Longrightarrow> \<F>\<^sub>SC.arr (D f)"
+        unfolding strict_arr_char D_def
+        using arr_mkarr Diagonalize_in_Hom Arr_rep rep_mkarr Par_Arr_norm
+              Arr_implies_Ide_Dom Arr_implies_Ide_Cod Diag_Diagonalize
+        by force
+      show "functor comp \<F>\<^sub>SC.comp D"
+      proof
+        show "\<And>f. \<not> arr f \<Longrightarrow> D f = \<F>\<^sub>SC.null" using D_def by simp
+        show "\<And>f. arr f \<Longrightarrow> \<F>\<^sub>SC.arr (D f)" by fact
+        show "\<And>f. arr f \<Longrightarrow> \<F>\<^sub>SC.dom (D f) = D (dom f)"
+          using D_def Diagonalize_in_Hom \<F>\<^sub>SC.dom_char
+                rep_mkarr rep_dom Arr_implies_Ide_Dom Arr_implies_Ide_Cod
+                Diagonalize_preserves_Ide ide_mkarr_Ide Diag_Diagonalize Dom_norm
+          by simp
+        show 2: "\<And>f. arr f \<Longrightarrow> \<F>\<^sub>SC.cod (D f) = D (cod f)"
+          using D_def Diagonalize_in_Hom \<F>\<^sub>SC.cod_char \<F>\<^sub>SC.arr_char
+                rep_mkarr rep_cod Arr_implies_Ide_Dom Arr_implies_Ide_Cod
+                Diagonalize_preserves_Ide ide_mkarr_Ide Diag_Diagonalize Dom_norm
+          by simp
+        fix f g
+        assume fg: "seq g f"
+        hence fg': "arr f \<and> arr g \<and> dom g = cod f" by blast
+        show "D (g \<cdot> f) = \<F>\<^sub>SC.comp (D g) (D f)"
         proof -
-          have "\<F>\<^sub>SC.arr (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
+          have seq: "\<F>\<^sub>SC.seq (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
           proof -
-            have "arr (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
-              using f arr_mkarr Diagonalize_in_Hom Arr_rep by simp
-            moreover have "Diag (DOM (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)) \<and> Diag (COD (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>))"
-              using f Arr_rep Diagonalize_in_Hom rep_mkarr Par_Arr_norm [of "\<^bold>\<lfloor>rep f\<^bold>\<rfloor>"]
-                    Arr_implies_Ide_Dom Arr_implies_Ide_Cod Ide_implies_Arr Diag_Diagonalize 
+            have 3: "\<F>\<^sub>SC.arr (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) \<and> \<F>\<^sub>SC.arr (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
+              using fg' 1 arr_char D_def by force
+            moreover have "\<F>\<^sub>SC.dom (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) = \<F>\<^sub>SC.cod (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
+              using fg' 2 3 \<F>\<^sub>SC.dom_char rep_in_Hom mkarr_in_hom D_def
+                    Dom_Diagonalize_rep Diag_implies_Arr Diag_Diagonalize(1)
               by force
-            ultimately show ?thesis unfolding strict_arr_char by auto
+            ultimately show ?thesis using \<F>\<^sub>SC.seqI by auto
           qed
-          thus ?thesis using f diagonalize_def by simp
-        qed
-      qed
-      fix f
-      assume f: "arr f"
-      show "\<F>\<^sub>SC.dom (diagonalize f) = diagonalize (dom f)"
-        using f 1 diagonalize_def Arr_rep Diagonalize_in_Hom arr_mkarr \<F>\<^sub>SC.dom_char
-              rep_mkarr Par_Arr_norm [of "\<^bold>\<lfloor>rep f\<^bold>\<rfloor>"] Arr_rep
-              rep_dom Arr_rep Arr_implies_Ide_Dom Ide_implies_Arr Diagonalize_norm
-        by simp
-      show "\<F>\<^sub>SC.cod (diagonalize f) = diagonalize (cod f)"
-        using f 1 diagonalize_def Arr_rep Diagonalize_in_Hom arr_mkarr \<F>\<^sub>SC.cod_char
-              rep_mkarr Par_Arr_norm [of "\<^bold>\<lfloor>rep f\<^bold>\<rfloor>"] Arr_rep
-              rep_cod Arr_rep Arr_implies_Ide_Cod Ide_implies_Arr Diagonalize_norm
-        by simp
-      fix g
-      assume g: "g \<in> hom (cod f) (cod g)"
-      show "diagonalize (g \<cdot> f) = \<F>\<^sub>SC.comp (diagonalize g) (diagonalize f)"
-      proof -
-        have seq: "\<F>\<^sub>SC.seq (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
-        proof -
-          have 2: "\<F>\<^sub>SC.arr (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) \<and> \<F>\<^sub>SC.arr (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
-            using f g 1 arr_char diagonalize_def by force
-          moreover have "\<F>\<^sub>SC.dom (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) = \<F>\<^sub>SC.cod (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
-            using f g 2 \<F>\<^sub>SC.dom_char rep_in_Hom mkarr_in_hom
-                  Dom_Diagonalize_rep Diag_implies_Arr Diag_Diagonalize(1)
-                  \<open>\<F>\<^sub>SC.cod (diagonalize f) = diagonalize (cod f)\<close>
-                  diagonalize_def
-            by auto
-          ultimately show ?thesis by auto
-        qed
-        have "mkarr \<^bold>\<lfloor>rep (g \<cdot> f)\<^bold>\<rfloor> = \<F>\<^sub>SC.comp (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
-        proof -
-          have Seq: "Seq \<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
-            using f g rep_preserves_seq Diagonalize_in_Hom Arr_implies_Ide_Cod Ide_implies_Arr
-            by force
-          hence 1: "\<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<cdot> \<^bold>\<lfloor>rep f\<^bold>\<rfloor> \<in> Hom \<^bold>\<lfloor>DOM f\<^bold>\<rfloor> \<^bold>\<lfloor>COD g\<^bold>\<rfloor>"
-            using f g Seq Arr_rep Diagonalize_in_Hom by simp
-          have "\<F>\<^sub>SC.comp (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)
-                  = mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<cdot> mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
-            using seq \<F>\<^sub>SC.comp_char by simp
-          also have "... = mkarr (\<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<cdot> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
-            using Seq comp_mkarr [of "\<^bold>\<lfloor>rep g\<^bold>\<rfloor>" "\<^bold>\<lfloor>rep f\<^bold>\<rfloor>"] by fastforce
-          also have "... = mkarr \<^bold>\<lfloor>rep (g \<cdot> f)\<^bold>\<rfloor>"
-          proof (intro mkarr_eqI)
-            show "Par (\<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<cdot> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>) \<^bold>\<lfloor>rep (g \<cdot> f)\<^bold>\<rfloor>"
-              using f g 1 rep_in_Hom rep_preserves_seq rep_in_Hom
-                    Par_Arr_norm [of "rep g \<^bold>\<cdot> rep f"] rep_comp [of f g]
-                    Diagonalize_in_Hom
-              by force
-            show "\<^bold>\<lfloor>\<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<cdot> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>\<^bold>\<rfloor> = \<^bold>\<lfloor>\<^bold>\<lfloor>rep (g \<cdot> f)\<^bold>\<rfloor>\<^bold>\<rfloor>"
-              using f g rep_preserves_seq norm_in_Hom [of "rep g \<^bold>\<cdot> rep f"]
-                    Diag_Diagonalize rep_comp [of f g] Diagonalize_Diag
-                    norm_in_Hom [of "rep g \<^bold>\<cdot> rep f"]
-              by fastforce
+          have "mkarr \<^bold>\<lfloor>rep (g \<cdot> f)\<^bold>\<rfloor> = \<F>\<^sub>SC.comp (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
+          proof -
+            have Seq: "Seq \<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
+              using fg rep_preserves_seq Diagonalize_in_Hom by force
+            hence 4: "\<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<cdot> \<^bold>\<lfloor>rep f\<^bold>\<rfloor> \<in> Hom \<^bold>\<lfloor>DOM f\<^bold>\<rfloor> \<^bold>\<lfloor>COD g\<^bold>\<rfloor>"
+              using fg' Seq Diagonalize_in_Hom by auto
+            have "\<F>\<^sub>SC.comp (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>) = mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<cdot> mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
+              using seq \<F>\<^sub>SC.comp_char \<F>\<^sub>SC.seq_char by meson
+            also have "... = mkarr (\<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<cdot> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
+              using Seq comp_mkarr by fastforce
+            also have "... = mkarr \<^bold>\<lfloor>rep (g \<cdot> f)\<^bold>\<rfloor>"
+            proof (intro mkarr_eqI)
+              show "Par (\<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<cdot> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>) \<^bold>\<lfloor>rep (g \<cdot> f)\<^bold>\<rfloor>"
+                using fg 4 rep_in_Hom rep_preserves_seq rep_in_Hom Diagonalize_in_Hom
+                      Par_Arr_norm
+                apply (elim seqE, auto)
+                by (simp_all add: rep_comp)
+              show "\<^bold>\<lfloor>\<^bold>\<lfloor>rep g\<^bold>\<rfloor> \<^bold>\<cdot> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>\<^bold>\<rfloor> = \<^bold>\<lfloor>\<^bold>\<lfloor>rep (g \<cdot> f)\<^bold>\<rfloor>\<^bold>\<rfloor>"
+                using fg rep_preserves_seq norm_in_Hom Diag_Diagonalize Diagonalize_Diag
+                apply auto
+                by (simp add: rep_comp)
+            qed
+            finally show ?thesis by blast
           qed
-          finally show ?thesis by blast
+          thus ?thesis using fg D_def by auto
         qed
-        thus ?thesis using f g diagonalize_def by simp
       qed
     qed
 
     lemma diagonalize_is_functor:
-    shows "functor comp \<F>\<^sub>SC.comp diagonalize" ..
+    shows "functor comp \<F>\<^sub>SC.comp D" ..
+
+    lemma diagonalize_strict_arr:
+    assumes "\<F>\<^sub>SC.arr f"
+    shows "D f = f"
+      using assms arr_char D_def strict_arr_char Arr_rep Arr_implies_Ide_Dom Ide_implies_Arr
+            mkarr_Diagonalize_rep [of f]
+      by auto
 
     lemma diagonalize_is_idempotent:
-    shows "diagonalize o diagonalize = diagonalize"
-      using D.is_extensional \<F>\<^sub>SC.null_char not_arr_null
-            Arr_rep Diagonalize_in_Hom mkarr_Diagonalize_rep D.preserves_hom strict_arr_char
-            diagonalize_def
+    shows "D o D = D"
+      unfolding D_def
+      using D.is_extensional \<F>\<^sub>SC.null_char Arr_rep Diagonalize_in_Hom mkarr_Diagonalize_rep
+            strict_arr_char rep_mkarr
       by fastforce
-
-    lemma diagonalize_diagonalize:
-    shows "diagonalize (diagonalize f) = diagonalize f"
-    proof -
-      have "diagonalize (diagonalize f) = (diagonalize o diagonalize) f" by simp
-      thus ?thesis using diagonalize_is_idempotent by presburger
-    qed
 
     lemma diagonalize_tensor:
     assumes "arr f" and "arr g"
-    shows "diagonalize (f \<otimes> g) = diagonalize (diagonalize f \<otimes> diagonalize g)"
-      using assms D.preserves_arr strict_arr_char diagonalize_def
-            rep_in_Hom Diagonalize_in_Hom tensor_mkarr tensor_in_hom rep_tensor
+    shows "D (f \<otimes> g) = D (D f \<otimes> D g)"
+      unfolding D_def
+      using assms strict_arr_char rep_in_Hom Diagonalize_in_Hom tensor_mkarr rep_tensor
             Diagonalize_in_Hom rep_mkarr Diagonalize_norm Diagonalize_Tensor
       by force
 
     lemma ide_diagonalize_can:
     assumes "can f"
-    shows "ide (diagonalize f)"
-      using assms diagonalize_def Can_rep_can Ide_Diagonalize_Can ide_mkarr_Ide can_implies_arr
+    shows "ide (D f)"
+      using assms D_def Can_rep_can Ide_Diagonalize_Can ide_mkarr_Ide can_implies_arr
       by simp
 
     text {*
@@ -2661,25 +2567,25 @@ begin
     *}
 
     interpretation S: full_inclusion_functor comp "\<lambda>f. ide f \<and> Diag (DOM f)" ..
-    interpretation DoS: composite_functor \<F>\<^sub>SC.comp comp \<F>\<^sub>SC.comp \<F>\<^sub>SC.map diagonalize
+    interpretation DoS: composite_functor \<F>\<^sub>SC.comp comp \<F>\<^sub>SC.comp \<F>\<^sub>SC.map D
       ..
-    interpretation SoD: composite_functor comp \<F>\<^sub>SC.comp comp diagonalize \<F>\<^sub>SC.map ..
+    interpretation SoD: composite_functor comp \<F>\<^sub>SC.comp comp D \<F>\<^sub>SC.map ..
 
     interpretation \<nu>: transformation_by_components
                         comp comp map SoD.map "\<lambda>a. mkarr (DOM a\<^bold>\<down>)"
     proof
       fix a
       assume a: "ide a"
-      show "mkarr (DOM a\<^bold>\<down>) \<in> hom (map a) (SoD.map a)"
+      show "\<guillemotleft>mkarr (DOM a\<^bold>\<down>) : map a \<rightarrow> SoD.map a\<guillemotright>"
       proof -
-        have "mkarr (DOM a\<^bold>\<down>) \<in> hom a (mkarr \<^bold>\<lfloor>DOM a\<^bold>\<rfloor>)"
-          using a Arr_rep Arr_implies_Ide_Dom red_in_Hom dom_char [of a] by simp
+        have "\<guillemotleft>mkarr (DOM a\<^bold>\<down>) : a \<rightarrow> mkarr \<^bold>\<lfloor>DOM a\<^bold>\<rfloor>\<guillemotright>"
+          using a Arr_implies_Ide_Dom red_in_Hom dom_char [of a] by auto
         moreover have "map a = a"
           using a map_simp by simp
         moreover have "SoD.map a = mkarr \<^bold>\<lfloor>DOM a\<^bold>\<rfloor>"
-          using a D.preserves_ide \<F>\<^sub>SC.ideD \<F>\<^sub>SC.map_simp diagonalize_def Ide_Diagonalize_rep_ide
-                Ide_in_Hom rep_in_Hom Diagonalize_in_Hom
-          by fastforce
+          using a D.preserves_ide \<F>\<^sub>SC.ideD \<F>\<^sub>SC.map_simp D_def Ide_Diagonalize_rep_ide
+                Ide_in_Hom Diagonalize_in_Hom
+          by force
         ultimately show ?thesis by simp
       qed
       next
@@ -2688,40 +2594,36 @@ begin
       show "mkarr (DOM (cod f)\<^bold>\<down>) \<cdot> map f = SoD.map f \<cdot> mkarr (DOM (dom f)\<^bold>\<down>)"
       proof -
         have "SoD.map f \<cdot> mkarr (DOM (dom f)\<^bold>\<down>) = mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor> \<cdot> mkarr (DOM f\<^bold>\<down>)"
-          using f DOM_dom red_in_Hom rep_in_Hom D.preserves_hom \<F>\<^sub>SC.map_simp diagonalize_def
-          by simp
+          using f DOM_dom D.preserves_arr \<F>\<^sub>SC.map_simp D_def by simp
         also have "... = mkarr (\<^bold>\<lfloor>rep f\<^bold>\<rfloor> \<^bold>\<cdot> DOM f\<^bold>\<down>)"
-          using f rep_in_Hom Diagonalize_in_Hom red_in_Hom comp_mkarr Arr_implies_Ide_Dom
+          using f Diagonalize_in_Hom red_in_Hom comp_mkarr Arr_implies_Ide_Dom
           by simp
         also have "... = mkarr (COD f\<^bold>\<down> \<^bold>\<cdot> rep f)"
         proof (intro mkarr_eqI)
           show "Par (\<^bold>\<lfloor>rep f\<^bold>\<rfloor> \<^bold>\<cdot> DOM f\<^bold>\<down>) (COD f\<^bold>\<down> \<^bold>\<cdot> rep f)"
-            using f rep_in_Hom Diagonalize_in_Hom red_in_Hom Arr_implies_Ide_Dom
-                  Arr_implies_Ide_Cod
+            using f Diagonalize_in_Hom red_in_Hom Arr_implies_Ide_Dom Arr_implies_Ide_Cod
             by simp
           show "\<^bold>\<lfloor>\<^bold>\<lfloor>rep f\<^bold>\<rfloor> \<^bold>\<cdot> DOM f\<^bold>\<down>\<^bold>\<rfloor> = \<^bold>\<lfloor>COD f\<^bold>\<down> \<^bold>\<cdot> rep f\<^bold>\<rfloor>"
           proof -
             have "\<^bold>\<lfloor>\<^bold>\<lfloor>rep f\<^bold>\<rfloor> \<^bold>\<cdot> DOM f\<^bold>\<down>\<^bold>\<rfloor> = \<^bold>\<lfloor>rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> \<^bold>\<lfloor>DOM f\<^bold>\<down>\<^bold>\<rfloor>"
-              using f rep_in_Hom Arr_implies_Ide_Dom Can_red by simp
+              using f by simp
             also have "... = \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
-              using f rep_in_Hom Arr_implies_Ide_Dom Can_red [of "DOM f"]
-                    Ide_Diagonalize_Can [of "DOM f\<^bold>\<down>"] red_in_Hom Diagonalize_in_Hom
-                    Diag_Diagonalize CompDiag_Diag_Ide [of "\<^bold>\<lfloor>rep f\<^bold>\<rfloor>" "\<^bold>\<lfloor>DOM f\<^bold>\<down>\<^bold>\<rfloor>"]
+              using f Arr_implies_Ide_Dom Can_red Ide_Diagonalize_Can [of "DOM f\<^bold>\<down>"]
+                    Diag_Diagonalize CompDiag_Diag_Ide
               by force
             also have "... = \<^bold>\<lfloor>COD f\<^bold>\<down>\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> \<^bold>\<lfloor>rep f\<^bold>\<rfloor>"
-              using f rep_in_Hom Arr_implies_Ide_Cod Can_red [of "COD f"]
-                    Ide_Diagonalize_Can [of "COD f\<^bold>\<down>"] red_in_Hom Diagonalize_in_Hom
-                    Diag_Diagonalize CompDiag_Diag_Ide [of "\<^bold>\<lfloor>COD f\<^bold>\<down>\<^bold>\<rfloor>" "\<^bold>\<lfloor>rep f\<^bold>\<rfloor>"]
+              using f Arr_implies_Ide_Cod Can_red Ide_Diagonalize_Can [of "COD f\<^bold>\<down>"]
+                    Diag_Diagonalize CompDiag_Diag_Ide
               by force
             also have "... = \<^bold>\<lfloor>COD f\<^bold>\<down> \<^bold>\<cdot> rep f\<^bold>\<rfloor>"
-              using f rep_in_Hom Arr_implies_Ide_Cod Can_red by simp
+              by simp
             finally show ?thesis by blast
           qed
         qed
         also have "... = mkarr (COD f\<^bold>\<down>) \<cdot> mkarr (rep f)"
           using f comp_mkarr rep_in_Hom red_in_Hom Arr_implies_Ide_Cod by blast
         also have "... = mkarr (DOM (cod f)\<^bold>\<down>) \<cdot> map f"
-          using f mkarr_rep DOM_cod by simp
+          using f DOM_cod by simp
         finally show ?thesis by blast
       qed
     qed
@@ -2743,7 +2645,7 @@ begin
       have "\<not> \<F>\<^sub>SC.arr f \<Longrightarrow> DoS.map f = \<F>\<^sub>SC.map f"
         using DoS.is_extensional \<F>\<^sub>SC.map_def by simp
       moreover have "\<F>\<^sub>SC.arr f \<Longrightarrow> DoS.map f = \<F>\<^sub>SC.map f"
-        using \<F>\<^sub>SC.map_simp strict_arr_char Diagonalize_Diag diagonalize_def mkarr_Diagonalize_rep
+        using \<F>\<^sub>SC.map_simp strict_arr_char Diagonalize_Diag D_def mkarr_Diagonalize_rep
         by simp
       ultimately show "DoS.map f = \<F>\<^sub>SC.map f" by blast
     qed
@@ -2751,13 +2653,12 @@ begin
     interpretation \<mu>: transformation_by_components
                         \<F>\<^sub>SC.comp \<F>\<^sub>SC.comp DoS.map \<F>\<^sub>SC.map "\<lambda>a. a"
       using \<F>\<^sub>SC.ideD \<F>\<^sub>SC.map_simp DoS_eq_\<F>\<^sub>SC \<F>\<^sub>SC.map_simp \<F>\<^sub>SC.comp_cod_arr \<F>\<^sub>SC.comp_arr_dom
-      by (unfold_locales) auto
+      by (unfold_locales, intro \<F>\<^sub>SC.in_homI, auto)
          
     interpretation \<mu>: natural_isomorphism \<F>\<^sub>SC.comp \<F>\<^sub>SC.comp DoS.map \<F>\<^sub>SC.map \<mu>.map
       apply unfold_locales using \<mu>.map_simp_ide \<F>\<^sub>SC.ide_is_iso by simp
 
-    interpretation equivalence_of_categories
-                     \<F>\<^sub>SC.comp comp diagonalize \<F>\<^sub>SC.map \<nu>.map \<mu>.map ..
+    interpretation equivalence_of_categories \<F>\<^sub>SC.comp comp D \<F>\<^sub>SC.map \<nu>.map \<mu>.map ..
 
     text {*
       We defined the natural isomorphisms @{term \<mu>} and @{term \<nu>} by giving their
@@ -2790,10 +2691,10 @@ begin
       unfolding \<nu>.map_def \<nu>_def using map_simp DOM_cod by fastforce
 
     lemma is_equivalent_to_strict_subcategory:
-    shows "equivalence_of_categories \<F>\<^sub>SC.comp comp diagonalize \<F>\<^sub>SC.map \<nu> \<mu>"
+    shows "equivalence_of_categories \<F>\<^sub>SC.comp comp D \<F>\<^sub>SC.map \<nu> \<mu>"
     proof -
-      have "equivalence_of_categories \<F>\<^sub>SC.comp comp diagonalize \<F>\<^sub>SC.map \<nu>.map \<mu>.map" ..
-      thus "equivalence_of_categories \<F>\<^sub>SC.comp comp diagonalize \<F>\<^sub>SC.map \<nu> \<mu>"
+      have "equivalence_of_categories \<F>\<^sub>SC.comp comp D \<F>\<^sub>SC.map \<nu>.map \<mu>.map" ..
+      thus "equivalence_of_categories \<F>\<^sub>SC.comp comp D \<F>\<^sub>SC.map \<nu> \<mu>"
         using \<nu>_char \<mu>_char by simp
     qed
 
@@ -2804,8 +2705,7 @@ begin
 
     interpretation I: "functor" C comp inclusion_of_generators
       using inclusion_is_functor by auto
-    interpretation DoI: composite_functor
-                          C comp \<F>\<^sub>SC.comp inclusion_of_generators diagonalize ..
+    interpretation DoI: composite_functor C comp \<F>\<^sub>SC.comp inclusion_of_generators D ..
 
     lemma DoI_eq_I:
     shows "DoI.map = inclusion_of_generators"
@@ -2816,7 +2716,7 @@ begin
       moreover have "C.arr f \<Longrightarrow> DoI.map f = inclusion_of_generators f"
       proof -
         assume f: "C.arr f"
-        have "DoI.map f = diagonalize (inclusion_of_generators f)" using f by simp
+        have "DoI.map f = D (inclusion_of_generators f)" using f by simp
         also have "... = inclusion_of_generators f"
         proof -
           have "\<F>\<^sub>SC.arr (inclusion_of_generators f)"
@@ -2832,60 +2732,61 @@ begin
 
   end
 
-  locale free_strict_monoidal_category =
-    monoidal_language C +
-    \<F>C: free_monoidal_category C
-  for C :: "'c comp"
-
-  sublocale free_strict_monoidal_category \<subseteq>
-              full_subcategory \<F>C.comp "\<lambda>f. \<F>C.ide f \<and> Diag (\<F>C.DOM f)"
-    by (unfold_locales) auto  
-
-  sublocale free_strict_monoidal_category \<subseteq>
-              full_inclusion_functor \<F>C.comp "\<lambda>f. \<F>C.ide f \<and> Diag (\<F>C.DOM f)" ..        
-
   text {*
     Next, we show that the subcategory @{text "\<F>\<^sub>SC"} inherits monoidal structure from
     the ambient category @{text "\<F>C"}, and that this monoidal structure is strict.
   *}
 
-  context free_strict_monoidal_category
+  locale free_strict_monoidal_category =
+    monoidal_language C +
+    \<F>C: free_monoidal_category C +
+    full_subcategory \<F>C.comp "\<lambda>f. \<F>C.ide f \<and> Diag (\<F>C.DOM f)"
+    for C :: "'c comp"
   begin
 
-    interpretation D: "functor" \<F>C.comp comp \<F>C.diagonalize
+    interpretation D: "functor" \<F>C.comp comp \<F>C.D
       using \<F>C.diagonalize_is_functor by auto
 
-    notation comp                     (infixr "\<cdot>\<^sub>S" 55)
+    notation comp           (infixr "\<cdot>\<^sub>S" 55)
 
-    definition tensor\<^sub>S                (infixr "\<otimes>\<^sub>S" 53)
-    where "f \<otimes>\<^sub>S g \<equiv> \<F>C.diagonalize (\<F>C.tensor f g)"
+    definition tensor\<^sub>S      (infixr "\<otimes>\<^sub>S" 53)
+    where "f \<otimes>\<^sub>S g \<equiv> \<F>C.D (\<F>C.tensor f g)"
 
-    definition assoc\<^sub>S                ("\<a>\<^sub>S[_, _, _]")
+    definition assoc\<^sub>S       ("\<a>\<^sub>S[_, _, _]")
     where "assoc\<^sub>S a b c \<equiv> a \<otimes>\<^sub>S b \<otimes>\<^sub>S c"
 
     lemma tensor_char:
     assumes "arr f" and "arr g"
     shows "f \<otimes>\<^sub>S g = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor>)"
-      unfolding \<F>C.diagonalize_def tensor\<^sub>S_def
+      unfolding \<F>C.D_def tensor\<^sub>S_def
       using assms arr_char \<F>C.rep_tensor by simp
 
-    lemma tensor_in_hom:
+    lemma tensor_in_hom [simp]:
+    assumes "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>g : c \<rightarrow> d\<guillemotright>"
+    shows "\<guillemotleft>f \<otimes>\<^sub>S g : a \<otimes>\<^sub>S c \<rightarrow> b \<otimes>\<^sub>S d\<guillemotright>"
+      unfolding tensor\<^sub>S_def
+      using assms D.preserves_hom D.preserves_arr arr_char in_hom_char by simp
+
+    lemma arr_tensor [simp]:
     assumes "arr f" and "arr g"
-    shows "f \<otimes>\<^sub>S g \<in> hom (dom f \<otimes>\<^sub>S dom g) (cod f \<otimes>\<^sub>S cod g)"
-    proof -
-      have "\<F>C.arr f \<and> \<F>C.arr g" using assms by blast
-      hence "f \<otimes>\<^sub>S g \<in> hom (\<F>C.dom f \<otimes>\<^sub>S \<F>C.dom g) (\<F>C.cod f \<otimes>\<^sub>S \<F>C.cod g)"
-        using assms D.preserves_hom \<F>C.tensor_in_hom [of f g] tensor\<^sub>S_def by simp
-      moreover have "\<F>C.dom f = dom f \<and> \<F>C.cod f = cod f \<and>
-                     \<F>C.dom g = dom g \<and> \<F>C.cod g = cod g"
-        using assms dom_char cod_char by simp
-      ultimately show ?thesis by auto
-    qed
+    shows "arr (f \<otimes>\<^sub>S g)"
+      using assms arr_iff_in_hom [of f] arr_iff_in_hom [of g] tensor_in_hom by blast
+
+    lemma dom_tensor [simp]:
+    assumes "arr f" and "arr g"
+    shows "dom (f \<otimes>\<^sub>S g) = dom f \<otimes>\<^sub>S dom g"
+      using assms arr_iff_in_hom [of f] arr_iff_in_hom [of g] tensor_in_hom by blast
+
+    lemma cod_tensor [simp]:
+    assumes "arr f" and "arr g"
+    shows "cod (f \<otimes>\<^sub>S g) = cod f \<otimes>\<^sub>S cod g"
+      using assms arr_iff_in_hom [of f] arr_iff_in_hom [of g] tensor_in_hom by blast
 
     lemma tensor_preserves_ide:
     assumes "ide a" and "ide b"
     shows "ide (a \<otimes>\<^sub>S b)"
-      using assms ide_char \<F>C.tensor_preserves_ide D.preserves_ide tensor\<^sub>S_def by simp
+      using assms tensor\<^sub>S_def D.preserves_ide \<F>C.tensor_preserves_ide ide_char
+      by fastforce
 
     lemma tensor_tensor:
     assumes "arr f" and "arr g" and "arr h"
@@ -2894,41 +2795,36 @@ begin
     proof -
       show "(f \<otimes>\<^sub>S g) \<otimes>\<^sub>S h = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
       proof -
-        have "(f \<otimes>\<^sub>S g) \<otimes>\<^sub>S h = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep (f \<otimes>\<^sub>Sg)\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
-          using assms arr_char tensor_char tensor_in_hom [of f g] \<F>C.rep_in_Hom
-                Diagonalize_in_Hom by blast
+        have "(f \<otimes>\<^sub>S g) \<otimes>\<^sub>S h = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep (f \<otimes>\<^sub>S g)\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
+          using assms Diag_Diagonalize TensorDiag_preserves_Diag Diag_implies_Arr
+                \<F>C.COD_mkarr \<F>C.DOM_mkarr \<F>C.strict_arr_char tensor_char
+          by simp
         also have
           "... = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep (\<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor>))\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor>
                            \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
           using assms arr_char tensor_char by simp
         also have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor>\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
-          using assms \<F>C.Arr_rep Diagonalize_in_Hom \<F>C.rep_mkarr TensorDiag_in_Hom
-                Diag_Diagonalize TensorDiag_preserves_Diag
-                \<F>C.Diagonalize_norm [of "\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor>"]
-                tensor_char
+          using assms \<F>C.rep_mkarr TensorDiag_in_Hom Diag_Diagonalize
+                TensorDiag_preserves_Diag
           by force
         also have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
-          using assms \<F>C.Arr_rep Diagonalize_in_Hom TensorDiag_in_Hom Diag_Diagonalize
-                Diagonalize_Diag TensorDiag_preserves_Diag TensorDiag_assoc
+          using assms Diag_Diagonalize TensorDiag_preserves_Diag TensorDiag_assoc
           by force
         finally show ?thesis by blast
       qed
       show "f \<otimes>\<^sub>S g \<otimes>\<^sub>S h = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
       proof -
         have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>\<^bold>\<rfloor>)"
-          using assms \<F>C.Arr_rep Diagonalize_in_Hom TensorDiag_in_Hom Diag_Diagonalize
-                Diagonalize_Diag TensorDiag_preserves_Diag TensorDiag_assoc
-          by force
+          using assms Diag_Diagonalize TensorDiag_preserves_Diag by force
         also have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor>
                                    (\<^bold>\<lfloor>\<F>C.rep (\<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>))\<^bold>\<rfloor>))"
-          using assms \<F>C.Arr_rep Diagonalize_in_Hom \<F>C.rep_mkarr TensorDiag_in_Hom
-                Diag_Diagonalize TensorDiag_preserves_Diag \<F>C.Diagonalize_norm tensor_char
-          by force
+          using assms \<F>C.rep_mkarr TensorDiag_in_Hom Diag_Diagonalize by force
         also have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep (g \<otimes>\<^sub>S h)\<^bold>\<rfloor>)"
-           using assms ide_char tensor_char by simp
+           using assms tensor_char by simp
         also have "... = f \<otimes>\<^sub>S g \<otimes>\<^sub>S h"
-          using assms arr_char tensor_char tensor_in_hom [of g h] \<F>C.rep_in_Hom
-                Diagonalize_in_Hom by blast
+          using assms Diag_Diagonalize TensorDiag_preserves_Diag Diag_implies_Arr
+                \<F>C.COD_mkarr \<F>C.DOM_mkarr \<F>C.strict_arr_char tensor_char
+          by simp
         finally show ?thesis by blast
       qed
     qed
@@ -2945,26 +2841,25 @@ begin
     lemma tensor_unity_arr:
     assumes "arr f"
     shows "\<I> \<otimes>\<^sub>S f = f"
-      using assms arr_unity tensor_char \<F>C.\<I>_agreement \<F>C.Diagonalize_norm
-            \<F>C.strict_arr_char \<F>C.mkarr_Diagonalize_rep
+      using assms arr_unity tensor_char \<F>C.strict_arr_char \<F>C.mkarr_Diagonalize_rep
       by simp
 
     lemma tensor_arr_unity:
     assumes "arr f"
     shows "f \<otimes>\<^sub>S \<I> = f"
-      using assms arr_unity tensor_char [of f \<I>] \<F>C.\<I>_agreement \<F>C.Diagonalize_norm
-            \<F>C.strict_arr_char \<F>C.mkarr_Diagonalize_rep
+      using assms arr_unity tensor_char \<F>C.strict_arr_char \<F>C.mkarr_Diagonalize_rep
       by simp
 
     lemma assoc_char:
     assumes "ide a" and "ide b" and "ide c"
     shows "\<a>\<^sub>S[a, b, c] = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep a\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep b\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep c\<^bold>\<rfloor>)"
-      using assms tensor_tensor [of a b c] assoc\<^sub>S_def by fast
+      using assms tensor_tensor(2) assoc\<^sub>S_def ideD(1) by simp
 
     lemma assoc_in_hom:
     assumes "ide a" and "ide b" and "ide c"
-    shows "\<a>\<^sub>S[a, b, c] \<in> hom ((a \<otimes>\<^sub>S b) \<otimes>\<^sub>S c) (a \<otimes>\<^sub>S b \<otimes>\<^sub>S c)"
-      using assms tensor_preserves_ide ideD tensor_assoc assoc\<^sub>S_def by simp
+    shows "\<guillemotleft>\<a>\<^sub>S[a, b, c] : (a \<otimes>\<^sub>S b) \<otimes>\<^sub>S c \<rightarrow> a \<otimes>\<^sub>S b \<otimes>\<^sub>S c\<guillemotright>"
+      using assms tensor_preserves_ide ideD tensor_assoc assoc\<^sub>S_def
+      by (metis (no_types, lifting) ide_in_hom)
 
     text {* The category @{text "\<F>\<^sub>SC"} is a monoidal category. *}
 
@@ -2974,62 +2869,48 @@ begin
         using ide_char arr_char \<F>C.rep_mkarr \<F>C.Dom_norm \<F>C.Cod_norm \<F>C.\<I>_agreement
         by auto
       show "\<And>a. ide a \<Longrightarrow> iso a"
-        using ide_char iso_char by simp
-      fix f a b g c d
-      show "\<lbrakk> f \<in> hom a b; g \<in> hom c d \<rbrakk> \<Longrightarrow> f \<otimes>\<^sub>S g \<in> hom (a \<otimes>\<^sub>S c) (b \<otimes>\<^sub>S d)"
-        using tensor_in_hom by simp
-      next
-      fix a b
-      assume a: "ide a" and b: "ide b"
-      show "ide (a \<otimes>\<^sub>S b)"
-        using a b tensor_preserves_ide by presburger
-      next
-      fix a b c
-      assume a: "ide a" and b: "ide b" and c: "ide c"
-      show "iso \<a>\<^sub>S[a, b, c]"
-        using a b c tensor_preserves_ide ide_is_iso assoc\<^sub>S_def by presburger
-      show "\<a>\<^sub>S[a, b, c] \<in> hom ((a \<otimes>\<^sub>S b) \<otimes>\<^sub>S c) (a \<otimes>\<^sub>S b \<otimes>\<^sub>S c)"
-        using a b c assoc_in_hom by presburger
+        using ide_char arr_char iso_char by auto
+      show "\<And>f a b g c d. \<lbrakk> in_hom a b f; in_hom c d g \<rbrakk> \<Longrightarrow> in_hom (a \<otimes>\<^sub>S c) (b \<otimes>\<^sub>S d) (f \<otimes>\<^sub>S g)"
+        using tensor_in_hom by blast
+      show "\<And>a b. \<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> ide (a \<otimes>\<^sub>S b)"
+        using tensor_preserves_ide by blast
+      show "\<And>a b c. \<lbrakk> ide a; ide b; ide c\<rbrakk> \<Longrightarrow> iso \<a>\<^sub>S[a, b, c]"
+        using tensor_preserves_ide ide_is_iso assoc\<^sub>S_def by presburger
+      show "\<And>a b c. \<lbrakk> ide a; ide b; ide c\<rbrakk> \<Longrightarrow> \<guillemotleft>\<a>\<^sub>S[a, b, c] : (a \<otimes>\<^sub>S b) \<otimes>\<^sub>S c \<rightarrow> a \<otimes>\<^sub>S b \<otimes>\<^sub>S c\<guillemotright>"
+        using assoc_in_hom by blast
+      show "\<And>a b. \<lbrakk> ide a; ide b \<rbrakk> \<Longrightarrow> (a \<otimes>\<^sub>S b) \<cdot>\<^sub>S \<a>\<^sub>S[a, \<I>, b] = a \<otimes>\<^sub>S b"
+        using ide_def tensor_unity_arr assoc\<^sub>S_def ideD(1) tensor_preserves_ide ide_comp_self
+        by simp
+      show "\<And>f. arr f \<Longrightarrow> cod f \<cdot>\<^sub>S (\<I> \<otimes>\<^sub>S f) = f \<cdot>\<^sub>S dom f"
+        using tensor_unity_arr comp_arr_dom comp_cod_arr by presburger
+      show "\<And>f. arr f \<Longrightarrow> cod f \<cdot>\<^sub>S (f \<otimes>\<^sub>S \<I>) = f \<cdot>\<^sub>S dom f"
+        using tensor_arr_unity comp_arr_dom comp_cod_arr by presburger
       next
       fix a
       assume a: "ide a"
-      show "a \<in> hom (\<I> \<otimes>\<^sub>S a) a"
-        using a tensor_unity_arr by fastforce
-      show "a \<in> hom (a \<otimes>\<^sub>S \<I>) a"
-        using a tensor_arr_unity by fastforce
-      next
-      fix f
-      assume f: "arr f"
-      show "cod f \<cdot>\<^sub>S (\<I> \<otimes>\<^sub>S f) = f \<cdot>\<^sub>S dom f"
-        using f tensor_unity_arr comp_arr_dom comp_cod_arr by presburger
-      show "cod f \<cdot>\<^sub>S (f \<otimes>\<^sub>S \<I>) = f \<cdot>\<^sub>S dom f"
-        using f tensor_arr_unity comp_arr_dom comp_cod_arr by presburger
-      next
-      fix a b
-      assume a: "ide a"
-      assume b: "ide b"
-      show "(a \<otimes>\<^sub>S b) \<cdot>\<^sub>S \<a>\<^sub>S[a, \<I>, b] = a \<otimes>\<^sub>S b"
-      proof -
-        have "a \<otimes>\<^sub>S b \<in> hom (a \<otimes>\<^sub>S b) (a \<otimes>\<^sub>S b)"
-          using a b tensor_preserves_ide ideD by simp
-        moreover have "\<a>\<^sub>S[a, \<I>, b] = a \<otimes>\<^sub>S b"
-          using a b tensor_unity_arr [of b] assoc\<^sub>S_def by fastforce
-        ultimately show ?thesis
-          using a b comp_arr_dom [of "a \<otimes>\<^sub>S b"] by simp
-      qed
+      show "\<guillemotleft>a : \<I> \<otimes>\<^sub>S a \<rightarrow> a\<guillemotright>"
+        using a tensor_unity_arr ide_in_hom [of a] by fast
+      show "\<guillemotleft>a : a \<otimes>\<^sub>S \<I> \<rightarrow> a\<guillemotright>"
+        using a tensor_arr_unity ide_in_hom [of a] by fast
       next
       fix f g f' g'
       assume fg: "seq g f"
       assume fg': "seq g' f'"
       show "(g \<otimes>\<^sub>S g') \<cdot>\<^sub>S (f \<otimes>\<^sub>S f') = g \<cdot>\<^sub>S f \<otimes>\<^sub>S g' \<cdot>\<^sub>S f'"
       proof -
-        have "(g \<otimes>\<^sub>S g') \<cdot>\<^sub>S (f \<otimes>\<^sub>S f') = \<F>C.diagonalize ((g \<otimes> g') \<cdot> (f \<otimes> f'))"
-          using fg fg' arr_char dom_char cod_char \<F>C.tensor_in_hom D.preserves_comp
-                tensor\<^sub>S_def
-          by force
+        have A: "\<F>C.seq g f" and B: "\<F>C.seq g' f'"
+          using fg fg' seq_char by auto
+        have "(g \<otimes>\<^sub>S g') \<cdot>\<^sub>S (f \<otimes>\<^sub>S f') = \<F>C.D ((g \<otimes> g') \<cdot> (f \<otimes> f'))"
+          using A B tensor\<^sub>S_def by fastforce
+        also have "... = \<F>C.D (g \<cdot> f \<otimes> g' \<cdot> f')"
+          using A B \<F>C.interchange \<F>C.T_simp \<F>C.seqE by metis
+        also have "... = \<F>C.D (g \<cdot> f) \<otimes>\<^sub>S \<F>C.D (g' \<cdot> f')"
+          using A B tensor\<^sub>S_def \<F>C.T_simp \<F>C.seqE \<F>C.diagonalize_tensor arr_char
+          by (metis (no_types, lifting) D.preserves_reflects_arr)
+        also have "... = \<F>C.D g \<cdot>\<^sub>S \<F>C.D f \<otimes>\<^sub>S \<F>C.D g' \<cdot>\<^sub>S \<F>C.D f'"
+          using A B by simp
         also have "... = g \<cdot>\<^sub>S f \<otimes>\<^sub>S g' \<cdot>\<^sub>S f'"
-          using fg fg' arr_char dom_char cod_char \<F>C.interchange comp_char tensor\<^sub>S_def
-          by force
+           using fg fg' \<F>C.diagonalize_strict_arr by (elim seqE, simp)
         finally show ?thesis by blast
       qed
       next
@@ -3037,9 +2918,10 @@ begin
       assume f0: "arr f0" and f1: "arr f1" and f2: "arr f2"
       show "\<a>\<^sub>S[cod f0, cod f1, cod f2] \<cdot>\<^sub>S ((f0 \<otimes>\<^sub>S f1) \<otimes>\<^sub>S f2)
               = (f0 \<otimes>\<^sub>S f1 \<otimes>\<^sub>S f2) \<cdot>\<^sub>S \<a>\<^sub>S[dom f0, dom f1, dom f2]"
-        using f0 f1 f2 tensor_in_hom comp_arr_dom [of "f0 \<otimes>\<^sub>S f1 \<otimes>\<^sub>S f2"]
-              comp_cod_arr [of "f0 \<otimes>\<^sub>S f1 \<otimes>\<^sub>S f2"] tensor_assoc [of f0 f1 f2] assoc\<^sub>S_def
-        by simp
+        using f0 f1 f2 assoc\<^sub>S_def tensor_assoc dom_tensor cod_tensor arr_tensor
+              comp_cod_arr [of "f0 \<otimes>\<^sub>S f1 \<otimes>\<^sub>S f2" "cod f0 \<otimes>\<^sub>S cod f1 \<otimes>\<^sub>S cod f2"]
+              comp_arr_dom [of "f0 \<otimes>\<^sub>S f1 \<otimes>\<^sub>S f2" "dom f0 \<otimes>\<^sub>S dom f1 \<otimes>\<^sub>S dom f2"]
+        by presburger
       next
       fix a b c d
       assume a: "ide a" and b: "ide b" and c: "ide c" and d: "ide d"
@@ -3071,25 +2953,14 @@ begin
   sublocale free_strict_monoidal_category \<subseteq> monoidal_category comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C
     using is_monoidal_category by auto
 
-  context free_strict_monoidal_category
-  begin
-
-    interpretation strict_monoidal_category comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C
-      using tensor_preserves_ide assoc_agreement lunit_agreement runit_agreement
-      apply unfold_locales
-      unfolding assoc\<^sub>S_def
-        apply presburger
-       apply meson
-      by meson
-
-    lemma is_strict_monoidal_category:
-    shows "strict_monoidal_category comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C" ..
-
-  end
-
   sublocale free_strict_monoidal_category \<subseteq>
               strict_monoidal_category comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C
-    using is_strict_monoidal_category by auto
+    using tensor_preserves_ide assoc_agreement lunit_agreement runit_agreement
+    apply unfold_locales
+    unfolding assoc\<^sub>S_def
+      apply presburger
+     apply meson
+    by meson
 
   context free_strict_monoidal_category
   begin
@@ -3102,14 +2973,14 @@ begin
       corestriction to @{text "\<F>\<^sub>SC"} of the inclusion of generators of @{text "\<F>C"}.
     *}
 
-    interpretation D: "functor" \<F>C.comp comp \<F>C.diagonalize
+    interpretation D: "functor" \<F>C.comp comp \<F>C.D
       using \<F>C.diagonalize_is_functor by auto
 
-    interpretation I: composite_functor C \<F>C.comp comp \<F>C.inclusion_of_generators \<F>C.diagonalize
+    interpretation I: composite_functor C \<F>C.comp comp \<F>C.inclusion_of_generators \<F>C.D
     proof -
       interpret "functor" C \<F>C.comp \<F>C.inclusion_of_generators
         using \<F>C.inclusion_is_functor by blast
-      show "composite_functor C \<F>C.comp comp \<F>C.inclusion_of_generators \<F>C.diagonalize" ..
+      show "composite_functor C \<F>C.comp comp \<F>C.inclusion_of_generators \<F>C.D" ..
     qed
 
     definition inclusion_of_generators
@@ -3126,12 +2997,12 @@ begin
 
     interpretation D: strict_monoidal_functor \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha>\<^sub>F\<^sub>M\<^sub>C \<F>C.\<iota>\<^sub>F\<^sub>M\<^sub>C
                                               comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C
-                                              \<F>C.diagonalize
+                                              \<F>C.D
     proof
-      show "\<F>C.diagonalize \<F>C.\<iota> = \<iota>"
+      show "\<F>C.D \<F>C.\<iota> = \<iota>"
       proof -
-        have "\<F>C.diagonalize \<F>C.\<iota> = \<F>C.mkarr \<^bold>\<lfloor>\<F>C.rep \<F>C.\<iota>\<^bold>\<rfloor>"
-          unfolding \<F>C.diagonalize_def using \<F>C.\<iota>_in_hom by simp
+        have "\<F>C.D \<F>C.\<iota> = \<F>C.mkarr \<^bold>\<lfloor>\<F>C.rep \<F>C.\<iota>\<^bold>\<rfloor>"
+          unfolding \<F>C.D_def using \<F>C.\<iota>_in_hom by auto
         also have "... = \<F>C.mkarr \<^bold>\<lfloor>\<^bold>\<l>\<^bold>[\<^bold>\<parallel>\<^bold>\<I>\<^bold>\<parallel>\<^bold>]\<^bold>\<rfloor>"
           using \<F>C.\<iota>_def \<F>C.rep_unity \<F>C.rep_lunit \<F>C.Par_Arr_norm \<F>C.Diagonalize_norm
           by auto
@@ -3140,65 +3011,60 @@ begin
         finally show ?thesis by blast
       qed
       show "\<And>f g. \<lbrakk> \<F>C.arr f; \<F>C.arr g \<rbrakk> \<Longrightarrow>
-                  \<F>C.diagonalize (\<F>C.tensor f g)
-                     = tensor (\<F>C.diagonalize f) (\<F>C.diagonalize g)"
+                    \<F>C.D (\<F>C.tensor f g) = tensor (\<F>C.D f) (\<F>C.D g)"
       proof -
         fix f g
         assume f: "\<F>C.arr f" and g: "\<F>C.arr g"
-        have fg: "arr (\<F>C.diagonalize f) \<and> arr (\<F>C.diagonalize g)"
+        have fg: "arr (\<F>C.D f) \<and> arr (\<F>C.D g)"
           using f g D.preserves_arr by blast
-        have "\<F>C.diagonalize (\<F>C.tensor f g) = f \<otimes>\<^sub>S g"
+        have "\<F>C.D (\<F>C.tensor f g) = f \<otimes>\<^sub>S g"
           using tensor\<^sub>S_def by simp
-        also have "f \<otimes>\<^sub>S g = \<F>C.diagonalize (f \<otimes> g)" using f g tensor\<^sub>S_def by simp
-        also have "... = \<F>C.diagonalize f \<otimes>\<^sub>S \<F>C.diagonalize g"
-          using f g fg \<F>C.diagonalize_tensor tensor\<^sub>S_def by force
-        also have "... = tensor (\<F>C.diagonalize f) (\<F>C.diagonalize g)"
+        also have "f \<otimes>\<^sub>S g = \<F>C.D (f \<otimes> g)"
+          using f g tensor\<^sub>S_def by simp
+        also have "... = \<F>C.D f \<otimes>\<^sub>S \<F>C.D g"
+          using f g fg tensor\<^sub>S_def \<F>C.T_simp \<F>C.diagonalize_tensor arr_char
+          by (metis (no_types, lifting))
+        also have "... = tensor (\<F>C.D f) (\<F>C.D g)"
           using fg T_simp by simp
-        finally show "\<F>C.diagonalize (\<F>C.tensor f g)
-                        = tensor (\<F>C.diagonalize f) (\<F>C.diagonalize g)"
+        finally show "\<F>C.D (\<F>C.tensor f g) = tensor (\<F>C.D f) (\<F>C.D g)"
           by blast
       qed
       show "\<And>a b c. \<lbrakk> \<F>C.ide a; \<F>C.ide b; \<F>C.ide c \<rbrakk> \<Longrightarrow>
-                      \<F>C.diagonalize (\<F>C.assoc a b c)
-                        = assoc (\<F>C.diagonalize a) (\<F>C.diagonalize b) (\<F>C.diagonalize c)"
+                      \<F>C.D (\<F>C.assoc a b c) = assoc (\<F>C.D a) (\<F>C.D b) (\<F>C.D c)"
       proof -
         fix a b c
         assume a: "\<F>C.ide a" and b: "\<F>C.ide b" and c: "\<F>C.ide c"
-        have abc: "ide (\<F>C.diagonalize a) \<and> ide (\<F>C.diagonalize b) \<and> ide (\<F>C.diagonalize c)"
-          using a b c D.preserves_ide by presburger
-        have abc': "\<F>C.ide (\<F>C.diagonalize a) \<and> \<F>C.ide (\<F>C.diagonalize b) \<and>
-                    \<F>C.ide (\<F>C.diagonalize c)"
-            using a b c D.preserves_ide by blast
-        have 1: "\<And>f g. \<F>C.arr f \<Longrightarrow> \<F>C.arr g \<Longrightarrow> f \<otimes>\<^sub>S g = \<F>C.diagonalize (f \<otimes> g)"
+        have abc: "ide (\<F>C.D a) \<and> ide (\<F>C.D b) \<and> ide (\<F>C.D c)"
+          using a b c D.preserves_ide by blast
+        have abc': "\<F>C.ide (\<F>C.D a) \<and> \<F>C.ide (\<F>C.D b) \<and> \<F>C.ide (\<F>C.D c)"
+            using a b c D.preserves_ide ide_char by simp
+        have 1: "\<And>f g. \<F>C.arr f \<Longrightarrow> \<F>C.arr g \<Longrightarrow> f \<otimes>\<^sub>S g = \<F>C.D (f \<otimes> g)"
           using tensor\<^sub>S_def by simp
-        have 2: "\<And>f. ide f \<Longrightarrow> \<F>C.ide f" by blast
-        have "assoc (\<F>C.diagonalize a) (\<F>C.diagonalize b) (\<F>C.diagonalize c)
-                = \<F>C.diagonalize a \<otimes>\<^sub>S \<F>C.diagonalize b \<otimes>\<^sub>S \<F>C.diagonalize c"
+        have 2: "\<And>f. ide f \<Longrightarrow> \<F>C.ide f" using ide_char by blast
+        have "assoc (\<F>C.D a) (\<F>C.D b) (\<F>C.D c) = \<F>C.D a \<otimes>\<^sub>S \<F>C.D b \<otimes>\<^sub>S \<F>C.D c"
           using abc \<alpha>_ide_simp assoc\<^sub>S_def by simp
-        also have "... = \<F>C.diagonalize a \<otimes>\<^sub>S
-                         \<F>C.diagonalize (\<F>C.diagonalize b \<otimes> \<F>C.diagonalize c)"
+        also have "... = \<F>C.D a \<otimes>\<^sub>S \<F>C.D (\<F>C.D b \<otimes> \<F>C.D c)"
           using abc' 1 by auto
-        also have "... = \<F>C.diagonalize a \<otimes>\<^sub>S \<F>C.diagonalize (b \<otimes> c)"
+        also have "... = \<F>C.D a \<otimes>\<^sub>S \<F>C.D (b \<otimes> c)"
           using b c \<F>C.diagonalize_tensor by force
-        also have "... = \<F>C.diagonalize (\<F>C.diagonalize a \<otimes> \<F>C.diagonalize (b \<otimes> c))"
-          using 1 [of "\<F>C.diagonalize a" "\<F>C.diagonalize (b \<otimes> c)"]
-                b c abc D.preserves_ide \<F>C.tensor_preserves_ide
-          by blast
-        also have "... = \<F>C.diagonalize (a \<otimes> b \<otimes> c)"
+        also have "... = \<F>C.D (\<F>C.D a \<otimes> \<F>C.D (b \<otimes> c))"
+          using 1 b c abc D.preserves_ide \<F>C.tensor_preserves_ide ide_char
+          by simp
+        also have "... = \<F>C.D (a \<otimes> b \<otimes> c)"
           using a b c \<F>C.diagonalize_tensor by force
-        also have "... = \<F>C.diagonalize \<a>[a, b, c]"
+        also have "... = \<F>C.D \<a>[a, b, c]"
         proof -
           have "\<F>C.can \<a>[a, b, c]" using a b c \<F>C.can_assoc by simp
-          hence "\<F>C.ide (\<F>C.diagonalize \<a>[a, b, c])"
+          hence "\<F>C.ide (\<F>C.D \<a>[a, b, c])"
             using a b c \<F>C.ide_diagonalize_can by simp
-          moreover have "\<F>C.cod (\<F>C.diagonalize \<a>[a, b, c]) = \<F>C.diagonalize (a \<otimes> b \<otimes> c)"
-            using a b c \<F>C.assoc_in_hom [of a b c] D.preserves_hom [of "\<a>[a, b, c]"] by blast
+          moreover have "\<F>C.cod (\<F>C.D \<a>[a, b, c]) = \<F>C.D (a \<otimes> b \<otimes> c)"
+            using a b c \<F>C.assoc_in_hom D.preserves_hom
+            by (metis (no_types, lifting) cod_char in_homE)
           ultimately show ?thesis by simp
         qed
-        also have "... = \<F>C.diagonalize (\<F>C.assoc a b c)"
+        also have "... = \<F>C.D (\<F>C.assoc a b c)"
           using a b c by simp
-        finally show "\<F>C.diagonalize (\<F>C.assoc a b c)
-                        = assoc (\<F>C.diagonalize a) (\<F>C.diagonalize b) (\<F>C.diagonalize c)"
+        finally show "\<F>C.D (\<F>C.assoc a b c) = assoc (\<F>C.D a) (\<F>C.D b) (\<F>C.D c)"
           by blast
       qed
     qed
@@ -3206,7 +3072,7 @@ begin
     lemma diagonalize_is_strict_monoidal_functor:
     shows "strict_monoidal_functor \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha>\<^sub>F\<^sub>M\<^sub>C \<F>C.\<iota>\<^sub>F\<^sub>M\<^sub>C
                                    comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C
-                                   \<F>C.diagonalize"
+                                   \<F>C.D"
       ..
 
     interpretation \<phi>: natural_isomorphism
@@ -3218,18 +3084,17 @@ begin
       free monoidal category and the subcategory @{term "\<F>\<^sub>SC"}.
     *}
 
-    interpretation E: equivalence_of_categories
-                        comp \<F>C.comp \<F>C.diagonalize map \<F>C.\<nu> \<F>C.\<mu>
+    interpretation E: equivalence_of_categories comp \<F>C.comp \<F>C.D map \<F>C.\<nu> \<F>C.\<mu>
       using \<F>C.is_equivalent_to_strict_subcategory by auto
 
     interpretation D: monoidal_functor \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha>\<^sub>F\<^sub>M\<^sub>C \<F>C.\<iota>\<^sub>F\<^sub>M\<^sub>C
                                        comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C
-                                       \<F>C.diagonalize D.\<phi>
+                                       \<F>C.D D.\<phi>
       using D.monoidal_functor_axioms by metis
 
     interpretation equivalence_of_monoidal_categories comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C
                                                            \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha>\<^sub>F\<^sub>M\<^sub>C \<F>C.\<iota>\<^sub>F\<^sub>M\<^sub>C
-                                                           \<F>C.diagonalize D.\<phi> \<I>
+                                                           \<F>C.D D.\<phi> \<I>
                                                            map \<F>C.\<nu> \<F>C.\<mu>
        ..
  
@@ -3240,7 +3105,7 @@ begin
     theorem monoidally_equivalent_to_free_monoidal_category:
     shows "equivalence_of_monoidal_categories comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha>\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<iota>\<^sub>F\<^sub>S\<^sub>M\<^sub>C
                                               \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha>\<^sub>F\<^sub>M\<^sub>C \<F>C.\<iota>\<^sub>F\<^sub>M\<^sub>C
-                                              \<F>C.diagonalize D.\<phi>
+                                              \<F>C.D D.\<phi>
                                               map \<F>C.\<nu> \<F>C.\<mu>"
       ..
 
@@ -3258,13 +3123,16 @@ begin
     \<F>C: free_monoidal_category C +
     E: evaluation_functor C D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D V +
     \<F>\<^sub>SC: free_strict_monoidal_category C
-  for C :: "'c comp"
-  and D :: "'d comp"                    (infixr "\<cdot>\<^sub>D" 55)
+  for C :: "'c comp"      (infixr "\<cdot>\<^sub>C" 55)
+  and D :: "'d comp"      (infixr "\<cdot>\<^sub>D" 55)
   and T\<^sub>D :: "'d * 'd \<Rightarrow> 'd"
   and \<alpha>\<^sub>D :: "'d * 'd * 'd \<Rightarrow> 'd"
   and \<iota>\<^sub>D :: "'d"
   and V :: "'c \<Rightarrow> 'd"
   begin
+
+    notation \<F>C.in_hom   ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
+    notation \<F>\<^sub>SC.in_hom  ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>S _\<guillemotright>")
 
     (* TODO: This is just the restriction of the evaluation functor to a subcategory.
        It would be useful to define a restriction_of_functor locale that does this in general
@@ -3284,7 +3152,7 @@ begin
       using \<F>\<^sub>SC.arr_char \<F>\<^sub>SC.cod_char E.preserves_cod
        apply simp
       using \<F>\<^sub>SC.arr_char \<F>\<^sub>SC.dom_char \<F>\<^sub>SC.cod_char \<F>\<^sub>SC.comp_char E.preserves_comp
-      by auto
+      by (elim \<F>\<^sub>SC.seqE, auto)
 
     lemma is_functor:
     shows "functor \<F>\<^sub>SC.comp D map" ..
@@ -3296,60 +3164,69 @@ begin
     *}
 
     lemma ide_eval_Can:
-    shows "Can t \<Longrightarrow> D.ide \<guillemotleft>t\<guillemotright>"
+    shows "Can t \<Longrightarrow> D.ide \<lbrace>t\<rbrace>"
     proof (induct t)
-      show "\<And>x. Can \<^bold>\<langle>x\<^bold>\<rangle> \<Longrightarrow> D.ide \<guillemotleft>\<^bold>\<langle>x\<^bold>\<rangle>\<guillemotright>" by simp
-      show "Can \<^bold>\<I> \<Longrightarrow> D.ide \<guillemotleft>\<^bold>\<I>\<guillemotright>" by simp
-      show "\<And>t1 t2. \<lbrakk> Can t1 \<Longrightarrow> D.ide \<guillemotleft>t1\<guillemotright>; Can t2 \<Longrightarrow> D.ide \<guillemotleft>t2\<guillemotright>; Can (t1 \<^bold>\<otimes> t2) \<rbrakk> \<Longrightarrow>
-                     D.ide \<guillemotleft>t1 \<^bold>\<otimes> t2\<guillemotright>"
-        using D.tensor_preserves_ide by simp
-      show "\<And>t1 t2. \<lbrakk> Can t1 \<Longrightarrow> D.ide \<guillemotleft>t1\<guillemotright>; Can t2 \<Longrightarrow> D.ide \<guillemotleft>t2\<guillemotright>; Can (t1 \<^bold>\<cdot> t2) \<rbrakk> \<Longrightarrow>
-                     D.ide \<guillemotleft>t1 \<^bold>\<cdot> t2\<guillemotright>"
+      show "\<And>x. Can \<^bold>\<langle>x\<^bold>\<rangle> \<Longrightarrow> D.ide \<lbrace>\<^bold>\<langle>x\<^bold>\<rangle>\<rbrace>" by simp
+      show "Can \<^bold>\<I> \<Longrightarrow> D.ide \<lbrace>\<^bold>\<I>\<rbrace>" by simp
+      show "\<And>t1 t2. \<lbrakk> Can t1 \<Longrightarrow> D.ide \<lbrace>t1\<rbrace>; Can t2 \<Longrightarrow> D.ide \<lbrace>t2\<rbrace>; Can (t1 \<^bold>\<otimes> t2) \<rbrakk> \<Longrightarrow>
+                     D.ide \<lbrace>t1 \<^bold>\<otimes> t2\<rbrace>"
+        by simp
+      show "\<And>t1 t2. \<lbrakk> Can t1 \<Longrightarrow> D.ide \<lbrace>t1\<rbrace>; Can t2 \<Longrightarrow> D.ide \<lbrace>t2\<rbrace>; Can (t1 \<^bold>\<cdot> t2) \<rbrakk> \<Longrightarrow>
+                     D.ide \<lbrace>t1 \<^bold>\<cdot> t2\<rbrace>"
       proof -
         fix t1 t2
-        assume t1: "Can t1 \<Longrightarrow> D.ide \<guillemotleft>t1\<guillemotright>" and t2: "Can t2 \<Longrightarrow> D.ide \<guillemotleft>t2\<guillemotright>"
-          and t12: "Can (t1 \<^bold>\<cdot> t2)"
-        show "D.ide \<guillemotleft>t1 \<^bold>\<cdot> t2\<guillemotright>"
+        assume t1: "Can t1 \<Longrightarrow> D.ide \<lbrace>t1\<rbrace>"
+        and t2: "Can t2 \<Longrightarrow> D.ide \<lbrace>t2\<rbrace>"
+        and t12: "Can (t1 \<^bold>\<cdot> t2)"
+        show "D.ide \<lbrace>t1 \<^bold>\<cdot> t2\<rbrace>"
           using t1 t2 t12 Can_implies_Arr eval_in_hom [of t1] eval_in_hom [of t2] D.comp_ide_arr
-          by auto
+          by fastforce
       qed
-      show "\<And>t. (Can t \<Longrightarrow> D.ide \<guillemotleft>t\<guillemotright>) \<Longrightarrow> Can \<^bold>\<l>\<^bold>[t\<^bold>] \<Longrightarrow> D.ide \<guillemotleft>\<^bold>\<l>\<^bold>[t\<^bold>]\<guillemotright>"
-        using D.strict_lunit D.lunit_in_hom D.lunit_in_hom by simp
-      show "\<And>t. (Can t \<Longrightarrow> D.ide \<guillemotleft>t\<guillemotright>) \<Longrightarrow> Can \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>] \<Longrightarrow> D.ide \<guillemotleft>\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<guillemotright>"
-        using D.strict_lunit D.lunit_in_hom D.lunit_in_hom by simp
-      show "\<And>t. (Can t \<Longrightarrow> D.ide \<guillemotleft>t\<guillemotright>) \<Longrightarrow> Can \<^bold>\<r>\<^bold>[t\<^bold>] \<Longrightarrow> D.ide \<guillemotleft>\<^bold>\<r>\<^bold>[t\<^bold>]\<guillemotright>"
-        using D.strict_runit D.runit_in_hom D.runit_in_hom by simp
-      show "\<And>t. (Can t \<Longrightarrow> D.ide \<guillemotleft>t\<guillemotright>) \<Longrightarrow> Can \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>] \<Longrightarrow> D.ide \<guillemotleft>\<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<guillemotright>"
-        using D.strict_runit D.runit_in_hom D.runit_in_hom by simp
+      show "\<And>t. (Can t \<Longrightarrow> D.ide \<lbrace>t\<rbrace>) \<Longrightarrow> Can \<^bold>\<l>\<^bold>[t\<^bold>] \<Longrightarrow> D.ide \<lbrace>\<^bold>\<l>\<^bold>[t\<^bold>]\<rbrace>"
+        using D.strict_lunit by simp
+      show "\<And>t. (Can t \<Longrightarrow> D.ide \<lbrace>t\<rbrace>) \<Longrightarrow> Can \<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>] \<Longrightarrow> D.ide \<lbrace>\<^bold>\<l>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace>"
+        using D.strict_lunit by simp
+      show "\<And>t. (Can t \<Longrightarrow> D.ide \<lbrace>t\<rbrace>) \<Longrightarrow> Can \<^bold>\<r>\<^bold>[t\<^bold>] \<Longrightarrow> D.ide \<lbrace>\<^bold>\<r>\<^bold>[t\<^bold>]\<rbrace>"
+        using D.strict_runit by simp
+      show "\<And>t. (Can t \<Longrightarrow> D.ide \<lbrace>t\<rbrace>) \<Longrightarrow> Can \<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>] \<Longrightarrow> D.ide \<lbrace>\<^bold>\<r>\<^sup>-\<^sup>1\<^bold>[t\<^bold>]\<rbrace>"
+        using D.strict_runit by simp
       fix t1 t2 t3
-      assume t1: "Can t1 \<Longrightarrow> D.ide \<guillemotleft>t1\<guillemotright>"
-      and t2: "Can t2 \<Longrightarrow> D.ide \<guillemotleft>t2\<guillemotright>"
-      and t3: "Can t3 \<Longrightarrow> D.ide \<guillemotleft>t3\<guillemotright>"
-      show "Can \<^bold>\<a>\<^bold>[t1, t2, t3\<^bold>] \<Longrightarrow> D.ide \<guillemotleft>\<^bold>\<a>\<^bold>[t1, t2, t3\<^bold>]\<guillemotright>"
+      assume t1: "Can t1 \<Longrightarrow> D.ide \<lbrace>t1\<rbrace>"
+      and t2: "Can t2 \<Longrightarrow> D.ide \<lbrace>t2\<rbrace>"
+      and t3: "Can t3 \<Longrightarrow> D.ide \<lbrace>t3\<rbrace>"
+      show "Can \<^bold>\<a>\<^bold>[t1, t2, t3\<^bold>] \<Longrightarrow> D.ide \<lbrace>\<^bold>\<a>\<^bold>[t1, t2, t3\<^bold>]\<rbrace>"
       proof -
         assume "Can \<^bold>\<a>\<^bold>[t1, t2, t3\<^bold>]"
-        hence t123: "D.ide \<guillemotleft>t1\<guillemotright> \<and> D.ide \<guillemotleft>t2\<guillemotright> \<and> D.ide \<guillemotleft>t3\<guillemotright>"
+        hence t123: "D.ide \<lbrace>t1\<rbrace> \<and> D.ide \<lbrace>t2\<rbrace> \<and> D.ide \<lbrace>t3\<rbrace>"
           using t1 t2 t3 by simp
-        have "\<guillemotleft>\<^bold>\<a>\<^bold>[t1, t2, t3\<^bold>]\<guillemotright> = \<guillemotleft>t1\<guillemotright> \<otimes>\<^sub>D \<guillemotleft>t2\<guillemotright> \<otimes>\<^sub>D \<guillemotleft>t3\<guillemotright>"
-          using t123 D.strict_assoc D.assoc_in_hom D.assoc_in_hom [of "\<guillemotleft>t1\<guillemotright>" "\<guillemotleft>t2\<guillemotright>" "\<guillemotleft>t3\<guillemotright>"]
-                D.tensor_preserves_ide
-          by auto
-        thus ?thesis using t123 D.tensor_preserves_ide by simp
+        have "\<lbrace>\<^bold>\<a>\<^bold>[t1, t2, t3\<^bold>]\<rbrace> = \<lbrace>t1\<rbrace> \<otimes>\<^sub>D \<lbrace>t2\<rbrace> \<otimes>\<^sub>D \<lbrace>t3\<rbrace>"
+          using t123 D.strict_assoc D.assoc_in_hom [of "\<lbrace>t1\<rbrace>" "\<lbrace>t2\<rbrace>" "\<lbrace>t3\<rbrace>"] apply simp
+          by (elim D.in_homE, simp)
+        thus ?thesis using t123 by simp
       qed
-      show "Can \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t1, t2, t3\<^bold>] \<Longrightarrow> D.ide \<guillemotleft>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t1, t2, t3\<^bold>]\<guillemotright>"
+      show "Can \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t1, t2, t3\<^bold>] \<Longrightarrow> D.ide \<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t1, t2, t3\<^bold>]\<rbrace>"
       proof -
         assume "Can \<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t1, t2, t3\<^bold>]"
-        hence t123: "Can t1 \<and> Can t2 \<and> Can t3 \<and> D.ide \<guillemotleft>t1\<guillemotright> \<and> D.ide \<guillemotleft>t2\<guillemotright> \<and> D.ide \<guillemotleft>t3\<guillemotright>"
+        hence t123: "Can t1 \<and> Can t2 \<and> Can t3 \<and> D.ide \<lbrace>t1\<rbrace> \<and> D.ide \<lbrace>t2\<rbrace> \<and> D.ide \<lbrace>t3\<rbrace>"
           using t1 t2 t3 by simp
-        have "\<guillemotleft>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t1, t2, t3\<^bold>]\<guillemotright>
-                 = D.inv \<a>\<^sub>D[D.cod \<guillemotleft>t1\<guillemotright>, D.cod \<guillemotleft>t2\<guillemotright>, D.cod \<guillemotleft>t3\<guillemotright>] \<cdot>\<^sub>D (\<guillemotleft>t1\<guillemotright> \<otimes>\<^sub>D \<guillemotleft>t2\<guillemotright> \<otimes>\<^sub>D \<guillemotleft>t3\<guillemotright>)"
+        have "\<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t1, t2, t3\<^bold>]\<rbrace>
+                 = D.inv \<a>\<^sub>D[D.cod \<lbrace>t1\<rbrace>, D.cod \<lbrace>t2\<rbrace>, D.cod \<lbrace>t3\<rbrace>] \<cdot>\<^sub>D (\<lbrace>t1\<rbrace> \<otimes>\<^sub>D \<lbrace>t2\<rbrace> \<otimes>\<^sub>D \<lbrace>t3\<rbrace>)"
           using t123 eval_Assoc' [of t1 t2 t3] Can_implies_Arr by simp
-        also have "... = \<guillemotleft>t1\<guillemotright> \<otimes>\<^sub>D \<guillemotleft>t2\<guillemotright> \<otimes>\<^sub>D \<guillemotleft>t3\<guillemotright>"
-          using t123 D.strict_assoc D.assoc_in_hom D.assoc_in_hom [of "\<guillemotleft>t1\<guillemotright>" "\<guillemotleft>t2\<guillemotright>" "\<guillemotleft>t3\<guillemotright>"]
-                D.tensor_preserves_ide
-          by simp
-        finally have "\<guillemotleft>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t1, t2, t3\<^bold>]\<guillemotright> = \<guillemotleft>t1\<guillemotright> \<otimes>\<^sub>D \<guillemotleft>t2\<guillemotright> \<otimes>\<^sub>D \<guillemotleft>t3\<guillemotright>" by blast
-        thus ?thesis using t123 D.tensor_preserves_ide by presburger
+        also have "... = \<lbrace>t1\<rbrace> \<otimes>\<^sub>D \<lbrace>t2\<rbrace> \<otimes>\<^sub>D \<lbrace>t3\<rbrace>"
+        proof -
+          have "D.dom \<a>\<^sub>D[\<lbrace>t1\<rbrace>, \<lbrace>t2\<rbrace>, \<lbrace>t3\<rbrace>] = \<lbrace>t1\<rbrace> \<otimes>\<^sub>D \<lbrace>t2\<rbrace> \<otimes>\<^sub>D \<lbrace>t3\<rbrace>"
+          proof -
+            have "D.dom \<a>\<^sub>D[\<lbrace>t1\<rbrace>, \<lbrace>t2\<rbrace>, \<lbrace>t3\<rbrace>] = D.cod \<a>\<^sub>D[\<lbrace>t1\<rbrace>, \<lbrace>t2\<rbrace>, \<lbrace>t3\<rbrace>]"
+              using t123 D.strict_assoc by simp
+            also have "... = \<lbrace>t1\<rbrace> \<otimes>\<^sub>D \<lbrace>t2\<rbrace> \<otimes>\<^sub>D \<lbrace>t3\<rbrace>"
+              using t123 by simp
+            finally show ?thesis by blast
+          qed
+          thus ?thesis
+            using t123 D.strict_assoc D.comp_arr_dom by auto
+        qed
+        finally have "\<lbrace>\<^bold>\<a>\<^sup>-\<^sup>1\<^bold>[t1, t2, t3\<^bold>]\<rbrace> = \<lbrace>t1\<rbrace> \<otimes>\<^sub>D \<lbrace>t2\<rbrace> \<otimes>\<^sub>D \<lbrace>t3\<rbrace>" by blast
+        thus ?thesis using t123 by auto
       qed
     qed
 
@@ -3361,9 +3238,9 @@ begin
         using assms \<F>C.can_implies_arr \<F>C.mkarr_rep by blast
       moreover have 1: "Can (\<F>C.rep f)"
         using assms \<F>C.Can_rep_can by simp
-      moreover have "D.ide \<guillemotleft>\<F>C.rep f\<guillemotright>"
+      moreover have "D.ide \<lbrace>\<F>C.rep f\<rbrace>"
         using assms ide_eval_Can by (simp add: 1)
-      ultimately show ?thesis using assms \<F>C.can_implies_arr E.map_def by presburger
+      ultimately show ?thesis using assms \<F>C.can_implies_arr E.map_def by force
     qed
 
     text {*
@@ -3375,46 +3252,47 @@ begin
 
     lemma map_diagonalize:
     assumes f: "\<F>C.arr f"
-    shows "E.map (\<F>C.diagonalize f) = E.map f"
+    shows "E.map (\<F>C.D f) = E.map f"
     proof -
       interpret EQ: equivalence_of_categories
-                      \<F>\<^sub>SC.comp \<F>C.comp \<F>C.diagonalize \<F>\<^sub>SC.map \<F>C.\<nu> \<F>C.\<mu>
+                      \<F>\<^sub>SC.comp \<F>C.comp \<F>C.D \<F>\<^sub>SC.map \<F>C.\<nu> \<F>C.\<mu>
         using \<F>C.is_equivalent_to_strict_subcategory by auto
-      have "E.map (\<F>C.\<nu> (\<F>C.cod f)) \<cdot>\<^sub>D E.map f
-                       = E.map (\<F>C.diagonalize f) \<cdot>\<^sub>D E.map (\<F>C.\<nu> (\<F>C.dom f))"
+      have 1: "\<F>C.seq (\<F>\<^sub>SC.map (\<F>C.D f)) (\<F>C.\<nu> (\<F>C.dom f))"
+      proof
+        show "\<guillemotleft>\<F>C.\<nu> (\<F>C.dom f) : \<F>C.dom f \<rightarrow> \<F>C.D (\<F>C.dom f)\<guillemotright>"
+          using f \<F>\<^sub>SC.map_simp EQ.F.preserves_arr
+          by (intro \<F>C.in_homI, simp_all)
+        show "\<guillemotleft>\<F>\<^sub>SC.map (\<F>C.D f) : \<F>C.D (\<F>C.dom f) \<rightarrow> \<F>C.cod (\<F>C.D f)\<guillemotright>"
+          using f \<F>\<^sub>SC.map_simp \<F>C.arr_iff_in_hom EQ.F.preserves_hom \<F>\<^sub>SC.arr_char
+                \<F>\<^sub>SC.in_hom_char [of "\<F>C.D f" "\<F>C.D (\<F>C.dom f)" "\<F>C.D (\<F>C.cod f)"]
+          by (intro \<F>C.in_homI, auto)
+      qed
+      have "E.map (\<F>C.\<nu> (\<F>C.cod f)) \<cdot>\<^sub>D E.map f =
+            E.map (\<F>C.D f) \<cdot>\<^sub>D E.map (\<F>C.\<nu> (\<F>C.dom f))"
       proof -
         have "E.map (\<F>C.\<nu> (\<F>C.cod f)) \<cdot>\<^sub>D E.map f = E.map (\<F>C.\<nu> (\<F>C.cod f) \<cdot> f)"
-          using f EQ.\<eta>.preserves_hom by simp
-        also have "... = E.map (\<F>C.diagonalize f \<cdot> \<F>C.\<nu> (\<F>C.dom f))"
+          using f by simp
+        also have "... = E.map (\<F>C.D f \<cdot> \<F>C.\<nu> (\<F>C.dom f))"
           using f EQ.\<eta>.naturality \<F>\<^sub>SC.map_simp EQ.F.preserves_arr by simp
-        also have "... = E.map (\<F>\<^sub>SC.map (\<F>C.diagonalize f)) \<cdot>\<^sub>D E.map (\<F>C.\<nu> (\<F>C.dom f))"
-        proof -
-          have "\<F>C.seq (\<F>\<^sub>SC.map (\<F>C.diagonalize f)) (\<F>C.\<nu> (\<F>C.dom f))"
-            using f EQ.\<eta>.preserves_hom EQ.F.preserves_hom \<F>\<^sub>SC.preserves_hom by simp
-          thus ?thesis
-            by (metis (no_types, lifting) E.preserves_comp_2 EQ.F.preserves_arr
-                \<F>\<^sub>SC.map_simp f)
-        qed
-        also have "... = E.map (\<F>C.diagonalize f) \<cdot>\<^sub>D E.map (\<F>C.\<nu> (\<F>C.dom f))"
+        also have "... = E.map (\<F>\<^sub>SC.map (\<F>C.D f)) \<cdot>\<^sub>D E.map (\<F>C.\<nu> (\<F>C.dom f))"
+          using f 1 E.preserves_comp_2 EQ.F.preserves_arr \<F>\<^sub>SC.map_simp
+          by (metis (no_types, lifting))
+        also have "... = E.map (\<F>C.D f) \<cdot>\<^sub>D E.map (\<F>C.\<nu> (\<F>C.dom f))"
           using f EQ.F.preserves_arr \<F>\<^sub>SC.map_simp by simp
         finally show ?thesis by blast
       qed
       moreover have "\<And>a. \<F>C.ide a \<Longrightarrow> D.ide (E.map (\<F>C.\<nu> a))"
-        using \<F>C.\<nu>_def \<F>C.Arr_rep Arr_implies_Ide_Cod Can_red \<F>C.can_mkarr_Can ide_eval_can
-        by (metis (no_types, lifting) EQ.\<eta>.preserves_arr \<F>C.arr_compD(3) \<F>C.comp_preserves_can
-            \<F>C.ideD(1) \<F>C.ide_implies_can)
+        using \<F>C.\<nu>_def \<F>C.Arr_rep Arr_implies_Ide_Cod Can_red \<F>C.can_mkarr_Can
+              ide_eval_can
+        by (metis (no_types, lifting) EQ.\<eta>.preserves_reflects_arr \<F>C.seqE
+            \<F>C.comp_preserves_can \<F>C.ideD(1) \<F>C.ide_implies_can)
       moreover have "D.cod (E.map f) = D.dom (E.map (\<F>C.\<nu> (\<F>C.cod f)))"
         using f E.preserves_hom EQ.\<eta>.preserves_hom by simp
-      moreover have "D.dom (E.map (\<F>C.diagonalize f))
-                       = D.cod (E.map (\<F>C.\<nu> (\<F>C.dom f)))"
-      proof -
-        have 1: "\<F>C.seq (\<F>\<^sub>SC.map (\<F>C.diagonalize f)) (\<F>C.\<nu> (\<F>C.dom f))"
-          using f EQ.\<eta>.preserves_hom EQ.F.preserves_hom \<F>\<^sub>SC.preserves_hom by simp
-        thus ?thesis
-          using f E.preserves_seq EQ.F.preserves_arr \<F>\<^sub>SC.map_simp
-          by (simp add: 1)
-      qed
-      ultimately show ?thesis using f by auto
+      moreover have "D.dom (E.map (\<F>C.D f)) = D.cod (E.map (\<F>C.\<nu> (\<F>C.dom f)))"
+          using f 1 E.preserves_seq EQ.F.preserves_arr \<F>\<^sub>SC.map_simp by auto
+      ultimately show ?thesis
+        using f D.comp_arr_dom D.ideD D.arr_dom_iff_arr E.is_natural_2
+        by (metis E.preserves_cod \<F>C.ide_cod \<F>C.ide_dom)
     qed
 
     lemma strictly_preserves_tensor:
@@ -3422,18 +3300,18 @@ begin
     shows "map (\<F>\<^sub>SC.tensor f g) = map f \<otimes>\<^sub>D map g"
     proof -
       have 1: "\<F>C.arr (f \<otimes> g)"
-        using assms \<F>\<^sub>SC.arr_char \<F>C.tensor_in_hom by blast
+        using assms \<F>\<^sub>SC.arr_char \<F>C.tensor_in_hom by auto
       have 2: "\<F>\<^sub>SC.arr (\<F>\<^sub>SC.tensor f g)"
-        using assms \<F>\<^sub>SC.tensor_in_hom [of f g] \<F>\<^sub>SC.T_simp by auto
+        using assms \<F>\<^sub>SC.tensor_in_hom [of f g] \<F>\<^sub>SC.T_simp by fastforce
       have "map (\<F>\<^sub>SC.tensor f g) = E.map (f \<otimes> g)"
       proof -
         have "map (\<F>\<^sub>SC.tensor f g) = map (f \<otimes>\<^sub>S g)"
           using assms \<F>\<^sub>SC.T_simp by simp
-        also have "... = map (\<F>C.diagonalize (f \<otimes> g))"
-          using assms \<F>C.tensor\<^sub>F\<^sub>M\<^sub>C_def \<F>\<^sub>SC.tensor\<^sub>S_def by simp
+        also have "... = map (\<F>C.D (f \<otimes> g))"
+          using assms \<F>C.tensor\<^sub>F\<^sub>M\<^sub>C_def \<F>\<^sub>SC.tensor\<^sub>S_def by force
         also have "... = E.map (f \<otimes> g)"
         proof -
-          interpret Diag: "functor" \<F>C.comp \<F>\<^sub>SC.comp \<F>C.diagonalize
+          interpret Diag: "functor" \<F>C.comp \<F>\<^sub>SC.comp \<F>C.D
             using \<F>C.diagonalize_is_functor by auto
           show ?thesis
             using assms 1 map_diagonalize [of "f \<otimes> g"] Diag.preserves_arr map_def by simp
@@ -3457,58 +3335,12 @@ begin
       show "map (\<F>\<^sub>SC.assoc a b c) = \<a>\<^sub>D[map a, map b, map c]"
       proof -
         have "map (\<F>\<^sub>SC.assoc a b c) = map a \<otimes>\<^sub>D map b \<otimes>\<^sub>D map c"
-        proof -
-          have "\<F>\<^sub>SC.ide (\<F>\<^sub>SC.assoc a b c) \<and> \<F>\<^sub>SC.assoc a b c
-                  = \<F>\<^sub>SC.tensor a (\<F>\<^sub>SC.tensor b c)"
-          proof
-            show "\<F>\<^sub>SC.ide (\<F>\<^sub>SC.assoc a b c)"
-              using a b c \<F>\<^sub>SC.strict_assoc by fast
-            show "\<F>\<^sub>SC.assoc a b c = \<F>\<^sub>SC.tensor a (\<F>\<^sub>SC.tensor b c)"
-            proof -
-              have "\<F>\<^sub>SC.assoc a b c = a \<otimes>\<^sub>S b \<otimes>\<^sub>S c"
-                using a b c \<F>\<^sub>SC.\<alpha>_def \<F>\<^sub>SC.assoc_agreement \<F>\<^sub>SC.assoc\<^sub>S_def by simp
-              also have "... = \<F>\<^sub>SC.tensor a (\<F>\<^sub>SC.tensor b c)"
-              proof -
-                have "\<F>\<^sub>SC.tensor b c = b \<otimes>\<^sub>S c"
-                  using b c \<F>\<^sub>SC.T_simp by blast
-                moreover have "\<F>\<^sub>SC.tensor a (b \<otimes>\<^sub>S c) = a \<otimes>\<^sub>S b \<otimes>\<^sub>S c"
-                  using a b c \<F>\<^sub>SC.tensor_in_hom [of b c] \<F>\<^sub>SC.T_simp by blast
-                ultimately show ?thesis by presburger
-              qed
-              finally show ?thesis by blast
-            qed
-          qed
-          hence "D.ide (map (\<F>\<^sub>SC.assoc a b c)) \<and>
-                 map (\<F>\<^sub>SC.assoc a b c) = map (\<F>\<^sub>SC.tensor a (\<F>\<^sub>SC.tensor b c))"
-            using a b c preserves_ide [of "\<F>\<^sub>SC.assoc a b c"] by metis
-          also have "map (\<F>\<^sub>SC.tensor a (\<F>\<^sub>SC.tensor b c)) = map a \<otimes>\<^sub>D map b \<otimes>\<^sub>D map c"
-          proof -
-            have "map (\<F>\<^sub>SC.tensor a (\<F>\<^sub>SC.tensor b c)) = map a \<otimes>\<^sub>D map (\<F>\<^sub>SC.tensor b c)"
-            proof -
-              have "\<F>\<^sub>SC.arr (\<F>\<^sub>SC.tensor b c)"
-              proof -
-                have "\<F>\<^sub>SC.arr (b \<otimes>\<^sub>S c)"
-                  using b c \<F>\<^sub>SC.tensor_in_hom by fast
-                moreover have "... = \<F>\<^sub>SC.tensor b c"
-                  using b c \<F>\<^sub>SC.T_simp by blast
-                ultimately show ?thesis by metis
-              qed
-              thus ?thesis
-                using a b c strictly_preserves_tensor \<F>\<^sub>SC.tensor_in_hom by fast
-            qed
-            also have "... = map a \<otimes>\<^sub>D map b \<otimes>\<^sub>D map c"
-            proof -
-              have "map (\<F>\<^sub>SC.tensor b c) = map b \<otimes>\<^sub>D map c"
-                using b c strictly_preserves_tensor [of b c] by fastforce
-              thus ?thesis by presburger
-            qed
-            finally show ?thesis by blast
-          qed
-          finally show ?thesis by fast
-        qed
+          using a b c \<F>\<^sub>SC.\<alpha>_def \<F>\<^sub>SC.assoc_agreement \<F>\<^sub>SC.assoc\<^sub>S_def \<F>\<^sub>SC.arr_tensor
+                \<F>\<^sub>SC.T_simp \<F>\<^sub>SC.ideD(1) \<F>\<^sub>SC.strict_assoc preserves_ide [of "\<F>\<^sub>SC.assoc a b c"]
+                strictly_preserves_tensor
+          by force
         also have "... = \<a>\<^sub>D[map a, map b, map c]"
-          using a b c preserves_ide D.strict_assoc D.assoc_in_hom [of "map a" "map b" "map c"]
-          by auto
+          using a b c D.strict_assoc D.assoc_in_hom [of "map a" "map b" "map c"] by auto
         finally show ?thesis by blast
       qed
     qed
@@ -3525,8 +3357,8 @@ begin
     \<F>\<^sub>SC: free_strict_monoidal_category C +
     strict_monoidal_extension C \<F>\<^sub>SC.comp \<F>\<^sub>SC.T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<F>\<^sub>SC.\<alpha> \<F>\<^sub>SC.\<iota> D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D
                                 \<F>\<^sub>SC.inclusion_of_generators V F
-  for C :: "'c comp"
-  and D :: "'d comp"                    (infixr "\<cdot>\<^sub>D" 55)
+  for C :: "'c comp"      (infixr "\<cdot>\<^sub>C" 55)
+  and D :: "'d comp"      (infixr "\<cdot>\<^sub>D" 55)
   and T\<^sub>D :: "'d * 'd \<Rightarrow> 'd"
   and \<alpha>\<^sub>D :: "'d * 'd * 'd \<Rightarrow> 'd"
   and \<iota>\<^sub>D :: "'d"
@@ -3573,29 +3405,29 @@ begin
         using assms(2) by auto
 
       text {*
-        Let @{term E} be the evaluation functor from @{text "\<F>\<^sub>SC"} to @{term D}
-        induced by @{term V}.  Then @{term E} is also a strict monoidal extension of @{term V}.
+        Let @{term E\<^sub>S} be the evaluation functor from @{text "\<F>\<^sub>SC"} to @{term D}
+        induced by @{term V}.  Then @{term E\<^sub>S} is also a strict monoidal extension of @{term V}.
       *}
-      interpret E: strict_evaluation_functor C D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D V ..
+      interpret E\<^sub>S: strict_evaluation_functor C D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D V ..
 
       text {*
-        Let @{term D} be the strict monoidal functor @{term "\<F>C.diagonalize"} that projects
+        Let @{term D} be the strict monoidal functor @{term "\<F>C.D"} that projects
         @{text "\<F>C"} to the subcategory @{text "\<F>\<^sub>SC"}.
       *}
-      interpret D: "functor" \<F>C.comp comp \<F>C.diagonalize
+      interpret D: "functor" \<F>C.comp comp \<F>C.D
         using \<F>C.diagonalize_is_functor by auto
       interpret D: strict_monoidal_functor \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha> \<F>C.\<iota>
                                            comp T\<^sub>F\<^sub>S\<^sub>M\<^sub>C \<alpha> \<iota>
-                                           \<F>C.diagonalize
+                                           \<F>C.D
         using diagonalize_is_strict_monoidal_functor by blast
 
       text {*
          The composite functor @{text "F o D"} is also an extension of @{term V}
          to a strict monoidal functor on @{text "\<F>C"}.
       *}
-      interpret FoD: composite_functor \<F>C.comp comp D \<F>C.diagonalize F ..
-      interpret FoD: strict_monoidal_functor \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha> \<F>C.\<iota> D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D
-                                            "F o \<F>C.diagonalize"
+      interpret FoD: composite_functor \<F>C.comp comp D \<F>C.D F ..
+      interpret FoD: strict_monoidal_functor
+                       \<F>C.comp \<F>C.T\<^sub>F\<^sub>M\<^sub>C \<F>C.\<alpha> \<F>C.\<iota> D T\<^sub>D \<alpha>\<^sub>D \<iota>\<^sub>D "F o \<F>C.D"
         using D.strict_monoidal_functor_axioms F.strict_monoidal_functor_axioms
               strict_monoidal_functors_compose
         by fast
@@ -3609,7 +3441,7 @@ begin
             fix f
             assume f: "C.arr f"
             have "FoD.map (\<F>C.inclusion_of_generators f)
-                    = F (\<F>C.diagonalize (\<F>C.inclusion_of_generators f))"
+                    = F (\<F>C.D (\<F>C.inclusion_of_generators f))"
               using f by simp
             also have "... = F (inclusion_of_generators f)"
               using f \<F>C.strict_arr_char' F.I.preserves_arr inclusion_of_generators_def by simp
@@ -3624,29 +3456,19 @@ begin
 
       text {*
          By the freeness of @{text "\<F>C"}, we have that @{text "F o D"}
-         is equal to the evaluation functor @{term "E.E.map"} induced by @{term V}
-         on @{text "\<F>C"}.  Moreover, @{term E.map} coincides with @{term "E.E.map"} on
+         is equal to the evaluation functor @{term "E\<^sub>S.E.map"} induced by @{term V}
+         on @{text "\<F>C"}.  Moreover, @{term E\<^sub>S.map} coincides with @{term "E\<^sub>S.E.map"} on
          @{text "\<F>\<^sub>SC"} and @{text "F o D"} coincides with @{term F} on
          @{text "\<F>\<^sub>SC"}.  Therefore, @{term F} coincides with @{term E} on their common
-         domain @{text "\<F>\<^sub>SC"}, showing @{term "F = E.map"}.
+         domain @{text "\<F>\<^sub>SC"}, showing @{term "F = E\<^sub>S.map"}.
       *}
-      have "\<And>f. arr f \<Longrightarrow> F f = E.map f"
-      proof -
-        fix f
-        assume f: "arr f"
-        have "F f = F (\<F>C.diagonalize f)"
-          using f \<F>C.strict_arr_char' by auto
-        also have "... = E.E.map f"
-          using \<F>C.is_free [of D] E.E.evaluation_functor_axioms
-                FoD.strict_monoidal_extension_to_free_monoidal_category_axioms
-          by simp
-        also have "... = E.map f"
-          using f E.map_def by simp
-        finally show "F f = E.map f" by blast
-      qed
-      moreover have "\<And>f. \<not>arr f \<Longrightarrow> F f = E.map f"
-        using F.is_extensional E.is_extensional arr_char by auto
-      ultimately show "F = E.map" by blast
+      have "\<And>f. arr f \<Longrightarrow> F f = E\<^sub>S.map f"
+        using \<F>C.strict_arr_char' \<F>C.is_free [of D] E\<^sub>S.E.evaluation_functor_axioms
+              FoD.strict_monoidal_extension_to_free_monoidal_category_axioms E\<^sub>S.map_def
+        by simp
+      moreover have "\<And>f. \<not>arr f \<Longrightarrow> F f = E\<^sub>S.map f"
+        using F.is_extensional E\<^sub>S.is_extensional arr_char by auto
+      ultimately show "F = E\<^sub>S.map" by blast
     qed
 
   end

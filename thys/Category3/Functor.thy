@@ -20,21 +20,24 @@ begin
   locale "functor" =
     A: category A +
     B: category B
-  for A :: "'a comp"
-  and B :: "'b comp"
+  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
+  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
   and F :: "'a \<Rightarrow> 'b" +
-  assumes is_extensional [simp]: "\<not>A.arr f \<Longrightarrow> F f = B.null"
-  and preserves_arr [simp]: "A.arr f \<Longrightarrow> B.arr (F f)"
+  assumes is_extensional: "\<not>A.arr f \<Longrightarrow> F f = B.null"
+  and preserves_arr: "A.arr f \<Longrightarrow> B.arr (F f)"
   and preserves_dom [iff]: "A.arr f \<Longrightarrow> B.dom (F f) = F (A.dom f)"
   and preserves_cod [iff]: "A.arr f \<Longrightarrow> B.cod (F f) = F (A.cod f)"
-  and preserves_comp [iff]: "\<lbrakk> A.arr f; g \<in> A.hom (A.cod f) (A.cod g) \<rbrakk>
-                                                   \<Longrightarrow> F (A g f) = B (F g) (F f)"
+  and preserves_comp [iff]: "A.seq g f \<Longrightarrow> F (g \<cdot>\<^sub>A f) = F g \<cdot>\<^sub>B F f"
   begin
 
+    notation A.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>")
+    notation B.in_hom     ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
+
     lemma preserves_hom [intro]:
-    assumes "f \<in> A.hom a b"
-    shows "F f \<in> B.hom (F a) (F b)"
-      using assms preserves_dom preserves_cod by auto
+    assumes "\<guillemotleft>f : a \<rightarrow>\<^sub>A b\<guillemotright>"
+    shows "\<guillemotleft>F f : F a \<rightarrow>\<^sub>B F b\<guillemotright>"
+      using assms B.in_homI
+      by (metis A.in_homE preserves_arr preserves_cod preserves_dom)
 
     text{*
       The following, which is made possible through the presence of @{text null},
@@ -44,69 +47,32 @@ begin
       by some other means.
     *}
 
-    lemma reflects_arr:
-    assumes "B.arr (F f)"
-    shows "A.arr f"
-      using assms is_extensional B.not_arr_null by metis
+    lemma preserves_reflects_arr [iff]:
+    shows "B.arr (F f) \<longleftrightarrow> A.arr f"
+      using preserves_arr is_extensional B.not_arr_null by metis
+
+    lemma preserves_seq [intro]:
+    assumes "A.seq g f"
+    shows "B.seq (F g) (F f)"
+      using assms by auto
 
     lemma preserves_ide [simp]:
     assumes "A.ide a"
     shows "B.ide (F a)"
-      using assms preserves_hom A.ideD(1) A.ideD(2) B.ideI_dom
-      by (metis (mono_tags, lifting) mem_Collect_eq)
-
-    lemma preserves_seq:
-    assumes "A.seq g f"
-    shows "B.seq (F g) (F f)"
-      using assms preserves_hom by fastforce
+      using assms A.ide_in_hom B.ide_in_hom by auto
 
     lemma preserves_iso [simp]:
     assumes "A.iso f"
     shows "B.iso (F f)"
-    proof
-      show "B.inverse_arrows (F f) (F (A.inv f))"
-      proof
-        have 1: "B.antipar (F f) (F (A.inv f))"
-          using assms
-          by (metis (full_types) A.inverse_arrowsD(1) A.isoE A.inverse_unique preserves_arr
-              preserves_cod preserves_dom)
-        show "B.ide (B (F f) (F (A.inv f)))"
-        proof -
-          have 2: "A.seq f (A.inv f)"
-            using assms 1 A.inv_is_inverse by (metis A.inverse_arrowsD(1))
-          hence "B (F f) (F (A.inv f)) = F (A f (A.inv f))"
-            by simp
-          also have "... = F (A.cod f)"
-            using assms 1 2 A.inv_is_inverse A.ide_comp_simp
-            by (metis A.inverse_arrowsD(3) preserves_cod preserves_dom)
-          finally show ?thesis
-            using assms by simp
-        qed
-        show "B.ide (B (F (A.inv f)) (F f))"
-        proof -
-          have 2: "A.seq (A.inv f) f"
-            using assms 1 A.inv_is_inverse by (metis A.inverse_arrowsD(1))
-          hence "B (F (A.inv f)) (F f) = F (A (A.inv f) f)"
-            by simp
-          also have "... = F (A.dom f)"
-            using assms 1 2 A.inv_is_inverse
-            by (simp add: A.ide_comp_simp A.inverse_arrowsD(2))
-          finally show ?thesis
-            using assms by simp
-        qed
-      qed
-    qed
+      using assms A.inverse_arrowsE
+      apply (elim A.isoE A.inverse_arrowsE A.seqE A.ide_compE)
+      by (metis A.arr_dom_iff_arr B.ide_dom B.inverse_arrows_def B.isoI preserves_arr
+                preserves_comp preserves_dom)
 
     lemma preserves_section_retraction:
-    assumes "A.section_retraction m e"
-    shows "B.section_retraction (F m) (F e)"
-    proof
-      have "A.ide (A e m)" using assms by auto
-      hence "B.ide (F (A e m))" by simp
-      moreover have "F (A e m) = B (F e) (F m)"
-        using assms preserves_comp A.section_retractionD by simp
-      ultimately show "B.ide (B (F e) (F m))" by simp
-    qed
+    assumes "A.ide (A e m)"
+    shows "B.ide (B (F e) (F m))"
+      using assms by (metis A.ide_compE preserves_comp preserves_ide)
 
     lemma preserves_section:
     assumes "A.section m"
@@ -121,7 +87,8 @@ begin
     lemma preserves_inverse_arrows:
     assumes "A.inverse_arrows f g"
     shows "B.inverse_arrows (F f) (F g)"
-      using assms preserves_section_retraction by blast
+      using assms A.inverse_arrows_def B.inverse_arrows_def preserves_section_retraction
+      by simp
 
     lemma preserves_inv:
     assumes "A.iso f"
@@ -140,16 +107,11 @@ begin
   begin
 
     lemma locally_reflects_ide:
-    assumes "f \<in> A.hom a a" and "B.ide (F f)"
+    assumes "\<guillemotleft>f : a \<rightarrow>\<^sub>A a\<guillemotright>" and "B.ide (F f)"
     shows "A.ide f"
-    proof -
-      have "A.par f (A.dom f)"
-        using assms by auto
-      moreover have "F f = F (A.dom f)"
-        using assms by (metis B.ideD(1) B.ideD(2) preserves_dom reflects_arr)
-      ultimately show ?thesis
-        using assms is_faithful [of f "A.dom f"] by auto
-    qed
+      using assms is_faithful
+      by (metis A.arr_dom_iff_arr A.cod_dom A.dom_dom A.in_homE B.ide_comp_self
+          B.ide_self_inverse B.comp_arr_inv A.ide_cod preserves_dom)
 
   end
 
@@ -157,8 +119,7 @@ begin
   for A :: "'a comp"
   and B :: "'b comp"
   and F :: "'a \<Rightarrow> 'b" +
-  assumes is_full: "\<lbrakk> A.ide a; A.ide a'; g \<in> B.hom (F a') (F a) \<rbrakk>
-                       \<Longrightarrow> \<exists>f. f \<in> A.hom a' a \<and> F f = g"
+  assumes is_full: "\<lbrakk> A.ide a; A.ide a'; \<guillemotleft>g : F a' \<rightarrow>\<^sub>B F a\<guillemotright> \<rbrakk> \<Longrightarrow> \<exists>f. \<guillemotleft>f : a' \<rightarrow>\<^sub>A a\<guillemotright> \<and> F f = g"
 
   locale fully_faithful_functor =
     faithful_functor A B F +
@@ -169,32 +130,21 @@ begin
   begin
 
     lemma reflects_iso:
-    assumes "f \<in> A.hom a' a" and "B.iso (F f)"
+    assumes "\<guillemotleft>f : a' \<rightarrow>\<^sub>A a\<guillemotright>" and "B.iso (F f)"
     shows "A.iso f"
     proof -
       from assms obtain g' where g': "B.inverse_arrows (F f) g'" by blast
-      have 1: "g' \<in> B.hom (F a) (F a')"
-        using assms(1) g' by auto
-      from this obtain g where g: "g \<in> A.hom a a' \<and> F g = g'"
-        using assms(1) is_full by fastforce
+      have 1: "\<guillemotleft>g' : F a \<rightarrow>\<^sub>B F a'\<guillemotright>"
+        using assms g' by (metis B.inv_in_hom B.inverse_unique preserves_hom)
+      from this obtain g where g: "\<guillemotleft>g : a \<rightarrow>\<^sub>A a'\<guillemotright> \<and> F g = g'"
+        using assms(1) is_full by (metis A.arrI A.ide_cod A.ide_dom A.in_homE)
       have "A.inverse_arrows f g"
-      proof
-        have 2: "A.antipar f g" using assms(1) 1 g by simp
-        show "A.ide (A f g)"
-        proof -
-          have "B.ide (F (A f g))" using 2 g g' by auto
-          hence "F (A f g) = B.dom (F (A f g))" by simp
-          hence "F (A f g) = F (A.dom g)" using assms(1) g by auto
-          thus ?thesis using 2 is_faithful [of "A f g" "A.dom g"] by simp
-        qed
-        show "A.ide (A g f)"
-        proof -
-          have "B.ide (F (A g f))" using 2 g g' by auto
-          hence "F (A g f) = B.dom (F (A g f))" by simp
-          hence "F (A g f) = F (A.dom f)" using assms(1) g by auto
-          thus ?thesis using 2 is_faithful [of "A g f" "A.dom f"] by simp
-        qed
-      qed
+        using assms 1 g g'
+        apply (elim B.inverse_arrowsE, intro A.inverse_arrowsI, auto)
+        using B.ide_dom B.iso_is_arr locally_reflects_ide preserves_comp
+         apply (metis A.in_homI A.seqI' A.dom_comp A.cod_comp A.in_homE)
+        using B.ide_dom B.iso_is_arr locally_reflects_ide preserves_comp
+        by (metis A.in_homI A.seqI' A.dom_comp A.cod_comp A.in_homE)
       thus ?thesis by auto
     qed
 
@@ -207,12 +157,7 @@ begin
   assumes is_embedding: "\<lbrakk> A.arr f; A.arr f'; F f = F f' \<rbrakk> \<Longrightarrow> f = f'"
 
   sublocale embedding_functor \<subseteq> faithful_functor
-  proof
-    fix f f'
-    assume A: "A.par f f'"
-    and B: "F f = F f'"
-    show "f = f'" using A B is_embedding by blast
-  qed
+    using is_embedding by (unfold_locales, blast)
 
   context embedding_functor
   begin
@@ -220,8 +165,8 @@ begin
     lemma reflects_ide:
     assumes "A.arr f" and "B.ide (F f)"
     shows "A.ide f"
-      using assms is_embedding
-      by (metis A.ide_dom B.ideD(2) A.ideD(1) preserves_dom)
+      using assms is_embedding A.ide_in_hom B.ide_in_hom
+      by (metis A.in_homE B.in_homE A.ide_cod preserves_cod)
 
   end
 
@@ -232,8 +177,7 @@ begin
   and B :: "'b comp"
   and F :: "'a \<Rightarrow> 'b"
 
-  locale essentially_surjective_functor =
-    "functor" +
+  locale essentially_surjective_functor = "functor" +
   assumes essentially_surjective: "\<forall>b. B.ide b \<longrightarrow> (\<exists>a. A.ide a \<and> B.isomorphic (F a) b)"
 
   locale constant_functor =
@@ -255,8 +199,7 @@ begin
 
     lemma is_functor:
     shows "functor A B map"
-      apply unfold_locales
-      by (auto simp add: map_def value_is_ide)
+      using map_def value_is_ide by (unfold_locales, auto)
       
   end
 
@@ -278,8 +221,8 @@ begin
 
     lemma is_functor:
     shows "functor C C map"
-      apply (unfold_locales)
-      by (auto simp add: map_def)
+      using C.arr_dom_iff_arr C.arr_cod_iff_arr
+      by (unfold_locales; auto simp add: map_def)
 
   end
 
@@ -309,9 +252,7 @@ begin
     interpret F: "functor" A B F using assms(1) by auto
     interpret G: "functor" B C G using assms(2) by auto
     show "functor A C (G o F)"
-      apply unfold_locales
-      (* 5 *) apply (metis F.reflects_arr G.is_extensional comp_apply)
-      (* 4 *) by simp_all
+      using F.preserves_arr F.is_extensional G.is_extensional by (unfold_locales, auto)
   qed
 
   locale composite_functor =
@@ -332,16 +273,16 @@ begin
   sublocale composite_functor \<subseteq> "functor" A C "G o F"
     using functor_comp F.functor_axioms G.functor_axioms by blast
 
-  lemma comp_ide_dom [simp]:
+  lemma comp_functor_identity [simp]:
   assumes "functor A B F"
   shows "F o identity_functor.map A = F"
   proof
     interpret "functor" A B F using assms by blast
     show "\<And>x. (F o A.map) x = F x"
-      using A.map_def by (simp add: A.not_arr_null)
+      using A.map_def is_extensional by simp
   qed
 
-  lemma comp_ide_cod [simp]:
+  lemma comp_identity_functor [simp]:
   assumes "functor A B F"
   shows "identity_functor.map B o F = F"
   proof
@@ -355,8 +296,8 @@ begin
     B: category B +
     F: "functor" A B F +
     G: "functor" B A G
-  for A :: "'a comp"
-  and B :: "'b comp"
+  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
+  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
   and F :: "'a \<Rightarrow> 'b"
   and G :: "'b \<Rightarrow> 'a" +
   assumes inv: "G o F = identity_functor.map A"
@@ -365,23 +306,19 @@ begin
   locale isomorphic_categories =
     A: category A +
     B: category B
-  for A :: "'a comp"
-  and B :: "'b comp" +
+  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
+  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55) +
   assumes iso: "\<exists>F G. inverse_functors A B F G"
 
   sublocale inverse_functors \<subseteq> isomorphic_categories A B
-  proof
-    have "inverse_functors A B F G" ..
-    thus "\<exists>F G. inverse_functors A B F G" by auto
-  qed
+    using inverse_functors_axioms by (unfold_locales, auto)
   
   lemma inverse_functors_sym:
   assumes "inverse_functors A B F G"
   shows "inverse_functors B A G F"
   proof -
     interpret inverse_functors A B F G using assms by auto
-    show ?thesis
-      apply (unfold_locales) using inv inv' by auto
+    show ?thesis using inv inv' by (unfold_locales, auto)
   qed
   
   lemma inverse_functor_unique:
@@ -391,23 +328,9 @@ begin
     interpret FG: inverse_functors C D F G using assms(1) by auto
     interpret FG': inverse_functors C D F G' using assms(2) by auto
     show "G = G'"
-    proof
-      fix x
-      have "\<not>FG.B.arr x \<Longrightarrow> G x = G' x"
-        using FG.G.is_extensional FG'.G.is_extensional by presburger
-      moreover have "FG.B.arr x \<Longrightarrow> G x = G' x"
-      proof -
-        assume x: "FG.B.arr x"
-        have "G x = (G' o F) (G x)"
-          using x FG'.inv by fastforce
-        also have "... = G' ((F o G) x)"
-          by simp
-        also have "... = G' x"
-          using x FG.inv' by simp
-        finally show "G x = G' x" by auto
-      qed
-      ultimately show "G x = G' x" by blast
-    qed
+      using FG.G.is_extensional FG'.G.is_extensional FG'.inv FG.inv'
+      by (metis FG'.G.functor_axioms FG.G.functor_axioms comp_assoc comp_identity_functor
+                comp_functor_identity)
   qed
 
   lemma inverse_functor_unique':
@@ -419,8 +342,8 @@ begin
     A: category A +
     B: category B +
     F: "functor" A B F
-  for A :: "'a comp"
-  and B :: "'b comp"
+  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
+  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
   and F :: "'a \<Rightarrow> 'b" +
   assumes invertible: "\<exists>G. inverse_functors A B F G"
   begin
@@ -443,37 +366,34 @@ begin
     assumes "A.terminal a"
     shows "B.terminal (F a)"
     proof
-      show "B.ide (F a)" using assms F.preserves_ide A.terminal_def by blast
+      show 0: "B.ide (F a)" using assms F.preserves_ide A.terminal_def by blast
       fix b :: 'b
       assume b: "B.ide b"
-      show "\<exists>!g. g \<in> B.hom b (F a)"
+      show "\<exists>!g. \<guillemotleft>g : b \<rightarrow>\<^sub>B F a\<guillemotright>"
       proof
         let ?G = "SOME G. inverse_functors A B F G"
         from invertible have G: "inverse_functors A B F ?G"
           using someI_ex [of "\<lambda>G. inverse_functors A B F G"] by fast
         interpret inverse_functors A B F ?G using G by auto
-        let ?P = "\<lambda>f. f \<in> A.hom (?G b) a"
+        let ?P = "\<lambda>f. \<guillemotleft>f : ?G b \<rightarrow>\<^sub>A a\<guillemotright>"
         have 1: "\<exists>!f. ?P f" using assms b A.terminal_def G.preserves_ide by simp
         hence 2: "?P (THE f. ?P f)" by (metis (no_types, lifting) theI')
-        thus "F (THE f. ?P f) \<in> B.hom b (F a)"
-          using b inv' B.ideD(1) F.preserves_hom
-          by (metis (mono_tags, lifting) B.map_simp comp_def mem_Collect_eq)
-        hence 3: "(THE f. ?P f) \<in> A.hom (?G b) a"
+        thus "\<guillemotleft>F (THE f. ?P f) : b \<rightarrow>\<^sub>B F a\<guillemotright>"
+          using b apply (elim A.in_homE, intro B.in_homI, auto)
+          using B.ideD(1) B.map_simp comp_def inv' by metis
+        hence 3: "\<guillemotleft>(THE f. ?P f) : ?G b \<rightarrow>\<^sub>A a\<guillemotright>"
           using assms 2 b G by simp
         fix g :: 'b
-        assume g: "g \<in> B.hom b (F a)"
-        have "?G g \<in> A.hom (?G b) a"
-        proof -
-          have "A.arr a" using assms(1) A.ideD(1) A.terminal_def by blast
-          moreover have "?G g \<in> A.hom (?G b) (?G (F a))"
-            using g G.preserves_hom [of g b "F a"] by simp
-          ultimately show ?thesis using g A.map_simp
-            by (metis (no_types, lifting) comp_apply inv mem_Collect_eq)
-        qed
+        assume g: "\<guillemotleft>g : b \<rightarrow>\<^sub>B F a\<guillemotright>"
+        have "?G (F a) = a"
+          using assms(1) A.terminal_def inv A.map_simp
+          by (metis 0 F.preserves_reflects_arr B.ideD(1) comp_apply)
+        hence "\<guillemotleft>?G g : ?G b \<rightarrow>\<^sub>A a\<guillemotright>"
+          using assms(1) g A.terminal_def inv G.preserves_hom [of b "F a" g]
+          by (elim B.in_homE, auto)
         hence "?G g = (THE f. ?P f)" using assms 1 3 A.terminal_def by blast
         thus "g = F (THE f. ?P f)"
-          using inv' CollectD g B.map_simp mem_Collect_eq
-          by (metis (no_types, lifting) comp_apply)
+          using inv' g by (metis B.in_homE B.map_simp comp_def)
       qed
     qed
   
@@ -493,20 +413,9 @@ begin
     interpret FG: inverse_functors C D F G using assms(1) by auto
     interpret FG': inverse_functors C D F G' using assms(2) by auto
     show "G = G'"
-    proof
-      fix x
-      have "\<not>FG.B.arr x \<Longrightarrow> G x = G' x"
-        using FG.G.is_extensional FG'.G.is_extensional by presburger
-      moreover have "FG.B.arr x \<Longrightarrow> G x = G' x"
-      proof -
-        assume x: "FG.B.arr x"
-        have "G x = (G' o F) (G x)" using x FG'.inv by fastforce
-        also have "... = G' ((F o G) x)" by simp
-        also have "... = G' x" using x FG.inv' by simp
-        finally show "G x = G' x" by auto
-      qed
-      ultimately show "G x = G' x" by blast
-    qed
+      using FG.G.is_extensional FG'.G.is_extensional FG'.inv FG'.inverse_functors_axioms
+            FG.inverse_functors_axioms inverse_functor_unique
+      by blast
   qed
 
   lemma inverse_functor_eq':
@@ -518,21 +427,24 @@ begin
     F: "functor" A B F +
     Aop: dual_category A +
     Bop: dual_category B
-  for A :: "'a comp"
-  and B :: "'b comp"
+  for A :: "'a comp"      (infixr "\<cdot>\<^sub>A" 55)
+  and B :: "'b comp"      (infixr "\<cdot>\<^sub>B" 55)
   and F :: "'a \<Rightarrow> 'b"
   begin
+
+    notation Aop.comp     (infixr "\<cdot>\<^sub>A\<^sup>o\<^sup>p" 55)
+    notation Bop.comp     (infixr "\<cdot>\<^sub>B\<^sup>o\<^sup>p" 55)
 
     definition map
     where "map \<equiv> F"
 
-    lemma map_char [iff]:
+    lemma map_simp [simp]:
     shows "map f = F f"
       by (simp add: map_def)
 
     lemma is_functor:
     shows "functor Aop.comp Bop.comp map"
-      apply (unfold_locales) by auto
+      using F.is_extensional by (unfold_locales, auto)
 
   end
 

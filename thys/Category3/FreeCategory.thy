@@ -133,7 +133,8 @@ begin
     We use an option type to provide a value to be used for @{term null}.
   *}
 
-  locale free_category = G: graph Obj Arr D C
+  locale free_category =
+    G: graph Obj Arr D C
   for Obj :: "'obj set"
   and Arr :: "'arr set"
   and D :: "'arr \<Rightarrow> 'obj"
@@ -207,88 +208,105 @@ begin
       Composition is concatenation of paths.
     *}
 
-    definition comp
-    where "comp g f \<equiv> if isArr g \<and> isArr f \<and> Dom g = Cod f
-                      then mkArr (Dom f) (Cod g) (Path f @ Path g)
-                      else Null"
+    definition comp     (infixr "\<cdot>" 55)
+    where "g \<cdot> f \<equiv> if isArr g \<and> isArr f \<and> Dom g = Cod f
+                   then mkArr (Dom f) (Cod g) (Path f @ Path g)
+                   else Null"
 
     interpretation partial_magma comp
-    proof
-      show "\<exists>!n. \<forall>f. comp n f = n \<and> comp f n = n"
-        using comp_def by metis
-    qed
+      using comp_def by (unfold_locales, metis)
+
+    notation in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
     lemma null_char:
     shows "null = Null"
       by (metis comp_null(1) comp_def)
 
-    lemma in_Obj_implies_unit:
+    lemma in_Obj_implies_ide:
     assumes "x \<in> Obj"
-    shows "unit (mkArr x x [])"
-      unfolding unit_def
-      using comp_def null_char Cod_mkArr Dom_mkArr Path_mkArr append_Nil append_Nil2 mkArr_Path
+    shows "ide (mkArr x x [])"
+      unfolding ide_def
+      using assms comp_def null_char Cod_mkArr Dom_mkArr Path_mkArr append_Nil append_Nil2
+            mkArr_Path G.path_Obj mkArr_not_Null
       by fastforce
 
-    lemma has_dom_char:
-    shows "has_dom f \<longleftrightarrow> isArr f"
+    lemma has_domain_char:
+    shows "domains f \<noteq> {} \<longleftrightarrow> isArr f"
     proof
-      show "has_dom f \<Longrightarrow> isArr f"
-        unfolding has_dom_def
-        by (metis comp_def null_char)
-      show "isArr f \<Longrightarrow> has_dom f"
-        unfolding has_dom_def
-        using Dom_in_Obj G.path_Obj comp_def mkArr_not_Null null_char in_Obj_implies_unit
-              self_append_conv2
-        by fastforce
+      show "domains f \<noteq> {} \<Longrightarrow> isArr f"
+        unfolding domains_def
+        using Collect_empty_eq comp_def null_char by fastforce
+      show "isArr f \<Longrightarrow> domains f \<noteq> {}"
+      proof (unfold domains_def)
+        assume 1: "f \<noteq> Null \<and> G.path (Dom f) (Cod f) (Path f)"
+        hence 2: "Dom f \<in> Obj"
+          using Dom_in_Obj by force
+        hence "comp f (mkArr (Dom f) (Dom f) []) \<noteq> null"
+          using 1 by (simp add: G.path_Obj comp_def mkArr_not_Null null_char)
+        thus "{a. ide a \<and> comp f a \<noteq> null} \<noteq> {}"
+          using 2 in_Obj_implies_ide by auto
+      qed
     qed
 
-    lemma has_cod_char:
-    shows "has_cod f \<longleftrightarrow> isArr f"
+    lemma has_codomain_char:
+    shows "codomains f \<noteq> {} \<longleftrightarrow> isArr f"
     proof
-      show "has_cod f \<Longrightarrow> isArr f"
-        unfolding has_cod_def
-        by (metis comp_def null_char)
-      show "isArr f \<Longrightarrow> has_cod f"
-        unfolding has_cod_def
-        using Cod_in_Obj Cod_mkArr G.path_Obj comp_def mkArr_not_Null null_char in_Obj_implies_unit
-        by fastforce
+      show "codomains f \<noteq> {} \<Longrightarrow> isArr f"
+        unfolding codomains_def
+        using Collect_empty_eq comp_def null_char by fastforce
+      show "isArr f \<Longrightarrow> codomains f \<noteq> {}"
+      proof (unfold codomains_def)
+        assume 1: "f \<noteq> Null \<and> G.path (Dom f) (Cod f) (Path f)"
+        hence 2: "Cod f \<in> Obj"
+          using Cod_in_Obj by force
+        hence "comp (mkArr (Cod f) (Cod f) []) f \<noteq> null"
+          using 1 G.path_Obj comp_def mkArr_not_Null null_char by auto
+        thus "{b. ide b \<and> comp b f \<noteq> null} \<noteq> {}"
+          using 2 in_Obj_implies_ide by auto
+      qed
     qed
 
     interpretation category comp
     proof
       fix f g h
-      assume hg: "comp h g \<noteq> null" and hgf: "comp (comp h g) f \<noteq> null"
-      have "isArr f \<and> isArr g \<and> Dom g = Cod f"
-        using hg hgf comp_def null_char Dom_mkArr by metis
-      thus "comp g f \<noteq> null"
-        using comp_def null_char mkArr_not_Null G.path_concat by auto
-      next
-      fix f g h
-      assume gf: "comp g f \<noteq> null" and hgf: "comp h (comp g f) \<noteq> null"
+      show "g \<cdot> f \<noteq> null \<Longrightarrow> seq g f"
+        using comp_def arr_def G.path_concat Path_mkArr has_codomain_char null_char
+        by auto
+      show "(domains f \<noteq> {}) = (codomains f \<noteq> {})"
+        by (simp add: has_domain_char has_codomain_char)
+      assume gf: "seq g f" and hgf: "seq h (g \<cdot> f)"
       have isArr: "isArr h \<and> isArr g"
-        using gf hgf by (metis comp_def null_char)
+        using gf hgf by (metis comp_def not_arr_null null_char)
       then have "Dom h = Cod g"
         using gf hgf Cod_mkArr [of "Dom g" "Cod g" "Path g"]
-        by (metis (full_types) Cod_mkArr comp_def null_char)
-      with isArr show "comp h g \<noteq> null"
-        using comp_def null_char mkArr_not_Null G.path_concat by auto
-    next
+        by (metis Cod_mkArr comp_null(2) comp_def not_arr_null)
+      with isArr show "seq h g"
+        using comp_def null_char mkArr_not_Null G.path_concat
+        using arr_def has_domain_char by auto
+      next
       fix f g h
-      assume gf: "comp g f \<noteq> null" and hg: "comp h g \<noteq> null"
+      assume hg: "seq h g" and hgf: "seq (h \<cdot> g) f"
+      have isArr: "isArr g \<and> isArr f"
+        using hg hgf by (metis comp_def not_arr_null null_char)
+      then have "Dom g = Cod f"
+        using hg hgf Dom_mkArr [of "Dom g" "Cod g" "Path g"]
+        by (metis Dom_mkArr comp_null(2) comp_def not_arr_null)
+      with isArr show "seq g f"
+        using comp_def null_char mkArr_not_Null G.path_concat
+        using arr_def has_domain_char by auto
+      next
+      fix f g h
+      assume gf: "seq g f" and hg: "seq h g"
       have 1: "isArr h \<and> isArr g \<and> isArr f \<and> Dom h = Cod g \<and> Dom g = Cod f"
-        using gf hg comp_def null_char by metis
-      show "comp h (comp g f) \<noteq> null"
+        using gf hg comp_def null_char by (metis not_arr_null)
+      show "seq (h \<cdot> g) f"
         using 1 comp_def null_char Dom_mkArr Cod_mkArr Path_mkArr mkArr_not_Null G.path_concat
-        by auto
-      show "comp (comp h g) f \<noteq> null"
-        using 1 comp_def null_char Dom_mkArr Cod_mkArr Path_mkArr mkArr_not_Null G.path_concat
-        by auto
-      show "comp h (comp g f) = comp (comp h g) f"
+              arr_def has_codomain_char
+        by fastforce
+      show "(h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
         using 1 comp_def null_char Dom_mkArr Cod_mkArr Path_mkArr mkArr_not_Null G.path_concat
               append_assoc
         by force
-      next
-      show "\<And>f. has_dom f = has_cod f" using has_dom_char has_cod_char by auto
     qed
 
     lemma is_category:
@@ -304,24 +322,18 @@ begin
 
     lemma arr_char:
     shows "arr f \<longleftrightarrow> isArr f"
-      by (simp add: arr_def has_cod_char has_dom_iff_has_cod)
+      using has_codomain_char has_codomain_iff_arr by auto
 
     lemma dom_char:
     shows "dom f = (if arr f then mkArr (Dom f) (Dom f) [] else null)"
     proof -
       have "\<not>arr f \<Longrightarrow> dom f = null"
-        using arr_char has_domD(1) dom_def by auto
+        by (simp add: has_domain_iff_arr dom_def)
       moreover have "arr f \<Longrightarrow> dom f = mkArr (Dom f) (Dom f) []"
-      proof -
-        assume f: "arr f"
-        have "unit (mkArr (Dom f) (Dom f) [])"
-          using f arr_char in_Obj_implies_unit by (simp add: Dom_in_Obj)
-        moreover have "comp f (mkArr (Dom f) (Dom f) []) = f"
-          using f arr_char comp_def
-          by (simp add: Dom_in_Obj G.path_Obj mkArr_not_Null)
-        ultimately show ?thesis
-          using dom_simp f not_arr_null by force
-      qed
+        apply (intro dom_eqI)
+        using Dom_in_Obj arr_char in_Obj_implies_ide
+         apply auto[1]
+        by (simp add: Dom_in_Obj G.path_Obj arr_char mkArr_not_Null comp_def)
       ultimately show ?thesis by auto
     qed
 
@@ -329,39 +341,28 @@ begin
     shows "cod f = (if arr f then mkArr (Cod f) (Cod f) [] else null)"
     proof -
       have "\<not>arr f \<Longrightarrow> cod f = null"
-        using arr_char has_codD(1) cod_def by auto
+        by (simp add: has_codomain_iff_arr cod_def)
       moreover have "arr f \<Longrightarrow> cod f = mkArr (Cod f) (Cod f) []"
-      proof -
-        assume f: "arr f"
-        have "unit (mkArr (Cod f) (Cod f) [])"
-          using f arr_char in_Obj_implies_unit by (simp add: Cod_in_Obj)
-        moreover have "comp (mkArr (Cod f) (Cod f) []) f = f"
-          using f arr_char comp_def
-          by (simp add: Cod_in_Obj G.path_Obj mkArr_not_Null)
-        ultimately show ?thesis
-          using cod_simp f not_arr_null by force
-      qed
+        apply (intro cod_eqI)
+        using Cod_in_Obj arr_char in_Obj_implies_ide
+         apply auto[1]
+        by (simp add: Cod_in_Obj G.path_Obj arr_char mkArr_not_Null comp_def)
       ultimately show ?thesis by auto
     qed
-
-    lemma comp_char:
-    shows "comp g f = (if seq g f then mkArr (Dom f) (Cod g) (Path f @ Path g) else null)"
-      by (metis arr_char arr_comp cod_char dom_char comp_def null_char)
 
     lemma ide_char:
     shows "ide f \<longleftrightarrow> f \<in> (\<lambda>x. mkArr x x []) ` Obj"
     proof
       show "ide f \<Longrightarrow> f \<in> (\<lambda>x. mkArr x x []) ` Obj"
-        by (metis (no_types, lifting) Dom_in_Obj arr_char dom_char ideD(2) image_iff ideD(1))
+        by (metis (no_types, lifting) Dom_in_Obj ide_in_hom arr_char dom_char in_homE image_iff)
       show "f \<in> (\<lambda>x. mkArr x x []) ` Obj \<Longrightarrow> ide f"
-        using G.path_Obj arr_char dom_char mkArr_not_Null by auto
+        using in_Obj_implies_ide by auto
     qed
 
     lemma arr_empty [simp]:
     assumes "x \<in> Obj"
     shows "arr (mkArr x x [])"
-      using assms
-      by (simp add: G.path_Obj arr_char free_category.mkArr_not_Null free_category_axioms)
+      using assms by (simp add: G.path_Obj arr_char mkArr_not_Null)
 
     lemma arr_single [simp]:
     assumes "x \<in> Arr"
@@ -371,22 +372,22 @@ begin
     lemma dom_mkArr [simp]:
     assumes "arr (mkArr x y p)"
     shows "dom (mkArr x y p) = mkArr x x []"
-      using assms dom_char Dom_mkArr arr_char by auto
+      using assms dom_char arr_char by auto
 
     lemma cod_mkArr [simp]:
     assumes "arr (mkArr x y p)"
     shows "cod (mkArr x y p) = mkArr y y []"
-      using assms cod_char Cod_mkArr arr_char by auto
+      using assms cod_char arr_char by auto
 
     lemma comp_mkArr [simp]:
     assumes "seq (mkArr y z q) (mkArr x y p)"
     shows "comp (mkArr y z q) (mkArr x y p) = mkArr x z (p @ q)"
-      using assms comp_char Cod_mkArr arr_char Dom_mkArr Path_mkArr by auto
+      using assms arr_char comp_def by auto
 
     lemma mkArr_eqI:
     assumes "arr (mkArr a b p)"
     shows "mkArr a b p = mkArr a b p' \<longleftrightarrow> p = p'"
-      using assms by (metis Path_mkArr arr_char)
+      using assms arr_char Path_mkArr by metis
 
   end
 
@@ -403,31 +404,34 @@ begin
 
     lemma FC_arr_char:
     shows "FC.arr f \<longleftrightarrow> f \<in> (\<lambda>x. FC.mkArr x x []) ` Obj"
-      using FC.arr_char
-      by (metis (no_types, lifting) FC.ideD(1) FC.ideI_dom FC.ide_char empty_iff FC.dom_char
-          FC.mkArr_Path FC.G.path_def length_greater_0_conv less_or_eq_imp_le)
+    proof
+      show "FC.arr f \<Longrightarrow> f \<in> (\<lambda>x. FC.mkArr x x []) ` Obj"
+        using FC.arr_char FC.ide_char FC.mkArr_Path FC.G.path_def length_greater_0_conv
+        by (metis (no_types, lifting) FC.cod_char FC.ide_cod empty_iff le_eq_less_or_eq)
+      show "f \<in> (\<lambda>x. FC.mkArr x x []) ` Obj \<Longrightarrow> FC.arr f"
+        using FC.ide_char by auto
+    qed
 
-    lemma FC_seq_char:
-    shows "FC.seq g f \<longleftrightarrow> FC.arr f \<and> g = f"
-      using FC_arr_char by auto
+    lemma FC_in_hom_char:
+    shows "FC.in_hom f a b \<longleftrightarrow> FC.arr f \<and> f = a \<and> f = b"
+      using FC.ide_char FC_arr_char by auto
 
     typedef 'a arr = "UNIV :: ('a, unit) free_category.arr set" ..
 
     interpretation AC: abstracted_category FC.comp Abs_arr Rep_arr UNIV
-      using Rep_arr_inverse Abs_arr_inverse apply unfold_locales by auto
+      using Rep_arr_inverse Abs_arr_inverse by (unfold_locales, auto)
 
-    definition comp
+    definition comp     (infixr "\<cdot>" 55)
     where "comp \<equiv> AC.comp"
 
     lemma is_category:
     shows "category comp"
-    proof -
-      have "category AC.comp" ..
-      thus "category comp" using comp_def by auto
-    qed
+      using AC.category_axioms comp_def by auto
 
     interpretation category comp
       using is_category by auto
+
+    notation in_hom     ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
     definition mkIde
     where "mkIde x \<equiv> if x \<in> Obj then Abs_arr (FC.mkArr x x []) else null"
@@ -442,8 +446,8 @@ begin
       proof -
         assume f: "arr f"
         obtain A where A: "A \<in> Obj \<and> Rep_arr f = FC.mkArr A A []"
-          using f AC.arr_char [of f] FC_arr_char [of "Rep_arr f"]
-                FC.ide_char FC_seq_char FC.Dom_in_Obj FC.arr_char FC.dom_char comp_def FC.ideD(3)
+          using f AC.arr_char FC_arr_char FC.ide_char FC_in_hom_char FC.Dom_in_Obj
+                FC.arr_char FC.dom_char comp_def
           by auto
         then have "f = mkIde A"
           by (metis Rep_arr_inverse mkIde_def)
@@ -451,19 +455,19 @@ begin
       qed
       show "f \<in> mkIde ` Obj \<Longrightarrow> arr f"
         using FC_arr_char mkIde_def AC.arr_char AC.domain_closed AC.rep_abs FC.arr_empty
-              f_inv_into_f inv_into_into local.comp_def
+              f_inv_into_f inv_into_into comp_def
         by auto
     qed
 
     lemma dom_char:
     shows "dom f = (if arr f then f else null)"
-      using AC.dom_char arr_char comp_def
-      by (simp add: AC.arr_char FC.ide_char FC_arr_char Rep_arr_inverse)
+      using AC.dom_char arr_char comp_def AC.arr_char FC.ide_char FC_arr_char
+      by (simp add: Rep_arr_inverse)
 
     lemma cod_char:
     shows "cod f = (if arr f then f else null)"
-      using AC.cod_char arr_char comp_def
-      by (simp add: AC.arr_char FC.ide_char FC_arr_char Rep_arr_inverse)
+      using AC.cod_char comp_def Rep_arr_inverse cod_dom dom_char
+      by auto
 
     lemma dom_simp [simp]:
     assumes "arr f"
@@ -475,22 +479,23 @@ begin
     shows "cod f = f"
       using assms cod_char by simp
 
-    lemma seq_char:
-    shows "seq g f \<longleftrightarrow> ide f \<and> g = f"
-      using arr_char dom_char cod_char by fastforce
+    lemma in_hom_char:
+    shows "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<longleftrightarrow> arr f \<and> f = a \<and> f = b"
+      by auto
 
     lemma comp_char:
-    shows "comp g f = (if seq g f then f else null)"
-      using AC.comp_char comp_def comp_cod_arr seq_char dom_char by fastforce
+    shows "g \<cdot> f = (if seq g f then f else null)"
+      using AC.comp_char comp_def comp_cod_arr in_hom_char dom_char
+      by (metis (no_types, lifting) seqE)
 
     lemma comp_simp [simp]:
     assumes "seq g f"
-    shows "comp g f = f"
-      using assms comp_char by auto
+    shows "g \<cdot> f = f"
+      using assms comp_char by meson
 
     lemma is_discrete:
     shows "ide f \<longleftrightarrow> arr f"
-      using arr_char dom_char by fastforce
+      using arr_char dom_char in_hom_char ide_in_hom by metis
 
     lemma ide_mkIde:
     assumes "x \<in> Obj"
@@ -563,19 +568,19 @@ begin
                      \<Longrightarrow> f \<in> (\<lambda>x. FC.mkArr False True [x]) ` Arr"
       proof -
         assume f': "\<not>(f = FC.mkArr False False [] \<or> f = FC.mkArr True True [])"
-        have "FC.Dom f = False \<and> FC.Cod f = True"
+        have 0: "FC.Dom f = False \<and> FC.Cod f = True"
         proof -
           have "f \<noteq> FC.Null \<and> FC.G.path (FC.Dom f) (FC.Cod f) (FC.Path f)"
-            using FC.arr_char f by presburger
+            using FC.arr_char f by blast
           then show ?thesis
             by (metis (full_types) FC.G.path_def FC.mkArr_Path f')
         qed
         hence 1: "f = FC.mkArr False True (FC.Path f)"
         proof -
           have "FC.mkArr (FC.Dom f) (FC.Cod f) (FC.Path f) = f"
-            using FC.arr_char FC.mkArr_Path f by presburger
+            using FC.arr_char FC.mkArr_Path f by meson
           then show ?thesis
-            by (simp add: \<open>FC.Dom f = False \<and> FC.Cod f = True\<close>)
+            by (simp add: 0)
         qed
         moreover have "length (FC.Path f) = 1"
         proof -
@@ -608,16 +613,18 @@ begin
       assume gf: "FC.arr g \<and> FC.arr f \<and>
                   ((f = FC.mkArr False False [] \<and> g \<noteq> FC.mkArr True True []) \<or>
                    (f \<noteq> FC.mkArr False False [] \<and> g = FC.mkArr True True []))"
-      show "FC.seq g f" using gf FC_arr_char FC_ide_char by auto
+      show "FC.seq g f"
+        using gf FC_arr_char FC_ide_char by (intro FC.seqI; fastforce)
       next
       assume gf: "FC.seq g f"
+      hence 1: "FC.arr f \<and> FC.arr g \<and> FC.dom g = FC.cod f" by auto
       have "FC.Cod f = False \<Longrightarrow> f = FC.mkArr False False []"
       proof -
-        assume 1: "FC.Cod f = False"
-        have "FC.mkArr (FC.Dom f) (FC.Cod f) (FC.Path f) = f"
-          using FC.arr_char gf by auto
-        then show ?thesis
-          using 1 FC.G.path_def FC.arr_char gf by auto
+        assume "FC.Cod f = False"
+        moreover have "FC.mkArr (FC.Dom f) (FC.Cod f) (FC.Path f) = f"
+          using gf FC.arr_char [of f] by auto
+        ultimately show ?thesis
+          using FC.G.path_def FC.arr_char [of f] gf by auto
       qed
       moreover have "FC.Cod f = True \<Longrightarrow> g = FC.mkArr True True []"
       proof -
@@ -626,32 +633,32 @@ begin
           using FC.arr_char gf by blast
         moreover have "FC.Cod f = FC.Dom g"
         proof -
-          have 1: "\<not> FC.Dom (FC.mkArr False False [])"
+          have "\<not> FC.Dom (FC.mkArr False False [])"
             using FC.not_arr_null FC.null_char FC_arr_char by force
-          have "FC.Dom (FC.mkArr True True [])"
+          moreover have "FC.Dom (FC.mkArr True True [])"
             using FC.not_arr_null FC.null_char FC_arr_char by auto
-          then show ?thesis
-            using 1 by (metis (full_types) FC.cod_char FC.dom_char gf)
+          ultimately show ?thesis
+            by (metis FC.arr_char FC.comp_def gf)
         qed
         ultimately show ?thesis
-          using f FC_arr_char gf by auto
+          using f FC_arr_char [of g] gf by auto
       qed
       ultimately have "f = FC.mkArr False False [] \<or> g = FC.mkArr True True []"
         using gf FC_arr_char by auto
       moreover have "\<not>(f = FC.mkArr False False [] \<and> g = FC.mkArr True True [])"
-        using gf by (metis FC.arr_char FC.dom_mkArr FC.Dom_mkArr FC.cod_mkArr)
-      ultimately show "FC.arr g \<and> FC.arr f
-                   \<and> ((f = FC.mkArr False False [] \<and> g \<noteq> FC.mkArr True True []) \<or>
-                      (f \<noteq> FC.mkArr False False [] \<and> g = FC.mkArr True True []))"
-        using gf by metis
+        using 1 by (metis FC.arr_char FC.dom_mkArr FC.Dom_mkArr FC.cod_mkArr)
+      ultimately show "FC.arr g \<and> FC.arr f \<and>
+                       ((f = FC.mkArr False False [] \<and> g \<noteq> FC.mkArr True True []) \<or>
+                        (f \<noteq> FC.mkArr False False [] \<and> g = FC.mkArr True True []))"
+        using 1 by metis
     qed
 
     typedef 'a arr = "UNIV :: (bool, 'a) free_category.arr set" ..
 
     interpretation AC: abstracted_category FC.comp Abs_arr Rep_arr UNIV
-      using Rep_arr_inverse Abs_arr_inverse apply unfold_locales by auto
+      using Rep_arr_inverse Abs_arr_inverse by (unfold_locales, auto)
 
-    definition comp
+    definition comp     (infixr "\<cdot>" 55)
     where "comp \<equiv> AC.comp"
 
     lemma is_category:
@@ -663,6 +670,8 @@ begin
 
     interpretation category comp
       using is_category by auto
+
+    notation in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
     definition Zero
     where "Zero \<equiv> Abs_arr (FC.mkArr False False [])"
@@ -683,9 +692,9 @@ begin
 
     lemma not_ide_mkArr:
     shows "\<not>ide (mkArr x)"
-      using mkArr_def ide_char Zero_def One_def
+      using mkArr_def ide_char ide_def Zero_def One_def
       by (metis Abs_arr_inverse FC.G.path_single_Arr UNIV_I FC.Cod_mkArr FC.Dom_mkArr
-                FC.mkArr_not_Null ideD(1) not_arr_null)
+                FC.mkArr_not_Null)
 
     lemma arr_char:
     shows "arr f \<longleftrightarrow> f = Zero \<or> f = One \<or> f \<in> mkArr ` Arr"
@@ -702,21 +711,51 @@ begin
         by (metis One_def Rep_arr_inverse)
       have "(Rep_arr f \<in> (\<lambda>a. FC.mkArr False True [a]) ` Arr \<longrightarrow>
                G Arr (\<lambda>a. FC.mkArr False True [a]) (Rep_arr f) \<in> Arr \<and>
-               Rep_arr f = FC.mkArr False True [G Arr (\<lambda>a. FC.mkArr False True [a]) (Rep_arr f)])
+               Rep_arr f =
+               FC.mkArr False True [G Arr (\<lambda>a. FC.mkArr False True [a]) (Rep_arr f)])
             \<and> (Rep_arr f \<notin> (\<lambda>a. FC.mkArr False True [a]) ` Arr \<longrightarrow>
                  (\<forall>a. a \<notin> Arr \<or> Rep_arr f \<noteq> FC.mkArr False True [a]))"
         using 1 by meson
       moreover have
           "f \<noteq> mkArr (G Arr (\<lambda>a. FC.mkArr False True [a]) (Rep_arr f))
              \<Longrightarrow> G Arr (\<lambda>a. FC.mkArr False True [a]) (Rep_arr f) \<notin> Arr \<or>
-                 Rep_arr f \<noteq> FC.mkArr False True [G Arr (\<lambda>a. FC.mkArr False True [a]) (Rep_arr f)]"
+                 Rep_arr f \<noteq>
+                 FC.mkArr False True [G Arr (\<lambda>a. FC.mkArr False True [a]) (Rep_arr f)]"
         by (metis Rep_arr_inverse mkArr_def)
       ultimately have "arr f \<Longrightarrow> f = Zero \<or> f = One \<or> f \<in> mkArr ` Arr"
         using 2 3 AC.arr_char FC_arr_char comp_def by force
       thus "arr f \<longleftrightarrow> (f = Zero \<or> f = One \<or> f \<in> mkArr ` Arr)"
         using AC.arr_char Abs_arr_inverse FC_arr_char One_def UNIV_I Zero_def comp_def
               mkArr_def
-        by fastforce
+        by auto
+    qed
+
+    lemma in_hom_char:
+    shows "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<longleftrightarrow> (a = Zero \<and> b = Zero \<and> f = Zero) \<or>
+                            (a = One \<and> b = One \<and> f = One) \<or>
+                            (a = Zero \<and> b = One \<and> f \<in> mkArr ` Arr)"
+    proof -
+      have "f = Zero \<Longrightarrow> ?thesis"
+        using arr_char [of f]
+        by (metis ide_char ide_in_hom image_iff in_homE not_ide_mkArr)
+      moreover have "f = One \<Longrightarrow> ?thesis"
+        using arr_char [of f]
+        by (metis ide_char ide_in_hom image_iff in_homE not_ide_mkArr)
+      moreover have "f \<in> mkArr ` Arr \<Longrightarrow> ?thesis"
+      proof -
+        assume f: "f \<in> mkArr ` Arr"
+        have 1: "arr f" using f by (simp add: arr_char)
+        moreover have "dom f = Zero \<and> cod f = One"
+          using f 1 AC.dom_char AC.cod_char AC.rep_abs comp_def mkArr_def Zero_def One_def
+          by auto
+        ultimately have "in_hom f Zero One" by auto
+        thus "in_hom f a b \<longleftrightarrow> (a = Zero \<and> b = Zero \<and> f = Zero \<or>
+                                           a = One \<and> b = One \<and> f = One \<or>
+                                           a = Zero \<and> b = One \<and> f \<in> mkArr ` Arr)"
+          by (metis f in_homE ide_char ide_in_hom)
+      qed
+      ultimately show ?thesis
+        using arr_char [of f] by fast
     qed
 
     lemma Zero_not_eq_One [simp]:
@@ -734,10 +773,8 @@ begin
 
     lemma dom_char:
     shows "dom f = (if ide f then f else if arr f then Zero else null)"
-      using comp_def arr_char ide_char AC.dom_char Zero_def AC.arr_char
-            AC.ide_char FC.arr_empty FC_ide_char FC_seq_char UNIV_I UNIV_bool FC.cod_mkArr
-            ideD(2)
-      by metis
+      using ide_char arr_char in_hom_char
+      by (metis has_domain_iff_arr in_homE dom_def)
 
     lemma dom_simp [simp]:
     shows "dom One = One"
@@ -746,10 +783,8 @@ begin
 
     lemma cod_char:
     shows "cod f = (if ide f then f else if arr f then One else null)"
-      using comp_def arr_char ide_char AC.dom_char One_def AC.arr_char
-            AC.ide_char FC.arr_empty FC_ide_char FC_seq_char UNIV_I UNIV_bool
-            AC.cod_char FC.dom_mkArr ideD(3)
-      by metis
+      using ide_char arr_char in_hom_char
+      by (metis has_codomain_iff_arr in_homE cod_def)
 
     lemma cod_simp [simp]:
     shows "cod Zero = Zero"
@@ -760,52 +795,49 @@ begin
     shows "seq g f \<longleftrightarrow> arr g \<and> arr f \<and> ((f = Zero \<and> g \<noteq> One) \<or> (f \<noteq> Zero \<and> g = One))"
     proof
       assume gf: "seq g f"
+      hence 1: "arr f \<and> arr g \<and> cod f = dom g" by auto
       have f: "arr f \<and> (f = Zero \<or> f = One \<or> f \<in> mkArr ` Arr)" using gf arr_char by auto
       have g: "arr g \<and> (g = Zero \<or> g = One \<or> g \<in> mkArr ` Arr)" using gf arr_char by auto
       have "f = Zero \<Longrightarrow> g \<noteq> One"
-        using f g gf by force
+        using f g 1 by force
       moreover have "f = One \<Longrightarrow> g = One"
-        using f g gf by (metis Zero_not_eq_One cod_simp(2) dom_simp(2))
+        using f g 1 by (metis Zero_not_eq_One cod_simp(2) dom_simp(2))
       moreover have "f \<in> mkArr ` Arr \<Longrightarrow> f \<noteq> Zero \<and> g = One"
-        using f gf arr_char [of f]
+        using f 1 arr_char [of f]
         by (metis Zero_not_eq_One Zero_not_in_mkArr_Arr cod_simp(2) dom_simp(2))
       ultimately show "arr g \<and> arr f \<and> ((f = Zero \<and> g \<noteq> One) \<or> (f \<noteq> Zero \<and> g = One))"
         using f g arr_char [of f] arr_char [of g] by blast
       next
       assume gf: "arr g \<and> arr f \<and> ((f = Zero \<and> g \<noteq> One) \<or> (f \<noteq> Zero \<and> g = One))"
-      have "f = Zero \<Longrightarrow> seq g f" using gf arr_char cod_dom dom_simp by fastforce
-      moreover have "g = One \<Longrightarrow> seq g f" using gf arr_char dom_cod cod_simp by fastforce
-      ultimately show "seq g f" using gf by blast
+      thus "seq g f" using in_hom_char by auto
     qed
 
     lemma comp_char:
-    shows "comp g f = (if seq g f then
-                         if f = Zero then g else if g = One then f else null
-                       else null)"
+    shows "g \<cdot> f = (if seq g f then
+                      if f = Zero then g else if g = One then f else null
+                    else null)"
     proof -
-      have "seq g f \<Longrightarrow> f = Zero \<Longrightarrow> comp g f = g"
-        using comp_def seq_char [of g f] AC.comp_char [of g f]
-              FC.comp_char [of "Rep_arr g" "Rep_arr f"] Zero_def
-        by (metis comp_arr_ide dom_simp ide_char seq_char)
-      moreover have "seq g f \<Longrightarrow> g = One \<Longrightarrow> comp g f = f"
-        using comp_def seq_char [of g f] AC.comp_char [of g f]
-              FC.comp_char [of "Rep_arr g" "Rep_arr f"] One_def
-        by (metis comp_ide_arr cod_simp ide_char seq_char)
-      moreover have "seq g f \<Longrightarrow> f \<noteq> Zero \<Longrightarrow> g \<noteq> One \<Longrightarrow> comp g f = null"
+      have "seq g f \<Longrightarrow> f = Zero \<Longrightarrow> g \<cdot> f = g"
+        using comp_def seq_char [of g f] AC.comp_char [of g f] Zero_def cod_simp(1)
+        by (metis comp_arr_dom dom_simp(2))
+      moreover have "seq g f \<Longrightarrow> g = One \<Longrightarrow> g \<cdot> f = f"
+        using comp_def seq_char [of g f] AC.comp_char [of g f] One_def dom_simp(1)
+        by (metis comp_cod_arr cod_simp(2))
+      moreover have "seq g f \<Longrightarrow> f \<noteq> Zero \<Longrightarrow> g \<noteq> One \<Longrightarrow> g \<cdot> f = null"
         using seq_char by blast
-      moreover have "\<not>seq g f \<Longrightarrow> comp g f = null"
-        using comp_def AC.comp_char by auto
-      ultimately show ?thesis by presburger
+      moreover have "\<not>seq g f \<Longrightarrow> g \<cdot> f = null"
+        using comp_def AC.comp_char ext by fastforce
+      ultimately show ?thesis by argo
     qed
 
     lemma comp_simp [simp]:
     assumes "seq g f"
-    shows "f = Zero \<Longrightarrow> comp g f = g"
-    and "g = One \<Longrightarrow> comp g f = f"
+    shows "f = Zero \<Longrightarrow> g \<cdot> f = g"
+    and "g = One \<Longrightarrow> g \<cdot> f = f"
     proof -
-      show "f = Zero \<Longrightarrow> local.comp g f = g"
+      show "f = Zero \<Longrightarrow> g \<cdot> f = g"
         using assms seq_char comp_char by metis
-      show "g = One \<Longrightarrow> comp g f = f"
+      show "g = One \<Longrightarrow> g \<cdot> f = f"
         using assms seq_char comp_char by metis
     qed
 
@@ -860,7 +892,7 @@ begin
     interpretation AC: abstracted_category Q.comp Abs_arr Rep_arr UNIV
       using Rep_arr_inverse Abs_arr_inverse apply unfold_locales by auto
 
-    definition comp
+    definition comp     (infixr "\<cdot>" 55)
     where "comp \<equiv> AC.comp"
 
     lemma is_category:
@@ -872,6 +904,8 @@ begin
 
     interpretation category comp
       using is_category by auto
+
+    notation in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
     definition Zero
     where "Zero \<equiv> Abs_arr Q.Zero"
@@ -890,14 +924,14 @@ begin
     proof -
       have 1: "Rep_arr f = Q.Zero \<or> Rep_arr f = Q.One \<or> Rep_arr f \<in> Q.mkArr ` {False, True}
                  \<longrightarrow> arr f"
-        by (simp add: AC.arr_char Q.arr_char local.comp_def)
+        by (simp add: AC.arr_char Q.arr_char comp_def)
       have 2: "\<forall>a. a \<in> UNIV \<longrightarrow> Rep_arr (Abs_arr a) = a"
         by (simp add: Abs_arr_inverse)
       hence 3: "Rep_arr (Abs_arr (Q.mkArr True)) = Q.mkArr True"
         by blast
       hence 4: "f = j1 \<longrightarrow> arr f"
         using 1 j1_def by auto
-      have "f = j0 \<or> f = Zero \<or> f = One \<longrightarrow>arr f"
+      have "f = j0 \<or> f = Zero \<or> f = One \<longrightarrow> arr f"
         using 1 2 Zero_def One_def by (metis (no_types) UNIV_I insertI1 j0_def rev_image_eqI)
       thus ?thesis
         using 2 3 4
@@ -905,29 +939,28 @@ begin
             UNIV_I Zero_def j0_def j1_def comp_def)
     qed
 
-    lemma ide_char:
-    shows "ide a \<longleftrightarrow> a = Zero \<or> a = One"
-      using arr_char
-      by (metis (no_types, lifting) AC.ide_char Q.ide_char UNIV_I Zero_def ideD(1) j0_def j1_def
-          comp_def Abs_arr_inverse One_def)
-
     lemma dom_char:
     shows "dom f = (if f = j0 \<or> f = j1 then Zero else if arr f then f else null)"
       using comp_def
-      by (metis (full_types) AC.arr_char AC.dom_char Abs_arr_inverse One_def Q.dom_char Q.ide_char
-          Q.not_ide_mkArr UNIV_I Zero_def arr_char j0_def j1_def)
+      by (metis (full_types) AC.arr_char AC.dom_char Abs_arr_inverse One_def Q.dom_char
+          Q.ide_char Q.not_ide_mkArr UNIV_I Zero_def arr_char j0_def j1_def)
 
     lemma cod_char:
     shows "cod f = (if f = j0 \<or> f = j1 then One else if arr f then f else null)"
       using comp_def
-      by (metis (full_types) AC.arr_char AC.cod_char Abs_arr_inverse One_def Q.cod_char Q.ide_char
-          Q.not_ide_mkArr UNIV_I Zero_def arr_char j0_def j1_def)
+      by (metis (full_types) AC.arr_char AC.cod_char Abs_arr_inverse One_def Q.cod_char
+          Q.ide_char Q.not_ide_mkArr UNIV_I Zero_def arr_char j0_def j1_def)
+
+    lemma ide_char:
+    shows "ide a \<longleftrightarrow> a = Zero \<or> a = One"
+      using ide_in_hom arr_char
+      by (metis (no_types, lifting) AC.ide_char Q.ide_char UNIV_I Zero_def in_homE j0_def j1_def
+          comp_def Abs_arr_inverse One_def)
 
     lemma Zero_not_eq_One [simp]:
     shows "Zero \<noteq> One"
       using Zero_def One_def Q.Zero_def Q.One_def
-      by (metis AC.domain_closed AC.rep_abs Q.dom_char Q.ideD(1) Q.ide_char Q.is_category
-                Q.seq_char category.ide_cod)
+      by (metis AC.rep_abs Q.Zero_not_eq_One UNIV_I)
 
     lemma j0_not_eq_j1 [simp]:
     shows "j0 \<noteq> j1"
@@ -967,44 +1000,45 @@ begin
     shows "seq g f \<longleftrightarrow> arr g \<and> arr f \<and> ((f = Zero \<and> g \<noteq> One) \<or> (f \<noteq> Zero \<and> g = One))"
     proof
       assume gf: "seq g f"
-      have f: "arr f \<and> (f = Zero \<or> f = One \<or> f = j0 \<or> f = j1)" using gf arr_char by auto
-      have g: "arr g \<and> (g = Zero \<or> g = One \<or> g = j0 \<or> g = j1)" using gf arr_char by auto
-      have "f = Zero \<Longrightarrow> g \<noteq> One" using f g gf by force
-      moreover have "f \<noteq> Zero \<Longrightarrow> g = One"
+      have f: "arr f \<and> (f = Zero \<or> f = One \<or> f = j0 \<or> f = j1)" using gf arr_char by blast
+      have g: "arr g \<and> (g = Zero \<or> g = One \<or> g = j0 \<or> g = j1)" using gf arr_char by blast
+      have "f = Zero \<Longrightarrow> g \<noteq> One"
         using f g gf
-        by (metis Zero_not_eq_One cod_simp(2) cod_simp(3) cod_simp(4)
-                  dom_simp(1) dom_simp(3) dom_simp(4))
+        by (metis Zero_not_eq_One seqE cod_simp(1) dom_simp(2))
+      moreover have "f \<noteq> Zero \<Longrightarrow> g = One"
+        using f g gf by auto
       ultimately show "arr g \<and> arr f \<and> ((f = Zero \<and> g \<noteq> One) \<or> (f \<noteq> Zero \<and> g = One))"
         using f g by blast
       next
       assume gf: "arr g \<and> arr f \<and> ((f = Zero \<and> g \<noteq> One) \<or> (f \<noteq> Zero \<and> g = One))"
-      have "f = Zero \<Longrightarrow> seq g f" using gf arr_char by auto
-      moreover have "g = One \<Longrightarrow> seq g f" using gf arr_char by auto
+      have "f = Zero \<Longrightarrow> seq g f" using gf arr_char [of g] by auto
+      moreover have "g = One \<Longrightarrow> seq g f" using gf arr_char [of f] by auto
       ultimately show "seq g f" using gf by blast
     qed
 
     lemma comp_char:
-    shows "comp g f = (if seq g f then
-                         if f = Zero then g else if g = One then f else null
-                       else null)"
+    shows "g \<cdot> f = (if seq g f then
+                      if f = Zero then g else if g = One then f else null
+                    else null)"
     proof -
-      have "\<not>seq g f \<Longrightarrow> comp g f = null"
-        using comp_def AC.comp_char Q.comp_char seq_char by auto
-      moreover have "seq g f \<Longrightarrow> f = Zero \<Longrightarrow> comp g f = g"
-        using comp_arr_dom [of g] by fastforce
-      moreover have "seq g f \<Longrightarrow> g = One \<Longrightarrow> comp g f = f"
-        using comp_cod_arr [of f] by fastforce
-      ultimately show ?thesis using seq_char by metis
+      have "\<not>seq g f \<Longrightarrow> g \<cdot> f = null"
+        using comp_def AC.comp_char Q.comp_char seq_char ext by blast
+      moreover have "seq g f \<Longrightarrow> f = Zero \<Longrightarrow> g \<cdot> f = g"
+        using comp_arr_dom by auto
+      moreover have "seq g f \<Longrightarrow> g = One \<Longrightarrow> g \<cdot> f = f"
+        using comp_cod_arr by auto
+      ultimately show ?thesis
+        by (metis seqE seq_char)
     qed
 
     lemma comp_simp [simp]:
     assumes "seq g f"
-    shows "f = Zero \<Longrightarrow> comp g f = g"
-    and "g = One \<Longrightarrow> comp g f = f"
+    shows "f = Zero \<Longrightarrow> g \<cdot> f = g"
+    and "g = One \<Longrightarrow> g \<cdot> f = f"
     proof -
-      show "f = Zero \<Longrightarrow> comp g f = g"
+      show "f = Zero \<Longrightarrow> g \<cdot> f = g"
         using assms comp_char by metis
-      show "g = One \<Longrightarrow> comp g f = f"
+      show "g = One \<Longrightarrow> g \<cdot> f = f"
         using assms comp_char seq_char by metis
     qed
 

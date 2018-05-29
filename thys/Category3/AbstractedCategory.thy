@@ -19,8 +19,9 @@ begin
     The construction of functor categories is a good example of this.
   *}
 
-  locale abstracted_category = C: category C
-  for C :: "'c comp"
+  locale abstracted_category =
+    C: category C
+  for C :: "'c comp"   (infixr "\<cdot>\<^sub>C" 55)
   and A :: "'c \<Rightarrow> 'a"
   and R :: "'a \<Rightarrow> 'c"
   and S :: "'c set" +
@@ -30,116 +31,114 @@ begin
   and domain_closed: "C.arr x \<or> x = C.null \<Longrightarrow> x \<in> S"
   begin
 
-    definition comp
-    where "comp g f \<equiv> if C.seq (R g) (R f) then A (C (R g) (R f)) else A C.null"
+    definition comp    (infixr "\<cdot>" 55)
+    where "g \<cdot> f \<equiv> if C.arr (R g \<cdot>\<^sub>C R f) then A (R g \<cdot>\<^sub>C R f) else A C.null"
 
     interpretation partial_magma comp
     proof
-      show "\<exists>!n. \<forall>f. comp n f = n \<and> comp f n = n"
+      show "\<exists>!n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n"
       proof
-        show "\<forall>f. comp (A C.null) f = A C.null \<and> comp f (A C.null) = A C.null"
-          using comp_def rep_abs domain_closed by auto
-        show "\<And>n. \<forall>f. comp n f = n \<and> comp f n = n \<Longrightarrow> n = A C.null"
-          by (metis comp_def C.not_arr_null rep_abs domain_closed)
+        show "\<forall>f. A C.null \<cdot> f = A C.null \<and> f \<cdot> A C.null = A C.null"
+          unfolding comp_def using rep_abs domain_closed by auto
+        show "\<And>n. \<forall>f. n \<cdot> f = n \<and> f \<cdot> n = n \<Longrightarrow> n = A C.null"
+          unfolding comp_def using rep_abs domain_closed C.comp_null(1) by metis
       qed
     qed
+
+    notation in_hom ("\<guillemotleft>_ : _ \<rightarrow> _\<guillemotright>")
 
     lemma null_char:
     shows "null = A C.null"
-      by (metis C.not_arr_null abstracted_category.comp_def abstracted_category_axioms comp_null(2)
-                domain_closed rep_abs)
+      using domain_closed rep_abs
+      by (metis (no_types, lifting) C.comp_null(2) comp_def comp_null(1))
 
-    lemma ide_implies_unit_abs:
-    shows "C.ide f \<Longrightarrow> unit (A f)"
-      by (simp add: abs_rep domain_closed local.comp_def null_char rep_abs unit_def)
-
-    lemma has_dom_char':
-    shows "has_dom f \<longleftrightarrow> C.has_dom (R f)"
+    lemma abs_preserves_ide:
+    shows "C.ide f \<Longrightarrow> ide (A f)"
     proof -
-      fix f
-      show "has_dom f \<longleftrightarrow> C.has_dom (R f)"
-      proof
-        assume f: "has_dom f"
-        show "C.has_dom (R f)"
-          using ide_implies_unit_abs f comp_def has_dom_def C.has_dom_def
-          by (metis C.dom_def C.ideD(1) C.not_arr_null C.ide_dom comp_null(2))
-        next
-        assume f: "C.has_dom (R f)"
-        show "has_dom f"
-          using ide_implies_unit_abs f comp_def has_dom_def C.has_dom_def
-          by (metis C.arr_dom_iff_arr C.has_domD(1) C.has_domD(3) C.not_arr_null
-                    abstracted_category.domain_closed abstracted_category_axioms
-                    C.cod_dom C.ide_dom comp_null(2) rep_abs)
-      qed
+      have "C.ide f \<Longrightarrow> A f \<cdot> A f \<noteq> null"
+        using comp_def null_char rep_abs abs_rep domain_closed
+        by (metis C.ideD(1) C.ide_comp_self C.not_arr_null)
+      thus "C.ide f \<Longrightarrow> ide (A f)"
+        unfolding ide_def
+        using comp_def null_char rep_abs abs_rep domain_closed C.comp_arr_dom C.comp_cod_arr
+        by fastforce
     qed
 
-    lemma has_cod_char':
-    shows "has_cod f \<longleftrightarrow> C.has_cod (R f)"
-    proof -
-      fix f
-      show "has_cod f \<longleftrightarrow> C.has_cod (R f)"
-      proof
-        assume f: "has_cod f"
-        show "C.has_cod (R f)"
-          using ide_implies_unit_abs has_dom_char' f comp_def has_cod_def C.has_cod_def
-          by (metis C.category_axioms C.cod_def C.ideD(1) C.not_arr_null category.ide_cod null_char)
-        next
-        assume f: "C.has_cod (R f)"
-        show "has_cod f"
-        proof (intro has_codI)
-          have "unit (A (C.cod (R f)))"
-            using ide_implies_unit_abs f C.arrI C.ide_cod by blast
-          moreover have "comp (A (C.cod (R f))) f \<noteq> null"
-          proof -
-            have "C.seq (R (A (C.cod (R f)))) (R f)"
-              using ide_implies_unit_abs f rep_abs
-              by (simp add: C.arrI C.arr_cod_iff_arr C.dom_cod domain_closed)
-            thus ?thesis
-              using ide_implies_unit_abs f comp_def
-              by (metis C.arr_cod_iff_arr C.has_codD(3) C.not_arr_null domain_closed
-                        null_char rep_abs)
-          qed
-          ultimately show "unit (A (C.cod (R f))) \<and> comp (A (C.cod (R f))) f \<noteq> null"
-            by auto
-        qed
+    lemma has_domain_char':
+    shows "domains f \<noteq> {} \<longleftrightarrow> C.domains (R f) \<noteq> {}"
+    proof
+      assume f: "domains f \<noteq> {}"
+      show "C.domains (R f) \<noteq> {}"
+        using f unfolding domains_def C.domains_def comp_def null_char apply auto
+        by (metis C.seqE C.cod_in_codomains C.comp_arr_dom C.has_codomain_iff_arr
+            C.self_domain_iff_ide C.domains_char C.domains_comp C.domains_null C.codomains_char)
+      next
+      assume f: "C.domains (R f) \<noteq> {}"
+      obtain a where a: "a \<in> C.domains (R f)" using f by blast
+      have "A a \<in> domains f"
+      proof -
+        have "ide (A a)"
+          using a abs_preserves_ide C.domains_def by simp
+        moreover have "comp f (A a) \<noteq> null"
+          using a
+          unfolding comp_def C.domains_def null_char
+          using domain_closed rep_abs C.in_homE C.ext by (simp, metis)
+        ultimately show ?thesis using domains_def by blast
       qed
+      thus "domains f \<noteq> {}" by auto
     qed
+
+    lemma has_codomain_char':
+    shows "codomains f \<noteq> {} \<longleftrightarrow> C.codomains (R f) \<noteq> {}"
+    proof
+      assume f: "codomains f \<noteq> {}"
+      show "C.codomains (R f) \<noteq> {}"
+        using f unfolding codomains_def C.codomains_def comp_def null_char apply auto
+        by (metis (no_types, lifting) C.seqE C.cod_in_codomains C.comp_cod_arr
+            C.has_codomain_iff_arr C.not_arr_null C.self_domain_iff_ide C.domains_char
+            C.codomains_char)
+      next
+      assume f: "C.codomains (R f) \<noteq> {}"
+      obtain b where b: "b \<in> C.codomains (R f)" using f by blast
+      have "A b \<in> codomains f"
+      proof -
+        have "ide (A b)"
+          using b abs_preserves_ide C.codomains_def by simp
+        moreover have "comp (A b) f \<noteq> null"
+          using b
+          unfolding comp_def C.codomains_def null_char
+          using domain_closed rep_abs C.in_homE C.ext by (simp, metis)
+        ultimately show ?thesis using codomains_def by blast
+      qed
+      thus "codomains f \<noteq> {}" by auto
+    qed
+
+    lemma arr_char:
+    shows "arr f \<longleftrightarrow> C.arr (R f)"
+      using comp_def null_char arr_def C.arr_def has_domain_char' has_codomain_char' by simp
 
     lemma is_category:
     shows "category comp"
-      using comp_def C.not_arr_null C.arr_comp C.dom_comp C.cod_comp comp_null(2) rep_abs
-      apply (unfold_locales)
-           apply (metis abstracted_category.domain_closed abstracted_category_axioms)
-          apply (metis abstracted_category.domain_closed abstracted_category_axioms)
-         apply (metis abstracted_category.domain_closed abstracted_category_axioms)
-        apply (metis abstracted_category.domain_closed abstracted_category_axioms)
-    proof -
-      show "\<And>f. has_dom f = has_cod f"
-        using has_dom_char' has_cod_char' by (simp add: C.has_dom_iff_has_cod)
-      show "\<And>f g h. \<lbrakk> comp g f \<noteq> null; comp h g \<noteq> null \<rbrakk> \<Longrightarrow>
-                    comp h (comp g f) = comp (comp h g) f"
-      proof -
-        fix f g h
-        assume gf: "comp g f \<noteq> null"
-        assume hg: "comp h g \<noteq> null"
-        have 1: "C.seq (R g) (R f) \<and> C.seq (R h) (R g)"
-          using gf hg by (metis comp_def null_char)
-        have 2: "C.seq (R h) (R (A (C (R g) (R f)))) \<and> C.seq (R (A (C (R h) (R g)))) (R f)"
-          using 1 rep_abs C.arr_comp C.dom_comp C.cod_comp
-          by (simp add: domain_closed)
-        have "comp h (comp g f) = A (C (R h) (R (A (C (R g) (R f)))))"
-          using 1 2 comp_def by simp
-        also have "... = A (C (R h) (C (R g) (R f)))"
-          using 1 rep_abs domain_closed by simp
-        also have "... = A (C (C (R h) (R g)) (R f))"
-          using 1 by simp
-        also have "... = A (C (R (A (C (R h) (R g)))) (R f))"
-          using 1 rep_abs domain_closed by simp
-        also have "... = comp (comp h g) f"
-          using 1 2 comp_def by simp
-        finally show "comp h (comp g f) = comp (comp h g) f"
-          by simp
-      qed
+    proof
+      fix f g h
+      show 0: "g \<cdot> f \<noteq> null \<Longrightarrow> seq g f"
+        unfolding arr_def
+        using domain_closed rep_abs has_domain_char' has_codomain_char' null_char
+        by (auto simp add: C.has_domain_iff_arr comp_def)
+      show "(domains f \<noteq> {}) = (codomains f \<noteq> {})"
+        using has_domain_char' has_codomain_char' C.has_domain_iff_arr C.has_codomain_iff_arr
+        by simp
+      show "seq h g \<Longrightarrow> seq (h \<cdot> g) f \<Longrightarrow> seq g f"
+        using comp_def arr_char rep_abs domain_closed
+        by (metis C.seqE C.seqI C.dom_comp)
+      show "seq h (g \<cdot> f) \<Longrightarrow> seq g f \<Longrightarrow> seq h g"
+        using comp_def arr_char rep_abs domain_closed
+        by (metis (full_types) C.compatible_iff_seq C.codomains_comp)
+      show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> seq (h \<cdot> g) f"
+        using comp_def arr_char rep_abs domain_closed
+        by (metis (full_types) C.compatible_iff_seq C.domains_comp)
+      show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
+        using comp_def arr_char rep_abs domain_closed C.seqI' C.seqE by fastforce
     qed
 
   end
@@ -150,67 +149,37 @@ begin
   context abstracted_category
   begin
 
-    lemma has_dom_char:
-    shows "has_dom f \<longleftrightarrow> C.arr (R f)"
-      using has_dom_char' by (simp add: C.arr_def C.has_dom_iff_has_cod)
+    lemma has_domain_char:
+    shows "domains f \<noteq> {} \<longleftrightarrow> C.arr (R f)"
+      using has_domain_char' by (simp add: C.arr_def C.has_domain_iff_has_codomain)
      
     lemma has_cod_char:
-    shows "has_cod f \<longleftrightarrow> C.arr (R f)"
-      using has_cod_char' by (simp add: C.arr_def C.has_dom_iff_has_cod)
-
-    lemma arr_char:
-    shows "arr f \<longleftrightarrow> C.arr (R f)"
-      using has_dom_char has_cod_char arr_def by simp
+    shows "codomains f \<noteq> {} \<longleftrightarrow> C.arr (R f)"
+      using has_codomain_char' by (simp add: C.arr_def C.has_domain_iff_has_codomain)
 
     lemma dom_char:
     shows "dom f = (if arr f then A (C.dom (R f)) else null)"
-    proof -
-      have "arr f \<Longrightarrow> dom f = A (C.dom (R f))"
-      proof -
-        assume f: "arr f"
-        have "unit (A (C.dom (R f)))"
-          using f arr_char ide_implies_unit_abs by simp
-        moreover have "comp f (A (C.dom (R f))) \<noteq> null"
-          using f arr_char comp_def null_char rep_abs
-          by (metis C.arr_dom_iff_arr C.comp_arr_dom C.cod_dom not_arr_null
-                    abstracted_category.domain_closed abstracted_category_axioms)
-        ultimately show "dom f = A (C.dom (R f))"
-          using f dom_simp by simp
-      qed
-      moreover have "\<not>arr f \<Longrightarrow> dom f = null"
-        by (simp add: arr_def dom_def)
-      ultimately show ?thesis by auto
-    qed
-     
+      using arr_char abs_preserves_ide has_domain_iff_arr dom_def
+            domain_closed comp_def rep_abs C.arr_dom_iff_arr
+      apply (cases "arr f")
+       by (intro dom_eqI, simp_all)
+
     lemma cod_char:
     shows "cod f = (if arr f then A (C.cod (R f)) else null)"
-    proof -
-      have "arr f \<Longrightarrow> cod f = A (C.cod (R f))"
-      proof -
-        assume f: "arr f"
-        have "unit (A (C.cod (R f)))"
-          using f arr_char ide_implies_unit_abs by simp
-        moreover have "comp (A (C.cod (R f))) f \<noteq> null"
-          using f arr_char comp_def null_char rep_abs
-          by (metis C.arr_cod_iff_arr C.comp_cod_arr C.dom_cod not_arr_null
-                    abstracted_category.domain_closed abstracted_category_axioms)
-        ultimately show "cod f = A (C.cod (R f))"
-          using f cod_simp by simp
-      qed
-      moreover have "\<not>arr f \<Longrightarrow> cod f = null"
-        by (simp add: arr_def cod_def)
-      ultimately show ?thesis by auto
-    qed
+      using arr_char abs_preserves_ide has_codomain_iff_arr cod_def
+            domain_closed comp_def rep_abs C.arr_cod_iff_arr
+      apply (cases "arr f")
+       by (intro cod_eqI, simp_all)
 
     lemma ide_char:
     shows "ide a \<longleftrightarrow> C.ide (R a)"
-     using arr_char dom_char
-     by (metis C.arr_dom_iff_arr C.ideD(1) C.ideD(2) C.ideI_dom abs_rep domain_closed
-               ideD(1) ideD(2) ideI_dom rep_abs)
+     using arr_char dom_char domain_closed abs_rep rep_abs abs_preserves_ide
+     by (metis C.arr_dom C.ide_char' ide_char)
 
     lemma comp_char:
-    shows "comp g f = (if seq g f then A (C (R g) (R f)) else null)"
-      using arr_char dom_char cod_char comp_def null_char arr_comp not_arr_null by metis
+    shows "g \<cdot> f = (if seq g f then A (R g \<cdot>\<^sub>C R f) else null)"
+      using arr_char dom_char cod_char comp_def null_char seqI' not_arr_null
+      by (simp add: domain_closed rep_abs)
 
   end
 

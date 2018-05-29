@@ -19,42 +19,45 @@ begin
     worry about whether an arrow belows to the category or its dual.
   *}
     
-  locale dual_category = C: category C
-  for C :: "'a comp"
+  locale dual_category =
+    C: category C
+  for C :: "'a comp"     (infixr "\<cdot>" 55)
   begin
 
-    definition comp
-    where "comp g f \<equiv> C f g"
+    definition comp      (infixr "\<cdot>\<^sup>o\<^sup>p" 55)
+    where "g \<cdot>\<^sup>o\<^sup>p f \<equiv> f \<cdot> g"
 
     lemma comp_char [simp]:
-    shows "comp g f = C f g"
+    shows "g \<cdot>\<^sup>o\<^sup>p f = f \<cdot> g"
       using comp_def by auto
 
     interpretation partial_magma comp
       apply unfold_locales using comp_def C.ex_un_null by metis
 
+    notation in_hom ("\<guillemotleft>_ : _ \<leftarrow> _\<guillemotright>")
+
     lemma null_char [simp]:
     shows "null = C.null"
-      using C.comp_null comp_def C.nullI null_def by auto
+      by (metis C.comp_null(2) comp_null(2) comp_def)
 
-    lemma unit_char:
-    shows "unit a \<longleftrightarrow> C.unit a"
-      unfolding unit_def C.unit_def by auto
+    lemma ide_char [simp]:
+    shows "ide a \<longleftrightarrow> C.ide a"
+      unfolding ide_def C.ide_def by auto
 
-    lemma has_dom_char:
-    shows "has_dom f \<longleftrightarrow> C.has_cod f"
-      using unit_char has_dom_def C.has_cod_def by simp
+    lemma domains_char:
+    shows "domains f = C.codomains f"
+      using C.codomains_def domains_def ide_char by auto
 
-    lemma has_cod_char:
-    shows "has_cod f \<longleftrightarrow> C.has_dom f"
-      using unit_char has_cod_def C.has_dom_def by simp
+    lemma codomains_char:
+    shows "codomains f = C.domains f"
+      using C.domains_def codomains_def ide_char by auto
 
     interpretation category comp
-      apply unfold_locales
-      (* 6 *) using comp_def C.match_2 null_char apply metis
-      (* 5 *) using comp_def C.match_1 null_char apply metis
-      (* 4 *) apply (auto simp add: C.match_3 C.match_4)
-      (* 3 *) by (auto simp add: C.has_dom_iff_has_cod has_cod_char has_dom_char C.comp_assoc')
+      using C.has_domain_iff_arr C.has_codomain_iff_arr domains_char codomains_char null_char
+            comp_def C.match_4 C.ext arr_def C.comp_assoc
+      apply (unfold_locales, simp_all)
+      using C.match_2 apply (metis C.ext C.not_arr_null)
+      using C.match_1 by metis
 
     lemma is_category:
     shows "category comp" ..
@@ -69,27 +72,23 @@ begin
 
     lemma dom_char [simp]:
     shows "dom f = C.cod f"
-      using unit_char has_dom_char dom_def C.cod_def by auto
+      by (simp add: C.cod_def dom_def domains_char)
 
     lemma cod_char [simp]:
     shows "cod f = C.dom f"
-      using unit_char has_cod_char cod_def C.dom_def by auto
+      by (simp add: C.dom_def cod_def codomains_char)
 
-    lemma arr_char [iff]:
+    lemma arr_char [simp]:
     shows "arr f \<longleftrightarrow> C.arr f"
-      using arr_def C.arr_def has_cod_char has_dom_char by auto
+      using C.has_codomain_iff_arr has_domain_iff_arr domains_char by auto
 
-    lemma hom_char [iff]:
-    shows "f \<in> hom b a \<longleftrightarrow> f \<in> C.hom a b"
-      by fastforce
+    lemma hom_char [simp]:
+    shows "in_hom f b a \<longleftrightarrow> C.in_hom f a b"
+      by force
 
-    lemma ide_char [iff]:
-    shows "ide a \<longleftrightarrow> C.ide a"
-      using ideD(1) ideD(3) by auto
-
-    lemma seq_char [iff]:
-    shows "seq g f \<longleftrightarrow> C.seq f g"
-      by auto
+    lemma seq_char [simp]:
+    shows "seq g f = C.seq f g"
+      by simp
 
   end
 
