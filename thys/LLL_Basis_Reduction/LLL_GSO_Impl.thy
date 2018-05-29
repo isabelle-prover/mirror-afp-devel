@@ -180,10 +180,12 @@ next
   hence j: "j < i" and id: "(j < i) = True" by auto
   note Linv = Suc(3)
   note inv = LLL_invD[OF Linv]
+  interpret gs1: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs"
+    by (standard) (use inv gs.lin_indpt_list_def in auto)
   note impl = Suc(2)
   from fi_state[OF impl i] have fi: "fi_state state = fs ! i" by auto
   have mu: "fs ! i \<bullet>i gso fs j / \<parallel>gso fs j\<parallel>\<^sup>2 = \<mu> fs i j" 
-    unfolding scalar_prod_int_rat_def gs.\<mu>.simps id if_True
+    unfolding scalar_prod_int_rat_def gs1.\<mu>.simps id if_True
     by (subst comm_scalar_prod, insert j i inv, auto)
   note res = Suc(5)[unfolded map_rev_Suc basis_reduction_add_rows_loop.simps fi Let_def mu]
   let ?c = "floor_ceil (\<mu> fs i j)" 
@@ -279,6 +281,8 @@ proof -
     fi_state[OF impl i] fim1_state[OF impl i i0] 
     gi_state[OF impl i] gim1_state[OF impl i i0]]
   from LLL_invD[OF inv] have len: "length fs = m" by auto
+  interpret gs1: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs"
+    by (standard) (use assms LLL_invariant_def gs.lin_indpt_list_def in auto)
   from fs_state[OF impl len] have fs: "fs_state state = fs" by auto
   let ?x = "sq_norm (gso fs (i - 1))" 
   let ?y = "\<alpha> * sq_norm (gso fs i)" 
@@ -286,7 +290,7 @@ proof -
   note swap = basis_reduction_swap[OF inv i i0 cond refl, unfolded fs'']
   note inv' = LLL_invD[OF inv]
   have mu: "fs ! i \<bullet>i gso fs (i - 1) / \<parallel>gso fs (i - 1)\<parallel>\<^sup>2 = \<mu> fs i (i - 1)" 
-    unfolding gs.\<mu>.simps scalar_prod_int_rat_def
+    unfolding gs1.\<mu>.simps scalar_prod_int_rat_def
     by (subst comm_scalar_prod, insert i0 i inv', auto)
   have nim1: "\<parallel>gso fs i\<parallel>\<^sup>2 + square_rat (\<mu> fs i (i - 1)) * \<parallel>gso fs (i - 1)\<parallel>\<^sup>2 = 
     sq_norm (gso fs'' (i - 1))" by (subst swap(4), insert i, auto)
@@ -420,9 +424,10 @@ qed
 
 lemma initial_state: "LLL_impl_inv (initial_state n fs_init) 0 fs_init" 
 proof -
-  have id: "gram_schmidt n (RAT fs_init) = map (gso fs_init) [0..<m]" 
-    apply(rule gs.main_connect)
-    using len lin_dep unfolding gs.lin_indpt_list_def by (auto intro!: gs.mn)
+  interpret gs: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT (fs_init)"
+    by (standard) (use lin_dep gs.lin_indpt_list_def in auto)
+  have id: "gram_schmidt n (RAT fs_init) = map (gso fs_init) [0..<length (RAT fs_init)]" 
+    using gs.mn by (rule gs.main_connect)
   show ?thesis unfolding initial_state_def Let_def LLL_impl_inv_def list_repr_def gram_schmidt_triv id
     by (simp, intro nth_equalityI, auto simp: len)
 qed

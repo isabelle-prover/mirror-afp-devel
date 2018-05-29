@@ -42,6 +42,8 @@ shows
     (is "\<And> i' j'. _ \<Longrightarrow> _ \<Longrightarrow> _ = ?new_mu i' j'")
 proof -
   note fs_int = LLL_invariant_fs_int[OF Linv]
+  interpret gs1: gram_schmidt_fs_lin_indpt n "TYPE(rat)" "RAT fs"
+    by (standard) (use assms LLL_invariant_def gs.lin_indpt_list_def in auto)
   note add = basis_reduction_add_row_main[OF Linv i j c fs' mu_small]
   then have fs_int': "fs_int fs'"
     using LLL_invariant_fs_int by auto
@@ -62,7 +64,7 @@ proof -
           unfold if_distrib[of rat_of_int] of_int_diff of_int_mult updates id' 
           d\<mu>[OF fs_int' j'' i'] d\<mu>[OF fs_int j'' i'] 
           if_distrib[of "( * ) (rat_of_int (d fs (Suc j')))"] ring_distribs,
-          insert True i' j' i j d\<mu>[OF fs_int], auto simp: gs.\<mu>.simps[of _ x x for x]) 
+          insert True i' j' i j d\<mu>[OF fs_int], auto simp: gs1.\<mu>.simps) 
   qed
 qed
 

@@ -63,8 +63,13 @@ lemma \<mu>_bound_rowD: assumes "\<mu>_bound_row fs bnd i" "j \<le> i"
   using assms unfolding \<mu>_bound_row_def by auto
 
 lemma \<mu>_bound_row_1: assumes "\<mu>_bound_row fs bnd i" 
-  shows "bnd \<ge> 1" using \<mu>_bound_rowD[OF assms, of i]
-  by (auto simp: gs.\<mu>.simps)
+  shows "bnd \<ge> 1"
+proof -
+  interpret gs1: gram_schmidt_fs n "TYPE(rat)" "RAT fs" .
+  show ?thesis
+  using \<mu>_bound_rowD[OF assms, of i]
+  by (auto simp: gs1.\<mu>.simps)
+qed
 
 lemma reduced_\<mu>_bound_row: assumes red: "reduced fs i"  
   and ii: "ii < i" 
@@ -72,6 +77,7 @@ shows "\<mu>_bound_row fs 1 ii"
 proof (intro \<mu>_bound_rowI)
   fix j
   assume "j \<le> ii"
+  interpret gs1: gram_schmidt_fs n "TYPE(rat)" "RAT fs" .
   show "(\<mu> fs ii j)^2 \<le> 1"
   proof (cases "j < ii")
     case True
@@ -79,7 +85,7 @@ proof (intro \<mu>_bound_rowI)
     have "abs (\<mu> fs ii j) \<le> 1/2" by auto
     from mult_mono[OF this this]
     show ?thesis by (auto simp: power2_eq_square)
-  qed (auto simp: gs.\<mu>.simps)
+  qed (auto simp: gs1.\<mu>.simps)
 qed
 
 lemma f_bound_True_arbitrary: assumes "f_bound True ii fs"
@@ -279,6 +285,8 @@ proof (rule bound_invI)
   have Linv: "LLL_invariant True i fs" (is ?g1) and fbnd: "f_bound True i fs" 
     and gbnd: "g_bound fs" by auto
   note inv = LLL_invD[OF Linv]
+  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+    by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   show "LLL_invariant True i fs" by fact
   show fbndF: "f_bound False i fs" using f_bound_True_arbitrary[OF fbnd] .
   have A0: "A > 0" using LLL_inv_A_pos[OF Linv gbnd] i by auto
@@ -286,8 +294,7 @@ proof (rule bound_invI)
     fix j
     assume ji: "j < i" 
     have "(\<mu> fs i j)\<^sup>2 \<le> gs.Gramian_determinant (RAT fs) j * \<parallel>RAT fs ! i\<parallel>\<^sup>2"
-      apply(rule gs.mu_bound_Gramian_determinant[OF _ _ _ _ _ ji i])
-      using inv unfolding gs.lin_indpt_list_def  by (auto, fastforce)
+      using ji i inv by (intro gs1.mu_bound_Gramian_determinant) (auto)
     also have "gs.Gramian_determinant (RAT fs) j = of_int (d fs j)" unfolding d_def 
       by (subst of_int_Gramian_determinant, insert ji i inv(2-), auto simp: set_conv_nth)
     also have "\<parallel>RAT fs ! i\<parallel>\<^sup>2 = of_int \<parallel>fs ! i\<parallel>\<^sup>2" using i inv(2-) by (auto simp: sq_norm_of_int)
@@ -311,7 +318,7 @@ proof (rule bound_invI)
       with mu_bound[of j] j show ?thesis by auto
     next
       case True
-      show ?thesis unfolding True gs.\<mu>.simps using i A0 by auto
+      show ?thesis unfolding True gs1.\<mu>.simps using i A0 by auto
     qed
     also have "\<dots> \<le> 4 ^ (m - 1 - i) * of_nat (A ^ (m - 1) * m)" 
       by (rule mult_right_mono, auto)
@@ -330,6 +337,8 @@ proof -
   note Linv = bound_invD(1)[OF binv]
   from mu_small have mu_small: "\<mu>_small fs i" unfolding \<mu>_small_row_def \<mu>_small_def by auto
   note inv = LLL_invD[OF Linv]
+  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+    by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   note fbnd = bound_invD(2)[OF binv]
   note gbnd = bound_invD(3)[OF binv]
   {
@@ -346,7 +355,7 @@ proof -
         fix j
         assume j: "j \<le> i" 
         from mu_small[unfolded \<mu>_small_def, rule_format, of j]
-        have "abs (\<mu> fs i j) \<le> 1" using j unfolding \<mu>_small_def by (cases "j = i", force simp: gs.\<mu>.simps, auto)
+        have "abs (\<mu> fs i j) \<le> 1" using j unfolding \<mu>_small_def by (cases "j = i", force simp: gs1.\<mu>.simps, auto)
         from mult_mono[OF this this] show "(\<mu> fs i j)\<^sup>2 \<le> 1" by (auto simp: power2_eq_square)
       qed
       have "rat_of_int \<parallel>fs ! i\<parallel>\<^sup>2 \<le> rat_of_int (int (Suc i * A))" 
@@ -460,6 +469,10 @@ proof (rule bound_invI)
   note Linv' = swap(1)
   note inv' = LLL_invD[OF Linv']
   note inv = LLL_invD[OF Linv]
+  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+    by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
+  interpret gs2: gram_schmidt_fs_int "RAT fs'" n "TYPE(rat)"
+    by (standard) (use inv' gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   let ?mu1 = "\<mu> fs" 
   let ?mu2 = "\<mu> fs'" 
   let ?mu = "?mu1 i (i - 1)" 
@@ -516,9 +529,9 @@ proof (rule bound_invI)
             by (rule gs.sumlist_in_span[OF G1], unfold set_map, insert G1,
               auto intro!: gs.smult_in_span intro: gs.span_mem)
           also have "gs.span (?g1 ` {0 ..< i - 1}) = gs.span (?f1 ` {0 ..< i - 1})" 
-            apply(subst gs.partial_span[OF _ _ _ _ im1], insert inv, unfold gs.lin_indpt_list_def)
-                apply(blast, blast, blast, blast)
-                apply(rule arg_cong[of _ _ gs.span])
+            apply(subst gs1.partial_span, insert im1 inv, unfold gs.lin_indpt_list_def)
+             apply(blast)
+            apply(rule arg_cong[of _ _ gs.span])
             apply(subst nth_image[symmetric])
             by (insert i inv, auto)
           also have "\<dots> \<subseteq> gs.span U" unfolding U_def 
@@ -531,19 +544,19 @@ proof (rule bound_invI)
           using u g2i inv(5)[OF im1] by auto
         have list_id: "[0..<Suc (i - 1)] = [0..< i - 1] @ [i - 1]" 
           "map f [x] = [f x]" for f x by auto
-        have "gs.is_oc_projection (gs.gso (RAT fs') i) (gs.span (gs.gso (RAT fs') ` {0..<i})) ((RAT fs') ! i)"
+        have "gs.is_oc_projection (gs2.gso i) (gs.span (gs2.gso ` {0..<i})) ((RAT fs') ! i)"
           using i inv' unfolding gs.lin_indpt_list_def
-          by (intro gs.gso_oc_projection_span(2)) (auto)
-        then have "gs.is_oc_projection (?g2 i) (gs.span (gs.gso (RAT fs') ` {0 ..< i}))  (?f1 (i - 1))" 
+          by (intro gs2.gso_oc_projection_span(2)) (auto)
+        then have "gs.is_oc_projection (?g2 i) (gs.span (gs2.gso ` {0 ..< i}))  (?f1 (i - 1))" 
           unfolding id(2) using inv(6) i by (auto)
         also have "?f1 (i - 1) = u + ?g1 (i - 1) " 
-          apply(subst gs.fi_is_sum_of_mu_gso[OF _ _ im1], insert inv, unfold gs.lin_indpt_list_def)
-          apply(blast, blast)
-          unfolding list_id map_append u_def 
-          by (subst gs.M.sumlist_snoc, insert i, auto simp: gs.\<mu>.simps intro!: inv(5))
-        also have "gs.span (gs.gso (RAT fs') ` {0 ..< i}) = gs.span (set (take i (RAT fs')))" 
-          using inv' unfolding gs.lin_indpt_list_def
-          by (subst gs.partial_span[OF _ _ _ _ \<open>i \<le> m\<close>]) auto
+          apply(subst gs1.fi_is_sum_of_mu_gso, insert im1 inv, unfold gs.lin_indpt_list_def)
+          apply(blast)
+          unfolding list_id map_append u_def
+          by (subst gs.M.sumlist_snoc, insert i, auto simp: gs1.\<mu>.simps intro!: inv(5))
+        also have "gs.span (gs2.gso ` {0 ..< i}) = gs.span (set (take i (RAT fs')))" 
+          using inv' \<open>i \<le> m\<close> unfolding gs.lin_indpt_list_def
+          by (subst gs2.partial_span) auto
         also have "set (take i (RAT fs')) = ?f2 ` {0 ..< i}" using inv'(6) i 
           by (subst nth_image[symmetric], auto)
         also have "{0 ..< i} = {0 ..< i - 1} \<union> {(i - 1)}" using i by auto
@@ -779,7 +792,8 @@ proof -
   have inv: "LLL_invariant upw k fs" 
     and gbnd: "g_bound fs" by auto
   note * = LLL_invD[OF inv]
-  interpret gs: gram_schmidt_rat n .
+  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+    by (standard) (use * gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   note d_approx[OF inv gbnd i, unfolded d_def]  
   let ?r = "rat_of_int"
   have int: "(gs.Gramian_determinant (RAT fs) i \<cdot>\<^sub>v (gso fs i)) $v j \<in> \<int>"
@@ -788,7 +802,7 @@ proof -
       using that assms * by (intro vec_hom_Ints) (auto)
     then show ?thesis
       using * gs.gso_connect snd_gram_schmidt_int assms unfolding gs.lin_indpt_list_def
-      by (intro gs.Gramian_determinant_times_gso_Ints) (auto)
+      by (intro gs1.Gramian_determinant_times_gso_Ints) (auto)
   qed
   have gsi: "gso fs i \<in> Rn" using *(5)[OF i] .
   have gs_sq: "\<bar>(gso fs i $ j)\<bar>\<^sup>2 \<le> rat_of_nat A"
@@ -860,8 +874,9 @@ proof (atomize(full))
      and gbnd: "g_bound fs" by auto
   from LLL_inv_A_pos[OF inv gbnd] i have A: "A > 0" by auto 
   note * = LLL_invD[OF inv]
+  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+    by (standard) (use * gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   let ?mu = "\<mu> fs i j" 
-  interpret gs: gram_schmidt_rat n .
   show "\<bar>num\<bar> \<le> A ^ (2 * m) * 2 ^ m * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
   proof (cases "j < i")
     case j: True
@@ -888,7 +903,7 @@ proof (atomize(full))
       have 1: "of_int_hom.vec_hom (fs ! j) $v i \<in> \<int>" if "i < n" "j < length fs" for j i
         using * that by (metis vec_hom_Ints)
       then show ?thesis
-        by (intro gs.mu_bound_Gramian_determinant[OF _ _ _ _ _ j i], insert * j i, auto simp: set_conv_nth gs.lin_indpt_list_def)
+        by (intro gs1.mu_bound_Gramian_determinant, insert * j i, auto simp: set_conv_nth gs.lin_indpt_list_def)
     qed
     also have "sq_norm (RAT fs ! i) = of_int (sq_norm (fs ! i))" 
       unfolding sq_norm_of_int[symmetric] using *(6) i by auto
@@ -906,8 +921,8 @@ proof (atomize(full))
     from this[folded abs_le_square_iff] 
     have mu_bound: "abs ?mu \<le> of_nat ?bnd" by auto
     have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
-      by (rule gs.Gramian_determinant_mu_ints[OF _ _ _ _ i],
-      insert j *(1,3-6), auto simp: set_conv_nth gs.lin_indpt_list_def vec_hom_Ints)
+      by (rule gs1.Gramian_determinant_mu_ints,
+      insert j *(1,3-6) i, auto simp: set_conv_nth gs.lin_indpt_list_def vec_hom_Ints)
     also have "(gs.Gramian_determinant (RAT fs) (Suc j)) = of_int (d fs (Suc j))" 
       unfolding d_def by (rule of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)
     finally have ints: "of_int (d fs (Suc j)) * ?mu \<in> \<int>" .
@@ -931,7 +946,7 @@ proof (atomize(full))
     from denom num show ?thesis by blast
   next
     case False
-    hence "?mu = 0 \<or> ?mu = 1" unfolding gs.\<mu>.simps by auto
+    hence "?mu = 0 \<or> ?mu = 1" unfolding gs1.\<mu>.simps by auto
     hence "quotient_of ?mu = (1,1) \<or> quotient_of ?mu = (0,1)" by auto
     from this[unfolded quot] show ?thesis using A i by (auto intro!: mult_ge_one)
   qed
