@@ -38,7 +38,7 @@ lemma filterlim_sequentially_iff:
   by auto
 
 lemma filterlim_realpow_sequentially_at_top:
-  "(x::real)>1 \<Longrightarrow> filterlim (op ^ x) at_top sequentially"
+  "(x::real)>1 \<Longrightarrow> filterlim ((^) x) at_top sequentially"
   apply (rule LIMSEQ_divide_realpow_zero[THEN filterlim_inverse_at_top,of _ 1,simplified])
   by auto
 
@@ -88,8 +88,8 @@ next
   proof-
     have "(\<Prod>j = s..Suc n. a powr 2 ^ j) =(a powr 2 ^(Suc n))  " 
       using \<open>s=Suc n\<close> by simp
-    also have "(a powr 2 ^(Suc n) ) =  a powr sum (op ^ 2) {s..Suc n}   " using that by auto
-    ultimately show " (\<Prod>j = s..Suc n. a powr 2 ^ j) = a powr sum (op ^ 2) {s..Suc n}"
+    also have "(a powr 2 ^(Suc n) ) =  a powr sum ((^) 2) {s..Suc n}   " using that by auto
+    ultimately show " (\<Prod>j = s..Suc n. a powr 2 ^ j) = a powr sum ((^) 2) {s..Suc n}"
       using \<open>s\<le>Suc n\<close> by linarith
   qed
   ultimately show ?case using \<open>s\<le>Suc n\<close> by linarith
@@ -397,7 +397,7 @@ proof (rule ccontr)
         unfolding eventually_sequentially
       proof (rule_tac x="t+1" in exI,rule allI,rule impI)
         fix n assume "t + 1 \<le> n" 
-        have "inj_on (op + (t + 1)) {..<n}" by simp
+        have "inj_on ((+) (t + 1)) {..<n}" by simp
         from sum.reindex[OF this, of "\<lambda>j. ln (d j)",symmetric] 
         show "(\<Sum>i<n. ln (d (t + 1 + i))) = (\<Sum>j = t + 1..n+t. ln (d j))"
           apply (auto intro!:sum.cong)
@@ -497,7 +497,7 @@ proof (rule,rule)
            Max ((\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) `
                 {s..n}) powr
            2 ^ i)"
-    proof (rule prod_mono, clarify)
+    proof (rule prod_mono)
       fix i assume i: "i \<in> {s..n}"
       have "real_of_int (a i) = (real_of_int (a i) powr (1 / real_of_int (2 ^ i))) powr 2 ^ i"
         unfolding powr_powr by (simp add: a less_eq_real_def)
@@ -538,7 +538,7 @@ proof (rule,rule)
 
   proof -
     define ff where "ff = Max (( \<lambda> (j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  } )"
-    have " sum (op ^ 2) {s..n} < (2::real) ^ (n + 1)" using factt \<open>s\<le>n\<close>  by auto
+    have " sum ((^) 2) {s..n} < (2::real) ^ (n + 1)" using factt \<open>s\<le>n\<close>  by auto
     moreover have "1 \<le> ff" 
     proof -
       define S where "S=(\<lambda>(j::nat). ( of_int( a j) powr(1 /real_of_int (2^j)) )) ` {s..n  }"
@@ -590,7 +590,7 @@ proof (rule,rule)
     define ss where "ss = (\<lambda>j. real_of_int (a j) powr (1 / real_of_int (2 ^ j))) ` {s..n}"
     show ?thesis 
     proof (fold ss_def,rule powr_mono2)
-      have "Max ss \<ge>0" -- \<open>NOTE: we are repeating the same proof, so it may be a good idea to put 
+      have "Max ss \<ge>0" \<comment> \<open>NOTE: we are repeating the same proof, so it may be a good idea to put 
                             this conclusion in an outer block so that it can be reused 
                             (without reproving).\<close>
       proof -
