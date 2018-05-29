@@ -265,6 +265,7 @@ NormByEval
 Open_Induction
 OpSets
 Optics
+Optimal_BST
 Orbit_Stabiliser
 Ordered_Resolution_Prover
 Ordinal

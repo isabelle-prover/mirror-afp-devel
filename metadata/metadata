@@ -6846,3 +6846,17 @@ abstract =
   number theoretic result, the proof makes use only of analytical arguments. We
   also formalize a corollary of the theorem for a specific series fulfilling the
   assumptions of the theorem.
+
+[Optimal_BST]
+title = Optimal Binary Search Trees
+author = Tobias Nipkow <https://www.in.tum.de/~nipkow>, Dániel Somogyi <>
+topic = Computer Science/Algorithms, Computer Science/Data Structures
+date = 2018-05-27
+notify = nipkow@in.tum.de
+abstract =
+  This article formalizes recursive algorithms for the construction
+  of optimal binary search trees given fixed access frequencies.
+  We follow Knuth (1971), Yao (1980) and Mehlhorn (1984).
+  The algorithms are memoized with the help of the AFP article
+  <a href="Monad_Memo_DP.html">Monadification, Memoization and Dynamic Programming</a>,
+  thus yielding dynamic programming algorithms.
