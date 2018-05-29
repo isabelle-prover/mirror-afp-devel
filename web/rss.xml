@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>25 May 2018 00:00:00 +0000</pubDate>
+    <pubDate>27 May 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Optimal Binary Search Trees</title>
+              <link>https://www.isa-afp.org/entries/Optimal_BST.html</link>
+       <guid>https://www.isa-afp.org/entries/Optimal_BST.html</guid>
+       <dc:creator> Tobias Nipkow, Dániel Somogyi       </dc:creator>
+       <pubDate>27 May 2018 00:00:00 +0000</pubDate>
+       <description>
+This article formalizes recursive algorithms for the construction
+of optimal binary search trees given fixed access frequencies.
+We follow Knuth (1971), Yao (1980) and Mehlhorn (1984).
+The algorithms are memoized with the help of the AFP article
+&lt;a href=&#34;Monad_Memo_DP.html&#34;&gt;Monadification, Memoization and Dynamic Programming&lt;/a&gt;,
+thus yielding dynamic programming algorithms.</description>
+    </item>
     <item>
        <title>Hidden Markov Models</title>
               <link>https://www.isa-afp.org/entries/Hidden_Markov_Models.html</link>
@@ -46,6 +60,20 @@ minimum and maximum reachability probabilities can be computed via a
 reduction to MDP model checking, including the case where one wants to
 disregard unrealizable behavior. Further information can be found in
 our ITP paper [2].</description>
+    </item>
+    <item>
+       <title>Irrational Rapidly Convergent Series</title>
+              <link>https://www.isa-afp.org/entries/Irrationality_J_Hancl.html</link>
+       <guid>https://www.isa-afp.org/entries/Irrationality_J_Hancl.html</guid>
+       <dc:creator> Angeliki Koutsoukou Argyraki, Wenda Li       </dc:creator>
+       <pubDate>23 May 2018 00:00:00 +0000</pubDate>
+       <description>
+We formalize with Isabelle/HOL a proof of a theorem by J. Hancl asserting the
+irrationality of the sum of a series consisting of rational numbers, built up
+by sequences that fulfill certain properties. Even though the criterion is a
+number theoretic result, the proof makes use only of analytical arguments. We
+also formalize a corollary of the theorem for a specific series fulfilling the
+assumptions of the theorem.</description>
     </item>
     <item>
        <title>Axiom Systems for Category Theory in Free Logic</title>
@@ -342,7 +370,7 @@ expansions. &lt;/p&gt;</description>
        <title>A verified LLL algorithm</title>
               <link>https://www.isa-afp.org/entries/LLL_Basis_Reduction.html</link>
        <guid>https://www.isa-afp.org/entries/LLL_Basis_Reduction.html</guid>
-       <dc:creator> Jose Divasón, Maximilian Haslbeck, Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
+       <dc:creator> Ralph Bottesch, Jose Divasón, Maximilian Haslbeck, Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
        <pubDate>02 Feb 2018 00:00:00 +0000</pubDate>
        <description>
 The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
@@ -535,38 +563,6 @@ fixpoint operations LFP and GFP. Composition of BNFs is subdivided
 into four simpler operations: Compose, Kill, Lift, and Permute. The
 N2M operation provides mutual (co)induction principles and
 (co)recursors for nested (co)datatypes.</description>
-    </item>
-    <item>
-       <title>The string search algorithm by Knuth, Morris and Pratt</title>
-              <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
-       <guid>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
-       <dc:creator> Fabian Hellauer, Peter Lammich       </dc:creator>
-       <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
-       <description>
-The Knuth-Morris-Pratt algorithm is often used to show that the
-problem of finding a string &lt;i&gt;s&lt;/i&gt; in a text
-&lt;i&gt;t&lt;/i&gt; can be solved deterministically in
-&lt;i&gt;O(|s| + |t|)&lt;/i&gt; time. We use the Isabelle
-Refinement Framework to formulate and verify the algorithm. Via
-refinement, we apply some optimisations and finally use the
-&lt;em&gt;Sepref&lt;/em&gt; tool to obtain executable code in
-&lt;em&gt;Imperative/HOL&lt;/em&gt;.</description>
-    </item>
-    <item>
-       <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
-              <link>https://www.isa-afp.org/entries/Stochastic_Matrices.html</link>
-       <guid>https://www.isa-afp.org/entries/Stochastic_Matrices.html</guid>
-       <dc:creator> René Thiemann       </dc:creator>
-       <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
-       <description>
-Stochastic matrices are a convenient way to model discrete-time and
-finite state Markov chains. The Perron&amp;ndash;Frobenius theorem
-tells us something about the existence and uniqueness of non-negative
-eigenvectors of a stochastic matrix.  In this entry, we formalize
-stochastic matrices, link the formalization to the existing AFP-entry
-on Markov chains, and apply the Perron&amp;ndash;Frobenius theorem to
-prove that stationary distributions always exist, and they are unique
-if the stochastic matrix is irreducible.</description>
     </item>
   </channel>
 </rss>

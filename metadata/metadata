@@ -6962,3 +6962,31 @@ abstract =
   specify this correctness property and prove that although one existing
   replication algorithm satisfies this property, several other published
   algorithms do not.
+
+[Irrationality_J_Hancl]
+title = Irrational Rapidly Convergent Series
+author = Angeliki Koutsoukou Argyraki <http://www.cl.cam.ac.uk/~ak2110/>, Wenda Li <http://www.cl.cam.ac.uk/~wl302/>
+topic = Mathematics/Number Theory, Mathematics/Analysis
+date = 2018-05-23
+notify = ak2110@cam.ac.uk, wl302@cam.ac.uk
+abstract = 
+  We formalize with Isabelle/HOL a proof of a theorem by J. Hancl asserting the
+  irrationality of the sum of a series consisting of rational numbers, built up
+  by sequences that fulfill certain properties. Even though the criterion is a
+  number theoretic result, the proof makes use only of analytical arguments. We
+  also formalize a corollary of the theorem for a specific series fulfilling the
+  assumptions of the theorem.
+
+[Optimal_BST]
+title = Optimal Binary Search Trees
+author = Tobias Nipkow <https://www.in.tum.de/~nipkow>, Dániel Somogyi <>
+topic = Computer Science/Algorithms, Computer Science/Data Structures
+date = 2018-05-27
+notify = nipkow@in.tum.de
+abstract =
+  This article formalizes recursive algorithms for the construction
+  of optimal binary search trees given fixed access frequencies.
+  We follow Knuth (1971), Yao (1980) and Mehlhorn (1984).
+  The algorithms are memoized with the help of the AFP article
+  <a href="Monad_Memo_DP.html">Monadification, Memoization and Dynamic Programming</a>,
+  thus yielding dynamic programming algorithms.
