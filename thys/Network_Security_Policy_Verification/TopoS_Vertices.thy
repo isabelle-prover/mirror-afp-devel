@@ -1,7 +1,7 @@
 theory TopoS_Vertices
 imports Main 
 "HOL-Library.Char_ord" (*order on char*)
-"HOL-Library.List_lexord" (*order on strings*)
+"HOL-Library.List_Lexorder" (*order on strings*)
 begin
 
 

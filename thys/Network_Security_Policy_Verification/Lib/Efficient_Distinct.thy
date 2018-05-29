@@ -1,7 +1,7 @@
 theory Efficient_Distinct
 imports 
   Automatic_Refinement.Misc (*mergesort*)
-  "HOL-Library.List_lexord"
+  "HOL-Library.List_Lexorder"
   "HOL-Library.Product_Lexorder"
   "HOL-Library.Char_ord"
   TopoS_Util
