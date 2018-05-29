@@ -538,6 +538,11 @@ abstract =
 	category. We also examine the case of limits in a functor category,
 	ultimately culminating in a proof that the Yoneda embedding preserves
 	limits.
+extra-history =
+	Change history:
+	[2018-05-29]:
+	Revised axioms for the category locale.  Introduced notation for composition and "in hom".
+	(revision 8318366d4575)<br>
 
 [MonoidalCategory]
 title = Monoidal Categories
@@ -563,6 +568,14 @@ abstract =
   isomorphism expressing the preservation of the unit object. Our
   definitions of monoidal category and monoidal functor are stated so as
   to take advantage of the economy afforded by these facts.
+extra-history =
+	Change history:
+	[2017-05-18]:
+	Integrated material from MonoidalCategory/Category3Adapter into Category3/ and deleted adapter.
+	(revision 015543cdd069)<br>
+	[2018-05-29]:
+	Modifications required due to 'Category3' changes.  Introduced notation for "in hom".
+	(revision 8318366d4575)<br>
 
 [Card_Multisets]
 title = Cardinality of Multisets
