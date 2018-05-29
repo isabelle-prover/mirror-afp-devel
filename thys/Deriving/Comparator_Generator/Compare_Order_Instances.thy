@@ -8,7 +8,7 @@ subsection \<open>Defining Compare-Order-Instances for Common Types\<close>
 theory Compare_Order_Instances
 imports
   Compare_Instances
-  "HOL-Library.List_lexord"
+  "HOL-Library.List_Lexorder"
   "HOL-Library.Product_Lexorder"
   "HOL-Library.Option_ord"
 begin

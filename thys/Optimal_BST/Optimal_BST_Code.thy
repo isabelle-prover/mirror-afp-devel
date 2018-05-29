@@ -13,15 +13,13 @@ where a = a and b = b for a b
 defines w_ab = w and wpl_ab = "wpl.wpl w_ab" .
 
 global_interpretation Optimal_BST
-where w = "w_ab a b" for a b
+where w = "w_ab a b" rewrites "wpl.wpl (w_ab a b) = wpl_ab a b" for a b
 defines opt_bst_ab = opt_bst
-rewrites "wpl.wpl (w_ab a b) = wpl_ab a b"
 by(simp add: wpl_ab_def)
 
 global_interpretation Optimal_BST2
-where w = "w_ab a b" for a b
+where w = "w_ab a b" rewrites "wpl.wpl (w_ab a b) = wpl_ab a b" for a b
 defines opt_bst2_ab = opt_bst2
-rewrites "wpl.wpl (w_ab a b) = wpl_ab a b"
 proof -
   show "wpl.wpl (w_ab a b) = wpl_ab a b" by(simp add: wpl_ab_def)
   show "Optimal_BST2 (w_ab a b)"

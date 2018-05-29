@@ -44,16 +44,16 @@ proof(induction xs)
       have "Max (?M (x#xs)) = Max (?M xs) + 1"
       proof (cases "\<exists>u \<in> set xs. f u < f x")
         case True
-        hence "?M (x#xs) = op + 1 ` ?M xs"
+        hence "?M (x#xs) = (+) 1 ` ?M xs"
           by (auto simp: nth_Cons' image_def less_Suc_eq_0_disj)
         thus ?thesis
-          using mono_Max_commute[of "op + 1" "?M xs"] ne by (auto simp: mono_def)
+          using mono_Max_commute[of "(+) 1" "?M xs"] ne by (auto simp: mono_def)
       next
         case False
-        hence *: "?M (x#xs) = insert 0 (op + 1 ` ?M xs)"
+        hence *: "?M (x#xs) = insert 0 ((+) 1 ` ?M xs)"
           using 1 by (auto simp: nth_Cons' image_def less_Suc_eq_0_disj)
-        hence "Max (?M (x#xs)) = Max (op + 1 ` ?M xs)" using Max_insert ne by simp
-        thus ?thesis using mono_Max_commute[of "op + 1" "?M xs"] ne by (auto simp: mono_def)
+        hence "Max (?M (x#xs)) = Max ((+) 1 ` ?M xs)" using Max_insert ne by simp
+        thus ?thesis using mono_Max_commute[of "(+) 1" "?M xs"] ne by (auto simp: mono_def)
       qed
       with Cons 2 0 show ?case by auto
     qed
@@ -117,7 +117,7 @@ proof -
     by(force simp add: Args_min_simps Ball_def)
   have "finite ?M'" using M(1) \<open>?M' \<subseteq> ?M\<close> infinite_super by blast
   hence "Max ?M \<le> Max ?M'" by (simp add: \<open>Max ?M \<in> ?M'\<close>)
-  have "Max ?M' \<le> Max ?M" using Max.antimono[OF \<open>?M' \<subseteq> ?M\<close> _ M(1)] \<open>Max ?M \<in> ?M'\<close> by auto
+  have "Max ?M' \<le> Max ?M" using Max.subset_imp[OF \<open>?M' \<subseteq> ?M\<close> _ M(1)] \<open>Max ?M \<in> ?M'\<close> by auto
   thus ?thesis using * ** \<open>Max ?M \<le> Max ?M'\<close> by force
 qed
 

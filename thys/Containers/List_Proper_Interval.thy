@@ -2,7 +2,7 @@
     Author:     Andreas Lochbihler, ETH Zurich *)
 
 theory List_Proper_Interval imports
-  "HOL-Library.List_lexord"
+  "HOL-Library.List_Lexorder"
   Collection_Order
 begin
 

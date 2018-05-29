@@ -7,7 +7,7 @@ subsubsection {* Instantiation for a Simple While Language *}
 theory WhileGraphSSA imports
 Generic_Interpretation
 Disjoin_Transform
-"HOL-Library.List_lexord"
+"HOL-Library.List_Lexorder"
 "HOL-Library.Char_ord"
 begin
 

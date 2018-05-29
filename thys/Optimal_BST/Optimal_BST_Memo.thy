@@ -5,6 +5,7 @@ imports
   Optimal_BST
   "Monad_Memo_DP.State_Main"
   "HOL-Library.Product_Lexorder"
+  "HOL-Library.RBT_Mapping"
   Optimal_BST_Examples
 begin
 
@@ -34,7 +35,7 @@ text \<open>The actual memoization of the cubic algorithm:\<close>
 context Optimal_BST
 begin
 
-memoize_fun opt_bst\<^sub>m: opt_bst with_memory dp_consistency_rbt
+memoize_fun opt_bst\<^sub>m: opt_bst with_memory dp_consistency_mapping
 monadifies (state) opt_bst.simps[unfolded argmin_fold]
 (* FIXME why not argmin_argmin2? memoize_prover breaks!
 How about opt_bst_wpl?
@@ -51,9 +52,9 @@ end
 text \<open>Code generation:\<close>
 
 global_interpretation Optimal_BST
-where w = "w_ab a b" for a b
+where w = "w_ab a b"
+rewrites "wpl.wpl (w_ab a b) = wpl_ab a b" for a b
 defines opt_bst_ab = opt_bst and opt_bst_ab' = opt_bst\<^sub>m'
-rewrites "wpl.wpl (w_ab a b) = wpl_ab a b"
 by(simp add: wpl_ab_def)
 
 text \<open>Examples:\<close>

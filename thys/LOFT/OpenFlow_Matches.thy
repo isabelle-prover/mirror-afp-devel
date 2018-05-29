@@ -3,7 +3,7 @@ imports IP_Addresses.Prefix_Match
         Simple_Firewall.Simple_Packet
         "HOL-Library.Monad_Syntax"
         (*"../Iptables_Semantics/Primitive_Matchers/Simple_Packet" (* I just want those TCP,UDP,\<dots> defs *)*)
-        "HOL-Library.List_lexord"
+        "HOL-Library.List_Lexorder"
         "HOL-Library.Char_ord" (* For a linorder on strings. See below. *)
 begin
 

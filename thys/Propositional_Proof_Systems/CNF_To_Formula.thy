@@ -1,6 +1,6 @@
 subsubsection\<open>Going back: CNFs to formulas\<close>
 theory CNF_To_Formula
-imports CNF_Formulas "HOL-Library.List_lexord"
+imports CNF_Formulas "HOL-Library.List_Lexorder"
 begin
   
 text\<open>One downside of CNFs is that they cannot be converted back to formulas 

@@ -4,7 +4,7 @@ section {* $\Pi$-Extended Regular Expressions *}
 
 (*<*)
 theory Pi_Regular_Exp
-imports Pi_Regular_Set "HOL-Library.List_lexord" "HOL-Library.Code_Target_Nat"
+imports Pi_Regular_Set "HOL-Library.List_Lexorder" "HOL-Library.Code_Target_Nat"
   Deriving.Compare_Instances   
 begin
 (*>*)

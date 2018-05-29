@@ -6,34 +6,6 @@ theory Weighted_Path_Length
 imports "HOL-Library.Tree"
 begin
 
-(* FIXME rm upon new release *)
-lemma upto_single[simp]: "[i..i] = [i]"
-by (simp add: upto.simps)
-
-lemma upto_Nil_iff[simp]: "[i..j] = [] \<longleftrightarrow> j < i"
-by(auto simp: upto.simps)
-
-lemma length_upto[simp]: "length [i..j] = nat(j - i + 1)"
-by(induction i j rule: upto.induct) (auto simp: upto.simps)
-
-lemma nth_upto: "i + int k \<le> j \<Longrightarrow> [i..j] ! k = i + int k"
-apply(induction i j arbitrary: k rule: upto.induct)
-apply(subst upto_rec1)
-apply(auto simp add: nth_Cons')
-done
-
-lemma Nil_upto_Nil[simp]: "[] = [i..j] \<longleftrightarrow> j < i"
-by(auto simp: upto.simps)
-
-lemma upto_split1: 
-  "\<lbrakk> i \<le> j;  j \<le> k \<rbrakk> \<Longrightarrow> [i..k] = [i..j-1] @ [j..k]"
-proof (induction j rule: int_ge_induct)
-  case base thus ?case by (simp add: upto_rec1)
-next
-  case step thus ?case using upto_rec1 upto_rec2 by simp
-qed
-(* end rm *)
-
 text \<open>This theory presents two definitions of the \emph{weighted path length} of a BST,
 the objective function we want to minimize,
 and proves them equivalent. Function \<open>Wpl\<close> is the intuitive global definition
