@@ -1286,7 +1286,7 @@ qed
 
 
 (* equation (3) in front of Lemma 16.18 *)
-lemma d_approx: assumes i: "ii < m" 
+lemma d_approx_main: assumes i: "ii \<le> m" "m \<noteq> 0" 
 shows "rat_of_int (d fs ii) \<le> rat_of_nat (A^ii)" 
 proof -
   note inv = LLL_invD[OF Linv]
@@ -1300,6 +1300,11 @@ proof -
   also have "\<dots> = of_nat (A^ii)" by simp
   finally show ?thesis by simp
 qed
+
+lemma d_approx: assumes i: "ii < m"  
+  shows "rat_of_int (d fs ii) \<le> rat_of_nat (A^ii)" 
+  using d_approx_main[of ii] assms by auto
+
 
 lemma Gramian_determinant_bound: assumes i: "ii < m" 
   shows "gs.Gramian_determinant fs ii \<le> A^ii" 
