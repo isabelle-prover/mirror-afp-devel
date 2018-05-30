@@ -231,7 +231,6 @@ context begin interpretation autoref_syn .
       "0::int \<equiv> OP 0 :::\<^sub>i i_int"
       "1::int \<equiv> OP 1 :::\<^sub>i i_int"
       "(numeral x)::int \<equiv> (OP (numeral x) :::\<^sub>i i_int)"
-      "(neg_numeral x)::int \<equiv> (OP (neg_numeral x) :::\<^sub>i i_int)"
       by simp_all
 
     (*lemma [autoref_itype]:
