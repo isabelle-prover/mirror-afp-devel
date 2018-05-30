@@ -21,7 +21,7 @@ begin
      where "epi f = (arr f \<and> inj_on (\<lambda>g. g \<cdot> f) {g. seq g f})"
 
      definition mono
-     where "mono f = (arr f \<and> inj_on (op \<cdot> f) {g. seq f g})"
+     where "mono f = (arr f \<and> inj_on (\<lambda>g. f \<cdot> g) {g. seq f g})"
 
      lemma epiI [intro]:
      assumes "arr f" and "\<And>g g'. seq g f \<and> seq g' f \<and> g \<cdot> f = g' \<cdot> f \<Longrightarrow> g = g'"
@@ -170,7 +170,7 @@ begin
      assumes "mono m" and "mono m'" and "seq m' m"
      shows "mono (m' \<cdot> m)"
      proof -
-       have "inj_on (op \<cdot> (m' \<cdot> m)) {f. seq (m' \<cdot> m) f}"
+       have "inj_on (\<lambda>f. (m' \<cdot> m) \<cdot> f) {f. seq (m' \<cdot> m) f}"
          unfolding inj_on_def
          using assms
          by (metis CollectD seqI seqE dom_comp monoE comp_assoc)
