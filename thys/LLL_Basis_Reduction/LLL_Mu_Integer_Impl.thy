@@ -40,22 +40,22 @@ fun inc_state :: "LLL_dmu_d_state \<Rightarrow> LLL_dmu_d_state" where
   "inc_state (f,mu,d) = (inc_i f, mu, d)" 
 
 fun basis_reduction_add_rows_loop where
-  "basis_reduction_add_rows_loop state i j [] = state" 
-| "basis_reduction_add_rows_loop state i sj (fj # fjs) = (
+  "basis_reduction_add_rows_loop n state i j [] = state" 
+| "basis_reduction_add_rows_loop n state i sj (fj # fjs) = (
      let fi = fi_state state;
          dsj = d_state state sj;
          j = sj - 1;
          c = floor_ceil_num_denom (dmu_ij_state state i j) dsj;
-         state' = (if c = 0 then state else upd_fi_mu_state state i (fi - c \<cdot>\<^sub>v fj) 
+         state' = (if c = 0 then state else upd_fi_mu_state state i (vec n (\<lambda> i. fi $ i - c * fj $ i)) 
              (IArray.of_fun (\<lambda> jj. let mu = dmu_ij_state state i jj in 
                   if jj < j then mu - c * dmu_ij_state state j jj else 
                   if jj = j then mu - dsj * c else mu) i))
-      in basis_reduction_add_rows_loop state' i j fjs)"
+      in basis_reduction_add_rows_loop n state' i j fjs)"
 
 text \<open>More efficient code which breaks abstraction of state.\<close>
  
 lemma basis_reduction_add_rows_loop_code: 
-  "basis_reduction_add_rows_loop state i sj (fj # fjs) = (
+  "basis_reduction_add_rows_loop n state i sj (fj # fjs) = (
      case state of ((f1,f2),mus,ds) \<Rightarrow> 
      let fi = hd f2;
          j = sj - 1;
@@ -63,11 +63,11 @@ lemma basis_reduction_add_rows_loop_code:
          mui = mus !! i;
          c = floor_ceil_num_denom (mui !! j) dsj
       in (if c = 0 then 
-          basis_reduction_add_rows_loop state i j fjs
+          basis_reduction_add_rows_loop n state i j fjs
          else  
              let muj = mus !! j in 
-           basis_reduction_add_rows_loop
-                ((f1,  (fi - c \<cdot>\<^sub>v fj) # tl f2), iarray_update mus i 
+           basis_reduction_add_rows_loop n
+                ((f1,  vec n (\<lambda> i. fi $ i - c * fj $ i) # tl f2), iarray_update mus i 
              (IArray.of_fun (\<lambda> jj. let mu = mui !! jj in 
                   if jj < j then mu - c * muj !! jj else 
                   if jj = j then mu - dsj * c else mu) i),
@@ -87,9 +87,9 @@ declare basis_reduction_add_rows_loop_code_equations[code]
 
 
 definition basis_reduction_add_rows where
-  "basis_reduction_add_rows upw i state = 
+  "basis_reduction_add_rows n upw i state = 
      (if upw 
-        then basis_reduction_add_rows_loop state i i (small_fs_state state) 
+        then basis_reduction_add_rows_loop n state i i (small_fs_state state) 
         else state)" 
 
 context
@@ -151,7 +151,7 @@ qed
 definition basis_reduction_step where
   "basis_reduction_step upw i state = (if i = 0 then (True, Suc i, inc_state state)
      else let 
-       state' = basis_reduction_add_rows upw i state;
+       state' = basis_reduction_add_rows n upw i state;
        di = d_state state' i;
        dsi = d_state state' (Suc i);
        dim1 = d_state state' (i - 1);
@@ -176,7 +176,7 @@ definition "initial_state = (let
 end
 
 definition "basis_reduction \<alpha> n fs = (let m = length fs in 
-  basis_reduction_main \<alpha> m True 0 (initial_state m fs))" 
+  basis_reduction_main \<alpha> n m True 0 (initial_state m fs))" 
 
 definition "reduce_basis \<alpha> fs = (case fs of Nil \<Rightarrow> fs | Cons f _ \<Rightarrow> fs_state (basis_reduction \<alpha> (dim_vec f) fs))" 
 
@@ -247,9 +247,9 @@ lemma basis_reduction_add_rows_loop: assumes
     impl: "LLL_impl_inv state i fs" 
   and inv: "LLL_invariant True i fs" 
   and mu_small: "\<mu>_small_row i fs j"
-  and res: "basis_reduction_add_rows_loop state i j 
+  and res: "basis_reduction_add_rows_loop n state i j 
     (map ((!) fs) (rev [0 ..< j])) = state'" 
-    (is "basis_reduction_add_rows_loop state i j (?mapf fs j) = _")
+    (is "basis_reduction_add_rows_loop n state i j (?mapf fs j) = _")
   and j: "j \<le> i" 
   and i: "i < m" 
   and fs': "fs' = fs_state state'" 
@@ -284,13 +284,17 @@ next
   proof (cases "?c = 0")
     case True
     from res[unfolded True] 
-    have res: "basis_reduction_add_rows_loop state i j (?mapf fs j) = state'" 
+    have res: "basis_reduction_add_rows_loop n state i j (?mapf fs j) = state'" 
       by simp
     note step = Linv basis_reduction_add_row_main_0[OF Linv i j True Suc(4)]
     show ?thesis using Suc(1)[OF impl step(1-2) res _ i] j by auto
   next
     case False
     hence id: "(?c = 0) = False" by auto
+    from i j have jm: "j < m" by auto
+    have idd: "vec n (\<lambda>ia. fs ! i $v ia - ?c * fs ! j $v ia) = 
+      fs ! i - ?c \<cdot>\<^sub>v fs ! j" 
+      by (intro eq_vecI, insert inv(4)[OF i] inv(4)[OF jm], auto)
     define fi' where "fi' = fs ! i - ?c \<cdot>\<^sub>v fs ! j" 
     obtain fs'' where fs'': "fs[i := fs ! i - ?c \<cdot>\<^sub>v fs ! j] = fs''" by auto
     note step = basis_reduction_add_row_main[OF Linv i j refl fs''[symmetric] Suc(4)]
@@ -298,7 +302,7 @@ next
     have map_id_f: "?mapf fs j = ?mapf fs'' j"  
       by (rule nth_equalityI, insert j i, auto simp: rev_nth fs''[symmetric])
     have nth_id: "[0..<m] ! i = i" using i by auto
-    note res = res[unfolded False map_id_f id if_False]
+    note res = res[unfolded False map_id_f id if_False idd]
     have fi: "fi' = fs'' ! i" unfolding fs''[symmetric] fi'_def using inv(6) i by auto
     let ?fn = "\<lambda> fs i. (fs ! i, sq_norm (gso fs i))" 
     let ?d = "\<lambda> fs i. d fs (Suc i)" 
@@ -364,7 +368,7 @@ qed
 lemma basis_reduction_add_rows: assumes
      impl: "LLL_impl_inv state i fs" 
   and inv: "LLL_invariant upw i fs" 
-  and res: "basis_reduction_add_rows upw i state = state'" 
+  and res: "basis_reduction_add_rows n upw i state = state'" 
   and i: "i < m" 
   and fs': "fs' = fs_state state'" 
 shows 
@@ -391,7 +395,7 @@ proof (atomize(full), goal_cases)
     from i have mm: "[0..<m] = [0 ..< i] @ [i] @ [Suc i ..< m]"
       by (intro nth_equalityI, auto simp: nth_append nth_Cons split: nat.splits)
     from res[unfolded def] True 
-    have "basis_reduction_add_rows_loop state i i (small_fs_state state) = state'" by auto
+    have "basis_reduction_add_rows_loop n state i i (small_fs_state state) = state'" by auto
     from basis_reduction_add_rows_loop[OF impl start(1-2) this[unfolded id] le_refl i fs']
     show ?thesis by auto
   qed
@@ -513,7 +517,7 @@ qed
 lemma basis_reduction_step: assumes 
   impl: "LLL_impl_inv state i fs" 
   and inv: "LLL_invariant upw i fs" 
-  and res: "basis_reduction_step \<alpha> m upw i state = (upw',i',state')" 
+  and res: "basis_reduction_step \<alpha> n m upw i state = (upw',i',state')" 
   and i: "i < m" 
   and fs': "fs' = fs_state state'" 
 shows 
@@ -536,7 +540,7 @@ proof (atomize(full), goal_cases)
   next
     case False
     hence id: "(i = 0) = False" by auto
-    obtain state'' where state'': "basis_reduction_add_rows upw i state = state''" by auto
+    obtain state'' where state'': "basis_reduction_add_rows n upw i state = state''" by auto
     define fs'' where fs'': "fs'' = fs_state state''" 
     obtain f mu ds where state: "state'' = (f,mu,ds)" by (cases state'', auto)
     from basis_reduction_add_rows[OF impl inv state'' i fs'']
@@ -571,23 +575,23 @@ qed
 lemma basis_reduction_main: assumes 
   impl: "LLL_impl_inv state i fs" 
   and inv: "LLL_invariant upw i fs" 
-  and res: "basis_reduction_main \<alpha> m upw i state = state'" 
+  and res: "basis_reduction_main \<alpha> n m upw i state = state'" 
   and fs': "fs' = fs_state state'" 
 shows "LLL_invariant True m fs'" 
       "LLL_impl_inv state' m fs'" 
 proof (atomize(full), insert assms(1-3), induct "LLL_measure i fs" arbitrary: i fs upw state rule: less_induct)
   case (less i fs upw)
   have id: "LLL_invariant upw i fs = True" using less by auto
-  note res = less(4)[unfolded basis_reduction_main.simps[of _ _ upw]]
+  note res = less(4)[unfolded basis_reduction_main.simps[of _ _ _ upw]]
   note inv = less(3)
   note impl = less(2)
   note IH = less(1)
   show ?case
   proof (cases "i < m")
     case i: True
-    obtain i'' state'' upw'' where step: "basis_reduction_step \<alpha> m upw i state = (upw'',i'',state'')" 
+    obtain i'' state'' upw'' where step: "basis_reduction_step \<alpha> n m upw i state = (upw'',i'',state'')" 
       (is "?step = _") by (cases ?step, auto)
-    with res i have res: "basis_reduction_main \<alpha> m upw'' i'' state'' = state'" by auto
+    with res i have res: "basis_reduction_main \<alpha> n m upw'' i'' state'' = state'" by auto
     note main = basis_reduction_step[OF impl inv step i refl]
     from IH[OF main(3,1,2) res]
     show ?thesis by auto

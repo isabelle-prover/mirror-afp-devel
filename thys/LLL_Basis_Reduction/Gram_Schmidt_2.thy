@@ -1339,9 +1339,6 @@ lemma det: assumes m: "m = n" shows "det FF = det Fs"
   apply (subst det_mult[OF M_dim(3)], (insert Fs_dim(3) m, auto)[1])
   apply (subst det_lower_triangular[OF _ M_dim(3)]) 
   by (subst M_index, (auto simp: \<mu>.simps)[3], unfold prod_list_diag_prod, auto simp: \<mu>.simps) 
-
-
-
 end
 
 locale gram_schmidt_fs_lin_indpt = gram_schmidt_fs_Rn +
