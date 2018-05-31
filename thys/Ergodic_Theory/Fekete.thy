@@ -24,8 +24,48 @@ text \<open>We define subadditive sequences, either from the start or eventually
 definition subadditive::"(nat\<Rightarrow>real) \<Rightarrow> bool"
   where "subadditive u = (\<forall>m n. u (m+n) \<le> u m + u n)"
 
+lemma subadditiveI:
+  assumes "\<And>m n. u (m+n) \<le> u m + u n"
+  shows "subadditive u"
+unfolding subadditive_def using assms by auto
+
+lemma subadditiveD:
+  assumes "subadditive u"
+  shows "u (m+n) \<le> u m + u n"
+using assms unfolding subadditive_def by auto
+
+lemma subadditive_un_le_nu1:
+  assumes "subadditive u"
+          "n > 0"
+  shows "u n \<le> n * u 1"
+proof -
+  have *: "n = 0 \<or> (u n \<le> n * u 1)" for n
+  proof (induction n)
+    case 0
+    then show ?case by auto
+  next
+    case (Suc n)
+    consider "n = 0" | "n > 0" by auto
+    then show ?case
+    proof (cases)
+      case 1
+      then show ?thesis by auto
+    next
+      case 2
+      then have "u (Suc n) \<le> u n + u 1" using subadditiveD[OF assms(1), of n 1] by auto
+      then show ?thesis using Suc.IH 2 by (auto simp add: algebra_simps)
+    qed
+  qed
+  show ?thesis using *[of n] \<open>n > 0\<close> by auto
+qed
+
 definition eventually_subadditive::"(nat\<Rightarrow>real) \<Rightarrow> nat \<Rightarrow> bool"
   where "eventually_subadditive u N0 = (\<forall>m>N0. \<forall>n>N0. u (m+n) \<le> u m + u n)"
+
+lemma eventually_subadditiveI:
+  assumes "\<And>m n. m > N0 \<Longrightarrow> n > N0 \<Longrightarrow> u (m+n) \<le> u m + u n"
+  shows "eventually_subadditive u N0"
+unfolding eventually_subadditive_def using assms by auto
 
 lemma subadditive_imp_eventually_subadditive:
   assumes "subadditive u"
@@ -158,6 +198,26 @@ lemma subadditive_converges_bounded:
   shows "(\<lambda>n. u n/n) \<longlonglongrightarrow> Inf {u n/n | n. n>0}"
 by (rule subadditive_converges_bounded'[OF subadditive_imp_eventually_subadditive[OF assms(1)] assms(2)])
 
+text \<open>We reformulate the previous lemma in a more directly usable form, avoiding the infimum.\<close>
+
+lemma subadditive_converges_bounded'':
+  assumes "subadditive u"
+          "\<And>n. n > 0 \<Longrightarrow> u n \<ge> n * (a::real)"
+  shows "\<exists>l. (\<lambda>n. u n / n) \<longlonglongrightarrow> l \<and> (\<forall>n>0. u n \<ge> n * l)"
+proof -
+  have B: "bdd_below {u n/n | n. n>0}"
+    apply (rule bdd_belowI[of _ a]) using assms(2)
+    apply (auto simp add: divide_simps)
+    by (metis linordered_field_class.sign_simps(5) mult_left_le_imp_le of_nat_0_less_iff)
+  define l where "l = Inf {u n/n | n. n>0}"
+  have *: "u n / n \<ge> l" if "n > 0" for n
+    unfolding l_def using that by (auto intro!: cInf_lower[OF _ B])
+  show ?thesis
+    apply (rule exI[of _ l], auto)
+    using subadditive_converges_bounded[OF assms(1) B] apply (simp add: l_def)
+    using * by (simp add: divide_simps algebra_simps)
+qed
+
 lemma subadditive_converges_unbounded':
   assumes "eventually_subadditive u N0"
           "\<not> (bdd_below {u n/n | n. n>N0})"
@@ -180,6 +240,109 @@ lemma subadditive_converges_unbounded:
           "\<not> (bdd_below {u n/n | n. n>0})"
   shows "(\<lambda>n. ereal(u n/n)) \<longlonglongrightarrow> -\<infinity>"
 by (rule subadditive_converges_unbounded'[OF subadditive_imp_eventually_subadditive[OF assms(1)] assms(2)])
+
+subsection \<open>Superadditive sequences\<close>
+
+text \<open>While most applications involve subadditive sequences, one sometimes encounters superadditive
+sequences. We reformulate quickly some of the above results in this setting.\<close>
+
+definition superadditive::"(nat\<Rightarrow>real) \<Rightarrow> bool"
+  where "superadditive u = (\<forall>m n. u (m+n) \<ge> u m + u n)"
+
+lemma subadditive_of_superadditive:
+  assumes "superadditive u"
+  shows "subadditive (\<lambda>n. -u n)"
+using assms unfolding superadditive_def subadditive_def by (auto simp add: algebra_simps)
+
+lemma superadditive_un_ge_nu1:
+  assumes "superadditive u"
+          "n > 0"
+  shows "u n \<ge> n * u 1"
+using subadditive_un_le_nu1[OF subadditive_of_superadditive[OF assms(1)] assms(2)] by auto
+
+lemma superadditive_converges_bounded'':
+  assumes "superadditive u"
+          "\<And>n. n > 0 \<Longrightarrow> u n \<le> n * (a::real)"
+  shows "\<exists>l. (\<lambda>n. u n / n) \<longlonglongrightarrow> l \<and> (\<forall>n>0. u n \<le> n * l)"
+proof -
+  have "\<exists>l. (\<lambda>n. -u n / n) \<longlonglongrightarrow> l \<and> (\<forall>n>0. -u n \<ge> n * l)"
+    apply (rule subadditive_converges_bounded''[OF subadditive_of_superadditive[OF assms(1)], of "-a"])
+    using assms(2) by auto
+  then obtain l where l: "(\<lambda>n. -u n / n) \<longlonglongrightarrow> l" "(\<forall>n>0. -u n \<ge> n * l)" by blast
+  have "(\<lambda>n. -((-u n)/n)) \<longlonglongrightarrow> -l"
+    by (intro tendsto_intros l)
+  moreover have "\<forall>n>0. u n \<le> n * (-l)"
+    using l(2) by (auto simp add: algebra_simps) (metis minus_equation_iff neg_le_iff_le)
+  ultimately show ?thesis
+    by auto
+qed
+
+
+subsection \<open>Almost additive sequences\<close>
+
+text \<open>One often encounters sequences which are both subadditive and superadditive, but only up
+to an additive constant. Adding or subtracting this constant, one can make the sequence
+genuinely subadditive or superadditive, and thus deduce results about its convergence, as follows.
+Such sequences appear notably when dealing with quasimorphisms.\<close>
+
+lemma almost_additive_converges:
+  fixes u::"nat \<Rightarrow> real"
+  assumes "\<And>m n. abs(u(m+n) - u m - u n) \<le> C"
+  shows "convergent (\<lambda>n. u n/n)"
+        "abs(u k - k * lim (\<lambda>n. u n / n)) \<le> C"
+proof -
+  have "(abs (u 0)) \<le> C" using assms[of 0 0] by auto
+  then have "C \<ge> 0" by auto
+
+  define v where "v = (\<lambda>n. u n + C)"
+  have "subadditive v"
+    unfolding subadditive_def v_def using assms by (auto simp add: algebra_simps abs_diff_le_iff)
+  then have vle: "v n \<le> n * v 1" if "n > 0" for n
+    using subadditive_un_le_nu1 that by auto
+  define w where "w = (\<lambda>n. u n - C)"
+  have "superadditive w"
+    unfolding superadditive_def w_def using assms by (auto simp add: algebra_simps abs_diff_le_iff)
+  then have wge: "w n \<ge> n * w 1" if "n > 0" for n
+    using superadditive_un_ge_nu1 that by auto
+
+  have I: "v n \<ge> w n" for n
+    unfolding v_def w_def using \<open>C \<ge> 0\<close> by auto
+  then have *: "v n \<ge> n * w 1" if "n > 0" for n using order_trans[OF wge[OF that]] by auto
+  then obtain lv where lv: "(\<lambda>n. v n/n) \<longlonglongrightarrow> lv" "\<And>n. n > 0 \<Longrightarrow> v n \<ge> n * lv"
+    using subadditive_converges_bounded''[OF \<open>subadditive v\<close> *] by auto
+  have *: "w n \<le> n * v 1" if "n > 0" for n using order_trans[OF _ vle[OF that]] I by auto
+  then obtain lw where lw: "(\<lambda>n. w n/n) \<longlonglongrightarrow> lw" "\<And>n. n > 0 \<Longrightarrow> w n \<le> n * lw"
+    using superadditive_converges_bounded''[OF \<open>superadditive w\<close> *] by auto
+
+  have *: "v n/n = w n /n + 2*C*(1/n)" for n
+    unfolding v_def w_def by (auto simp add: algebra_simps divide_simps)
+  have "(\<lambda>n. w n /n + 2*C*(1/n)) \<longlonglongrightarrow> lw + 2*C*0"
+    by (intro tendsto_add tendsto_mult lim_1_over_n lw, auto)
+  then have "lw = lv"
+    unfolding *[symmetric] using lv(1) LIMSEQ_unique by auto
+
+  have *: "u n/n = w n /n + C*(1/n)" for n
+    unfolding w_def by (auto simp add: algebra_simps divide_simps)
+  have "(\<lambda>n. u n /n) \<longlonglongrightarrow> lw + C*0"
+    unfolding * by (intro tendsto_add tendsto_mult lim_1_over_n lw, auto)
+  then have lu: "convergent (\<lambda>n. u n/n)" "lim (\<lambda>n. u n/n) = lw"
+    by (auto simp add: convergentI limI)
+  then show "convergent (\<lambda>n. u n/n)" by simp
+
+  show "abs(u k - k * lim (\<lambda>n. u n / n)) \<le> C"
+  proof (cases "k>0")
+    case False
+    then show ?thesis using assms[of 0 0] by auto
+  next
+    case True
+    have "u k - k * lim (\<lambda>n. u n/n) = v k - C - k * lv" unfolding lu(2) \<open>lw = lv\<close> v_def by auto
+    also have "... \<ge> -C" using lv(2)[OF True] by auto
+    finally have A: "u k - k * lim (\<lambda>n. u n/n) \<ge> - C" by simp
+    have "u k - k * lim (\<lambda>n. u n/n) = w k + C - k * lw" unfolding lu(2) w_def by auto
+    also have "... \<le> C" using lw(2)[OF True] by auto
+    finally show ?thesis using A by auto
+  qed
+qed
 
 
 subsection \<open>Submultiplicative sequences, application to the spectral radius\<close>
@@ -231,8 +394,8 @@ proof -
       then show ?thesis unfolding v_def by simp
     qed
 
-    have "eventually_subadditive w 0" unfolding eventually_subadditive_def
-    proof (auto)
+    have "eventually_subadditive w 0"
+    proof (rule eventually_subadditiveI)
       fix m n
       have "w (m+n) = ln (u (m+n))" by (simp add: w_def)
       also have "... \<le> ln(u m * u n)"
@@ -309,8 +472,10 @@ lemma spectral_radius_upper_bound [simp]:
   "(spectral_radius x)^n \<le> norm(x^n)"
 proof (cases)
   assume "\<not>(n = 0)"
-  have "root n (norm(x^n)) \<ge> spectral_radius x" using spectral_radius_aux \<open>n \<noteq> 0\<close> by auto
-  then show ?thesis by (metis \<open>n \<noteq> 0\<close> spectral_radius_nonneg norm_ge_zero not_gr0 power_mono real_root_pow_pos2)
+  have "root n (norm(x^n)) \<ge> spectral_radius x"
+    using spectral_radius_aux \<open>n \<noteq> 0\<close> by auto
+  then show ?thesis
+    by (metis \<open>n \<noteq> 0\<close> spectral_radius_nonneg norm_ge_zero not_gr0 power_mono real_root_pow_pos2)
 qed (simp)
 
 lemma spectral_radius_limit:
