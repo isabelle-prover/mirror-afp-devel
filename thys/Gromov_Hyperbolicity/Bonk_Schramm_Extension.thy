@@ -995,7 +995,7 @@ definition to_Bonk_Schramm_extension::"'a::metric_space \<Rightarrow> 'a Bonk_Sc
   where "to_Bonk_Schramm_extension x = abs_Bonk_Schramm_extension (basepoint x)"
 
 lemma to_Bonk_Schramm_extension_isometry:
-  "isometry to_Bonk_Schramm_extension"
+  "isometry_on UNIV to_Bonk_Schramm_extension"
 proof (rule isometry_onI)
   fix x y::'a
   show "dist (to_Bonk_Schramm_extension x) (to_Bonk_Schramm_extension y) = dist x y"

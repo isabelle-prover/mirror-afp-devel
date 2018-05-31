@@ -281,7 +281,7 @@ definition to_metric_completion::"('a::metric_space) \<Rightarrow> 'a metric_com
   where "to_metric_completion x = abs_metric_completion (\<lambda>n. x)"
 
 lemma to_metric_completion_isometry:
-  "isometry to_metric_completion"
+  "isometry_on UNIV to_metric_completion"
 proof (rule isometry_onI)
   fix x y::'a
   have "(\<lambda>n. dist (x) (y)) \<longlonglongrightarrow> dist (to_metric_completion x) (to_metric_completion y)"
@@ -357,8 +357,8 @@ This shows that the metric completion is unique, up to isometry:\<close>
 
 lemma lift_to_metric_completion_isometry:
   fixes f::"('a::metric_space) \<Rightarrow> ('b::complete_space)"
-  assumes "isometry f"
-  shows "\<exists>g. isometry g
+  assumes "isometry_on UNIV f"
+  shows "\<exists>g. isometry_on UNIV g
           \<and> range g = closure(range f)
           \<and> f = g o to_metric_completion
           \<and> (\<forall>x \<in> range to_metric_completion. g x = f (inv to_metric_completion x))"
@@ -371,7 +371,7 @@ proof -
   have *: "isometry_on (range to_metric_completion) g"
     apply (rule isometry_on_cong[OF _ g(3)], rule isometry_on_compose[of _ _ f])
     using assms isometry_on_inverse[OF to_metric_completion_isometry] isometry_on_subset by (auto) (fastforce)
-  then have "isometry g"
+  then have "isometry_on UNIV g"
     unfolding to_metric_completion_dense'[symmetric] apply (rule isometry_on_closure)
     using continuous_on_subset[OF uniformly_continuous_imp_continuous[OF g(1)]] by auto
 
@@ -386,15 +386,15 @@ proof -
   have "range f \<subseteq> range g"
     using g(2) by auto
   moreover have "closed (range g)"
-    using isometry_on_complete_image[OF \<open>isometry g\<close>] by (simp add: complete_eq_closed)
+    using isometry_on_complete_image[OF \<open>isometry_on UNIV g\<close>] by (simp add: complete_eq_closed)
   ultimately have "closure (range f) \<subseteq> range g"
     by (simp add: closure_minimal)
   then have "range g = closure (range f)"
     using \<open>range g \<subseteq> closure (range f)\<close> by auto
-  then show ?thesis using \<open>isometry g\<close> g by metis
+  then show ?thesis using \<open>isometry_on UNIV g\<close> g by metis
 qed
 
-subsection\<open>The metric completion of a second countable space is second countable\<close>
+subsection \<open>The metric completion of a second countable space is second countable\<close>
 
 text \<open>We want to show that the metric completion of a second countable space is still
 second countable. This is most easily expressed using the fact that a metric
