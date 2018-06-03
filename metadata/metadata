@@ -6751,7 +6751,7 @@ title = A verified LLL algorithm
 author = Ralph Bottesch <>, Jose Divasón <http://www.unirioja.es/cu/jodivaso/>, Maximilian Haslbeck <>, Sebastiaan Joosten <http://sjcjoosten.nl/>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>, Akihisa Yamada<>
 topic = Computer Science/Algorithms, Mathematics/Algebra
 date = 2018-02-02
-notify = ralph@bottesch.uibk.ac.at, jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
+notify = ralph.bottesch@uibk.ac.at, jose.divason@unirioja.es, maximilian.haslbeck@uibk.ac.at, s.j.c.joosten@utwente.nl, rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
 abstract =
   The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
   LLL algorithm, is an algorithm to find a basis with short, nearly
