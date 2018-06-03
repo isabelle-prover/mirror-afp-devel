@@ -213,7 +213,8 @@ lemma \<mu>': assumes j: "j \<le> i" and i: "i < m"
 proof (cases "j < i")
   case j: True
   have dsj: "d (Suc j) > 0"
-    using j i Gramian_determinant dist unfolding lin_indpt_list_def  by auto
+    using j i Gramian_determinant dist unfolding lin_indpt_list_def
+    by (meson less_trans_Suc nat_less_le)
   let ?sum = " (\<Sum>k = 0..<j. \<mu> j k * \<mu> i k * \<beta> fs k)" 
   have "\<mu>' i j = (fs ! i \<bullet> fs ! j - ?sum) * (d (Suc j) / \<beta> fs j)"     
     unfolding mu_Gramian_beta_def[OF j i] \<mu>'_def by simp
@@ -227,7 +228,8 @@ next
   case False
   with j have j: "j = i" by auto
   have dsi: "d (Suc i) > 0" "d i > 0"
-    using i Gramian_determinant dist  unfolding lin_indpt_list_def  by auto
+    using i Suc_leI dist  unfolding lin_indpt_list_def
+    by (simp_all add: Suc_leI Gramian_determinant(2))
   let ?sum = " (\<Sum>k = 0..<i. \<mu> i k * \<mu> i k * \<beta> fs k)" 
   have bzero: "\<beta> fs i \<noteq> 0" unfolding \<beta>_def using dsi by auto
   have "\<mu>' i i = d (Suc i)" by (simp add: \<mu>.simps \<mu>'_def)

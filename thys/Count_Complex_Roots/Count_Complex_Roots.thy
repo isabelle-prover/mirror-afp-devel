@@ -548,15 +548,18 @@ proof -
       show ?thesis by auto
     qed
     also have winding_eq:"... = - cindex_pathE (poly p \<circ> rec) 0 / 2"
-      apply (rule winding_number_cindex_pathE)
-      subgoal unfolding rec_def path_compose_join 
+    proof (rule winding_number_cindex_pathE)
+      show "finite_ReZ_segments (poly p \<circ> rec) 0"
+        unfolding rec_def path_compose_join 
         apply (fold g1_def g2_def g3_def g4_def)
         by (auto intro!: finite_ReZ_segments_joinpaths path_join_imp)
-      subgoal by (rule valid_path_compose_holomorphic[where s=UNIV],auto)
-      subgoal using path_no_proots unfolding path_image_compose proots_def by fastforce
-      subgoal unfolding rec_def pathstart_compose pathfinish_compose 
-        by (auto simp add:l1_def l4_def)   
-      done
+      show "valid_path (poly p \<circ> rec)"
+        by (rule valid_path_compose_holomorphic[where S=UNIV]) auto
+      show "0 \<notin> path_image (poly p \<circ> rec)"
+        using path_no_proots unfolding path_image_compose proots_def by fastforce
+      show "pathfinish (poly p \<circ> rec) = pathstart (poly p \<circ> rec)"
+        unfolding rec_def pathstart_compose pathfinish_compose  by (auto simp add:l1_def l4_def)   
+    qed
     also have cindex_pathE_eq:"... = of_int (- sms) / of_int 4"
     proof -
       have "cindex_pathE (poly p \<circ> rec) 0 = cindex_pathE (g1+++g2+++g3+++g4) 0"
@@ -665,7 +668,7 @@ proof -
       have "winding_number (poly p \<circ> rec) 0 \<in> \<int>"
       proof (rule integer_winding_number)
         show "path (poly p \<circ> rec)"
-          by (auto intro!:valid_path_compose_holomorphic[where s=UNIV] valid_path_imp_path)
+          by (auto intro!:valid_path_compose_holomorphic[where S=UNIV] valid_path_imp_path)
         show "pathfinish (poly p \<circ> rec) = pathstart (poly p \<circ> rec)"
           unfolding rec_def path_compose_join
           by (auto simp add:l1_def l4_def pathfinish_compose pathstart_compose)
@@ -1401,7 +1404,7 @@ proof -
   have [simp]:"valid_path (g r)" "path (g r)" "finite_ReZ_segments (g r) 0" for r
   proof -
     show "valid_path (g r)" unfolding g_def
-      apply (rule valid_path_compose_holomorphic[where s=UNIV])
+      apply (rule valid_path_compose_holomorphic[where S=UNIV])
       by (auto simp add:of_real_linepath)
     then show "path (g r)" using valid_path_imp_path by auto
     show "finite_ReZ_segments (g r) 0"
