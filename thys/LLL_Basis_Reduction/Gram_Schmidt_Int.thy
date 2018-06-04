@@ -464,7 +464,7 @@ fun \<sigma>s and \<mu>' where
 
 declare \<mu>'.simps[simp del]
 
-interpretation gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+interpretation gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
   by (standard)
     (use indep len gs.lin_indpt_list_def fs_intD(4) fs_int_def indep in
       \<open>auto intro!: vec_hom_Ints simp add: gs.lin_indpt_list_def \<close>)
@@ -641,7 +641,47 @@ lemma d\<mu>_impl: "d\<mu>_impl fs = IArray.of_fun (\<lambda> i. IArray.of_fun (
   unfolding d\<mu>_impl_def len using dmu_array[of 0]
   by (auto simp: \<mu>')
 end
+
 end
 
+
+context gram_schmidt_fs_int
+begin
+
+
+lemma A_mu':
+  assumes "i < m" "j \<le> i"
+  shows "(\<mu>' i j)\<^sup>2 \<le> A ^ (3 * Suc j)"
+proof -
+  have 1: "1 \<le> A * A ^ j"
+    using assms A_1 one_le_power[of _ "Suc j"] by fastforce
+  have "0 < d (Suc j)"
+     using assms by (intro Gramian_determinant) auto
+  then have [simp]: "0 \<le> d (Suc j)"
+    by arith
+  have A_d: "d (Suc j) \<le> A ^ (Suc j)"
+    using assms by (intro A_d) auto
+  have "(\<mu>' i j)\<^sup>2 = (d (Suc j)) * (d (Suc j)) * (\<mu> i j)\<^sup>2"
+    unfolding \<mu>'_def by (auto simp add: power2_eq_square)
+  also have "\<dots> \<le> (d (Suc j)) * (d (Suc j)) * A ^ (Suc j)"
+  proof -
+    have "(\<mu> i j)\<^sup>2 \<le> A ^ (Suc j)" if "i = j"
+      using that 1 by (auto simp add: \<mu>.simps)
+    moreover have "(\<mu> i j)\<^sup>2 \<le> A ^ (Suc j)" if "i \<noteq> j"
+      using A_mu assms that by (auto)
+    ultimately have "(\<mu> i j)\<^sup>2 \<le> A ^ (Suc j)"
+      by fastforce
+    then show ?thesis
+      by (intro mult_mono[of _ _ "(\<mu> i j)\<^sup>2"]) (auto)
+  qed
+  also have "\<dots> \<le> A ^ (Suc j) * A ^ (Suc j) * A ^ (Suc j)"
+    using assms 1 A_d by (auto intro!: mult_mono)
+  also have "A ^ (Suc j) * A ^ (Suc j) * A ^ (Suc j) = A ^ (3 * (Suc j))"
+    using nat_pow_distr nat_pow_pow power3_eq_cube by metis
+  finally show ?thesis
+    by simp
+qed
+
+end
 
 end

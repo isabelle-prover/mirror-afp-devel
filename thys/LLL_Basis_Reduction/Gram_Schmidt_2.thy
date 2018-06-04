@@ -1982,8 +1982,6 @@ qed
 
 end
 
-
-
 lemma (in gram_schmidt_fs_Rn) Gramian_determinant_Ints:
   assumes "k \<le> m" "\<And>i j. i < n \<Longrightarrow> j < m \<Longrightarrow> fs ! j $ i \<in> \<int>"
   shows "Gramian_determinant fs k \<in> \<int>"
@@ -2002,10 +2000,9 @@ proof -
     by (subst of_int_hom.mat_hom_mult[symmetric], auto)
 qed
 
-locale gram_schmidt_fs_int' = gram_schmidt_fs_lin_indpt +
+locale gram_schmidt_fs_int = gram_schmidt_fs_lin_indpt +
   assumes fs_int: "\<And>i j. i < n \<Longrightarrow> j < m \<Longrightarrow> fs ! j $ i \<in> \<int>"
 begin
-
 
 lemma Gramian_determinant_ge1:
   assumes "k \<le> m"
@@ -2042,7 +2039,7 @@ proof -
     by simp
 qed
 
-end (* gram_schmdit_fs_int *)
+end (* gram_schmidt_fs_int *)
 
 context gram_schmidt
 begin
@@ -2595,7 +2592,7 @@ lemma Ints_scalar_prod:
    \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> v $ i \<in> \<int>) \<Longrightarrow> (\<And> i. i < n \<Longrightarrow> w $ i \<in> \<int>) \<Longrightarrow> v \<bullet> w \<in> \<int>" 
   unfolding scalar_prod_def  by (intro Ints_sum Ints_mult, auto)
 
-lemma (in gram_schmidt_fs_Rn)Gramian_matrix_alt_alt_def:
+lemma (in gram_schmidt_fs_Rn) Gramian_matrix_alt_alt_def:
   assumes "k < m"
   shows "Gramian_matrix fs k = mat k k (\<lambda>(i,j). fs ! i \<bullet> fs ! j)"
 proof -
@@ -2606,16 +2603,16 @@ proof -
     by (intro eq_matI) (auto simp add: Let_def)
 qed
 
-locale gram_schmidt_fs_int = gram_schmidt_fs_int' n f_ty for
-  n :: nat and f_ty :: "'a :: {linordered_field,trivial_conjugatable_ordered_field,field_char_0} itself"
-begin
 
-lemma fs_scalar_Ints:
+
+lemma (in gram_schmidt_fs_int) fs_scalar_Ints:
   assumes "i < m" "j < m"
   shows "fs ! i \<bullet> fs ! j \<in> \<int>"
   by (rule Ints_scalar_prod[of _ n], insert fs_int assms, auto)
 
-lemma Gramian_determinant_times_gso_Ints:
+
+
+lemma (in gram_schmidt_fs_int) Gramian_determinant_times_gso_Ints:
   assumes "i < n" "k < m"
   shows "(Gramian_determinant fs k \<cdot>\<^sub>v (gso k)) $ i \<in> \<int>"
 proof -
@@ -2681,29 +2678,7 @@ proof -
     by (auto simp add: distrib_left Gramian_determinant_Ints fs_int intro!: Ints_mult Ints_add)
 qed
 
-lemma Gramian_determinant_div:
-  assumes "l < m"
-  shows "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = \<parallel>gso l\<parallel>\<^sup>2"
-proof -
-  have "Gramian_determinant fs (Suc l) / Gramian_determinant fs l = 
-             (\<Prod>j<Suc l. \<parallel>gso j\<parallel>\<^sup>2) / (\<Prod>j<l. \<parallel>gso j\<parallel>\<^sup>2)"
-    using assms by (auto simp add: Gramian_determinant)
-  also have "(\<Prod>j<Suc l. \<parallel>gso j\<parallel>\<^sup>2) = (\<Prod>j \<in> {0..<l} \<union> {l}. \<parallel>gso j\<parallel>\<^sup>2)"
-    using assms by (intro prod.cong) (auto)
-  also have "\<dots> = (\<Prod>j<l. \<parallel>gso j\<parallel>\<^sup>2) * \<parallel>gso l\<parallel>\<^sup>2"
-    using assms by (subst prod_Un) (auto simp add: atLeast0LessThan)
-  also have "(\<Prod>j<l. \<parallel>gso j\<parallel>\<^sup>2) * \<parallel>gso l\<parallel>\<^sup>2 / (\<Prod>j<l. \<parallel>gso j\<parallel>\<^sup>2) = \<parallel>gso l\<parallel>\<^sup>2"
-  proof -
-    have "0 < \<parallel>gso j\<parallel>\<^sup>2" if "j < l" for j
-      using assms that by (intro sq_norm_pos) (auto)
-    then show ?thesis
-      using assms by (fastforce simp add: field_simps)
-  qed
-  finally show ?thesis
-    by simp
-qed
-
-lemma Gramian_determinant_mu_ints:
+lemma (in gram_schmidt_fs_int) Gramian_determinant_mu_ints:
   assumes "l \<le> k" "k < m"
   shows "Gramian_determinant fs (Suc l) * \<mu> k l \<in> \<int>"
 proof (cases "l < k")
@@ -2729,8 +2704,6 @@ next
   with assms have l: "l = k" by auto
   show ?thesis unfolding l \<mu>.simps using Gramian_determinant_Ints fs_int assms by simp
 qed
-
-end (* gram_schmidt_fs_int *)
 
 
 lemma vec_hom_Ints:
@@ -2874,7 +2847,7 @@ lemma fs_int_mu_d_Z: assumes inv: "fs_int fs"
 shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
 proof -
   note * = fs_intD[OF inv]
-  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)" 
+  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
     by (standard) (use * assms fs_int_def gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   have id: "of_int (d fs (Suc j)) = gs.Gramian_determinant (RAT fs) (Suc j)" 
     unfolding d_def
@@ -2898,7 +2871,7 @@ proof -
   have inv: "fs_int fs"
     unfolding fs_int_def using lin_indep len by auto
   note * = fs_intD[OF inv]
-  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)" 
+  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
     by (standard) (use * assms fs_int_def gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   let ?G = "map (gso fs) [0 ..< m]" 
   let ?gso = "\<lambda> fs j. ?G ! j"
@@ -2962,10 +2935,99 @@ proof -
     by (rule arg_cong[of _ _ floor_ceil], subst d\<mu>[OF inv j i], insert pos, auto)
 qed
 
+end
 
+section \<open>Bounds\<close>
+
+context gram_schmidt_fs_lin_indpt
+begin
+
+definition "A = Max (sq_norm ` set fs)"
+
+lemma max_list_Max: "ls \<noteq> [] \<Longrightarrow> max_list ls = Max (set ls)"
+  by (induction ls) (auto simp add: max_list_Cons)
+
+lemma A_ge_0:
+  assumes "0 < m"
+  shows "0 \<le> A"
+proof -
+  have "x \<in> sq_norm ` set fs \<Longrightarrow> 0 \<le> x" for x
+    by auto
+  then show ?thesis
+  using assms unfolding A_def by auto
+qed
+
+lemma A_fs:
+  assumes "i < m"
+  shows "\<parallel>fs ! i\<parallel>\<^sup>2 \<le> A"
+    using assms unfolding A_def by (auto)
+
+lemma A_gso:
+  assumes "i < m"
+  shows "\<parallel>gso i\<parallel>\<^sup>2 \<le> A"
+  using assms A_fs sq_norm_gso_le_f by fastforce
+
+lemma A_d:
+  assumes "i \<le> m"
+  shows "Gramian_determinant fs i \<le> A ^ i"
+proof -
+  have "(\<Prod>j<i. \<parallel>gso j\<parallel>\<^sup>2) \<le> (\<Prod>j<i. A)"
+      using assms A_gso by (intro prod_mono) auto
+    then show ?thesis
+      using assms Gramian_determinant by auto
+qed
 
 end
 
+lemma ex_MAXIMUM: assumes "finite A" "A \<noteq> {}"
+  shows "\<exists>a \<in> A.  MAXIMUM A f = f a"
+proof -
+  have "MAXIMUM A f \<in> f ` A"
+    using assms by (auto intro!: Max_in)
+  then show ?thesis
+    using assms imageE by blast
+qed
+
+context gram_schmidt_fs_int
+begin
+
+lemma fs_int': "k < n \<Longrightarrow> f \<in> set fs \<Longrightarrow> f $ k \<in> \<int>"
+  by (metis fs_int in_set_conv_nth)
+
+lemma
+  assumes "set fs \<noteq> {}"
+  shows A_Ints: "A \<in> \<int>" and A_1: "1 \<le> A"  
+proof -
+  have "\<exists>v\<^sub>m \<in> set fs. A = sq_norm v\<^sub>m"
+    unfolding A_def using assms by (auto intro!: ex_MAXIMUM)
+  then obtain v\<^sub>m::"'a vec" where v\<^sub>m_def: "v\<^sub>m \<in> set fs" "A = sq_norm v\<^sub>m"
+    by blast
+  then show A_Ints: "A \<in> \<int>"
+    using fs_int' carrier_vecD fs_carrier
+    by (auto simp add: sq_norm_vec_as_cscalar_prod scalar_prod_def intro!: Ints_sum Ints_mult)
+  have *: "0 \<noteq> A"
+    using A_gso sq_norm_pos assms by fastforce
+  show "1 \<le> A"
+    by (rule Ints_cases[OF A_Ints]) (use * A_ge_0 assms in force)+
+qed
+
+lemma A_mu:
+  assumes "i < m" "j < i"
+  shows "(\<mu> i j)\<^sup>2 \<le> A ^ (Suc j)"
+proof -
+  have "(\<mu> i j)\<^sup>2 \<le> Gramian_determinant fs j * \<parallel>fs ! i\<parallel>\<^sup>2"
+    using assms by (intro mu_bound_Gramian_determinant) auto
+  also have "Gramian_determinant fs j * \<parallel>fs ! i\<parallel>\<^sup>2 \<le> A ^ j * \<parallel>fs ! i\<parallel>\<^sup>2"
+    using assms A_d A_ge_0 by (intro mult_mono) fastforce+
+  also have "A ^ j * \<parallel>fs ! i\<parallel>\<^sup>2 \<le> A ^ j * A"
+    using assms A_fs A_ge_0 by (intro mult_mono) fastforce+
+  also have "\<dots> = A ^ (Suc j)"
+    by auto
+  finally show ?thesis
+    by simp
+qed
+
+end
 
 
 end

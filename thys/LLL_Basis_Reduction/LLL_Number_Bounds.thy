@@ -285,7 +285,7 @@ proof (rule bound_invI)
   have Linv: "LLL_invariant True i fs" (is ?g1) and fbnd: "f_bound True i fs" 
     and gbnd: "g_bound fs" by auto
   note inv = LLL_invD[OF Linv]
-  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
     by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   show "LLL_invariant True i fs" by fact
   show fbndF: "f_bound False i fs" using f_bound_True_arbitrary[OF fbnd] .
@@ -337,7 +337,7 @@ proof -
   note Linv = bound_invD(1)[OF binv]
   from mu_small have mu_small: "\<mu>_small fs i" unfolding \<mu>_small_row_def \<mu>_small_def by auto
   note inv = LLL_invD[OF Linv]
-  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
     by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   note fbnd = bound_invD(2)[OF binv]
   note gbnd = bound_invD(3)[OF binv]
@@ -469,9 +469,9 @@ proof (rule bound_invI)
   note Linv' = swap(1)
   note inv' = LLL_invD[OF Linv']
   note inv = LLL_invD[OF Linv]
-  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
     by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
-  interpret gs2: gram_schmidt_fs_int "RAT fs'" n "TYPE(rat)"
+  interpret gs2: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs'"
     by (standard) (use inv' gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   let ?mu1 = "\<mu> fs" 
   let ?mu2 = "\<mu> fs'" 
@@ -793,7 +793,7 @@ proof -
   have inv: "LLL_invariant upw k fs" 
     and gbnd: "g_bound fs" by auto
   note * = LLL_invD[OF inv]
-  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
     by (standard) (use * gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   note d_approx[OF inv gbnd i, unfolded d_def]  
   let ?r = "rat_of_int"
@@ -910,7 +910,7 @@ proof -
   from LLL_inv_A_pos[OF inv gbnd] i have A: "A > 0" by auto 
   note * = LLL_invD[OF inv]
   let ?mu = "\<mu> fs i j" 
-  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
     by (standard) (use * gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   from j i have jm: "j < m" by auto
   from d_approx[OF inv gbnd jm]
@@ -986,7 +986,7 @@ proof (atomize(full))
      and gbnd: "g_bound fs" by auto
   from LLL_inv_A_pos[OF inv gbnd] i have A: "A > 0" by auto 
   note * = LLL_invD[OF inv]
-  interpret gs1: gram_schmidt_fs_int "RAT fs" n "TYPE(rat)"
+  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
     by (standard) (use * gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   let ?mu = "\<mu> fs i j" 
   let ?bnd = "A^(m - 1) * 2 ^ (m - 1) * m" 
