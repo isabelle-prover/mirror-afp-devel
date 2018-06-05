@@ -10,13 +10,14 @@ begin
  (*Begin: some useful parameter settings*)
   declare [[ smt_solver = cvc4, smt_oracle = true ]]
   nitpick_params[user_axioms, show_all, format = 2, expect = genuine]
+  sledgehammer_params[overlord]
  (*End: some useful parameter settings*)
 (*>*)
 
 section\<open>Introduction\<close>
 
   text\<open>This document provides a concise overview on the core results of our previous
-       work @{cite "C67,R58,C57"} on the exploration of axioms systems for category theory.
+       work @{cite "C67,R58,C57"} on the exploration of axiom systems for category theory.
        Extending the previous studies we
        include one further axiomatic theory in our experiments. This additional
        theory has been suggested by Mac Lane~@{cite "MacLane48"} in
@@ -564,7 +565,7 @@ subsection\<open>AxiomsSet8Strict (algebraic reading)\<close>
   text\<open>We analyse the axioms set suggested by Mac Lane~@{cite "MacLane48"} already in 1948.
       As for the theory by
        Freyd and Scedrov above, which was developed much later, we need to assume
-       strictness of composition to show equivalence to our previous axioms sets.
+       strictness of composition to show equivalence to our previous axiom sets.
        Note that his complicated conditions on existence of compositions proved to be
        unnecessary, as we show. It shows it is hard to think about partial operations.\<close>
 
@@ -616,7 +617,7 @@ subsection\<open>AxiomsSet8Strict (algebraic reading)\<close>
  subsection\<open>Skolemization of the Axioms of Mac Lane\<close>
 
  text\<open>Mac Lane employs diagrammatic composition instead of the set-theoretic
-     definition as used in our axioms sets. As we have seen above,
+     definition as used in our axiom sets. As we have seen above,
       this is not a problem as long as composition is the only primitive.
       But when adding the Skolem terms $dom$ and $cod$ care must be taken and we should
       actually transform all axioms into a common form. Below we address this (in a minimal way) by
