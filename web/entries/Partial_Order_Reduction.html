@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Transition Systems and Automata - Archive of Formal Proofs
+<title>Partial Order Reduction - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,13 +61,11 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>ransition
+  <h1>          <font class="first">P</font>artial
   
-          <font class="first">S</font>ystems
+          <font class="first">O</font>rder
   
-          and
-  
-          <font class="first">A</font>utomata
+          <font class="first">R</font>eduction
   
 </h1>
   <p>&nbsp;</p>
@@ -76,7 +74,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Transition Systems and Automata</td>
+  <td class="data" width="80%">Partial Order Reduction</td>
 </tr>
 
 <tr>
@@ -92,35 +90,31 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-10-19</td>
+  <td class="data">2018-06-05</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-This entry provides a very abstract theory of transition systems that
-can be instantiated to express various types of automata. A transition
-system is typically instantiated by providing a set of initial states,
-a predicate for enabled transitions, and a transition execution
-function. From this, it defines the concepts of finite and infinite
-paths as well as the set of reachable states, among other things. Many
-useful theorems, from basic path manipulation rules to coinduction and
-run construction rules, are proven in this abstract transition system
-context. The library comes with instantiations for DFAs, NFAs, and
-Büchi automata.</td>
+This entry provides a formalization of the abstract theory of ample
+set partial order reduction. The formalization includes transition
+systems with actions, trace theory, as well as basics on finite,
+infinite, and lazy sequences. We also provide a basic framework for
+static analysis on concurrent systems with respect to the ample set
+condition.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Transition_Systems_and_Automata-AFP,
+        <pre>@article{Partial_Order_Reduction-AFP,
   author  = {Julian Brunner},
-  title   = {Transition Systems and Automata},
+  title   = {Partial Order Reduction},
   journal = {Archive of Formal Proofs},
-  month   = oct,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Transition_Systems_and_Automata.html},
+  month   = jun,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Partial_Order_Reduction.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -132,11 +126,9 @@ Büchi automata.</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Collections.html">Collections</a>, <a href="DFS_Framework.html">DFS_Framework</a>      </td></tr>
+          <td class="data"><a href="Coinductive.html">Coinductive</a>, <a href="Stuttering_Equivalence.html">Stuttering_Equivalence</a>, <a href="Transition_Systems_and_Automata.html">Transition_Systems_and_Automata</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Buchi_Complementation.html">Buchi_Complementation</a>, <a href="Partial_Order_Reduction.html">Partial_Order_Reduction</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -148,17 +140,17 @@ Büchi automata.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Transition_Systems_and_Automata/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Transition_Systems_and_Automata/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Partial_Order_Reduction/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Partial_Order_Reduction/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Transition_Systems_and_Automata/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Partial_Order_Reduction/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Transition_Systems_and_Automata-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Partial_Order_Reduction-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 

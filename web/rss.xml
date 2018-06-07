@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 May 2018 00:00:00 +0000</pubDate>
+    <pubDate>05 Jun 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Partial Order Reduction</title>
+              <link>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</link>
+       <guid>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</guid>
+       <dc:creator> Julian Brunner       </dc:creator>
+       <pubDate>05 Jun 2018 00:00:00 +0000</pubDate>
+       <description>
+This entry provides a formalization of the abstract theory of ample
+set partial order reduction. The formalization includes transition
+systems with actions, trace theory, as well as basics on finite,
+infinite, and lazy sequences. We also provide a basic framework for
+static analysis on concurrent systems with respect to the ample set
+condition.</description>
+    </item>
     <item>
        <title>Optimal Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/Optimal_BST.html</link>
@@ -545,24 +559,6 @@ states that, if &lt;em&gt;h&lt;/em&gt; and &lt;em&gt;n&lt;/em&gt; are
 coprime, there are infinitely many primes &lt;em&gt;p&lt;/em&gt; with
 &lt;em&gt;p&lt;/em&gt; &amp;equiv; &lt;em&gt;h&lt;/em&gt; (mod
 &lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Operations on Bounded Natural Functors</title>
-              <link>https://www.isa-afp.org/entries/BNF_Operations.html</link>
-       <guid>https://www.isa-afp.org/entries/BNF_Operations.html</guid>
-       <dc:creator> Jasmin Christian Blanchette, Andrei Popescu, Dmitriy Traytel       </dc:creator>
-       <pubDate>19 Dec 2017 00:00:00 +0000</pubDate>
-       <description>
-This entry formalizes the closure property of bounded natural functors
-(BNFs) under seven operations. These operations and the corresponding
-proofs constitute the core of Isabelle&#39;s (co)datatype package. To
-be close to the implemented tactics, the proofs are deliberately
-formulated as detailed apply scripts. The (co)datatypes together with
-(co)induction principles and (co)recursors are byproducts of the
-fixpoint operations LFP and GFP. Composition of BNFs is subdivided
-into four simpler operations: Compose, Kill, Lift, and Permute. The
-N2M operation provides mutual (co)induction principles and
-(co)recursors for nested (co)datatypes.</description>
     </item>
   </channel>
 </rss>
