@@ -1,3 +1,17 @@
+[Partial_Order_Reduction]
+title = Partial Order Reduction
+author = Julian Brunner <http://www21.in.tum.de/~brunnerj/>
+topic = Computer Science/Automata and Formal Languages
+date = 2018-06-05
+notify = brunnerj@in.tum.de
+abstract = 
+  This entry provides a formalization of the abstract theory of ample
+  set partial order reduction. The formalization includes transition
+  systems with actions, trace theory, as well as basics on finite,
+  infinite, and lazy sequences. We also provide a basic framework for
+  static analysis on concurrent systems with respect to the ample set
+  condition.
+
 [CakeML]
 title = CakeML
 author = Lars Hupel <https://www21.in.tum.de/~hupel/>
