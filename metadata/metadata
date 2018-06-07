@@ -6407,7 +6407,7 @@ abstract =
 
 [DynamicArchitectures]
 title = Dynamic Architectures
-author = Diego Marmsoler<>
+author = Diego Marmsoler <http://marmsoler.com>
 topic = Computer Science/System Description Languages
 date = 2017-07-28
 notify = diego.marmsoler@tum.de
@@ -6434,6 +6434,9 @@ abstract =
   terms of coinductive lists. Thus, our theory is based on
   Lochbihler's formalization of coinductive lists. The theory may
   be applied to verify properties for dynamic architectures.
+extra-history =
+	Change history:
+		[2018-06-07]: adding logical operators to specify configuration traces (revision 09178f08f050)<br>
 
 [Stewart_Apollonius]
 title = Stewart's Theorem and Apollonius' Theorem
@@ -6851,7 +6854,7 @@ abstract =
 
 [Architectural_Design_Patterns]
 title = A Theory of Architectural Design Patterns
-author = Diego Marmsoler<>
+author = Diego Marmsoler <http://marmsoler.com>
 topic = Computer Science/System Description Languages
 date = 2018-03-01
 notify = diego.marmsoler@tum.de
