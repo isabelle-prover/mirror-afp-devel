@@ -13,7 +13,7 @@ begin
 
 subsection "Subscriptions"
 
-datatype ('id, 'evt) subscription = sub 'id 'evt | unsub 'id 'evt
+datatype 'evt subscription = sub 'evt | unsub 'evt
 
 subsection "Publisher-Subscriber Architectures"
 
@@ -24,17 +24,17 @@ locale publisher_subscriber =
     and pbcmp :: "'pid \<Rightarrow> cnf \<Rightarrow> 'PB"
     and sbactive :: "'sid \<Rightarrow> cnf \<Rightarrow> bool"
     and sbcmp :: "'sid \<Rightarrow> cnf \<Rightarrow> 'SB" +
-  fixes pbsb :: "'PB \<Rightarrow> ('sid,'evt set) subscription set"
-    and pbnt :: "'PB \<Rightarrow> ('evt \<times> 'msg) set"             
+  fixes pbsb :: "'PB \<Rightarrow> ('evt set) subscription set"
+    and pbnt :: "'PB \<Rightarrow> ('evt \<times> 'msg)"             
     and sbnt :: "'SB \<Rightarrow> ('evt \<times> 'msg) set"
-    and sbsb :: "'SB \<Rightarrow> ('sid,'evt set) subscription"
+    and sbsb :: "'SB \<Rightarrow> ('evt set) subscription"
   assumes conn1: "\<And>k pid. pbactive pid k
       \<Longrightarrow> pbsb (pbcmp pid k) = (\<Union>sid\<in>{sid. sbactive sid k}. {sbsb (sbcmp sid k)})"
     and conn2: "\<And>t n n'' sid pid E e m.
-      \<lbrakk>t \<in> arch; sbactive sid (t n); sub sid E = sbsb (sbcmp sid (t n)); n''\<ge> n; e \<in> E;
-      \<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> sbactive sid (t n') \<and> unsub sid E' = sbsb (sbcmp sid (t n')) \<and> e \<in> E';
-      (e, m) \<in> pbnt (pbcmp pid (t n'')); sbactive sid (t n'')\<rbrakk>
-      \<Longrightarrow> sbnt (sbcmp sid (t n'')) = pbnt (pbcmp pid (t n''))"
+      \<lbrakk>t \<in> arch; sbactive sid (t n); sub E = sbsb (sbcmp sid (t n)); n''\<ge> n; e \<in> E;
+      \<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> sbactive sid (t n') \<and> unsub E' = sbsb (sbcmp sid (t n')) \<and> e \<in> E';
+      (e, m) = pbnt (pbcmp pid (t n'')); sbactive sid (t n'')\<rbrakk>
+      \<Longrightarrow> pbnt (pbcmp pid (t n'')) \<in> sbnt (sbcmp sid (t n''))"
 begin
 
 notation pb.imp (infixl "\<longrightarrow>\<^sup>p" 10)
@@ -65,12 +65,12 @@ theorem msgDelivery:
   fixes t n n'' sid E e m
   assumes "t \<in> arch"
     and "sbactive sid (t n)"
-    and "sub sid E = sbsb (sbcmp sid (t n))"
+    and "sub E = sbsb (sbcmp sid (t n))"
     and "n'' \<ge> n"
-    and "\<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> sbactive sid (t n') \<and> unsub sid E' = sbsb(sbcmp sid (t n'))
+    and "\<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> sbactive sid (t n') \<and> unsub E' = sbsb(sbcmp sid (t n'))
           \<and> e \<in> E'"
     and "e \<in> E"
-    and "(e,m) \<in> pbnt (pbcmp the_publisher (t n''))"
+    and "(e,m) = pbnt (pbcmp the_publisher (t n''))"
     and "sbactive sid (t n'')"
   shows "(e,m) \<in> sbnt (sbcmp sid (t n''))" using assms conn2 by simp
 
