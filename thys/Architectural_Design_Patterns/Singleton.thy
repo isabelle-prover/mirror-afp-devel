@@ -67,15 +67,15 @@ lemma lNxt_active[simp]:
   shows "\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub> = n"
 by (simp add: nxtAct_active)
     
-lemma assI[intro]:
+lemma baI[intro]:
   fixes t n a
   assumes "\<phi> (\<sigma>\<^bsub>the_singleton\<^esub>(t n))"
-  shows "eval the_singleton t t' n (ass \<phi>)" using assms by (simp add: assIANow)
+  shows "eval the_singleton t t' n (ba \<phi>)" using assms by (simp add: baIANow)
   
-lemma assE[elim]:
+lemma baE[elim]:
   fixes t n a
-  assumes "eval the_singleton t t' n (ass \<phi>)"                      
-  shows "\<phi> (\<sigma>\<^bsub>the_singleton\<^esub>(t n))" using assms by (simp add: assEANow)
+  assumes "eval the_singleton t t' n (ba \<phi>)"                      
+  shows "\<phi> (\<sigma>\<^bsub>the_singleton\<^esub>(t n))" using assms by (simp add: baEANow)
 
 lemma evtE[elim]:
   fixes t id n a
@@ -117,7 +117,7 @@ lemma untilI[intro]:
   assumes "n'\<ge>n"
     and "eval the_singleton t t' n' \<gamma>"
     and "\<And>n''. \<lbrakk>n\<le>n''; n''<n'\<rbrakk> \<Longrightarrow> eval the_singleton t t' n'' \<gamma>'"
-  shows "eval the_singleton t t' n (\<gamma>' \<UU> \<gamma>)"
+  shows "eval the_singleton t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)"
 proof -
   have "\<parallel>the_singleton\<parallel>\<^bsub>t n\<^esub>" by simp 
   moreover from `n'\<ge>n` have "\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" by simp

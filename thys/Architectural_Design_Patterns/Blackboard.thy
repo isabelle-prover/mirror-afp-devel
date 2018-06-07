@@ -43,26 +43,26 @@ locale blackboard = publisher_subscriber bbactive bbcmp ksactive kscmp bbrp bbcs
     ks1: "\<forall>p. \<exists>ks. p=prob ks" \<comment> \<open>Component Parameter\<close>
     \<comment> \<open>Assertions about component behavior.\<close>
     and bhvbb1: "\<And>t t' bId p s. \<lbrakk>t \<in> arch\<rbrakk> \<Longrightarrow> pb.eval bId t t' 0
-      (pb.glob (pb.ass (\<lambda>bb. (p,s)\<in>bbns bb)
-      \<longrightarrow>\<^sup>p (pb.evt (pb.ass (\<lambda>bb. (p,s) \<in> bbcs bb)))))"
+      (pb.glob (pb.ba (\<lambda>bb. (p,s)\<in>bbns bb)
+      \<longrightarrow>\<^sup>p (pb.evt (pb.ba (\<lambda>bb. (p,s) \<in> bbcs bb)))))"
     and bhvbb2: "\<And>t t' bId kId P q. \<lbrakk>t\<in>arch\<rbrakk> \<Longrightarrow> pb.eval bId t t' 0
-      (pb.glob (pb.ass (\<lambda>bb. sub kId P \<in> bbrp bb \<and> q \<in> P) \<longrightarrow>\<^sup>p
-      (pb.evt (pb.ass (\<lambda>bb. q \<in> bbop bb)))))"
+      (pb.glob (pb.ba (\<lambda>bb. sub kId P \<in> bbrp bb \<and> q \<in> P) \<longrightarrow>\<^sup>p
+      (pb.evt (pb.ba (\<lambda>bb. q \<in> bbop bb)))))"
     and bhvbb3: "\<And>t t' bId p . \<lbrakk>t\<in>arch\<rbrakk> \<Longrightarrow> pb.eval bId t t' 0
-      (pb.glob (pb.ass (\<lambda>bb. p \<in> bbop(bb)) \<longrightarrow>\<^sup>p
-      (pb.wuntil (pb.ass (\<lambda>bb. p\<in>bbop(bb))) (pb.ass (\<lambda>bb. (p,solve(p))\<in>bbcs(bb))))))"
+      (pb.glob (pb.ba (\<lambda>bb. p \<in> bbop(bb)) \<longrightarrow>\<^sup>p
+      (pb.wuntil (pb.ba (\<lambda>bb. p\<in>bbop(bb))) (pb.ba (\<lambda>bb. (p,solve(p))\<in>bbcs(bb))))))"
     and bhvks1: "\<And>t t' kId p P. \<lbrakk>t\<in>arch; p = prob kId\<rbrakk> \<Longrightarrow> sb.eval kId t t' 0
-      (sb.glob ((sb.ass (\<lambda>ks. sub kId P = ksrp ks)) \<and>\<^sup>s
-      (sb.all (\<lambda>q. (sb.pred (q\<in>P)) \<longrightarrow>\<^sup>s (sb.evt (sb.ass (\<lambda>ks. (q,solve(q)) \<in> kscs ks)))))
-      \<longrightarrow>\<^sup>s (sb.evt (sb.ass (\<lambda>ks. (p, solve p) \<in> ksns ks)))))"
+      (sb.glob ((sb.ba (\<lambda>ks. sub kId P = ksrp ks)) \<and>\<^sup>s
+      (sb.all (\<lambda>q. (sb.pred (q\<in>P)) \<longrightarrow>\<^sup>s (sb.evt (sb.ba (\<lambda>ks. (q,solve(q)) \<in> kscs ks)))))
+      \<longrightarrow>\<^sup>s (sb.evt (sb.ba (\<lambda>ks. (p, solve p) \<in> ksns ks)))))"
     and bhvks2: "\<And>t t' kId p P q. \<lbrakk>t \<in> arch;p = prob kId\<rbrakk> \<Longrightarrow> sb.eval kId t t' 0
-      (sb.glob (sb.ass (\<lambda>ks. sub kId P = ksrp ks \<and> q \<in> P \<longrightarrow> (q,p) \<in> sb)))"
+      (sb.glob (sb.ba (\<lambda>ks. sub kId P = ksrp ks \<and> q \<in> P \<longrightarrow> (q,p) \<in> sb)))"
     and bhvks3: "\<And>t t' kId p. \<lbrakk>t\<in>arch;p = prob kId\<rbrakk> \<Longrightarrow> sb.eval kId t t' 0
-      (sb.glob ((sb.ass (\<lambda>ks. p\<in>ksop ks)) \<longrightarrow>\<^sup>s (sb.evt (sb.ass (\<lambda>ks. (\<exists>P. sub kId P = ksrp ks))))))"
+      (sb.glob ((sb.ba (\<lambda>ks. p\<in>ksop ks)) \<longrightarrow>\<^sup>s (sb.evt (sb.ba (\<lambda>ks. (\<exists>P. sub kId P = ksrp ks))))))"
     and bhvks4: "\<And>t t' kId p P. \<lbrakk>t\<in>arch; p\<in>P\<rbrakk> \<Longrightarrow> sb.eval kId t t' 0
-      (sb.glob ((sb.ass (\<lambda>ks. sub kId P = ksrp ks)) \<longrightarrow>\<^sup>s
-      (sb.wuntil (\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p\<in>P') \<and>\<^sup>s (sb.ass (\<lambda>ks. unsub kId P' = ksrp ks)))))
-      (sb.ass (\<lambda>ks. (p,solve p) \<in> kscs ks)))))"
+      (sb.glob ((sb.ba (\<lambda>ks. sub kId P = ksrp ks)) \<longrightarrow>\<^sup>s
+      (sb.wuntil (\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p\<in>P') \<and>\<^sup>s (sb.ba (\<lambda>ks. unsub kId P' = ksrp ks)))))
+      (sb.ba (\<lambda>ks. (p,solve p) \<in> kscs ks)))))"
 
     \<comment> \<open>Assertions about component activation.\<close>
     and actks:
@@ -130,51 +130,51 @@ begin
         \<comment> \<open>Problem p is provided at the output of the blackboard until it is solved\<close>
         \<comment> \<open>or forever...\<close>
         from pb.globE[OF bhvbb3] have
-          "pb.eval the_bb t t' n (pb.ass (\<lambda> bb. p \<in> bbop(bb)) \<longrightarrow>\<^sup>p
-          (pb.wuntil (pb.ass (\<lambda> bb. p\<in>bbop(bb)))
-          (pb.ass (\<lambda>bb. (p,solve(p))\<in>bbcs(bb)))))"
+          "pb.eval the_bb t t' n (pb.ba (\<lambda> bb. p \<in> bbop(bb)) \<longrightarrow>\<^sup>p
+          (pb.wuntil (pb.ba (\<lambda> bb. p\<in>bbop(bb)))
+          (pb.ba (\<lambda>bb. (p,solve(p))\<in>bbcs(bb)))))"
           using `t\<in>arch` by auto
         moreover from `p \<in> bbop (bbcmp the_bb (t n))` have
-          "pb.eval the_bb t t' n (pb.ass (\<lambda> bb. p\<in>bbop bb))"
-          using `t\<in>arch` pb.assI by simp
+          "pb.eval the_bb t t' n (pb.ba (\<lambda> bb. p\<in>bbop bb))"
+          using `t\<in>arch` pb.baI by simp
         ultimately have "pb.eval the_bb t t' n
-          (pb.wuntil (pb.ass (\<lambda> bb. p\<in>bbop(bb)))
-          (pb.ass (\<lambda> bb. (p,solve(p))\<in>bbcs(bb))))"
+          (pb.wuntil (pb.ba (\<lambda> bb. p\<in>bbop(bb)))
+          (pb.ba (\<lambda> bb. (p,solve(p))\<in>bbcs(bb))))"
           using pb.impE by blast
-        hence "pb.eval the_bb t t' n ((pb.until (pb.ass (\<lambda> bb. p\<in>bbop bb))
-          (pb.ass (\<lambda> bb. (p,solve(p))\<in>bbcs bb))) \<or>\<^sup>p (pb.glob (pb.ass (\<lambda> bb. p\<in>bbop bb))))"
+        hence "pb.eval the_bb t t' n ((pb.until (pb.ba (\<lambda> bb. p\<in>bbop bb))
+          (pb.ba (\<lambda> bb. (p,solve(p))\<in>bbcs bb))) \<or>\<^sup>p (pb.glob (pb.ba (\<lambda> bb. p\<in>bbop bb))))"
           using pb.wuntil_def by simp
         hence "pb.eval the_bb t t' n
-          (pb.until (pb.ass (\<lambda>bb. p\<in>bbop bb))
-            (pb.ass (\<lambda>bb. (p,solve(p))\<in>bbcs bb))) \<or>
-          (pb.eval the_bb t t' n (pb.glob (pb.ass (\<lambda> bb. p\<in>bbop bb))))"
-          using pb.orE by simp
+          (pb.until (pb.ba (\<lambda>bb. p\<in>bbop bb))
+            (pb.ba (\<lambda>bb. (p,solve(p))\<in>bbcs bb))) \<or>
+          (pb.eval the_bb t t' n (pb.glob (pb.ba (\<lambda> bb. p\<in>bbop bb))))"
+          using pb.disjE by simp
         thus "\<exists>m\<ge>n. (p,solve p) \<in> bbcs(bbcmp the_bb (t m))"
         \<comment> \<open>We need to consider both cases, the case in which the problem is eventually\<close>
         \<comment> \<open>solved and the case in which the problem is always provided as an output\<close>
         proof
           \<comment> \<open>First we consider the case in which the problem is eventually solved:\<close>
           assume "pb.eval the_bb t t' n
-            (pb.until (pb.ass (\<lambda>bb. p\<in>bbop bb))
-            (pb.ass (\<lambda>bb. (p,solve(p))\<in>bbcs bb)))"
+            (pb.until (pb.ba (\<lambda>bb. p\<in>bbop bb))
+            (pb.ba (\<lambda>bb. (p,solve(p))\<in>bbcs bb)))"
           hence "\<exists>i\<ge>n. (pb.eval the_bb t t' i
-            (pb.ass (\<lambda>bb. (p,solve(p)) \<in> bbcs bb)) \<and>
-            (\<forall>k\<ge>n. k<i \<longrightarrow> pb.eval the_bb t t' k (pb.ass (\<lambda> bb. p \<in> bbop bb))))"
+            (pb.ba (\<lambda>bb. (p,solve(p)) \<in> bbcs bb)) \<and>
+            (\<forall>k\<ge>n. k<i \<longrightarrow> pb.eval the_bb t t' k (pb.ba (\<lambda> bb. p \<in> bbop bb))))"
             using `t\<in>arch` pb.untilE by simp
           then obtain i where "i\<ge>n" and
-            "pb.eval the_bb t t' i (pb.ass (\<lambda>bb. (p,solve(p)) \<in> bbcs bb))" by auto
+            "pb.eval the_bb t t' i (pb.ba (\<lambda>bb. (p,solve(p)) \<in> bbcs bb))" by auto
           hence "(p,solve(p))\<in>bbcs(bbcmp the_bb (t i))"
-            using `t\<in>arch` pb.assEA by auto
+            using `t\<in>arch` pb.baEA by auto
           thus ?thesis using `i\<ge>n` by auto
         next
           \<comment> \<open>Now we consider the case in which p is always provided at the output\<close>
           \<comment> \<open>of the blackboard:\<close>
           assume "pb.eval the_bb t t' n
-            (pb.glob (pb.ass (\<lambda>bb. p\<in>bbop bb)))"
-          hence "\<forall>n'\<ge>n. (pb.eval the_bb t t' n' (pb.ass (\<lambda>bb. p \<in> bbop bb)))"
+            (pb.glob (pb.ba (\<lambda>bb. p\<in>bbop bb)))"
+          hence "\<forall>n'\<ge>n. (pb.eval the_bb t t' n' (pb.ba (\<lambda>bb. p \<in> bbop bb)))"
             using `t\<in>arch` pb.globE by auto
           hence outp: "\<forall>n'\<ge>n. (p \<in> bbop (bbcmp the_bb (t n')))"
-            using `t\<in>arch` pb.assE by blast
+            using `t\<in>arch` pb.baE by blast
 
           \<comment> \<open>thus, by assumption there exists a KS which is able to solve p and which\<close>
           \<comment> \<open>is active at @{text n'}...\<close>
@@ -210,13 +210,13 @@ begin
 
             \<comment> \<open>finally, the blackboard will forward the solution which finishes the proof.\<close>
             with bhvbb1 have "pb.eval the_bb t t' (sb.nxtAct (sKs p) t n\<^sub>s)
-              (pb.evt (pb.ass (\<lambda>bb. (p, solve p) \<in> bbcs bb)))"
+              (pb.evt (pb.ba (\<lambda>bb. (p, solve p) \<in> bbcs bb)))"
               using `t\<in>arch` pb.globE pb.impE[of the_bb t t'] by blast
             then obtain n\<^sub>f where "n\<^sub>f\<ge>sb.nxtAct (sKs p) t n\<^sub>s" and
-              "pb.eval the_bb t t' n\<^sub>f (pb.ass (\<lambda>bb. (p, solve p) \<in> bbcs bb))"
+              "pb.eval the_bb t t' n\<^sub>f (pb.ba (\<lambda>bb. (p, solve p) \<in> bbcs bb))"
               using `t\<in>arch` pb.evtE[of t t' "sb.nxtAct (sKs p) t n\<^sub>s"] by auto
             hence "(p, solve p) \<in> bbcs (bbcmp the_bb (t n\<^sub>f))"
-              using `t \<in> arch` pb.assEA by auto
+              using `t \<in> arch` pb.baEA by auto
             moreover have "n\<^sub>f\<ge>n"
             proof -
               from `ksactive (sKs p) (t n\<^sub>k)` have "sb.nxtAct (sKs p) t n\<^sub>k\<ge>n\<^sub>k"
@@ -233,10 +233,10 @@ begin
             from `ksactive (sKs p) (t n\<^sub>k)` have "\<exists>i\<ge>0. ksactive (sKs p) (t i)" by auto
             moreover have "sb.lNAct (sKs p) t 0 \<le> n\<^sub>k" by simp
             ultimately have "sb.eval (sKs p) t t'' n\<^sub>k
-              ((sb.ass (\<lambda>ks. p\<in>ksop ks)) \<longrightarrow>\<^sup>s
-              (sb.evt (sb.ass (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks))))"
+              ((sb.ba (\<lambda>ks. p\<in>ksop ks)) \<longrightarrow>\<^sup>s
+              (sb.evt (sb.ba (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks))))"
               using sb.globEA[OF _ bhvks3[of t p "sKs p" t'']] `t\<in>arch` sks_prob by simp
-            moreover have "sb.eval (sKs p) t t'' n\<^sub>k (sb.ass (\<lambda>ks. p \<in> ksop ks))"
+            moreover have "sb.eval (sKs p) t t'' n\<^sub>k (sb.ba (\<lambda>ks. p \<in> ksop ks))"
             proof -
               from `ksactive (sKs p) (t n\<^sub>k)` have "\<exists>n'\<ge>n\<^sub>k. ksactive (sKs p) (t n')" by auto
               moreover have "p \<in> ksop (kscmp (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>k)))"
@@ -245,16 +245,16 @@ begin
                   using sb.nxtAct_active by blast
                 with `p\<in>ksop(kscmp (sKs p) (t n\<^sub>k))` show ?thesis by simp
               qed
-              ultimately show ?thesis using sb.assIA[of n\<^sub>k "sKs p" t] by blast
+              ultimately show ?thesis using sb.baIA[of n\<^sub>k "sKs p" t] by blast
             qed
-            ultimately have "sb.eval (sKs p) t t'' n\<^sub>k (sb.evt (sb.ass (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks)))"
+            ultimately have "sb.eval (sKs p) t t'' n\<^sub>k (sb.evt (sb.ba (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks)))"
               using sb.impE by blast
             then obtain n\<^sub>r where "n\<^sub>r\<ge>sb.nxtAct (sKs p) t n\<^sub>k" and
               "\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i) \<and>
               (\<forall>n''\<ge>sb.lNAct (sKs p) t n\<^sub>r. n'' \<le> sb.nxtAct (sKs p) t n\<^sub>r
-              \<longrightarrow> sb.eval (sKs p) t t'' n'' (sb.ass (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks))) \<or>
+              \<longrightarrow> sb.eval (sKs p) t t'' n'' (sb.ba (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks))) \<or>
               \<not> (\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)) \<and>
-              sb.eval (sKs p) t t'' n\<^sub>r (sb.ass (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks))"
+              sb.eval (sKs p) t t'' n\<^sub>r (sb.ba (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks))"
               using `ksactive (sKs p) (t n\<^sub>k)` sb.evtEA[of n\<^sub>k "sKs p" t] by blast
             moreover from case_ass have "sb.nxtAct (sKs p) t n\<^sub>k\<ge>n\<^sub>k" using sb.nxtActI by blast
             with `n\<^sub>r\<ge>sb.nxtAct (sKs p) t n\<^sub>k` have "n\<^sub>r\<ge>n\<^sub>k" by arith
@@ -262,50 +262,50 @@ begin
             hence "n\<^sub>r \<le> sb.nxtAct (sKs p) t n\<^sub>r" using sb.nxtActLe by simp
             moreover have "n\<^sub>r \<ge> sb.lNAct (sKs p) t n\<^sub>r" by simp
             ultimately have
-              "sb.eval (sKs p) t t'' n\<^sub>r (sb.ass (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks))" by blast
+              "sb.eval (sKs p) t t'' n\<^sub>r (sb.ba (\<lambda>ks. \<exists>P. sub (sKs p) P = ksrp ks))" by blast
             with `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` obtain P where
               "sub (sKs p) P = ksrp (kscmp (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>r)))"
-              using sb.assEA by blast
-            hence "sb.eval (sKs p) t t'' n\<^sub>r (sb.ass (\<lambda>ks. sub (sKs p) P = ksrp ks))"
-              using `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` sb.assIA sks_prob by blast
+              using sb.baEA by blast
+            hence "sb.eval (sKs p) t t'' n\<^sub>r (sb.ba (\<lambda>ks. sub (sKs p) P = ksrp ks))"
+              using `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` sb.baIA sks_prob by blast
 
             \<comment> \<open>the knowledgesource will eventually get a solution for each required subproblem:\<close>
             moreover have "sb.eval (sKs p) t t'' n\<^sub>r (sb.all (\<lambda> p'. sb.pred (p'\<in>P) \<longrightarrow>\<^sup>s
-              (sb.evt (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks)))))"
+              (sb.evt (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks)))))"
             proof -
               have "\<forall>p'. sb.eval (sKs p) t t'' n\<^sub>r (sb.pred (p'\<in>P) \<longrightarrow>\<^sup>s
-                (sb.evt (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
+                (sb.evt (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
               proof
                 \<comment> \<open>by induction hypothesis, the blackboard will eventually provide solutions for subproblems\<close>
                 fix p'
                 have "sb.eval (sKs p) t t'' n\<^sub>r (sb.pred (p'\<in>P)) \<longrightarrow>
                   (sb.eval (sKs p) t t'' n\<^sub>r
-                  (sb.evt (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
+                  (sb.evt (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
                 proof
                   assume "sb.eval (sKs p) t t'' n\<^sub>r (sb.pred (p'\<in>P))"
                   hence "p' \<in> P" using sb.predE by blast
-                  thus "(sb.eval (sKs p) t t'' n\<^sub>r (sb.evt (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
+                  thus "(sb.eval (sKs p) t t'' n\<^sub>r (sb.evt (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
                   proof -
                     have "sb.lNAct (sKs p) t 0 \<le> n\<^sub>r" by simp
                     moreover from `ksactive (sKs p) (t n\<^sub>k)` have "\<exists>i\<ge>0. ksactive (sKs p) (t i)" by auto
-                    ultimately have "sb.eval (sKs p) t t'' n\<^sub>r ((sb.ass (\<lambda>ks. sub (sKs p) P = ksrp ks))
+                    ultimately have "sb.eval (sKs p) t t'' n\<^sub>r ((sb.ba (\<lambda>ks. sub (sKs p) P = ksrp ks))
                       \<longrightarrow>\<^sup>s (sb.wuntil (\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p'\<in>P') \<and>\<^sup>s
-                      (sb.ass (\<lambda>ks. unsub (sKs p) P' = ksrp ks)))))
-                      (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
+                      (sb.ba (\<lambda>ks. unsub (sKs p) P' = ksrp ks)))))
+                      (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
                       using sb.globEA[OF _ bhvks4[of t p' P "sKs p" t'']]
                       `t\<in>arch` `ksactive (sKs p) (t n\<^sub>k)` `p'\<in>P` by simp
-                    with `sb.eval (sKs p) t t'' n\<^sub>r (sb.ass (\<lambda>ks. sub (sKs p) P = ksrp ks))` have
+                    with `sb.eval (sKs p) t t'' n\<^sub>r (sb.ba (\<lambda>ks. sub (sKs p) P = ksrp ks))` have
                       "sb.eval (sKs p) t t'' n\<^sub>r (sb.wuntil (\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p'\<in>P') \<and>\<^sup>s
-                      (sb.ass (\<lambda>ks. unsub (sKs p) P' = ksrp ks))))) (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks)))"
-                      using sb.impE[of "(sKs p)" t t'' n\<^sub>r "sb.ass (\<lambda>ks. sub (sKs p) P = ksrp ks)"] by blast
+                      (sb.ba (\<lambda>ks. unsub (sKs p) P' = ksrp ks))))) (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks)))"
+                      using sb.impE[of "(sKs p)" t t'' n\<^sub>r "sb.ba (\<lambda>ks. sub (sKs p) P = ksrp ks)"] by blast
                     hence "sb.eval (sKs p) t t'' n\<^sub>r (sb.until (\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p'\<in>P') \<and>\<^sup>s
-                      (sb.ass (\<lambda>ks. unsub (sKs p) P' = ksrp ks))))) (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks))) \<or>
+                      (sb.ba (\<lambda>ks. unsub (sKs p) P' = ksrp ks))))) (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks))) \<or>
                       sb.eval (sKs p) t t'' n\<^sub>r (sb.glob (\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p'\<in>P') \<and>\<^sup>s
-                      sb.ass (\<lambda>ks. unsub (sKs p) P' = ksrp ks)))))" using sb.wuntil_def by auto
-                    thus "(sb.eval (sKs p) t t'' n\<^sub>r (sb.evt (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
+                      sb.ba (\<lambda>ks. unsub (sKs p) P' = ksrp ks)))))" using sb.wuntil_def by auto
+                    thus "(sb.eval (sKs p) t t'' n\<^sub>r (sb.evt (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
                     proof
-                      let ?\<gamma>'="\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p'\<in>P') \<and>\<^sup>s (sb.ass (\<lambda>ks. unsub (sKs p) P' = ksrp ks))))"
-                      let ?\<gamma>="sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks)"
+                      let ?\<gamma>'="\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p'\<in>P') \<and>\<^sup>s (sb.ba (\<lambda>ks. unsub (sKs p) P' = ksrp ks))))"
+                      let ?\<gamma>="sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks)"
                       assume "sb.eval (sKs p) t t'' n\<^sub>r (sb.until ?\<gamma>' ?\<gamma>)"
                       with `\<exists>i\<ge>n\<^sub>r. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>` obtain n' where "n'\<ge>sb.nxtAct (sKs p) t n\<^sub>r" and
                         lass: "(\<exists>i\<ge>n'. \<parallel>sKs p\<parallel>\<^bsub>t i\<^esub>) \<and> (\<forall>n''\<ge>sb.lNAct (sKs p) t n'. n'' \<le> sb.nxtAct (sKs p) t n'
@@ -341,7 +341,7 @@ begin
                       qed
                     next
                       assume cass: "sb.eval (sKs p) t t'' n\<^sub>r
-                        (sb.glob (\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p'\<in>P') \<and>\<^sup>s sb.ass (\<lambda>ks. unsub (sKs p) P' = ksrp ks)))))"
+                        (sb.glob (\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p'\<in>P') \<and>\<^sup>s sb.ba (\<lambda>ks. unsub (sKs p) P' = ksrp ks)))))"
 
                       have "sub (sKs p) P = ksrp (kscmp (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>r))) \<and>
                         p' \<in> P \<longrightarrow> (p', p) \<in> sb"
@@ -349,42 +349,42 @@ begin
                         have "\<exists>i\<ge>0. ksactive (sKs p) (t i)" using \<open>\<exists>i\<ge>0. ksactive (sKs p) (t i)\<close> by auto
                         moreover have "sb.lNAct (sKs p) t 0 \<le> (sb.nxtAct (sKs p) t n\<^sub>r)" by simp
                         ultimately have "sb.eval (sKs p) t t'' (sb.nxtAct (sKs p) t n\<^sub>r)
-                          (sb.ass (\<lambda>ks. sub (sKs p) P = ksrp ks \<and> p' \<in> P \<longrightarrow> (p', p) \<in> sb))"
+                          (sb.ba (\<lambda>ks. sub (sKs p) P = ksrp ks \<and> p' \<in> P \<longrightarrow> (p', p) \<in> sb))"
                           using sb.globEA[OF _ bhvks2[of t p "sKs p" t'' P]] `t \<in> arch` sks_prob by blast
                         moreover from `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` have
                           "ksactive (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>r))" using sb.nxtActI by blast
                         ultimately show ?thesis
-                          using sb.assEANow[of "sKs p" t t'' "sb.nxtAct (sKs p) t n\<^sub>r"] by simp
+                          using sb.baEANow[of "sKs p" t t'' "sb.nxtAct (sKs p) t n\<^sub>r"] by simp
                       qed
                       with `p' \<in> P` have "(p', p) \<in> sb"
                         using `sub (sKs p) P = ksrp (kscmp (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>r)))`
                         sks_prob by simp
                       moreover have "\<exists>n\<^sub>p\<ge>(sb.nxtAct (sKs p) t n\<^sub>r).
-                        pb.eval the_bb t t' n\<^sub>p (pb.ass (\<lambda>bb. p' \<in> bbop bb))"
+                        pb.eval the_bb t t' n\<^sub>p (pb.ba (\<lambda>bb. p' \<in> bbop bb))"
                       proof -
                         from pb.globE[OF bhvbb2[of t "the_bb" t']]
                         have "pb.eval the_bb t t' (sb.nxtAct (sKs p) t n\<^sub>r)
-                          (pb.ass (\<lambda>bb. sub (sKs p) P \<in> bbrp bb \<and> p' \<in> P) \<longrightarrow>\<^sup>p
-                          (pb.evt (pb.ass (\<lambda>bb. p' \<in> bbop bb))))" using `t \<in> arch` by auto
+                          (pb.ba (\<lambda>bb. sub (sKs p) P \<in> bbrp bb \<and> p' \<in> P) \<longrightarrow>\<^sup>p
+                          (pb.evt (pb.ba (\<lambda>bb. p' \<in> bbop bb))))" using `t \<in> arch` by auto
                         moreover from `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` have
                           "ksactive (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>r))" using sb.nxtActI by blast
                         with `sub (sKs p) P = ksrp (kscmp (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>r)))`
                           have "sub (sKs p) P \<in> bbrp (bbcmp the_bb (t (sb.nxtAct (sKs p) t n\<^sub>r)))"
                           using conn1A by auto
                         with `p' \<in> P` have "pb.eval the_bb t t' (sb.nxtAct (sKs p) t n\<^sub>r)
-                          (pb.ass (\<lambda>bb. sub (sKs p) P \<in> bbrp bb \<and> p' \<in> P))" using `t \<in> arch`
-                          pb.assIA[where \<phi>="\<lambda>bb. sub (sKs p) P \<in> bbrp bb \<and> p' \<in> P"] by blast
+                          (pb.ba (\<lambda>bb. sub (sKs p) P \<in> bbrp bb \<and> p' \<in> P))" using `t \<in> arch`
+                          pb.baIA[where \<phi>="\<lambda>bb. sub (sKs p) P \<in> bbrp bb \<and> p' \<in> P"] by blast
                         ultimately have "pb.eval the_bb t t' (sb.nxtAct (sKs p) t n\<^sub>r)
-                          (pb.evt (pb.ass (\<lambda>bb. p' \<in> bbop bb)))" using pb.impE `p' \<in> P`
+                          (pb.evt (pb.ba (\<lambda>bb. p' \<in> bbop bb)))" using pb.impE `p' \<in> P`
                           by blast
                         with `p' \<in> P` have "pb.eval the_bb t t' (sb.nxtAct (sKs p) t n\<^sub>r)
-                          (pb.evt (pb.ass (\<lambda>bb. p' \<in> bbop bb)))" by simp
+                          (pb.evt (pb.ba (\<lambda>bb. p' \<in> bbop bb)))" by simp
                         thus ?thesis using `t \<in> arch` pb.evtE[of t t' "sb.nxtAct (sKs p) t n\<^sub>r"]
                           by simp
                       qed
                       then obtain "n\<^sub>p" where "n\<^sub>p \<ge> sb.nxtAct (sKs p) t n\<^sub>r" and
-                        "pb.eval the_bb t t' n\<^sub>p (pb.ass (\<lambda>bb. p' \<in> bbop bb))" by auto
-                      hence "p' \<in> bbop (bbcmp the_bb (t n\<^sub>p))" using `t \<in> arch` pb.assEA by auto
+                        "pb.eval the_bb t t' n\<^sub>p (pb.ba (\<lambda>bb. p' \<in> bbop bb))" by auto
+                      hence "p' \<in> bbop (bbcmp the_bb (t n\<^sub>p))" using `t \<in> arch` pb.baEA by auto
                       ultimately obtain m where "m\<ge>n\<^sub>p" and "(p', solve p') \<in> bbcs (bbcmp the_bb (t m))"
                         using indH by auto
 
@@ -400,14 +400,14 @@ begin
                           "ksactive (sKs p) (t n)" and "sb.nxtAct (sKs p) t n\<^sub>r \<le> n" and "n \<le> m" and
                           "unsub (sKs p) P' = ksrp (kscmp (sKs p) (t n))" and "p' \<in> P'" by auto
                         hence "sb.eval (sKs p) t t'' n (\<exists>\<^sub>s P'. sb.pred (p'\<in>P') \<and>\<^sup>s
-                          sb.ass (\<lambda>ks. unsub (sKs p) P' = ksrp ks))" by blast
+                          sb.ba (\<lambda>ks. unsub (sKs p) P' = ksrp ks))" by blast
                         moreover have "sb.lNAct (sKs p) t n\<^sub>r \<le> n"
                           using \<open>n\<^sub>r \<le> sb.nxtAct (sKs p) t n\<^sub>r\<close> \<open>sb.lNAct (sKs p) t n\<^sub>r \<le> n\<^sub>r\<close>
                           \<open>sb.nxtAct (sKs p) t n\<^sub>r \<le> n\<close> by linarith
                         with cass have "sb.eval (sKs p) t t'' n (\<not>\<^sup>s (\<exists>\<^sub>s P'. (sb.pred (p'\<in>P')
-                          \<and>\<^sup>s sb.ass (\<lambda>ks. unsub (sKs p) P' = ksrp ks))))"
+                          \<and>\<^sup>s sb.ba (\<lambda>ks. unsub (sKs p) P' = ksrp ks))))"
                           using sb.globEA[of n\<^sub>r "sKs p" t t''
-                          "\<not>\<^sup>s (\<exists>\<^sub>sP'. sb.pred (p' \<in> P') \<and>\<^sup>s sb.ass (\<lambda>ks. unsub (sKs p) P' = ksrp ks))" n]
+                          "\<not>\<^sup>s (\<exists>\<^sub>sP'. sb.pred (p' \<in> P') \<and>\<^sup>s sb.ba (\<lambda>ks. unsub (sKs p) P' = ksrp ks))" n]
                           `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` by auto
                         ultimately show False using sb.notE by auto
                       qed
@@ -426,8 +426,8 @@ begin
                         and "ksactive (sKs p) (t m)"
                         using `t \<in> arch` msgDelivery[of t "sKs p" "sb.nxtAct (sKs p) t n\<^sub>r" P m p' "solve p'"]
                         `p' \<in> P` by auto
-                      hence "sb.eval (sKs p) t t'' m (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks))"
-                        using sb.assIANow by simp
+                      hence "sb.eval (sKs p) t t'' m (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks))"
+                        using sb.baIANow by simp
                       moreover have "m \<ge> sb.lNAct (sKs p) t m" by simp
                       moreover from `ksactive (sKs p) (t m)` have "m \<le> sb.nxtAct (sKs p) t m"
                         using sb.nxtActLe by auto
@@ -435,13 +435,13 @@ begin
                         "sb.lNAct (sKs p) t n\<^sub>r \<le> sb.nxtAct (sKs p) t n\<^sub>r" by simp
                       with `sb.nxtAct (sKs p) t n\<^sub>r \<le> m` have "sb.lNAct (sKs p) t n\<^sub>r \<le> m" by arith
                       ultimately show "sb.eval (sKs p) t t'' n\<^sub>r
-                        (sb.evt (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks)))"
+                        (sb.evt (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks)))"
                         using `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` sb.evtIA by blast
                     qed
                   qed
                 qed
                 thus "sb.eval (sKs p) t t'' n\<^sub>r (sb.pred (p'\<in>P) \<longrightarrow>\<^sup>s
-                  (sb.evt (sb.ass (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
+                  (sb.evt (sb.ba (\<lambda>ks. (p',solve p') \<in> kscs ks))))"
                   using sb.impI by auto
               qed
               thus ?thesis using sb.allI by blast
@@ -449,27 +449,27 @@ begin
 
             \<comment> \<open>Thus, the knowlege source will eventually solve the problem at hand...\<close>
             ultimately have "sb.eval (sKs p) t t'' n\<^sub>r
-              (sb.ass (\<lambda>ks. sub (sKs p) P = ksrp ks) \<and>\<^sup>s
-              (\<forall>\<^sub>sq. (sb.pred (q \<in> P) \<longrightarrow>\<^sup>s sb.evt (sb.ass (\<lambda>ks. (q, solve q) \<in> kscs ks)))))"
-              using sb.andI by simp
+              (sb.ba (\<lambda>ks. sub (sKs p) P = ksrp ks) \<and>\<^sup>s
+              (\<forall>\<^sub>sq. (sb.pred (q \<in> P) \<longrightarrow>\<^sup>s sb.evt (sb.ba (\<lambda>ks. (q, solve q) \<in> kscs ks)))))"
+              using sb.conjI by simp
             moreover from `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` have "\<exists>i\<ge>0. ksactive (sKs p) (t i)" by blast
             hence "sb.eval (sKs p) t t'' n\<^sub>r
-              ((sb.ass (\<lambda>ks. sub (sKs p) P = ksrp ks) \<and>\<^sup>s
+              ((sb.ba (\<lambda>ks. sub (sKs p) P = ksrp ks) \<and>\<^sup>s
               (\<forall>\<^sub>sq. (sb.pred (q \<in> P) \<longrightarrow>\<^sup>s
-              sb.evt (sb.ass (\<lambda>ks. (q, solve q) \<in> kscs ks))))) \<longrightarrow>\<^sup>s
-              (sb.evt (sb.ass (\<lambda>ks. (p, solve p) \<in> ksns ks))))" using `t \<in> arch`
+              sb.evt (sb.ba (\<lambda>ks. (q, solve q) \<in> kscs ks))))) \<longrightarrow>\<^sup>s
+              (sb.evt (sb.ba (\<lambda>ks. (p, solve p) \<in> ksns ks))))" using `t \<in> arch`
               sb.globEA[OF _ bhvks1[of t p "sKs p" t'' P]] sks_prob by simp
             ultimately have "sb.eval (sKs p) t t'' n\<^sub>r
-              (sb.evt (sb.ass (\<lambda>ks. (p,solve(p))\<in>ksns(ks))))"
+              (sb.evt (sb.ba (\<lambda>ks. (p,solve(p))\<in>ksns(ks))))"
               using sb.impE[of "sKs p" t t'' n\<^sub>r] by blast
 
             \<comment> \<open>and forward it to the blackboard\<close>
             then obtain n\<^sub>s where "n\<^sub>s\<ge>sb.nxtAct (sKs p) t n\<^sub>r" and
               "(\<exists>i\<ge>n\<^sub>s. ksactive (sKs p) (t i) \<and>
               (\<forall>n''\<ge>sb.lNAct (sKs p) t n\<^sub>s. n'' \<le> sb.nxtAct (sKs p) t n\<^sub>s \<longrightarrow>
-              sb.eval (sKs p) t t'' n'' (sb.ass (\<lambda>ks. (p,solve(p))\<in>ksns(ks))))) \<or>
+              sb.eval (sKs p) t t'' n'' (sb.ba (\<lambda>ks. (p,solve(p))\<in>ksns(ks))))) \<or>
               \<not> (\<exists>i\<ge>n\<^sub>s. ksactive (sKs p) (t i)) \<and>
-              sb.eval (sKs p) t t'' n\<^sub>s (sb.ass (\<lambda>ks. (p,solve(p))\<in>ksns(ks)))"
+              sb.eval (sKs p) t t'' n\<^sub>s (sb.ba (\<lambda>ks. (p,solve(p))\<in>ksns(ks)))"
               using sb.evtEA[of n\<^sub>r "sKs p" t] `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` by blast
             moreover from `sb.nxtAct (sKs p) t n\<^sub>r \<ge> n\<^sub>r` `n\<^sub>r\<ge>n\<^sub>k` `n\<^sub>s\<ge>sb.nxtAct (sKs p) t n\<^sub>r`
               have "n\<^sub>s\<ge>n\<^sub>k" by arith
@@ -477,28 +477,28 @@ begin
             moreover have "n\<^sub>s\<ge>sb.lNAct (sKs p) t n\<^sub>s" by simp
             moreover from `\<exists>i\<ge>n\<^sub>s. ksactive (sKs p) (t i)` have "n\<^sub>s \<le> sb.nxtAct (sKs p) t n\<^sub>s"
               using sb.nxtActLe by simp
-            ultimately have "sb.eval (sKs p) t t'' n\<^sub>s (sb.ass (\<lambda>ks. (p,solve(p))\<in>ksns(ks)))"
+            ultimately have "sb.eval (sKs p) t t'' n\<^sub>s (sb.ba (\<lambda>ks. (p,solve(p))\<in>ksns(ks)))"
               using sb.evtEA[of n\<^sub>r "sKs p" t] `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` by blast
             with `\<exists>i\<ge>n\<^sub>s. ksactive (sKs p) (t i)` have
               "(p,solve(p)) \<in> ksns (kscmp (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>s)))"
-              using sb.assEA[of n\<^sub>s "sKs p" t t'' "\<lambda>ks. (p, solve p) \<in> ksns ks"] by auto
+              using sb.baEA[of n\<^sub>s "sKs p" t t'' "\<lambda>ks. (p, solve p) \<in> ksns ks"] by auto
             moreover from `\<exists>i\<ge>n\<^sub>s. ksactive (sKs p) (t i)`
               have "ksactive (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>s))" using sb.nxtActI by simp
             ultimately have "(p,solve(p)) \<in> bbns (bbcmp the_bb (t (sb.nxtAct (sKs p) t n\<^sub>s)))"
               using conn1[OF pb.the_active[of "t (sb.nxtAct (sKs p) t n\<^sub>s)"]] by auto
             hence "pb.eval the_bb t t'
-              (sb.nxtAct (sKs p) t n\<^sub>s) (pb.ass (\<lambda>bb. (p,solve(p)) \<in> bbns bb))"
-              using `t\<in>arch` pb.assI by simp
+              (sb.nxtAct (sKs p) t n\<^sub>s) (pb.ba (\<lambda>bb. (p,solve(p)) \<in> bbns bb))"
+              using `t\<in>arch` pb.baI by simp
 
             \<comment> \<open>finally, the blackboard will forward the solution which finishes the proof.\<close>
             with bhvbb1 have "pb.eval the_bb t t' (sb.nxtAct (sKs p) t n\<^sub>s)
-              (pb.evt (pb.ass (\<lambda>bb. (p, solve p) \<in> bbcs bb)))"
+              (pb.evt (pb.ba (\<lambda>bb. (p, solve p) \<in> bbcs bb)))"
               using `t\<in>arch` pb.globE pb.impE[of the_bb t t'] by blast
             then obtain n\<^sub>f where "n\<^sub>f\<ge>sb.nxtAct (sKs p) t n\<^sub>s" and
-              "pb.eval the_bb t t' n\<^sub>f (pb.ass (\<lambda>bb. (p, solve p) \<in> bbcs bb))"
+              "pb.eval the_bb t t' n\<^sub>f (pb.ba (\<lambda>bb. (p, solve p) \<in> bbcs bb))"
               using `t\<in>arch` pb.evtE[of t t' "sb.nxtAct (sKs p) t n\<^sub>s"] by auto
             hence "(p, solve p) \<in> bbcs (bbcmp the_bb (t n\<^sub>f))"
-              using `t \<in> arch` pb.assEA by auto
+              using `t \<in> arch` pb.baEA by auto
             moreover have "n\<^sub>f\<ge>n"
             proof -
               from `\<exists>n'''\<ge>n\<^sub>s. ksactive (sKs p) (t n''')` have "sb.nxtAct (sKs p) t n\<^sub>s\<ge>n\<^sub>s"

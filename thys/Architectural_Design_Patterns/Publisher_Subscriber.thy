@@ -38,22 +38,22 @@ locale publisher_subscriber =
 begin
 
 notation pb.imp (infixl "\<longrightarrow>\<^sup>p" 10)
-notation pb.or (infixl "\<or>\<^sup>p" 15)
-notation pb.and (infixl "\<and>\<^sup>p" 20)
+notation pb.disj (infixl "\<or>\<^sup>p" 15)
+notation pb.conj (infixl "\<and>\<^sup>p" 20)
 notation pb.not ("\<not>\<^sup>p _" [19]19)
 no_notation pb.all (binder "\<forall>\<^sub>b" 10)
-no_notation pb.exists (binder "\<exists>\<^sub>b" 10)
+no_notation pb.ex (binder "\<exists>\<^sub>b" 10)
 notation pb.all (binder "\<forall>\<^sub>p" 10)
-notation pb.exists (binder "\<exists>\<^sub>p" 10)
+notation pb.ex (binder "\<exists>\<^sub>p" 10)
 
 notation sb.imp (infixl "\<longrightarrow>\<^sup>s" 10)
-notation sb.or (infixl "\<or>\<^sup>s" 15)  
-notation sb.and (infixl "\<and>\<^sup>s" 20)
+notation sb.disj (infixl "\<or>\<^sup>s" 15)  
+notation sb.conj (infixl "\<and>\<^sup>s" 20)
 notation sb.not ("\<not>\<^sup>s _" [19]19)
 no_notation sb.all (binder "\<forall>\<^sub>b" 10)
-no_notation sb.exists (binder "\<exists>\<^sub>b" 10)
+no_notation sb.ex (binder "\<exists>\<^sub>b" 10)
 notation sb.all (binder "\<forall>\<^sub>s" 10)
-notation sb.exists (binder "\<exists>\<^sub>s" 10)
+notation sb.ex (binder "\<exists>\<^sub>s" 10)
 
 abbreviation the_publisher :: "'pid" where
 "the_publisher \<equiv> pb.the_singleton"
