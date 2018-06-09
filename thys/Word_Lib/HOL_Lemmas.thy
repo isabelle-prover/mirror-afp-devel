@@ -81,7 +81,8 @@ next
       by (rule  div_mult_mod_eq [symmetric])
 
     moreover have "a ^ m mod a ^ n = 0"
-      by (simp add: mv [symmetric] power_add)
+      by (subst mod_eq_0_iff_dvd, subst dvd_def, rule exI [where x = "a ^ q"],
+      (subst power_add [symmetric] mv)+, rule refl)
 
     ultimately show "(a ^ m div a ^ n) * a ^ n = a ^ m" by simp
   qed
@@ -108,13 +109,13 @@ lemma ran_upd:
 
 lemma nat_less_power_trans:
   fixes n :: nat
-  assumes nv: "n < 2 ^ (m - k)" 
+  assumes nv: "n < 2 ^ (m - k)"
   and     kv: "k \<le> m"
   shows "2 ^ k * n < 2 ^ m"
 proof (rule order_less_le_trans)
   show "2 ^ k * n < 2 ^ k * 2 ^ (m - k)"
     by (rule mult_less_mono2 [OF nv zero_less_power]) simp
-    
+
   show "(2::nat) ^ k * 2 ^ (m - k) \<le> 2 ^ m" using nv kv
     by (subst power_add [symmetric]) simp
 qed
@@ -122,8 +123,8 @@ qed
 lemma nat_le_power_trans:
   fixes n :: nat
   shows "\<lbrakk>n \<le> 2 ^ (m - k); k \<le> m\<rbrakk> \<Longrightarrow> 2 ^ k * n \<le> 2 ^ m"
-  by (auto dest: le_Suc_ex [of k] simp add: power_add)
-  
+  by (metis le_add_diff_inverse mult_le_mono2 semiring_normalization_rules(26))
+
 lemma x_power_minus_1:
   fixes x :: "'a :: {ab_group_add, power, numeral, one}"
   shows "x + (2::'a) ^ n - (1::'a) = x + (2 ^ n - 1)" by simp

@@ -86,12 +86,17 @@ definition
 where
   "word_clz w \<equiv> length (takeWhile Not (to_bl w))"
 
+(* Count trailing zeros  *)
+definition
+  word_ctz :: "'a::len word \<Rightarrow> nat"
+where
+  "word_ctz w \<equiv> length (takeWhile Not (rev (to_bl w)))"
 
 definition
   word_log2 :: "'a::len word \<Rightarrow> nat"
 where
   "word_log2 (w::'a::len word) \<equiv> size w - 1 - word_clz w"
-  
+
 
 (* Bit population count. Equivalent of __builtin_popcount. *)
 definition
@@ -99,6 +104,18 @@ definition
 where
   "pop_count w \<equiv> length (filter id (to_bl w))"
 
+
+(* Sign extension from bit n *)
+
+definition
+  sign_extend :: "nat \<Rightarrow> 'a::len word \<Rightarrow> 'a word"
+where
+  "sign_extend n w \<equiv> if w !! n then w || ~~mask n else w && mask n"
+
+definition
+  sign_extended :: "nat \<Rightarrow> 'a::len word \<Rightarrow> bool"
+where
+  "sign_extended n w \<equiv> \<forall>i. n < i \<longrightarrow> i < size w \<longrightarrow> w !! i = w !! n"
 
 
 lemma ptr_add_0 [simp]:
@@ -286,7 +303,7 @@ lemma shiftr_mask_le:
 
 lemmas shiftr_mask = order_refl [THEN shiftr_mask_le, simp]
 
-lemma word_leI: 
+lemma word_leI:
   "(\<And>n.  \<lbrakk>n < size (u::'a::len0 word); u !! n \<rbrakk> \<Longrightarrow> (v::'a::len0 word) !! n) \<Longrightarrow> u <= v"
   apply (rule xtr4)
    apply (rule word_and_le2)
@@ -488,6 +505,13 @@ lemma word_and_max_word:
   shows "x = max_word \<Longrightarrow> a AND x = a"
   by simp
 
+(* Simplifying with word_and_max_word and max_word_def works for arbitrary word sizes,
+   but the conditional rewrite can be slow when combined with other common rewrites on
+   word expressions. If we are willing to limit our attention to common word sizes,
+   the following will usually be much faster. *)
+lemmas word_and_max_simps[simplified max_word_def, simplified] =
+  word_and_max[where 'a=8] word_and_max[where 'a=16] word_and_max[where 'a=32] word_and_max[where 'a=64]
+
 lemma word_and_1:
   fixes x::"'a::len word"
   shows "(x AND 1) = (if x!!0 then 1 else 0)"
@@ -540,10 +564,7 @@ lemma ucast_of_nat:
   apply (rule nat_int.Rep_eqD)
   apply (simp only: zmod_int)
   apply (rule mod_mod_cancel)
-  apply simp
-  apply (rule le_imp_power_dvd)
-  apply (simp add: is_down_def target_size_def source_size_def word_size)
-  done
+  by (simp add: is_down le_imp_power_dvd)
 
 (* shortcut for some specific lengths *)
 lemma word_fixed_sint_1[simp]:
@@ -647,10 +668,10 @@ lemma to_bl_1:
 proof -
   have "to_bl (1 :: 'a::len word) = to_bl (mask 1 :: 'a::len word)"
     by (simp add: mask_def)
-  
+
   also have "\<dots> = replicate (len_of TYPE('a) - 1) False @ [True]"
     by (cases "len_of TYPE('a)"; clarsimp simp: to_bl_mask)
- 
+
   finally show ?thesis .
 qed
 
