@@ -2,7 +2,7 @@
   Title:      Blockchain.thy
   Author:     Diego Marmsoler
 *)
-section "A Theory of Blockchain Architectures"
+section "Blockchain Architectures"
 
 theory Blockchain imports Auxiliary DynamicArchitectures.Dynamic_Architecture_Calculus RF_LTL
 begin

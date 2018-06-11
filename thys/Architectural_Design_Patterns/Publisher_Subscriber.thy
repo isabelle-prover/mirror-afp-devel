@@ -31,8 +31,9 @@ locale publisher_subscriber =
   assumes conn1: "\<And>k pid. pbactive pid k
       \<Longrightarrow> pbsb (pbcmp pid k) = (\<Union>sid\<in>{sid. sbactive sid k}. {sbsb (sbcmp sid k)})"
     and conn2: "\<And>t n n'' sid pid E e m.
-      \<lbrakk>t \<in> arch; sbactive sid (t n); sub E = sbsb (sbcmp sid (t n)); n''\<ge> n; e \<in> E;
-      \<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> sbactive sid (t n') \<and> unsub E' = sbsb (sbcmp sid (t n')) \<and> e \<in> E';
+      \<lbrakk>t \<in> arch; pbactive pid (t n); sbactive sid (t n); sub E = sbsb (sbcmp sid (t n)); n''\<ge> n; e \<in> E;
+      \<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> sbactive sid (t n') \<and>
+        unsub E' = sbsb (sbcmp sid (t n')) \<and> e \<in> E';
       (e, m) = pbnt (pbcmp pid (t n'')); sbactive sid (t n'')\<rbrakk>
       \<Longrightarrow> pbnt (pbcmp pid (t n'')) \<in> sbnt (sbcmp sid (t n''))"
 begin
@@ -55,9 +56,29 @@ no_notation sb.ex (binder "\<exists>\<^sub>b" 10)
 notation sb.all (binder "\<forall>\<^sub>s" 10)
 notation sb.ex (binder "\<exists>\<^sub>s" 10)
 
-abbreviation the_publisher :: "'pid" where
-"the_publisher \<equiv> pb.the_singleton"
+subsubsection "Calculus Interpretation"
+text {*
+\noindent
+@{thm[source] pb.baIA}: @{thm pb.baIA [no_vars]}
+*}
+text {*
+\noindent
+@{thm[source] sb.baIA}: @{thm sb.baIA [no_vars]}
+*}
+subsubsection "Results from Singleton"
+abbreviation the_pb :: "'pid" where
+"the_pb \<equiv> pb.the_singleton"
 
+text {*
+\noindent
+@{thm[source] pb.ts_prop(1)}: @{thm pb.ts_prop(1) [no_vars]}
+*}
+text {*
+\noindent
+@{thm[source] pb.ts_prop(2)}: @{thm pb.ts_prop(2) [no_vars]}
+*}
+
+subsubsection "Architectural Guarantees"
 text {*
   The following theorem ensures that a subscriber indeed receives all messages associated with an event for which he is subscribed.
 *}
@@ -70,17 +91,18 @@ theorem msgDelivery:
     and "\<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> sbactive sid (t n') \<and> unsub E' = sbsb(sbcmp sid (t n'))
           \<and> e \<in> E'"
     and "e \<in> E"
-    and "(e,m) = pbnt (pbcmp the_publisher (t n''))"
+    and "(e,m) = pbnt (pbcmp the_pb (t n''))"
     and "sbactive sid (t n'')"
-  shows "(e,m) \<in> sbnt (sbcmp sid (t n''))" using assms conn2 by simp
+  shows "(e,m) \<in> sbnt (sbcmp sid (t n''))"
+  using assms conn2 pb.ts_prop(2) by simp
 
 text {*
   Since a publisher is actually a singleton, we can provide an alternative version of constraint @{thm[source] conn1}.
 *}
 lemma conn1A:
   fixes k
-  shows "pbsb (pbcmp the_publisher k) = (\<Union>sid\<in>{sid. sbactive sid k}. {sbsb (sbcmp sid k)})"
-  using conn1[OF pb.the_active] .
+  shows "pbsb (pbcmp the_pb k) = (\<Union>sid\<in>{sid. sbactive sid k}. {sbsb (sbcmp sid k)})"
+  using conn1[OF pb.ts_prop(2)] .
 end
   
 end
