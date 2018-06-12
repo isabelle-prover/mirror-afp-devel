@@ -1,4 +1,4 @@
-section "A Theory of Blockchain Architectures"
+section "Some Auxiliary Results"
 
 theory Auxiliary imports Main
 begin

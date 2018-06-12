@@ -2117,11 +2117,11 @@ proof -
       using diff_chain_within [OF gdiff fdiff]
       by (simp add: has_vector_derivative_def scaleR_conv_of_real o_def mult_ac)
   }
-  then have *: "\<forall>x\<in>{0<..<1} - k.  ((\<lambda>x. f (g x)) has_vector_derivative f' (g x) * vector_derivative g (at x within {0..1})) (at x within {0..1})"
+  then have *: "\<And>x. x\<in>{0<..<1} - k \<Longrightarrow> ((\<lambda>x. f (g x)) has_vector_derivative f' (g x) * vector_derivative g (at x within {0..1})) (at x within {0..1})"
        by auto
   have "((\<lambda>x. ((f'(g x))) * ((vector_derivative g (at x within {0..1}))))
              has_integral (((f(g 1)) - (f(g 0))))) {0..1}"
-    using fundamental_theorem_of_calculus_interior_strong[OF k(1) zero_le_one cfg]
+    using fundamental_theorem_of_calculus_interior_strong[OF k(1) zero_le_one _ cfg]
     using k assms cfg * by (auto simp: at_within_Icc_at)
   then have "((\<lambda>x. (((f'(g x))) * ((vector_derivative g (at x within {0..1})))) \<bullet> base_vec)
              has_integral (((f(g 1)) - (f(g 0)))) \<bullet> base_vec) {0..1}"

@@ -131,7 +131,7 @@ lemma is_factorization_of_roots:
         case_prod_unfold prod_list_zero_iff simp del: power_Suc)
 
 lemma (in monoid_mult) prod_list_prod_nth: "prod_list xs = (\<Prod>i<length xs. xs ! i)"
-  by (induction xs) (auto simp: prod_lessThan_Suc_shift)
+  by (induction xs) (auto simp: prod_lessThan_Suc_shift simp del: prod_lessThan_Suc)
 
 lemma order_prod:
   assumes "\<And>x. x \<in> A \<Longrightarrow> f x \<noteq> 0"

@@ -5,6 +5,7 @@ session "Gromov_Hyperbolicity" (AFP) = "HOL-Analysis" +
   sessions
     "HOL-Cardinals"
     "HOL-Decision_Procs"
+    Ergodic_Theory
   theories
     Library_Complements
     Eexp_Eln
@@ -14,6 +15,9 @@ session "Gromov_Hyperbolicity" (AFP) = "HOL-Analysis" +
     Gromov_Hyperbolicity
     Bonk_Schramm_Extension
     Gromov_Boundary
+    Boundary_Extension
+    Busemann_Function
+    Isometries_Classification
   document_files
     "root.tex"
     "root.bib"

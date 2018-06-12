@@ -14,8 +14,8 @@ We introduce a dedicated definition, and show its basic properties.\<close>
 definition isometry_on::"('a::metric_space) set \<Rightarrow> ('a \<Rightarrow> ('b::metric_space)) \<Rightarrow> bool"
   where "isometry_on X f = (\<forall>x \<in> X. \<forall>y \<in> X. dist (f x) (f y) = dist x y)"
 
-abbreviation isometry :: "('a::metric_space \<Rightarrow> 'b::metric_space) \<Rightarrow> bool"
-  where "isometry f \<equiv> isometry_on UNIV f"
+definition isometry :: "('a::metric_space \<Rightarrow> 'b::metric_space) \<Rightarrow> bool"
+  where "isometry f \<equiv> isometry_on UNIV f \<and> range f = UNIV"
 
 lemma isometry_on_subset:
   assumes "isometry_on X f"
@@ -34,6 +34,12 @@ lemma isometry_onD:
   shows "dist (f x) (f y) = dist x y"
 using assms unfolding isometry_on_def by auto
 
+lemma isometryI [intro?]:
+  assumes "\<And>x y. dist (f x) (f y) = dist x y"
+          "range f = UNIV"
+  shows "isometry f"
+unfolding isometry_def isometry_on_def using assms by auto
+
 lemma
   assumes "isometry_on X f"
   shows isometry_on_lipschitz: "1-lipschitz_on X f"
@@ -44,6 +50,17 @@ proof -
   then show "uniformly_continuous_on X f" "continuous_on X f"
     using lipschitz_on_uniformly_continuous lipschitz_on_continuous_on by auto
 qed
+
+lemma isometryD:
+  assumes "isometry f"
+  shows "isometry_on UNIV f"
+        "dist (f x) (f y) = dist x y"
+        "range f = UNIV"
+        "1-lipschitz_on UNIV f"
+        "uniformly_continuous_on UNIV f"
+        "continuous_on UNIV f"
+using assms unfolding isometry_def isometry_on_def apply auto
+using isometry_on_lipschitz isometry_on_uniformly_continuous isometry_on_continuous assms unfolding isometry_def by blast+
 
 lemma isometry_on_injective:
   assumes "isometry_on X f"
@@ -83,17 +100,34 @@ next
     by (simp add: f_inv_into_f)
 qed
 
+lemma isometry_inverse:
+  assumes "isometry f"
+  shows "isometry (inv f)"
+        "bij f"
+using isometry_on_inverse[OF isometryD(1)[OF assms]] isometryD(3)[OF assms]
+unfolding isometry_def by (auto simp add: bij_imp_bij_inv bij_is_surj)
+
 lemma isometry_on_homeomorphism:
   assumes "isometry_on X f"
   shows "homeomorphism X (f`X) f (inv_into X f)"
+        "homeomorphism_on X f"
         "X homeomorphic f`X"
 proof -
-  show "homeomorphism X (f`X) f (inv_into X f)"
+  show *: "homeomorphism X (f`X) f (inv_into X f)"
     apply (rule homeomorphismI) using uniformly_continuous_imp_continuous[OF isometry_on_uniformly_continuous]
     isometry_on_inverse[OF assms] assms by auto
   then show "X homeomorphic f`X"
     unfolding homeomorphic_def by auto
+  show "homeomorphism_on X f"
+    unfolding homeomorphism_on_def using * by auto
 qed
+
+lemma isometry_homeomorphism:
+  fixes f::"('a::metric_space) \<Rightarrow> ('b::metric_space)"
+  assumes "isometry f"
+  shows "homeomorphism UNIV UNIV f (inv f)"
+        "(UNIV::'a set) homeomorphic (UNIV::'b set)"
+using isometry_on_homeomorphism[OF isometryD(1)[OF assms]] isometryD(3)[OF assms] by auto
 
 lemma isometry_on_closure:
   assumes "isometry_on X f"
@@ -157,8 +191,8 @@ proof (rule completeI)
 qed
 
 lemma isometry_on_id [simp]:
-  "isometry (\<lambda>x. x)"
   "isometry_on A (\<lambda>x. x)"
+  "isometry_on A id"
 unfolding isometry_on_def by auto
 
 lemma isometry_on_add [simp]:
@@ -194,7 +228,18 @@ using assms isometry_preserves_infdist[OF assms(1) assms(2)] isometry_preserves_
   isometry_preserves_bounded[OF assms(1) assms(2)] isometry_preserves_bounded[OF assms(1) assms(3)]
 by (auto, smt SUP_cong subset_eq)
 
+lemma isometry_on_UNIV_iterates:
+  fixes f::"('a::metric_space) \<Rightarrow> 'a"
+  assumes "isometry_on UNIV f"
+  shows "isometry_on UNIV (f^^n)"
+by (induction n, auto, rule isometry_on_compose[of _ _ f], auto intro: isometry_on_subset[OF assms])
 
+lemma isometry_iterates:
+  fixes f::"('a::metric_space) \<Rightarrow> 'a"
+  assumes "isometry f"
+  shows "isometry (f^^n)"
+using isometry_on_UNIV_iterates[OF isometryD(1)[OF assms], of n] bij_fn[OF isometry_inverse(2)[OF assms], of n]
+unfolding isometry_def by (simp add: bij_is_surj)
 
 section \<open>Geodesic spaces\<close>
 
@@ -447,10 +492,10 @@ proof -
        "t \<in> {0..dist x y} \<Longrightarrow> dist x (geodesic_segment_param G x t) = t"
        "s \<in> {0..dist x y} \<Longrightarrow> t \<in> {0..dist x y} \<Longrightarrow> dist (geodesic_segment_param G x s) (geodesic_segment_param G x t) = abs(s-t)"
        "z \<in> G \<Longrightarrow> z = geodesic_segment_param G x (dist x z)"
-   using G g apply (auto simp add: rev_image_eqI)
-   using G isometry_on_cong * atLeastAtMost_iff apply blast
-   using G isometry_on_cong * atLeastAtMost_iff apply blast
-   by (auto simp add: * dist_real_def isometry_onD)
+    using G g apply (auto simp add: rev_image_eqI)
+    using G isometry_on_cong * atLeastAtMost_iff apply blast
+    using G isometry_on_cong * atLeastAtMost_iff apply blast
+    by (auto simp add: * dist_real_def isometry_onD)
 qed
 
 lemma geodesic_segment_param_in_segment:
@@ -552,7 +597,7 @@ lemma geodesic_segment_homeo_interval:
 proof -
   obtain g where g: "g 0 = x" "g (dist x y) = y" "isometry_on {0..dist x y} g" "G = g`{0..dist x y}"
     by (meson \<open>geodesic_segment_between G x y\<close> geodesic_segment_between_def)
-  show ?thesis using isometry_on_homeomorphism(2)[OF g(3)] unfolding g(4) by simp
+  show ?thesis using isometry_on_homeomorphism(3)[OF g(3)] unfolding g(4) by simp
 qed
 
 lemma geodesic_segment_topology:
@@ -598,7 +643,7 @@ proof -
     have *: "isometry_on ({0..dist x y} - {t}) g"
       apply (rule isometry_on_subset[OF g(3)]) by auto
     have "({0..dist x y} - {t}) homeomorphic g`({0..dist x y} - {t})"
-      by (rule isometry_on_homeomorphism(2)[OF *])
+      by (rule isometry_on_homeomorphism(3)[OF *])
     moreover have "g`({0..dist x y} - {t}) = G - {g t}"
       unfolding g(4) using isometry_on_injective[OF g(3)] t by (auto simp add: inj_onD)
     ultimately show ?thesis by auto
@@ -634,7 +679,7 @@ proof -
     using isometry_on_inverse[OF \<open>isometry_on {0..dist x y} g\<close>] g(4) by auto
   then have "isometry_on H (inv_into {0..dist x y} g)"
     using \<open>H \<subseteq> G\<close> isometry_on_subset by auto
-  then have "H homeomorphic L" unfolding L_def using isometry_on_homeomorphism by auto
+  then have "H homeomorphic L" unfolding L_def using isometry_on_homeomorphism(3) by auto
   then have "compact L \<and> connected L"
     using assms homeomorphic_compactness homeomorphic_connectedness by blast
   then obtain a b where "L = {a..b}"
@@ -1596,6 +1641,11 @@ lemma quasi_isometry_subset:
   shows "1 C-quasi_isometry_between X Y (\<lambda>x. x)"
 unfolding quasi_isometry_between_def using assms by auto
 
+lemma isometry_quasi_isometry_between:
+  assumes "isometry f"
+  shows "1 0-quasi_isometry_between UNIV UNIV f"
+using assms unfolding quasi_isometry_between_def quasi_isometry_on_def isometry_def isometry_on_def surj_def by (auto) metis
+
 proposition quasi_isometry_inverse:
   assumes "lambda C-quasi_isometry_between X Y f"
   shows "\<exists>g. lambda (3 * C * lambda)-quasi_isometry_between Y X g
@@ -2448,7 +2498,7 @@ proof -
     define Delta::real where "Delta = 9/8"
     have Delta: "1 < Delta" "Delta \<le> 2" unfolding Delta_def using C by auto
     obtain A where A: "finite A" "A \<subseteq> {a..b}" "a \<in> A" "b \<in> A" "a < b"
-             and Abounds:
+              and Abounds:
               "\<And>u. u \<in> A - {b} \<Longrightarrow> dist (c u) (c (next_in A u)) \<le> 3 * Delta * C"
               "\<And>u. u \<in> A - {b} \<Longrightarrow> dist (c u) (c (next_in A u)) \<ge> Delta * C"
               "\<And>u v. u \<in> A - {b} \<Longrightarrow> v \<in> {u..next_in A u} \<Longrightarrow> dist (c u) (c v) \<le> Delta * C \<or> dist (c (next_in A u)) (c v) \<le> Delta * C"

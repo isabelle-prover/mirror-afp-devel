@@ -244,7 +244,7 @@ proof -
   also have "\<dots> = (INF n. (\<integral>\<^sup>+\<omega>. (\<Prod>i<n. eexp (- ereal (\<omega> i))) \<partial>?P))"
   proof (intro nn_integral_monotone_convergence_INF_AE')
     show "AE \<omega> in ?P. (\<Prod>i<Suc n. eexp (- ereal (\<omega> i))) \<le> (\<Prod>i<n. eexp (- ereal (\<omega> i)))" for n
-      using AE_pos by eventually_elim (auto intro!: prod_mono3 intro: less_imp_le)
+      using AE_pos by eventually_elim (auto intro!: prod_mono3 intro: less_imp_le simp del: prod_lessThan_Suc)
   qed (auto simp: less_top[symmetric])
   also have "\<dots> = (INF n. (\<Prod>i<n. (\<integral>\<^sup>+\<omega>. eexp (- ereal (\<omega> i)) \<partial>?P)))"
   proof (intro INF_cong refl indep_vars_nn_integral)

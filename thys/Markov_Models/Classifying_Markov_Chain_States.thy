@@ -389,7 +389,7 @@ qed
 lemma p_eq_sum_p_f: "p x y n = (\<Sum>i\<le>n. p y y (n - i) * f x y i)"
   by (cases n)
      (simp_all del: sum_atMost_Suc
-               add: f_0 p_0 p_eq_sum_p_u Iic_Suc_eq_insert_0 zero_notin_Suc_image sum.reindex
+               add: f_0 p_0 p_eq_sum_p_u atMost_Suc_eq_insert_0 zero_notin_Suc_image sum.reindex
                     f_Suc f_Suc_eq)
 
 lemma gf_G_eq_gf_F:

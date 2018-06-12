@@ -1345,7 +1345,7 @@ next
   then show ?case
     by (auto intro!: derivative_eq_intros ext simp: FDERIV_floatarith_def interpret_floatarith_inner_floatariths 
         interpret_floatariths_map add.commute minus_sin_cos_eq
-        reorient: mult_minus_left list_of_eucl_coord_update cos_pi_minus)
+        simp flip: mult_minus_left list_of_eucl_coord_update cos_pi_minus)
 next
   case (Arctan fa)
   then show ?case

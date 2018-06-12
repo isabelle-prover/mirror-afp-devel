@@ -30,7 +30,7 @@ lemma pochhammer_poly_Suc: "pochhammer_poly (Suc n) = [:of_nat n,1:] * pochhamme
   by (cases "n = 0") (simp_all add: poly_eq_iff coeff_pochhammer_poly coeff_pCons split: nat.split)
 
 lemma pochhammer_poly_altdef: "pochhammer_poly n = (\<Prod>i<n. [:of_nat i,1:])"
-  by (induction n) (simp_all add: pochhammer_poly_Suc prod_lessThan_Suc)
+  by (induction n) (simp_all add: pochhammer_poly_Suc)
 
 lemma eval_pochhammer_poly: "poly (pochhammer_poly n) k = pochhammer k n"
   by (cases n) (auto simp add: pochhammer_poly_altdef poly_prod add_ac lessThan_Suc_atMost 
@@ -39,6 +39,6 @@ lemma eval_pochhammer_poly: "poly (pochhammer_poly n) k = pochhammer k n"
 lemma pochhammer_poly_Suc':
     "pochhammer_poly (Suc n) = pCons 0 (pcompose (pochhammer_poly n) [:1,1:])"
   by (simp add: pochhammer_poly_altdef prod_lessThan_Suc_shift
-                pcompose_prod pcompose_pCons add_ac)
+                pcompose_prod pcompose_pCons add_ac del: prod_lessThan_Suc)
  
 end

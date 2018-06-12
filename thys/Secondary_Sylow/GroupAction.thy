@@ -541,7 +541,8 @@ lemma (in group) right_mult_is_bij:
 proof(auto simp add:Bij_def bij_betw_def inj_on_def)
   fix x y
   assume x:"x \<in> carrier G" and y:"y \<in> carrier G" and "h \<otimes> x = h \<otimes> y"
-  with h show "x = y" by (metis l_cancel)
+  with h show "x = y"
+    by simp
 next
   fix x
   assume x:"x \<in> carrier G"

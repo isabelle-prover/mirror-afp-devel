@@ -299,7 +299,7 @@ proof -
     also have "... = (\<Sum>i\<in>Suc ` {..m}. p i * (i - 1))"
       by (auto simp add: sum.reindex)
     also have "... = (\<Sum>i\<le>Suc m. p i * (i - 1))"
-      using \<open>p 0 = 0\<close> by (simp add: Iic_Suc_eq_insert_0 zero_notin_Suc_image)
+      using \<open>p 0 = 0\<close> by (simp add: atMost_Suc_eq_insert_0 zero_notin_Suc_image)
     also have "... = (\<Sum>i\<le>m. p i * (i - 1))"
       using p by (auto elim!: partitionsE)
     also have "... = (\<Sum>i\<le>m. p i * i - p i)"

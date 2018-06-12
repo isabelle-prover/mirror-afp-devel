@@ -136,17 +136,38 @@ lemma Gromov_product_e_x_x [simp]:
   "Gromov_product_at e x x = dist e x"
 unfolding Gromov_product_at_def by auto
 
+lemma Gromov_product_at_diff:
+  "\<bar>Gromov_product_at x y z - Gromov_product_at a b c\<bar> \<le> dist x a + dist y b + dist z c"
+unfolding Gromov_product_at_def abs_le_iff apply (auto simp add: divide_simps)
+by (smt dist_commute dist_triangle4)+
+
 lemma Gromov_product_at_diff1:
   "\<bar>Gromov_product_at a x y - Gromov_product_at b x y\<bar> \<le> dist a b"
-unfolding Gromov_product_at_def by (simp add: algebra_simps divide_simps, smt dist_triangle dist_triangle3)
+using Gromov_product_at_diff[of a x y b x y] by auto
 
 lemma Gromov_product_at_diff2:
   "\<bar>Gromov_product_at e x z - Gromov_product_at e y z\<bar> \<le> dist x y"
-unfolding Gromov_product_at_def by (simp add: algebra_simps divide_simps, smt dist_commute dist_triangle)
+using Gromov_product_at_diff[of e x z e y z] by auto
 
 lemma Gromov_product_at_diff3:
   "\<bar>Gromov_product_at e x y - Gromov_product_at e x z\<bar> \<le> dist y z"
-unfolding Gromov_product_at_def by (simp add: algebra_simps divide_simps, smt dist_commute dist_triangle)
+using Gromov_product_at_diff[of e x y e x z] by auto
+
+text \<open>The Gromov product is continuous in its three variables. We formulate it in terms of sequences,
+as it is the way it will be used below (and moreover continuity for functions of several variables
+is very poor in the library).\<close>
+
+lemma Gromov_product_at_continuous:
+  assumes "(u \<longlongrightarrow> x) F" "(v \<longlongrightarrow> y) F" "(w \<longlongrightarrow> z) F"
+  shows "((\<lambda>n. Gromov_product_at (u n) (v n) (w n)) \<longlongrightarrow> Gromov_product_at x y z) F"
+proof -
+  have "((\<lambda>n. abs(Gromov_product_at (u n) (v n) (w n) - Gromov_product_at x y z)) \<longlongrightarrow> 0 + 0 + 0) F"
+    apply (rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (u n) x + dist (v n) y + dist (w n) z", OF always_eventually always_eventually])
+    apply (simp, simp add: Gromov_product_at_diff, simp, intro tendsto_intros)
+    using assms tendsto_dist_iff by auto
+  then show ?thesis
+    apply (subst tendsto_dist_iff) unfolding dist_real_def by auto
+qed
 
 
 subsection \<open>Typeclass for Gromov hyperbolic spaces\<close>
@@ -528,8 +549,8 @@ proof -
       the result has already been proved above. We need to argue that all functions are continuous
       on the sets we are considering, which is straightforward but tedious.\<close>
       define u::"nat \<Rightarrow> real" where "u = (\<lambda>n. t-1/n)"
-      have "u \<longlonglongrightarrow> t -0"
-        unfolding u_def apply (intro tendsto_intros) by (simp add: lim_1_over_n)
+      have "u \<longlonglongrightarrow> t - 0"
+        unfolding u_def by (intro tendsto_intros)
       then have "u \<longlonglongrightarrow> t" by simp
       then have *: "eventually (\<lambda>n. u n > delta) sequentially"
         using 3 by (auto simp add: order_tendsto_iff)
@@ -1300,7 +1321,7 @@ proof -
       terms, using rather $uv \leq (u^2/2 + 2v^2)/2$. We also bound $\ln(720)$ by a good
       approximation $20/3$.\<close>
       also have "... \<le> (deltaG(TYPE('a))^2/2 + 1^2/2) * (20/3)
-           + 2 * ((1/2) * deltaG(TYPE('a))^2/2 + 2 * (ln lambda)^2 / 2) + ((1/2) * deltaG(TYPE('a))^2/2 + 2 * (ln (1+C))^2 / 2)"
+            + 2 * ((1/2) * deltaG(TYPE('a))^2/2 + 2 * (ln lambda)^2 / 2) + ((1/2) * deltaG(TYPE('a))^2/2 + 2 * (ln (1+C))^2 / 2)"
         by (intro mono_intros, auto, approximation 7)
       also have "... = (49/12) * deltaG(TYPE('a))^2 + 10/3 + 2 * (ln lambda)^2 + (ln (1+C))^2"
         by (auto simp add: algebra_simps)
@@ -1432,14 +1453,14 @@ proof -
           unfolding Km_def apply (rule compact_has_closed_thickening)
           apply (rule compact_continuous_image)
           apply (rule continuous_on_subset[OF \<open>continuous_on {A..B} d\<close>])
-          using tm \<open>ty \<in> {A..B}\<close> by (auto)
+          using tm \<open>ty \<in> {A..B}\<close> by auto
         then show "closed (Km \<inter> {c A--c B})" by (rule topological_space_class.closed_Int, auto)
 
         have "closed KM"
           unfolding KM_def apply (rule compact_has_closed_thickening)
           apply (rule compact_continuous_image)
           apply (rule continuous_on_subset[OF \<open>continuous_on {A..B} d\<close>])
-          using tM \<open>ty \<in> {A..B}\<close> by (auto)
+          using tM \<open>ty \<in> {A..B}\<close> by auto
         then show "closed (KM \<inter> {c A--c B})" by (rule topological_space_class.closed_Int, auto)
 
         show "connected {c A--c B}" by simp
@@ -1943,7 +1964,7 @@ class metric_tree_with_delta = metric_tree + metric_space_with_deltaG +
   assumes delta0: "deltaG(TYPE('a::metric_space)) = 0"
 
 class Gromov_hyperbolic_space_0 = Gromov_hyperbolic_space +
-  assumes delta0: "deltaG(TYPE('a::metric_space)) = 0"
+  assumes delta0 [simp]: "deltaG(TYPE('a::metric_space)) = 0"
 
 class Gromov_hyperbolic_space_0_geodesic = Gromov_hyperbolic_space_0 + geodesic_space
 

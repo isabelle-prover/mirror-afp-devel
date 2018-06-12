@@ -2,7 +2,6 @@
     License: BSD
 *)
 
-
 theory Gromov_Boundary
   imports Gromov_Hyperbolicity Eexp_Eln
 begin
@@ -281,7 +280,7 @@ definition Gromov_converging_at_boundary::"(nat \<Rightarrow> ('a::Gromov_hyperb
   where "Gromov_converging_at_boundary u = (\<forall>a. \<forall>(M::real). \<exists>N. \<forall>n \<ge> N. \<forall> m\<ge>N. Gromov_product_at a (u m) (u n) \<ge> M)"
 
 lemma Gromov_converging_at_boundaryI:
-  assumes "\<And>M. \<exists>N. \<forall>n \<ge> N. \<forall> m\<ge>N. Gromov_product_at a (u m) (u n) \<ge> M"
+  assumes "\<And>M. \<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. Gromov_product_at a (u m) (u n) \<ge> M"
   shows "Gromov_converging_at_boundary u"
 unfolding Gromov_converging_at_boundary_def proof (auto)
   fix b::'a and M::real
@@ -471,6 +470,13 @@ proof -
     unfolding to_Gromov_completion_def using Gromov_completion_rel_to_const' by blast
 qed
 
+text \<open>To distinguish the case of points inside the space or in the boundary, we introduce the
+following case distinction.\<close>
+
+lemma Gromov_completion_cases [case_names to_Gromov_completion boundary, cases type: Gromov_completion]:
+  "(\<And>x. z = to_Gromov_completion x \<Longrightarrow> P) \<Longrightarrow> (z \<in> Gromov_boundary \<Longrightarrow> P) \<Longrightarrow> P"
+apply (cases "z \<in> Gromov_boundary") using not_in_Gromov_boundary by auto
+
 
 subsection \<open>Extending the original distance and the original Gromov product to the completion\<close>
 
@@ -485,41 +491,55 @@ in extended nonnegative reals.
 We also extend the original distance, by $+\infty$ on the boundary. This is not a really interesting
 function, but it will be instrumental below. Again, this extended Gromov distance (not to be mistaken
 for the genuine distance we will construct later on on the completion) takes values in extended
-nonnegative reals.\<close>
+nonnegative reals.
 
+Since the extended Gromov product and the extension of the original distance both take values in
+$[0,+\infty]$, it may seem natural to define them in ennreal. This is the choice that was made in
+a previous implementation, but it turns out that one keeps computing with these numbers, writing
+down inequalities and subtractions. ennreal is ill suited for this kind of computations, as it only
+works well with additions. Hence, the implementation was switched to ereal, where proofs are indeed
+much smoother.
 
-text \<open>To define the extended Gromov product, one takes a limit of the Gromov product along any
+To define the extended Gromov product, one takes a limit of the Gromov product along any
 sequence, as it does not depend up to $\delta$ on the chosen sequence. However, if one wants to
 keep the exact inequality that defines hyperbolicity, but at all points, then using an infimum
 is the best choice.\<close>
 
-definition extended_Gromov_product_at::"('a::Gromov_hyperbolic_space) \<Rightarrow> 'a Gromov_completion \<Rightarrow> 'a Gromov_completion \<Rightarrow> ennreal"
-  where "extended_Gromov_product_at e x y = Inf {liminf (\<lambda>n. ennreal(Gromov_product_at e (u n) (v n))) |u v. abs_Gromov_completion u = x \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v}"
+definition extended_Gromov_product_at::"('a::Gromov_hyperbolic_space) \<Rightarrow> 'a Gromov_completion \<Rightarrow> 'a Gromov_completion \<Rightarrow> ereal"
+  where "extended_Gromov_product_at e x y = Inf {liminf (\<lambda>n. ereal(Gromov_product_at e (u n) (v n))) |u v. abs_Gromov_completion u = x \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v}"
 
-definition extended_Gromov_distance::"('a::Gromov_hyperbolic_space) Gromov_completion \<Rightarrow> 'a Gromov_completion \<Rightarrow> ennreal"
+definition extended_Gromov_distance::"('a::Gromov_hyperbolic_space) Gromov_completion \<Rightarrow> 'a Gromov_completion \<Rightarrow> ereal"
   where "extended_Gromov_distance x y =
               (if x \<in> Gromov_boundary \<or> y \<in> Gromov_boundary then \<infinity>
-              else ennreal (dist (inv to_Gromov_completion x) (inv to_Gromov_completion y)))"
+              else ereal (dist (inv to_Gromov_completion x) (inv to_Gromov_completion y)))"
 
 text \<open>The extended distance and the extended Gromov product are invariant under exchange
 of the points, readily from the definition.\<close>
 
 lemma extended_Gromov_distance_commute:
   "extended_Gromov_distance x y = extended_Gromov_distance y x"
-  unfolding extended_Gromov_distance_def by (simp add: dist_commute)
+unfolding extended_Gromov_distance_def by (simp add: dist_commute)
+
+lemma extended_Gromov_product_nonneg [mono_intros, simp]:
+  "0 \<le> extended_Gromov_product_at e x y"
+unfolding extended_Gromov_product_at_def by (rule Inf_greatest, auto intro: Liminf_bounded always_eventually)
+
+lemma extended_Gromov_distance_nonneg [mono_intros, simp]:
+  "0 \<le> extended_Gromov_distance x y"
+unfolding extended_Gromov_distance_def by auto
 
 lemma extended_Gromov_product_at_commute:
   "extended_Gromov_product_at e x y = extended_Gromov_product_at e y x"
 unfolding extended_Gromov_product_at_def
 proof (rule arg_cong[of _ _ Inf])
-  have "{liminf (\<lambda>n. ennreal (Gromov_product_at e (u n) (v n))) |u v.
+  have "{liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) |u v.
           abs_Gromov_completion u = x \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v} =
-        {liminf (\<lambda>n. ennreal (Gromov_product_at e (v n) (u n))) |u v.
+        {liminf (\<lambda>n. ereal (Gromov_product_at e (v n) (u n))) |u v.
           abs_Gromov_completion v = y \<and> abs_Gromov_completion u = x \<and> Gromov_completion_rel v v \<and> Gromov_completion_rel u u}"
     by (auto simp add: Gromov_product_commute)
-  then show "{liminf (\<lambda>n. ennreal (Gromov_product_at e (u n) (v n))) |u v.
+  then show "{liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) |u v.
       abs_Gromov_completion u = x \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v} =
-      {liminf (\<lambda>n. ennreal (Gromov_product_at e (u n) (v n))) |u v.
+      {liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) |u v.
       abs_Gromov_completion u = y \<and> abs_Gromov_completion v = x \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v}"
     by auto
 qed
@@ -544,12 +564,12 @@ proof -
   then have *: "{u. abs_Gromov_completion u = to_Gromov_completion z \<and> Gromov_completion_rel u u} = {(\<lambda>n. z)}" for z::'a
     unfolding to_Gromov_completion_def by auto
   have **: "{F u v |u v. abs_Gromov_completion u = to_Gromov_completion x \<and> abs_Gromov_completion v = to_Gromov_completion y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v}
-      = {F (\<lambda>n. x) (\<lambda>n. y)}" for F::"(nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> ennreal"
+      = {F (\<lambda>n. x) (\<lambda>n. y)}" for F::"(nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> ereal"
     using *[of x] *[of y] unfolding extended_Gromov_product_at_def by (auto, smt mem_Collect_eq singletonD)
 
-  have "extended_Gromov_product_at e (to_Gromov_completion x) (to_Gromov_completion y) = Inf {liminf (\<lambda>n. ennreal(Gromov_product_at e ((\<lambda>n. x) n) ((\<lambda>n. y) n)))}"
+  have "extended_Gromov_product_at e (to_Gromov_completion x) (to_Gromov_completion y) = Inf {liminf (\<lambda>n. ereal(Gromov_product_at e ((\<lambda>n. x) n) ((\<lambda>n. y) n)))}"
     unfolding extended_Gromov_product_at_def ** by simp
-  also have "... = ennreal(Gromov_product_at e x y)"
+  also have "... = ereal(Gromov_product_at e x y)"
     by (auto simp add: Liminf_const)
   finally show "extended_Gromov_product_at e (to_Gromov_completion x) (to_Gromov_completion y) = Gromov_product_at e x y"
     by simp
@@ -586,26 +606,23 @@ the space.\<close>
 
 lemma extended_Gromov_product_le_dist [mono_intros]:
   "extended_Gromov_product_at e x y \<le> extended_Gromov_distance (to_Gromov_completion e) x"
-proof (cases "x \<in> Gromov_boundary")
-  case True
+proof (cases x)
+  case boundary
   then show ?thesis by simp
 next
-  case False
-  then obtain a where a: "x = to_Gromov_completion a"
-    using not_in_Gromov_boundary by auto
+  case (to_Gromov_completion a)
   define v where "v = rep_Gromov_completion y"
-
   have *: "abs_Gromov_completion (\<lambda>n. a) = x \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel (\<lambda>n. a) (\<lambda>n. a) \<and> Gromov_completion_rel v v"
-    unfolding v_def a to_Gromov_completion_def
+    unfolding v_def to_Gromov_completion to_Gromov_completion_def
     by (auto simp add: Quotient3_rep_reflp[OF Quotient3_Gromov_completion] Quotient3_abs_rep[OF Quotient3_Gromov_completion])
-  have "extended_Gromov_product_at e x y \<le> liminf (\<lambda>n. ennreal(Gromov_product_at e a (v n)))"
+  have "extended_Gromov_product_at e x y \<le> liminf (\<lambda>n. ereal(Gromov_product_at e a (v n)))"
     unfolding extended_Gromov_product_at_def apply (rule Inf_lower) using * by force
-  also have "... \<le> liminf (\<lambda>n. ennreal(dist e a))"
+  also have "... \<le> liminf (\<lambda>n. ereal(dist e a))"
     using Gromov_product_le_dist(1)[of e a] by (auto intro!: Liminf_mono)
-  also have "... = ennreal(dist e a)"
+  also have "... = ereal(dist e a)"
     by (simp add: Liminf_const)
   also have "... = extended_Gromov_distance (to_Gromov_completion e) x"
-    unfolding a by auto
+    unfolding to_Gromov_completion by auto
   finally show ?thesis by auto
 qed
 
@@ -625,17 +642,18 @@ proof (cases "(extended_Gromov_distance y z = \<infinity>) \<or> (extended_Gromo
     using extended_Gromov_distance_PInf_boundary by auto
   then obtain b c where b: "y = to_Gromov_completion b" and c: "z = to_Gromov_completion c"
     unfolding Gromov_boundary_def by auto
-  have "extended_Gromov_distance y z = ennreal(dist b c)"
+  have "extended_Gromov_distance y z = ereal(dist b c)"
     unfolding b c by auto
   have "extended_Gromov_product_at e x y \<le> (extended_Gromov_product_at e x z + extended_Gromov_distance y z) + h" if "h>0" for h
   proof -
-    have "\<exists>t\<in>{liminf (\<lambda>n. ennreal(Gromov_product_at e (u n) (w n))) |u w. abs_Gromov_completion u = x
+    have "\<exists>t\<in>{liminf (\<lambda>n. ereal(Gromov_product_at e (u n) (w n))) |u w. abs_Gromov_completion u = x
                   \<and> abs_Gromov_completion w = z \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel w w}.
           t < extended_Gromov_product_at e x z + h"
-      apply (subst Inf_less_iff[symmetric]) using False \<open>h > 0\<close> unfolding extended_Gromov_product_at_def[symmetric] by auto
+      apply (subst Inf_less_iff[symmetric]) using False \<open>h > 0\<close> extended_Gromov_product_nonneg[of e x z] unfolding extended_Gromov_product_at_def[symmetric]
+      by (metis add.right_neutral ereal_add_left_cancel_less order_refl)
     then obtain u w where H: "abs_Gromov_completion u = x" "abs_Gromov_completion w = z"
                           "Gromov_completion_rel u u" "Gromov_completion_rel w w"
-                          "liminf (\<lambda>n. ennreal(Gromov_product_at e (u n) (w n))) < extended_Gromov_product_at e x z + h"
+                          "liminf (\<lambda>n. ereal(Gromov_product_at e (u n) (w n))) < extended_Gromov_product_at e x z + h"
       by auto
     then have w: "w n = c" for n
       using c Gromov_completion_rel_to_const Quotient3_Gromov_completion Quotient3_rel to_Gromov_completion_def by fastforce
@@ -645,25 +663,24 @@ proof (cases "(extended_Gromov_distance y z = \<infinity>) \<or> (extended_Gromo
 
     have "Gromov_product_at e (u n) (v n) \<le> Gromov_product_at e (u n) (w n) + dist b c" for n
       unfolding v w using Gromov_product_at_diff3[of e "u n" b c] by auto
-    then have *: "ennreal(Gromov_product_at e (u n) (v n)) \<le> ennreal(Gromov_product_at e (u n) (w n)) + extended_Gromov_distance y z" for n
-      unfolding \<open>extended_Gromov_distance y z = ennreal(dist b c)\<close> using ennreal_leI by fastforce
-    have "extended_Gromov_product_at e x y \<le> liminf(\<lambda>n. ennreal(Gromov_product_at e (u n) (v n)))"
+    then have *: "ereal(Gromov_product_at e (u n) (v n)) \<le> ereal(Gromov_product_at e (u n) (w n)) + extended_Gromov_distance y z" for n
+      unfolding \<open>extended_Gromov_distance y z = ereal(dist b c)\<close> by fastforce
+    have "extended_Gromov_product_at e x y \<le> liminf(\<lambda>n. ereal(Gromov_product_at e (u n) (v n)))"
       unfolding extended_Gromov_product_at_def by (rule Inf_lower, auto, rule exI[of _ u], rule exI[of _ v], auto, fact+)
-    also have "... \<le> liminf(\<lambda>n. ennreal(Gromov_product_at e (u n) (w n)) + extended_Gromov_distance y z)"
+    also have "... \<le> liminf(\<lambda>n. ereal(Gromov_product_at e (u n) (w n)) + extended_Gromov_distance y z)"
       apply (rule Liminf_mono) using * unfolding eventually_sequentially by auto
-    also have "... = liminf(\<lambda>n. ennreal(Gromov_product_at e (u n) (w n))) + extended_Gromov_distance y z"
-      by (rule Liminf_add_const, auto)
+    also have "... = liminf(\<lambda>n. ereal(Gromov_product_at e (u n) (w n))) + extended_Gromov_distance y z"
+      apply (rule Liminf_add_ereal_right) using False by auto
     also have "... \<le> extended_Gromov_product_at e x z + h + extended_Gromov_distance y z"
-      using less_imp_le[OF H(5)] by auto
+      using less_imp_le[OF H(5)] by (auto intro: mono_intros)
     finally show ?thesis
-      by (simp add: ord_le_eq_trans)
+      by (simp add: algebra_simps)
   qed
   then show ?thesis
-    using ennreal_le_epsilon ennreal_less_zero_iff by blast
+    using ereal_le_epsilon by blast
 next
   case True
-  then show ?thesis
-    by (metis ennreal_add_eq_top infinity_ennreal_def top_greatest)
+  then show ?thesis by auto
 qed
 
 lemma extended_Gromov_product_at_diff2 [mono_intros]:
@@ -676,36 +693,36 @@ proof (cases "extended_Gromov_product_at f x y = \<infinity>")
   case False
   have "extended_Gromov_product_at e x y \<le> (extended_Gromov_product_at f x y + dist e f) + h" if "h>0" for h
   proof -
-    have "\<exists>t\<in>{liminf (\<lambda>n. ennreal(Gromov_product_at f (u n) (v n))) |u v. abs_Gromov_completion u = x
+    have "\<exists>t\<in>{liminf (\<lambda>n. ereal(Gromov_product_at f (u n) (v n))) |u v. abs_Gromov_completion u = x
                 \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v}.
           t < extended_Gromov_product_at f x y + h"
-      apply (subst Inf_less_iff[symmetric]) using False \<open>h > 0\<close> unfolding extended_Gromov_product_at_def[symmetric] by auto
+      apply (subst Inf_less_iff[symmetric]) using False \<open>h > 0\<close> extended_Gromov_product_nonneg[of f x y] unfolding extended_Gromov_product_at_def[symmetric]
+      by (metis add.right_neutral ereal_add_left_cancel_less order_refl)
     then obtain u v where H: "abs_Gromov_completion u = x" "abs_Gromov_completion v = y"
                           "Gromov_completion_rel u u" "Gromov_completion_rel v v"
-                          "liminf (\<lambda>n. ennreal(Gromov_product_at f (u n) (v n))) < extended_Gromov_product_at f x y + h"
+                          "liminf (\<lambda>n. ereal(Gromov_product_at f (u n) (v n))) < extended_Gromov_product_at f x y + h"
       by auto
 
     have "Gromov_product_at e (u n) (v n) \<le> Gromov_product_at f (u n) (v n) + dist e f" for n
       using Gromov_product_at_diff1[of e "u n" "v n" f] by auto
-    then have *: "ennreal(Gromov_product_at e (u n) (v n)) \<le> ennreal(Gromov_product_at f (u n) (v n)) + dist e f" for n
-      using ennreal_leI by fastforce
-    have "extended_Gromov_product_at e x y \<le> liminf(\<lambda>n. ennreal(Gromov_product_at e (u n) (v n)))"
+    then have *: "ereal(Gromov_product_at e (u n) (v n)) \<le> ereal(Gromov_product_at f (u n) (v n)) + dist e f" for n
+      by fastforce
+    have "extended_Gromov_product_at e x y \<le> liminf(\<lambda>n. ereal(Gromov_product_at e (u n) (v n)))"
       unfolding extended_Gromov_product_at_def by (rule Inf_lower, auto, rule exI[of _ u], rule exI[of _ v], auto, fact+)
-    also have "... \<le> liminf(\<lambda>n. ennreal(Gromov_product_at f (u n) (v n)) + dist e f)"
+    also have "... \<le> liminf(\<lambda>n. ereal(Gromov_product_at f (u n) (v n)) + dist e f)"
       apply (rule Liminf_mono) using * unfolding eventually_sequentially by auto
-    also have "... = liminf(\<lambda>n. ennreal(Gromov_product_at f (u n) (v n))) + dist e f"
-      by (rule Liminf_add_const, auto)
+    also have "... = liminf(\<lambda>n. ereal(Gromov_product_at f (u n) (v n))) + dist e f"
+      apply (rule Liminf_add_ereal_right) using False by auto
     also have "... \<le> extended_Gromov_product_at f x y + h + dist e f"
-      using less_imp_le[OF H(5)] by auto
+      using less_imp_le[OF H(5)] by (auto intro: mono_intros)
     finally show ?thesis
-      by (simp add: ord_le_eq_trans)
+      by (simp add: algebra_simps)
   qed
   then show ?thesis
-    using ennreal_le_epsilon ennreal_less_zero_iff by blast
+    using ereal_le_epsilon by blast
 next
   case True
-  then show ?thesis
-    by (metis ennreal_add_eq_top infinity_ennreal_def top_greatest)
+  then show ?thesis by auto
 qed
 
 text \<open>A point in the Gromov boundary is represented by a sequence tending to infinity and
@@ -740,12 +757,12 @@ text \<open>We can characterize the points for which the Gromov product is infin
 the same point, at infinity. This is essentially equivalent to the definition of the Gromov
 completion, but there is some boilerplate to get the proof working.\<close>
 
-lemma Gromov_boundary_extended_product_PInf:
+lemma Gromov_boundary_extended_product_PInf [simp]:
   "extended_Gromov_product_at e x y = \<infinity> \<longleftrightarrow> (x \<in> Gromov_boundary \<and> y = x)"
 proof
   fix x y::"'a Gromov_completion" assume "x \<in> Gromov_boundary \<and> y = x"
   then have H: "y = x" "x \<in> Gromov_boundary" by auto
-  have "liminf (\<lambda>n. ennreal (Gromov_product_at e (u n) (v n))) = \<infinity>" if
+  have *: "liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = \<infinity>" if
                   "abs_Gromov_completion u = x" "abs_Gromov_completion v = y"
                   "Gromov_completion_rel u u" "Gromov_completion_rel v v" for u v
   proof -
@@ -755,25 +772,21 @@ proof
       using Quotient3_rel[OF Quotient3_Gromov_completion] by fastforce
     then have "(\<lambda>n. Gromov_product_at e (u n) (v n)) \<longlonglongrightarrow> \<infinity>"
       unfolding Gromov_completion_rel_def using Gromov_converging_at_boundary_imp_not_constant'[OF \<open>Gromov_converging_at_boundary u\<close>] by auto
-    then have "(\<lambda>n. e2ennreal (ereal (Gromov_product_at e (u n) (v n)))) \<longlonglongrightarrow> e2ennreal(\<infinity>)"
-      by (intro tendsto_intros, simp)
-    then have "(\<lambda>n. ennreal (Gromov_product_at e (u n) (v n))) \<longlonglongrightarrow> \<infinity>"
-      by auto
     then show ?thesis
       by (simp add: tendsto_iff_Liminf_eq_Limsup)
   qed
   then show "extended_Gromov_product_at e x y = \<infinity>"
-    unfolding extended_Gromov_product_at_def by auto
+    unfolding extended_Gromov_product_at_def by (auto intro: Inf_eqI)
 next
   fix x y::"'a Gromov_completion" assume H: "extended_Gromov_product_at e x y = \<infinity>"
   then have "extended_Gromov_distance (to_Gromov_completion e) x = \<infinity>"
     using extended_Gromov_product_le_dist[of e x y] neq_top_trans by auto
   then have "x \<in> Gromov_boundary"
-    by (metis extended_Gromov_distance_def infinity_ennreal_def not_in_Gromov_boundary' top_neq_ennreal)
+    by (metis ereal.distinct(1) extended_Gromov_distance_def infinity_ereal_def not_in_Gromov_boundary')
   have "extended_Gromov_distance (to_Gromov_completion e) y = \<infinity>"
     using extended_Gromov_product_le_dist[of e y x] neq_top_trans H by (auto simp add: extended_Gromov_product_at_commute)
   then have "y \<in> Gromov_boundary"
-    by (metis extended_Gromov_distance_def infinity_ennreal_def not_in_Gromov_boundary' top_neq_ennreal)
+    by (metis ereal.distinct(1) extended_Gromov_distance_def infinity_ereal_def not_in_Gromov_boundary')
   define u where "u = rep_Gromov_completion x"
   define v where "v = rep_Gromov_completion y"
   have A: "Gromov_converging_at_boundary u" "Gromov_converging_at_boundary v"
@@ -783,14 +796,10 @@ next
   have "abs_Gromov_completion u = x \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v"
     unfolding u_def v_def
     using Quotient3_abs_rep[OF Quotient3_Gromov_completion] Quotient3_rep_reflp[OF Quotient3_Gromov_completion] by auto
-  then have "extended_Gromov_product_at e x y \<le> liminf (\<lambda>n. ennreal(Gromov_product_at e (u n) (v n)))"
+  then have "extended_Gromov_product_at e x y \<le> liminf (\<lambda>n. ereal(Gromov_product_at e (u n) (v n)))"
     unfolding extended_Gromov_product_at_def by (auto intro!: Inf_lower)
-  then have "(\<lambda>n. ennreal(Gromov_product_at e (u n) (v n))) \<longlonglongrightarrow> \<infinity>"
-    by (metis (no_types, lifting) H Liminf_le_Limsup infinity_ennreal_def neq_top_trans sequentially_bot tendsto_iff_Liminf_eq_Limsup)
-  then have "(\<lambda>n. enn2ereal(ennreal(Gromov_product_at e (u n) (v n)))) \<longlonglongrightarrow> enn2ereal(\<infinity>)"
-    by (intro tendsto_intros, simp)
   then have "(\<lambda>n. ereal(Gromov_product_at e (u n) (v n))) \<longlonglongrightarrow> \<infinity>"
-    unfolding enn2ereal_ennreal[OF Gromov_product_nonneg] by auto
+    unfolding H by (simp add: liminf_PInfty)
   then have "(\<lambda>n. ereal(Gromov_product_at a (u n) (v n))) \<longlonglongrightarrow> \<infinity>" for a
     using Gromov_product_tendsto_PInf_a_b by auto
 
@@ -809,15 +818,12 @@ is just the extended distance to the basepoint.\<close>
 
 lemma extended_Gromov_product_e_x_x [simp]:
   "extended_Gromov_product_at e x x = extended_Gromov_distance (to_Gromov_completion e) x"
-proof (cases "x \<in> Gromov_boundary")
-  case True
+proof (cases x)
+  case boundary
   then show ?thesis using Gromov_boundary_extended_product_PInf by auto
 next
-  case False
-  then obtain a where a: "x = to_Gromov_completion a"
-    unfolding Gromov_boundary_def by auto
-  show ?thesis
-    unfolding a by auto
+  case (to_Gromov_completion a)
+  then show ?thesis by auto
 qed
 
 text \<open>The inequality in terms of Gromov products characterizing hyperbolicity extends in the
@@ -828,7 +834,7 @@ lemma extended_hyperb_ineq [mono_intros]:
       min (extended_Gromov_product_at e x y) (extended_Gromov_product_at e y z) - deltaG(TYPE('a))"
 proof -
   have "min (extended_Gromov_product_at e x y) (extended_Gromov_product_at e y z) - deltaG(TYPE('a)) \<le>
-    Inf {liminf (\<lambda>n. ennreal (Gromov_product_at e (u n) (v n))) |u v.
+    Inf {liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) |u v.
             abs_Gromov_completion u = x \<and> abs_Gromov_completion v = z \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v}"
   proof (rule cInf_greatest, auto)
     define u where "u = rep_Gromov_completion x"
@@ -837,7 +843,7 @@ proof -
       unfolding u_def w_def
       using Quotient3_abs_rep[OF Quotient3_Gromov_completion] Quotient3_rep_reflp[OF Quotient3_Gromov_completion] by auto
     then show "\<exists>t u. Gromov_completion_rel u u \<and>
-            (\<exists>v. abs_Gromov_completion v = z \<and> abs_Gromov_completion u = x \<and> t = liminf (\<lambda>n. ennreal (Gromov_product_at e (u n) (v n))) \<and> Gromov_completion_rel v v)"
+            (\<exists>v. abs_Gromov_completion v = z \<and> abs_Gromov_completion u = x \<and> t = liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) \<and> Gromov_completion_rel v v)"
       by auto
   next
     fix u w assume H: "x = abs_Gromov_completion u" "z = abs_Gromov_completion w"
@@ -847,55 +853,56 @@ proof -
       unfolding v_def
       by (auto simp add: Quotient3_abs_rep[OF Quotient3_Gromov_completion] Quotient3_rep_reflp[OF Quotient3_Gromov_completion])
 
-    have *: "min (ennreal(Gromov_product_at e (u n) (v n))) (ennreal(Gromov_product_at e (v n) (w n))) \<le> ennreal(Gromov_product_at e (u n) (w n)) + deltaG(TYPE('a))" for n
-      apply (subst min_ennreal, auto)
-      apply (subst ennreal_plus[symmetric], simp, simp)
-      apply (rule ennreal_leI)
-      using hyperb_ineq[of e "u n" "v n" "w n"] by auto
+    have *: "min (ereal(Gromov_product_at e (u n) (v n))) (ereal(Gromov_product_at e (v n) (w n))) \<le> ereal(Gromov_product_at e (u n) (w n)) + deltaG(TYPE('a))" for n
+      by (subst ereal_min[symmetric], subst plus_ereal.simps(1), intro mono_intros)
 
-    have "extended_Gromov_product_at e (abs_Gromov_completion u) y \<le> liminf (\<lambda>n. ennreal(Gromov_product_at e (u n) (v n)))"
+    have "extended_Gromov_product_at e (abs_Gromov_completion u) y \<le> liminf (\<lambda>n. ereal(Gromov_product_at e (u n) (v n)))"
       unfolding extended_Gromov_product_at_def using Y H by (auto intro!: Inf_lower)
-    moreover have "extended_Gromov_product_at e y (abs_Gromov_completion w) \<le> liminf (\<lambda>n. ennreal(Gromov_product_at e (v n) (w n)))"
+    moreover have "extended_Gromov_product_at e y (abs_Gromov_completion w) \<le> liminf (\<lambda>n. ereal(Gromov_product_at e (v n) (w n)))"
       unfolding extended_Gromov_product_at_def using Y H by (auto intro!: Inf_lower)
     ultimately have "min (extended_Gromov_product_at e (abs_Gromov_completion u) y) (extended_Gromov_product_at e y (abs_Gromov_completion w))
-      \<le> min (liminf (\<lambda>n. ennreal(Gromov_product_at e (u n) (v n)))) (liminf (\<lambda>n. ennreal(Gromov_product_at e (v n) (w n))))"
+      \<le> min (liminf (\<lambda>n. ereal(Gromov_product_at e (u n) (v n)))) (liminf (\<lambda>n. ereal(Gromov_product_at e (v n) (w n))))"
       by (intro mono_intros, auto)
-    also have "... = liminf (\<lambda>n. min (ennreal(Gromov_product_at e (u n) (v n))) (ennreal(Gromov_product_at e (v n) (w n))))"
+    also have "... = liminf (\<lambda>n. min (ereal(Gromov_product_at e (u n) (v n))) (ereal(Gromov_product_at e (v n) (w n))))"
       by (rule Liminf_min_eq_min_Liminf[symmetric])
-    also have "... \<le> liminf (\<lambda>n. ennreal(Gromov_product_at e (u n) (w n)) + deltaG(TYPE('a)))"
+    also have "... \<le> liminf (\<lambda>n. ereal(Gromov_product_at e (u n) (w n)) + deltaG(TYPE('a)))"
       using * by (auto intro!: Liminf_mono)
-    also have "... = liminf (\<lambda>n. ennreal(Gromov_product_at e (u n) (w n))) + deltaG(TYPE('a))"
-      by (auto intro!: Liminf_add_const)
-    finally show "min (extended_Gromov_product_at e (abs_Gromov_completion u) y) (extended_Gromov_product_at e y (abs_Gromov_completion w)) - ennreal (deltaG TYPE('a))
-                  \<le> liminf (\<lambda>n. ennreal (Gromov_product_at e (u n) (w n)))"
-      by (simp add: add.commute ennreal_minus_le_iff)
+    also have "... = liminf (\<lambda>n. ereal(Gromov_product_at e (u n) (w n))) + deltaG(TYPE('a))"
+      by (intro Liminf_add_ereal_right, auto)
+    finally show "min (extended_Gromov_product_at e (abs_Gromov_completion u) y) (extended_Gromov_product_at e y (abs_Gromov_completion w))
+                  \<le> liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (w n))) + ereal (deltaG TYPE('a))"
+      by simp
   qed
   then show ?thesis unfolding extended_Gromov_product_at_def by auto
 qed
 
 lemma extended_hyperb_ineq' [mono_intros]:
-  "extended_Gromov_product_at (e::'a::Gromov_hyperbolic_space) x z + deltaG(TYPE('a))\<ge>
+  "extended_Gromov_product_at (e::'a::Gromov_hyperbolic_space) x z + deltaG(TYPE('a)) \<ge>
       min (extended_Gromov_product_at e x y) (extended_Gromov_product_at e y z)"
-using extended_hyperb_ineq[of e x y z] unfolding ennreal_minus_le_iff by (simp add: add.commute)
+using extended_hyperb_ineq[of e x y z] unfolding ereal_minus_le_iff by (simp add: add.commute)
+
+lemma zero_le_ereal [mono_intros]:
+  assumes "0 \<le> z"
+  shows "0 \<le> ereal z"
+using assms by auto
 
 lemma extended_hyperb_ineq_4_points' [mono_intros]:
   "Min {extended_Gromov_product_at (e::'a::Gromov_hyperbolic_space) x y, extended_Gromov_product_at e y z, extended_Gromov_product_at e z t} \<le> extended_Gromov_product_at e x t + 2 * deltaG(TYPE('a))"
 proof -
-  have *: "ennreal(2 * z) = ennreal z + ennreal z" for z
-    by (metis (no_types, hide_lams) BitM_plus_one add.left_neutral add.right_neutral add_mono_thms_linordered_field(5) ennreal_eq_0_iff ennreal_plus less_eq_real_def linorder_not_le mult_2_right order_less_irrefl order_trans_rules(23) semiring_normalization_rules(7))
   have "min (extended_Gromov_product_at e x y + 0) (min (extended_Gromov_product_at e y z) (extended_Gromov_product_at e z t))
         \<le> min (extended_Gromov_product_at e x y + deltaG(TYPE('a))) (extended_Gromov_product_at e y t + deltaG(TYPE('a))) "
     by (intro mono_intros)
   also have "... = min (extended_Gromov_product_at e x y) (extended_Gromov_product_at e y t) + deltaG(TYPE('a))"
-    by (simp add: min_def)
+    by (simp add: add_mono_thms_linordered_semiring(3) dual_order.antisym min_def)
   also have "... \<le> (extended_Gromov_product_at e x t + deltaG(TYPE('a))) + deltaG(TYPE('a))"
     by (intro mono_intros)
-  finally show ?thesis unfolding * by (auto simp add: algebra_simps)
+  finally show ?thesis apply (auto simp add: algebra_simps)
+    by (metis (no_types, hide_lams) add.commute add.left_commute mult_2_right plus_ereal.simps(1))
 qed
 
 lemma extended_hyperb_ineq_4_points [mono_intros]:
   "Min {extended_Gromov_product_at (e::'a::Gromov_hyperbolic_space) x y, extended_Gromov_product_at e y z, extended_Gromov_product_at e z t} - 2 * deltaG(TYPE('a)) \<le> extended_Gromov_product_at e x t"
-using extended_hyperb_ineq_4_points'[of e x y z] unfolding ennreal_minus_le_iff by (simp add: add.commute)
+using extended_hyperb_ineq_4_points'[of e x y z] unfolding ereal_minus_le_iff by (simp add: add.commute)
 
 
 subsection \<open>Construction of the distance on the Gromov completion\<close>
@@ -938,17 +945,7 @@ definition epsilonG::"('a::Gromov_hyperbolic_space) itself \<Rightarrow> real"
 definition basepoint::"'a"
   where "basepoint = (SOME a. True)"
 
-definition extended_predist::"('a::Gromov_hyperbolic_space) Gromov_completion \<Rightarrow> 'a Gromov_completion \<Rightarrow> real"
-  where "extended_predist x y = enn2real(min (esqrt (extended_Gromov_distance x y))
-          (eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))))"
-
-lemma extended_predist_ennreal:
-  "ennreal (extended_predist x (y::('a::Gromov_hyperbolic_space) Gromov_completion)) = min (esqrt (extended_Gromov_distance x y))
-          (eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)))"
-unfolding extended_predist_def apply (subst ennreal_enn2real, auto)
-by (metis eexp_le1 enn2ereal_nonneg ennreal_1 ennreal_neq_top ereal_uminus_le_0_iff min.strict_coboundedI2 neq_top_trans top.not_eq_extremum)
-
-lemma constant_in_extended_predist_pos [simp]:
+lemma constant_in_extended_predist_pos [simp, mono_intros]:
   "epsilonG(TYPE('a::Gromov_hyperbolic_space)) > 0"
   "epsilonG(TYPE('a::Gromov_hyperbolic_space)) \<ge> 0"
   "ennreal (epsilonG(TYPE('a))) * top = top"
@@ -963,9 +960,25 @@ proof -
     using ** by simp
 qed
 
-lemma extended_predist_nonneg [simp]:
+definition extended_predist::"('a::Gromov_hyperbolic_space) Gromov_completion \<Rightarrow> 'a Gromov_completion \<Rightarrow> real"
+  where "extended_predist x y = real_of_ereal (min (esqrt (extended_Gromov_distance x y))
+          (eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)))"
+
+lemma extended_predist_ereal:
+  "ereal (extended_predist x (y::('a::Gromov_hyperbolic_space) Gromov_completion)) = min (esqrt (extended_Gromov_distance x y))
+          (eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))"
+proof -
+  have "eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y) \<le> eexp (0)"
+    by (intro mono_intros, simp add: ereal_mult_le_0_iff)
+  then have A: "min (esqrt (extended_Gromov_distance x y)) (eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)) \<le> 1"
+    unfolding min_def using order_trans by fastforce
+  show ?thesis
+    unfolding extended_predist_def apply (rule ereal_real') using A by auto
+qed
+
+lemma extended_predist_nonneg [simp, mono_intros]:
   "extended_predist x y \<ge> 0"
-unfolding extended_predist_def by auto
+unfolding extended_predist_def min_def by (auto intro: real_of_ereal_pos)
 
 lemma extended_predist_commute:
   "extended_predist x y = extended_predist y x"
@@ -975,53 +988,57 @@ lemma extended_predist_self0 [simp]:
   "extended_predist x y = 0 \<longleftrightarrow> x = y"
 proof (auto)
   show "extended_predist y y = 0"
-  proof (cases "y \<in> Gromov_boundary")
-    case True
+  proof (cases y)
+    case boundary
     then have *: "extended_Gromov_product_at basepoint y y = \<infinity>"
       using Gromov_boundary_extended_product_PInf by auto
-    show ?thesis unfolding extended_predist_def * by (auto simp add: min_def)
+    show ?thesis unfolding extended_predist_def *  apply (auto simp add: min_def)
+      using constant_in_extended_predist_pos(1)[where ?'a = 'a] boundary by auto
   next
-    case False
-    then obtain a where *: "y = to_Gromov_completion a"
-      using not_in_Gromov_boundary by auto
-    show ?thesis unfolding extended_predist_def * by (auto simp add: min_def)
+    case (to_Gromov_completion a)
+    then show ?thesis unfolding extended_predist_def by (auto simp add: min_def)
   qed
   assume "extended_predist x y = 0"
-  then have "esqrt (extended_Gromov_distance x y) = 0 \<or> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)) = 0"
-    unfolding extended_predist_def apply auto
-    by (metis eexp_le1 eexp_special_values(1) enn2ereal_eq_top_iff enn2ereal_nonneg enn2real_eq_0_iff ennreal_1 ereal_uminus_eq_iff ereal_uminus_le_0_iff min_def neq_top_trans top_neq_ennreal)
-  then show "x = y"
+  then have "esqrt (extended_Gromov_distance x y) = 0 \<or> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y) = 0"
+    by (metis extended_predist_ereal min_def zero_ereal_def)
+    then show "x = y"
   proof
     assume "esqrt (extended_Gromov_distance x y) = 0"
     then have *: "extended_Gromov_distance x y = 0"
-      using esqrt_strict_mono strict_mono_eq by fastforce
+      using extended_Gromov_distance_nonneg by (metis ereal_zero_mult esqrt_square)
     then have "\<not>(x \<in> Gromov_boundary)" "\<not>(y \<in> Gromov_boundary)" by auto
     then obtain a b where ab: "x = to_Gromov_completion a" "y = to_Gromov_completion b"
       unfolding Gromov_boundary_def by auto
     have "a = b" using * unfolding ab by auto
     then show "x = y" using ab by auto
   next
-    assume "eexp (- enn2ereal (epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)) = 0"
+    assume "eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y) = 0"
     then have "extended_Gromov_product_at basepoint x y = \<infinity>"
-      by (auto simp add: ennreal_mult_eq_top_iff)
+      by auto
     then show "x = y"
       using Gromov_boundary_extended_product_PInf[of basepoint x y] by auto
   qed
 qed
 
-lemma extended_predist_le1 [simp]:
+lemma extended_predist_le1 [simp, mono_intros]:
   "extended_predist x y \<le> 1"
-unfolding extended_predist_def by (simp add: enn2real_leI min_le_iff_disj)
+proof -
+  have "eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y) \<le> eexp (0)"
+    by (intro mono_intros, simp add: ereal_mult_le_0_iff)
+  then have "min (esqrt (extended_Gromov_distance x y)) (eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)) \<le> 1"
+    unfolding min_def using order_trans by fastforce
+  then show ?thesis
+    unfolding extended_predist_def by (simp add: real_of_ereal_le_1)
+qed
 
 lemma extended_predist_weak_triangle:
   "extended_predist x z \<le> sqrt 2 * max (extended_predist x y) (extended_predist y z)"
 proof -
-  have "esqrt 2 = eexp (ereal(ln 2/2))"
-    unfolding ennreal_sqrt2[symmetric] by auto (metis exp_ln_iff ln_sqrt real_sqrt_gt_0_iff zero_less_numeral)
+  have Z: "esqrt 2 = eexp (ereal(ln 2/2))"
+    by (subst esqrt_eq_iff_square, auto simp add: exp_add[symmetric])
 
-  have A: "eexp(enn2ereal (ennreal(epsilonG TYPE('a)) * 1)) \<le> esqrt 2"
-    apply (simp del:eexp.simps)
-    unfolding epsilonG_def \<open>esqrt 2 = eexp (ereal(ln 2/2))\<close>
+  have A: "eexp(ereal(epsilonG TYPE('a)) * 1) \<le> esqrt 2"
+    unfolding Z epsilonG_def apply auto
     apply (auto simp add: algebra_simps divide_simps intro!: mono_intros)
     using delta_nonneg[where ?'a = 'a] by auto
 
@@ -1029,30 +1046,30 @@ proof -
   and $d(y,z)$ is either the extended distance, or the exponential of minus the Gromov product,
   depending on which is smaller. We split according to the four cases.\<close>
 
-  have "(esqrt (extended_Gromov_distance x y) \<le> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))
-        \<or> esqrt (extended_Gromov_distance x y) \<ge> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)))
+  have "(esqrt (extended_Gromov_distance x y) \<le> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)
+        \<or> esqrt (extended_Gromov_distance x y) \<ge> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))
         \<and>
-      ((esqrt (extended_Gromov_distance y z) \<le> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint y z))
-        \<or> esqrt (extended_Gromov_distance y z) \<ge> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint y z))))"
+      ((esqrt (extended_Gromov_distance y z) \<le> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint y z)
+        \<or> esqrt (extended_Gromov_distance y z) \<ge> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint y z)))"
     by auto
-  then have "ennreal(extended_predist x z) \<le> esqrt 2 * max (ennreal(extended_predist x y)) (ennreal (extended_predist y z))"
+  then have "ereal(extended_predist x z) \<le> ereal (sqrt 2) * max (ereal(extended_predist x y)) (ereal (extended_predist y z))"
   proof (auto)
 
     text \<open>First, consider the case where the minimum is the extended distance for both cases.
     Then $ed(x,z) \leq ed(x,y) + ed(y,z) \leq 2 \max(ed(x,y), ed(y,z))$. Therefore, $ed(x,z)^{1/2}
     \leq \sqrt{2} \max(ed(x,y)^{1/2}, ed(y,z)^{1/2})$. As predist is defined using
     the square root of $ed$, this readily gives the result.\<close>
-    assume H: "esqrt (extended_Gromov_distance x y) \<le> eexp (- enn2ereal (epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))"
-              "esqrt (extended_Gromov_distance y z) \<le> eexp (- enn2ereal (epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint y z))"
+    assume H: "esqrt (extended_Gromov_distance x y) \<le> eexp (ereal (- epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y)"
+              "esqrt (extended_Gromov_distance y z) \<le> eexp (ereal (- epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z)"
     have "extended_Gromov_distance x z \<le> extended_Gromov_distance x y + extended_Gromov_distance y z"
       by (rule extended_Gromov_distance_triangle)
     also have "... \<le> 2 * max (extended_Gromov_distance x y) (extended_Gromov_distance y z)"
-      by (simp add: add_mono mult_2)
+      by (simp add: add_mono add_mono_thms_linordered_semiring(1) mult_2_ereal)
     finally have "esqrt (extended_Gromov_distance x z) \<le> esqrt (2 * max (extended_Gromov_distance x y) (extended_Gromov_distance y z))"
       by (intro mono_intros)
     also have "... = esqrt 2 * max (esqrt (extended_Gromov_distance x y)) (esqrt (extended_Gromov_distance y z))"
       by (auto simp add: esqrt_mult max_of_mono[OF esqrt_mono])
-    finally show ?thesis unfolding extended_predist_ennreal min_def using H by auto
+    finally show ?thesis unfolding extended_predist_ereal min_def using H by auto
 
   next
     text \<open>Next, consider the case where the minimum comes from the Gromov product for both cases.
@@ -1062,8 +1079,8 @@ proof -
     for the distance, the Gromov product is multiplied by a constant $\epsilon$ by design, the loss
     we get in the end is $\exp(\delta \epsilon)$. The precise value of $\epsilon$ we have taken is
     designed so that this is at most $\sqrt{2}$, giving the desired conclusion.\<close>
-    assume H: "eexp (- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y)) \<le> esqrt (extended_Gromov_distance x y)"
-              "eexp (- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z)) \<le> esqrt (extended_Gromov_distance y z)"
+    assume H: "eexp (ereal (- epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y) \<le> esqrt (extended_Gromov_distance x y)"
+              "eexp (ereal (- epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z) \<le> esqrt (extended_Gromov_distance y z)"
 
     text \<open>First, check that $\epsilon$ and $\delta$ satisfy the required inequality
     $\exp(\epsilon \delta) \leq \sqrt{2}$ (but in the extended reals as this is what we will use.\<close>
@@ -1073,40 +1090,39 @@ proof -
       using delta_nonneg[where ?'a = 'a] by auto
 
     text \<open>We start the computation. First, use the hyperbolicity inequality.\<close>
-    have "eexp (- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x z))
-      \<le> eexp (- enn2ereal (ennreal (epsilonG TYPE('a)) * (min (extended_Gromov_product_at basepoint x y) (extended_Gromov_product_at basepoint y z) - deltaG(TYPE('a)))))"
-      by (intro mono_intros, auto simp add: extended_hyperb_ineq)
-    text \<open>Use distributivity to isolate the term $\epsilon \delta$.
-    This is not so trivial as we are in ennreal, where $a-b+b$ is not always equal to $a$, so the
-    justification requires some work.\<close>
-    also have "... \<le> eexp (- enn2ereal (ennreal (epsilonG TYPE('a)) * min (extended_Gromov_product_at basepoint x y) (extended_Gromov_product_at basepoint y z))
-            + enn2ereal(ennreal (epsilonG TYPE('a) * deltaG TYPE('a))))"
-      apply (intro mono_intros)
-      apply (subst ennreal_right_diff_distrib, simp)
-      apply (subst ennreal_mult'[symmetric], simp)
-      apply (intro mono_intros)
-      done
+    have "eexp (- epsilonG TYPE('a) * extended_Gromov_product_at basepoint x z)
+      \<le> eexp (- epsilonG TYPE('a) * ((min (extended_Gromov_product_at basepoint x y) (extended_Gromov_product_at basepoint y z) - deltaG(TYPE('a)))))"
+      apply (subst uminus_ereal.simps(1)[symmetric], subst ereal_mult_minus_left)+ by (intro mono_intros)
+    text \<open>Use distributivity to isolate the term $\epsilon \delta$. This requires some care
+    as multiplication is not distributive in general in ereal.\<close>
+    also have "... = eexp (- epsilonG TYPE('a) * min (extended_Gromov_product_at basepoint x y) (extended_Gromov_product_at basepoint y z)
+            + epsilonG TYPE('a) * deltaG TYPE('a))"
+      apply (rule cong[of eexp], auto)
+      apply (subst times_ereal.simps(1)[symmetric])
+      apply (subst ereal_distrib_minus_left, auto)
+      apply (subst uminus_ereal.simps(1)[symmetric])+
+      apply (subst ereal_minus(6))
+      by simp
+
     text \<open>Use multiplicativity of exponential to extract the multiplicative error factor.\<close>
-    also have "... = eexp(- enn2ereal (ennreal (epsilonG TYPE('a)) * (min (extended_Gromov_product_at basepoint x y) (extended_Gromov_product_at basepoint y z))))
+    also have "... = eexp(- epsilonG TYPE('a) * (min (extended_Gromov_product_at basepoint x y) (extended_Gromov_product_at basepoint y z)))
                     * eexp(epsilonG(TYPE('a))* deltaG(TYPE('a)))"
-      apply (subst enn2ereal_ennreal, simp) by (rule eexp_add_mult, auto)
+      by (rule eexp_add_mult, auto)
     text \<open>Extract the min outside of the exponential, using that all functions are monotonic.\<close>
     also have "... = eexp(epsilonG(TYPE('a))* deltaG(TYPE('a)))
-                    * (max (eexp(- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y)))
-                           (eexp(- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z))))"
-      apply (subst min_of_mono[symmetric, of "\<lambda>t. enn2ereal(ennreal (epsilonG TYPE('a)) * t)"])
-      apply (meson less_eq_ennreal.rep_eq mono_def mult_left_mono zero_le)
-      apply (subst max_of_antimono[of "\<lambda> (t::ereal). -t", symmetric])
-      apply (simp add: antimonoI)
+                    * (max (eexp(- epsilonG TYPE('a) * extended_Gromov_product_at basepoint x y))
+                            (eexp(- epsilonG TYPE('a) * extended_Gromov_product_at basepoint y z)))"
+      apply (subst max_of_antimono[of "\<lambda> (t::ereal). -epsilonG TYPE('a) * t", symmetric])
+      apply (metis antimonoI constant_in_extended_predist_pos(2) enn2ereal_ennreal enn2ereal_nonneg ereal_minus_le_minus ereal_mult_left_mono ereal_mult_minus_left uminus_ereal.simps(1))
       apply (subst max_of_mono[OF eexp_mono])
       apply (simp add: mult.commute)
       done
     text \<open>We recognize the distance of $x$ to $y$ and the distance from $y$ to $z$ on the right.\<close>
-    also have "... = eexp(epsilonG(TYPE('a)) * deltaG(TYPE('a))) * (max (ennreal(extended_predist x y)) (ennreal(extended_predist y z)))"
-      unfolding extended_predist_ennreal min_def using H by auto
-    also have "... \<le> esqrt 2 * max (ennreal(extended_predist x y)) (ennreal(extended_predist y z))"
-      by (intro mono_intros B, auto)
-    finally show ?thesis unfolding extended_predist_ennreal min_def by auto
+    also have "... = eexp(epsilonG(TYPE('a)) * deltaG(TYPE('a))) * (max (ereal (extended_predist x y)) (extended_predist y z))"
+      unfolding extended_predist_ereal min_def using H by auto
+    also have "... \<le> esqrt 2 * max (ereal(extended_predist x y)) (ereal(extended_predist y z))"
+      apply (intro mono_intros B) using extended_predist_nonneg[of x y] by (simp add: max_def)
+    finally show ?thesis unfolding extended_predist_ereal min_def by auto
 
   next
     text \<open>Next consider the case where $d(x,y)$ comes from the exponential of minus the Gromov product,
@@ -1115,64 +1131,65 @@ proof -
     the Gromov product between $x$ and $y$ or $x$ and $z$ differ by at most the distance from $y$ to $z$,
     i.e., $1$. Then the result follows directly as $\exp(\epsilon) \leq \sqrt{2}$, by the choice of
     $\epsilon$.\<close>
-    assume H: "eexp (- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y)) \<le> esqrt (extended_Gromov_distance x y)"
-              "esqrt (extended_Gromov_distance y z) \<le> eexp (- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z))"
+    assume H: "eexp (- epsilonG TYPE('a) * extended_Gromov_product_at basepoint x y) \<le> esqrt (extended_Gromov_distance x y)"
+              "esqrt (extended_Gromov_distance y z) \<le> eexp (- epsilonG TYPE('a) * extended_Gromov_product_at basepoint y z)"
     then have "esqrt(extended_Gromov_distance y z) \<le> 1"
-      using eexp_le1 enn2ereal_nonneg ereal_uminus_le_0_iff order_trans by blast
+      by (auto intro!: order_trans[OF H(2)] simp add: ereal_mult_le_0_iff)
     then have "extended_Gromov_distance y z \<le> 1"
-      by (metis antisym esqrt_mono2 esqrt_simps(2) esqrt_strict_mono le_cases strict_mono_eq)
+      by (metis eq_iff esqrt_mono2 esqrt_simps(2) esqrt_square extended_Gromov_distance_nonneg le_cases zero_less_one_ereal)
 
-    have "ennreal(extended_predist x z) \<le> eexp(- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x z))"
-      unfolding extended_predist_ennreal min_def by auto
-    also have "... \<le> eexp(-enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y)
-                          + enn2ereal (ennreal(epsilonG TYPE('a)) * extended_Gromov_distance y z))"
-      apply (intro mono_intros, auto simp add: plus_ennreal.rep_eq[symmetric], intro mono_intros)
-      using extended_Gromov_product_at_diff3[of basepoint x y z] unfolding distrib_left[symmetric]
-      by (auto intro!: mono_intros)
-    also have "... \<le> eexp(-enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y) + enn2ereal (ennreal(epsilonG TYPE('a)) * 1))"
+    have "ereal(extended_predist x z) \<le> eexp(- epsilonG TYPE('a) * extended_Gromov_product_at basepoint x z)"
+      unfolding extended_predist_ereal min_def by auto
+    also have "... \<le> eexp(- epsilonG TYPE('a) * extended_Gromov_product_at basepoint x y
+                          + epsilonG TYPE('a) * extended_Gromov_distance y z)"
+      apply (intro mono_intros) apply (subst uminus_ereal.simps(1)[symmetric])+ apply (subst ereal_mult_minus_left)+
+      apply (intro mono_intros)
+      using extended_Gromov_product_at_diff3[of basepoint x y z]
+      by (meson constant_in_extended_predist_pos(2) ereal_le_distrib ereal_mult_left_mono order_trans zero_le_ereal)
+    also have "... \<le> eexp(-epsilonG TYPE('a) * extended_Gromov_product_at basepoint x y + ereal(epsilonG TYPE('a)) * 1)"
       by (intro mono_intros, fact)
-    also have "... = eexp(-enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y)) * eexp(enn2ereal (ennreal(epsilonG TYPE('a)) * 1))"
+    also have "... = eexp(-epsilonG TYPE('a) * extended_Gromov_product_at basepoint x y) * eexp(ereal(epsilonG TYPE('a)) * 1)"
       by (rule eexp_add_mult, auto)
-    also have "... \<le> eexp(-enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y)) * esqrt 2"
-      by (intro mono_intros A, auto)
-    also have "... = esqrt 2 * ennreal(extended_predist x y)"
-      unfolding extended_predist_ennreal min_def using H by (auto simp add: mult.commute)
-    also have "... \<le> esqrt 2 * max (ennreal(extended_predist x y)) (ennreal(extended_predist y z))"
+    also have "... \<le> eexp(-epsilonG TYPE('a) * extended_Gromov_product_at basepoint x y) * esqrt 2"
+      by (intro mono_intros A)
+    also have "... = esqrt 2 * ereal(extended_predist x y)"
+      unfolding extended_predist_ereal min_def using H by (auto simp add: mult.commute)
+    also have "... \<le> esqrt 2 * max (ereal(extended_predist x y)) (ereal(extended_predist y z))"
       unfolding max_def by (auto intro!: mono_intros)
     finally show ?thesis by auto
 
   next
     text \<open>The last case is the symmetric of the previous one, and is proved similarly.\<close>
-    assume H: "esqrt (extended_Gromov_distance x y) \<le> eexp (- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x y))"
-              "eexp (- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z)) \<le> esqrt (extended_Gromov_distance y z)"
+    assume H: "eexp (- epsilonG TYPE('a) * extended_Gromov_product_at basepoint y z) \<le> esqrt (extended_Gromov_distance y z)"
+              "esqrt (extended_Gromov_distance x y) \<le> eexp (- epsilonG TYPE('a) * extended_Gromov_product_at basepoint x y)"
     then have "esqrt(extended_Gromov_distance x y) \<le> 1"
-      using eexp_le1 enn2ereal_nonneg ereal_uminus_le_0_iff order_trans by blast
+      by (auto intro!: order_trans[OF H(2)] simp add: ereal_mult_le_0_iff)
     then have "extended_Gromov_distance x y \<le> 1"
-      by (metis antisym esqrt_mono2 esqrt_simps(2) esqrt_strict_mono le_cases strict_mono_eq)
+      by (metis eq_iff esqrt_mono2 esqrt_simps(2) esqrt_square extended_Gromov_distance_nonneg le_cases zero_less_one_ereal)
 
-    have "ennreal(extended_predist x z) \<le> eexp(- enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint x z))"
-      unfolding extended_predist_ennreal min_def by auto
-    also have "... \<le> eexp(-enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z)
-                          + enn2ereal (ennreal(epsilonG TYPE('a)) * extended_Gromov_distance x y))"
-      apply (intro mono_intros, auto simp add: plus_ennreal.rep_eq[symmetric], intro mono_intros)
-      using extended_Gromov_product_at_diff3[of basepoint z y x] unfolding distrib_left[symmetric]
-      by (auto intro!: mono_intros simp add: extended_Gromov_distance_commute extended_Gromov_product_at_commute)
-    also have "... \<le> eexp(-enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z) + enn2ereal (ennreal(epsilonG TYPE('a)) * 1))"
+    have "ereal(extended_predist x z) \<le> eexp(- epsilonG TYPE('a) * extended_Gromov_product_at basepoint x z)"
+      unfolding extended_predist_ereal min_def by auto
+    also have "... \<le> eexp(- epsilonG TYPE('a) * extended_Gromov_product_at basepoint y z
+                          + epsilonG TYPE('a) * extended_Gromov_distance x y)"
+      apply (intro mono_intros) apply (subst uminus_ereal.simps(1)[symmetric])+ apply (subst ereal_mult_minus_left)+
+      apply (intro mono_intros)
+      using extended_Gromov_product_at_diff3[of basepoint z y x]
+      apply (simp add: extended_Gromov_product_at_commute extended_Gromov_distance_commute)
+      by (meson constant_in_extended_predist_pos(2) ereal_le_distrib ereal_mult_left_mono order_trans zero_le_ereal)
+    also have "... \<le> eexp(-epsilonG TYPE('a) * extended_Gromov_product_at basepoint y z + ereal(epsilonG TYPE('a)) * 1)"
       by (intro mono_intros, fact)
-    also have "... = eexp(-enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z)) * eexp(enn2ereal (ennreal(epsilonG TYPE('a)) * 1))"
+    also have "... = eexp(-epsilonG TYPE('a) * extended_Gromov_product_at basepoint y z) * eexp(ereal(epsilonG TYPE('a)) * 1)"
       by (rule eexp_add_mult, auto)
-    also have "... \<le> eexp(-enn2ereal (ennreal (epsilonG TYPE('a)) * extended_Gromov_product_at basepoint y z)) * esqrt 2"
-      by (intro mono_intros A, auto)
-    also have "... = esqrt 2 * ennreal(extended_predist y z)"
-      unfolding extended_predist_ennreal min_def using H by (auto simp add: mult.commute)
-    also have "... \<le> esqrt 2 * max (ennreal(extended_predist x y)) (ennreal(extended_predist y z))"
+    also have "... \<le> eexp(-epsilonG TYPE('a) * extended_Gromov_product_at basepoint y z) * esqrt 2"
+      by (intro mono_intros A)
+    also have "... = esqrt 2 * ereal(extended_predist y z)"
+      unfolding extended_predist_ereal min_def using H by (auto simp add: mult.commute)
+    also have "... \<le> esqrt 2 * max (ereal(extended_predist x y)) (ereal(extended_predist y z))"
       unfolding max_def by (auto intro!: mono_intros)
     finally show ?thesis by auto
   qed
-
   then show "extended_predist x z \<le> sqrt 2 * max (extended_predist x y) (extended_predist y z)"
-    unfolding ennreal_sqrt2[symmetric] max_of_mono[OF ennreal_mono']
-    by (metis ennreal_le_iff ennreal_mult' extended_predist_nonneg le_max_iff_disj mult_eq_0_iff mult_left_mono real_sqrt_ge_0_iff zero_le_numeral)
+    unfolding ereal_sqrt2[symmetric] max_of_mono[OF ereal_mono] times_ereal.simps(1) by auto
 qed
 
 instantiation Gromov_completion :: (Gromov_hyperbolic_space) metric_space
@@ -1211,143 +1228,129 @@ From this point on, we will only use this, and never come back to the definition
 
 theorem Gromov_completion_dist_comparison [mono_intros]:
   fixes x y::"('a::Gromov_hyperbolic_space) Gromov_completion"
-  shows "ennreal(dist x y) \<le> esqrt(extended_Gromov_distance x y)"
-        "ennreal(dist x y) \<le> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))"
-        "min (esqrt(extended_Gromov_distance x y)) (eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))) \<le> 2 * ennreal(dist x y)"
+  shows "ereal(dist x y) \<le> esqrt(extended_Gromov_distance x y)"
+        "ereal(dist x y) \<le> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)"
+        "min (esqrt(extended_Gromov_distance x y)) (eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)) \<le> 2 * ereal(dist x y)"
 proof -
   interpret Turn_into_distance extended_predist
     by (standard, auto intro: extended_predist_weak_triangle extended_predist_commute)
-  have "ennreal(dist x y) \<le> ennreal(extended_predist x y)"
+  have "ereal(dist x y) \<le> ereal(extended_predist x y)"
     unfolding dist_Gromov_completion_def by (auto intro!: upper mono_intros)
-  then show "ennreal(dist x y) \<le> esqrt(extended_Gromov_distance x y)"
-            "ennreal(dist x y) \<le> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))"
-    unfolding extended_predist_ennreal by auto
-  have "ennreal(extended_predist x y) \<le> ennreal(2 * dist x y)"
+  then show "ereal(dist x y) \<le> esqrt(extended_Gromov_distance x y)"
+            "ereal(dist x y) \<le> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)"
+    unfolding extended_predist_ereal by auto
+  have "ereal(extended_predist x y) \<le> ereal(2 * dist x y)"
     unfolding dist_Gromov_completion_def by (auto intro!: lower mono_intros)
-  also have "... = 2 * ennreal (dist x y)"
-    by (simp add: ennreal_mult')
-  finally show "min (esqrt(extended_Gromov_distance x y)) (eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))) \<le> 2 * ennreal(dist x y)"
-    unfolding extended_predist_ennreal by auto
+  also have "... = 2 * ereal (dist x y)"
+    by simp
+  finally show "min (esqrt(extended_Gromov_distance x y)) (eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)) \<le> 2 * ereal(dist x y)"
+    unfolding extended_predist_ereal by auto
 qed
 
 lemma Gromov_completion_dist_le_1 [simp, mono_intros]:
   fixes x y::"('a::Gromov_hyperbolic_space) Gromov_completion"
   shows "dist x y \<le> 1"
 proof -
-  have "ennreal(dist x y) \<le> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))"
+  have "ereal(dist x y) \<le> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)"
     using Gromov_completion_dist_comparison(2)[of x y] by simp
   also have "... \<le> eexp(-0)"
-    by (intro mono_intros)
+    by (intro mono_intros) (simp add: ereal_mult_le_0_iff)
   finally show ?thesis
     by auto
 qed
-
 
 text \<open>To avoid computations with exponentials, the following lemma is very convenient. It asserts
 that if $x$ is close enough to infinity, and $y$ is close enough to $x$, then the Gromov product
 between $x$ and $y$ is large.\<close>
 
 lemma large_Gromov_product_approx:
-  assumes "(M::ennreal) < \<infinity>"
+  assumes "(M::ereal) < \<infinity>"
   shows "\<exists>e D. e > 0 \<and> D < \<infinity> \<and> (\<forall>x y. dist x y \<le> e \<longrightarrow> extended_Gromov_distance x (to_Gromov_completion basepoint) \<ge> D \<longrightarrow> extended_Gromov_product_at basepoint x y \<ge> M)"
 proof -
-  obtain M0::real where "M = ennreal M0" using assms by (auto intro: ennreal_cases)
+  obtain M0::real where "M \<le> ereal M0" using assms by (cases M, auto)
   define e::real where "e = exp(-epsilonG(TYPE('a)) * M0)/2"
-  define D::ennreal where "D = ennreal M0 + 4"
+  define D::ereal where "D = ereal M0 + 4"
   have "e > 0"
     unfolding e_def by auto
   moreover have "D < \<infinity>"
     unfolding D_def by auto
   moreover have "extended_Gromov_product_at basepoint x y \<ge> M0"
     if "dist x y \<le> e" "extended_Gromov_distance x (to_Gromov_completion basepoint) \<ge> D" for x y::"'a Gromov_completion"
-  proof (cases "esqrt(extended_Gromov_distance x y) \<le> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))")
+  proof (cases "esqrt(extended_Gromov_distance x y) \<le> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)")
     case False
-    then have "eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)) \<le> 2 * ennreal(dist x y)"
+    then have "eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y) \<le> 2 * ereal(dist x y)"
       using Gromov_completion_dist_comparison(3)[of x y] unfolding min_def by auto
     also have "... \<le> exp(-epsilonG(TYPE('a)) * M0)"
       using \<open>dist x y \<le> e\<close> unfolding e_def by (auto simp add: numeral_mult_ennreal)
-    finally have "-eln(exp(-epsilonG(TYPE('a)) * M0)) \<le> -eln(eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)))"
-      by (intro mono_intros)
-    then have "epsilonG((TYPE('a))) * M0 \<le> enn2ereal(epsilonG(TYPE('a))) * enn2ereal(extended_Gromov_product_at basepoint x y)"
-      by (auto simp add: times_ennreal.rep_eq)
-    then have "ereal M0 \<le> enn2ereal (extended_Gromov_product_at basepoint x y)"
-      apply (auto simp del: times_ereal.simps(1) simp add: times_ereal.simps(1)[symmetric])
-      by (metis ereal_mult_strict_left_mono not_less constant_in_extended_predist_pos(1) ereal_less(2) less_ereal.simps(4))
+    finally have "ereal M0 \<le> extended_Gromov_product_at basepoint x y"
+      unfolding eexp_ereal[symmetric] apply (simp only: eexp_le_eexp_iff_le)
+      unfolding times_ereal.simps(1)[symmetric] uminus_ereal.simps(1)[symmetric] ereal_mult_minus_left ereal_minus_le_minus
+      using ereal_mult_le_mult_iff[of "ereal (epsilonG TYPE('a))"] apply auto
+      by (metis \<open>\<And>r p. ereal (r * p) = ereal r * ereal p\<close>)
     then show "M0 \<le> extended_Gromov_product_at basepoint x y"
-      by (metis (full_types) dual_order.trans enn2ereal_ennreal ennreal_less_zero_iff extended_Gromov_product_at_def less_eq_ennreal.rep_eq less_imp_le not_le zero_le)
+      by auto
   next
     case True
-    then have "esqrt(extended_Gromov_distance x y) \<le> 2 * ennreal(dist x y)"
+    then have "esqrt(extended_Gromov_distance x y) \<le> 2 * ereal(dist x y)"
       using Gromov_completion_dist_comparison(3)[of x y] unfolding min_def by auto
     also have "... \<le> esqrt 4"
-      by (metis (no_types, hide_lams) esqrt_4 Gromov_completion_dist_le_1[of x y] ennreal_le_1 mult.comm_neutral mult_left_mono zero_le)
+      by simp
     finally have *: "extended_Gromov_distance x y \<le> 4"
-      unfolding esqrt_le by simp
-    have "ennreal M0+4 \<le> D"
+      unfolding esqrt_le  using antisym by fastforce
+    have "ereal M0+4 \<le> D"
       unfolding D_def by auto
     also have "... \<le> extended_Gromov_product_at basepoint x x"
       using that by (auto simp add: extended_Gromov_distance_commute)
     also have "... \<le> extended_Gromov_product_at basepoint x y + extended_Gromov_distance x y"
       by (rule extended_Gromov_product_at_diff3[of basepoint x x y])
     also have "... \<le> extended_Gromov_product_at basepoint x y + 4"
-      using * by simp
+      by (intro mono_intros *)
     finally show "M0 \<le> extended_Gromov_product_at basepoint x y"
-      by (simp add: add.commute ennreal_minus_le_iff)
+      by (metis (no_types, lifting) PInfty_neq_ereal(1) add.commute ereal_add_nonneg_nonneg ereal_add_strict_mono ereal_le_distrib mult_2_ereal not_le numeral_Bit0 numeral_eq_ereal one_add_one zero_less_one_ereal)
   qed
-  ultimately show ?thesis unfolding \<open>M = ennreal M0\<close> by auto
+  ultimately show ?thesis using order_trans[OF \<open>M \<le> ereal M0\<close>] by force
 qed
 
 text \<open>On the other hand, far away from infinity, it is equivalent to control the extended Gromov
 distance or the new distance on the space.\<close>
+
 lemma inside_Gromov_distance_approx:
-  assumes "C < (\<infinity>::ennreal)"
+  assumes "C < (\<infinity>::ereal)"
   shows "\<exists>e>0. \<forall>x y. extended_Gromov_distance (to_Gromov_completion basepoint) x \<le> C \<longrightarrow> dist x y \<le> e
-          \<longrightarrow> esqrt(extended_Gromov_distance x y) \<le> 2 * ennreal(dist x y)"
+          \<longrightarrow> esqrt(extended_Gromov_distance x y) \<le> 2 * ereal(dist x y)"
 proof -
-  define e0 where "e0 = eexp(-enn2ereal(epsilonG(TYPE('a)) * C))"
-  have "e0 > 0" unfolding e0_def
-    by (metis assms eexp.simps(3) eln_eexp enn2ereal_eq_top_iff ennreal_neq_top ennreal_top_eq_mult_iff ereal_uminus_uminus gr_zeroI infinity_ennreal_def not_less top_greatest)
-  have "e0 < \<infinity>" unfolding e0_def apply auto
-    by (metis eexp_special_values(4) ereal_less(5) less_ennreal.rep_eq neg_0_less_iff_less_erea not_less_zero top.not_eq_extremum zero_ennreal.rep_eq)
-  have "e0 / 4 > 0" "e0/4 < \<infinity>"
-    using \<open>e0 > 0\<close> \<open>e0 < \<infinity>\<close> apply auto
-    apply (metis \<open>0 < e0\<close> ennreal_divide_eq_0_iff not_gr_zero top_neq_numeral)
-    by (metis ennreal_divide_eq_top_iff top.not_eq_extremum zero_neq_numeral)
-  define e where "e = enn2real (e0/4)"
+  obtain C0 where "C \<le> ereal C0" using assms by (cases C, auto)
+  define e0 where "e0 = exp(-epsilonG(TYPE('a)) * C0)"
+  have "e0 > 0"
+    unfolding e0_def using assms by auto
+  define e where "e = e0/4"
   have "e > 0"
-    unfolding e_def using \<open>e0/4 > 0\<close> \<open>e0/4 < \<infinity>\<close> by (simp add: enn2real_positive_iff)
-  moreover have "esqrt(extended_Gromov_distance x y) \<le> 2 * ennreal(dist x y)"
-    if "extended_Gromov_distance (to_Gromov_completion basepoint) x \<le> C" "dist x y \<le> e" for x y::"'a Gromov_completion"
+    unfolding e_def using \<open>e0 > 0\<close> by auto
+  moreover have "esqrt(extended_Gromov_distance x y) \<le> 2 * ereal(dist x y)"
+    if "extended_Gromov_distance (to_Gromov_completion basepoint) x \<le> C0" "dist x y \<le> e" for x y::"'a Gromov_completion"
   proof -
-    have R: "min a b \<le> c \<Longrightarrow> a \<le> c \<or> b \<le> c" for a b c::ennreal unfolding min_def
+    have R: "min a b \<le> c \<Longrightarrow> a \<le> c \<or> b \<le> c" for a b c::ereal unfolding min_def
       by presburger
-    have *: "2 * (e0/4) = e0/2"
-    proof -
-      have "2 / 4 = (1::real) / 2"
-        by simp
-      then have "inverse 4 * 2 = inverse (2::ennreal)"
-        by (metis divide_ennreal_def ennreal_divide_numeral ennreal_numeral mult.left_neutral mult_2 mult_2_right mult_numeral_1_right zero_le_numeral)
-      then show ?thesis
-        unfolding divide_ennreal_def apply (subst mult.commute) by (simp add: mult.assoc)
-    qed
-    have "2 * ennreal (dist x y) \<le> 2 * ennreal e"
-      using that by (intro mono_intros)
-    also have "... = e0/2"
-      unfolding e_def using \<open>e0/4 < \<infinity>\<close> * by auto
-    also have "... < e0"
-      by (metis \<open>e0 < \<infinity>\<close> \<open>e0 > 0\<close> divide_less_ennreal ennreal_divide_self ennreal_numeral_less_top infinity_ennreal_def mult.commute not_gr_zero one_less_numeral semiring_norm(76) zero_neq_numeral)
-    also have "... \<le> eexp(-enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_distance (to_Gromov_completion basepoint) x))"
-      unfolding e0_def by (intro mono_intros that)
-    also have "... \<le> eexp(-enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y))"
+    have "2 * ereal (dist x y) \<le> 2 * ereal e"
+      using that by (intro mono_intros, auto)
+    also have "... = ereal(e0/2)"
+      unfolding e_def by auto
+    also have "... < ereal e0"
+      apply (intro mono_intros) using \<open>e0 > 0\<close> by auto
+    also have "... \<le> eexp(-epsilonG(TYPE('a)) * extended_Gromov_distance (to_Gromov_completion basepoint) x)"
+      unfolding e0_def eexp_ereal[symmetric] ereal_mult_minus_left mult_minus_left uminus_ereal.simps(1)[symmetric] times_ereal.simps(1)[symmetric]
+      by (intro mono_intros that)
+    also have "... \<le> eexp(-epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint x y)"
+      unfolding ereal_mult_minus_left mult_minus_left uminus_ereal.simps(1)[symmetric] times_ereal.simps(1)[symmetric]
       by (intro mono_intros)
     finally show ?thesis
       using R[OF Gromov_completion_dist_comparison(3)[of x y]] by auto
   qed
-  ultimately show ?thesis by auto
+  ultimately show ?thesis using order_trans[OF _ \<open>C \<le> ereal C0\<close>] by auto
 qed
 
 
-subsection \<open>Topology of the Gromov boundary\<close>
+subsection \<open>Characterizing convergence in the Gromov boundary\<close>
 
 text \<open>The convergence of sequences in the Gromov boundary can be characterized, essentially
 by definition: sequences tend to a point at infinity iff the Gromov product with this point tends
@@ -1365,56 +1368,60 @@ lemma Gromov_completion_boundary_limit:
   shows "(u \<longlongrightarrow> x) F \<longleftrightarrow> ((\<lambda>n. extended_Gromov_product_at basepoint (u n) x) \<longlongrightarrow> \<infinity>) F"
 proof
   assume *: "((\<lambda>n. extended_Gromov_product_at basepoint (u n) x) \<longlongrightarrow> \<infinity>) F"
-  have "((\<lambda>n. ennreal(dist (u n) x)) \<longlongrightarrow> 0) F"
-  proof (rule tendsto_sandwich[of "\<lambda>_. 0" _ _ "(\<lambda>n. eexp (- enn2ereal(ennreal(epsilonG(TYPE('a))) * extended_Gromov_product_at basepoint (u n) x)))"])
-    have "((\<lambda>n. eexp (- enn2ereal(ennreal(epsilonG(TYPE('a))) * extended_Gromov_product_at basepoint (u n) x))) \<longlongrightarrow> eexp (- enn2ereal(ennreal(epsilonG(TYPE('a))) * (\<infinity>::ennreal)))) F"
-      apply (intro tendsto_intros *) apply auto
-      by (metis constant_in_extended_predist_pos(1) less_numeral_extra(3))
-    then show "((\<lambda>n. eexp (- enn2ereal(ennreal(epsilonG(TYPE('a))) * extended_Gromov_product_at basepoint (u n) x))) \<longlongrightarrow> 0) F"
-      by auto
+  have "((\<lambda>n. ereal(dist (u n) x)) \<longlongrightarrow> 0) F"
+  proof (rule tendsto_sandwich[of "\<lambda>_. 0" _ _ "(\<lambda>n. eexp (-epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x))"])
+    have "((\<lambda>n. eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x)) \<longlongrightarrow> eexp (- epsilonG(TYPE('a)) * (\<infinity>::ereal))) F"
+      apply (intro tendsto_intros *) by auto
+    then show "((\<lambda>n. eexp (-epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x)) \<longlongrightarrow> 0) F"
+      using constant_in_extended_predist_pos(1)[where ?'a = 'a] by auto
   qed (auto simp add: Gromov_completion_dist_comparison)
-  then have "((\<lambda>n. enn2real(ennreal(dist (u n) x))) \<longlongrightarrow> 0) F"
-    by (intro tendsto_enn2real, auto)
+  then have "((\<lambda>n. real_of_ereal(ereal(dist (u n) x))) \<longlongrightarrow> 0) F"
+    by (simp add: zero_ereal_def)
   then show "(u \<longlongrightarrow> x) F"
     by (subst tendsto_dist_iff, auto)
 next
   assume *: "(u \<longlongrightarrow> x) F"
+  have A: "1 / ereal (- epsilonG TYPE('a)) * (ereal (- epsilonG TYPE('a))) = 1"
+    apply auto using constant_in_extended_predist_pos(1)[where ?'a = 'a] by auto
   have a: "esqrt(extended_Gromov_distance (u n) x) = \<infinity>" for n
     unfolding extended_Gromov_distance_PInf_boundary(2)[OF assms, of "u n"] by auto
-  have "min (esqrt(extended_Gromov_distance (u n) x)) (eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x)))
-        = eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x))" for n
+  have "min (esqrt(extended_Gromov_distance (u n) x)) (eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x))
+        = eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x)" for n
     unfolding a min_def using neq_top_trans by force
-  moreover have "((\<lambda>n. min (esqrt(extended_Gromov_distance (u n) x)) (eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x)))) \<longlongrightarrow> 0) F"
-  proof (rule tendsto_sandwich[of "\<lambda>_. 0" _ _ "\<lambda>n. 2 * ennreal(dist (u n) x)"])
-    have "((\<lambda>n. 2 * ennreal (dist (u n) x)) \<longlongrightarrow> 2 * ennreal 0) F"
+  moreover have "((\<lambda>n. min (esqrt(extended_Gromov_distance (u n) x)) (eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x))) \<longlongrightarrow> 0) F"
+  proof (rule tendsto_sandwich[of "\<lambda>_. 0" _ _ "\<lambda>n. 2 * ereal(dist (u n) x)"])
+    have "((\<lambda>n. 2 * ereal (dist (u n) x)) \<longlongrightarrow> 2 * ereal 0) F"
       apply (intro tendsto_intros) using * tendsto_dist_iff by auto
-    then show "((\<lambda>n. 2 * ennreal (dist (u n) x)) \<longlongrightarrow> 0) F" by auto
-  qed (auto simp add: Gromov_completion_dist_comparison)
-  ultimately have "((\<lambda>n. eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x))) \<longlongrightarrow> 0) F"
+    then show "((\<lambda>n. 2 * ereal (dist (u n) x)) \<longlongrightarrow> 0) F" by (simp add: zero_ereal_def)
+    show "\<forall>\<^sub>F n in F. 0 \<le> min (esqrt (extended_Gromov_distance (u n) x)) (eexp (ereal (- epsilonG TYPE('a)) * extended_Gromov_product_at basepoint (u n) x))"
+      by (rule always_eventually, auto)
+    show "\<forall>\<^sub>F n in F.
+        min (esqrt (extended_Gromov_distance (u n) x)) (eexp (ereal (- epsilonG TYPE('a)) * extended_Gromov_product_at basepoint (u n) x)) \<le> 2 * ereal (dist (u n) x)"
+      apply (rule always_eventually) using Gromov_completion_dist_comparison(3) by auto
+  qed (auto)
+  ultimately have "((\<lambda>n. eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x)) \<longlongrightarrow> 0) F"
     by auto
-  then have "((\<lambda>n. (1/ennreal (epsilonG TYPE('a))) * e2ennreal(- eln (eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x))))) \<longlongrightarrow> (1/ennreal (epsilonG TYPE('a))) * e2ennreal(- eln 0)) F"
+  then have "((\<lambda>n. - epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x) \<longlongrightarrow> -\<infinity>) F"
+    unfolding eexp_special_values(3)[symmetric] eexp_tendsto' by auto
+  then have "((\<lambda>n. 1/ereal(-epsilonG(TYPE('a))) * (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x)) \<longlongrightarrow> 1/ereal(-epsilonG(TYPE('a))) * (-\<infinity>)) F"
     by (intro tendsto_intros, auto)
-  then have "((\<lambda>n. (1/ennreal (epsilonG TYPE('a))) * (epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x)) \<longlongrightarrow> (1/ennreal (epsilonG TYPE('a))) * \<infinity>) F"
-    by auto
-  moreover have "(1/ennreal (epsilonG TYPE('a))) * (epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (u n) x) = extended_Gromov_product_at basepoint (u n) x" for n
-    by (metis constant_in_extended_predist_pos(3) ennreal_divide_times ennreal_neq_top mult.commute mult.left_neutral mult_divide_eq_ennreal mult_eq_0_iff)
-  moreover have "(1/ennreal (epsilonG TYPE('a))) * \<infinity> = \<infinity>"
-    by (simp add: ennreal_mult_top)
+  moreover have "1/ereal(-epsilonG(TYPE('a))) * (-\<infinity>) = \<infinity>"
+    apply auto using constant_in_extended_predist_pos(1)[where ?'a = 'a] by auto
   ultimately show "((\<lambda>n. extended_Gromov_product_at basepoint (u n) x) \<longlongrightarrow> \<infinity>) F"
-    by auto
+    unfolding ab_semigroup_mult_class.mult_ac(1)[symmetric] A by auto
 qed
 
 lemma extended_Gromov_product_tendsto_PInf_a_b:
-  assumes "(\<lambda>n. extended_Gromov_product_at a (u n) (v n)) \<longlonglongrightarrow> \<infinity>"
-  shows "(\<lambda>n. extended_Gromov_product_at b (u n) (v n)) \<longlonglongrightarrow> \<infinity>"
+  assumes "((\<lambda>n. extended_Gromov_product_at a (u n) (v n)) \<longlongrightarrow> \<infinity>) F"
+  shows "((\<lambda>n. extended_Gromov_product_at b (u n) (v n)) \<longlongrightarrow> \<infinity>) F"
 proof (rule tendsto_sandwich[of "\<lambda>n. extended_Gromov_product_at a (u n) (v n) - dist a b" _ _ "\<lambda>_. \<infinity>"])
-  have "extended_Gromov_product_at a (u n) (v n) - ennreal (dist a b) \<le> extended_Gromov_product_at b (u n) (v n)" for n
-    using extended_Gromov_product_at_diff1[of a "u n" "v n" b] by (simp add: add.commute ennreal_minus_le_iff)
-  then show "\<forall>\<^sub>F n in sequentially. extended_Gromov_product_at a (u n) (v n) - ennreal (dist a b) \<le> extended_Gromov_product_at b (u n) (v n)"
+  have "extended_Gromov_product_at a (u n) (v n) - ereal (dist a b) \<le> extended_Gromov_product_at b (u n) (v n)" for n
+    using extended_Gromov_product_at_diff1[of a "u n" "v n" b] by (simp add: add.commute ereal_minus_le_iff)
+  then show "\<forall>\<^sub>F n in F. extended_Gromov_product_at a (u n) (v n) - ereal (dist a b) \<le> extended_Gromov_product_at b (u n) (v n)"
     by auto
-  have "(\<lambda>n. extended_Gromov_product_at a (u n) (v n) - ennreal (dist a b)) \<longlonglongrightarrow> \<infinity> - ennreal (dist a b)"
+  have "((\<lambda>n. extended_Gromov_product_at a (u n) (v n) - ereal (dist a b)) \<longlongrightarrow> \<infinity> - ereal (dist a b)) F"
     by (intro tendsto_intros assms) auto
-  then show "(\<lambda>n. extended_Gromov_product_at a (u n) (v n) - ennreal (dist a b)) \<longlonglongrightarrow> \<infinity>"
+  then show "((\<lambda>n. extended_Gromov_product_at a (u n) (v n) - ereal (dist a b)) \<longlongrightarrow> \<infinity>) F"
     by auto
 qed (auto)
 
@@ -1423,36 +1430,36 @@ lemma Gromov_completion_inside_limit:
   shows "(u \<longlongrightarrow> x) F \<longleftrightarrow> ((\<lambda>n. extended_Gromov_distance (u n) x) \<longlongrightarrow> 0) F"
 proof
   assume *: "((\<lambda>n. extended_Gromov_distance (u n) x) \<longlongrightarrow> 0) F"
-  have "((\<lambda>n. ennreal(dist (u n) x)) \<longlongrightarrow> 0) F"
+  have "((\<lambda>n. ereal(dist (u n) x)) \<longlongrightarrow> ereal 0) F"
   proof (rule tendsto_sandwich[of "\<lambda>_. 0" _ _ "\<lambda>n. esqrt (extended_Gromov_distance (u n) x)"])
     have "((\<lambda>n. esqrt (extended_Gromov_distance (u n) x)) \<longlongrightarrow> esqrt 0) F"
       by (intro tendsto_intros *)
-    then show "((\<lambda>n. esqrt (extended_Gromov_distance (u n) x)) \<longlongrightarrow> 0) F"
-      by auto
-  qed (auto simp add: Gromov_completion_dist_comparison)
-  then have "((\<lambda>n. enn2real(ennreal(dist (u n) x))) \<longlongrightarrow> 0) F"
-    by (intro tendsto_enn2real, auto)
+    then show "((\<lambda>n. esqrt (extended_Gromov_distance (u n) x)) \<longlongrightarrow> ereal 0) F"
+      by (simp add: zero_ereal_def)
+  qed (auto simp add: Gromov_completion_dist_comparison zero_ereal_def)
+  then have "((\<lambda>n. real_of_ereal(ereal(dist (u n) x))) \<longlongrightarrow> 0) F"
+    by (intro lim_real_of_ereal)
   then show "(u \<longlongrightarrow> x) F"
     by (subst tendsto_dist_iff, auto)
 next
   assume *: "(u \<longlongrightarrow> x) F"
   have "x \<in> range to_Gromov_completion" using assms unfolding Gromov_boundary_def by auto
   have "((\<lambda>n. esqrt(extended_Gromov_distance (u n) x)) \<longlongrightarrow> 0) F"
-  proof (rule tendsto_sandwich[of "\<lambda>_. 0" _ _ "\<lambda>n. 2 * ennreal(dist (u n) x)"])
+  proof (rule tendsto_sandwich[of "\<lambda>_. 0" _ _ "\<lambda>n. 2 * ereal(dist (u n) x)"])
     have A: "extended_Gromov_distance (to_Gromov_completion basepoint) x < \<infinity>"
-      by (metis Gromov_boundary_extended_product_PInf assms extended_Gromov_product_e_x_x infinity_ennreal_def top.not_eq_extremum)
-    obtain e where e: "e>0" "\<And>y. dist x y \<le> e \<Longrightarrow> esqrt(extended_Gromov_distance x y) \<le> 2 * ennreal (dist x y)"
+      by (simp add: assms extended_Gromov_distance_def)
+    obtain e where e: "e>0" "\<And>y. dist x y \<le> e \<Longrightarrow> esqrt(extended_Gromov_distance x y) \<le> 2 * ereal (dist x y)"
       using inside_Gromov_distance_approx[OF A] by auto
     have B: "eventually (\<lambda>n. dist x (u n) < e) F"
       using order_tendstoD(2)[OF iffD1[OF tendsto_dist_iff *] \<open>e > 0\<close>] by (simp add: dist_commute)
-    then have "eventually (\<lambda>n. esqrt(extended_Gromov_distance x (u n)) \<le> 2 * ennreal (dist x (u n))) F"
+    then have "eventually (\<lambda>n. esqrt(extended_Gromov_distance x (u n)) \<le> 2 * ereal (dist x (u n))) F"
       using eventually_mono[OF _ e(2)] less_imp_le by (metis (mono_tags, lifting))
-    then show "eventually (\<lambda>n. esqrt(extended_Gromov_distance (u n) x) \<le> 2 * ennreal (dist (u n) x)) F"
+    then show "eventually (\<lambda>n. esqrt(extended_Gromov_distance (u n) x) \<le> 2 * ereal (dist (u n) x)) F"
       by (simp add: dist_commute extended_Gromov_distance_commute)
-    have "((\<lambda>n. 2 * ennreal(dist (u n) x)) \<longlongrightarrow> 2 * ennreal 0) F"
+    have "((\<lambda>n. 2 * ereal(dist (u n) x)) \<longlongrightarrow> 2 * ereal 0) F"
       apply (intro tendsto_intros) using tendsto_dist_iff * by auto
-    then show "((\<lambda>n. 2 * ennreal(dist (u n) x)) \<longlongrightarrow> 0) F"
-      by simp
+    then show "((\<lambda>n. 2 * ereal(dist (u n) x)) \<longlongrightarrow> 0) F"
+      by (simp add: zero_ereal_def)
   qed (auto)
   then have "((\<lambda>n. esqrt(extended_Gromov_distance (u n) x) * esqrt(extended_Gromov_distance (u n) x)) \<longlongrightarrow> 0 * 0) F"
     by (intro tendsto_intros, auto)
@@ -1463,17 +1470,17 @@ qed
 lemma to_Gromov_completion_lim [simp, tendsto_intros]:
   "((\<lambda>n. to_Gromov_completion (u n)) \<longlongrightarrow> to_Gromov_completion a) F \<longleftrightarrow> (u \<longlongrightarrow> a) F"
 proof (subst Gromov_completion_inside_limit, auto)
-  assume "((\<lambda>n. ennreal (dist (u n) a)) \<longlongrightarrow> 0) F"
-  then have "((\<lambda>n. enn2real(ennreal (dist (u n) a))) \<longlongrightarrow> enn2real 0) F"
-    by (intro tendsto_enn2real, auto)
+  assume "((\<lambda>n. ereal (dist (u n) a)) \<longlongrightarrow> 0) F"
+  then have "((\<lambda>n. real_of_ereal(ereal (dist (u n) a))) \<longlongrightarrow> 0) F"
+    unfolding zero_ereal_def by (rule lim_real_of_ereal)
   then show "(u \<longlongrightarrow> a) F"
     by (subst tendsto_dist_iff, auto)
 next
   assume "(u \<longlongrightarrow> a) F"
   then have "((\<lambda>n. dist (u n) a) \<longlongrightarrow> 0) F"
     using tendsto_dist_iff by auto
-  then show "((\<lambda>n. ennreal (dist (u n) a)) \<longlongrightarrow> 0) F"
-    by (intro tendsto_intros)
+  then show "((\<lambda>n. ereal (dist (u n) a)) \<longlongrightarrow> 0) F"
+    unfolding zero_ereal_def by (intro tendsto_intros)
 qed
 
 text \<open>Now, we can also come back to our original definition of the completion, where points on the
@@ -1489,13 +1496,13 @@ lemma Gromov_completion_converge_to_boundary_aux:
   assumes "x \<in> Gromov_boundary" "abs_Gromov_completion v = x" "Gromov_completion_rel v v"
   shows "(\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x) \<longlonglongrightarrow> \<infinity>"
 proof -
-  have A: "eventually (\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x \<ge> ennreal M) sequentially" for M
+  have A: "eventually (\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x \<ge> ereal M) sequentially" for M
   proof -
     have "Gromov_converging_at_boundary v"
       using Gromov_boundary_abs_converging assms by blast
     then obtain N where N: "\<And>m n. m \<ge> N \<Longrightarrow> n \<ge> N \<Longrightarrow> Gromov_product_at basepoint (v m) (v n) \<ge> M + deltaG(TYPE('a))"
       unfolding Gromov_converging_at_boundary_def by metis
-    have "extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x \<ge> ennreal M" if "n \<ge> N" for n
+    have "extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x \<ge> ereal M" if "n \<ge> N" for n
     unfolding extended_Gromov_product_at_def proof (rule Inf_greatest, auto)
       fix wv wx assume H: "abs_Gromov_completion wv = to_Gromov_completion (v n)"
                           "x = abs_Gromov_completion wx"
@@ -1510,7 +1517,7 @@ proof -
         using order_tendstoD[OF *, of "ereal (M + deltaG TYPE('a))"] by auto
       then obtain P where P: "\<And>p. p \<ge> P \<Longrightarrow> ereal(Gromov_product_at basepoint (v p) (wx p)) > M + deltaG(TYPE('a))"
         unfolding eventually_sequentially by auto
-      have *: "ennreal (Gromov_product_at basepoint (v n) (wx p)) \<ge> ennreal M" if "p \<ge> max P N" for p
+      have *: "ereal (Gromov_product_at basepoint (v n) (wx p)) \<ge> ereal M" if "p \<ge> max P N" for p
       proof (intro mono_intros)
         have "M \<le> min (M + deltaG(TYPE('a))) (M + deltaG(TYPE('a))) - deltaG(TYPE('a))"
           by auto
@@ -1522,17 +1529,17 @@ proof -
         finally show "M \<le> Gromov_product_at basepoint (v n) (wx p) "
           by simp
       qed
-      then have "eventually (\<lambda>p. ennreal (Gromov_product_at basepoint (v n) (wx p)) \<ge> ennreal M) sequentially"
+      then have "eventually (\<lambda>p. ereal (Gromov_product_at basepoint (v n) (wx p)) \<ge> ereal M) sequentially"
         unfolding eventually_sequentially by metis
-      then show "ennreal M \<le> liminf (\<lambda>p. ennreal (Gromov_product_at basepoint (wv p) (wx p)))"
+      then show "ereal M \<le> liminf (\<lambda>p. ereal (Gromov_product_at basepoint (wv p) (wx p)))"
         unfolding wv by (simp add: Liminf_bounded)
     qed
     then show ?thesis unfolding eventually_sequentially by auto
   qed
-  have B: "eventually (\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x > M) sequentially" if "M < top" for M
+  have B: "eventually (\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x > M) sequentially" if "M < \<infinity>" for M
   proof -
-    obtain N where "ennreal N > M" using \<open>M < top\<close> ennreal_rat_dense by blast
-    then have "a \<ge> ennreal N \<Longrightarrow> a > M" for a by auto
+    obtain N where "ereal N > M" using \<open>M < \<infinity>\<close> ereal_dense2 by auto
+    then have "a \<ge> ereal N \<Longrightarrow> a > M" for a by auto
     then show ?thesis using A[of N] eventually_elim2 by force
   qed
   then show ?thesis
@@ -1543,7 +1550,7 @@ text \<open>Then, we prove the converse and therefore the equivalence.\<close>
 
 lemma Gromov_completion_converge_to_boundary:
   assumes "x \<in> Gromov_boundary"
-  shows "((\<lambda>n. to_Gromov_completion(u n)) \<longlonglongrightarrow> x) \<longleftrightarrow> (Gromov_completion_rel u u \<and> abs_Gromov_completion u = x)"
+  shows "((\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> x) \<longleftrightarrow> (Gromov_completion_rel u u \<and> abs_Gromov_completion u = x)"
 proof
   assume "Gromov_completion_rel u u \<and> abs_Gromov_completion u = x"
   then show "((\<lambda>n. to_Gromov_completion(u n)) \<longlonglongrightarrow> x)"
@@ -1560,8 +1567,8 @@ next
       unfolding eventually_sequentially by auto
     have "Gromov_product_at basepoint (u m) (u n) \<ge> M" if "n \<ge> N" "m\<ge> N" for m n
     proof -
-      have "ennreal M \<le> min (ennreal (M + deltaG(TYPE('a)))) (ennreal (M + deltaG(TYPE('a)))) - ennreal(deltaG(TYPE('a)))"
-        by (simp add: ennreal_minus)
+      have "ereal M \<le> min (ereal (M + deltaG(TYPE('a)))) (ereal (M + deltaG(TYPE('a)))) - ereal(deltaG(TYPE('a)))"
+        by simp
       also have "... \<le> min (extended_Gromov_product_at basepoint (to_Gromov_completion (u m)) x) (extended_Gromov_product_at basepoint x (to_Gromov_completion (u n))) - deltaG(TYPE('a))"
         apply (intro mono_intros) using N[OF \<open>n \<ge> N\<close>] N[OF \<open>m \<ge> N\<close>]
         by (auto simp add: extended_Gromov_product_at_commute)
@@ -1593,12 +1600,11 @@ next
     using Gromov_completion_converge_to_boundary_aux[OF assms] by auto
 
   have *: "(\<lambda>n. min (extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x) (extended_Gromov_product_at basepoint x (to_Gromov_completion (v n))) -
-          ennreal (deltaG TYPE('a))) \<longlonglongrightarrow> min \<infinity> \<infinity> - ennreal (deltaG TYPE('a))"
+          ereal (deltaG TYPE('a))) \<longlonglongrightarrow> min \<infinity> \<infinity> - ereal (deltaG TYPE('a))"
     apply (intro tendsto_intros) using Lu Lv by (auto simp add: extended_Gromov_product_at_commute)
-  have "(\<lambda>n. enn2ereal(extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) (to_Gromov_completion (v n)))) \<longlonglongrightarrow> enn2ereal \<infinity>"
-    apply (intro tendsto_intros)
+  have "(\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) (to_Gromov_completion (v n))) \<longlonglongrightarrow> \<infinity>"
     apply (rule tendsto_sandwich[of "\<lambda>n. min (extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x)
-                                             (extended_Gromov_product_at basepoint x (to_Gromov_completion (v n))) - deltaG(TYPE('a))" _ _ "\<lambda>_. \<infinity>"])
+                                              (extended_Gromov_product_at basepoint x (to_Gromov_completion (v n))) - deltaG(TYPE('a))" _ _ "\<lambda>_. \<infinity>"])
     using extended_hyperb_ineq not_eventuallyD apply blast using * by auto
   then have "(\<lambda>n. Gromov_product_at basepoint (u n) (v n)) \<longlonglongrightarrow> \<infinity>"
     by auto
@@ -1636,6 +1642,379 @@ lemma lim_imp_Gromov_converging_at_boundary:
   shows "Gromov_converging_at_boundary u"
 using Gromov_boundary_abs_converging Gromov_completion_converge_to_boundary assms by blast
 
+text \<open>If two sequences tend to the same point at infinity, then their Gromov product tends to
+infinity.\<close>
+
+lemma same_limit_imp_Gromov_product_tendsto_infinity:
+  assumes "z \<in> Gromov_boundary"
+          "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> z"
+          "(\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> z"
+  shows "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. Gromov_product_at a (u n) (v m) \<ge> C"
+proof -
+  have "Gromov_completion_rel u u" "Gromov_completion_rel v v" "abs_Gromov_completion u = abs_Gromov_completion v"
+    using iffD1[OF Gromov_completion_converge_to_boundary[OF assms(1)]] assms by auto
+  then have *: "Gromov_completion_rel u v"
+    using Quotient3_Gromov_completion Quotient3_rel by fastforce
+  have **: "Gromov_converging_at_boundary u"
+    using assms lim_imp_Gromov_converging_at_boundary by blast
+  then obtain M where M: "\<And>m n. m \<ge> M \<Longrightarrow> n \<ge> M \<Longrightarrow> Gromov_product_at a (u m) (u n) \<ge> C + deltaG(TYPE('a))"
+    unfolding Gromov_converging_at_boundary_def by blast
+
+  have "(\<lambda>n. Gromov_product_at a (u n) (v n)) \<longlonglongrightarrow> \<infinity>"
+    using * Gromov_converging_at_boundary_imp_not_constant'[OF **] unfolding Gromov_completion_rel_def by auto
+  then have "eventually (\<lambda>n. Gromov_product_at a (u n) (v n) \<ge> C + deltaG(TYPE('a))) sequentially"
+    by (meson Lim_PInfty ereal_less_eq(3) eventually_sequentiallyI)
+  then obtain N where N: "\<And>n. n \<ge> N \<Longrightarrow> Gromov_product_at a (u n) (v n) \<ge> C + deltaG(TYPE('a))"
+    unfolding eventually_sequentially by auto
+  have "Gromov_product_at a (u n) (v m) \<ge> C" if "n \<ge> max M N" "m \<ge> max M N" for m n
+  proof -
+    have "C + deltaG(TYPE('a)) \<le> min (Gromov_product_at a (u n) (u m)) (Gromov_product_at a (u m) (v m))"
+      using M N that by auto
+    also have "... \<le> Gromov_product_at a (u n) (v m) + deltaG(TYPE('a))"
+      by (intro mono_intros)
+    finally show ?thesis by simp
+  qed
+  then show ?thesis
+    by blast
+qed
+
+text \<open>An admissible sequence converges in the Gromov boundary, to the point it defines. This
+follows from the definition of the topology in the two cases, inner and boundary.\<close>
+
+lemma abs_Gromov_completion_limit:
+  assumes "Gromov_completion_rel u u"
+  shows "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> abs_Gromov_completion u"
+proof (cases "abs_Gromov_completion u")
+  case (to_Gromov_completion x)
+  then show ?thesis
+    using Gromov_completion_rel_to_const Quotient3_Gromov_completion Quotient3_rel assms to_Gromov_completion_def by fastforce
+next
+  case boundary
+  show ?thesis
+    unfolding Gromov_completion_converge_to_boundary[OF boundary]
+    using assms Gromov_boundary_rep_converging Gromov_converging_at_boundary_rel Quotient3_Gromov_completion Quotient3_abs_rep boundary by fastforce
+qed
+
+text \<open>In particular, a point in the Gromov boundary is the limit of
+its representative sequence in the space.\<close>
+
+lemma rep_Gromov_completion_limit:
+  "(\<lambda>n. to_Gromov_completion (rep_Gromov_completion x n)) \<longlonglongrightarrow> x"
+using abs_Gromov_completion_limit[of "rep_Gromov_completion x"] Quotient3_Gromov_completion Quotient3_abs_rep Quotient3_rep_reflp by fastforce
+
+
+subsection \<open>Continuity properties of the extended Gromov product and distance\<close>
+
+text \<open>We have defined our extended Gromov product in terms of sequences satisfying the equivalence
+relation. However, we would like to avoid this definition as much as possible, and express things
+in terms of the topology of the space. Hence, we reformulate this definition in topological terms,
+first when one of the two points is inside and the other one is on the boundary, then for all
+cases, and then we come back to the case where one point is inside, removing the assumption that
+the other one is on the boundary.\<close>
+
+lemma extended_Gromov_product_inside_boundary_aux:
+  assumes "y \<in> Gromov_boundary"
+  shows "extended_Gromov_product_at e (to_Gromov_completion x) y = Inf {liminf (\<lambda>n. ereal(Gromov_product_at e x (v n))) |v. (\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> y}"
+proof -
+  have A: "abs_Gromov_completion v = to_Gromov_completion x \<and> Gromov_completion_rel v v \<longleftrightarrow> (v = (\<lambda>n. x))" for v
+    apply (auto simp add: to_Gromov_completion_def)
+    by (metis (mono_tags) Gromov_completion_rel_def Quotient3_Gromov_completion abs_Gromov_completion_in_Gromov_boundary not_in_Gromov_boundary' rep_Gromov_completion_to_Gromov_completion rep_abs_rsp  to_Gromov_completion_def)
+  have *: "{F u v |u v. abs_Gromov_completion u = to_Gromov_completion x \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v}
+      = {F (\<lambda>n. x) v |v. (\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> y}" for F::"(nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> ereal"
+    unfolding Gromov_completion_converge_to_boundary[OF \<open>y \<in> Gromov_boundary\<close>] using A by force
+  show ?thesis
+    unfolding extended_Gromov_product_at_def * by simp
+qed
+
+lemma extended_Gromov_product_boundary_inside_aux:
+  assumes "y \<in> Gromov_boundary"
+  shows "extended_Gromov_product_at e y (to_Gromov_completion x) = Inf {liminf (\<lambda>n. ereal(Gromov_product_at e (v n) x)) |v. (\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> y}"
+using extended_Gromov_product_inside_boundary_aux[OF assms] by (simp add: extended_Gromov_product_at_commute Gromov_product_commute)
+
+lemma extended_Gromov_product_at_topological:
+  "extended_Gromov_product_at e x y = Inf {liminf (\<lambda>n. ereal(Gromov_product_at e (u n) (v n))) |u v. (\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> x \<and> (\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> y}"
+proof (cases x)
+  case boundary
+  show ?thesis
+  proof (cases y)
+    case boundary
+    then show ?thesis
+      unfolding extended_Gromov_product_at_def Gromov_completion_converge_to_boundary[OF \<open>x \<in> Gromov_boundary\<close>] Gromov_completion_converge_to_boundary[OF \<open>y \<in> Gromov_boundary\<close>]
+      by meson
+  next
+    case (to_Gromov_completion yi)
+    have A: "liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = liminf (\<lambda>n. ereal (Gromov_product_at e (u n) yi))" if "v \<longlonglongrightarrow> yi" for u v
+    proof -
+      define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e (u n) yi)"
+      have h: "h \<longlonglongrightarrow> 0"
+        apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (v n) yi"])
+        unfolding h_def using Gromov_product_at_diff3[of e _ _  yi] that apply auto
+        using tendsto_dist_iff by blast
+      have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e (u n) yi)" for n
+        unfolding h_def by auto
+      have "liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = 0 + liminf (\<lambda>n. ereal (Gromov_product_at e (u n) yi))"
+        unfolding * apply (rule ereal_liminf_lim_add) using h by (auto simp add: zero_ereal_def)
+      then show ?thesis by simp
+    qed
+    show ?thesis
+      unfolding to_Gromov_completion extended_Gromov_product_boundary_inside_aux[OF \<open>x \<in> Gromov_boundary\<close>] apply (rule cong[of Inf Inf], auto)
+      using A by fast+
+  qed
+next
+  case (to_Gromov_completion xi)
+  show ?thesis
+  proof (cases y)
+    case boundary
+    have A: "liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = liminf (\<lambda>n. ereal (Gromov_product_at e xi (v n)))" if "u \<longlonglongrightarrow> xi" for u v
+    proof -
+      define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e xi (v n))"
+      have h: "h \<longlonglongrightarrow> 0"
+        apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (u n) xi"])
+        unfolding h_def using Gromov_product_at_diff2[of e _ _  xi] that apply auto
+        using tendsto_dist_iff by blast
+      have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e xi (v n))" for n
+        unfolding h_def by auto
+      have "liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = 0 + liminf (\<lambda>n. ereal (Gromov_product_at e xi (v n)))"
+        unfolding * apply (rule ereal_liminf_lim_add) using h by (auto simp add: zero_ereal_def)
+      then show ?thesis by simp
+    qed
+    show ?thesis
+      unfolding to_Gromov_completion extended_Gromov_product_inside_boundary_aux[OF \<open>y \<in> Gromov_boundary\<close>] apply (rule cong[of Inf Inf], auto)
+      using A by fast+
+  next
+    case (to_Gromov_completion yi)
+    have B: "liminf (\<lambda>n. Gromov_product_at e (u n) (v n)) = Gromov_product_at e xi yi" if "u \<longlonglongrightarrow> xi" "v \<longlonglongrightarrow> yi" for u v
+    proof -
+      have "(\<lambda>n. Gromov_product_at e (u n) (v n)) \<longlonglongrightarrow> Gromov_product_at e xi yi"
+        apply (rule Gromov_product_at_continuous) using that by auto
+      then show "liminf (\<lambda>n. Gromov_product_at e (u n) (v n)) = Gromov_product_at e xi yi"
+        by (simp add: lim_imp_Liminf)
+    qed
+    have *: "{liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) |u v. u \<longlonglongrightarrow> xi \<and> v \<longlonglongrightarrow> yi} = {ereal (Gromov_product_at e xi yi)}"
+      using B apply auto by (rule exI[of _ "\<lambda>n. xi"], rule exI[of _ "\<lambda>n. yi"], auto)
+    show ?thesis
+      unfolding \<open>x = to_Gromov_completion xi\<close> \<open>y = to_Gromov_completion yi\<close> by (auto simp add: *)
+  qed
+qed
+
+lemma extended_Gromov_product_inside_boundary:
+  "extended_Gromov_product_at e (to_Gromov_completion x) y = Inf {liminf (\<lambda>n. ereal(Gromov_product_at e x (v n))) |v. (\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> y}"
+proof -
+  have A: "liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = liminf (\<lambda>n. ereal (Gromov_product_at e x (v n)))" if "u \<longlonglongrightarrow> x" for u v
+  proof -
+    define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e x (v n))"
+    have h: "h \<longlonglongrightarrow> 0"
+      apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (u n) x"])
+      unfolding h_def using Gromov_product_at_diff2[of e _ _  x] that apply auto
+      using tendsto_dist_iff by blast
+    have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e x (v n))" for n
+      unfolding h_def by auto
+    have "liminf (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = 0 + liminf (\<lambda>n. ereal (Gromov_product_at e x (v n)))"
+      unfolding * apply (rule ereal_liminf_lim_add) using h by (auto simp add: zero_ereal_def)
+    then show ?thesis by simp
+  qed
+  show ?thesis
+    unfolding extended_Gromov_product_at_topological apply (rule cong[of Inf Inf], auto)
+    using A by fast+
+qed
+
+lemma extended_Gromov_product_boundary_inside:
+  "extended_Gromov_product_at e y (to_Gromov_completion x) = Inf {liminf (\<lambda>n. ereal(Gromov_product_at e (v n) x)) |v. (\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> y}"
+using extended_Gromov_product_inside_boundary by (simp add: extended_Gromov_product_at_commute Gromov_product_commute)
+
+text \<open>Now, we compare the extended Gromov product to a sequence of Gromov products for converging
+sequences. As the extended Gromov product is defined as an Inf of limings, it is clearly smaller
+than the liminf. More interestingly, it is also of the order of magnitude of the limsup, for
+whatever sequence one uses. In other words, it is canonically defined, up to $2 \delta$.\<close>
+
+lemma extended_Gromov_product_le_liminf:
+  assumes "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi"
+          "(\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> eta"
+  shows "liminf (\<lambda>n. Gromov_product_at e (u n) (v n)) \<ge> extended_Gromov_product_at e xi eta"
+unfolding extended_Gromov_product_at_topological using assms by (auto intro!: Inf_lower)
+
+lemma limsup_le_extended_Gromov_product_inside:
+  assumes "(\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> (eta::('a::Gromov_hyperbolic_space) Gromov_completion)"
+  shows "limsup (\<lambda>n. Gromov_product_at e x (v n)) \<le> extended_Gromov_product_at e (to_Gromov_completion x) eta + deltaG(TYPE('a))"
+proof (cases eta)
+  case boundary
+  have A: "limsup (\<lambda>n. Gromov_product_at e x (v n)) \<le> liminf (\<lambda>n. Gromov_product_at e x (v' n)) + deltaG(TYPE('a))"
+    if H: "(\<lambda>n. to_Gromov_completion (v' n)) \<longlonglongrightarrow> eta"  for v'
+  proof -
+    have "ereal a \<le> liminf (\<lambda>n. Gromov_product_at e x (v' n)) + deltaG(TYPE('a))" if L: "ereal a < limsup (\<lambda>n. Gromov_product_at e x (v n))" for a
+    proof -
+      obtain Nv where Nv: "\<And>m n. m \<ge> Nv \<Longrightarrow> n \<ge> Nv \<Longrightarrow> Gromov_product_at e (v m) (v' n) \<ge> a"
+        using same_limit_imp_Gromov_product_tendsto_infinity[OF \<open>eta \<in> Gromov_boundary\<close> assms H] by blast
+      obtain N where N: "ereal a < Gromov_product_at e x (v N)" "N \<ge> Nv"
+        using limsup_obtain[OF L] by blast
+      have *: "a - deltaG(TYPE('a)) \<le> Gromov_product_at e x (v' n)" if "n \<ge> Nv" for n
+      proof -
+        have "a \<le> min (Gromov_product_at e x (v N)) (Gromov_product_at e (v N) (v' n))"
+          apply auto using N(1)  Nv[OF \<open>N \<ge> Nv\<close> \<open>n \<ge> Nv\<close>] by auto
+        also have "... \<le> Gromov_product_at e x (v' n) + deltaG(TYPE('a))"
+          by (intro mono_intros)
+        finally show ?thesis by auto
+      qed
+      have "a - deltaG(TYPE('a)) \<le> liminf (\<lambda>n. Gromov_product_at e x (v' n))"
+        apply (rule Liminf_bounded) unfolding eventually_sequentially using * by fastforce
+      then show ?thesis
+        unfolding ereal_minus(1)[symmetric] by (subst ereal_minus_le[symmetric], auto)
+    qed
+    then show ?thesis
+      using ereal_dense2 not_less by blast
+  qed
+  have "limsup (\<lambda>n. Gromov_product_at e x (v n)) - deltaG(TYPE('a)) \<le> extended_Gromov_product_at e (to_Gromov_completion x) eta"
+    unfolding extended_Gromov_product_inside_boundary by (rule Inf_greatest, auto simp add: A)
+  then show ?thesis by auto
+next
+  case (to_Gromov_completion y)
+  then have "v \<longlonglongrightarrow> y" using assms by auto
+  have L: "(\<lambda>n. Gromov_product_at e x (v n)) \<longlonglongrightarrow> ereal(Gromov_product_at e x y)"
+    using Gromov_product_at_continuous[OF _ _ \<open>v \<longlonglongrightarrow> y\<close>, of "\<lambda>n. e" e "\<lambda>n. x" x] by auto
+  show ?thesis
+    unfolding to_Gromov_completion using lim_imp_Limsup[OF _ L] by auto
+qed
+
+lemma limsup_le_extended_Gromov_product_inside':
+  assumes "(\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> (eta::('a::Gromov_hyperbolic_space) Gromov_completion)"
+  shows "limsup (\<lambda>n. Gromov_product_at e (v n) x) \<le> extended_Gromov_product_at e eta (to_Gromov_completion x) + deltaG(TYPE('a))"
+using limsup_le_extended_Gromov_product_inside[OF assms] by (simp add: Gromov_product_commute extended_Gromov_product_at_commute)
+
+lemma limsup_le_extended_Gromov_product:
+  assumes "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> (xi::('a::Gromov_hyperbolic_space) Gromov_completion)"
+          "(\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> eta"
+  shows "limsup (\<lambda>n. Gromov_product_at e (u n) (v n)) \<le> extended_Gromov_product_at e xi eta + 2 * deltaG(TYPE('a))"
+proof -
+  consider "xi \<in> Gromov_boundary \<and> eta \<in> Gromov_boundary" | "xi \<notin> Gromov_boundary" | "eta \<notin> Gromov_boundary"
+    by blast
+  then show ?thesis
+  proof (cases)
+    case 1
+    then have B: "xi \<in> Gromov_boundary" "eta \<in> Gromov_boundary" by auto
+    have A: "limsup (\<lambda>n. Gromov_product_at e (u n) (v n)) \<le> liminf (\<lambda>n. Gromov_product_at e (u' n) (v' n)) + 2 * deltaG(TYPE('a))"
+      if H: "(\<lambda>n. to_Gromov_completion (u' n)) \<longlonglongrightarrow> xi" "(\<lambda>n. to_Gromov_completion (v' n)) \<longlonglongrightarrow> eta"  for u' v'
+    proof -
+      have "ereal a \<le> liminf (\<lambda>n. Gromov_product_at e (u' n) (v' n)) + 2 * deltaG(TYPE('a))" if L: "ereal a < limsup (\<lambda>n. Gromov_product_at e (u n) (v n))" for a
+      proof -
+        obtain Nu where Nu: "\<And>m n. m \<ge> Nu \<Longrightarrow> n \<ge> Nu \<Longrightarrow> Gromov_product_at e (u' m) (u n) \<ge> a"
+          using same_limit_imp_Gromov_product_tendsto_infinity[OF \<open>xi \<in> Gromov_boundary\<close> H(1) assms(1)] by blast
+        obtain Nv where Nv: "\<And>m n. m \<ge> Nv \<Longrightarrow> n \<ge> Nv \<Longrightarrow> Gromov_product_at e (v m) (v' n) \<ge> a"
+          using same_limit_imp_Gromov_product_tendsto_infinity[OF \<open>eta \<in> Gromov_boundary\<close> assms(2) H(2)] by blast
+        obtain N where N: "ereal a < Gromov_product_at e (u N) (v N)" "N \<ge> max Nu Nv"
+          using limsup_obtain[OF L] by blast
+        then have "N \<ge> Nu" "N \<ge> Nv" by auto
+        have *: "a - 2 * deltaG(TYPE('a)) \<le> Gromov_product_at e (u' n) (v' n)" if "n \<ge> max Nu Nv" for n
+        proof -
+          have n: "n \<ge> Nu" "n \<ge> Nv" using that by auto
+          have "a \<le> Min {Gromov_product_at e (u' n) (u N), Gromov_product_at e (u N) (v N), Gromov_product_at e (v N) (v' n)}"
+            apply auto using N(1) Nu[OF n(1) \<open>N \<ge> Nu\<close>] Nv[OF \<open>N \<ge> Nv\<close> n(2)] by auto
+          also have "... \<le> Gromov_product_at e (u' n) (v' n) + 2 *  deltaG(TYPE('a))"
+            by (intro mono_intros)
+          finally show ?thesis by auto
+        qed
+        have "a - 2 * deltaG(TYPE('a)) \<le> liminf (\<lambda>n. Gromov_product_at e (u' n) (v' n))"
+          apply (rule Liminf_bounded) unfolding eventually_sequentially using * by fastforce
+        then show ?thesis
+          unfolding ereal_minus(1)[symmetric] by (subst ereal_minus_le[symmetric], auto)
+      qed
+      then show ?thesis
+        using ereal_dense2 not_less by blast
+    qed
+    have "limsup (\<lambda>n. Gromov_product_at e (u n) (v n)) - 2 * deltaG(TYPE('a)) \<le> extended_Gromov_product_at e xi eta"
+      unfolding extended_Gromov_product_at_topological by (rule Inf_greatest, auto simp add: A)
+    then show ?thesis by auto
+  next
+    case 2
+    then obtain x where x: "xi = to_Gromov_completion x" by (cases xi, auto)
+    have A: "limsup (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = limsup (\<lambda>n. ereal (Gromov_product_at e x (v n)))"
+    proof -
+      define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e x (v n))"
+      have h: "h \<longlonglongrightarrow> 0"
+        apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (u n) x"])
+        unfolding h_def using Gromov_product_at_diff2[of e _ _  x] assms(1) unfolding x apply auto
+        using tendsto_dist_iff by blast
+      have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e x (v n))" for n
+        unfolding h_def by auto
+      have "limsup (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = 0 + limsup (\<lambda>n. ereal (Gromov_product_at e x (v n)))"
+        unfolding * apply (rule ereal_limsup_lim_add) using h by (auto simp add: zero_ereal_def)
+      then show ?thesis by simp
+    qed
+    have *: "ereal (deltaG TYPE('a)) \<le> ereal (2 * deltaG TYPE('a))"
+      by auto
+    show ?thesis
+      unfolding A x using limsup_le_extended_Gromov_product_inside[OF assms(2), of e x] *
+      by (meson add_left_mono order.trans)
+  next
+    case 3
+    then obtain y where y: "eta = to_Gromov_completion y" by (cases eta, auto)
+    have A: "limsup (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = limsup (\<lambda>n. ereal (Gromov_product_at e (u n) y))"
+    proof -
+      define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e (u n) y)"
+      have h: "h \<longlonglongrightarrow> 0"
+        apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (v n) y"])
+        unfolding h_def using Gromov_product_at_diff3[of e _ _  y] assms(2) unfolding y apply auto
+        using tendsto_dist_iff by blast
+      have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e (u n) y)" for n
+        unfolding h_def by auto
+      have "limsup (\<lambda>n. ereal (Gromov_product_at e (u n) (v n))) = 0 + limsup (\<lambda>n. ereal (Gromov_product_at e (u n) y))"
+        unfolding * apply (rule ereal_limsup_lim_add) using h by (auto simp add: zero_ereal_def)
+      then show ?thesis by simp
+    qed
+    have *: "ereal (deltaG TYPE('a)) \<le> ereal (2 * deltaG TYPE('a))"
+      by auto
+    show ?thesis
+      unfolding A y using limsup_le_extended_Gromov_product_inside'[OF assms(1), of e y] *
+      by (meson add_left_mono order.trans)
+  qed
+qed
+
+text \<open>One can then extend to the boundary the fact that $(y,z)_x + (x,z)_y = d(x,y)$, up to a
+constant $\delta$, by taking this identity inside and passing to the limit.\<close>
+
+lemma extended_Gromov_product_add_le:
+  "extended_Gromov_product_at x xi (to_Gromov_completion y) + extended_Gromov_product_at y xi (to_Gromov_completion x) \<le> dist x y"
+proof -
+  obtain u where u: "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi"
+    using rep_Gromov_completion_limit by blast
+  have "liminf (\<lambda>n. ereal (Gromov_product_at a b (u n))) \<ge> 0" for a b
+    by (rule Liminf_bounded[OF always_eventually], auto)
+  then have *: "liminf (\<lambda>n. ereal (Gromov_product_at a b (u n))) \<noteq> -\<infinity>" for a b
+    by auto
+  have "extended_Gromov_product_at x xi (to_Gromov_completion y) + extended_Gromov_product_at y xi (to_Gromov_completion x)
+      \<le> liminf (\<lambda>n. ereal (Gromov_product_at x y (u n))) + liminf (\<lambda>n. Gromov_product_at y x (u n))"
+    apply (intro mono_intros)
+    using extended_Gromov_product_le_liminf [OF u, of "\<lambda>n. y" "to_Gromov_completion y" x]
+      extended_Gromov_product_le_liminf [OF u, of "\<lambda>n. x" "to_Gromov_completion x" y] by (auto simp add: Gromov_product_commute)
+  also have "... \<le> liminf (\<lambda>n. ereal (Gromov_product_at x y (u n)) + Gromov_product_at y x (u n))"
+    by (rule ereal_liminf_add_mono, auto simp add: *)
+  also have "... = dist x y"
+    apply (simp add: Gromov_product_add)
+    by (metis lim_imp_Liminf sequentially_bot tendsto_const)
+  finally show ?thesis by auto
+qed
+
+lemma extended_Gromov_product_add_ge:
+  "extended_Gromov_product_at (x::'a::Gromov_hyperbolic_space) xi (to_Gromov_completion y) + extended_Gromov_product_at y xi (to_Gromov_completion x) \<ge> dist x y - deltaG(TYPE('a))"
+proof -
+  have A: "dist x y - extended_Gromov_product_at y (to_Gromov_completion x) xi - deltaG(TYPE('a)) \<le> liminf (\<lambda>n. ereal (Gromov_product_at x y (u n)))"
+    if "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi" for u
+  proof -
+    have "dist x y = liminf (\<lambda>n. ereal (Gromov_product_at x y (u n)) + Gromov_product_at y x (u n))"
+      apply (simp add: Gromov_product_add)
+      by (metis lim_imp_Liminf sequentially_bot tendsto_const)
+    also have "... \<le> liminf (\<lambda>n. ereal (Gromov_product_at x y (u n))) + limsup (\<lambda>n. Gromov_product_at y x (u n))"
+      by (rule ereal_liminf_limsup_add)
+    also have "... \<le> liminf (\<lambda>n. ereal (Gromov_product_at x y (u n))) + (extended_Gromov_product_at y (to_Gromov_completion x) xi + deltaG(TYPE('a)))"
+      by (intro mono_intros limsup_le_extended_Gromov_product_inside[OF that])
+    finally show ?thesis by (auto simp add: algebra_simps)
+  qed
+  have "dist x y - extended_Gromov_product_at y (to_Gromov_completion x) xi - deltaG(TYPE('a)) \<le> extended_Gromov_product_at x (to_Gromov_completion y) xi"
+    unfolding extended_Gromov_product_inside_boundary[of x] apply (rule Inf_greatest) using A by auto
+  then show ?thesis
+    apply (auto simp add: algebra_simps extended_Gromov_product_at_commute)
+    unfolding ereal_minus(1)[symmetric] by (subst ereal_minus_le, auto simp add: algebra_simps)
+qed
+
 text \<open>If one perturbs a sequence inside the space by a bounded distance, one does not change the
 limit on the boundary.\<close>
 
@@ -1647,43 +2026,25 @@ lemma Gromov_converging_at_boundary_bounded_perturbation:
 proof -
   have "(\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x) \<longlonglongrightarrow> \<infinity>"
   proof (rule tendsto_sandwich[of "\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x - C" _ _ "\<lambda>n. \<infinity>"])
-    have "extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x - ennreal C \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x" for n
-    proof -
+    show "\<forall>\<^sub>F n in sequentially. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x - ereal C \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x"
+    proof (rule always_eventually, auto)
+      fix n::nat
       have "extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x
                   + extended_Gromov_distance (to_Gromov_completion (u n)) (to_Gromov_completion (v n))"
         by (intro mono_intros)
       also have "... \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x + C"
-        using assms(3)[of n] by (auto simp add: ennreal_leI)
-      finally show ?thesis
-        by (simp add: add.commute ennreal_minus_le_iff)
+        using assms(3)[of n] by (intro mono_intros, auto)
+      finally show "extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x + ereal C"
+        by auto
     qed
-    then show "\<forall>\<^sub>F n in sequentially. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x - ennreal C \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v n)) x"
-      by auto
-    have "(\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x - ennreal C) \<longlonglongrightarrow> \<infinity> - ennreal C"
+    have "(\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x - ereal C) \<longlonglongrightarrow> \<infinity> - ereal C"
       apply (intro tendsto_intros)
       unfolding Gromov_completion_boundary_limit[OF \<open>x \<in> Gromov_boundary\<close>, symmetric] using assms(1) by auto
-    then show "(\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x - ennreal C) \<longlonglongrightarrow> \<infinity>"
+    then show "(\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x - ereal C) \<longlonglongrightarrow> \<infinity>"
       by auto
   qed (auto)
   then show ?thesis
     unfolding Gromov_completion_boundary_limit[OF \<open>x \<in> Gromov_boundary\<close>] by simp
-qed
-
-text \<open>Combining the two cases, we deduce that a point in the Gromov boundary is the limit of
-its representative sequence in the space.\<close>
-
-lemma rep_Gromov_completion_limit:
-  "(\<lambda>n. to_Gromov_completion (rep_Gromov_completion x n)) \<longlonglongrightarrow> x"
-proof (cases "x \<in> Gromov_boundary")
-  case True
-  show ?thesis
-    unfolding Gromov_completion_converge_to_boundary[OF True]
-    using Gromov_boundary_rep_converging Gromov_converging_at_boundary_rel Quotient3_Gromov_completion Quotient3_abs_rep True by fastforce
-next
-  case False
-  then obtain y where y: "x = to_Gromov_completion y"
-    using not_in_Gromov_boundary by blast
-  show ?thesis unfolding y by auto
 qed
 
 text \<open>We prove that the extended Gromov distance is a continuous function of one variable,
@@ -1694,10 +2055,10 @@ $\infty$.\<close>
 
 lemma extended_Gromov_distance_continuous:
   "continuous_on UNIV (\<lambda>y. extended_Gromov_distance x y)"
-proof (cases "x \<in> Gromov_boundary")
+proof (cases x)
   text \<open>First, if $x$ is in the boundary, then all distances to $x$ are infinite, and the statement
   is trivial.\<close>
-  case True
+  case boundary
   then have *: "extended_Gromov_distance x y = \<infinity>" for y
     by auto
   show ?thesis
@@ -1705,33 +2066,32 @@ proof (cases "x \<in> Gromov_boundary")
 next
   text \<open>Next, consider the case where $x$ is inside the space. We split according to whether $y$ is
   inside the space or at infinity.\<close>
-  case False
-  then obtain a where a: "x = to_Gromov_completion a"
-    unfolding Gromov_boundary_def by auto
+  case (to_Gromov_completion a)
   have "(\<lambda>n. extended_Gromov_distance x (u n)) \<longlonglongrightarrow> extended_Gromov_distance x y" if "u \<longlonglongrightarrow> y" for u y
-  proof (cases "y \<in> Gromov_boundary")
+  proof (cases y)
     text \<open>If $y$ is at infinity, then we know that the Gromov product of $u_n$ and $y$ tends to
     infinity. Therefore, the extended distance from $u_n$ to any fixed point also tends to infinity
     (as the Gromov product is bounded from below by the extended distance).\<close>
-    case True
+    case boundary
     have *: "(\<lambda>n. extended_Gromov_product_at a (u n) y) \<longlonglongrightarrow> \<infinity>"
-      by (rule extended_Gromov_product_tendsto_PInf_a_b[OF iffD1[OF Gromov_completion_boundary_limit, OF True \<open>u \<longlonglongrightarrow> y\<close>]])
+      by (rule extended_Gromov_product_tendsto_PInf_a_b[OF iffD1[OF Gromov_completion_boundary_limit, OF boundary \<open>u \<longlonglongrightarrow> y\<close>]])
     have "(\<lambda>n. extended_Gromov_distance x (u n)) \<longlonglongrightarrow> \<infinity>"
       apply (rule tendsto_sandwich[of "\<lambda>n. extended_Gromov_product_at a (u n) y" _ _ "\<lambda>_. \<infinity>"])
-      unfolding a using extended_Gromov_product_le_dist[of a "u _" y] * by auto
-    then show ?thesis using True by auto
+      unfolding to_Gromov_completion using extended_Gromov_product_le_dist[of a "u _" y] * by auto
+    then show ?thesis using boundary by auto
   next
     text \<open>If $y$ is inside the space, then we use the triangular inequality for the extended Gromov
     distance to conclure.\<close>
-    case False
+    case (to_Gromov_completion b)
+    then have F: "y \<notin> Gromov_boundary" by auto
     have *: "(\<lambda>n. extended_Gromov_distance (u n) y) \<longlonglongrightarrow> 0"
-      by (rule iffD1[OF Gromov_completion_inside_limit[OF False] \<open>u \<longlonglongrightarrow> y\<close>])
+      by (rule iffD1[OF Gromov_completion_inside_limit[OF F] \<open>u \<longlonglongrightarrow> y\<close>])
     show "(\<lambda>n. extended_Gromov_distance x (u n)) \<longlonglongrightarrow> extended_Gromov_distance x y"
     proof (rule tendsto_sandwich[of "\<lambda>n. extended_Gromov_distance x y - extended_Gromov_distance (u n) y" _ _
                                     "\<lambda>n. extended_Gromov_distance x y + extended_Gromov_distance (u n) y"])
       have "extended_Gromov_distance x y - extended_Gromov_distance (u n) y \<le> extended_Gromov_distance x (u n)" for n
         using extended_Gromov_distance_triangle[of y x "u n"]
-        by (auto simp add: extended_Gromov_distance_commute False ennreal_minus_le_iff extended_Gromov_distance_def)
+        by (auto simp add: extended_Gromov_distance_commute F ennreal_minus_le_iff extended_Gromov_distance_def)
       then show "\<forall>\<^sub>F n in sequentially. extended_Gromov_distance x y - extended_Gromov_distance (u n) y \<le> extended_Gromov_distance x (u n)"
         by auto
       have "extended_Gromov_distance x (u n) \<le> extended_Gromov_distance x y + extended_Gromov_distance (u n) y" for n
@@ -1743,7 +2103,7 @@ next
       then show "(\<lambda>n. extended_Gromov_distance x y - extended_Gromov_distance (u n) y) \<longlonglongrightarrow> extended_Gromov_distance x y"
         by simp
       have "(\<lambda>n. extended_Gromov_distance x y + extended_Gromov_distance (u n) y) \<longlonglongrightarrow> extended_Gromov_distance x y + 0"
-        by (intro tendsto_intros *)
+        by (intro tendsto_intros *, auto)
       then show "(\<lambda>n. extended_Gromov_distance x y + extended_Gromov_distance (u n) y) \<longlonglongrightarrow> extended_Gromov_distance x y"
         by simp
     qed
@@ -1756,7 +2116,11 @@ lemma extended_Gromov_distance_continuous':
   "continuous_on UNIV (\<lambda>x. extended_Gromov_distance x y)"
 using extended_Gromov_distance_continuous[of y] extended_Gromov_distance_commute[of _ y] by auto
 
-text \<open>We deduce the basic fact that the original space is open in the Gromov completion\<close>
+
+subsection \<open>Topology of the Gromov boundary\<close>
+
+text \<open>We deduce the basic fact that the original space is open in the Gromov completion from the
+continuity of the extended distance.\<close>
 
 lemma to_Gromov_completion_range_open:
   "open (range to_Gromov_completion)"
@@ -1786,6 +2150,19 @@ lemma to_Gromov_completion_continuous:
   "continuous_on UNIV to_Gromov_completion"
 by (rule homeomorphism_on_continuous[OF to_Gromov_completion_homeomorphism])
 
+lemma from_Gromov_completion_continuous:
+  "homeomorphism_on (range to_Gromov_completion) from_Gromov_completion"
+  "continuous_on (range to_Gromov_completion) from_Gromov_completion"
+  "\<And>x::('a::Gromov_hyperbolic_space) Gromov_completion. x \<in> range to_Gromov_completion \<Longrightarrow> continuous (at x) from_Gromov_completion"
+proof -
+  show *: "homeomorphism_on (range to_Gromov_completion) from_Gromov_completion"
+    using homeomorphism_on_inverse[OF to_Gromov_completion_homeomorphism] unfolding from_Gromov_completion_def[symmetric] by simp
+  show "continuous_on (range to_Gromov_completion) from_Gromov_completion"
+    by (simp add: * homeomorphism_on_continuous)
+  then show "continuous (at x) from_Gromov_completion" if "x \<in> range to_Gromov_completion" for x::"'a Gromov_completion"
+    using continuous_on_eq_continuous_at that to_Gromov_completion_range_open by auto
+qed
+
 text \<open>The Gromov boundary is always complete. Indeed, consider a Cauchy sequence $u_n$ in the
 boundary, and approximate well enough $u_n$ by a point $v_n$ inside. Then the sequence $v_n$
 is Gromov converging at infinity (the respective Gromov products tend to infinity essentially
@@ -1810,8 +2187,8 @@ proof (rule completeI)
   have "Gromov_converging_at_boundary v"
   proof (rule Gromov_converging_at_boundaryI[of basepoint])
     fix M::real
-    obtain D1 e1 where D1: "e1 > 0" "D1 < \<infinity>" "\<And>x y::'a Gromov_completion. dist x y \<le> e1 \<Longrightarrow> extended_Gromov_distance x (to_Gromov_completion basepoint) \<ge> D1 \<Longrightarrow> extended_Gromov_product_at basepoint x y \<ge> ennreal M"
-      using large_Gromov_product_approx[of "ennreal M"] by auto
+    obtain D1 e1 where D1: "e1 > 0" "D1 < \<infinity>" "\<And>x y::'a Gromov_completion. dist x y \<le> e1 \<Longrightarrow> extended_Gromov_distance x (to_Gromov_completion basepoint) \<ge> D1 \<Longrightarrow> extended_Gromov_product_at basepoint x y \<ge> ereal M"
+      using large_Gromov_product_approx[of "ereal M"] by auto
     obtain D2 e2 where D2: "e2 > 0" "D2 < \<infinity>" "\<And>x y::'a Gromov_completion. dist x y \<le> e2 \<Longrightarrow> extended_Gromov_distance x (to_Gromov_completion basepoint) \<ge> D2 \<Longrightarrow> extended_Gromov_product_at basepoint x y \<ge> D1"
       using large_Gromov_product_approx[OF \<open>D1 < \<infinity>\<close>] by auto
     define e where "e = (min e1 e2)/3"
@@ -1822,7 +2199,7 @@ proof (rule completeI)
       by (rule order_tendstoD[OF \<open>(\<lambda>n. dist (to_Gromov_completion (v n)) (u n)) \<longlonglongrightarrow> 0\<close>], fact)
     then obtain N2 where N2: "\<And>n. n \<ge> N2 \<Longrightarrow> dist (to_Gromov_completion (v n)) (u n) < e"
       unfolding eventually_sequentially by auto
-    have "ennreal M \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v m)) (to_Gromov_completion (v n))"
+    have "ereal M \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v m)) (to_Gromov_completion (v n))"
       if "n \<ge> max N1 N2" "m \<ge> max N1 N2" for m n
     proof (rule D1(3))
       have "dist (to_Gromov_completion (v m)) (to_Gromov_completion (v n))
@@ -1886,7 +2263,7 @@ proof (rule completeI, auto)
       using \<open>Cauchy u0\<close> r(1) u_def by (simp add: Cauchy_subseq_Cauchy)
 
     have *: "\<exists>x \<in> range to_Gromov_completion. dist (u n) x < 1/real(n+1)" for n
-      by (rule closure_approachableD, auto simp add: to_Gromov_completion_range_dense)
+      by (rule closure_approachableD, auto)
     have "\<exists>v. \<forall>n. dist (to_Gromov_completion (v n)) (u n) < 1/real(n+1)"
       using of_nat_less_top apply (intro choice) using * by (auto simp add: dist_commute)
     then obtain v where v: "\<And>n. dist (to_Gromov_completion (v n)) (u n) < 1/real(n+1)"
@@ -1899,8 +2276,8 @@ proof (rule completeI, auto)
     have "Gromov_converging_at_boundary v"
     proof (rule Gromov_converging_at_boundaryI[of basepoint])
       fix M::real
-      obtain D1 e1 where D1: "e1 > 0" "D1 < \<infinity>" "\<And>x y::'a Gromov_completion. dist x y \<le> e1 \<Longrightarrow> extended_Gromov_distance x (to_Gromov_completion basepoint) \<ge> D1 \<Longrightarrow> extended_Gromov_product_at basepoint x y \<ge> ennreal M"
-        using large_Gromov_product_approx[of "ennreal M"] by auto
+      obtain D1 e1 where D1: "e1 > 0" "D1 < \<infinity>" "\<And>x y::'a Gromov_completion. dist x y \<le> e1 \<Longrightarrow> extended_Gromov_distance x (to_Gromov_completion basepoint) \<ge> D1 \<Longrightarrow> extended_Gromov_product_at basepoint x y \<ge> ereal M"
+        using large_Gromov_product_approx[of "ereal M"] by auto
       obtain D2 e2 where D2: "e2 > 0" "D2 < \<infinity>" "\<And>x y::'a Gromov_completion. dist x y \<le> e2 \<Longrightarrow> extended_Gromov_distance x (to_Gromov_completion basepoint) \<ge> D2 \<Longrightarrow> extended_Gromov_product_at basepoint x y \<ge> D1"
         using large_Gromov_product_approx[OF \<open>D1 < \<infinity>\<close>] by auto
       define e where "e = (min e1 e2)/3"
@@ -1917,7 +2294,7 @@ proof (rule completeI, auto)
         unfolding eventually_sequentially by auto
       define N where "N = N1+N2+N3"
       have N: "N \<ge> N1" "N \<ge> N2" "N \<ge> N3" unfolding N_def by auto
-      have "ennreal M \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v m)) (to_Gromov_completion (v n))"
+      have "ereal M \<le> extended_Gromov_product_at basepoint (to_Gromov_completion (v m)) (to_Gromov_completion (v n))"
         if "n \<ge> N" "m \<ge> N" for m n
       proof (rule D1(3))
         have "dist (to_Gromov_completion (v m)) (to_Gromov_completion (v n))
@@ -1963,8 +2340,10 @@ proof (rule completeI, auto)
     case False
     define C where "C = limsup (\<lambda>n. extended_Gromov_distance (to_Gromov_completion basepoint) (u0 n)) + 1"
     have "C < \<infinity>" unfolding C_def using False less_top by fastforce
+    have *: "limsup (\<lambda>n. extended_Gromov_distance (to_Gromov_completion basepoint) (u0 n)) \<ge> 0"
+      by (intro le_Limsup always_eventually, auto)
     have "limsup (\<lambda>n. extended_Gromov_distance (to_Gromov_completion basepoint) (u0 n)) < C"
-      unfolding C_def using False by auto
+      unfolding C_def using False * ereal_add_left_cancel_less by force
     then have "eventually (\<lambda>n. extended_Gromov_distance (to_Gromov_completion basepoint) (u0 n) < C) sequentially"
       using Limsup_lessD by blast
     then obtain N where N: "\<And>n. n \<ge> N \<Longrightarrow> extended_Gromov_distance (to_Gromov_completion basepoint) (u0 n) < C"
@@ -1982,7 +2361,7 @@ proof (rule completeI, auto)
     have "Cauchy v"
     proof (rule metric_CauchyI)
       obtain a::real where a: "a > 0" "\<And>x y::'a Gromov_completion. extended_Gromov_distance (to_Gromov_completion basepoint) x \<le> C \<Longrightarrow> dist x y \<le> a
-          \<Longrightarrow> esqrt(extended_Gromov_distance x y) \<le> 2 * ennreal(dist x y)"
+          \<Longrightarrow> esqrt(extended_Gromov_distance x y) \<le> 2 * ereal(dist x y)"
         using inside_Gromov_distance_approx[OF \<open>C < \<infinity>\<close>] by auto
       fix e::real assume "e > 0"
       define e2 where "e2 = min (sqrt (e/2) /2) a"
@@ -1991,16 +2370,16 @@ proof (rule completeI, auto)
         using \<open>Cauchy u\<close> unfolding Cauchy_def by blast
       have "dist (v m) (v n) < e" if "n \<ge> N" "m \<ge> N" for m n
       proof -
-        have "ennreal(sqrt(dist (v m) (v n))) = esqrt(extended_Gromov_distance (u m) (u n))"
-          unfolding uv by (auto simp add: esqrt_ennreal_ennreal_sqrt)
-        also have "... \<le> 2 * ennreal(dist (u m) (u n))"
+        have "ereal(sqrt(dist (v m) (v n))) = esqrt(extended_Gromov_distance (u m) (u n))"
+          unfolding uv by (auto simp add: esqrt_ereal_ereal_sqrt)
+        also have "... \<le> 2 * ereal(dist (u m) (u n))"
           apply (rule a(2)) using u[of m] N[OF \<open>m \<ge> N\<close> \<open>n \<ge> N\<close>] unfolding e2_def by auto
-        also have "... = ennreal(2 * dist (u m) (u n))"
-          by (simp add: ennreal_mult')
-        also have "... \<le> ennreal(2 * e2)"
+        also have "... = ereal(2 * dist (u m) (u n))"
+          by simp
+        also have "... \<le> ereal(2 * e2)"
           apply (intro mono_intros) using N[OF \<open>m \<ge> N\<close> \<open>n \<ge> N\<close>] less_imp_le by auto
         finally have "sqrt(dist (v m) (v n)) \<le> 2 * e2"
-          unfolding ennreal_le_iff2 using \<open>e2 > 0\<close> by auto
+          using \<open>e2 > 0\<close> by auto
         also have "... \<le> sqrt (e/2)"
           unfolding e2_def by auto
         finally have "dist (v m) (v n) \<le> e/2"
@@ -2060,9 +2439,9 @@ proof -
     have A: "\<exists>y \<in> k. dist (to_Gromov_completion y) (to_Gromov_completion x) \<le> e/4" if "dist basepoint x \<le> D" for x::'a
     proof -
       obtain z where z: "z \<in> k" "dist z x < e0" using \<open>dist basepoint x \<le> D\<close> k(2) by auto
-      have "ennreal(dist (to_Gromov_completion z) (to_Gromov_completion x)) \<le> esqrt(extended_Gromov_distance (to_Gromov_completion z) (to_Gromov_completion x))"
+      have "ereal(dist (to_Gromov_completion z) (to_Gromov_completion x)) \<le> esqrt(extended_Gromov_distance (to_Gromov_completion z) (to_Gromov_completion x))"
         by (intro mono_intros)
-      also have "... = ennreal(sqrt (dist z x))"
+      also have "... = ereal(sqrt (dist z x))"
         by auto
       finally have "dist (to_Gromov_completion z) (to_Gromov_completion x) \<le> sqrt (dist z x)"
         by auto
@@ -2085,14 +2464,14 @@ proof -
       define x2 where "x2 = geodesic_segment_param {basepoint--x} basepoint D"
       have *: "Gromov_product_at basepoint x x2 = D"
         unfolding x2_def apply (rule Gromov_product_geodesic_segment) using False \<open>D \<ge> 0\<close> by auto
-      have "ennreal(dist (to_Gromov_completion x) (to_Gromov_completion x2))
-            \<le> eexp (- enn2ereal(epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (to_Gromov_completion x) (to_Gromov_completion x2)))"
+      have "ereal(dist (to_Gromov_completion x) (to_Gromov_completion x2))
+            \<le> eexp (- epsilonG(TYPE('a)) * extended_Gromov_product_at basepoint (to_Gromov_completion x) (to_Gromov_completion x2))"
         by (intro mono_intros)
-      also have "... = eexp (- enn2ereal(epsilonG(TYPE('a)) * ennreal D))"
+      also have "... = eexp (- epsilonG(TYPE('a)) * ereal D)"
         using * by auto
-      also have "... = ennreal(exp(-epsilonG(TYPE('a)) * D))"
-        apply (subst ennreal_mult'[symmetric]) using \<open>D \<ge> 0\<close> by auto
-      also have "...\<le> ennreal(e/4)"
+      also have "... = ereal(exp(-epsilonG(TYPE('a)) * D))"
+        by auto
+      also have "...\<le> ereal(e/4)"
         by (intro mono_intros, fact)
       finally have "dist (to_Gromov_completion x) (to_Gromov_completion x2) \<le> e/4"
         using \<open>e > 0\<close> by auto
@@ -2336,19 +2715,18 @@ proof -
     by (intro real_Gromov_completion_rel_MInf tendsto_intros)
 
   have "\<exists>x. to_real_Gromov_completion x = y" for y
-  proof (cases "y \<in> Gromov_boundary")
-    case False
-    then obtain x where "y = to_Gromov_completion x" unfolding Gromov_boundary_def by auto
+  proof (cases y)
+    case (to_Gromov_completion x)
     then have "y = to_real_Gromov_completion x" by auto
     then show ?thesis by blast
   next
-    case True
+    case boundary
     define u where u: "u = rep_Gromov_completion y"
     have y: "abs_Gromov_completion u = y" "Gromov_completion_rel u u"
       unfolding u using Quotient3_abs_rep[OF Quotient3_Gromov_completion]
       Quotient3_rep_reflp[OF Quotient3_Gromov_completion] by auto
     have "Gromov_converging_at_boundary u"
-      using u True by (simp add: Gromov_boundary_rep_converging)
+      using u boundary by (simp add: Gromov_boundary_rep_converging)
     then have "(u \<longlonglongrightarrow> \<infinity>) \<or> (u \<longlonglongrightarrow> - \<infinity>)" using real_Gromov_converging_to_boundary by auto
     then show ?thesis
     proof
@@ -2452,318 +2830,5 @@ proof (rule homeomorphism_on_compact)
     qed
   qed
 qed
-
-
-section \<open>Extension of quasi-isometries to the boundary\<close>
-
-text \<open>In this section, we show that a quasi-isometry between geodesic Gromov hyperbolic spaces
-extends to a homeomorphism between their boundaries.\<close>
-
-text \<open>Applying a quasi-isometry on a geodesic triangle essentially sends it to a geodesic triangle,
-in hyperbolic spaces. It follows that, up to an additive constant, the Gromov product, which is the
-distance to the center of the triangle, is multiplied by a constant between $\lambda^{-1}$ and
-$\lambda$ when one applies a quasi-isometry. This argument is given in the next lemma. This implies
-that two points are close in the Gromov completion if and only if their images are also close in the
-Gromov completion of the image. Essentially, this lemma implies that a quasi-isometry has a
-continuous extension to the Gromov boundary, which is a homeomorphism.\<close>
-
-lemma Gromov_product_at_quasi_isometry:
-  fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "quasi_isometry lambda C f"
-  shows "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
-        "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
-proof -
-  have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
-  define D where "D = 81 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2)"
-  have Dxy: "hausdorff_distance (f`{x--y}) {f x--f y} \<le> D"
-    unfolding D_def apply (rule geodesic_quasi_isometric_image[OF assms(1)]) by auto
-  have Dyz: "hausdorff_distance (f`{y--z}) {f y--f z} \<le> D"
-    unfolding D_def apply (rule geodesic_quasi_isometric_image[OF assms(1)]) by auto
-  have Dxz: "hausdorff_distance (f`{x--z}) {f x--f z} \<le> D"
-    unfolding D_def apply (rule geodesic_quasi_isometric_image[OF assms(1)]) by auto
-
-  define E where "E = (lambda * (4 * deltaG(TYPE('a))) + C) + D"
-  have "E \<ge> 0" unfolding E_def D_def using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
-  obtain w where w: "infdist w {x--y} \<le> 4 * deltaG(TYPE('a))"
-                    "infdist w {x--z} \<le> 4 * deltaG(TYPE('a))"
-                    "infdist w {y--z} \<le> 4 * deltaG(TYPE('a))"
-                    "dist w x = Gromov_product_at x y z"
-    using slim_triangle[of "{x--y}" x y "{x--z}" z "{y--z}"] by auto
-  have "infdist (f w) {f x--f y} \<le> infdist (f w) (f`{x--y}) + hausdorff_distance (f`{x--y}) {f x--f y}"
-    by (intro mono_intros quasi_isometry_on_bounded[OF quasi_isometry_on_subset[OF assms(1)], of "{x--y}"], auto)
-  also have "... \<le> (lambda * infdist w {x--y} + C) + D"
-    apply (intro mono_intros) using quasi_isometry_on_infdist[OF assms(1)] Dxy by auto
-  also have "... \<le> (lambda * (4 * deltaG(TYPE('a))) + C) + D"
-    apply (intro mono_intros) using w \<open>lambda \<ge> 1\<close> by auto
-  finally have Exy: "infdist (f w) {f x--f y} \<le> E" unfolding E_def by auto
-
-  have "infdist (f w) {f y--f z} \<le> infdist (f w) (f`{y--z}) + hausdorff_distance (f`{y--z}) {f y--f z}"
-    by (intro mono_intros quasi_isometry_on_bounded[OF quasi_isometry_on_subset[OF assms(1)], of "{y--z}"], auto)
-  also have "... \<le> (lambda * infdist w {y--z} + C) + D"
-    apply (intro mono_intros) using quasi_isometry_on_infdist[OF assms(1)] Dyz by auto
-  also have "... \<le> (lambda * (4 * deltaG(TYPE('a))) + C) + D"
-    apply (intro mono_intros) using w \<open>lambda \<ge> 1\<close> by auto
-  finally have Eyz: "infdist (f w) {f y--f z} \<le> E" unfolding E_def by auto
-
-  have "infdist (f w) {f x--f z} \<le> infdist (f w) (f`{x--z}) + hausdorff_distance (f`{x--z}) {f x--f z}"
-    by (intro mono_intros quasi_isometry_on_bounded[OF quasi_isometry_on_subset[OF assms(1)], of "{x--z}"], auto)
-  also have "... \<le> (lambda * infdist w {x--z} + C) + D"
-    apply (intro mono_intros) using quasi_isometry_on_infdist[OF assms(1)] Dxz by auto
-  also have "... \<le> (lambda * (4 * deltaG(TYPE('a))) + C) + D"
-    apply (intro mono_intros) using w \<open>lambda \<ge> 1\<close> by auto
-  finally have Exz: "infdist (f w) {f x--f z} \<le> E" unfolding E_def by auto
-
-  have "2 * ((1/lambda * dist w x - C)) \<le> 2 * dist (f w) (f x)"
-    using quasi_isometry_onD(2)[OF assms(1), of w x] by auto
-  also have "... = (dist (f w) (f x) + dist (f w) (f y)) + (dist (f w) (f x) + dist (f w) (f z)) - (dist (f w) (f y) + dist (f w) (f z))"
-    by auto
-  also have "... \<le> (dist (f x) (f y) + 2 * infdist (f w) {f x--f y}) + (dist (f x) (f z) + 2 * infdist (f w) {f x--f z}) - dist (f y) (f z)"
-    by (intro geodesic_segment_distance mono_intros, auto)
-  also have "... \<le> 2 * Gromov_product_at (f x) (f y) (f z) + 4 * E"
-    unfolding Gromov_product_at_def using Exy Exz by (auto simp add: algebra_simps divide_simps)
-  finally have *: "Gromov_product_at x y z / lambda - C - 2 * E \<le> Gromov_product_at (f x) (f y) (f z)"
-    unfolding w(4) by simp
-
-  have "2 * Gromov_product_at (f x) (f y) (f z) - 2 * E \<le> 2 * Gromov_product_at (f x) (f y) (f z) - 2 * infdist (f w) {f y--f z}"
-    using Eyz by auto
-  also have "... = dist (f x) (f y) + dist (f x) (f z) - (dist (f y) (f z) + 2 * infdist (f w) {f y--f z})"
-    unfolding Gromov_product_at_def by (auto simp add: algebra_simps divide_simps)
-  also have "... \<le> (dist (f w) (f x) + dist (f w) (f y)) + (dist (f w) (f x) + dist (f w) (f z)) - (dist (f w) (f y) + dist (f w) (f z))"
-    by (intro geodesic_segment_distance mono_intros, auto)
-  also have "... = 2 * dist (f w) (f x)"
-    by auto
-  also have "... \<le> 2 * (lambda * dist w x + C)"
-    using quasi_isometry_onD(1)[OF assms(1), of w x] by auto
-  finally have "Gromov_product_at (f x) (f y) (f z) \<le> lambda * dist w x + C + E"
-    by auto
-  then have **: "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + C + 2 * E"
-    unfolding w(4) using \<open>E \<ge> 0\<close> by auto
-
-  have "C + 2 * E = 1 * 1 * C + 2 * ((lambda * 1 * 4 * deltaG(TYPE('a)) + 1 * 1 * C) + 81 * lambda * lambda * (C + lambda + deltaG(TYPE('b))^2))"
-    unfolding E_def D_def power2_eq_square by auto
-  also have "... \<le> lambda * lambda * C + 2 * ((lambda * lambda * 4 * deltaG(TYPE('a)) + lambda * lambda * C) + 81 * lambda * lambda * (C + lambda + deltaG(TYPE('b))^2))"
-    apply (intro mono_intros \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close>) using \<open>lambda \<ge> 1\<close> by auto
-  also have "... = lambda * lambda * (165 * C + 162 * lambda + 162 * deltaG(TYPE('b))^2 + 8 * deltaG(TYPE('a)))"
-    by (simp add: algebra_simps)
-  also have "... \<le> lambda * lambda * (165 * C + 165 * lambda + 165 * deltaG(TYPE('b))^2 + 165 * deltaG(TYPE('a)))"
-    apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> by auto
-  finally have I: "C + 2 * E \<le> 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
-    by (auto simp add: algebra_simps power2_eq_square)
-
-  show "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
-    using * I by auto
-  show "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
-    using ** I by auto
-qed
-
-lemma Gromov_converging_at_infinity_quasi_isometry:
-  fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "lambda C-quasi_isometry f"
-  shows "Gromov_converging_at_boundary (\<lambda>n. f (u n)) \<longleftrightarrow> Gromov_converging_at_boundary u"
-proof
-  assume "Gromov_converging_at_boundary u"
-  show "Gromov_converging_at_boundary (\<lambda>n. f (u n))"
-  proof (rule Gromov_converging_at_boundaryI[of "f (basepoint)"])
-    have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
-    define D where "D = 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
-    fix M::real
-    obtain M2::real where M2: "M = M2/lambda - D"
-      using \<open>lambda \<ge> 1\<close> by (auto simp add: algebra_simps divide_simps)
-    obtain N where N: "\<And>m n. m \<ge> N \<Longrightarrow> n \<ge> N \<Longrightarrow> Gromov_product_at basepoint (u m) (u n) \<ge> M2"
-      using \<open>Gromov_converging_at_boundary u\<close> unfolding Gromov_converging_at_boundary_def by blast
-    have "Gromov_product_at (f basepoint) (f (u m)) (f (u n)) \<ge> M" if "m \<ge> N" "n \<ge> N" for m n
-    proof -
-      have "M \<le> Gromov_product_at basepoint (u m) (u n)/lambda - D"
-        unfolding M2 using N[OF that] \<open>lambda \<ge> 1\<close> by (auto simp add: divide_simps)
-      also have "... \<le> Gromov_product_at (f basepoint) (f (u m)) (f (u n))"
-        unfolding D_def by (rule Gromov_product_at_quasi_isometry[OF assms(1)])
-      finally show ?thesis by simp
-    qed
-    then show "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. M \<le> Gromov_product_at (f basepoint) (f (u m)) (f (u n))"
-      unfolding comp_def by auto
-  qed
-next
-  assume "Gromov_converging_at_boundary (\<lambda>n. f (u n))"
-  show "Gromov_converging_at_boundary u"
-  proof (rule Gromov_converging_at_boundaryI[of "basepoint"])
-    have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
-    define D where "D = 165 * lambda^2 * (C + lambda + deltaG(TYPE('b))^2 + deltaG(TYPE('a)))"
-    fix M::real
-    define M2 where "M2 = lambda * M + D"
-    have M2: "M = (M2 - D)/lambda" unfolding M2_def using \<open>lambda \<ge> 1\<close> by (auto simp add: algebra_simps divide_simps)
-    obtain N where N: "\<And>m n. m \<ge> N \<Longrightarrow> n \<ge> N \<Longrightarrow> Gromov_product_at (f basepoint) (f (u m)) (f (u n)) \<ge> M2"
-      using \<open>Gromov_converging_at_boundary (\<lambda>n. f (u n))\<close> unfolding Gromov_converging_at_boundary_def by blast
-    have "Gromov_product_at basepoint (u m) (u n) \<ge> M" if "m \<ge> N" "n \<ge> N" for m n
-    proof -
-      have "M2 \<le> Gromov_product_at (f basepoint) (f (u m)) (f (u n))"
-        using N[OF that] by auto
-      also have "... \<le> lambda * Gromov_product_at basepoint (u m) (u n) + D"
-        unfolding D_def by (rule Gromov_product_at_quasi_isometry[OF assms(1)])
-      finally show "M \<le> Gromov_product_at basepoint (u m) (u n)"
-        unfolding M2 using \<open>lambda \<ge> 1\<close> by (auto simp add: algebra_simps divide_simps)
-    qed
-    then show "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. Gromov_product_at basepoint (u m) (u n) \<ge> M"
-      by auto
-  qed
-qed
-
-text \<open>We define the extension to the completion of a function $f: X \to Y$ where $X$ and $Y$
-are geodesic Gromov-hyperbolic spaces, as a function from $X \cup \partial X$ to $Y\cup \partial Y$,
-as follows. If $x$ is in the space, we just use $f(x)$ (with the suitable coercions for the
-definition). Otherwise, we wish to define $f(x)$ as the limit of $f(u_n)$ for all sequences tending
-to $x$. For the definition, we use one such sequence chosen arbitrarily (this is the role of
-\verb+rep_Gromov_completion x+ below, it is indeed a sequence in the space tending to $x$), and
-we use the limit of $f(u_n)$ (if it exists, otherwise the framework will choose some point for us
-but it will make no sense whatsoever).
-
-For quasi-isometries, we have indeed that $f(u_n)$ converges if $u_n$ converges to a boundary point,
-by \verb+Gromov_converging_at_infinity_quasi_isometry+, so this definition is meaningful. Moreover,
-continuity of the extension follows readily from this (modulo a suitable criterion for continuity
-based on sequences convergence, established in \verb+continuous_at_extension_sequentially'+).\<close>
-
-definition Gromov_extension::"('a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic) \<Rightarrow> ('a Gromov_completion \<Rightarrow> 'b Gromov_completion)"
-  where "Gromov_extension f x = (if x \<in> Gromov_boundary then lim (to_Gromov_completion o f o (rep_Gromov_completion x))
-                                 else to_Gromov_completion (f (from_Gromov_completion x)))"
-
-lemma Gromov_extension_inside_space [simp]:
-  "Gromov_extension f (to_Gromov_completion x) = to_Gromov_completion (f x)"
-unfolding Gromov_extension_def by auto
-
-lemma Gromov_extension_boundary_to_boundary:
-  fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "lambda C-quasi_isometry f"
-          "x \<in> Gromov_boundary"
-  shows "(Gromov_extension f) x \<in> Gromov_boundary"
-proof -
-  have *: "Gromov_converging_at_boundary (\<lambda>n. f (rep_Gromov_completion x n))"
-    by (simp add: Gromov_converging_at_infinity_quasi_isometry[OF assms(1)] Gromov_boundary_rep_converging assms(2))
-  show ?thesis
-    unfolding Gromov_extension_def using assms(2) unfolding comp_def apply auto
-    by (metis Gromov_converging_at_boundary_converges * limI)
-qed
-
-proposition Gromov_extension_continuous:
-  fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "lambda C-quasi_isometry f"
-          "x \<in> Gromov_boundary"
-  shows "continuous (at x) (Gromov_extension f)"
-proof -
-  have "continuous (at x within (range to_Gromov_completion \<union> Gromov_boundary)) (Gromov_extension f)"
-  proof (rule continuous_at_extension_sequentially'[OF \<open>x \<in> Gromov_boundary\<close>])
-    fix b::"'a Gromov_completion" assume "b \<in> Gromov_boundary"
-    show "\<exists>u. (\<forall>n. u n \<in> range to_Gromov_completion) \<and> u \<longlonglongrightarrow> b \<and> (\<lambda>n. Gromov_extension f (u n)) \<longlonglongrightarrow> Gromov_extension f b"
-      apply (rule exI[of _ "to_Gromov_completion o (rep_Gromov_completion b)"], auto simp add: comp_def)
-      unfolding Gromov_completion_converge_to_boundary[OF \<open>b \<in> Gromov_boundary\<close>]
-      using Quotient3_abs_rep[OF Quotient3_Gromov_completion] Quotient3_rep_reflp[OF Quotient3_Gromov_completion] apply auto[1]
-      unfolding Gromov_extension_def using \<open>b \<in> Gromov_boundary\<close> unfolding comp_def
-      by (auto simp add: convergent_LIMSEQ_iff[symmetric] Gromov_boundary_rep_converging Gromov_converging_at_infinity_quasi_isometry[OF assms(1)]
-               intro!: Gromov_converging_at_boundary_converges')
-  next
-    fix u and b::"'a Gromov_completion"
-    assume u: "\<forall>n. u n \<in> range to_Gromov_completion" "b \<in> Gromov_boundary" "u \<longlonglongrightarrow> b"
-    define v where "v = (\<lambda>n. from_Gromov_completion (u n))"
-    have v: "u n = to_Gromov_completion (v n)" for n
-      using u(1) unfolding v_def by (simp add: f_inv_into_f from_Gromov_completion_def)
-
-    show "convergent (\<lambda>n. Gromov_extension f (u n))"
-      using u unfolding v
-      apply (auto intro!: Gromov_converging_at_boundary_converges' simp add: Gromov_converging_at_infinity_quasi_isometry[OF assms(1)])
-      using Gromov_boundary_abs_converging Gromov_completion_converge_to_boundary by blast
-  qed
-  then show ?thesis by (simp add: Gromov_boundary_def)
-qed
-
-text \<open>With a suitable homeomorphism criterion, one proves in the same way that the extension
-of a quasi-isometry to the boundary is a homeomorphism on its image.\<close>
-
-proposition Gromov_extension_homeo:
-  fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "lambda C-quasi_isometry f"
-  shows "homeomorphism_on Gromov_boundary (Gromov_extension f)"
-proof (rule homeomorphism_on_extension_sequentially'[of "range to_Gromov_completion"])
-  fix u and b::"'a Gromov_completion"
-  assume u: "\<forall>n. u n \<in> range to_Gromov_completion" "b \<in> Gromov_boundary" "u \<longlonglongrightarrow> b"
-  define v where "v = (\<lambda>n. from_Gromov_completion (u n))"
-  have v: "u n = to_Gromov_completion (v n)" for n
-    using u(1) unfolding v_def by (simp add: f_inv_into_f from_Gromov_completion_def)
-
-  show "convergent (\<lambda>n. Gromov_extension f (u n))"
-    using u unfolding v
-    apply (auto intro!: Gromov_converging_at_boundary_converges' simp add: Gromov_converging_at_infinity_quasi_isometry[OF assms(1)])
-    using lim_imp_Gromov_converging_at_boundary by auto
-next
-  fix u c
-  assume u: "\<forall>n. u n \<in> range to_Gromov_completion" "c \<in> Gromov_extension f ` Gromov_boundary" "(\<lambda>n. Gromov_extension f (u n)) \<longlonglongrightarrow> c"
-  then have "c \<in> Gromov_boundary" using Gromov_extension_boundary_to_boundary[OF assms(1)] by auto
-  define v where "v = (\<lambda>n. from_Gromov_completion (u n))"
-  have v: "u n = to_Gromov_completion (v n)" for n
-    using u(1) unfolding v_def by (simp add: f_inv_into_f from_Gromov_completion_def)
-  have "Gromov_converging_at_boundary (\<lambda>n. f (v n))"
-    apply (rule lim_imp_Gromov_converging_at_boundary[OF _ \<open>c \<in> Gromov_boundary\<close>])
-    using u(3) unfolding v by auto
-  then show "convergent u"
-    using u unfolding v
-    by (auto intro!: Gromov_converging_at_boundary_converges' simp add: Gromov_converging_at_infinity_quasi_isometry[OF assms(1), symmetric])
-next
-  fix b::"'a Gromov_completion" assume "b \<in> Gromov_boundary"
-  show "\<exists>u. (\<forall>n. u n \<in> range to_Gromov_completion) \<and> u \<longlonglongrightarrow> b \<and> (\<lambda>n. Gromov_extension f (u n)) \<longlonglongrightarrow> Gromov_extension f b"
-    apply (rule exI[of _ "to_Gromov_completion o (rep_Gromov_completion b)"], auto simp add: comp_def)
-    unfolding Gromov_completion_converge_to_boundary[OF \<open>b \<in> Gromov_boundary\<close>]
-    using Quotient3_abs_rep[OF Quotient3_Gromov_completion] Quotient3_rep_reflp[OF Quotient3_Gromov_completion] apply auto[1]
-    unfolding Gromov_extension_def using \<open>b \<in> Gromov_boundary\<close> unfolding comp_def
-    by (auto simp add: convergent_LIMSEQ_iff[symmetric] Gromov_boundary_rep_converging Gromov_converging_at_infinity_quasi_isometry[OF assms(1)]
-             intro!: Gromov_converging_at_boundary_converges')
-qed
-
-text \<open>When the quasi-isometric embedding is a quasi-isometric isomorphism, i.e., it is onto up
-to a bounded distance $C$, then its Gromov extension is onto on the boundary. Indeed, a point
-in the image boundary is a limit of a sequence inside the space. Perturbing by a bounded distance
-(which does not change the asymptotic behavior), it is the limit of a sequence inside the image of
-$f$. Then the preimage under $f$ of this sequence does converge, and its limit is sent by the
-extension on the original point, proving the surjectivity.\<close>
-
-lemma Gromov_extension_onto:
-  fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "lambda C-quasi_isometry_between UNIV UNIV f"
-          "y \<in> Gromov_boundary"
-  shows "\<exists>x \<in> Gromov_boundary. Gromov_extension f x = y"
-proof -
-  define u where "u = rep_Gromov_completion y"
-  have *: "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> y"
-    unfolding u_def using rep_Gromov_completion_limit by fastforce
-  have "\<exists>v. \<forall>n. dist (f (v n)) (u n) \<le> C"
-    apply (intro choice) using quasi_isometry_betweenD(3)[OF assms(1)] by auto
-  then obtain v where v: "\<And>n. dist (f (v n)) (u n) \<le> C" by auto
-  have *: "(\<lambda>n. to_Gromov_completion (f (v n))) \<longlonglongrightarrow> y"
-    apply (rule Gromov_converging_at_boundary_bounded_perturbation[OF * \<open>y \<in> Gromov_boundary\<close>])
-    using v by (simp add: dist_commute)
-  then have "Gromov_converging_at_boundary (\<lambda>n. f (v n))"
-    using assms(2) lim_imp_Gromov_converging_at_boundary by force
-  then have "Gromov_converging_at_boundary v"
-    using Gromov_converging_at_infinity_quasi_isometry[OF quasi_isometry_betweenD(1)[OF assms(1)]] by auto
-  then obtain x where "x \<in> Gromov_boundary" "(\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> x"
-    using Gromov_converging_at_boundary_converges by blast
-  then have "(\<lambda>n. (Gromov_extension f) (to_Gromov_completion (v n))) \<longlonglongrightarrow> Gromov_extension f x"
-    using isCont_tendsto_compose[OF Gromov_extension_continuous[OF quasi_isometry_betweenD(1)[OF assms(1)] \<open>x \<in> Gromov_boundary\<close>]] by fastforce
-  then have "y = Gromov_extension f x"
-    using * LIMSEQ_unique by auto
-  then show ?thesis using \<open>x \<in> Gromov_boundary\<close> by auto
-qed
-
-lemma Gromov_extension_onto':
-  fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "lambda C-quasi_isometry_between UNIV UNIV f"
-  shows "(Gromov_extension f)`Gromov_boundary = Gromov_boundary"
-using Gromov_extension_onto[OF assms] Gromov_extension_boundary_to_boundary[OF quasi_isometry_betweenD(1)[OF assms]] by auto
-
-text \<open>Finally, we obtain that a quasi-isometry between two Gromov hyperbolic spaces induces a
-homeomorphism of their boundaries.\<close>
-
-theorem Gromov_boundaries_homeomorphic:
-  fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
-  assumes "lambda C-quasi_isometry_between UNIV UNIV f"
-  shows "(Gromov_boundary::'a Gromov_completion set) homeomorphic (Gromov_boundary::'b Gromov_completion set)"
-using Gromov_extension_homeo[OF quasi_isometry_betweenD(1)[OF assms]] Gromov_extension_onto'[OF assms]
-unfolding homeomorphic_def homeomorphism_on_def by auto
 
 end (*of theory Gromov_Boundary*)

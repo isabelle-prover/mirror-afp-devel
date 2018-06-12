@@ -58,6 +58,15 @@ declare exp_ge_add_one_self_aux [mono_intros]
 declare exp_gt_one [mono_intros]
 declare exp_less_mono [mono_intros]
 declare dist_triangle [mono_intros]
+declare abs_triangle_ineq [mono_intros]
+declare abs_triangle_ineq2 [mono_intros]
+declare abs_triangle_ineq2_sym [mono_intros]
+declare abs_triangle_ineq3 [mono_intros]
+declare abs_triangle_ineq4 [mono_intros]
+declare Liminf_le_Limsup [mono_intros]
+declare ereal_liminf_add_mono [mono_intros]
+declare le_of_int_ceiling [mono_intros]
+declare ereal_minus_mono [mono_intros]
 
 lemma ln_le_cancelI [mono_intros]:
   assumes "(0::real) < x" "x \<le> y"
@@ -358,6 +367,16 @@ by (intro continuous_at_extension_sequentially[OF _ assms], auto)
 
 subsubsection \<open>Homeomorphisms\<close>
 
+lemma homeomorphism_cong:
+  assumes "homeomorphism X Y f g"
+          "X' = X" "Y' = Y" "\<And>x. x \<in> X \<Longrightarrow> f' x = f x" "\<And>y. y \<in> Y \<Longrightarrow> g' y = g y"
+  shows "homeomorphism X' Y' f' g'"
+using assms image_cong unfolding homeomorphism_def by (auto simp add: rev_image_eqI) force
+
+lemma homeomorphism_empty [simp]:
+  "homeomorphism {} {} f g"
+unfolding homeomorphism_def by auto
+
 text \<open>A variant around the notion of homeomorphism, which is only expressed in terms of the
 function and not of its inverse.\<close>
 
@@ -393,8 +412,64 @@ lemma homeomorphism_on_subset:
   shows "homeomorphism_on T f"
 using assms homeomorphism_of_subsets unfolding homeomorphism_on_def by blast
 
+lemma homeomorphism_on_empty [simp]:
+  "homeomorphism_on {} f"
+unfolding homeomorphism_on_def using homeomorphism_empty[of f] by auto
+
+lemma homeomorphism_on_cong:
+  assumes "homeomorphism_on X f"
+          "X' = X" "\<And>x. x \<in> X \<Longrightarrow> f' x = f x"
+  shows "homeomorphism_on X' f'"
+proof -
+  obtain g where g:"homeomorphism X (f`X) f g"
+    using assms unfolding homeomorphism_on_def by auto
+  have "homeomorphism X' (f'`X') f' g"
+    apply (rule homeomorphism_cong[OF g]) using assms by (auto simp add: rev_image_eqI)
+  then show ?thesis
+    unfolding homeomorphism_on_def by auto
+qed
+
+lemma homeomorphism_on_inverse:
+  fixes f::"'a::topological_space \<Rightarrow> 'b::topological_space"
+  assumes "homeomorphism_on X f"
+  shows "homeomorphism_on (f`X) (inv_into X f)"
+proof -
+  obtain g where g: "homeomorphism X (f`X) f g"
+    using assms unfolding homeomorphism_on_def by auto
+  then have "g`f`X = X"
+    by (simp add: homeomorphism_def)
+  then have "homeomorphism_on (f`X) g"
+    unfolding homeomorphism_on_def using homeomorphism_symD[OF g] by auto
+  moreover have "g x = inv_into X f x" if "x \<in> f`X" for x
+    using g that unfolding homeomorphism_def by (auto, metis f_inv_into_f inv_into_into that)
+  ultimately show ?thesis
+    using homeomorphism_on_cong by force
+qed
+
 text \<open>Characterization of homeomorphisms in terms of sequences: a map is a homeomorphism if and
 only if it respects convergent sequences.\<close>
+
+lemma homeomorphism_on_compose:
+  assumes "homeomorphism_on S f"
+          "x \<in> S"
+          "eventually (\<lambda>n. u n \<in> S) F"
+  shows "(u \<longlongrightarrow> x) F \<longleftrightarrow> ((\<lambda>n. f (u n)) \<longlongrightarrow> f x) F"
+proof
+  assume "(u \<longlongrightarrow> x) F"
+  then show "((\<lambda>n. f (u n)) \<longlongrightarrow> f x) F"
+    using continuous_on_tendsto_compose[OF homeomorphism_on_continuous[OF assms(1)] _ assms(2) assms(3)] by simp
+next
+  assume *: "((\<lambda>n. f (u n)) \<longlongrightarrow> f x) F"
+  have I: "inv_into S f (f y) = y" if "y \<in> S" for y
+    using homeomorphism_on_bij[OF assms(1)] by (meson bij_betw_inv_into_left that)
+  then have A: "eventually (\<lambda>n. u n = inv_into S f (f (u n))) F"
+    using assms eventually_mono by force
+  have "((\<lambda>n. (inv_into S f) (f (u n))) \<longlongrightarrow> (inv_into S f) (f x)) F"
+    apply (rule continuous_on_tendsto_compose[OF homeomorphism_on_continuous[OF homeomorphism_on_inverse[OF assms(1)]] *])
+    using assms eventually_mono by (auto) fastforce
+  then show "(u \<longlongrightarrow> x) F"
+    unfolding tendsto_cong[OF A] I[OF \<open>x \<in> S\<close>] by simp
+qed
 
 lemma homeomorphism_on_sequentially:
   fixes f::"'a::{first_countable_topology, t2_space} \<Rightarrow> 'b::{first_countable_topology, t2_space}"
@@ -444,118 +519,113 @@ does not have to be continuous on the approximating set $S$, only on the limit s
 any a priori identification of the limit. Then, we specialize this statement to a less general
 but often more usable version.\<close>
 
+lemma homeomorphism_on_extension_sequentially_precise:
+  fixes f::"'a::{first_countable_topology, t3_space} \<Rightarrow> 'b::{first_countable_topology, t3_space}"
+  assumes "\<And>u b. (\<forall>n. u n \<in> S) \<Longrightarrow> b \<in> T \<Longrightarrow> u \<longlonglongrightarrow> b \<Longrightarrow> convergent (\<lambda>n. f (u n))"
+          "\<And>u c. (\<forall>n. u n \<in> S) \<Longrightarrow> c \<in> f`T \<Longrightarrow> (\<lambda>n. f (u n)) \<longlonglongrightarrow> c \<Longrightarrow> convergent u"
+          "\<And>b. b \<in> T \<Longrightarrow> \<exists>u. (\<forall>n. u n \<in> S) \<and> u \<longlonglongrightarrow> b \<and> ((\<lambda>n. f (u n)) \<longlonglongrightarrow> f b)"
+          "\<And>n. u n \<in> S \<union> T" "l \<in> T"
+  shows "u \<longlonglongrightarrow> l \<longleftrightarrow> (\<lambda>n. f (u n)) \<longlonglongrightarrow> f l"
+proof
+  assume H: "u \<longlonglongrightarrow> l"
+  have "continuous (at l within (S \<union> T)) f"
+    apply (rule continuous_at_extension_sequentially'[OF \<open>l \<in> T\<close>]) using assms(1) assms(3) by auto
+  then show "(\<lambda>n. f (u n)) \<longlonglongrightarrow> f l"
+    apply (rule continuous_within_tendsto_compose) using H assms(4) by auto
+next
+  text \<open>For the reverse implication, we would like to use the continuity criterion
+  \verb+ continuous_at_extension_sequentially'+ applied to the inverse of $f$. Unfortunately, this
+  inverse is only well defined on $T$, while our sequence takes values in $S \cup T$. So, instead,
+  we redo by hand the proof of the continuity criterion, but in the opposite direction.\<close>
+  assume H: "(\<lambda>n. f (u n)) \<longlonglongrightarrow> f l"
+  show "u \<longlonglongrightarrow> l"
+  proof (rule ccontr)
+    assume "\<not> ?thesis"
+    then obtain U where U: "open U" "l \<in> U" "\<not>(\<forall>\<^sub>F n in sequentially. u n \<in> U)"
+      unfolding continuous_within tendsto_def[where l = l] using sequentially_imp_eventually_nhds_within by auto
+    obtain A :: "nat \<Rightarrow> 'b set" where *:
+      "\<And>i. open (A i)"
+      "\<And>i. f l \<in> A i"
+      "\<And>F. \<forall>n. F n \<in> A n \<Longrightarrow> F \<longlonglongrightarrow> f l"
+      by (rule first_countable_topology_class.countable_basis) blast
+    have B: "eventually (\<lambda>n. f (u n) \<in> A i) sequentially" for i
+      using \<open>open (A i)\<close> \<open>f l \<in> A i\<close> H topological_tendstoD by fastforce
+    have M: "\<exists>r. r \<ge> N \<and> (u r \<notin> U) \<and> f (u r) \<in> A i" for N i
+      using U(3) B[of i] unfolding eventually_sequentially by (meson dual_order.trans le_cases)
+    have "\<exists>r. \<forall>n. (u (r n) \<notin> U \<and> f (u (r n)) \<in> A n) \<and> r (Suc n) \<ge> r n + 1"
+      apply (rule dependent_nat_choice) using M by auto
+    then obtain r where r: "\<And>n. u (r n) \<notin> U" "\<And>n. f (u (r n)) \<in> A n" "\<And>n. r (Suc n) \<ge> r n + 1"
+      by auto
+    then have "strict_mono r"
+      by (metis Suc_eq_plus1 Suc_le_lessD strict_monoI_Suc)
+
+    have "\<exists>V W. open V \<and> open W \<and> l \<in> V \<and> (UNIV - U) \<subseteq> W \<and> V \<inter> W = {}"
+      apply (rule t3_space) using U by auto
+    then obtain V W where VW: "open V" "open W" "l \<in> V" "UNIV - U \<subseteq> W" "V \<inter> W = {}"
+      by auto
+
+    have "\<exists>z. z \<in> S \<and> f z \<in> A n \<and> z \<in> W" for n
+    proof -
+      define z where "z = u (r n)"
+      have "f z \<in> A n" unfolding z_def using r(2) by auto
+      have "z \<in> S \<union> T" "z \<notin> U"
+        unfolding z_def using r(1) assms(4) by auto
+      then have "z \<in> W" using VW by auto
+      show ?thesis
+      proof (cases "z \<in> T")
+        case True
+        obtain u::"nat \<Rightarrow> 'a" where u: "\<And>p. u p \<in> S" "u \<longlonglongrightarrow> z" "(\<lambda>p. f (u p)) \<longlonglongrightarrow> f z"
+          using assms(3)[OF \<open>z \<in> T\<close>] by auto
+        then have "eventually (\<lambda>p. f (u p) \<in> A n) sequentially"
+          using \<open>open (A n)\<close> \<open>f z \<in> A n\<close> unfolding tendsto_def by simp
+        moreover have "eventually (\<lambda>p. u p \<in> W) sequentially"
+          using \<open>open W\<close> \<open>z \<in> W\<close> u unfolding tendsto_def by simp
+        ultimately have "\<exists>p. u p \<in> W \<and> f (u p) \<in> A n"
+          using eventually_False_sequentially eventually_elim2 by blast
+        then show ?thesis using u(1) by auto
+      next
+        case False
+        then have "z \<in> S" using \<open>z \<in> S \<union> T\<close> by auto
+        then show ?thesis using \<open>f z \<in> A n\<close> \<open>z \<in> W\<close> by auto
+      qed
+    qed
+    then have "\<exists>v. \<forall>n. v n \<in> S \<and> f (v n) \<in> A n \<and> v n \<in> W"
+      by (auto intro: choice)
+    then obtain v where v: "\<And>n. v n \<in> S" "\<And>n. f (v n) \<in> A n" "\<And>n. v n \<in> W"
+      by blast
+    then have I: "(\<lambda>n. f (v n)) \<longlonglongrightarrow> f l" using *(3) by auto
+
+    obtain w where w: "\<And>n. w n \<in> S" "w \<longlonglongrightarrow> l" "((\<lambda>n. f (w n)) \<longlonglongrightarrow> f l)"
+      using assms(3)[OF \<open>l \<in> T\<close>] by auto
+    have "even_odd_interpolate (f o v) (f o w) \<longlonglongrightarrow> f l"
+      unfolding even_odd_interpolate_filterlim[symmetric] comp_def using v w I by auto
+    then have *: "(\<lambda>n. f (even_odd_interpolate v w n)) \<longlonglongrightarrow> f l"
+      unfolding even_odd_interpolate_compose unfolding comp_def by auto
+    have "convergent (even_odd_interpolate v w)"
+      apply (rule assms(2)[OF _ _ *])
+      unfolding even_odd_interpolate_def using v(1) w(1) \<open>l \<in> T\<close> by auto
+    then obtain z where "even_odd_interpolate v w \<longlonglongrightarrow> z"
+      unfolding convergent_def by auto
+    then have *: "v \<longlonglongrightarrow> z" "w \<longlonglongrightarrow> z" unfolding even_odd_interpolate_filterlim[symmetric] by auto
+    then have "z = l" using v(2) w(2) LIMSEQ_unique by auto
+    then have "v \<longlonglongrightarrow> l" using * by simp
+    then have "eventually (\<lambda>n. v n \<in> V) sequentially"
+      using VW by (simp add: tendsto_def)
+    then have "\<exists>n. v n \<in> V"
+      using eventually_False_sequentially eventually_elim2 by blast
+    then show False
+      using v(3) \<open>V \<inter> W = {}\<close> by auto
+  qed
+qed
+
 lemma homeomorphism_on_extension_sequentially':
   fixes f::"'a::{first_countable_topology, t3_space} \<Rightarrow> 'b::{first_countable_topology, t3_space}"
   assumes "\<And>u b. (\<forall>n. u n \<in> S) \<Longrightarrow> b \<in> T \<Longrightarrow> u \<longlonglongrightarrow> b \<Longrightarrow> convergent (\<lambda>n. f (u n))"
           "\<And>u c. (\<forall>n. u n \<in> S) \<Longrightarrow> c \<in> f`T \<Longrightarrow> (\<lambda>n. f (u n)) \<longlonglongrightarrow> c \<Longrightarrow> convergent u"
           "\<And>b. b \<in> T \<Longrightarrow> \<exists>u. (\<forall>n. u n \<in> S) \<and> u \<longlonglongrightarrow> b \<and> ((\<lambda>n. f (u n)) \<longlonglongrightarrow> f b)"
   shows "homeomorphism_on T f"
-proof -
-  have "x = y" if "f x = f y" "x \<in> T" "y \<in> T" for x y
-  proof -
-    obtain u::"nat \<Rightarrow> 'a" where u: "\<And>n. u n \<in> S" "u \<longlonglongrightarrow> x" "(\<lambda>n. f (u n)) \<longlonglongrightarrow> f x"
-      using assms(3)[OF \<open>x \<in> T\<close>] by auto
-    obtain v::"nat \<Rightarrow> 'a" where v: "\<And>n. v n \<in> S" "v \<longlonglongrightarrow> y" "(\<lambda>n. f (v n)) \<longlonglongrightarrow> f y"
-      using assms(3)[OF \<open>y \<in> T\<close>] by auto
-    have "even_odd_interpolate (f o u) (f o v) \<longlonglongrightarrow> f x"
-      unfolding even_odd_interpolate_filterlim[symmetric] comp_def using u v \<open>f x = f y\<close> by auto
-    then have *: "(\<lambda>n. f (even_odd_interpolate u v n)) \<longlonglongrightarrow> f x"
-      unfolding even_odd_interpolate_compose unfolding comp_def by auto
-    have "convergent (even_odd_interpolate u v)"
-      apply (rule assms(2)[OF _ _ *])
-      unfolding even_odd_interpolate_def using u(1) v(1) \<open>x \<in> T\<close> by auto
-    then obtain z where "even_odd_interpolate u v \<longlonglongrightarrow> z"
-      unfolding convergent_def by auto
-    then have "u \<longlonglongrightarrow> z" "v \<longlonglongrightarrow> z" unfolding even_odd_interpolate_filterlim[symmetric] by auto
-    then have "z = x" "z = y" using u(2) v(2) LIMSEQ_unique by auto
-    then show "x = y" by auto
-  qed
-  then have "inj_on f T" by (simp add: inj_on_def)
-
-  have Cf: "continuous_on T f"
-    apply (rule continuous_on_extension_sequentially'[OF assms(1) assms(3)]) by auto
-  define g where "g = inv_into T f"
-  text \<open>To prove the continuity of the inverse $g$ of $f$, we would like to use the same sequential
-  criterion. However, this inverse is only well defined on the image of $T$, not on the image of
-  $S \cup T$ (as $f$ does not have to be injective on $S$), which creates a lot of problems to
-  apply the criterion. Instead, we prove the continuity by hand, essentially following the proof
-  of the criterion but tweaking it here or there.\<close>
-  have "continuous (at y within f`T) g" if "y \<in> f`T" for y
-  proof (rule ccontr)
-    define x where "x = g y"
-    have "x \<in> T" "f x = y"
-      unfolding x_def g_def using \<open>y \<in> f`T\<close> by (auto simp add: inv_into_into f_inv_into_f)
-    assume "\<not> ?thesis"
-    then obtain U where U: "open U" "g y \<in> U" "\<not>(\<forall>\<^sub>F z in at y within f`T. g z \<in> U)"
-      unfolding continuous_within tendsto_def[where l = "g y"] using sequentially_imp_eventually_nhds_within by auto
-    have "\<exists>V W. open V \<and> open W \<and> g y \<in> V \<and> (UNIV - U) \<subseteq> W \<and> V \<inter> W = {}"
-      apply (rule t3_space) using U by auto
-    then obtain V W where VW: "open V" "open W" "x \<in> V" "UNIV - U \<subseteq> W" "V \<inter> W = {}"
-      unfolding \<open>x = g y\<close> by auto
-
-    obtain A :: "nat \<Rightarrow> 'b set" where *:
-      "\<And>i. open (A i)"
-      "\<And>i. y \<in> A i"
-      "\<And>F. \<forall>n. F n \<in> A n \<Longrightarrow> F \<longlonglongrightarrow> y"
-      by (rule first_countable_topology_class.countable_basis) blast
-    with * U(3) have "\<exists>F. \<forall>n. F n \<in> f`T \<and> F n \<in> A n \<and> \<not> (g(F n) \<in> U)"
-      unfolding at_within_def eventually_inf_principal eventually_nhds
-      by (intro choice) (meson DiffE)
-    then obtain F where F: "\<And>n. F n \<in> f`T" "\<And>n. F n \<in> A n" "\<And>n. g(F n) \<notin> U"
-      by auto
-    have "\<exists>z. z \<in> S \<and> f z \<in> A n \<and> z \<in> W" for n
-    proof -
-      define z where "z = g (F n)"
-      have "f z = F n"
-        unfolding z_def g_def using \<open>F n \<in> f`T\<close> by (simp add: f_inv_into_f)
-      then have "f z \<in> A n" using F(2) by auto
-      have "z \<in> T" "z \<notin> U"
-        unfolding z_def using F by (auto simp add: g_def inv_into_into)
-      then have "z \<in> W" using VW by auto
-      obtain u::"nat \<Rightarrow> 'a" where u: "\<And>p. u p \<in> S" "u \<longlonglongrightarrow> z" "(\<lambda>p. f (u p)) \<longlonglongrightarrow> f z"
-        using assms(3)[OF \<open>z \<in> T\<close>] by auto
-      then have "eventually (\<lambda>p. f (u p) \<in> A n) sequentially"
-        using \<open>open (A n)\<close> \<open>f z \<in> A n\<close> unfolding tendsto_def by simp
-      moreover have "eventually (\<lambda>p. u p \<in> W) sequentially"
-        using \<open>open W\<close> \<open>z \<in> W\<close> u unfolding tendsto_def by simp
-      ultimately have "\<exists>p. u p \<in> W \<and> f (u p) \<in> A n"
-        using eventually_False_sequentially eventually_elim2 by blast
-      then show ?thesis using u(1) by auto
-    qed
-    then have "\<exists>u. \<forall>n. u n \<in> S \<and> f (u n) \<in> A n \<and> u n \<in> W"
-      by (auto intro: choice)
-    then obtain u where u: "\<And>n. u n \<in> S" "\<And>n. f (u n) \<in> A n" "\<And>n. u n \<in> W"
-      by blast
-    then have I: "(\<lambda>n. f (u n)) \<longlonglongrightarrow> y" using *(3) by auto
-
-    obtain v where v: "\<And>n. v n \<in> S" "v \<longlonglongrightarrow> x" "((\<lambda>n. f (v n)) \<longlonglongrightarrow> f x)"
-      using assms(3)[OF \<open>x \<in> T\<close>] by auto
-    have "even_odd_interpolate (f o u) (f o v) \<longlonglongrightarrow> y"
-      unfolding even_odd_interpolate_filterlim[symmetric] comp_def using u v I \<open>f x = y\<close> by auto
-    then have *: "(\<lambda>n. f (even_odd_interpolate u v n)) \<longlonglongrightarrow> y"
-      unfolding even_odd_interpolate_compose unfolding comp_def by auto
-    have "convergent (even_odd_interpolate u v)"
-      apply (rule assms(2)[OF _ _ *])
-      unfolding even_odd_interpolate_def using u(1) v(1) \<open>y \<in> f`T\<close> by auto
-    then obtain z where "even_odd_interpolate u v \<longlonglongrightarrow> z"
-      unfolding convergent_def by auto
-    then have *: "u \<longlonglongrightarrow> z" "v \<longlonglongrightarrow> z" unfolding even_odd_interpolate_filterlim[symmetric] by auto
-    then have "z = x" using u(2) v(2) LIMSEQ_unique by auto
-    then have "u \<longlonglongrightarrow> x" using * by simp
-    then have "eventually (\<lambda>n. u n \<in> V) sequentially"
-      using VW by (simp add: tendsto_def)
-    then have "\<exists>n. u n \<in> V"
-      using eventually_False_sequentially eventually_elim2 by blast
-    then show False
-      using u(3) \<open>V \<inter> W = {}\<close> by auto
-  qed
-  then have Cg: "continuous_on (f`T) g"
-    by (simp add: continuous_on_eq_continuous_within)
-  have "homeomorphism T (f`T) f g"
-    apply (rule homeomorphismI[OF Cf Cg]) unfolding g_def using \<open>inj_on f T\<close> by auto
-  then show ?thesis
-    unfolding homeomorphism_on_def by auto
-qed
+apply (rule homeomorphism_on_sequentially, rule homeomorphism_on_extension_sequentially_precise[of S T])
+using assms by auto
 
 proposition homeomorphism_on_extension_sequentially:
   fixes f::"'a::{first_countable_topology, t3_space} \<Rightarrow> 'b::{first_countable_topology, t3_space}"
@@ -573,6 +643,7 @@ lemma homeomorphism_on_UNIV_extension_sequentially:
           "closure S = UNIV"
   shows "homeomorphism_on UNIV f"
 apply (rule homeomorphism_on_extension_sequentially[of S]) using assms by auto
+
 
 subsubsection \<open>Proper spaces\<close>
 
@@ -732,21 +803,113 @@ proof (auto simp add: closed_sequential_limits)
   then show "\<exists>x\<in>C. dist x l \<le> f x" using \<open>c \<in> C\<close> by auto
 qed
 
+text \<open>congruence rule for continuity. The assumption that $f y = g y$ is necessary since \verb+at x+
+is the pointed neighborhood at $x$.\<close>
+
+lemma continuous_within_cong:
+  assumes "continuous (at y within S) f"
+          "eventually (\<lambda>x. f x = g x) (at y within S)"
+          "f y = g y"
+  shows "continuous (at y within S) g"
+using assms(1) assms(2) Lim_transform_eventually unfolding continuous_within assms(3) by auto
+
 subsection \<open>Material on ereal and ennreal\<close>
 
-text \<open>More additions to \verb+tendsto_intros+.\<close>
+text \<open>We add the simp rules that we needed to make all computations become more or less automatic.\<close>
+
+lemma ereal_of_real_of_ereal_iff [simp]:
+  "ereal(real_of_ereal x) = x  \<longleftrightarrow> x \<noteq> \<infinity> \<and> x \<noteq> - \<infinity>"
+  "x = ereal(real_of_ereal x)  \<longleftrightarrow> x \<noteq> \<infinity> \<and> x \<noteq> - \<infinity>"
+by (metis MInfty_neq_ereal(1) PInfty_neq_ereal(2) real_of_ereal.elims)+
+
+lemma inverse_eq_infinity_iff_eq_zero [simp]:
+  "1/(x::ereal) = \<infinity> \<longleftrightarrow> x = 0"
+by (simp add: divide_ereal_def)
+
+declare ereal_inverse_eq_0 [simp]
+declare ereal_0_gt_inverse [simp]
+declare ereal_inverse_le_0_iff [simp]
+declare ereal_divide_eq_0_iff [simp]
+declare ereal_mult_le_0_iff [simp]
+declare ereal_zero_le_0_iff [simp]
+declare ereal_mult_less_0_iff [simp]
+declare ereal_zero_less_0_iff [simp]
+declare ereal_uminus_eq_reorder [simp]
+declare ereal_minus_le_iff [simp]
+
+lemma ereal_inverse_noteq_minus_infinity [simp]:
+  "1/(x::ereal) \<noteq> -\<infinity>"
+by (simp add: divide_ereal_def)
+
+lemma ereal_inverse_positive_iff_nonneg_not_infinity [simp]:
+  "0 < 1/(x::ereal) \<longleftrightarrow> (x \<ge> 0 \<and> x \<noteq> \<infinity>)"
+by (cases x, auto simp add: one_ereal_def)
+
+lemma ereal_inverse_negative_iff_nonpos_not_infinity' [simp]:
+  "0 > inverse (x::ereal) \<longleftrightarrow> (x < 0 \<and> x \<noteq> -\<infinity>)"
+by (cases x, auto simp add: one_ereal_def)
+
+lemma ereal_divide_pos_iff [simp]:
+  "0 < x/(y::ereal) \<longleftrightarrow> (y \<noteq> \<infinity> \<and> y \<noteq> -\<infinity>) \<and> ((x > 0 \<and> y > 0) \<or> (x < 0 \<and> y < 0) \<or> (y = 0 \<and> x > 0))"
+unfolding divide_ereal_def by auto
+
+lemma ereal_divide_neg_iff [simp]:
+  "0 > x/(y::ereal) \<longleftrightarrow> (y \<noteq> \<infinity> \<and> y \<noteq> -\<infinity>) \<and> ((x > 0 \<and> y < 0) \<or> (x < 0 \<and> y > 0) \<or> (y = 0 \<and> x < 0))"
+unfolding divide_ereal_def by auto
+
+lemma ereal_distrib_left:
+  fixes a b c :: ereal
+  assumes "a \<noteq> \<infinity> \<or> b \<noteq> -\<infinity>"
+    and "a \<noteq> -\<infinity> \<or> b \<noteq> \<infinity>"
+    and "\<bar>c\<bar> \<noteq> \<infinity>"
+  shows "c * (a + b) = c * a + c * b"
+using assms
+by (cases rule: ereal3_cases[of a b c]) (simp_all add: field_simps)
+
+lemma ereal_distrib_minus_left:
+  fixes a b c :: ereal
+  assumes "a \<noteq> \<infinity> \<or> b \<noteq> \<infinity>"
+    and "a \<noteq> -\<infinity> \<or> b \<noteq> -\<infinity>"
+    and "\<bar>c\<bar> \<noteq> \<infinity>"
+  shows "c * (a - b) = c * a - c * b"
+using assms
+by (cases rule: ereal3_cases[of a b c]) (simp_all add: field_simps)
+
+lemma ereal_distrib_minus_right:
+  fixes a b c :: ereal
+  assumes "a \<noteq> \<infinity> \<or> b \<noteq> \<infinity>"
+    and "a \<noteq> -\<infinity> \<or> b \<noteq> -\<infinity>"
+    and "\<bar>c\<bar> \<noteq> \<infinity>"
+  shows "(a - b) * c = a * c - b * c"
+using assms
+by (cases rule: ereal3_cases[of a b c]) (simp_all add: field_simps)
+
+text \<open>The next one is missing close to its friend \verb+Liminf_ereal_mult_right+.\<close>
+
+lemma Liminf_ereal_mult_left:
+  assumes "F \<noteq> bot" "(c::real) \<ge> 0"
+    shows "Liminf F (\<lambda>n. ereal c * f n) = ereal c * Liminf F f"
+using Liminf_ereal_mult_right[OF assms] by (subst (1 2) mult.commute)
+
+
+text \<open>More additions to \verb+mono_intros+.\<close>
 
 lemma ereal_leq_imp_neg_leq [mono_intros]:
   fixes x y::ereal
   assumes "x \<le> y"
   shows "-y \<le> -x"
-  using assms by auto
+using assms by auto
 
 lemma ereal_le_imp_neg_le [mono_intros]:
   fixes x y::ereal
   assumes "x < y"
   shows "-y < -x"
-  using assms by auto
+using assms by auto
+
+declare ereal_mult_left_mono [mono_intros]
+declare ereal_mult_right_mono [mono_intros]
+declare ereal_mult_strict_right_mono [mono_intros]
+declare ereal_mult_strict_left_mono [mono_intros]
 
 text \<open>Monotonicity of basic inclusions.\<close>
 
@@ -765,12 +928,25 @@ by (simp add: e2ennreal_mono mono_def)
 lemma enn2ereal_mono [mono_intros]:
   assumes "x \<le> y"
   shows "enn2ereal x \<le> enn2ereal y"
-  using assms less_eq_ennreal.rep_eq by auto
+using assms less_eq_ennreal.rep_eq by auto
 
-lemma ereal_mono [mono_intros]:
+lemma ereal_mono:
+  "mono ereal"
+unfolding mono_def by auto
+
+lemma ereal_strict_mono:
+  "strict_mono ereal"
+unfolding strict_mono_def by auto
+
+lemma ereal_mono2 [mono_intros]:
   assumes "x \<le> y"
   shows "ereal x \<le> ereal y"
 by (simp add: assms)
+
+lemma ereal_strict_mono2 [mono_intros]:
+  assumes "x < y"
+  shows "ereal x < ereal y"
+using assms by auto
 
 lemma enn2ereal_a_minus_b_plus_b [mono_intros]:
   "enn2ereal a \<le> enn2ereal (a - b) + enn2ereal b"
@@ -781,9 +957,10 @@ text \<open>The next lemma follows from the same assertion in ereals.\<close>
 lemma enn2ereal_strict_mono [mono_intros]:
   assumes "x < y"
   shows "enn2ereal x < enn2ereal y"
-  using assms less_ennreal.rep_eq by auto
+using assms less_ennreal.rep_eq by auto
 
 declare ennreal_mult_strict_left_mono [mono_intros]
+declare ennreal_mult_strict_right_mono [mono_intros]
 
 lemma ennreal_ge_0 [mono_intros]:
   assumes "0 < x"
@@ -791,7 +968,7 @@ lemma ennreal_ge_0 [mono_intros]:
 by (simp add: assms)
 
 
-text \<open>The next lemma is true and useful in ereal, note that variants such as $a + b \leq c + d$
+text \<open>The next lemma is true and useful in ereal. Note that variants such as $a + b \leq c + d$
 implies $a-d \leq c -b$ are not true -- take $a = c = \infty$ and $b = d = 0$...\<close>
 
 lemma ereal_minus_le_minus_plus [mono_intros]:
@@ -812,6 +989,33 @@ lemma tendsto_ennreal_1 [tendsto_intros]:
 unfolding ennreal_1[symmetric] by (intro tendsto_intros assms)
 
 subsection \<open>Miscellaneous\<close>
+
+declare lim_1_over_n [tendsto_intros]
+declare lim_ln_over_n [tendsto_intros]
+
+lemma lim_log_over_n [tendsto_intros]:
+  "(\<lambda>n. log k n/n) \<longlonglongrightarrow> 0"
+proof -
+  have *: "log k n/n = (1/ln k) * (ln n / n)" for n
+    unfolding log_def by auto
+  have "(\<lambda>n. (1/ln k) * (ln n / n)) \<longlonglongrightarrow> (1/ln k) * 0"
+    by (intro tendsto_intros)
+  then show ?thesis
+    unfolding * by auto
+qed
+
+lemma lim_ceiling_over_n [tendsto_intros]:
+  assumes "(\<lambda>n. u n/n) \<longlonglongrightarrow> l"
+  shows "(\<lambda>n. ceiling(u n)/n) \<longlonglongrightarrow> l"
+proof (rule tendsto_sandwich[of "\<lambda>n. u n/n" _ _ "\<lambda>n. u n/n + 1/n"])
+  show "\<forall>\<^sub>F n in sequentially. u n / real n \<le> real_of_int \<lceil>u n\<rceil> / real n"
+    unfolding eventually_sequentially by (rule exI[of _ 1], auto simp add: divide_simps)
+  show "\<forall>\<^sub>F n in sequentially. real_of_int \<lceil>u n\<rceil> / real n \<le> u n / real n + 1 / real n"
+    unfolding eventually_sequentially by (rule exI[of _ 1], auto simp add: divide_simps)
+  have "(\<lambda>n. u n / real n + 1 / real n) \<longlonglongrightarrow> l + 0"
+    by (intro tendsto_intros assms)
+  then show "(\<lambda>n. u n / real n + 1 / real n) \<longlonglongrightarrow> l" by auto
+qed (simp add: assms)
 
 lemma power4_eq_xxxx:
   fixes x::"'a::monoid_mult"
@@ -893,6 +1097,43 @@ proof (rule order_antisym)
       by auto
   qed
   then show "min (Liminf F u) (Liminf F v) \<le> Liminf F (\<lambda>n. min (u n) (v n))"
+    using not_le_imp_less by blast
+qed
+
+text \<open>The Limsup of a maximum is the maximum of the Limsups.\<close>
+
+lemma Limsup_max_eq_max_Limsup:
+  fixes u::"'a \<Rightarrow> 'b::complete_linorder"
+  shows "Limsup F (\<lambda>n. max (u n) (v n)) = max (Limsup F u) (Limsup F v)"
+proof (rule order_antisym)
+  show "max (Limsup F u) (Limsup F v) \<le> Limsup F (\<lambda>n. max (u n) (v n))"
+    by (auto intro: Limsup_mono)
+
+  have "Limsup F (\<lambda>n. max (u n) (v n)) < e" if "max (Limsup F u) (Limsup F v) < e" for e
+  proof (cases "\<exists>t. max (Limsup F u) (Limsup F v) < t \<and> t < e")
+    case True
+    then obtain t where t: "t < e" "max (Limsup F u) (Limsup F v) < t" by auto
+    then have "Limsup F u < t" "Limsup F v < t" using that max_def by auto
+    then have *: "eventually (\<lambda>n. u n < t) F" "eventually (\<lambda>n. v n < t) F"
+      by (auto simp: Limsup_lessD)
+    have "eventually (\<lambda>n. max (u n) (v n) < t) F"
+      using eventually_mono[OF eventually_conj[OF *]] by auto
+    then have "Limsup F (\<lambda>n. max (u n) (v n)) \<le> t"
+      by (meson Limsup_obtain' not_le_imp_less order.asym)
+    then show ?thesis
+      using t by auto
+  next
+    case False
+    have "Limsup F u < e" "Limsup F v < e" using that max_def by auto
+    then have *: "eventually (\<lambda>n. u n < e) F" "eventually (\<lambda>n. v n < e) F"
+      by (auto simp: Limsup_lessD)
+    have "eventually (\<lambda>n. max (u n) (v n) \<le> max (Limsup F u) (Limsup F v)) F"
+      apply (rule eventually_mono[OF eventually_conj[OF *]])  using False not_le_imp_less by force
+    then have "Limsup F (\<lambda>n. max (u n) (v n)) \<le> max (Limsup F u) (Limsup F v)"
+      by (meson Limsup_obtain' leD leI)
+    then show ?thesis using that le_less_trans by blast
+  qed
+  then show "Limsup F (\<lambda>n. max (u n) (v n)) \<le> max (Limsup F u) (Limsup F v)"
     using not_le_imp_less by blast
 qed
 

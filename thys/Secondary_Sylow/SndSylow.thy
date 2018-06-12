@@ -7,6 +7,8 @@ theory SndSylow
 imports SubgroupConjugation
 begin
 
+no_notation Multiset.subset_mset  (infix "<#" 50) (*prevent a clash with the same syntax for l_coset*)
+
 section {* The Secondary Sylow Theorems *}
 
 subsection {* Preliminaries *}
@@ -245,7 +247,7 @@ lemma (in snd_sylow) restrict_locale:
 proof -
   from subgrp interpret groupP: group "G\<lparr>carrier := P\<rparr>" by (metis subgroup_imp_group)
   define k where "k = (card P) div (p ^ a)"
-  with card have cardP:"card P = p ^ a * k" by (auto simp: dvd_mult_div_cancel)
+  with card have cardP:"card P = p ^ a * k" by auto
   hence orderP:"order (G\<lparr>carrier := P\<rparr>) = p ^ a * k" unfolding order_def by simp
   from cardP subgrp order_G have "p ^ a * k dvd p ^ a * m" by (metis card_subgrp_dvd)
   hence "k dvd m"
