@@ -118,7 +118,7 @@ unfolding inorder_splay[of x t, symmetric]
 by(induction x t arbitrary: l a r rule: splay.induct)
   (auto simp: sorted_lems sorted_Cons_le sorted_snoc_le splay_Leaf_iff split: tree.splits)
 
-lemma inorder_update:
+lemma inorder_update_splay:
   "sorted1(inorder t) \<Longrightarrow> inorder(update x y t) = upd_list x y (inorder t)"
 using inorder_splay[of x t, symmetric] sorted_splay[of t x]
 by(auto simp: upd_list_simps upd_list_Cons upd_list_snoc neq_Leaf_iff split: tree.split)
@@ -132,7 +132,7 @@ lemma inorder_splay_maxD:
 by(induction t arbitrary: l a r rule: splay_max.induct)
   (auto simp: sorted_lems split: tree.splits if_splits)
 
-lemma inorder_delete:
+lemma inorder_delete_splay:
   "sorted1(inorder t) \<Longrightarrow> inorder(delete x t) = del_list x (inorder t)"
 using inorder_splay[of x t, symmetric] sorted_splay[of t x]
 by (auto simp: del_list_simps del_list_sorted_app delete_def del_list_notin_Cons inorder_splay_maxD
@@ -142,14 +142,14 @@ by (auto simp: del_list_simps del_list_sorted_app delete_def del_list_notin_Cons
 subsubsection "Overall Correctness"
 
 interpretation Map_by_Ordered
-where empty = Leaf and lookup = lookup and update = update
+where empty = empty and lookup = lookup and update = update
 and delete = delete and inorder = inorder and inv = "\<lambda>_. True"
 proof (standard, goal_cases)
   case 2 thus ?case by(simp add: lookup_eq)
 next
-  case 3 thus ?case by(simp add: inorder_update del: update.simps)
+  case 3 thus ?case by(simp add: inorder_update_splay del: update.simps)
 next
-  case 4 thus ?case by(simp add: inorder_delete)
-qed auto
+  case 4 thus ?case by(simp add: inorder_delete_splay)
+qed (auto simp: empty_def)
 
 end
