@@ -51,7 +51,7 @@ begin
       thus ?thesis using ex_un_null by (metis comp_null(2))
     qed
 
-    lemma unitI:
+    lemma ideI:
     assumes "Arr a" and "C.ide a"
     shows "ide a"
       unfolding ide_def
@@ -67,7 +67,7 @@ begin
         assume f: "Arr f"
         have "ide (C.dom f)"
           using f inclusion C.dom_in_domains C.has_domain_iff_arr C.domains_def
-                dom_closed unitI
+                dom_closed ideI
           by auto
         moreover have "f \<cdot> C.dom f \<noteq> null"
           using f comp_def dom_closed null_char inclusion C.comp_arr_dom by force
@@ -86,7 +86,7 @@ begin
         assume f: "Arr f"
         have "ide (C.cod f)"
           using f inclusion C.cod_in_codomains C.has_codomain_iff_arr C.codomains_def
-                cod_closed unitI
+                cod_closed ideI
           by auto
         moreover have "C.cod f \<cdot> f \<noteq> null"
           using f comp_def cod_closed null_char inclusion C.comp_cod_arr by force
@@ -95,7 +95,7 @@ begin
       qed
     qed
 
-    lemma arr_char [iff]:
+    lemma arr_char:
     shows "arr f \<longleftrightarrow> Arr f"
     proof
       show "Arr f \<Longrightarrow> arr f"
@@ -111,6 +111,16 @@ begin
           using comp_def by metis
       qed
     qed
+
+    lemma arrI [intro]:
+    assumes "Arr f"
+    shows "arr f"
+      using assms arr_char by simp
+
+    lemma arrE [elim]:
+    assumes "arr f"
+    shows "Arr f"
+      using assms arr_char by simp
 
     interpretation category comp
       using comp_def null_char inclusion comp_closed dom_closed cod_closed
@@ -149,10 +159,10 @@ begin
     shows "dom f = C.dom f"
     proof -
       have "ide (C.dom f)"
-        using assms unitI
+        using assms ideI
         by (meson C.ide_dom arr_char dom_closed inclusion)
       moreover have "f \<cdot> C.dom f \<noteq> null"
-        using assms inclusion comp_def null_char dom_closed not_arr_null C.comp_arr_dom
+        using assms inclusion comp_def null_char dom_closed not_arr_null C.comp_arr_dom arr_char
         by auto
       ultimately show ?thesis
         using dom_eqI ext by blast
@@ -160,17 +170,17 @@ begin
 
     lemma dom_char:
     shows "dom f = (if Arr f then C.dom f else C.null)"
-      using dom_simp dom_def arr_def by auto
+      using dom_simp dom_def arr_def arr_char by auto
 
     lemma cod_simp [simp]:
     assumes "arr f"
     shows "cod f = C.cod f"
     proof -
       have "ide (C.cod f)"
-        using assms unitI
+        using assms ideI
         by (meson C.ide_cod arr_char cod_closed inclusion)
       moreover have "C.cod f \<cdot> f \<noteq> null"
-        using assms inclusion comp_def null_char cod_closed not_arr_null C.comp_cod_arr
+        using assms inclusion comp_def null_char cod_closed not_arr_null C.comp_cod_arr arr_char
         by auto
       ultimately show ?thesis
         using cod_eqI ext by blast
@@ -181,7 +191,7 @@ begin
       using cod_simp cod_def arr_def by auto
 
     lemma in_hom_char:
-    shows "\<guillemotleft>a : b \<rightarrow> f\<guillemotright> \<longleftrightarrow> arr a \<and> arr b \<and> arr f \<and> \<guillemotleft>a : b \<rightarrow>\<^sub>C f\<guillemotright>"
+    shows "\<guillemotleft>f : a \<rightarrow> b\<guillemotright> \<longleftrightarrow> arr a \<and> arr b \<and> arr f \<and> \<guillemotleft>f : a \<rightarrow>\<^sub>C b\<guillemotright>"
       using inclusion arr_char cod_closed dom_closed
       by (metis C.arr_iff_in_hom C.in_homE arr_iff_in_hom cod_simp dom_simp in_homE)
 
@@ -196,17 +206,85 @@ begin
         using arr_char dom_char cod_char by (intro seqI, auto)
       show "seq g f \<Longrightarrow> arr f \<and> arr g \<and> C.seq g f"
         apply (elim seqE, auto)
-        using inclusion by (intro C.seqI, auto)
+        using inclusion arr_char by auto
     qed
 
     lemma comp_char:
     shows "g \<cdot> f = (if arr f \<and> arr g \<and> C.seq g f then g \<cdot>\<^sub>C f else C.null)"
-      using arr_char comp_def comp_closed C.ext by fastforce
+      using arr_char comp_def comp_closed C.ext by force
 
     lemma comp_simp:
     assumes "seq g f"
     shows "g \<cdot> f = g \<cdot>\<^sub>C f"
       using assms comp_char seq_char by metis
+
+    lemma inclusion_preserves_inverse:
+    assumes "inverse_arrows f g"
+    shows "C.inverse_arrows f g"
+      using assms ide_char comp_simp arr_char
+      by (intro C.inverse_arrowsI, auto)
+
+    lemma iso_char:
+    shows "iso f \<longleftrightarrow> C.iso f \<and> arr f \<and> arr (C.inv f)"
+    proof
+      assume f: "iso f"
+      show "C.iso f \<and> arr f \<and> arr (C.inv f)"
+      proof -
+        have 1: "inverse_arrows f (inv f)"
+          using f inv_is_inverse by auto
+        have 2: "C.inverse_arrows f (inv f)"
+          using 1 inclusion_preserves_inverse by blast
+        moreover have "arr (inv f)"
+          using 1 iso_is_arr iso_inv_iso by blast
+        moreover have "inv f = C.inv f"
+          using 1 2 C.inv_is_inverse C.inverse_arrow_unique by blast
+        ultimately show ?thesis using f 2 iso_is_arr by auto
+      qed
+      next
+      assume f: "C.iso f \<and> arr f \<and> arr (C.inv f)"
+      show "iso f"
+      proof
+        have 1: "C.inverse_arrows f (C.inv f)"
+          using f C.inv_is_inverse by blast
+        show "inverse_arrows f (C.inv f)"
+        proof
+          have 2: "C.inv f \<cdot> f = C.inv f \<cdot>\<^sub>C f \<and> f \<cdot> C.inv f = f \<cdot>\<^sub>C C.inv f"
+            using f 1 comp_char by fastforce
+          have 3: "antipar f (C.inv f)"
+            using f C.seqE seqI by simp
+          show "ide (C.inv f \<cdot> f)"
+            using 1 2 3 ide_char apply (elim C.inverse_arrowsE) by simp
+          show "ide (f \<cdot> C.inv f)"
+            using 1 2 3 ide_char apply (elim C.inverse_arrowsE) by simp
+        qed
+      qed
+    qed
+
+    lemma inv_char:
+    assumes "iso f"
+    shows "inv f = C.inv f"
+    proof -
+      have "C.inverse_arrows f (inv f)"
+      proof
+        have 1: "inverse_arrows f (inv f)"
+          using assms iso_char inv_is_inverse by blast
+        show "C.ide (inv f \<cdot>\<^sub>C f)"
+        proof -
+          have "inv f \<cdot> f = inv f \<cdot>\<^sub>C f"
+            using assms 1 inv_in_hom iso_char [of f] comp_char [of "inv f" f] seq_char by auto
+          thus ?thesis
+            using 1 ide_char arr_char by force
+        qed
+        show "C.ide (f \<cdot>\<^sub>C inv f)"
+        proof -
+          have "f \<cdot> inv f = f \<cdot>\<^sub>C inv f"
+            using assms 1 inv_in_hom iso_char [of f] comp_char [of f "inv f"] seq_char by auto
+          thus ?thesis
+            using 1 ide_char arr_char by force
+        qed
+      qed
+      thus ?thesis using C.inverse_arrow_unique C.inv_is_inverse by blast
+    qed
 
   end
 
@@ -240,7 +318,7 @@ begin
       proof -
         have "C.inverse_arrows f g"
           using g apply (elim inverse_arrowsE, intro C.inverse_arrowsI)
-          using comp_simp ide_char by auto
+          using comp_simp ide_char arr_char by auto
         thus ?thesis
           using f iso_is_arr by blast
       qed

@@ -334,6 +334,27 @@ begin
       using assms inv_is_inverse inverse_unique inverse_arrows_compose inverse_arrows_def
       by meson
 
+    lemma isomorphic_reflexive:
+    assumes "ide f"
+    shows "isomorphic f f"
+      unfolding isomorphic_def
+      using assms ide_is_iso ide_in_hom by blast
+
+    lemma isomorphic_symmetric:
+    assumes "isomorphic f g"
+    shows "isomorphic g f"
+      using assms iso_inv_iso inv_in_hom by blast
+
+    lemma isomorphic_transitive:
+    assumes "isomorphic f g" and "isomorphic g h"
+    shows "isomorphic f h"
+    proof -
+      obtain \<phi> where \<phi>: "iso \<phi> \<and> \<guillemotleft>\<phi> : f \<rightarrow> g\<guillemotright>" using assms isomorphic_def by blast
+      obtain \<psi> where \<psi>: "iso \<psi> \<and> \<guillemotleft>\<psi> : g \<rightarrow> h\<guillemotright>" using assms isomorphic_def by blast
+      have "iso (\<psi> \<cdot> \<phi>) \<and> \<guillemotleft>\<psi> \<cdot> \<phi> : f \<rightarrow> h\<guillemotright>" using \<phi> \<psi> isos_compose by blast
+      thus "isomorphic f h" using isomorphic_def by auto
+    qed
+
     text {*
       A section or retraction of an isomorphism is in fact an inverse.
     *}
