@@ -580,7 +580,7 @@ qed
 
 subsection \<open>The final correctness proof\<close>
 
-interpretation Set_by_Ordered
+interpretation S: Set_by_Ordered
 where empty = Leaf and isin = isin and insert = insert and delete = delete
 and inorder = inorder and inv = wbt
 proof (standard, goal_cases)
