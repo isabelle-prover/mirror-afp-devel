@@ -2028,8 +2028,7 @@ proof -
   also have "\<dots> = \<parallel>fs ! k\<parallel>\<^sup>2 / \<parallel>gso l\<parallel>\<^sup>2"
     by (auto simp add: field_simps power2_eq_square)
   also have "\<dots> =  \<parallel>fs ! k\<parallel>\<^sup>2 / (Gramian_determinant fs (Suc l) / Gramian_determinant fs l)"
-    apply(subst Gramian_determinant_div[symmetric])
-    using assms by auto
+    using assms by (subst Gramian_determinant_div[symmetric]) auto
   also have "\<dots> =  Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2 / Gramian_determinant fs (Suc l)"
     by (auto simp add: field_simps)
   also have "\<dots> \<le> Gramian_determinant fs l * \<parallel>fs ! k\<parallel>\<^sup>2 / 1"
@@ -2964,6 +2963,21 @@ lemma fs_int': "k < n \<Longrightarrow> f \<in> set fs \<Longrightarrow> f $ k \
   by (metis fs_int in_set_conv_nth)
 
 lemma
+  assumes "i < m"
+  shows fs_sq_norm_Ints: "\<parallel>fs ! i\<parallel>\<^sup>2 \<in> \<int>" and fs_sq_norm_ge_1: "1 \<le> \<parallel>fs ! i\<parallel>\<^sup>2"
+proof -
+  show fs_Ints: "\<parallel>fs ! i\<parallel>\<^sup>2 \<in> \<int>"
+    using assms fs_int' carrier_vecD fs_carrier
+    by (auto simp add: sq_norm_vec_as_cscalar_prod scalar_prod_def intro!: Ints_sum Ints_mult)
+  have "fs ! i \<noteq> 0\<^sub>v n"
+    using assms fs_carrier loc_assms nth_mem vs_zero_lin_dep by force
+  then have *: "0 \<noteq> \<parallel>fs ! i\<parallel>\<^sup>2"
+    using assms sq_norm_vec_eq_0 f_carrier by metis
+  show "1 \<le> \<parallel>fs ! i\<parallel>\<^sup>2"
+    by (rule Ints_cases[OF fs_Ints]) (use * sq_norm_vec_ge_0[of "fs ! i"] assms in auto)
+qed
+
+lemma
   assumes "set fs \<noteq> {}"
   shows A_Ints: "A \<in> \<int>" and A_1: "1 \<le> A"  
 proof -
@@ -2981,19 +2995,32 @@ proof -
 qed
 
 lemma A_mu:
-  assumes "i < m" "j < i"
+  assumes "i < m" "j \<le> i"
   shows "(\<mu> i j)\<^sup>2 \<le> A ^ (Suc j)"
 proof -
-  have "(\<mu> i j)\<^sup>2 \<le> Gramian_determinant fs j * \<parallel>fs ! i\<parallel>\<^sup>2"
-    using assms by (intro mu_bound_Gramian_determinant) auto
-  also have "Gramian_determinant fs j * \<parallel>fs ! i\<parallel>\<^sup>2 \<le> A ^ j * \<parallel>fs ! i\<parallel>\<^sup>2"
-    using assms A_d A_ge_0 by (intro mult_mono) fastforce+
-  also have "A ^ j * \<parallel>fs ! i\<parallel>\<^sup>2 \<le> A ^ j * A"
-    using assms A_fs A_ge_0 by (intro mult_mono) fastforce+
-  also have "\<dots> = A ^ (Suc j)"
-    by auto
-  finally show ?thesis
-    by simp
+  { assume ji: "j < i"
+    have "(\<mu> i j)\<^sup>2 \<le> Gramian_determinant fs j * \<parallel>fs ! i\<parallel>\<^sup>2"
+      using assms  ji by (intro mu_bound_Gramian_determinant) auto
+    also have "\<dots> \<le> A ^ j * \<parallel>fs ! i\<parallel>\<^sup>2"
+      using assms A_d A_ge_0 by (intro mult_mono) fastforce+
+    also have "A ^ j * \<parallel>fs ! i\<parallel>\<^sup>2 \<le> A ^ j * A"
+      using assms A_fs A_ge_0 by (intro mult_mono) fastforce+
+    also have "\<dots> = A ^ (Suc j)"
+      by auto
+    finally have ?thesis
+      by simp }
+  moreover 
+  { assume ji: "j = i"
+    have "(\<mu> i j)\<^sup>2 = 1"
+      using ji by (simp add: \<mu>.simps)
+    also have "\<dots> \<le> A"
+      using assms A_1 by fastforce
+    also have "\<dots> \<le> A ^ (Suc j)"
+      using assms A_1 by fastforce
+    finally have ?thesis
+      by simp }
+  ultimately show ?thesis
+    using assms by fastforce
 qed
 
 end
