@@ -33,7 +33,7 @@ proof (rule finsum_cong';rule?)
 qed
 
 lemma minus_nonzero: "x : carrier G \<Longrightarrow> x \<noteq> \<zero> \<Longrightarrow> \<ominus> x \<noteq> \<zero>"
-  using minus_minus by fastforce
+  using r_neg by force
 
 end
 

@@ -248,14 +248,14 @@ qed
 lemma (in group_hom) group_hom_isoI:
   assumes inj1: "\<forall>x\<in>carrier G. h x = \<one>\<^bsub>H\<^esub> \<longrightarrow> x = \<one>\<^bsub>G\<^esub>"
       and surj: "h ` (carrier G) = carrier H"
-  shows "h \<in> G \<cong> H"
+  shows "h \<in> iso G H"
 proof-
   from inj1
   have "inj_on h (carrier G)" 
     by(auto intro: hom_injI)
   hence bij: "bij_betw h (carrier G) (carrier H)"
     using surj  unfolding bij_betw_def by auto
-  thus "h \<in> G \<cong> H"
+  thus ?thesis
     unfolding iso_def by auto
 qed
 
@@ -265,7 +265,7 @@ lemma group_isoI[intro]:
       and inj1: "\<forall>x\<in>carrier G. h x = \<one>\<^bsub>H\<^esub> \<longrightarrow> x = \<one>\<^bsub>G\<^esub>"
       and surj: "h ` (carrier G) = carrier H"
       and hom: "\<forall>x\<in>carrier G. \<forall>y\<in>carrier G. h (x \<otimes>\<^bsub>G\<^esub> y) = h x \<otimes>\<^bsub>H\<^esub> h y"
-  shows "h \<in> G \<cong> H"
+  shows "h \<in> iso G H"
 proof-
   from surj
   have "h \<in> carrier G \<rightarrow> carrier H"

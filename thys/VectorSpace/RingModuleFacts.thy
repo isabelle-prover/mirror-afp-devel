@@ -69,20 +69,10 @@ lemma (in module) smult_assoc_simp:
 "[| a \<in> carrier R; b \<in> carrier R; x \<in> carrier M |] ==>
       a \<odot>\<^bsub>M\<^esub> (b \<odot>\<^bsub>M\<^esub> x) = (a \<otimes> b) \<odot>\<^bsub>M\<^esub> x "
 by (auto simp add: smult_assoc1)
-             
-(* Add to Group? *)
-lemma (in group) show_r_one [simp]:
-  "\<lbrakk>a\<in> carrier G; b\<in> carrier G\<rbrakk>\<Longrightarrow> (a \<otimes>\<^bsub>G\<^esub> b= a) = ( b= \<one>\<^bsub>G\<^esub>)"
-by (metis l_inv r_one transpose_inv)
-
-(* Add to Group? *)
-lemma (in group) show_l_one [simp]:
-  "\<lbrakk>a\<in> carrier G; b\<in> carrier G\<rbrakk>\<Longrightarrow> (a \<otimes>\<^bsub>G\<^esub> b= b) = ( a= \<one>\<^bsub>G\<^esub>)"
-  by (metis Units_eq Units_one_closed l_one right_cancel)
-
+  
 (* Add to Ring? *)
-lemmas (in abelian_group) show_r_zero=add.show_r_one
-lemmas (in abelian_group) show_l_zero=add.show_l_one
+lemmas (in abelian_group) show_r_zero= add.l_cancel_one
+lemmas (in abelian_group) show_l_zero= add.r_cancel_one
 
 text {*A nontrivial ring has $0\neq 1$. *}(*Add to Ring.*)
 lemma (in ring) nontrivial_ring [simp]:

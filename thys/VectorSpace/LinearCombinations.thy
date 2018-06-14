@@ -605,7 +605,6 @@ proof -
   have 1: "LinearCombinations.module.lincomb M (?a\<ominus>\<^bsub>(func_space A)\<^esub> ?b) A
     = LinearCombinations.module.lincomb M (\<lambda>x.  a x \<ominus>\<^bsub>R\<^esub> b x) A"
     apply (subst mh.M.M.minus_eq)
-      apply (auto simp del: mh.f_minus mh.f_add )
     apply (intro lincomb_cong, auto)
     apply (subst func_space_neg, auto)
     apply (simp add: restrict_def func_space_def)

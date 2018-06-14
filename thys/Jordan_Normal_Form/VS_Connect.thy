@@ -77,11 +77,12 @@ proof -
     have "\<ominus>\<^bsub>?r\<^esub> x = - x" unfolding a_inv_def m_inv_def
       by (rule the1_equality, rule ex1I[of _ "- x"], auto simp: minus_unique)
   } note ainv = this
-  thus "a_inv ?r = uminus" by (intro ext)
+  thus inv: "a_inv ?r = uminus" by (intro ext)
   {
     fix x y :: 'a
-    have "x \<ominus>\<^bsub>?r\<^esub> y = x - y" 
-      by (subst a_minus_def[of x ?r y], (auto)[2], subst ainv, auto)
+    have "x \<ominus>\<^bsub>?r\<^esub> y = x - y"
+      apply (subst a_minus_def)
+      using inv by auto
   }
   thus "(\<lambda>x y. x \<ominus>\<^bsub>?r\<^esub> y) = minus" by (intro ext)
 qed (auto simp: class_ring_simps)
@@ -309,8 +310,7 @@ begin
   by (auto simp: module_vec_simps class_ring_simps)
 
 lemma finsum_vec[simp]: "finsum_vec TYPE('a) n = finsum V"
-  unfolding finsum_vec_def monoid_vec_def
-  unfolding finsum_def by simp
+  by (force simp: finsum_vec_def monoid_vec_def finsum_def finprod_def)
 
 lemma finsum_scalar_prod_sum:
   assumes f: "f : U \<rightarrow> carrier_vec n"

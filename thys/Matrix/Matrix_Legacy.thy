@@ -1235,8 +1235,9 @@ lemma mat_abelian_group: "abelian_group (mat_ring n b :: (('a :: {ab_group_add,s
 proof -
   interpret abelian_monoid ?R by (rule mat_abelian_monoid)
   show ?thesis
-  by (unfold_locales, rule group.Units, insert mat_group[of n n "()"],
-    simp add: mat_monoid_def mat_ring_def)
+    apply unfold_locales
+    apply (rule group.Units)
+    by (metis mat_group mat_monoid_def mat_ring_def partial_object.simps(1) ring.simps(1) ring.simps(2))
 qed
 
 lemma mat_semiring: "semiring (mat_ring n b :: (('a :: semiring_1) mat,'b)ring_scheme)"

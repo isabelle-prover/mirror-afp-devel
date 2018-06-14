@@ -2080,7 +2080,8 @@ proof -
                 from * index eqs False jk have i: "ii = Suc i" "i < i_end" by auto
                 from iblock(3)[OF ib_block `i_begin \<le> i` `i < i_end`] 
                 have Ai: "A $$ (i, ii) = 1" unfolding i .
-                have "ii < k" "i \<noteq> i_end - iter" using index * ** eqs by auto
+                have "ii < k" "i \<noteq> i_end - iter" using index * ** eqs
+                  by (blast, force)
                 hence Bi: "B $$ (i,ii) = 1" unfolding BB[OF `i < n` `ii < n`] Ai by auto
                 have "B $$ (i,ll) = A $$ (i,ll)" unfolding BB[OF `i < n` `ll < n`] 
                   using `i \<noteq> i_end - iter` `ll < k` by auto
