@@ -683,6 +683,17 @@ proof -
   with \<open>x = z\<close> show ?thesis by simp
 qed
 
+lemma rtrancl_Restr:
+  assumes "(x, y) \<in> (Restr r A)\<^sup>*"
+  shows "(x, y) \<in> r\<^sup>*"
+  using assms by induct auto
+
+lemma join_mono:
+  assumes "r \<subseteq> s"
+  shows "r\<^sup>\<down> \<subseteq> s\<^sup>\<down>"
+  using rtrancl_mono [OF assms] by (auto simp: join_def rtrancl_converse)
+
+
 lemma CR_iff_meet_subset_join: "CR r = (r\<^sup>\<up> \<subseteq> r\<^sup>\<down>)"
 proof
  assume "CR r" show "r\<^sup>\<up> \<subseteq> r\<^sup>\<down>"
@@ -2159,7 +2170,7 @@ lemma some_NF:
   using someI_ex [OF SN_reaches_NF [OF SN]]
   unfolding some_NF_def .
 
-lemma the_NF:
+lemma some_NF_WCR:
   assumes SN: "SN_on r {x}"
     and WCR: "WCR_on r {x. SN_on r {x}}"
     and steps: "(x, y) \<in> r\<^sup>*"
@@ -2174,7 +2185,7 @@ proof -
   from one some y show ?thesis by auto
 qed
 
-lemma the_NF_UNF:
+lemma some_NF_UNF:
   assumes UNF: "UNF r"
     and steps: "(x, y) \<in> r\<^sup>*"
     and NF: "y \<in> NF r"
@@ -2188,6 +2199,44 @@ proof -
   from pNF have nf: "(x, some_NF r x) \<in> r\<^sup>!" by auto
   from UNF [unfolded UNF_on_def] y nf show ?thesis by auto
 qed
+
+definition "the_NF A a = (THE b. (a, b) \<in> A\<^sup>!)"
+
+context
+  fixes A
+  assumes SN: "SN A" and CR: "CR A"
+begin
+lemma the_NF: "(a, the_NF A a) \<in> A\<^sup>!"
+proof -
+  obtain b where ab: "(a, b) \<in> A\<^sup>!" using SN by (meson SN_imp_WN UNIV_I WN_onE)
+  moreover have "(a, c) \<in> A\<^sup>! \<Longrightarrow> c = b" for c
+    using CR and ab by (meson CR_divergence_imp_join join_NF_imp_eq normalizability_E)
+  ultimately have "\<exists>!b. (a, b) \<in> A\<^sup>!" by blast
+  then show ?thesis unfolding the_NF_def by (rule theI')
+qed
+
+lemma the_NF_NF: "the_NF A a \<in> NF A"
+  using the_NF by (auto simp: normalizability_def)
+
+lemma the_NF_step:
+  assumes "(a, b) \<in> A"
+  shows "the_NF A a = the_NF A b"
+  using the_NF and assms
+  by (meson CR SN SN_imp_WN conversionI' r_into_rtrancl semi_complete_imp_conversionIff_same_NF semi_complete_onI)
+
+lemma the_NF_steps:
+  assumes "(a, b) \<in> A\<^sup>*"
+  shows "the_NF A a = the_NF A b"
+  using assms by (induct) (auto dest: the_NF_step)
+
+lemma the_NF_conv:
+  assumes "(a, b) \<in> A\<^sup>\<leftrightarrow>\<^sup>*"
+  shows "the_NF A a = the_NF A b"
+  using assms
+  by (meson CR WN_on_def the_NF semi_complete_imp_conversionIff_same_NF semi_complete_onI)
+
+end
+
 
 definition weak_diamond :: "'a rel \<Rightarrow> bool" ("w\<diamond>") where
   "w\<diamond> r \<longleftrightarrow> (r\<inverse> O r) - Id \<subseteq> (r O r\<inverse>)"
@@ -2755,5 +2804,32 @@ proof(intro equalityI)
   ultimately show "r \<subseteq> r O r" by auto
 qed
 
+lemma relcomp3_I:
+  assumes "(t, u) \<in> A" and "(s, t) \<in> B" and "(u, v) \<in> B"
+  shows "(s, v) \<in> B O A O B"
+  using assms by blast
+
+lemma relcomp3_transI:
+  assumes "trans B" and "(t, u) \<in> B O A O B" and "(s, t) \<in> B" and "(u, v) \<in> B"
+  shows "(s, v) \<in> B O A O B"
+using assms by (auto simp: trans_def intro: relcomp3_I)
+
+lemmas converse_inward = rtrancl_converse[symmetric] converse_Un converse_UNION converse_relcomp
+  converse_converse converse_Id
+
+lemma qc_SN_relto_iff:
+  assumes "r O s \<subseteq> s O (s \<union> r)\<^sup>*"
+  shows "SN (r\<^sup>* O s O r\<^sup>*) = SN s"
+proof -
+  from converse_mono [THEN iffD2 , OF assms]
+  have *: "s\<inverse> O r\<inverse> \<subseteq> (s\<inverse> \<union> r\<inverse>)\<^sup>* O s\<inverse>" unfolding converse_inward .
+  have "(r\<^sup>* O s O r\<^sup>*)\<inverse> = (r\<inverse>)\<^sup>* O s\<inverse> O (r\<inverse>)\<^sup>*"
+    by (simp only: converse_relcomp O_assoc rtrancl_converse)
+  with qc_wf_relto_iff [OF *]
+  show ?thesis by (simp add: SN_iff_wf)
+qed
+
+lemma conversion_empty [simp]: "conversion {} = Id"
+  by (auto simp: conversion_def)
 
 end

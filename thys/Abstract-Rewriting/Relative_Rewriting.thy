@@ -46,6 +46,8 @@ abbreviation SN_rel :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> bool" where
 abbreviation SN_rel_alt :: "'a rel \<Rightarrow> 'a rel \<Rightarrow> bool" where
   "SN_rel_alt R S \<equiv> SN_rel_on_alt R S UNIV"
 
+lemma relto_absorb [simp]: "relto R E O E\<^sup>* = relto R E" "E\<^sup>* O relto R E = relto R E"
+  using O_assoc and rtrancl_idemp_self_comp by (metis)+
 
 lemma steps_preserve_SN_on_relto:
   assumes steps: "(a, b) \<in> (R \<union> S)^*"
@@ -76,7 +78,7 @@ proof -
           show ?thesis using steps[of i] unfolding Suc by simp
         next
           case 0
-          from steps[of 0, unfolded f0] Ssteps have steps: "(a,f (Suc 0)) \<in> S^* O ?RS" by auto
+          from steps[of 0, unfolded f0] Ssteps have steps: "(a,f (Suc 0)) \<in> S^* O ?RS" by blast
           have "(a,f (Suc 0)) \<in> ?RS" 
             by (rule set_mp[OF _ steps], regexp)
           thus ?thesis unfolding 0 by simp
@@ -86,6 +88,11 @@ proof -
     qed
   qed
 qed
+
+lemma step_preserves_SN_on_relto: assumes st: "(s,t) \<in> R \<union> E"
+  and SN: "SN_on (relto R E) {s}"
+  shows "SN_on (relto R E) {t}"
+  by (rule steps_preserve_SN_on_relto[OF _ SN], insert st, auto)
 
 lemma SN_rel_on_imp_SN_rel_on_alt: "SN_rel_on R S T \<Longrightarrow> SN_rel_on_alt R S T"
 proof (unfold SN_rel_on_def)
@@ -610,7 +617,7 @@ proof
     obtain s t where gs: "(g i,s) \<in> Rw^*" and st: "(s,t) \<in> R" and tg: "(t, g (Suc i)) \<in> Rw^*" by auto
     from Rw[OF gs] R[OF st] Rw[OF tg]
     have step: "(?f i, ?f (Suc i)) \<in> A^* O (A^* O R' O A^*) O A^*"
-      by auto
+      by fast
     have "(?f i, ?f (Suc i)) \<in> A^* O R' O A^*"
       by (rule set_mp[OF _ step], regexp)
     hence "(h i, h (Suc i)) \<in> (relto R' Rw')^+"

@@ -187,7 +187,14 @@ where
 lemma isOK_choice [simp]:
   "isOK (choice []) \<longleftrightarrow> False"
   "isOK (choice (x # xs)) \<longleftrightarrow> isOK x \<or> isOK (choice xs)"
-by (auto simp: choice.simps isOK_def split: sum.splits)
+  by (auto simp: choice.simps isOK_def split: sum.splits)
+
+fun or_ok :: "'a check \<Rightarrow> 'a check \<Rightarrow> 'a check" where
+  "or_ok (Inl a) b = b" |
+  "or_ok (Inr a) b = Inr a" 
+
+lemma or_is_or: "isOK (or_ok a b) = isOK a \<or> isOK b" using or_ok.elims by blast
+
 
 end
 
