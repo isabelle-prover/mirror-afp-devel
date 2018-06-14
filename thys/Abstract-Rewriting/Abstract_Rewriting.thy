@@ -2766,5 +2766,15 @@ proof(intro equalityI)
   ultimately show "r \<subseteq> r O r" by auto
 qed
 
+lemma relcomp3_I:
+  assumes "(t, u) \<in> A" and "(s, t) \<in> B" and "(u, v) \<in> B"
+  shows "(s, v) \<in> B O A O B"
+  using assms by blast
+
+lemma relcomp3_transI:
+  assumes "trans B" and "(t, u) \<in> B O A O B" and "(s, t) \<in> B" and "(u, v) \<in> B"
+  shows "(s, v) \<in> B O A O B"
+using assms by (auto simp: trans_def intro: relcomp3_I)
+
 
 end

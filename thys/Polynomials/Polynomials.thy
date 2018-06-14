@@ -824,6 +824,12 @@ qed
 
 definition monom_vars where "monom_vars m = set (monom_vars_list m)" 
 
+lemma monom_vars_list_1[simp]: "monom_vars_list 1 = []" 
+  by transfer auto
+
+lemma monom_vars_list_var_monom[simp]: "monom_vars_list (var_monom x) = [x]" 
+  by transfer auto
+
 lemma monom_vars_eval_monom: 
   "(\<And> x. x \<in> monom_vars m \<Longrightarrow> f x = g x) \<Longrightarrow> eval_monom f m = eval_monom g m"
   by (rule eval_monom_vars_list, auto simp: monom_vars_def)
@@ -1808,6 +1814,9 @@ lemma univariate_power: assumes "univariate_power x m = Some n"
    "eval_monom \<alpha> m = ((\<alpha> x)^n)"
    "n \<ge> 1" 
   by (atomize(full), insert assms, transfer, auto dest: univariate_power_list)
+
+lemma univariate_power_var_monom: "univariate_power y (var_monom x) = (if x = y then Some 1 else None)"
+  by (transfer, auto)
 
 definition check_monom_strict_mono :: "bool \<Rightarrow> 'v :: linorder monom \<Rightarrow> 'v \<Rightarrow> bool" where
   "check_monom_strict_mono pm m v \<equiv> case univariate_power v m of
