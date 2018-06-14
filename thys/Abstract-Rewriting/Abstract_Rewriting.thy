@@ -683,6 +683,17 @@ proof -
   with \<open>x = z\<close> show ?thesis by simp
 qed
 
+lemma rtrancl_Restr:
+  assumes "(x, y) \<in> (Restr r A)\<^sup>*"
+  shows "(x, y) \<in> r\<^sup>*"
+  using assms by induct auto
+
+lemma join_mono:
+  assumes "r \<subseteq> s"
+  shows "r\<^sup>\<down> \<subseteq> s\<^sup>\<down>"
+  using rtrancl_mono [OF assms] by (auto simp: join_def rtrancl_converse)
+
+
 lemma CR_iff_meet_subset_join: "CR r = (r\<^sup>\<up> \<subseteq> r\<^sup>\<down>)"
 proof
  assume "CR r" show "r\<^sup>\<up> \<subseteq> r\<^sup>\<down>"

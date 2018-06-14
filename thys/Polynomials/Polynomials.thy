@@ -420,15 +420,23 @@ primrec eval_poly :: "('v :: linorder, 'a :: comm_semiring_1)assign \<Rightarrow
 | "eval_poly \<alpha> (mc # p) = eval_monomc \<alpha> mc + eval_poly \<alpha> p"
 
 
-fun poly_add :: "('v,'a)poly \<Rightarrow> ('v,'a :: semiring_0)poly \<Rightarrow> ('v,'a)poly" where 
+definition poly_const :: "'a :: zero \<Rightarrow> ('v :: linorder,'a)poly" where
+  "poly_const a = (if a = 0 then [] else [(1,a)])" 
+
+lemma poly_const[simp]: "eval_poly \<alpha> (poly_const a) = a" 
+  unfolding poly_const_def by auto
+
+lemma poly_const_inv: "poly_inv (poly_const a)" 
+  unfolding poly_const_def poly_inv_def by auto
+
+fun poly_add :: "('v,'a)poly \<Rightarrow> ('v,'a :: semiring_0)poly \<Rightarrow> ('v,'a)poly" where
   "poly_add [] q = q"
 | "poly_add ((m,c) # p) q = (case List.extract (\<lambda> mc. fst mc = m) q of
     None \<Rightarrow> (m,c) # poly_add p q
   | Some (q1,(_,d),q2) \<Rightarrow> if (c+d = 0) then poly_add p (q1 @ q2) else (m,c+d) # poly_add p (q1 @ q2))"
-
+ 
 lemma eval_poly_append[simp]: "eval_poly \<alpha> (mc1 @ mc2) = eval_poly \<alpha> mc1 + eval_poly \<alpha> mc2"
   by (induct mc1, auto simp: field_simps)
-
 
 abbreviation poly_monoms :: "('v,'a)poly \<Rightarrow> 'v monom set"
   where "poly_monoms p \<equiv> fst ` set p"
@@ -590,6 +598,15 @@ qed
 
 declare monom_mult_poly.simps[simp del]
 
+definition poly_minus :: "('v :: linorder,'a :: ring_1)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> ('v,'a)poly" where
+  "poly_minus f g = poly_add f (monom_mult_poly (1,-1) g)" 
+  
+lemma poly_minus[simp]: "eval_poly \<alpha> (poly_minus f g) = eval_poly \<alpha> f - eval_poly \<alpha> g" 
+  unfolding poly_minus_def by simp
+
+lemma poly_minus_inv: "poly_inv f \<Longrightarrow> poly_inv g \<Longrightarrow> poly_inv (poly_minus f g)" 
+  unfolding poly_minus_def by (intro poly_add_inv monom_mult_poly_inv)
+
 fun poly_mult :: "('v :: linorder, 'a :: semiring_0)poly \<Rightarrow> ('v,'a)poly \<Rightarrow> ('v,'a)poly" where 
   "poly_mult [] q = []"
 | "poly_mult (mc # p) q = poly_add (monom_mult_poly mc q) (poly_mult p q)"
@@ -621,6 +638,9 @@ definition one_poly :: "('v :: linorder,'a :: semiring_1)poly" where
   "one_poly \<equiv> [(1,1)]"
 
 lemma one_poly_inv: "poly_inv one_poly" unfolding one_poly_def poly_inv_def monom_inv_def by auto
+
+lemma poly_one[simp]: "eval_poly \<alpha> one_poly = 1" 
+  unfolding one_poly_def by simp
 
 lemma poly_zero_add: "poly_add zero_poly p = p" unfolding zero_poly_def using poly_add.simps by auto
 
