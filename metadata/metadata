@@ -1,10 +1,24 @@
+[Partial_Order_Reduction]
+title = Partial Order Reduction
+author = Julian Brunner <http://www21.in.tum.de/~brunnerj/>
+topic = Computer Science/Automata and Formal Languages
+date = 2018-06-05
+notify = brunnerj@in.tum.de
+abstract = 
+  This entry provides a formalization of the abstract theory of ample
+  set partial order reduction. The formalization includes transition
+  systems with actions, trace theory, as well as basics on finite,
+  infinite, and lazy sequences. We also provide a basic framework for
+  static analysis on concurrent systems with respect to the ample set
+  condition.
+
 [CakeML]
 title = CakeML
 author = Lars Hupel <https://www21.in.tum.de/~hupel/>
 topic = Computer Science/Programming Languages/Language Definitions
 date = 2018-03-12
 notify = hupel@in.tum.de
-abstract = 
+abstract =
   CakeML is a functional programming language with a proven-correct
   compiler and runtime system. This entry contains an unofficial version
   of the CakeML semantics that has been exported from the Lem
@@ -5061,10 +5075,10 @@ abstract =
 	All the results have been applied to improve CeTA, our certifier to validate termination and complexity proof certificates.
 	</p>
 extra-history =
-	Change history: 
+	Change history:
            [2016-01-07]: Added Schur-decomposition, Gram-Schmidt orthogonalization, uniqueness of Jordan normal forms<br/>
            [2018-04-17]: Integrated lemmas from deep-learning AFP-entry of Alexander Bentkamp
-notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at
+notify = rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
 
 [LTL_to_DRA]
 title = Converting Linear Temporal Logic to Deterministic (Generalized) Rabin Automata
@@ -5191,7 +5205,7 @@ extra-history =
 	Change history:
 	[2016-01-29]: Split off Polynomial Interpolation and Polynomial Factorization<br>
 	[2017-04-16]: Use certified Berlekamp-Zassenhaus factorization, use subresultant algorithm for computing resultants, improved bisection algorithm
-notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at, sebastiaan.joosten@uibk.ac.at
+notify = rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp, sebastiaan.joosten@uibk.ac.at
 
 [Polynomial_Interpolation]
 title = Polynomial Interpolation
@@ -5213,7 +5227,7 @@ abstract =
 	<p>
 	The development also contains improved code equations to speed up the
 	division of integers in target languages.
-notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at
+notify = rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
 
 [Polynomial_Factorization]
 title = Polynomial Factorization
@@ -5235,7 +5249,7 @@ abstract =
 	<p>
 	As side products, we developed division algorithms for polynomials over integral domains,
 	as well as primality-testing and prime-factorization algorithms for integers.
-notify = rene.thiemann@uibk.ac.at, akihisa.yamada@uibk.ac.at
+notify = rene.thiemann@uibk.ac.at, ayamada@trs.cm.is.nagoya-u.ac.jp
 
 [Perron_Frobenius]
 title = Perron-Frobenius Theorem for Spectral Radius Analysis
@@ -5265,7 +5279,7 @@ abstract =
 extra-history =
         Change history:
         [2017-10-18]:
-        added Perron-Frobenius theorem for irreducible matrices with generalization 
+        added Perron-Frobenius theorem for irreducible matrices with generalization
         (revision bda1f1ce8a1c)<br/>
         [2018-05-17]:
         prove conjecture of CPP'18 paper: Jordan blocks of spectral radius have maximum size
@@ -5796,16 +5810,16 @@ abstract =
 	semantic tree. It also uses the lifting lemma which lifts resolution
 	derivation steps from the ground world up to the first-order world.
 	The theory is presented in a paper in the Journal of Automated Reasoning
-	[Sch18] which extends a paper presented at the International Conference 
-	on Interactive Theorem Proving [Sch16]. An earlier version was 
-	presented in an MSc thesis [Sch15]. The formalization mostly follows 
-	textbooks by Ben-Ari [BA12], Chang and Lee [CL73], and Leitsch [Lei97]. 
-	The theory is part of the IsaFoL project [IsaFoL]. <p>  
-	<a name="Sch18"></a>[Sch18] Anders Schlichtkrull. "Formalization of the 
+	[Sch18] which extends a paper presented at the International Conference
+	on Interactive Theorem Proving [Sch16]. An earlier version was
+	presented in an MSc thesis [Sch15]. The formalization mostly follows
+	textbooks by Ben-Ari [BA12], Chang and Lee [CL73], and Leitsch [Lei97].
+	The theory is part of the IsaFoL project [IsaFoL]. <p>
+	<a name="Sch18"></a>[Sch18] Anders Schlichtkrull. "Formalization of the
 	Resolution Calculus for First-Order Logic". Journal of Automated
-	Reasoning, 2018.<br> <a name="Sch16"></a>[Sch16] Anders 
-	Schlichtkrull. "Formalization of the Resolution Calculus for First-Order 
-	Logic". In: ITP 2016. Vol. 9807. LNCS. Springer, 2016.<br> 
+	Reasoning, 2018.<br> <a name="Sch16"></a>[Sch16] Anders
+	Schlichtkrull. "Formalization of the Resolution Calculus for First-Order
+	Logic". In: ITP 2016. Vol. 9807. LNCS. Springer, 2016.<br>
 	<a name="Sch15"></a>[Sch15] Anders Schlichtkrull. <a href="https://people.compute.dtu.dk/andschl/Thesis.pdf">
 	"Formalization of Resolution Calculus in Isabelle"</a>.
 	<a href="https://people.compute.dtu.dk/andschl/Thesis.pdf">https://people.compute.dtu.dk/andschl/Thesis.pdf</a>.
@@ -5816,9 +5830,9 @@ abstract =
 	<i>Symbolic Logic and Mechanical Theorem Proving</i>. 1st. Academic
 	Press, Inc., 1973.<br> <a name="Lei97"></a>[Lei97] Alexander
 	Leitsch. <i>The Resolution Calculus</i>. Texts in theoretical computer
-	science. Springer, 1997.<br> <a name="IsaFoL"></a>[IsaFoL] 
+	science. Springer, 1997.<br> <a name="IsaFoL"></a>[IsaFoL]
 	IsaFoL authors. <a href="https://bitbucket.org/jasmin_blanchette/isafol">
-	IsaFoL: Isabelle Formalization of Logic</a>. 
+	IsaFoL: Isabelle Formalization of Logic</a>.
 	<a href="https://bitbucket.org/jasmin_blanchette/isafol">https://bitbucket.org/jasmin_blanchette/isafol</a>.
 extra-history =
 	Change history:
@@ -6393,7 +6407,7 @@ abstract =
 
 [DynamicArchitectures]
 title = Dynamic Architectures
-author = Diego Marmsoler<>
+author = Diego Marmsoler <http://marmsoler.com>
 topic = Computer Science/System Description Languages
 date = 2017-07-28
 notify = diego.marmsoler@tum.de
@@ -6420,6 +6434,9 @@ abstract =
   terms of coinductive lists. Thus, our theory is based on
   Lochbihler's formalization of coinductive lists. The theory may
   be applied to verify properties for dynamic architectures.
+extra-history =
+	Change history:
+		[2018-06-07]: adding logical operators to specify configuration traces (revision 09178f08f050)<br>
 
 [Stewart_Apollonius]
 title = Stewart's Theorem and Apollonius' Theorem
@@ -6638,7 +6655,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
 topic = Mathematics/Number Theory, Mathematics/Algebra
 date = 2017-12-21
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This article provides a formalisation of Dirichlet characters
   and Dirichlet <em>L</em>-functions including proofs of
   their basic properties &ndash; most notably their analyticity,
@@ -6693,7 +6710,7 @@ author = Sebastien Gouezel<>
 topic = Mathematics/Geometry
 date = 2018-01-16
 notify = sebastien.gouezel@univ-rennes1.fr
-abstract = 
+abstract =
   A geodesic metric space is Gromov hyperbolic if all its geodesic
   triangles are thin, i.e., every side is contained in a fixed
   thickening of the two other sides. While this definition looks
@@ -6734,7 +6751,7 @@ author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Andre
 topic = Tools
 date = 2017-12-19
 notify = jasmin.blanchette@gmail.com,uuomul@yahoo.com,traytel@inf.ethz.ch
-abstract = 
+abstract =
   This entry formalizes the closure property of bounded natural functors
   (BNFs) under seven operations. These operations and the corresponding
   proofs constitute the core of Isabelle's (co)datatype package. To
@@ -6769,7 +6786,7 @@ abstract =
 extra-history =
         Change history:
         [2018-04-16]: Integrated formal complexity bounds (Haslbeck, Thiemann)
-        [2018-05-25]: Integrated much faster LLL implementation based on integer arithmetic (Bottesch, Haslbeck, Thiemann) 
+        [2018-05-25]: Integrated much faster LLL implementation based on integer arithmetic (Bottesch, Haslbeck, Thiemann)
 
 [LLL_Factorization]
 title = A verified factorization algorithm for integer polynomials with polynomial complexity
@@ -6837,7 +6854,7 @@ abstract =
 
 [Architectural_Design_Patterns]
 title = A Theory of Architectural Design Patterns
-author = Diego Marmsoler<>
+author = Diego Marmsoler <http://marmsoler.com>
 topic = Computer Science/System Description Languages
 date = 2018-03-01
 notify = diego.marmsoler@tum.de
@@ -6982,7 +6999,7 @@ author = Angeliki Koutsoukou Argyraki <http://www.cl.cam.ac.uk/~ak2110/>, Wenda 
 topic = Mathematics/Number Theory, Mathematics/Analysis
 date = 2018-05-23
 notify = ak2110@cam.ac.uk, wl302@cam.ac.uk
-abstract = 
+abstract =
   We formalize with Isabelle/HOL a proof of a theorem by J. Hancl asserting the
   irrationality of the sum of a series consisting of rational numbers, built up
   by sequences that fulfill certain properties. Even though the criterion is a

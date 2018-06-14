@@ -273,7 +273,11 @@ next
   have id: "Suc j - 1 = j" by simp
   note mu = dmu_ij_state[OF impl Linv state j i]
   let ?c = "floor_ceil (\<mu> fs i j)" 
-  note floor = floor_ceil_num_denom_d\<mu>_d[OF LLL_invariant_fs_int[OF Linv] jj i]
+  interpret fs: fs_int' n m fs_init \<alpha> True i fs
+    by standard (use Linv in auto)
+  have floor: "floor_ceil_num_denom (d\<mu> fs i j) (d fs (Suc j)) = floor_ceil (fs.gs.\<mu> i j)"
+    using jj i inv unfolding d\<mu>_def d_def 
+    by (intro fs.floor_ceil_num_denom_d\<mu>_d[unfolded fs.d\<mu>_def fs.d_def]) auto
   from LLL_d_pos[OF Linv] j i have dj: "d fs (Suc j) > 0" by auto
   note updates = d_d\<mu>_add_row[OF Linv i j refl refl Suc(4)]
   note d_state = d_state[OF impl Linv state]
@@ -430,8 +434,12 @@ proof -
   let ?dmus = "dmu_ij_state state" 
   let ?ds = "d_state state" 
   note swap = basis_reduction_swap[OF inv i i0 cond refl, unfolded fs'']
-  note dmu = d\<mu>[OF LLL_invariant_fs_int[OF inv]]
-  note dmu' = d\<mu>[OF LLL_invariant_fs_int[OF swap(1)]]
+  interpret fs: fs_int' n m fs_init \<alpha> False i fs
+    by standard (use inv in auto)
+  interpret fs'': fs_int' n m fs_init \<alpha> False "i - 1" fs''
+    by standard (use swap in auto)
+  note dmu = fs.d\<mu>
+  note dmu' = fs''.d\<mu>
   note inv' = LLL_invD[OF inv]
   have fi: "fs ! (i - 1) = fs'' ! i" "fs ! i = fs'' ! (i - 1)" 
     unfolding fs''[symmetric] using inv'(6) i i0 by auto
@@ -551,8 +559,12 @@ proof (atomize(full), goal_cases)
     note d_state = d_state[OF impl inv state]
     from i have le: "i - 1 \<le> m" " i \<le> m" "Suc i \<le> m" by auto
     note d_state = d_state[OF le(1)] d_state[OF le(2)] d_state[OF le(3)]
-    note res = res[unfolded def id if_False Let_def state'' quot split d_state 
-        d_sq_norm_comparison[OF LLL_invariant_fs_int[OF inv] quot i False]] 
+    interpret fs'': fs_int' n m fs_init \<alpha> False i fs''
+      by standard (use inv in auto)
+    have "i < length fs''"
+      using LLL_invD[OF inv] i by auto
+    note d_sq_norm_comparison = fs''.d_sq_norm_comparison[OF quot this False]
+    note res = res[unfolded def id if_False Let_def state'' quot split d_state this] 
     note pos = LLL_d_pos[OF inv le(1)] LLL_d_pos[OF inv le(2)] quotient_of_denom_pos[OF quot]
     from False have sim1: "Suc (i - 1) = i" by simp
     let ?r = "rat_of_int" 
@@ -562,11 +574,15 @@ proof (atomize(full), goal_cases)
     proof (cases "?x \<le> ?y")
       case True
       from increase_i[OF inv i _ True] True res meas LLL_state_inc_state[OF impl inv state i] fs' fs''
-      show ?thesis by auto
+        d_def d_sq_norm_comparison fs''.d_def
+      show ?thesis
+        by auto
     next
       case gt: False
       hence gt: "?x > ?y" and id: "(?x \<le> ?y) = False" by auto
-      from res[unfolded id if_False] have "basis_reduction_swap m i state'' = (upw', i', state')" by auto
+      from res[unfolded id if_False] d_def d_sq_norm_comparison fs''.d_def id
+      have "basis_reduction_swap m i state'' = (upw', i', state')"
+        by auto
       from basis_reduction_swap[OF impl inv this gt i False fs'] show ?thesis using meas by auto
     qed
   qed
@@ -614,19 +630,24 @@ proof -
   define j where "j = m" 
   have jm: "j \<le> m" unfolding j_def by auto
   have 0: "0 = m - j" unfolding j_def by auto
+  interpret fs_init: fs_int_indpt n fs_init
+    by (standard) (use lin_dep in auto)
   have mu_repr: "mu_repr (IArray.of_fun (\<lambda>i. IArray.of_fun ((!!) (d\<mu>_impl fs_init !! i)) i) m) fs_init" 
-    unfolding d\<mu>_impl[OF lin_dep len] mu_repr_def 
-    by (intro iarray_cong', simp only: of_fun_nth)
+    unfolding fs_init.d\<mu>_impl mu_repr_def fs_init.d\<mu>_def d\<mu>_def fs_init.d_def d_def
+    apply(rule iarray_cong')
+    unfolding len[symmetric] by (auto simp add: nth_append)
   have d_repr: "d_repr (IArray.of_fun (\<lambda>i. if i = 0 then 1 else d\<mu>_impl fs_init !! (i - 1) !! (i - 1)) (Suc m)) fs_init" 
-    unfolding d\<mu>_impl[OF lin_dep len] d_repr_def 
+    unfolding fs_init.d\<mu>_impl d_repr_def 
   proof (intro iarray_cong', goal_cases)
     case (1 i)
     show ?case
     proof (cases "i = 0")
       case False
-      hence le: "i - 1 < m" "i - 1 < i" and id: "(i = 0) = False" "Suc (i - 1) = i" using 1 by auto
-      show ?thesis unfolding of_fun_nth[OF le(1)] of_fun_nth[OF le(2)] id if_False d\<mu>_def 
-        by (simp add: gs.\<mu>.simps)
+      hence le: "i - 1 < length fs_init" "i - 1 < i" and id: "(i = 0) = False" "Suc (i - 1) = i"
+        using 1 len by auto
+      show ?thesis unfolding of_fun_nth[OF le(1)] of_fun_nth[OF le(2)] id if_False 
+        d\<mu>_def fs_init.d\<mu>_def fs_init.d_def d_def
+        by (auto simp add: gs.\<mu>.simps )
     next
       case True
       have "d fs_init 0 = 1" unfolding d_def gs.Gramian_determinant_0 by simp

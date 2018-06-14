@@ -642,6 +642,48 @@ begin
     show ?thesis ..
   qed
 
+  lemma naturally_isomorphic_reflexive:
+  assumes "functor A B F"
+  shows "naturally_isomorphic A B F F"
+  proof -
+    interpret F: "functor" A B F using assms by auto
+    have "natural_isomorphism A B F F F" ..
+    thus ?thesis using naturally_isomorphic_def by blast
+  qed
+
+  lemma naturally_isomorphic_symmetric:
+  assumes "naturally_isomorphic A B F G"
+  shows "naturally_isomorphic A B G F"
+  proof -
+    obtain \<phi> where \<phi>: "natural_isomorphism A B F G \<phi>"
+      using assms naturally_isomorphic_def by blast
+    interpret \<phi>: natural_isomorphism A B F G \<phi>
+      using \<phi> by auto
+    interpret \<psi>: inverse_transformation A B F G \<phi> ..
+    have "natural_isomorphism A B G F \<psi>.map" ..
+    thus ?thesis using naturally_isomorphic_def by blast
+  qed
+
+  lemma naturally_isomorphic_transitive:
+  assumes "naturally_isomorphic A B F G"
+  and "naturally_isomorphic A B G H"
+  shows "naturally_isomorphic A B F H"
+  proof -
+    obtain \<phi> where \<phi>: "natural_isomorphism A B F G \<phi>"
+      using assms naturally_isomorphic_def by blast
+    interpret \<phi>: natural_isomorphism A B F G \<phi>
+      using \<phi> by auto
+    obtain \<psi> where \<psi>: "natural_isomorphism A B G H \<psi>"
+      using assms naturally_isomorphic_def by blast
+    interpret \<psi>: natural_isomorphism A B G H \<psi>
+      using \<psi> by auto
+    interpret \<psi>\<phi>: vertical_composite A B F G H \<phi> \<psi> ..
+    have "natural_isomorphism A B F H \<psi>\<phi>.map"
+      using \<phi> \<psi> natural_isomorphisms_compose by blast
+    thus ?thesis
+      using naturally_isomorphic_def by blast
+  qed
+
   section "Horizontal Composition"
 
   text{*

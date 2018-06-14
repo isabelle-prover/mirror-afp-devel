@@ -1,3 +1,5 @@
+section "Relative Frequency LTL"
+
 theory RF_LTL
   imports Main "HOL-Library.Sublist" Auxiliary DynamicArchitectures.Dynamic_Architecture_Calculus
 begin

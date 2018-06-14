@@ -80,6 +80,9 @@ definition is_root :: "'a \<Rightarrow> 'a tree \<Rightarrow> bool" where
 
 definition "isin t x = is_root x (splay x t)"
 
+definition empty :: "'a tree" where
+"empty = Leaf"
+
 hide_const (open) insert
 
 fun insert :: "'a::linorder \<Rightarrow> 'a tree \<Rightarrow> 'a tree" where
@@ -181,7 +184,7 @@ by (auto simp: del_list_simps del_list_sorted_app delete_def
 subsubsection "Overall Correctness"
 
 interpretation splay: Set_by_Ordered
-where empty = Leaf and isin = isin and insert = insert
+where empty = empty and isin = isin and insert = insert
 and delete = delete and inorder = inorder and inv = "\<lambda>_. True"
 proof (standard, goal_cases)
   case 2 thus ?case by(simp add: isin_set)
@@ -189,7 +192,7 @@ next
   case 3 thus ?case by(simp add: inorder_insert del: insert.simps)
 next
   case 4 thus ?case by(simp add: inorder_delete)
-qed auto
+qed (auto simp: empty_def)
 
 
 subsection "Functional Correctness Proofs II"

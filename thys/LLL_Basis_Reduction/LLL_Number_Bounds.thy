@@ -29,7 +29,12 @@ begin
 lemma LLL_mu_d_Z: assumes inv: "LLL_invariant upw i fs" 
   and j: "j \<le> ii" and ii: "ii < m" 
 shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
-  using assms fs_int_mu_d_Z LLL_invariant_fs_int by auto
+proof -
+  interpret fs: fs_int' n m fs_init \<alpha> upw i fs
+    by standard (use inv in auto)
+  show ?thesis
+    using assms fs.fs_int_mu_d_Z LLL_invD[OF inv] unfolding d_def fs.d_def by auto
+qed
 
 text \<open>maximum absolute value in initial basis\<close>
 definition "M = Max ({abs (fs_init ! i $ j) | i j. i < m \<and> j < n} \<union> {0})" 
@@ -42,6 +47,8 @@ definition f_bound :: "bool \<Rightarrow> nat \<Rightarrow> int vec list \<Right
 
 definition "\<mu>_bound_row fs bnd i = (\<forall> j \<le> i. (\<mu> fs i j)^2 \<le> bnd)" 
 abbreviation "\<mu>_bound_row_inner fs i j \<equiv> \<mu>_bound_row fs (4 ^ (m - 1 - j) * of_nat (A ^ (m - 1) * m)) i"  
+
+definition "d\<mu> gs i j = int_of_rat (of_int (d gs (Suc j)) * \<mu> gs i j)" 
 
 definition "LLL_bound_invariant outside upw i fs =
   (LLL_invariant upw i fs \<and> f_bound outside i fs \<and> g_bound fs)" 
@@ -112,6 +119,9 @@ context fixes fs :: "int vec list"
   and len: "length fs = m" 
 begin
 
+interpretation fs: fs_int_indpt n fs
+  by (standard) (use lin_indep in simp)
+
 
 lemma sq_norm_fs_mu_g_bound: assumes i: "i < m" 
   and mu_bound: "\<mu>_bound_row fs bnd i" 
@@ -119,7 +129,7 @@ lemma sq_norm_fs_mu_g_bound: assumes i: "i < m"
 shows "of_int \<parallel>fs ! i\<parallel>\<^sup>2 \<le> of_nat (Suc i * A) * bnd" 
 proof -
   have "of_int \<parallel>fs ! i\<parallel>\<^sup>2 = (\<Sum>j\<leftarrow>[0..<Suc i]. (\<mu> fs i j)\<^sup>2 * \<parallel>gso fs j\<parallel>\<^sup>2)" 
-    by (rule sq_norm_fs_via_sum_mu_gso) (use assms lin_indep len in auto)
+    by (rule fs.sq_norm_fs_via_sum_mu_gso) (use assms lin_indep len in auto)
   also have "\<dots> \<le> (\<Sum>j\<leftarrow>[0..<Suc i]. bnd * of_nat A)" 
   proof (rule sum_list_ge_mono, force, unfold length_map length_upt,
     subst (1 2) nth_map_upt, force, goal_cases)
@@ -284,9 +294,9 @@ proof (rule bound_invI)
   from bound_invD[OF binv]
   have Linv: "LLL_invariant True i fs" (is ?g1) and fbnd: "f_bound True i fs" 
     and gbnd: "g_bound fs" by auto
+  interpret fs: fs_int' n m fs_init \<alpha> True i fs
+    by standard (use Linv in auto)
   note inv = LLL_invD[OF Linv]
-  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
-    by (standard) (use inv gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   show "LLL_invariant True i fs" by fact
   show fbndF: "f_bound False i fs" using f_bound_True_arbitrary[OF fbnd] .
   have A0: "A > 0" using LLL_inv_A_pos[OF Linv gbnd] i by auto
@@ -294,9 +304,9 @@ proof (rule bound_invI)
     fix j
     assume ji: "j < i" 
     have "(\<mu> fs i j)\<^sup>2 \<le> gs.Gramian_determinant (RAT fs) j * \<parallel>RAT fs ! i\<parallel>\<^sup>2"
-      using ji i inv by (intro gs1.mu_bound_Gramian_determinant) (auto)
+      using ji i inv by (intro fs.gs.mu_bound_Gramian_determinant) (auto)
     also have "gs.Gramian_determinant (RAT fs) j = of_int (d fs j)" unfolding d_def 
-      by (subst of_int_Gramian_determinant, insert ji i inv(2-), auto simp: set_conv_nth)
+      by (subst fs.of_int_Gramian_determinant, insert ji i inv(2-), auto simp: set_conv_nth)
     also have "\<parallel>RAT fs ! i\<parallel>\<^sup>2 = of_int \<parallel>fs ! i\<parallel>\<^sup>2" using i inv(2-) by (auto simp: sq_norm_of_int)
     also have "of_int (d fs j) * \<dots> \<le> rat_of_nat (A^j) * of_int \<parallel>fs ! i\<parallel>\<^sup>2"
       by (rule mult_right_mono, insert ji i d_approx[OF Linv gbnd, of j], auto)
@@ -318,7 +328,7 @@ proof (rule bound_invI)
       with mu_bound[of j] j show ?thesis by auto
     next
       case True
-      show ?thesis unfolding True gs1.\<mu>.simps using i A0 by auto
+      show ?thesis unfolding True fs.gs.\<mu>.simps using i A0 by auto
     qed
     also have "\<dots> \<le> 4 ^ (m - 1 - i) * of_nat (A ^ (m - 1) * m)" 
       by (rule mult_right_mono, auto)
@@ -741,6 +751,7 @@ qed auto
 context fixes outside upw k fs
   assumes binv: "LLL_bound_invariant outside upw k fs"
 begin
+
 lemma LLL_invariant_f_bnd: 
   assumes i: "i < m" and j: "j < n" 
 shows "\<bar>fs ! i $ j\<bar> \<le> f_bnd outside" 
@@ -793,8 +804,8 @@ proof -
   have inv: "LLL_invariant upw k fs" 
     and gbnd: "g_bound fs" by auto
   note * = LLL_invD[OF inv]
-  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
-    by (standard) (use * gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
+  interpret fs: fs_int' n m fs_init \<alpha> upw k fs
+    by standard (use inv in auto)
   note d_approx[OF inv gbnd i, unfolded d_def]  
   let ?r = "rat_of_int"
   have int: "(gs.Gramian_determinant (RAT fs) i \<cdot>\<^sub>v (gso fs i)) $v j \<in> \<int>"
@@ -803,7 +814,7 @@ proof -
       using that assms * by (intro vec_hom_Ints) (auto)
     then show ?thesis
       using * gs.gso_connect snd_gram_schmidt_int assms unfolding gs.lin_indpt_list_def
-      by (intro gs1.Gramian_determinant_times_gso_Ints) (auto)
+      by (intro fs.gs.Gramian_determinant_times_gso_Ints) (auto)
   qed
   have gsi: "gso fs i \<in> Rn" using *(5)[OF i] .
   have gs_sq: "\<bar>(gso fs i $ j)\<bar>\<^sup>2 \<le> rat_of_nat A"
@@ -821,7 +832,7 @@ proof -
     using gs_sq A0 unfolding max_def by auto
   finally have gs_bound: "\<bar>(gso fs i $ j)\<bar> \<le> of_nat A" .
   have "gs.Gramian_determinant (RAT fs) i = rat_of_int (gs.Gramian_determinant fs i)"
-    using  assms *(4-6) carrier_vecD nth_mem by (intro of_int_Gramian_determinant) (simp, blast)
+    using  assms *(4-6) carrier_vecD nth_mem by (intro fs.of_int_Gramian_determinant) (simp, blast)
   with int have "(of_int (d fs i) \<cdot>\<^sub>v gso fs i) $v j \<in> \<int>"
     unfolding d_def by simp
   also have "(of_int (d fs i) \<cdot>\<^sub>v gso fs i) $v j = of_int (d fs i) * (gso fs i $ j)"
@@ -886,7 +897,6 @@ next
      and gbnd: "g_bound fs" by auto
   from LLL_inv_A_pos[OF inv gbnd] m have A: "A > 0" by auto 
   let ?r = rat_of_int 
-  note fs_int = LLL_invariant_fs_int[OF inv]
   from d_approx_main[OF inv gbnd i m] 
   have "rat_of_int (d fs i) \<le> of_nat (A ^ i)" 
     by auto
@@ -909,9 +919,9 @@ proof -
      and gbnd: "g_bound fs" by auto
   from LLL_inv_A_pos[OF inv gbnd] i have A: "A > 0" by auto 
   note * = LLL_invD[OF inv]
+  interpret fs: fs_int' n m fs_init \<alpha> upw k fs
+    by standard (use inv in auto)
   let ?mu = "\<mu> fs i j" 
-  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
-    by (standard) (use * gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
   from j i have jm: "j < m" by auto
   from d_approx[OF inv gbnd jm]
   have dj: "d fs j \<le> int (A ^ j)" by linarith
@@ -926,13 +936,13 @@ proof -
     have 1: "of_int_hom.vec_hom (fs ! j) $v i \<in> \<int>" if "i < n" "j < length fs" for j i
       using * that by (metis vec_hom_Ints)
     then show ?thesis
-      by (intro gs1.mu_bound_Gramian_determinant[OF j], insert * j i, 
+      by (intro fs.gs.mu_bound_Gramian_determinant[OF j], insert * j i, 
           auto simp: set_conv_nth gs.lin_indpt_list_def)
   qed
   also have "sq_norm (RAT fs ! i) = of_int (sq_norm (fs ! i))" 
     unfolding sq_norm_of_int[symmetric] using *(6) i by auto
   also have "(gs.Gramian_determinant (RAT fs) j) = of_int (d fs j)" 
-    unfolding d_def by (rule of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)
+    unfolding d_def by (rule fs.of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)
   also have "\<dots> * of_int (sq_norm (fs ! i)) = of_int (d fs j * sq_norm (fs ! i))" by simp 
   also have "\<dots> \<le> of_int (int (A^j) * int ?num)" unfolding of_int_le_iff 
     by (rule mult_mono[OF dj sq_f_bnd], auto)
@@ -946,6 +956,8 @@ proof -
   show "abs ?mu \<le> of_nat ?bnd" by auto
 qed
 
+
+
 lemma LLL_invariant_d\<mu>_bound: 
   assumes i: "i < m" and j: "j < i"  
 shows "abs (d\<mu> fs i j) \<le> A ^ (2 * (m - 1)) * 2 ^ (m - 1) * m" 
@@ -954,17 +966,19 @@ proof -
   have inv: "LLL_invariant upw k fs"
      and fbnd: "f_bound outside k fs"
      and gbnd: "g_bound fs" by auto
+  interpret fs: fs_int' n m fs_init \<alpha> upw k fs
+    by standard (use inv in auto)
   from LLL_inv_A_pos[OF inv gbnd] i have A: "A > 0" by auto 
   from j i have jm: "j < m - 1" "j < m" by auto
   let ?r = rat_of_int 
-  note fs_int = LLL_invariant_fs_int[OF inv]
   from LLL_invariant_d_bound[of "Suc j"] jm
   have "abs (d fs (Suc j)) \<le> A ^ Suc j" by linarith
   also have "\<dots> \<le> A ^ (m - 1)" unfolding of_nat_le_iff
     by (rule pow_mono_exp, insert A jm, auto)
   finally have dsj: "abs (d fs (Suc j)) \<le> int A ^ (m - 1)" by auto
-  from d\<mu>[OF fs_int _ i] j
-  have "?r (abs (d\<mu> fs i j)) = abs (?r (d fs (Suc j)) * \<mu> fs i j)" by auto
+  from fs.d\<mu>[of j i] j i LLL_invD[OF inv]
+  have "?r (abs (d\<mu> fs i j)) = abs (?r (d fs (Suc j)) * \<mu> fs i j)"
+    unfolding d_def fs.d_def d\<mu>_def fs.d\<mu>_def by auto
   also have "\<dots> = ?r (abs (d fs (Suc j))) * abs (\<mu> fs i j)" by (simp add: abs_mult)
   also have "\<dots> \<le> ?r (int A ^ (m - 1)) * rat_of_nat (A ^ (m - 1) * 2 ^ (m - 1) * m)" 
     by (rule mult_mono[OF _ LLL_invariant_mu_abs_bound[OF i j]], insert dsj, linarith, auto)
@@ -986,8 +1000,8 @@ proof (atomize(full))
      and gbnd: "g_bound fs" by auto
   from LLL_inv_A_pos[OF inv gbnd] i have A: "A > 0" by auto 
   note * = LLL_invD[OF inv]
-  interpret gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
-    by (standard) (use * gs.lin_indpt_list_def in \<open>auto simp add: vec_hom_Ints\<close>)
+  interpret fs: fs_int' n m fs_init \<alpha> upw k fs
+    by standard (use inv in auto)
   let ?mu = "\<mu> fs i j" 
   let ?bnd = "A^(m - 1) * 2 ^ (m - 1) * m" 
   show "\<bar>num\<bar> \<le> A ^ (2 * m) * 2 ^ m * m \<and> \<bar>denom\<bar> \<le> A ^ m" 
@@ -1001,10 +1015,10 @@ proof (atomize(full))
     from LLL_invariant_mu_abs_bound[OF assms(1) j]
     have mu_bound: "abs ?mu \<le> of_nat ?bnd" by auto
     have "gs.Gramian_determinant (RAT fs) (Suc j) * ?mu \<in> \<int>" 
-      by (rule gs1.Gramian_determinant_mu_ints,
+      by (rule fs.gs.Gramian_determinant_mu_ints,
       insert j *(1,3-6) i, auto simp: set_conv_nth gs.lin_indpt_list_def vec_hom_Ints)
     also have "(gs.Gramian_determinant (RAT fs) (Suc j)) = of_int (d fs (Suc j))" 
-      unfolding d_def by (rule of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)
+      unfolding d_def by (rule fs.of_int_Gramian_determinant, insert i j *(3,6), auto simp: set_conv_nth)
     finally have ints: "of_int (d fs (Suc j)) * ?mu \<in> \<int>" .
     from LLL_invariant_d_bound[of "Suc j"] jm
     have d_j: "d fs (Suc j) \<le> A ^ m" by auto
@@ -1024,7 +1038,7 @@ proof (atomize(full))
     from denom num show ?thesis by blast
   next
     case False
-    hence "?mu = 0 \<or> ?mu = 1" unfolding gs1.\<mu>.simps by auto
+    hence "?mu = 0 \<or> ?mu = 1" unfolding fs.gs.\<mu>.simps by auto
     hence "quotient_of ?mu = (1,1) \<or> quotient_of ?mu = (0,1)" by auto
     from this[unfolded quot] show ?thesis using A i by (auto intro!: mult_ge_one)
   qed

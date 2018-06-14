@@ -222,10 +222,7 @@ begin
     a natural isomorphism from @{text F} to the identity functor.
   *}
 
-  locale endofunctor =
-    "functor" A A F
-  for A :: "'a comp"     (infixr "\<cdot>" 55)
-  and F :: "'a \<Rightarrow> 'a"
+  context endofunctor
   begin
 
     lemma isomorphic_to_identity_is_equivalence:

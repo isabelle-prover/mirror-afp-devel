@@ -157,17 +157,256 @@ proof -
 qed
 
 subsection "A Model of Dynamic Architectures"
-
+text {*
+  In the following we formalize dynamic architectures in terms of configuration traces, i.e., sequences of architecture configurations.
+  Moreover, we introduce definitions for operations to support the specification of configuration traces.
+*}
 typedecl cnf
 type_synonym trace = "nat \<Rightarrow> cnf"
 consts arch:: "trace set"
 
+subsubsection "Implication"
+  
+definition imp :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
+  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<longrightarrow>\<^sup>c" 10)
+  where "\<gamma> \<longrightarrow>\<^sup>c \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"
+
+declare imp_def[simp]
+
+lemma impI[intro!]:
+  fixes t n
+  assumes "\<gamma> t n \<Longrightarrow> \<gamma>' t n"
+  shows "(\<gamma> \<longrightarrow>\<^sup>c \<gamma>') t n" using assms by simp
+
+lemma impE[elim!]:
+  fixes t n
+  assumes "(\<gamma> \<longrightarrow>\<^sup>c \<gamma>') t n" and "\<gamma> t n" and "\<gamma>' t n \<Longrightarrow> \<gamma>'' t n"
+  shows "\<gamma>'' t n" using assms by simp
+
+subsubsection "Disjunction"  
+    
+definition disj :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
+  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<or>\<^sup>c" 15)
+  where "\<gamma> \<or>\<^sup>c \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<or> \<gamma>' t n"
+
+declare disj_def[simp]
+
+lemma disjI1[intro]:
+  assumes "\<gamma> t n"
+  shows "(\<gamma> \<or>\<^sup>c \<gamma>') t n" using assms by simp
+
+lemma disjI2[intro]:
+  assumes "\<gamma>' t n"
+  shows "(\<gamma> \<or>\<^sup>c \<gamma>') t n" using assms by simp
+
+lemma disjE[elim!]:
+  assumes "(\<gamma> \<or>\<^sup>c \<gamma>') t n"
+    and "\<gamma> t n \<Longrightarrow> \<gamma>'' t n"
+    and "\<gamma>' t n \<Longrightarrow> \<gamma>'' t n"
+  shows "\<gamma>'' t n" using assms by auto
+
+subsubsection "Conjunction"
+  
+definition conj :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
+  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<and>\<^sup>c" 20)
+  where "\<gamma> \<and>\<^sup>c \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"
+
+declare conj_def[simp]
+
+lemma conjI[intro!]:
+  fixes n
+  assumes "\<gamma> t n" and "\<gamma>' t n"
+  shows "(\<gamma> \<and>\<^sup>c \<gamma>') t n" using assms by simp
+
+lemma conjE[elim!]:
+  fixes n
+  assumes "(\<gamma> \<and>\<^sup>c \<gamma>') t n" and "\<gamma> t n \<Longrightarrow> \<gamma>' t n \<Longrightarrow> \<gamma>'' t n"
+  shows "\<gamma>'' t n" using assms by simp
+
+subsubsection "Negation"
+  
+definition not :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" ("\<not>\<^sup>c _" [19] 19)
+  where "\<not>\<^sup>c \<gamma> \<equiv> \<lambda> t n. \<not> \<gamma> t n"
+
+declare not_def[simp]
+
+lemma notI[intro!]:
+  assumes "\<gamma> t n \<Longrightarrow> False"
+  shows "(\<not>\<^sup>c \<gamma>) t n" using assms by auto
+
+lemma notE[elim!]:
+  assumes "(\<not>\<^sup>c \<gamma>) t n"
+    and "\<gamma> t n"
+  shows "\<gamma>' t n" using assms by simp
+
+subsubsection "Quantifiers"
+
+definition all :: "('a \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool))
+  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (binder "\<forall>\<^sub>c" 10)
+  where "all P \<equiv> \<lambda>t n. (\<forall>y. (P y t n))"
+
+declare all_def[simp]
+
+lemma allI[intro!]:
+  assumes "\<And>x. \<gamma> x t n"
+  shows "(\<forall>\<^sub>cx. \<gamma> x) t n" using assms by simp
+
+lemma allE[elim!]:
+  fixes n
+  assumes "(\<forall>\<^sub>cx. \<gamma> x) t n" and "\<gamma> x t n \<Longrightarrow> \<gamma>' t n"
+  shows "\<gamma>' t n" using assms by simp
+
+definition ex :: "('a \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool))
+  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (binder "\<exists>\<^sub>c" 10)
+  where "ex P \<equiv> \<lambda>t n. (\<exists>y. (P y t n))"
+
+declare ex_def[simp]
+
+lemma exI[intro!]:
+  assumes "\<gamma> x t n"
+  shows "(\<exists>\<^sub>cx. \<gamma> x) t n" using assms HOL.exI by simp
+
+lemma exE[elim!]:
+  assumes "(\<exists>\<^sub>cx. \<gamma> x) t n" and "\<And>x. \<gamma> x t n \<Longrightarrow> \<gamma>' t n"
+  shows "\<gamma>' t n" using assms HOL.exE by auto
+
+subsubsection "Atomic Assertions"
 text {*
-  In the following we formalize dynamic architectures in terms of configuration traces, i.e., sequences of architecture configurations.
+  First we provide rules for basic behavior assertions.
 *}
 
+definition ca :: "(cnf \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)"
+  where "ca \<phi> \<equiv> \<lambda> t n. \<phi> (t n)"
+
+lemma caI[intro]:
+  fixes n
+  assumes "\<phi> (t n)"
+  shows "(ca \<phi>) t n" using assms ca_def by simp
+
+lemma caE[elim]:
+  fixes n
+  assumes "(ca \<phi>) t n"
+  shows "\<phi> (t n)" using assms ca_def by simp
+
+subsubsection "Next Operator"
+
+definition nxt :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" ("\<circle>\<^sub>c(_)" 24)
+  where "\<circle>\<^sub>c(\<gamma>) \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<gamma> t (Suc n)"
+
+subsubsection "Eventually Operator"  
+
+definition evt :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" ("\<diamond>\<^sub>c(_)" 23)
+  where "\<diamond>\<^sub>c(\<gamma>) \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<exists>n'\<ge>n. \<gamma> t n'"
+
+subsubsection "Globally Operator"
+
+definition glob :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" ("\<box>\<^sub>c(_)" 22)
+  where "\<box>\<^sub>c(\<gamma>) \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<forall>n'\<ge>n. \<gamma> t n'"
+
+lemma globI[intro!]:
+  fixes n'
+  assumes "\<forall>n\<ge>n'. \<gamma> t n"
+  shows "(\<box>\<^sub>c(\<gamma>)) t n'" using assms glob_def by simp
+
+lemma globE[elim!]:
+  fixes n n'
+  assumes "(\<box>\<^sub>c(\<gamma>)) t n" and "n'\<ge>n"
+  shows "\<gamma> t n'" using assms glob_def by simp
+
+subsubsection "Until Operator"
+
+definition until :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
+  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<UU>\<^sub>c" 21)
+  where "\<gamma>' \<UU>\<^sub>c \<gamma> \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"
+
+lemma untilI[intro]:
+  fixes n
+  assumes "\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n'<n'' \<longrightarrow> \<gamma>' t n')"
+  shows "(\<gamma>' \<UU>\<^sub>c \<gamma>) t n" using assms until_def by simp
+
+lemma untilE[elim]:
+  fixes n
+  assumes "(\<gamma>' \<UU>\<^sub>c \<gamma>) t n"
+  shows "\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n'<n'' \<longrightarrow> \<gamma>' t n')" using assms until_def by simp
+
+subsubsection "Weak Until"
+
+definition wuntil :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
+  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<WW>\<^sub>c" 20)
+  where "\<gamma>' \<WW>\<^sub>c \<gamma> \<equiv> \<gamma>' \<UU>\<^sub>c \<gamma> \<or>\<^sup>c \<box>\<^sub>c(\<gamma>')"
+
+lemma wUntilI[intro]:
+  fixes n
+  assumes "(\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n'<n'' \<longrightarrow> \<gamma>' t n')) \<or> (\<forall>n'\<ge>n. \<gamma>' t n')"
+  shows "(\<gamma>' \<WW>\<^sub>c \<gamma>) t n" using assms wuntil_def by auto
+
+lemma wUntilE[elim]:
+  fixes n n'
+  assumes "(\<gamma>' \<WW>\<^sub>c \<gamma>) t n"
+  shows "(\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n'<n'' \<longrightarrow> \<gamma>' t n')) \<or> (\<forall>n'\<ge>n. \<gamma>' t n')"
+proof -
+  from assms have "(\<gamma>' \<UU>\<^sub>c \<gamma> \<or>\<^sup>c \<box>\<^sub>c(\<gamma>')) t n" using wuntil_def by simp
+  hence "(\<gamma>' \<UU>\<^sub>c \<gamma>) t n \<or> (\<box>\<^sub>c(\<gamma>')) t n" by simp
+  thus ?thesis
+  proof
+    assume "(\<gamma>' \<UU>\<^sub>c \<gamma>) t n"
+    hence "\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')" by auto
+    thus ?thesis by auto
+  next
+    assume "(\<box>\<^sub>c\<gamma>') t n"
+    hence "\<forall>n'\<ge>n. \<gamma>' t n'" by auto
+    thus ?thesis by auto
+  qed
+qed
+
+lemma wUntil_Glob:
+  assumes "(\<gamma>' \<WW>\<^sub>c \<gamma>) t n"
+    and "(\<box>\<^sub>c(\<gamma>' \<longrightarrow>\<^sup>c \<gamma>'')) t n"
+  shows "(\<gamma>'' \<WW>\<^sub>c \<gamma>) t n"
+proof
+  from assms(1) have "(\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')) \<or> (\<forall>n'\<ge>n. \<gamma>' t n')" using wUntilE by simp
+  thus "(\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>'' t n')) \<or> (\<forall>n'\<ge>n. \<gamma>'' t n')"
+  proof
+    assume "\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"
+    show "(\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>'' t n')) \<or> (\<forall>n'\<ge>n. \<gamma>'' t n')"
+    proof -
+      from \<open>\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')\<close> obtain n'' where "n''\<ge>n" and "\<gamma> t n''" and a1: "\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n'" by auto
+      moreover have "\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>'' t n'"
+      proof
+        fix n'
+        show "n'\<ge>n \<longrightarrow> n'< n'' \<longrightarrow> \<gamma>'' t n'"
+        proof (rule HOL.impI[OF HOL.impI])
+          assume "n'\<ge>n" and "n'<n''"
+          with assms(2) have "(\<gamma>' \<longrightarrow>\<^sup>c \<gamma>'') t n'" using globE by simp
+          hence "\<gamma>' t n' \<longrightarrow> \<gamma>'' t n'" using impE by auto
+          moreover from a1 \<open>n'\<ge>n\<close> \<open>n'<n''\<close> have "\<gamma>' t n'" by simp
+          ultimately show "\<gamma>'' t n'" by simp
+        qed
+      qed
+      ultimately show ?thesis by auto
+    qed
+  next
+    assume a1: "\<forall>n'\<ge>n. \<gamma>' t n'"
+    have "\<forall>n'\<ge>n. \<gamma>'' t n'"
+    proof
+      fix n'
+      show "n'\<ge>n \<longrightarrow> \<gamma>'' t n'"
+      proof
+        assume "n'\<ge>n"
+        with assms(2) have "(\<gamma>' \<longrightarrow>\<^sup>c \<gamma>'') t n'" using globE by simp
+        hence "\<gamma>' t n' \<longrightarrow> \<gamma>'' t n'" using impE by auto
+        moreover from a1 \<open>n'\<ge>n\<close> have "\<gamma>' t n'" by simp
+        ultimately show "\<gamma>'' t n'" by simp
+      qed
+    qed
+    thus "(\<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>'' t n')) \<or> (\<forall>n'\<ge>n. \<gamma>'' t n')" by simp
+  qed
+qed
+
+subsection "Dynamic Components"
 text {*
-  Our model is provided in terms of a locale over three type parameters:
+  To support the specification of patterns over dynamic architectures we provide a locale for dynamic components.
+  It takes the following type parameters:
   \begin{itemize}
     \item id: a type for component identifiers
     \item cmp: a type for components
@@ -789,7 +1028,7 @@ proof -
   hence "llength(\<pi>\<^bsub>c\<^esub>(ltake n' t)) < llength (\<pi>\<^bsub>c\<^esub>(ltake (llength t) t))" by (simp add: ltake_all)
   hence "\<langle>c #\<^bsub>enat n'\<^esub> t\<rangle> < \<langle>c #\<^bsub>llength t\<^esub> t\<rangle>" using nAct_def by simp
   moreover have "\<not> lfinite t \<or> llength t - 1 < llength t"
-  proof (rule Meson.imp_to_disjD[OF impI])
+  proof (rule Meson.imp_to_disjD[OF HOL.impI])
     assume "lfinite t"
     hence "llength t \<noteq> \<infinity>" by (simp add: llength_eq_infty_conv_lfinite)
     moreover have "llength t>0"
@@ -826,7 +1065,7 @@ proof -
         by (simp add: one_enat_def)
       moreover have "enat i < enat (Suc i)" by simp
       moreover have "\<forall>i'. (n' \<le> i' \<and> enat i'<enat (Suc i) \<and> i'<llength t \<and> \<parallel>c\<parallel>\<^bsub>lnth t i'\<^esub>) \<longrightarrow> (i' = i)"
-      proof (rule impI[THEN allI])
+      proof (rule HOL.impI[THEN HOL.allI])
         fix i' assume "n' \<le> i' \<and> enat i'<enat (Suc i) \<and> i'<llength t \<and> \<parallel>c\<parallel>\<^bsub>lnth t i'\<^esub>"
         with `\<nexists>k. n'\<le>k \<and> k<i \<and> k<llength t \<and> \<parallel>c\<parallel>\<^bsub>lnth t k\<^esub>` show "i'=i" by fastforce
       qed

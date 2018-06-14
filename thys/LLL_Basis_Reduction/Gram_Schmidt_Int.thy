@@ -180,6 +180,7 @@ begin
 abbreviation d where "d \<equiv> Gramian_determinant fs" 
 definition \<mu>' where "\<mu>' i j \<equiv> d (Suc j) * \<mu> i j" 
 
+
 fun \<sigma> where 
   "\<sigma> 0 i j = 0" 
 | "\<sigma> (Suc l) i j = (d (Suc l) * \<sigma> l i j + \<mu>' i l * \<mu>' j l) / d l" 
@@ -446,15 +447,14 @@ proof -
 
 end (* gram_schmidt_fs_int *)
 
-
-context fs_int (* TODO: think of locale structure: Gram_Schmidt should not depend on LLL,
-	  but currently d\<mu> is defined in locale LLL *)
+context cof_vec_space
 begin
 
-context
-  fixes fs :: "int vec list"
-  assumes indep: "lin_indep fs" 
-	  and len: "length fs = m" 
+
+end
+
+
+context fs_int_indpt
 begin
 
 fun \<sigma>s and \<mu>' where 
@@ -464,87 +464,76 @@ fun \<sigma>s and \<mu>' where
 
 declare \<mu>'.simps[simp del]
 
-interpretation gs1: gram_schmidt_fs_int n "TYPE(rat)" "RAT fs"
-  by (standard)
-    (use indep len gs.lin_indpt_list_def fs_intD(4) fs_int_def indep in
-      \<open>auto intro!: vec_hom_Ints simp add: gs.lin_indpt_list_def \<close>)
-
-lemma lenR: "length (RAT fs) = m" using len by auto
-lemma fs_carrier: "set fs \<subseteq> carrier_vec n" using indep unfolding gs.lin_indpt_list_def by auto
-
-lemmas gs_\<sigma>_simps = gs1.\<sigma>_via_\<mu>'
-lemmas gs_\<mu>'_simps = gs1.\<mu>'_via_\<sigma>
-
-lemma \<sigma>s_\<mu>': "l < j \<Longrightarrow> j \<le> i \<Longrightarrow> i < m \<Longrightarrow> of_int (\<sigma>s l i j) = gs1.\<sigma> (Suc l) i j" 
-  "i < m \<Longrightarrow> j \<le> i \<Longrightarrow> of_int (\<mu>' i j) = gs1.\<mu>' i j" 
+lemma \<sigma>s_\<mu>': "l < j \<Longrightarrow> j \<le> i \<Longrightarrow> i < m \<Longrightarrow> of_int (\<sigma>s l i j) = gs.\<sigma> (Suc l) i j" 
+  "i < m \<Longrightarrow> j \<le> i \<Longrightarrow> of_int (\<mu>'  i j) = gs.\<mu>' i j" 
 proof (induct l i j and i j rule: \<sigma>s_\<mu>'.induct)
-  case (1 i j)
-  thus ?case by (simp add: gs_\<sigma>_simps)
+  case (1 i j)                          
+  thus ?case by (simp add: gs.\<sigma>.simps)
 next
   case (2 l i j)
-  have l: "Suc l < j" by fact
-  have j: "j \<le> i" by fact
-  have i: "i < m" by fact
-  from l j i have jm: "j < m" and lm: "Suc l < m" and lj: "l < j" and li: "Suc l \<le> i" 
-    and lj': "Suc l \<le> j" and lm': "l < m" and sslm: "Suc (Suc l) \<le> m" by auto
-  note IH1 = 2(1)[OF lm le_refl]
-  note IH2 = 2(2)[OF lj j i]
-  note IH3 = 2(3)[OF i li]
-  note IH4 = 2(4)[OF jm lj']
-  note IH5 = 2(5)[OF lm' le_refl]
-  note IHs = IH1 IH2 IH3 IH4 IH5
-  have id: "(Suc l = 0) = False" "(Suc l - 1) = l" by auto
-  have "gs1.\<sigma>(Suc (Suc l)) i j \<in> \<int>" 
-    by (rule gs1.\<sigma>_integer, insert l j i fs_carrier len, auto)
-  thus ?case unfolding gs_\<sigma>_simps[of "Suc l"] id if_False \<sigma>s.simps
-	    IHs[symmetric] of_int_mult[symmetric] of_int_add[symmetric]
-	  by (rule exact_division)
+  have "gs.\<sigma>(Suc (Suc l)) i j \<in> \<int>" 
+    by (rule gs.\<sigma>_integer, insert 2 gs.fs_carrier, auto)
+  then have "rat_of_int (\<mu>' (Suc l) (Suc l) * \<sigma>s l i j + \<mu>' i (Suc l) * \<mu>' j (Suc l)) / rat_of_int (\<mu>' l l) \<in> \<int>"
+    using 2 gs.d_Suc by (auto)
+  then have "rat_of_int (\<sigma>s (Suc l) i j) = 
+             of_int (\<mu>' (Suc l) (Suc l) * \<sigma>s l i j + \<mu>' i (Suc l) * \<mu>' j (Suc l)) / of_int (\<mu>' l l)"
+    by (subst \<sigma>s.simps, subst exact_division) auto
+  also have "\<dots> = gs.\<sigma> (Suc (Suc l)) i j"
+    using 2 gs.d_Suc by (auto)
+  finally show ?case
+    by simp
 next
   case (3 i j)
-  note i = 3(3)
-  note j = 3(4)
+  have "dim_vec (fs ! j) = dim_vec (fs ! i)"
+    using 3 f_carrier[of i] f_carrier[of j] carrier_vec_def by auto
+  then have "of_int_hom.vec_hom (fs ! i) $ k = rat_of_int (fs ! i $ k)" if "k < dim_vec (fs ! j)" for k
+    using that by simp
+  then have *: "of_int_hom.vec_hom (fs ! i) \<bullet> of_int_hom.vec_hom (fs ! j) = rat_of_int (fs ! i \<bullet> fs ! j)"
+    using 3 by (auto simp add: scalar_prod_def)
   show ?case
   proof (cases "j = 0")
     case True
-    then have "x < dim_vec (fs ! 0) \<Longrightarrow> rat_of_int (fs ! i $v x) = of_int_hom.vec_hom (fs ! i) $v x" for x
-      using 3 gs1.f_dim lenR by auto
-    then show ?thesis
-      by (subst gs_\<mu>'_simps, insert i j True fs_carrier len, auto simp: scalar_prod_def \<mu>'.simps)
+    have "dim_vec (fs ! 0) = dim_vec (fs ! i)"
+      using 3 f_carrier[of i] f_carrier[of 0] carrier_vec_def by fastforce
+    then have 1: "of_int_hom.vec_hom (fs ! i) $ k = rat_of_int (fs ! i $ k)" if "k < dim_vec (fs ! 0)" for k
+      using that by simp
+    have "(\<mu>' i j) = fs ! i \<bullet> fs ! j"
+      using True by (simp add: \<mu>'.simps)
+    also note *[symmetric]
+    also have  "of_int_hom.vec_hom (fs ! j) = map of_int_hom.vec_hom fs ! j"
+      using 3 by auto
+    finally show ?thesis
+      using 3 True by (subst gs.\<mu>'_via_\<sigma>) (auto)
   next
     case False
-    with i j have jm: "j - 1 < m" and jj: "j - 1 < j" by auto
-    from i have im: "i < length (RAT fs)"
-      using len by auto
-    note IH1 = 3(1)[OF False jm le_refl]
-    note IH2 = 3(2)[OF False jj j i]
-    from False have id: "(j = 0) = False" "Suc (j - 1) = j" by auto
-    have "x < dim_vec (fs ! j) \<Longrightarrow> rat_of_int (fs ! i $v x) = of_int_hom.vec_hom (fs ! i) $v x" for x
-      using 3 gs1.f_dim lenR by auto
-	  then show ?thesis 
-	    unfolding gs_\<mu>'_simps[OF j im] 
-	    unfolding \<mu>'.simps[of i j] of_int_mult of_int_diff id if_False
-	    unfolding IH1 IH2 id
-	    using i j len fs_carrier
-	    by (auto simp: scalar_prod_def)
+    then have "gs.\<mu>' i j = gs.\<mu>' (j - Suc 0) (j - Suc 0) * (rat_of_int (fs ! i \<bullet> fs ! j)) - gs.\<sigma> j i j"
+      using * False 3 by (subst gs.\<mu>'_via_\<sigma>) (auto)
+    then show ?thesis
+      using False 3 by (subst \<mu>'.simps) (auto)
 	qed
-qed  
+qed
+
 
 lemma \<mu>': assumes "i < m" "j \<le> i"
-  shows "\<mu>' i j = d\<mu> fs i j"
+  shows "\<mu>' i j = d\<mu> i j"
     "j = i \<Longrightarrow> \<mu>' i j = d fs (Suc i)"  
 proof -
   let ?r = rat_of_int
-  have "fs_int fs"
-    unfolding fs_int_def using indep len by simp
-  note d\<mu> = d\<mu>[OF this assms(2,1)]
-  have "?r (\<mu>' i j) = gs1.\<mu>'  i j" by (rule \<sigma>s_\<mu>'(2)[OF assms])
-  also have "\<dots> = ?r (d\<mu> fs i j)" unfolding gs1.\<mu>'_def d\<mu>
-    by (subst of_int_Gramian_determinant, insert assms len lenR fs_carrier, auto simp: d_def subset_eq)
-  finally show 1: "\<mu>' i j = d\<mu> fs i j" by simp
-  assume j: "j = i" 
-  have "?r (\<mu>' i j) = ?r (d\<mu> fs i j)" unfolding 1 ..
-  also have "\<dots> = ?r (d fs (Suc i))" unfolding d\<mu> unfolding j by (simp add: gs1.\<mu>.simps)
-  finally show "\<mu>' i j = d fs (Suc i)" by simp
+  note d\<mu> = d\<mu>[OF assms(2,1)]
+  have "?r (\<mu>' i j) = gs.\<mu>' i j" 
+    using \<sigma>s_\<mu>' assms by auto
+  also have "\<dots> = ?r (d\<mu> i j)"
+    unfolding gs.\<mu>'_def d\<mu>
+    by (subst of_int_Gramian_determinant, insert assms fs_carrier, auto simp: d_def subset_eq)
+  finally show 1: "\<mu>' i j = d\<mu> i j"
+    by simp
+  assume j: "j = i"
+  have "?r (\<mu>' i j) = ?r (d\<mu> i j)"
+    unfolding 1 ..
+  also have "\<dots> = ?r (d fs (Suc i))"
+    unfolding d\<mu> unfolding j by (simp add: gs.\<mu>.simps)
+  finally show "\<mu>' i j = d fs (Suc i)"
+    by simp
 qed
 
 lemma sigma_array: assumes mm: "mm \<le> m" and j: "j < mm" 
@@ -637,12 +626,11 @@ proof (induct mm rule: wf_induct[OF wf_measure[of "\<lambda> mm. m - mm"]])
   qed
 qed
 
-lemma d\<mu>_impl: "d\<mu>_impl fs = IArray.of_fun (\<lambda> i. IArray.of_fun (\<lambda> j. d\<mu> fs i j) (Suc i)) m" 
-  unfolding d\<mu>_impl_def len using dmu_array[of 0]
-  by (auto simp: \<mu>')
-end
+lemma d\<mu>_impl: "d\<mu>_impl fs = IArray.of_fun (\<lambda> i. IArray.of_fun (\<lambda> j. d\<mu> i j) (Suc i)) m" 
+  unfolding d\<mu>_impl_def using dmu_array[of 0] by (auto simp: \<mu>')
 
-end
+end (* fs_int_indpt *)
+
 
 
 context gram_schmidt_fs_int
@@ -681,6 +669,7 @@ proof -
   finally show ?thesis
     by simp
 qed
+
 
 end
 
