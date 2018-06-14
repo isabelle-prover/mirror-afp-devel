@@ -87,6 +87,11 @@ proof -
   qed
 qed
 
+lemma step_preserves_SN_on_relto: assumes st: "(s,t) \<in> R \<union> E"
+  and SN: "SN_on (relto R E) {s}"
+  shows "SN_on (relto R E) {t}"
+  by (rule steps_preserve_SN_on_relto[OF _ SN], insert st, auto)
+
 lemma SN_rel_on_imp_SN_rel_on_alt: "SN_rel_on R S T \<Longrightarrow> SN_rel_on_alt R S T"
 proof (unfold SN_rel_on_def)
   assume SN: "SN_on (relto R S) T"
