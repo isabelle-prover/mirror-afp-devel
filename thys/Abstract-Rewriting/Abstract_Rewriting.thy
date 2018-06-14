@@ -2776,5 +2776,22 @@ lemma relcomp3_transI:
   shows "(s, v) \<in> B O A O B"
 using assms by (auto simp: trans_def intro: relcomp3_I)
 
+lemmas converse_inward = rtrancl_converse[symmetric] converse_Un converse_UNION converse_relcomp
+  converse_converse converse_Id
+
+lemma qc_SN_relto_iff:
+  assumes "r O s \<subseteq> s O (s \<union> r)\<^sup>*"
+  shows "SN (r\<^sup>* O s O r\<^sup>*) = SN s"
+proof -
+  from converse_mono [THEN iffD2 , OF assms]
+  have *: "s\<inverse> O r\<inverse> \<subseteq> (s\<inverse> \<union> r\<inverse>)\<^sup>* O s\<inverse>" unfolding converse_inward .
+  have "(r\<^sup>* O s O r\<^sup>*)\<inverse> = (r\<inverse>)\<^sup>* O s\<inverse> O (r\<inverse>)\<^sup>*"
+    by (simp only: converse_relcomp O_assoc rtrancl_converse)
+  with qc_wf_relto_iff [OF *]
+  show ?thesis by (simp add: SN_iff_wf)
+qed
+
+lemma conversion_empty [simp]: "conversion {} = Id"
+  by (auto simp: conversion_def)
 
 end
