@@ -35,7 +35,7 @@ proof -
 qed
 
 lemma iso_order_closed:
-  assumes "\<phi> \<in> G \<cong> H"
+  assumes "\<phi> \<in> iso G H"
   shows "order G = order H"
 using assms
 unfolding order_def iso_def by (metis (no_types) bij_betw_same_card mem_Collect_eq)
@@ -104,7 +104,7 @@ text {* ... and thus of course by isomorphisms of groups. *}
 lemma iso_subgroup:
   assumes groups:"group G" "group F"
   assumes HG:"subgroup H G"
-  assumes \<phi>:"\<phi> \<in> G \<cong> F"
+  assumes \<phi>:"\<phi> \<in> iso G F"
   shows "subgroup (\<phi> ` H) F"
 proof -
   from groups \<phi> have "group_hom G F \<phi>" unfolding group_hom_def group_hom_axioms_def iso_def by auto
@@ -118,8 +118,8 @@ text {* An isomorphism restricts to an isomorphism of subgroups. *}
 lemma iso_restrict:
   assumes groups:"group G" "group F"
   assumes HG:"subgroup H G"
-  assumes \<phi>:"\<phi> \<in> G \<cong> F"
-  shows "(restrict \<phi> H) \<in> (G\<lparr>carrier := H\<rparr>) \<cong> (F\<lparr>carrier := \<phi> ` H\<rparr>)"
+  assumes \<phi>:"\<phi> \<in> iso G F"
+  shows "(restrict \<phi> H) \<in> iso (G\<lparr>carrier := H\<rparr>) (F\<lparr>carrier := \<phi> ` H\<rparr>)"
 unfolding iso_def hom_def bij_betw_def inj_on_def
 proof auto
   fix g h
@@ -186,7 +186,7 @@ text {* Being a normal subgroup is preserved by group isomorphisms. *}
 lemma iso_normal_subgroup:
   assumes groups:"group G" "group F"
   assumes HG:"H \<lhd> G"
-  assumes \<phi>:"\<phi> \<in> G \<cong> F"
+  assumes \<phi>:"\<phi> \<in> iso G F"
   shows "(\<phi> ` H) \<lhd> F"
 proof -
   from groups \<phi> have "group_hom G F \<phi>" unfolding group_hom_def group_hom_axioms_def iso_def by auto
@@ -208,7 +208,8 @@ lemma (in group) card_rcosets_triv:
   shows "card (rcosets {\<one>}) = order G"
 proof -
   have "subgroup {\<one>} G" by (rule triv_subgroup)
-  with assms have "card (rcosets {\<one>}) * card {\<one>} = order G" by (rule lagrange)
+  with assms have "card (rcosets {\<one>}) * card {\<one>} = order G"
+    using lagrange by blast
   thus ?thesis by (auto simp:card_Suc_eq)
 qed
 
@@ -601,7 +602,7 @@ lemma (in normal) flatten_set_group_mod:
 using factorgroup_is_group flatten_set_group_mod_inj by (rule flatten_set_group)
 
 lemma (in normal) flatten_set_group_mod_iso:
-  shows "(\<lambda>U. SOME g. g \<in> U) \<in> (G Mod H) \<cong> (flatten (G Mod H) (\<lambda>U. SOME g. g \<in> U))"
+  shows "(\<lambda>U. SOME g. g \<in> U) \<in> iso (G Mod H) (flatten (G Mod H) (\<lambda>U. SOME g. g \<in> U))"
 unfolding iso_def bij_betw_def
 apply (auto)
  apply (metis flatten_set_group_mod_inj factorgroup_is_group flatten_set_group_hom)

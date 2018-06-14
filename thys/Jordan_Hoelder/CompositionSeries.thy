@@ -284,7 +284,7 @@ along an isomorphism of groups. *}
 
 lemma (in normal_series) normal_series_iso:
   assumes H:"group H"
-  assumes iso:"\<Psi> \<in> G \<cong> H"
+  assumes iso:"\<Psi> \<in> iso G H"
   shows "normal_series H (map (image \<Psi>) \<GG>)"
 apply (simp add: normal_series_def normal_series_axioms_def)
 using H notempty apply simp
@@ -304,7 +304,7 @@ next
     fix i
     assume i:"Suc i < length \<GG>"
     hence norm:"\<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! Suc i\<rparr>" using normal by simp
-    moreover have "restrict \<Psi> (\<GG> ! Suc i) \<in> (G\<lparr>carrier := \<GG> ! Suc i\<rparr>) \<cong> H\<lparr>carrier := \<Psi> ` \<GG> ! Suc i\<rparr>"
+    moreover have "restrict \<Psi> (\<GG> ! Suc i) \<in> iso (G\<lparr>carrier := \<GG> ! Suc i\<rparr>) (H\<lparr>carrier := \<Psi> ` \<GG> ! Suc i\<rparr>)"
       by (metis H i is_group iso iso_restrict normal_series_subgroups)
     moreover have "group (G\<lparr>carrier := \<GG> ! Suc i\<rparr>)" by (metis i normal_series_subgroups subgroup_imp_group)
     moreover hence "subgroup (\<GG> ! Suc i) G" by (metis i normal_series_subgroups)
@@ -387,7 +387,7 @@ lemma (in composition_series) composition_series_simple_group:
 proof
   assume "\<GG> = [{\<one>}, carrier G]"
   with simplefact have "simple_group (G Mod {\<one>})" by auto
-  moreover have "the_elem \<in> (G Mod {\<one>}) \<cong> G" by (rule trivial_factor_iso)
+  moreover have "the_elem \<in> iso (G Mod {\<one>}) G" by (rule trivial_factor_iso)
   ultimately show "simple_group G" by (metis is_group simple_group.iso_simple)
 next
   assume simple:"simple_group G"
@@ -771,29 +771,33 @@ next
   ultimately have KGdisj:"\<GG> ! i <#> K \<inter> \<GG> ! (i + 1) = \<GG> ! i \<or> \<GG> ! i <#> K \<inter> \<GG> ! (i + 1) = \<GG> ! (i + 1)"
     using Gimax unfolding max_normal_subgroup_def max_normal_subgroup_axioms_def
     by auto
-  obtain \<phi> where "\<phi> \<in> (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (\<GG> ! i \<inter> (K \<inter> \<GG> ! (i + 1))))
-    \<cong> (G\<lparr>carrier := \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
+  obtain \<phi> where "\<phi> \<in> iso  (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (\<GG> ! i \<inter> (K \<inter> \<GG> ! (i + 1))))
+             (G\<lparr>carrier := \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
     using second_isomorphism_grp.normal_intersection_quotient_isom
     unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def
     using GiSi subKGSiGSi normal_imp_subgroup  by fastforce
-  hence "\<phi> \<in> (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! (i + 1) \<inter> \<GG> ! i))
-    \<cong> (G\<lparr>carrier := \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)" by (metis inf_commute)
-  hence "\<phi> \<in> (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> (\<GG> ! (i + 1) \<inter> \<GG> ! i)))
-    \<cong> (G\<lparr>carrier := \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)" by (metis Int_assoc)
-  hence "\<phi> \<in> (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))
-    \<cong> (G\<lparr>carrier := \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)" by (metis GiSi' Int_absorb2 Int_commute)
-  hence \<phi>:"\<phi> \<in> (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) \<cong> (G\<lparr>carrier := \<GG> ! i <#> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
+  hence "\<phi> \<in> iso  (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! (i + 1) \<inter> \<GG> ! i))
+                  (G\<lparr>carrier := \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)" 
+    by (metis inf_commute)
+  hence "\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> (\<GG> ! (i + 1) \<inter> \<GG> ! i)))
+                 (G\<lparr>carrier := \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
+    by (metis Int_assoc)
+  hence "\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))
+                 (G\<lparr>carrier := \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)" 
+    by (metis GiSi' Int_absorb2 Int_commute)
+  hence \<phi>:"\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))
+                   (G\<lparr>carrier := \<GG> ! i <#> K \<inter> \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"
     unfolding set_mult_def by auto
   from fstgoal have KGsiKGigroup:"group (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))" using normal.factorgroup_is_group by auto
   from KGdisj show "simple_group (G\<lparr>carrier := K, carrier := remdups_adj (map ((\<inter>) K) \<GG>) ! (j + 1)\<rparr> Mod remdups_adj (map ((\<inter>) K) \<GG>) ! j)"
   proof auto
     have groupGi:"group (G\<lparr>carrier := \<GG> ! i\<rparr>)" using i' normal_series_subgroups subgroup_imp_group by auto
     assume "\<GG> ! i <#> K \<inter> \<GG> ! Suc i = \<GG> ! i"
-    with \<phi> have "\<phi> \<in> (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) \<cong> (G\<lparr>carrier := \<GG> ! i\<rparr> Mod \<GG> ! i)" by auto
-    moreover obtain \<psi> where "\<psi> \<in> (G\<lparr>carrier := \<GG> ! i\<rparr> Mod (carrier (G\<lparr>carrier := \<GG> ! i\<rparr>))) \<cong> (G\<lparr>carrier := {\<one>\<^bsub>G\<lparr>carrier := \<GG> ! i\<rparr>\<^esub>}\<rparr>)"
+    with \<phi> have "\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) (G\<lparr>carrier := \<GG> ! i\<rparr> Mod \<GG> ! i)" by auto
+    moreover obtain \<psi> where "\<psi> \<in> iso (G\<lparr>carrier := \<GG> ! i\<rparr> Mod (carrier (G\<lparr>carrier := \<GG> ! i\<rparr>))) (G\<lparr>carrier := {\<one>\<^bsub>G\<lparr>carrier := \<GG> ! i\<rparr>\<^esub>}\<rparr>)"
       using group.self_factor_iso groupGi by force
-    ultimately obtain \<pi> where "\<pi> \<in> (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) \<cong> (G\<lparr>carrier := {\<one>}\<rparr>)"
-      using KGsiKGigroup group.iso_trans by fastforce
+    ultimately obtain \<pi> where "\<pi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) (G\<lparr>carrier := {\<one>}\<rparr>)"
+      using KGsiKGigroup group.iso_set_trans by fastforce
     hence "order (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = order (G\<lparr>carrier := {\<one>}\<rparr>)" by (metis iso_order_closed)
     hence "order (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = 1" unfolding order_def by auto
     hence "carrier (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) = {\<one>\<^bsub>G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)\<^esub>}"
@@ -806,9 +810,9 @@ next
     thus "simple_group (G\<lparr>carrier := remdups_adj (map ((\<inter>) K) \<GG>) ! Suc j\<rparr> Mod remdups_adj (map ((\<inter>) K) \<GG>) ! j)"..
   next
     assume "\<GG> ! i <#> K \<inter> \<GG> ! Suc i = \<GG> ! Suc i"
-    moreover with \<phi> have "\<phi> \<in> (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) \<cong> (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"by auto
-    then obtain \<phi>' where "\<phi>' \<in> (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i) \<cong> (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))"
-      using KGsiKGigroup group.iso_sym by auto
+    moreover with \<phi> have "\<phi> \<in> iso (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i)) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i)"by auto
+    then obtain \<phi>' where "\<phi>' \<in> iso (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr> Mod \<GG> ! i) (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))"
+      using KGsiKGigroup group.iso_set_sym by auto
     with Gisimple KGsiKGigroup have "simple_group (G\<lparr>carrier := K \<inter> \<GG> ! (i + 1)\<rparr> Mod (K \<inter> \<GG> ! i))" by (metis simple_group.iso_simple)
     with i show "simple_group (G\<lparr>carrier := remdups_adj (map ((\<inter>) K) \<GG>) ! Suc j\<rparr> Mod remdups_adj (map ((\<inter>) K) \<GG>) ! j)" by auto
   qed

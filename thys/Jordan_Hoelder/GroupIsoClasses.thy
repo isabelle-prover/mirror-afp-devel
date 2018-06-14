@@ -21,7 +21,7 @@ proof
 qed
 
 definition group_iso_rel :: "'a group \<Rightarrow> 'a group \<Rightarrow> bool"
-  where "group_iso_rel G H = (\<exists>\<phi>. \<phi> \<in> Rep_group G \<cong> Rep_group H)"
+  where "group_iso_rel G H = (\<exists>\<phi>. \<phi> \<in> iso (Rep_group G) (Rep_group H))"
 
 quotient_type 'a group_iso_class = "'a group" / group_iso_rel
   morphisms Rep_group_iso Abs_group_iso
@@ -30,15 +30,16 @@ proof (rule equivpI)
   proof (rule reflpI)
     fix G :: "'b group"
     show "group_iso_rel G G"
-    unfolding group_iso_rel_def using Rep_group iso_refl by auto
+      unfolding group_iso_rel_def using iso_set_refl by blast
   qed
 next
   show "symp group_iso_rel"
   proof (rule sympI)
     fix G H :: "'b group"
     assume "group_iso_rel G H"
-    then obtain \<phi> where "\<phi> \<in> Rep_group G \<cong> Rep_group H" unfolding group_iso_rel_def by auto
-    then obtain \<phi>' where "\<phi>' \<in> Rep_group H \<cong> Rep_group G" using group.iso_sym Rep_group by fastforce
+    then obtain \<phi> where "\<phi> \<in> iso (Rep_group G) (Rep_group H)" unfolding group_iso_rel_def by auto
+    then obtain \<phi>' where "\<phi>' \<in> iso (Rep_group H) (Rep_group G)" using group.iso_sym Rep_group
+      using group.iso_set_sym by blast
     thus "group_iso_rel H G" unfolding group_iso_rel_def by auto
   qed
 next
@@ -46,8 +47,10 @@ next
   proof (rule transpI)
     fix G H I :: "'b group"
     assume "group_iso_rel G H" "group_iso_rel H I"
-    then obtain \<phi> \<psi> where "\<phi> \<in> Rep_group G \<cong> Rep_group H" "\<psi> \<in> Rep_group H \<cong> Rep_group I" unfolding group_iso_rel_def by auto
-    then obtain \<pi> where "\<pi> \<in> Rep_group G \<cong> Rep_group I" using group.iso_trans Rep_group by fastforce
+    then obtain \<phi> \<psi> where "\<phi> \<in> iso (Rep_group G) (Rep_group H)" "\<psi> \<in> iso (Rep_group H) (Rep_group I)"
+      unfolding group_iso_rel_def by auto
+    then obtain \<pi> where "\<pi> \<in> iso (Rep_group G) (Rep_group I)" 
+      using Rep_group group.iso_set_trans by blast
     thus "group_iso_rel G I" unfolding group_iso_rel_def by auto
   qed
 qed
@@ -62,11 +65,11 @@ text {* Two isomorphic groups do indeed have the same isomorphism class: *}
 lemma iso_classes_iff:
   assumes "group G"
   assumes "group H"
-  shows "(\<exists>\<phi>. \<phi> \<in> G \<cong> H) = (group.iso_class G = group.iso_class H)"
+  shows "(\<exists>\<phi>. \<phi> \<in> iso G H) = (group.iso_class G = group.iso_class H)"
 proof -
   from assms(1,2) have groups:"group (monoid.truncate G)" "group (monoid.truncate H)"
     unfolding monoid.truncate_def group_def group_axioms_def Units_def monoid_def by auto
-  have "(\<exists>\<phi>. \<phi> \<in> G \<cong> H) = (\<exists>\<phi>. \<phi> \<in> (monoid.truncate G) \<cong> (monoid.truncate H))"
+  have "(\<exists>\<phi>. \<phi> \<in> iso G H) = (\<exists>\<phi>. \<phi> \<in> iso (monoid.truncate G) (monoid.truncate H))"
     unfolding iso_def hom_def monoid.truncate_def by auto
   also have "\<dots> = group_iso_rel (Abs_group (monoid.truncate G)) (Abs_group (monoid.truncate H))"
     unfolding group_iso_rel_def using groups group.Abs_group_inverse by (metis mem_Collect_eq)

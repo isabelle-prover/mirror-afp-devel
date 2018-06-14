@@ -53,14 +53,15 @@ text {* Being simple is a property that is preserved by isomorphisms. *}
 
 lemma (in simple_group) iso_simple:
   assumes H:"group H"
-  assumes iso:"\<phi> \<in> G \<cong> H"
+  assumes iso:"\<phi> \<in> iso G H"
   shows "simple_group H"
 unfolding simple_group_def simple_group_axioms_def using assms(1)
 proof (auto del: equalityI)
   from iso have "order G = order H" unfolding iso_def order_def using bij_betw_same_card by auto
   with order_gt_one show "Suc 0 < order H" by simp
 next
-  have inv_iso:"(inv_into (carrier G) \<phi>) \<in> H \<cong> G" using iso by (rule iso_sym)
+  have inv_iso:"(inv_into (carrier G) \<phi>) \<in> iso H G" using iso
+    by (simp add: iso_set_sym)    
   fix N
   assume NH:"N \<lhd> H" and Nneq1:"N \<noteq> {\<one>\<^bsub>H\<^esub>}"
   then interpret Nnormal: normal N H by simp
