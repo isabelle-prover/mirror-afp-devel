@@ -53,7 +53,7 @@ lemma subgroup_finite:
   assumes subgroup:"subgroup H G"
   assumes finite:"finite (carrier G)"
   shows "finite H"
-by (metis finite finite_subset subgroup subgroup_imp_subset)
+by (metis finite finite_subset subgroup subgroup.subset)
 
 end
 
@@ -93,7 +93,7 @@ lemma ex_conj_sylow_group:
   obtains g where "g \<in> carrier G" "H \<subseteq> g <# (P #> inv g)"
 proof -
   from H have HsubG:"subgroup H G" unfolding subgroups_of_size_def by auto
-  hence HG:"H \<subseteq> carrier G" unfolding subgroups_of_size_def by (simp add:subgroup_imp_subset)
+  hence HG:"H \<subseteq> carrier G" unfolding subgroups_of_size_def by (simp add:subgroup.subset)
   from Psize have PG:"subgroup P G" and cardP:"card P = p ^ a" unfolding subgroups_of_size_def by auto
   define H' where "H' = G\<lparr>carrier := H\<rparr>"
   from HsubG interpret Hgroup: group H' unfolding H'_def by (metis subgroup_imp_group)
@@ -125,8 +125,8 @@ proof -
     with HG h show  "n \<otimes> h \<in> N" by (metis in_mono inv_inv)
   qed
   with g have "((P #> g) <#> H) #> inv g \<subseteq> (P #> g) #> inv g" unfolding r_coset_def by auto
-  with PG g invg have "((P #> g) <#> H) #> inv g \<subseteq> P" by (metis coset_mult_assoc coset_mult_one r_inv subgroup_imp_subset)
-  with g HG PG invg have "P <#> (g <# H #> inv g) \<subseteq> P" by (metis lr_coset_assoc r_coset_subset_G rcos_assoc_lcos setmult_rcos_assoc subgroup_imp_subset)
+  with PG g invg have "((P #> g) <#> H) #> inv g \<subseteq> P" by (metis coset_mult_assoc coset_mult_one r_inv subgroup.subset)
+  with g HG PG invg have "P <#> (g <# H #> inv g) \<subseteq> P" by (metis lr_coset_assoc r_coset_subset_G rcos_assoc_lcos setmult_rcos_assoc subgroup.subset)
   with PG HG g invg have "g <# H #> inv g \<subseteq> P" by (metis l_coset_subset_G r_coset_subset_G set_mult_inclusion)
   with g have "(g <# H #> inv g) #> inv (inv g) \<subseteq> P #> inv (inv g)" unfolding r_coset_def by auto
   with HG g invg invinvg have "g <# H \<subseteq> P #> inv (inv g)" by (metis coset_mult_assoc coset_mult_inv2 l_coset_subset_G)
@@ -141,7 +141,7 @@ theorem sylow_contained_in_sylow_group:
   assumes H:"H \<in> subgroups_of_size (p ^ b)"
   obtains S where "H \<subseteq> S" and "S \<in> subgroups_of_size (p ^ a)"
 proof -
-  from H have HG:"H \<subseteq> carrier G" unfolding subgroups_of_size_def by (simp add:subgroup_imp_subset)
+  from H have HG:"H \<subseteq> carrier G" unfolding subgroups_of_size_def by (simp add:subgroup.subset)
   obtain P where PG:"subgroup P G" and cardP:"card P = p ^ a" by (metis sylow_thm)
   hence Psize:"P \<in> subgroups_of_size (p ^ a)" unfolding subgroups_of_size_def by simp
   with H obtain g where g:"g \<in> carrier G" "H \<subseteq> g <# (P #> inv g)" by (metis ex_conj_sylow_group)
@@ -164,7 +164,7 @@ proof -
   moreover from g P have "conjugation_action (p ^ a) g P = g <# (P #> inv g)" unfolding conjugation_action_def by simp
   ultimately have conjSize:"g <# (P #> inv g) \<in> subgroups_of_size (p ^ a)" unfolding conjugation_action_def by simp
   with Qcard have  card:"card (g <# (P #> inv g)) = card Q"  unfolding subgroups_of_size_def by simp
-  from conjSize finite_G have "finite (g <# (P #> inv g))" by (metis (mono_tags) finite_subset mem_Collect_eq subgroup_imp_subset subgroups_of_size_def)
+  from conjSize finite_G have "finite (g <# (P #> inv g))" by (metis (mono_tags) finite_subset mem_Collect_eq subgroup.subset subgroups_of_size_def)
   with g card have "Q = g <# (P #> inv g)" by (metis card_subset_eq)
   with g show thesis by (metis that)
 qed
@@ -268,7 +268,7 @@ theorem (in snd_sylow) p_sylow_mod_p:
 proof -
   obtain P where PG:"subgroup P G" and cardP:"card P = p ^ a" by (metis sylow_thm)
   hence orderP:"order (G\<lparr>carrier := P\<rparr>) = p ^ a" unfolding order_def by auto
-  from PG have PsubG:"P \<subseteq> carrier G" by (metis subgroup_imp_subset)
+  from PG have PsubG:"P \<subseteq> carrier G" by (metis subgroup.subset)
   from PG cardP have PSize:"P \<in> subgroups_of_size (p ^ a)" unfolding subgroups_of_size_def by auto
   from PG interpret groupP:group "(G\<lparr>carrier := P\<rparr>)" by (rule subgroup_imp_group)
   from cardP have PSize2:"P \<in> groupP.subgroups_of_size (p ^ a)" using groupP.subgroups_of_size_def groupP.subgroup_self by auto
@@ -309,7 +309,7 @@ proof -
       from cardQ QN have QsizeN:"Q \<in> groupN.subgroups_of_size (p ^ a)" unfolding groupN.subgroups_of_size_def by auto
       from QsizeN PsizeN obtain g where g:"g \<in> carrier (G\<lparr>carrier := N\<rparr>)" "P = g <#\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> (Q #>\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> inv\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> g)" by (rule Nsylow.sylow_conjugate)
       with NG have "P = g <# (Q #> inv g)" unfolding r_coset_def l_coset_def by (auto simp:subgroup_inv_equality)
-      with NG g Qsize have "conjugation_action (p ^ a) g Q = P" unfolding conjugation_action_def using subgroup_imp_subset by force
+      with NG g Qsize have "conjugation_action (p ^ a) g Q = P" unfolding conjugation_action_def using subgroup.subset by force
       with g NfixesQ show "Q = P" by auto
     qed
     moreover from finite_G PSize have "P \<in> conjP.fixed_points" using P_fixed_point_of_P_conj by auto

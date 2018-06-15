@@ -46,7 +46,7 @@ proof
     have A3:"A' = rcosets\<^bsub>G\<lparr>carrier := A\<rparr>\<^esub> H"
       unfolding A_def using factgroup_subgroup_union_factor A'normal normal_imp_subgroup by auto
     from A1 interpret normalHA: normal H "(G\<lparr>carrier := A\<rparr>)" by metis
-    have "H \<subseteq> A" using normalHA.is_subgroup subgroup_imp_subset by force
+    have "H \<subseteq> A" using normalHA.is_subgroup subgroup.subset by force
     with A2 have "A = H \<or> A = carrier G" using maxH.max_normal by auto
     thus "A' = carrier (G Mod H)"
     proof (rule disjE)
@@ -89,7 +89,7 @@ next
         assume AHGH:"rcosets\<^bsub>G\<lparr>carrier := A\<rparr>\<^esub> H = carrier (G Mod H)"
         have "A = carrier G" unfolding FactGroup_def RCOSETS_def
         proof
-          show "A \<subseteq> carrier G" using A(1) normal_imp_subgroup subgroup_imp_subset by metis
+          show "A \<subseteq> carrier G" using A(1) normal_imp_subgroup subgroup.subset by metis
         next
           show "carrier G \<subseteq> A"
           proof

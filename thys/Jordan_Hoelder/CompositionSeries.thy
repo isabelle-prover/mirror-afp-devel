@@ -434,7 +434,7 @@ lemma (in composition_series) entries_distinct:
   shows "\<GG> ! i \<noteq> \<GG> ! (i + 1)"
 proof
   from finite have "finite  (\<GG> ! (i + 1))" 
-    using i normal_series_subgroups subgroup_imp_subset rev_finite_subset by metis
+    using i normal_series_subgroups subgroup.subset rev_finite_subset by metis
   hence fin:"finite (carrier (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>))" by auto
   from i have norm:"\<GG> ! i \<lhd> (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)" by (rule normal)
   assume "\<GG> ! i = \<GG> ! (i + 1)"
@@ -580,7 +580,7 @@ next
       assume facts_eq:"rcosets\<^bsub>G\<lparr>carrier := J\<rparr>\<^esub> G' = carrier (G Mod G')"
       have "J = carrier G"
       proof
-        show "J \<subseteq> carrier G" using J(1) normal_imp_subgroup subgroup_imp_subset by force
+        show "J \<subseteq> carrier G" using J(1) normal_imp_subgroup subgroup.subset by force
       next
         show "carrier G \<subseteq> J"
         proof
@@ -591,7 +591,7 @@ next
           then obtain j where j:"j \<in> J" "G' #> x = G' #> j" unfolding RCOSETS_def r_coset_def by force
           hence "x \<in> G' #> j" using G'G normal_imp_subgroup x repr_independenceD by fastforce
           then obtain g' where g':"g' \<in> G'" "x = g' \<otimes> j" unfolding r_coset_def by auto
-          hence "g' \<in> J" using G'J normal_imp_subgroup subgroup_imp_subset by force
+          hence "g' \<in> J" using G'J normal_imp_subgroup subgroup.subset by force
           with g'(2) j(1) show  "x \<in> J" using J(1) normal_imp_subgroup subgroup.m_closed by fastforce
         qed
       qed
@@ -727,7 +727,7 @@ next
   also have "\<dots> = hd (remdups_adj (rev (map ((\<inter>) K) \<GG>)))" by (metis remdups_adj_rev)
   also have "\<dots> = hd (remdups_adj ((K \<inter> (carrier G)) # (map ((\<inter>) K) (tl (rev \<GG>)))))" by (metis rev)
   also have "\<dots> = hd ((K \<inter> (carrier G)) # (remdups_adj ((K \<inter> (carrier G)) # (map ((\<inter>) K) (tl (rev \<GG>))))))" by (metis list.sel(1) remdups_adj_Cons_alt)
-  also have "\<dots> = K" using KG normal_imp_subgroup subgroup_imp_subset by force
+  also have "\<dots> = K" using KG normal_imp_subgroup subgroup.subset by force
   finally show "last (remdups_adj (map ((\<inter>) K) \<GG>)) = carrier (G\<lparr>carrier := K\<rparr>)" by auto
 next
   \<comment> \<open>The induction step, using the second isomorphism theorem for groups.\<close>
@@ -740,7 +740,7 @@ next
     using remdups_adj_obtain_adjacency by force
   from i(1) have i':"i + 1 < length \<GG>" by (metis length_map)
   hence GiSi:"\<GG> ! i \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" by (metis normal)
-  hence GiSi':"\<GG> ! i \<subseteq> \<GG> ! (i + 1)" using normal_imp_subgroup subgroup_imp_subset by force
+  hence GiSi':"\<GG> ! i \<subseteq> \<GG> ! (i + 1)" using normal_imp_subgroup subgroup.subset by force
   from i' have finGSi:"finite (\<GG> ! (i + 1))" using  normal_series_subgroups finite by (metis subgroup_finite)
   from GiSi KG i' normal_series_subgroups have GSiKnormGSi:"\<GG> ! (i + 1) \<inter> K \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>"
     using second_isomorphism_grp.normal_subgrp_intersection_normal
@@ -855,7 +855,7 @@ next
   case (Suc k i j)
   hence i':"i + (Suc k) = j" "i + 1 < length \<GG>" by auto
   hence ij:"i + 1 \<le> j" by auto
-  have "\<GG> ! i \<subseteq> \<GG> ! (i + 1)" using i' normal normal_imp_subgroup subgroup_imp_subset by force
+  have "\<GG> ! i \<subseteq> \<GG> ! (i + 1)" using i' normal normal_imp_subgroup subgroup.subset by force
   moreover have "j - (i + 1) = k" "j < length \<GG>" using Suc assms by auto
   hence "\<GG> ! (i + 1) \<subseteq> \<GG> ! j" using Suc(1) ij by auto
   ultimately show "\<GG> ! i \<subseteq> \<GG> ! j" by simp

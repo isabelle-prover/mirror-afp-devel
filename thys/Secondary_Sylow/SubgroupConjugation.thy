@@ -106,11 +106,11 @@ lemma conjugation_subgroup:
   shows "subgroup (g <# (H #> inv g)) G"
 proof
   from gG have "inv g \<in> carrier G" by (rule inv_closed)
-  with HG have "(H #> inv g) \<subseteq> carrier G" by (metis r_coset_subset_G subgroup_imp_subset)
+  with HG have "(H #> inv g) \<subseteq> carrier G" by (metis r_coset_subset_G subgroup.subset)
   with gG show "g <# (H #> inv g) \<subseteq> carrier G" by (metis l_coset_subset_G)
 next
   from gG have invgG:"inv g \<in> carrier G" by (metis inv_closed)
-  with HG have lcosSubset:"(H #> inv g) \<subseteq> carrier G" by (metis r_coset_subset_G subgroup_imp_subset)
+  with HG have lcosSubset:"(H #> inv g) \<subseteq> carrier G" by (metis r_coset_subset_G subgroup.subset)
   fix x y
   assume x:"x \<in> g <# (H #> inv g)" and y:"y \<in> g <# (H #> inv g)"
   then obtain x' y' where x':"x' \<in> H #> inv g" "x = g \<otimes> x'" and y':"y' \<in> H #> inv g" "y = g \<otimes> y'" unfolding l_coset_def by auto
@@ -124,19 +124,19 @@ next
   also from gG hxG invgG have "... = g \<otimes> ((hx \<otimes> hy) \<otimes> inv g)" by (metis gG hxG hyG invgG m_assoc m_closed)
   finally have xy:"x \<otimes> y = g \<otimes> (hx \<otimes> hy \<otimes> inv g)".
   from hx hy HG have "hx \<otimes> hy \<in> H" by (metis subgroup.m_closed)
-  with invgG HG have "(hx \<otimes> hy) \<otimes> inv g \<in> H #> inv g" by (metis rcosI subgroup_imp_subset)
+  with invgG HG have "(hx \<otimes> hy) \<otimes> inv g \<in> H #> inv g" by (metis rcosI subgroup.subset)
   with gG lcosSubset have "g \<otimes> (hx \<otimes> hy \<otimes> inv g) \<in> g <# (H #> inv g)" by (metis lcosI)
   with xy show "x \<otimes> y \<in> g <# (H #> inv g)" by simp
 next
   from gG have invgG:"inv g \<in> carrier G" by (metis inv_closed)
-  with HG have lcosSubset:"(H #> inv g) \<subseteq> carrier G" by (metis r_coset_subset_G subgroup_imp_subset)
+  with HG have lcosSubset:"(H #> inv g) \<subseteq> carrier G" by (metis r_coset_subset_G subgroup.subset)
   from HG have "\<one> \<in> H" by (rule subgroup.one_closed)
-  with invgG HG have  "\<one> \<otimes> inv g \<in> H #> inv g" by (metis rcosI subgroup_imp_subset)
+  with invgG HG have  "\<one> \<otimes> inv g \<in> H #> inv g" by (metis rcosI subgroup.subset)
   with gG lcosSubset have "g \<otimes> (\<one> \<otimes> inv g) \<in> g <# (H #> inv g)" by (metis lcosI)
   with gG invgG show "\<one> \<in> g <# (H #> inv g)" by simp
 next
   from gG have invgG:"inv g \<in> carrier G" by (metis inv_closed)
-  with HG have lcosSubset:"(H #> inv g) \<subseteq> carrier G" by (metis r_coset_subset_G subgroup_imp_subset)
+  with HG have lcosSubset:"(H #> inv g) \<subseteq> carrier G" by (metis r_coset_subset_G subgroup.subset)
   fix x
   assume "x \<in> g <# (H #> inv g)"
   then obtain x' where x':"x' \<in> H #> inv g" "x = g \<otimes> x'" unfolding l_coset_def by auto
@@ -147,7 +147,7 @@ next
   also from gG have "... = g \<otimes> inv hx \<otimes> inv g" by simp
   also from gG invgG invhx HG have "... = g \<otimes> (inv hx \<otimes> inv g)" by (metis m_assoc subgroup.mem_carrier)
   finally have invx:"inv x = g \<otimes> (inv hx \<otimes> inv g)".
-  with invhx invgG HG have "(inv hx) \<otimes> inv g \<in> H #> inv g" by (metis rcosI subgroup_imp_subset)
+  with invhx invgG HG have "(inv hx) \<otimes> inv g \<in> H #> inv g" by (metis rcosI subgroup.subset)
   with gG lcosSubset have "g \<otimes> (inv hx \<otimes> inv g) \<in> g <# (H #> inv g)" by (metis lcosI)
   with invx show "inv x \<in> g <# (H #> inv g)" by simp
 qed
@@ -163,7 +163,7 @@ lemma conjugation_is_size_invariant:
 proof -
   from g have invg:"inv g \<in> carrier G" by (metis inv_closed)
   from P have PG:"subgroup P G" and card:"card P = p" unfolding subgroups_of_size_def by simp+
-  hence PsubG:"P \<subseteq> carrier G" by (metis subgroup_imp_subset)
+  hence PsubG:"P \<subseteq> carrier G" by (metis subgroup.subset)
   hence PinvgsubG:"P #> inv g \<subseteq> carrier G" by (metis invg r_coset_subset_G)
   have " g <# (P #> inv g) \<in> subgroups_of_size p"
   proof(auto simp add:subgroups_of_size_def)
@@ -188,7 +188,7 @@ proof -
     proof(rule inj_onI)
       fix U V
       assume U:"U \<in> subgroups_of_size p" and V:"V \<in> subgroups_of_size p"
-      hence subsetG:"U \<subseteq> carrier G" "V \<subseteq> carrier G" unfolding subgroups_of_size_def by (metis (lifting) mem_Collect_eq subgroup_imp_subset)+
+      hence subsetG:"U \<subseteq> carrier G" "V \<subseteq> carrier G" unfolding subgroups_of_size_def by (metis (lifting) mem_Collect_eq subgroup.subset)+
       hence subsetL:"U #> inv g \<subseteq> carrier G" "V #> inv g \<subseteq> carrier G" by (metis invg r_coset_subset_G)+
       assume "conjugation_action p g U = conjugation_action p g V"
       with g U V have "g <# (U #> inv g) = g <# (V #> inv g)" unfolding conjugation_action_def by simp
@@ -212,7 +212,7 @@ proof -
     with invg P have "(inv g) <# (P #> (inv (inv g))) \<in> subgroups_of_size p" unfolding conjugation_action_def by simp
     hence 1:"(inv g) <# (P #> g) \<in> subgroups_of_size p" by (metis g inv_inv)
     have "g <# (((inv g) <# (P #> g)) #> inv g) = (\<Union>p \<in> P. {g \<otimes> (inv g \<otimes> (p \<otimes> g) \<otimes> inv g)})" unfolding r_coset_def l_coset_def by (simp add:m_assoc)
-    also from P have PG:"P \<subseteq> carrier G" unfolding subgroups_of_size_def by (auto simp add:subgroup_imp_subset)
+    also from P have PG:"P \<subseteq> carrier G" unfolding subgroups_of_size_def by (auto simp add:subgroup.subset)
     have "\<forall>p \<in> P.  g \<otimes> (inv g \<otimes> (p \<otimes> g) \<otimes> inv g) = p"
     proof(auto)
       fix p
@@ -278,7 +278,7 @@ next
   proof(rule restrict_ext)
     fix P
     assume P:"P \<in> subgroups_of_size p"
-    hence PG:"P \<subseteq> carrier G" unfolding subgroups_of_size_def by (auto simp:subgroup_imp_subset)
+    hence PG:"P \<subseteq> carrier G" unfolding subgroups_of_size_def by (auto simp:subgroup.subset)
     with y have yPG:"y <# P \<subseteq> carrier G" by (metis l_coset_subset_G)
     from x y have invxyG:"inv (x \<otimes> y) \<in> carrier G" and xyG:"x \<otimes> y \<in> carrier G" using inv_closed m_closed by auto
     from yBij have "conjy ` subgroups_of_size p = subgroups_of_size p" unfolding Bij_def bij_betw_def by simp
@@ -351,9 +351,9 @@ lemma conj_wo_inv:
 proof -
   from g have invg:"inv g \<in> carrier G" by (metis inv_closed)
   from conj have "g <# (inv g <# (Q #> g)) = g <# P" by simp
-  with QG g invg have "(g \<otimes> inv g) <# (Q #> g) = g <# P" by (metis lcos_m_assoc r_coset_subset_G subgroup_imp_subset)
+  with QG g invg have "(g \<otimes> inv g) <# (Q #> g) = g <# P" by (metis lcos_m_assoc r_coset_subset_G subgroup.subset)
   with g invg have "\<one> <# (Q #> g) = g <# P" by (metis r_inv)
-  with QG g show "Q #> g = g <# P" by (metis lcos_mult_one r_coset_subset_G subgroup_imp_subset)
+  with QG g show "Q #> g = g <# P" by (metis lcos_mult_one r_coset_subset_G subgroup.subset)
 qed
 
 end

@@ -45,7 +45,7 @@ section {* More Facts about Subgroups *}
 lemma (in subgroup) subgroup_of_restricted_group:
   assumes "subgroup U (G\<lparr> carrier := H\<rparr>)"
   shows "U \<subseteq> H"
-using assms subgroup_imp_subset by force
+using assms subgroup.subset by force
 
 lemma (in subgroup) subgroup_of_subgroup:
   assumes "group G"
@@ -239,11 +239,11 @@ next
   proof
     fix x
     assume x:"x \<in> carrier G"
-    have "M <#> N #> x = M <#> (N #> x)" by (metis assms(1,2) normal_inv_iff setmult_rcos_assoc subgroup_imp_subset x)
+    have "M <#> N #> x = M <#> (N #> x)" by (metis assms(1,2) normal_inv_iff setmult_rcos_assoc subgroup.subset x)
     also have "\<dots> = M <#> (x <# N)" by (metis assms(2) normal.coset_eq x)
-    also have "\<dots> = (M #> x) <#> N" by (metis assms(1,2) normal_imp_subgroup rcos_assoc_lcos subgroup_imp_subset x)
+    also have "\<dots> = (M #> x) <#> N" by (metis assms(1,2) normal_imp_subgroup rcos_assoc_lcos subgroup.subset x)
     also have "\<dots> = (x <# M) <#> N" by (metis assms(1) normal.coset_eq x)
-    also have "\<dots> = x <# (M <#> N)" by (metis assms(1,2) normal_imp_subgroup setmult_lcos_assoc subgroup_imp_subset x)
+    also have "\<dots> = x <# (M <#> N)" by (metis assms(1,2) normal_imp_subgroup setmult_lcos_assoc subgroup.subset x)
     finally show "M <#> N #> x = x <# (M <#> N)".
   qed
 qed
@@ -290,7 +290,7 @@ proof -
   ultimately have "(<#>\<^bsub>G\<lparr>carrier:=H\<rparr>\<^esub>) = (<#>\<^bsub>G\<^esub>)" by simp
   with grpHN have "group ((G Mod N)\<lparr>carrier := (rcosets\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> N)\<rparr>)" unfolding FactGroup_def by auto
   moreover have "rcosets\<^bsub>G\<lparr>carrier := H\<rparr>\<^esub> N \<subseteq> carrier (G Mod N)" unfolding FactGroup_def RCOSETS_def r_coset_def
-    using assms(3) subgroup_imp_subset by fastforce
+    using assms(3) subgroup.subset by fastforce
   ultimately show ?thesis using GModN.is_group group.restrict_group_imp_subgroup by auto
 qed
 
@@ -333,7 +333,7 @@ proof
   assume "carrier (G Mod H) = {\<one>\<^bsub>G Mod H\<^esub>}"
   moreover with assms lagrange have "order (G Mod H) * card H = order G" unfolding FactGroup_def order_def using is_subgroup by force
   ultimately have "card H = order G" unfolding order_def by auto
-  thus "H = carrier G" using subgroup_imp_subset is_subgroup assms card_subset_eq unfolding order_def
+  thus "H = carrier G" using subgroup.subset is_subgroup assms card_subset_eq unfolding order_def
     by metis
 next
   from assms have ordergt0:"order G > 0" unfolding order_def by (metis subgroup.finite_imp_card_positive subgroup_self)
@@ -363,8 +363,8 @@ proof
     fix x
     assume x:"x \<in> \<Union>A"
     then obtain a where a:"a \<in> A" "x \<in> a" by auto
-    with assms have xx:"x \<in> carrier G" using subgroup_imp_subset unfolding FactGroup_def RCOSETS_def r_coset_def by force
-    from assms a obtain y where y:"y \<in> carrier G" "a = H #> y" using subgroup_imp_subset unfolding FactGroup_def RCOSETS_def by force
+    with assms have xx:"x \<in> carrier G" using subgroup.subset unfolding FactGroup_def RCOSETS_def r_coset_def by force
+    from assms a obtain y where y:"y \<in> carrier G" "a = H #> y" using subgroup.subset unfolding FactGroup_def RCOSETS_def by force
     with a have "x \<in> H #> y" by simp
     hence "H #> y = H #> x" using y is_subgroup repr_independence by auto
     with y(2) a(1) have "H #> x \<in> A" by auto
@@ -476,7 +476,7 @@ proof -
   proof auto
     fix U
     assume U:"U \<in> A"
-    then obtain x' where x':"x' \<in> carrier G" "U = H #> x'" using assms subgroup_imp_subset unfolding FactGroup_def RCOSETS_def by force
+    then obtain x' where x':"x' \<in> carrier G" "U = H #> x'" using assms subgroup.subset unfolding FactGroup_def RCOSETS_def by force
     with U have "H #> x' \<in> A" by simp
     with x' show "U \<in> rcosets\<^bsub>G\<lparr>carrier := {x \<in> carrier G. H #> x \<in> A}\<rparr>\<^esub> H" unfolding RCOSETS_def r_coset_def by auto
   next

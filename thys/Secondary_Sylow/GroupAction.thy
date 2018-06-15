@@ -584,8 +584,8 @@ lemma (in group) rcosets_closed:
   shows "M #> g \<in> rcosets H"
 proof -
   from M obtain h where h:"h \<in> carrier G" "M = H #> h" unfolding RCOSETS_def by auto
-  with g HG have "M #> g = H #> (h \<otimes> g)" by (metis coset_mult_assoc subgroup_imp_subset)
-  with HG g h show "M #> g \<in> rcosets H" by (metis rcosetsI subgroup.m_closed subgroup_imp_subset subgroup_self)
+  with g HG have "M #> g = H #> (h \<otimes> g)" by (metis coset_mult_assoc subgroup.subset)
+  with HG g h show "M #> g \<in> rcosets H" by (metis rcosetsI subgroup.m_closed subgroup.subset subgroup_self)
 qed
 
 lemma (in group) inv_mult_on_rcosets_is_bij:

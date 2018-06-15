@@ -33,7 +33,7 @@ proof -
   proof(rule Sgrp.normalI)
     show "subgroup N (G\<lparr>carrier := S\<rparr>)" using assms is_group by (metis subgroup.subgroup_of_subset normal_inv_iff)
   next
-    from SsubG have "S \<subseteq> carrier G" by (rule subgroup_imp_subset)
+    from SsubG have "S \<subseteq> carrier G" by (rule subgroup.subset)
     thus "\<forall>x\<in>carrier (G\<lparr>carrier := S\<rparr>). N #>\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> x = x <#\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> N"
       using Nnormal unfolding normal_def normal_axioms_def l_coset_def r_coset_def by fastforce
   qed
@@ -100,7 +100,7 @@ qed
 lemma normal_set_mult_subgroup:
   shows "subgroup (H <#> S) G"
 proof(rule subgroupI)
-  show "H <#> S \<subseteq> carrier G" by (metis setmult_subset_G subgroup_imp_subset subgrpS subset)
+  show "H <#> S \<subseteq> carrier G" by (metis setmult_subset_G subgroup.subset subgrpS subset)
 next
   have "\<one> \<in> H" "\<one> \<in> S" using is_subgroup subgrpS subgroup.one_closed by auto
   hence "\<one> \<otimes> \<one> \<in> H <#> S" unfolding set_mult_def by blast
