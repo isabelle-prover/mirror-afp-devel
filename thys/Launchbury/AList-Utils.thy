@@ -109,10 +109,10 @@ lemma map_add_domA[simp]:
     done
 
 
-lemma map_of_empty_iff1[simp]: "map_of \<Gamma> = empty \<longleftrightarrow> \<Gamma> = []"
+lemma map_of_empty_iff1[simp]: "map_of \<Gamma> = Map.empty \<longleftrightarrow> \<Gamma> = []"
   by (cases "\<Gamma>") auto
 
-lemma map_of_empty_iff2[simp]: "empty = map_of \<Gamma> \<longleftrightarrow> \<Gamma> = []"
+lemma map_of_empty_iff2[simp]: "Map.empty = map_of \<Gamma> \<longleftrightarrow> \<Gamma> = []"
   apply (subst eq_commute)
   by (rule map_of_empty_iff1)
 
@@ -158,11 +158,11 @@ syntax
 translations
   "{e | k\<mapsto>v \<in> m}" == "CONST mapCollect (\<lambda>k v. e) m"
 
-lemma mapCollect_empty[simp]: "{f k v | k \<mapsto> v \<in> empty} = {}"
+lemma mapCollect_empty[simp]: "{f k v | k \<mapsto> v \<in> Map.empty} = {}"
   unfolding mapCollect_def by simp
 
 lemma mapCollect_const[simp]:
-  "m \<noteq> empty \<Longrightarrow> {e | k\<mapsto>v\<in>m} = {e}"
+  "m \<noteq> Map.empty \<Longrightarrow> {e | k\<mapsto>v\<in>m} = {e}"
   unfolding mapCollect_def by auto
 
 lemma mapCollect_cong[fundef_cong]:
