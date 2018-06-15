@@ -59,7 +59,10 @@ class Stats(object):
 
 # performs a 'diff' between metadata and the actual filesystem contents
 def check_fs(meta_entries, directory):
-    fs_entries = set(e for e in os.listdir(directory) if os.path.isdir(os.path.join(directory, e)))
+    def is_fs_entry(e):
+        root = os.path.join(directory, e)
+        return os.path.isdir(root) and not os.path.exists(os.path.join(root, ".sitegen-ignore"))
+    fs_entries = set(e for e in os.listdir(directory) if is_fs_entry(e))
     meta_entries = set(k for k, _ in meta_entries.items())
     # check for entries not existing in filesystem
     for fs_missing in meta_entries - fs_entries:
