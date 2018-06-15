@@ -76,7 +76,7 @@ definition
 
 lemma HierAuto_EmptySet:
  "((@x. True),{Abs_seqauto ({@x. True}, (@x. True), {}, {})}, {}, 
-  empty ( @x. True \<mapsto> {})) \<in> {(D,F,E,G) | D F E G. HierAuto D F E G}"
+  Map.empty ( @x. True \<mapsto> {})) \<in> {(D,F,E,G) | D F E G. HierAuto D F E G}"
 apply (unfold HierAuto_def IsCompFun_def Root_def RootEx_def MutuallyDistinct_def
            OneAncestor_def NoCycles_def)
 apply auto

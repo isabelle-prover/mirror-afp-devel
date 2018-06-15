@@ -270,7 +270,7 @@ where
   "skl1_init \<equiv> { \<lparr>
     ik = {},
     secret = {},
-    progress = empty,
+    progress = Map.empty,
     signalsInit = \<lambda>x. 0,
     signalsResp = \<lambda>x. 0,
     signalsInit2 = \<lambda>x. 0,
@@ -345,7 +345,7 @@ apply (auto simp add: domIff med_progress_def)
 apply (rename_tac x y, case_tac "r x", auto)  
 done
     
-lemma med_progress_empty [simp]: "med_progress empty = empty"
+lemma med_progress_empty [simp]: "med_progress Map.empty = Map.empty"
 by (rule ext, auto)
 
 

@@ -423,7 +423,7 @@ fun OpSuccessSigma :: "(Operation \<times> \<Sigma>) \<rightharpoonup> \<Sigma>"
                    (case S p of \<lfloor>lrs\<rfloor>  \<Rightarrow> (case (lrs lr_id) of 
                                                \<bottom>  \<Rightarrow> \<lfloor>S(p\<mapsto>(lrs(lr_id\<mapsto>us)))\<rfloor>                        
                                              | \<lfloor>x\<rfloor> \<Rightarrow> \<lfloor>S\<rfloor>)
-                              | \<bottom> \<Rightarrow> \<lfloor>S(p\<mapsto>(empty(lr_id\<mapsto>us)))\<rfloor>)"
+                              | \<bottom> \<Rightarrow> \<lfloor>S(p\<mapsto>(Map.empty(lr_id\<mapsto>us)))\<rfloor>)"
   |"OpSuccessSigma (removeLR u r p lr_id,S) = 
                    (case S p of Some lrs \<Rightarrow> \<lfloor>S(p\<mapsto>(lrs(lr_id:=\<bottom>)))\<rfloor>
                               | \<bottom> \<Rightarrow> \<lfloor>S\<rfloor>)"

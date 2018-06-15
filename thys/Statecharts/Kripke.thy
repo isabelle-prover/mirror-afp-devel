@@ -24,7 +24,7 @@ definition
                  (dom L) = S)"
 
 lemma Kripke_EmptySet:
- "({@x. True}, {@x. True},{(@x. True, @x. True)}, empty(@x. True \<mapsto> {@x. True})) \<in> 
+ "({@x. True}, {@x. True},{(@x. True, @x. True)}, Map.empty(@x. True \<mapsto> {@x. True})) \<in> 
    {(S,S0,R,L) | S S0 R L. Kripke S S0 R L}"
 by (unfold Kripke_def Domain_unfold, auto)
 

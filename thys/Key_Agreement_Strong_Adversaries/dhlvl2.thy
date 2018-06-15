@@ -323,7 +323,7 @@ where
   "l2_init \<equiv> { \<lparr>
     ik = {},
     secret = {},
-    progress = empty,
+    progress = Map.empty,
     signalsInit = \<lambda>x. 0,
     signalsResp = \<lambda>x. 0,
     chan = {},

@@ -102,7 +102,7 @@ definition
   "FAddSA G SSA = (let  (S,SA) = SSA
                    in
                      (if ((S \<in> dom G) \<and> (S \<notin> States SA)) then
-                        (G ++ (empty(S \<mapsto> (insert SA (the (G S)))))
+                        (G ++ (Map.empty(S \<mapsto> (insert SA (the (G S)))))
                          ++ EmptyMap (States SA))
                       else G))"
 

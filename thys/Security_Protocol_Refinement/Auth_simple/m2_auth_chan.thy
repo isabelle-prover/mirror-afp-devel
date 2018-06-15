@@ -128,7 +128,7 @@ definition
   m2_init :: "m2_state set" 
 where 
   "m2_init \<equiv> { \<lparr> 
-     runs = empty, 
+     runs = Map.empty, 
      chan = {}
   \<rparr> }"
 

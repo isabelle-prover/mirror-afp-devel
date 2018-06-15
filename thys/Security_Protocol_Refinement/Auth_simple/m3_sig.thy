@@ -130,7 +130,7 @@ definition
   m3_init :: "m3_state set"
 where
   "m3_init \<equiv> { \<lparr>
-     runs = empty,
+     runs = Map.empty,
      IK = (Key`priK`bad) \<union> (Key`range pubK) \<union> (Key`shrK`bad)
   \<rparr> }"
 

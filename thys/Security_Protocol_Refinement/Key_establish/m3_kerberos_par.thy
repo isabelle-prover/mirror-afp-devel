@@ -249,7 +249,7 @@ definition
   m3_init :: "m3_pred"
 where
   "m3_init \<equiv> { \<lparr>
-     runs = empty,
+     runs = Map.empty,
      leak = shrK`bad \<times> {undefined},
      clk = 0,
      cache = {},

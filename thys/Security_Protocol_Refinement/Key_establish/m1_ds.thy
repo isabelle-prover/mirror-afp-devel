@@ -143,7 +143,7 @@ subsection \<open>Specification\<close>
 definition
   m1_init :: "unit m1_pred"
 where
-  "m1_init \<equiv> { \<lparr> runs = empty, leak = corrKey, clk = 0 \<rparr> }" 
+  "m1_init \<equiv> { \<lparr> runs = Map.empty, leak = corrKey, clk = 0 \<rparr> }" 
 
 definition 
   m1_trans :: "'x m1_trans" where

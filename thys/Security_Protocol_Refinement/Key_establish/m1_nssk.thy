@@ -169,7 +169,7 @@ abbreviation
   m1_init :: "m1_state set"
 where
   "m1_init \<equiv> { \<lparr>
-     runs = empty,
+     runs = Map.empty,
      leak = corrKey \<times> {undefined} \<times> {undefined}      \<comment> \<open>initial leakage\<close>
   \<rparr> }" 
 
@@ -579,7 +579,7 @@ subsubsection \<open>Lemmas about the abstraction function\<close>
 (******************************************************************************)
 
 lemma ir_runs2sigs_empty [simp]: 
-   "runz = empty \<Longrightarrow> ir_runs2sigs runz = (\<lambda>s. 0)"
+   "runz = Map.empty \<Longrightarrow> ir_runs2sigs runz = (\<lambda>s. 0)"
 by (rule ext, erule rev_mp) 
    (rule ir_runs2sigs.induct, auto)
 
@@ -804,7 +804,7 @@ subsubsection \<open>Lemmas about the auxiliary functions\<close>
 (******************************************************************************)
 
 lemma ri_runs2sigs_empty [simp]: 
-  "runz = empty \<Longrightarrow> ri_runs2sigs runz = (\<lambda>s. 0)"
+  "runz = Map.empty \<Longrightarrow> ri_runs2sigs runz = (\<lambda>s. 0)"
 by (rule ext, erule rev_mp) 
    (rule ri_runs2sigs.induct, auto)
 

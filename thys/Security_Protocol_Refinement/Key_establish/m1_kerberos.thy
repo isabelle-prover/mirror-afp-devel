@@ -224,7 +224,7 @@ subsection \<open>Specification\<close>
 definition
   m1_init :: "m1_state set"
 where
-  "m1_init \<equiv> { \<lparr> runs = empty, leak = corrKey \<times> {undefined}, clk = 0, cache = {} \<rparr> }" 
+  "m1_init \<equiv> { \<lparr> runs = Map.empty, leak = corrKey \<times> {undefined}, clk = 0, cache = {} \<rparr> }" 
 
 definition 
   m1_trans :: "'x m1_trans" where
@@ -666,7 +666,7 @@ subsubsection \<open>Lemmas about the auxiliary functions\<close>
 text \<open>Other lemmas\<close>
 
 lemma ri_runs2sigs_empty [simp]: 
-  "runz = empty \<Longrightarrow> ri_runs2sigs runz = (\<lambda>s. 0)"
+  "runz = Map.empty \<Longrightarrow> ri_runs2sigs runz = (\<lambda>s. 0)"
 by (rule ext, erule rev_mp) 
    (rule ri_runs2sigs.induct, auto) 
 
@@ -1025,7 +1025,7 @@ subsubsection \<open>Lemmas about the auxiliary functions\<close>
 (******************************************************************************)
 
 lemma ir_runs2sigs_empty [simp]: 
-  "runz = empty \<Longrightarrow> ir_runs2sigs runz = (\<lambda>s. 0)"
+  "runz = Map.empty \<Longrightarrow> ir_runs2sigs runz = (\<lambda>s. 0)"
 by (rule ext, erule rev_mp) 
    (rule ir_runs2sigs.induct, auto)
 

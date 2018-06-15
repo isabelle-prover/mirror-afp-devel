@@ -170,7 +170,7 @@ apply auto
 done
 
 lemma Union_ran_override [simp]:
-  "S \<in> dom G \<Longrightarrow> \<Union> (ran (G ++ empty(S \<mapsto> insert SA (the(G S))))) = 
+  "S \<in> dom G \<Longrightarrow> \<Union> (ran (G ++ Map.empty(S \<mapsto> insert SA (the(G S))))) = 
    (insert SA (Union (ran G)))"
 apply (unfold dom_def ran_def)
 apply auto
@@ -204,7 +204,7 @@ lemma chg_map_upd [simp]:
 by (unfold chg_map_def, auto)
 
 lemma ran_override_chg_map:
-  "A \<in> dom G \<Longrightarrow> ran (G ++ empty(A|->B)) = (ran (chg_map (\<lambda> x. B) A G))"
+  "A \<in> dom G \<Longrightarrow> ran (G ++ Map.empty(A|->B)) = (ran (chg_map (\<lambda> x. B) A G))"
 apply (unfold dom_def ran_def)
 apply (subst map_add_Some_iff [THEN ext])
 apply auto

@@ -1019,7 +1019,7 @@ done
 lemma var_not_var'_x':
   "\<lbrakk>\<Gamma> (x_var var) = Some ty_var; L (x_var var) = Some v_var;
     \<forall>x\<in>set y_cl_var_var'_v_list. L (x_var ((\<lambda>(y, cl, var, var', v). var') x)) = None; L x' = None\<rbrakk>
-    \<Longrightarrow> (\<Gamma> ++ map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)) ++ empty(x' \<mapsto> ty_x_d)) (x_var var) = Some ty_var"
+    \<Longrightarrow> (\<Gamma> ++ map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)) ++ Map.empty(x' \<mapsto> ty_x_d)) (x_var var) = Some ty_var"
 apply(subgoal_tac "x_var var \<noteq> x'")
  apply(simp add: map_add_def)
  apply(subgoal_tac "map_of (map (\<lambda>((y, cl, var, var', v), y', y). (x_var var', y)) (zip y_cl_var_var'_v_list y_ty_list)) (x_var var) = None")
@@ -1726,7 +1726,7 @@ apply(erule_tac Q = "\<forall>\<Gamma>'. \<Gamma> \<subseteq>\<^sub>m \<Gamma>' 
                     s_list)))" in contrapos_pp) apply(simp only: not_all)
 apply(rule_tac x = "\<Gamma> ++
                     map_of (map (\<lambda>((y, cl, var, var', v), (y', ty)). (x_var var', ty)) (zip y_cl_var_var'_v_list y_ty_list)) ++
-                    empty (x' \<mapsto> ty_def ctx dcl)" in exI)
+                    Map.empty (x' \<mapsto> ty_def ctx dcl)" in exI)
 apply(clarsimp split del: if_split) apply(rule)
  apply(clarsimp simp add: map_le_def split del: if_split) apply(rule sym)
  apply(rule_tac L = L and Pa = Pa and H = H in map_of_map_and_x) apply(assumption+) apply(simp add: not_dom_is_none) apply(erule wf_varstateE) apply(clarsimp)

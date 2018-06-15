@@ -232,7 +232,7 @@ definition
   m2_init :: "m2_pred"
 where
   "m2_init \<equiv> { \<lparr>
-     runs = empty,
+     runs = Map.empty,
      leak = corrKey \<times> {undefined},
      clk = 0,
      cache = {},

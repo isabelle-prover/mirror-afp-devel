@@ -28,7 +28,7 @@ definition addr_of_sys_xcpt :: "cname \<Rightarrow> addr" where
                         if s = OutOfMemory then 2 else undefined"
 
 definition start_heap :: "prog \<Rightarrow> heap" where
-  "start_heap P \<equiv> empty (addr_of_sys_xcpt NullPointer \<mapsto> blank P NullPointer)
+  "start_heap P \<equiv> Map.empty (addr_of_sys_xcpt NullPointer \<mapsto> blank P NullPointer)
                         (addr_of_sys_xcpt ClassCast \<mapsto> blank P ClassCast)
                         (addr_of_sys_xcpt OutOfMemory \<mapsto> blank P OutOfMemory)"
 
