@@ -290,5 +290,25 @@ where
 
 declare choice.simps [simp del]
 
+lemma isOK_mapM:
+  assumes "isOK (mapM f xs)"
+  shows "(\<forall>x. x \<in> set xs \<longrightarrow> isOK (f x)) \<and> run (mapM f xs) = map (\<lambda>x. run (f x)) xs"
+  using assms mapM_return[of f xs] by (force simp: isOK_def split: sum.splits)+
+
+fun firstM
+  where
+    "firstM f [] = error []"
+  | "firstM f (x # xs) = (try f x \<then> return x catch (\<lambda>e. firstM f xs <+? Cons e))"
+
+lemma firstM:
+  "isOK (firstM f xs) \<longleftrightarrow> (\<exists>x\<in>set xs. isOK (f x))"
+  by (induct xs) (auto simp: catch_def split: sum.splits)
+
+lemma firstM_return:
+  assumes "firstM f xs = return y"
+  shows "isOK (f y) \<and> y \<in> set xs"
+  using assms by (induct xs) (auto simp: catch_def split: sum.splits)
+
+
 end
 

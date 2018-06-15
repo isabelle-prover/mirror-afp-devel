@@ -42,6 +42,9 @@ lemma relpow_mono:
   assumes "r \<subseteq> r'" shows "r ^^ n \<subseteq> r' ^^ n"
   using assms by (induct n) auto
 
+lemma refl_inv_image:
+  "refl R \<Longrightarrow> refl (inv_image R f)"
+  by (simp add: inv_image_def refl_on_def)
 
 subsection \<open>Definitions\<close>
 
@@ -2831,5 +2834,7 @@ qed
 
 lemma conversion_empty [simp]: "conversion {} = Id"
   by (auto simp: conversion_def)
+
+lemma symcl_idemp [simp]: "(r\<^sup>\<leftrightarrow>)\<^sup>\<leftrightarrow> = r\<^sup>\<leftrightarrow>" by auto
 
 end
