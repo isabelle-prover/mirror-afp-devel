@@ -102,15 +102,15 @@ proof -
   from `pred (kind a) s'` obtain cf' cfs' where [simp]:"s' = cf'#cfs'"
     by(cases s') auto
   from `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-  have eqs:"fst (hd (transfer (kind a) s)) = (empty(ins [:=] params fs (fst cf)))"
-    "fst (hd (transfer (kind a) s')) = (empty(ins [:=] params fs (fst cf')))"
+  have eqs:"fst (hd (transfer (kind a) s)) = (Map.empty(ins [:=] params fs (fst cf)))"
+    "fst (hd (transfer (kind a) s')) = (Map.empty(ins [:=] params fs (fst cf')))"
     by simp_all
   from `valid_edge a` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` `(p,ins,outs) \<in> set procs`
   have "length fs = length ins" by(rule CFG_call_edge_length)
   from `(p,ins,outs) \<in> set procs` have "distinct ins" by(rule distinct_formal_ins)
   with `i < length ins` `length fs = length ins`
-  have "(empty(ins [:=] params fs (fst cf))) (ins!i) = (params fs (fst cf))!i"
-    "(empty(ins [:=] params fs (fst cf'))) (ins!i) = (params fs (fst cf'))!i"
+  have "(Map.empty(ins [:=] params fs (fst cf))) (ins!i) = (params fs (fst cf))!i"
+    "(Map.empty(ins [:=] params fs (fst cf'))) (ins!i) = (params fs (fst cf'))!i"
     by(fastforce intro:fun_upds_nth)+
   with eqs `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` params
   show ?thesis by simp
@@ -126,7 +126,7 @@ proof -
   have [simp]:"(THE ins. \<exists>outs. (p,ins,outs) \<in> set procs) = ins"
     by(rule formal_in_THE)
   from `pred (kind a) s` obtain cf cfs where [simp]:"s = cf#cfs" by(cases s) auto
-  from `V \<notin> set ins` have "(empty(ins [:=] params fs (fst cf))) V = None"
+  from `V \<notin> set ins` have "(Map.empty(ins [:=] params fs (fst cf))) V = None"
     by(auto dest:fun_upds_notin)
   with `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs` show ?thesis by simp
 qed

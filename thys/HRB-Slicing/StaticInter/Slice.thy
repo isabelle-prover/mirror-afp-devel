@@ -11,7 +11,7 @@ fun csppa :: "'node \<Rightarrow> 'node SDG_node set \<Rightarrow> nat \<Rightar
   ((('var \<rightharpoonup> 'val) \<Rightarrow> 'val option) list) \<Rightarrow> ((('var \<rightharpoonup> 'val) \<Rightarrow> 'val option) list)"
   where "csppa m S x [] = []"
   | "csppa m S x (f#fs) = 
-     (if Formal_in(m,x) \<notin> S then empty else f)#csppa m S (Suc x) fs"
+     (if Formal_in(m,x) \<notin> S then Map.empty else f)#csppa m S (Suc x) fs"
 
 definition cspp :: "'node \<Rightarrow> 'node SDG_node set \<Rightarrow> 
   ((('var \<rightharpoonup> 'val) \<Rightarrow> 'val option) list) \<Rightarrow> ((('var \<rightharpoonup> 'val) \<Rightarrow> 'val option) list)"
@@ -25,7 +25,7 @@ by(simp add:cspp_def)
 
 lemma csppa_Formal_in_notin_slice: 
   "\<lbrakk>x < length fs; Formal_in(m,x + i) \<notin> S\<rbrakk>
-  \<Longrightarrow> (csppa m S i fs)!x = empty"
+  \<Longrightarrow> (csppa m S i fs)!x = Map.empty"
 by(induct fs arbitrary:i x,auto simp:nth_Cons')
 
 lemma csppa_Formal_in_in_slice: 
@@ -42,7 +42,7 @@ where "map_merge f g Q xs \<equiv> (\<lambda>V. if (\<exists>i. i < length xs \<
 
 definition rspp :: "'node \<Rightarrow> 'node SDG_node set \<Rightarrow> 'var list \<Rightarrow> 
   ('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val) \<Rightarrow> ('var \<rightharpoonup> 'val)"
-where "rspp m S xs f g \<equiv> map_merge f (empty(ParamDefs m [:=] map g xs))
+where "rspp m S xs f g \<equiv> map_merge f (Map.empty(ParamDefs m [:=] map g xs))
   (\<lambda>i. Actual_out(m,i) \<in> S) (ParamDefs m)"
 
 
@@ -57,7 +57,7 @@ proof -
   from `x < length (ParamDefs (targetnode a))` 
     `length (ParamDefs (targetnode a)) = length xs`
     `distinct(ParamDefs (targetnode a))`
-  have "(empty(ParamDefs (targetnode a) [:=] map g xs))
+  have "(Map.empty(ParamDefs (targetnode a) [:=] map g xs))
     ((ParamDefs (targetnode a))!x) = (map g xs)!x"
     by(fastforce intro:fun_upds_nth)
   with `Actual_out(targetnode a,x) \<in> S` `x < length (ParamDefs (targetnode a))`
@@ -77,7 +77,7 @@ proof -
   from `x < length (ParamDefs (targetnode a))` 
     `length (ParamDefs (targetnode a)) = length xs`
     `distinct(ParamDefs (targetnode a))`
-  have "(empty(ParamDefs (targetnode a) [:=] map g xs))
+  have "(Map.empty(ParamDefs (targetnode a) [:=] map g xs))
     ((ParamDefs (targetnode a))!x) = (map g xs)!x"
     by(fastforce intro:fun_upds_nth)
   with `Actual_out((targetnode a),x) \<notin> S` `distinct(ParamDefs (targetnode a))` 
@@ -380,13 +380,13 @@ by(simp add:slice_kind_def)
 lemma slice_kind_Call_in_slice_Formal_in_not:
   assumes "sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>" and "kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs"
   and "\<forall>x < length fs. Formal_in(targetnode a,x) \<notin> HRB_slice S" 
-  shows "slice_kind S a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) empty"
+  shows "slice_kind S a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>replicate (length fs) Map.empty"
 proof -
   from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
   have "slice_kind S a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice S) fs)"
     by(simp add:slice_kind_def)
   from `\<forall>x < length fs. Formal_in(targetnode a,x) \<notin> HRB_slice S`
-  have "cspp (targetnode a) (HRB_slice S) fs = replicate (length fs) empty"
+  have "cspp (targetnode a) (HRB_slice S) fs = replicate (length fs) Map.empty"
     by(fastforce intro:nth_equalityI csppa_Formal_in_notin_slice simp:cspp_def)
   with `slice_kind S a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>(cspp (targetnode a) (HRB_slice S) fs)`
   show ?thesis by simp

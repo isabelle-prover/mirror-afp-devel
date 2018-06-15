@@ -136,7 +136,7 @@ where "transfer (\<Up>f) (cf#cfs)    = (f (fst cf),snd cf)#cfs"
   | "transfer (Q)\<^sub>\<surd> (cf#cfs)      = (cf#cfs)"
   | "transfer (Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs) (cf#cfs) = 
        (let ins = THE ins. \<exists>outs. (p,ins,outs) \<in> set procs in
-                            (empty(ins [:=] params fs (fst cf)),r)#cf#cfs)"
+                            (Map.empty(ins [:=] params fs (fst cf)),r)#cf#cfs)"
   | "transfer (Q\<hookleftarrow>\<^bsub>p\<^esub>f )(cf#cfs)    = (case cfs of [] \<Rightarrow> []
                                  | cf'#cfs' \<Rightarrow> (f (fst cf) (fst cf'),snd cf')#cfs')"
   | "transfer et [] = []"

@@ -2585,7 +2585,7 @@ proof(atomize_elim)
     have "(THE ins. \<exists>outs. (p,ins,outs) \<in> set procs) = ins"
       by(rule formal_in_THE)
     with `transfer (kind a) s\<^sub>1 = s\<^sub>1'` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
-    have [simp]:"s\<^sub>1' = (empty(ins [:=] params fs (fst cf\<^sub>1)),r)#cf\<^sub>1#cfs\<^sub>1" by simp
+    have [simp]:"s\<^sub>1' = (Map.empty(ins [:=] params fs (fst cf\<^sub>1)),r)#cf\<^sub>1#cfs\<^sub>1" by simp
     from `valid_edge a'` `a' \<in> get_return_edges a` `valid_edge a`
     have "return_node (targetnode a')" by(fastforce simp:return_node_def)
     with `valid_edge a` `valid_edge a'` `a' \<in> get_return_edges a`
@@ -2646,16 +2646,16 @@ proof(atomize_elim)
       show "V \<in> rv S (CFG_node (sourcenode a))" by(fastforce intro:rvI)
     qed
     have "\<forall>V \<in> rv S (CFG_node (targetnode a)). 
-      (empty(ins [:=] params fs (fst cf\<^sub>1))) V = 
+      (Map.empty(ins [:=] params fs (fst cf\<^sub>1))) V = 
       state_val (transfer (slice_kind S a) s\<^sub>2) V"
     proof
       fix V assume "V \<in> rv S (CFG_node (targetnode a))"
       from `sourcenode a \<in> \<lfloor>HRB_slice S\<rfloor>\<^bsub>CFG\<^esub>` `kind a = Q:r\<hookrightarrow>\<^bsub>p\<^esub>fs`
         `(THE ins. \<exists>outs. (p,ins,outs) \<in> set procs) = ins`
       have eq:"fst (hd (transfer (slice_kind S a) s\<^sub>2)) = 
-        empty(ins [:=] params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^sub>2))"
+        Map.empty(ins [:=] params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^sub>2))"
         by(auto dest:slice_kind_Call_in_slice)
-      show "(empty(ins [:=] params fs (fst cf\<^sub>1))) V = 
+      show "(Map.empty(ins [:=] params fs (fst cf\<^sub>1))) V = 
         state_val (transfer (slice_kind S a) s\<^sub>2) V"
       proof(cases "V \<in> set ins")
         case True
@@ -2735,7 +2735,7 @@ proof(atomize_elim)
           by(rule formal_in_THE)
         with slice_kind
         have "fst (hd (transfer (slice_kind S a) s\<^sub>2)) = 
-          empty(ins [:=] params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^sub>2))"
+          Map.empty(ins [:=] params (cspp (targetnode a) (HRB_slice S) fs) (fst cf\<^sub>2))"
           by simp
         moreover
         from `(p,ins,outs) \<in> set procs` have "distinct ins" 
@@ -2749,10 +2749,10 @@ proof(atomize_elim)
           by simp
         from `V = ins!i` `i < length ins` `length fs = length ins`
           `distinct ins`
-        have "empty(ins [:=] params fs (fst cf\<^sub>1)) V = (params fs (fst cf\<^sub>1))!i"
+        have "Map.empty(ins [:=] params fs (fst cf\<^sub>1)) V = (params fs (fst cf\<^sub>1))!i"
           by(fastforce intro:fun_upds_nth)
         with `i < length ins` `length fs = length ins`
-        have 1:"empty(ins [:=] params fs (fst cf\<^sub>1)) V = (fs!i) (fst cf\<^sub>1)"
+        have 1:"Map.empty(ins [:=] params fs (fst cf\<^sub>1)) V = (fs!i) (fst cf\<^sub>1)"
           by(fastforce intro:params_nth)
         from `\<forall>i < length ms\<^sub>2. \<forall>V \<in> rv S (CFG_node ((mx#tl ms\<^sub>2)!i)). 
           (fst (s\<^sub>1!(length msx + i))) V = (fst (s\<^sub>2!i)) V`
