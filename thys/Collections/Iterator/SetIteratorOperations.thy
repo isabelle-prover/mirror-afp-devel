@@ -42,13 +42,13 @@ unfolding set_iterator_rev_linord_def
 by (fact set_iterator_genord_emp_correct) 
 
 lemma (in linorder) map_iterator_linord_emp_correct :
-  "map_iterator_linord set_iterator_emp empty"
+  "map_iterator_linord set_iterator_emp Map.empty"
   "set_iterator_map_linord set_iterator_emp {}"
 unfolding set_iterator_map_linord_def
 by (simp_all add: set_iterator_genord_emp_correct map_to_set_def) 
 
 lemma (in linorder) map_iterator_rev_linord_emp_correct :
-  "map_iterator_rev_linord set_iterator_emp empty"
+  "map_iterator_rev_linord set_iterator_emp Map.empty"
   "set_iterator_map_rev_linord set_iterator_emp {}"
 unfolding set_iterator_map_rev_linord_def
 by (simp_all add: set_iterator_genord_emp_correct map_to_set_def) 
@@ -86,12 +86,12 @@ unfolding set_iterator_rev_linord_def
 by (simp add: set_iterator_genord_sng_correct) 
 
 lemma (in linorder) map_iterator_linord_sng_correct :
-  "map_iterator_linord (set_iterator_sng (k,v)) (empty (k \<mapsto> v))"
+  "map_iterator_linord (set_iterator_sng (k,v)) (Map.empty (k \<mapsto> v))"
 unfolding set_iterator_map_linord_def
 by (simp add: set_iterator_genord_sng_correct) 
 
 lemma (in linorder) map_iterator_rev_linord_sng_correct :
-  "map_iterator_rev_linord (set_iterator_sng (k,v)) (empty (k \<mapsto> v))"
+  "map_iterator_rev_linord (set_iterator_sng (k,v)) (Map.empty (k \<mapsto> v))"
 unfolding set_iterator_map_rev_linord_def
 by (simp add: set_iterator_genord_sng_correct) 
 

@@ -375,7 +375,7 @@ lemma ahm_invar_new_hashmap_with:
 by(auto simp add: ahm_invar_def new_hashmap_with_def intro: ahm_invar_aux_new_array)
 
 lemma ahm_\<alpha>_new_hashmap_with:
-  "n > 1 \<Longrightarrow> ahm_\<alpha> (new_hashmap_with n) = empty"
+  "n > 1 \<Longrightarrow> ahm_\<alpha> (new_hashmap_with n) = Map.empty"
 by(simp add: new_hashmap_with_def bounded_hashcode_nat_bounds fun_eq_iff)
 
 lemma ahm_invar_ahm_empty [simp]: "ahm_invar (ahm_empty ())"
