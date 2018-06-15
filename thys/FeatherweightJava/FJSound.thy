@@ -594,14 +594,14 @@ showing that every well-typed expression is either a value or contains
 a potential redex as a sub-expression. *}
 
 theorem Thm_2_4_2_1: 
-  assumes "CT;empty \<turnstile> e : C"
+  assumes "CT;Map.empty \<turnstile> e : C"
   and "FieldProj (New C0 es) fi \<in> subexprs(e)"
   shows "\<exists>Cf fDef. fields(CT, C0) = Cf \<and> lookup Cf (\<lambda>fd. (vdName fd = fi)) = Some fDef"
 proof -
-  obtain Ci where "CT;empty \<turnstile> (FieldProj (New C0 es) fi) : Ci" 
+  obtain Ci where "CT;Map.empty \<turnstile> (FieldProj (New C0 es) fi) : Ci" 
     using assms by (force simp add:subexpr_typing)
   then obtain Cf fDef C0'
-    where "CT;empty \<turnstile> (New C0 es) : C0'"
+    where "CT;Map.empty \<turnstile> (New C0 es) : C0'"
     and "fields(CT,C0') = Cf" 
     and "lookup Cf (\<lambda>fd. (vdName fd = fi)) = Some fDef"
     by (auto elim:typing.cases)
@@ -610,14 +610,14 @@ qed
 
 lemma Thm_2_4_2_2: 
   fixes es ds :: "exp list"
-  assumes "CT;empty \<turnstile> e : C" 
+  assumes "CT;Map.empty \<turnstile> e : C" 
   and "MethodInvk (New C0 es) m ds \<in> subexprs(e)"
   shows "\<exists>xs e0. mbody(CT,m,C0) = xs . e0 \<and> length xs = length ds"
 proof -
-  obtain D where "CT;empty \<turnstile> MethodInvk (New C0 es) m ds : D" 
+  obtain D where "CT;Map.empty \<turnstile> MethodInvk (New C0 es) m ds : D" 
     using assms by (force simp add:subexpr_typing)
   then obtain C0' Cs
-    where "CT;empty \<turnstile> (New C0 es) : C0'"
+    where "CT;Map.empty \<turnstile> (New C0 es) : C0'"
     and mt:"mtype(CT,m,C0') = Cs \<rightarrow> D"
     and "length ds = length Cs"
     by (auto elim:typing.cases)
@@ -625,7 +625,7 @@ proof -
 qed
      
 lemma closed_subterm_split: 
-  assumes "CT;\<Gamma> \<turnstile> e : C" and "\<Gamma> = empty"
+  assumes "CT;\<Gamma> \<turnstile> e : C" and "\<Gamma> = Map.empty"
   shows "
   ((\<exists>C0 es fi. (FieldProj (New C0 es) fi) \<in> subexprs(e))  
   \<or> (\<exists>C0 es m ds. (MethodInvk (New C0 es) m ds) \<in> subexprs(e))
@@ -684,7 +684,7 @@ next
   case (5 C CT Cs Df Ds \<Gamma> es)
   hence 
     "length es = length Cs"    
-    "\<And> i. \<lbrakk>i < length es; CT;\<Gamma> \<turnstile> (es!i) : (Cs!i); \<Gamma> = empty\<rbrakk> \<Longrightarrow> ?IH (es!i)"
+    "\<And> i. \<lbrakk>i < length es; CT;\<Gamma> \<turnstile> (es!i) : (Cs!i); \<Gamma> = Map.empty\<rbrakk> \<Longrightarrow> ?IH (es!i)"
     and "CT;\<Gamma> \<turnstile>+ es : Cs"
     by (auto simp add:typings_lengths)
   hence "(\<exists>i < length es. (?F (es!i) \<or> ?M (es!i) \<or> ?C (es!i))) \<or> (vals(es))" (is "?Q es")
@@ -693,8 +693,8 @@ next
     next
     case (Cons h t Ch Ct)
       with 5 have h_t_typs: "CT;\<Gamma> \<turnstile>+ (h#t) : (Ch#Ct)"
-        and OIH: "\<And> i. \<lbrakk>i < length (h#t); CT;\<Gamma> \<turnstile> ((h#t)!i) : ((Ch#Ct)!i); \<Gamma> = empty\<rbrakk> \<Longrightarrow> ?IH ((h#t)!i)"
-        and G_def: "\<Gamma> = empty"
+        and OIH: "\<And> i. \<lbrakk>i < length (h#t); CT;\<Gamma> \<turnstile> ((h#t)!i) : ((Ch#Ct)!i); \<Gamma> = Map.empty\<rbrakk> \<Longrightarrow> ?IH ((h#t)!i)"
+        and G_def: "\<Gamma> = Map.empty"
         by auto
       from h_t_typs have 
         h_typ: "CT;\<Gamma> \<turnstile> (h#t)!0 : (Ch#Ct)!0" 
@@ -702,7 +702,7 @@ next
         by(auto elim:typings.cases)
       { fix i assume "i < length t"
         hence s_i: "Suc i < length (h#t)" by auto
-        from OIH[OF s_i] have "\<lbrakk>i < length t; CT;\<Gamma> \<turnstile> (t!i) : (Ct!i); \<Gamma> = empty\<rbrakk> \<Longrightarrow> ?IH (t!i)" by auto }
+        from OIH[OF s_i] have "\<lbrakk>i < length t; CT;\<Gamma> \<turnstile> (t!i) : (Ct!i); \<Gamma> = Map.empty\<rbrakk> \<Longrightarrow> ?IH (t!i)" by auto }
       with t_typs have "?Q t" using Cons by auto
       moreover { 
         assume "\<exists>i < length t. (?F (t!i) \<or> ?M (t!i) \<or> ?C (t!i))"
@@ -818,15 +818,15 @@ qed
 subsection {* Type Soundness Theorem *}     
 
 theorem Thm_2_4_3: 
-  assumes e_typ: "CT;empty \<turnstile> e : C"
+  assumes e_typ: "CT;Map.empty \<turnstile> e : C"
   and ct_ok: "CT OK"
   and multisteps: "CT \<turnstile> e \<rightarrow>* e1"
   and no_step: "\<not>(\<exists>e2. CT \<turnstile> e1 \<rightarrow> e2)"
-  shows "(val(e1) \<and> (\<exists>D. CT;empty \<turnstile> e1 : D \<and> CT \<turnstile> D <: C))
+  shows "(val(e1) \<and> (\<exists>D. CT;Map.empty \<turnstile> e1 : D \<and> CT \<turnstile> D <: C))
       \<or> (\<exists>D C es. (Cast D (New C es) \<in> subexprs(e1) \<and> CT \<turnstile> C \<not><: D))" 
 proof -  
   from assms Cor_2_4_1_multi[OF multisteps ct_ok e_typ] obtain C1 
-    where e1_typ: "CT;empty \<turnstile> e1 : C1" 
+    where e1_typ: "CT;Map.empty \<turnstile> e1 : C1" 
     and C1_sub_C: "CT \<turnstile> C1 <: C" by auto
   from e1_typ have "((\<exists>C0 es fi. (FieldProj (New C0 es) fi) \<in> subexprs(e1))  
     \<or> (\<exists>C0 es m ds. (MethodInvk (New C0 es) m ds) \<in> subexprs(e1))
@@ -835,8 +835,8 @@ proof -
   moreover 
   { assume "?F e1" 
     then obtain C0 es fi where fp: "FieldProj (New C0 es) fi \<in> subexprs(e1)" by auto
-    then obtain Ci where "CT;empty \<turnstile> FieldProj (New C0 es) fi : Ci" using e1_typ by(force simp add:subexpr_typing)
-    then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" by (force elim: typing.cases)
+    then obtain Ci where "CT;Map.empty \<turnstile> FieldProj (New C0 es) fi : Ci" using e1_typ by(force simp add:subexpr_typing)
+    then obtain C0' where new_typ: "CT;Map.empty \<turnstile> New C0 es : C0'" by (force elim: typing.cases)
     hence "C0 = C0'" by (auto elim:typing.cases)
     with new_typ obtain Df where f1: "fields(CT,C0) = Df" and lens: "length es = length Df" by(auto elim:typing.cases)
     from Thm_2_4_2_1[OF e1_typ fp] obtain Cf fDef 
@@ -854,9 +854,9 @@ proof -
   } moreover {
     assume "?M e1"
     then obtain C0 es m ds where mi:"MethodInvk (New C0 es) m ds \<in> subexprs(e1)" by auto
-    then obtain D where "CT;empty \<turnstile> MethodInvk (New C0 es) m ds : D" using e1_typ by(force simp add:subexpr_typing)
+    then obtain D where "CT;Map.empty \<turnstile> MethodInvk (New C0 es) m ds : D" using e1_typ by(force simp add:subexpr_typing)
     then obtain C0' Es E 
-      where m_typ: "CT;empty \<turnstile> New C0 es : C0'" 
+      where m_typ: "CT;Map.empty \<turnstile> New C0 es : C0'" 
       and "mtype(CT,m,C0') = Es \<rightarrow> E"
       and "length ds = length Es"
       by (auto elim:typing.cases)
@@ -867,8 +867,8 @@ proof -
   } moreover {
     assume "?C e1"
     then obtain C0 D es where c_def: "Cast D (New C0 es) \<in> subexprs(e1)" by auto
-    then obtain D' where "CT;empty \<turnstile> Cast D (New C0 es) : D'" using e1_typ by (force simp add:subexpr_typing)
-    then obtain C0' where new_typ: "CT;empty \<turnstile> New C0 es : C0'" and D_eq_D': "D = D'" by (auto elim:typing.cases)
+    then obtain D' where "CT;Map.empty \<turnstile> Cast D (New C0 es) : D'" using e1_typ by (force simp add:subexpr_typing)
+    then obtain C0' where new_typ: "CT;Map.empty \<turnstile> New C0 es : C0'" and D_eq_D': "D = D'" by (auto elim:typing.cases)
     hence C0_eq_C0': "C0 = C0'" by(auto elim:typing.cases)
     hence ?thesis proof(cases "CT \<turnstile> C0 <: D")
       case True

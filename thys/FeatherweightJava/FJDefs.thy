@@ -142,12 +142,12 @@ primrec substs :: "(varName \<rightharpoonup> exp) \<Rightarrow> exp \<Rightarro
 abbreviation
   substs_syn :: "[exp list] \<Rightarrow> [varName list] \<Rightarrow> [exp] \<Rightarrow> exp"
     ("'(_'/_')_" [80,80,80] 80) where
-  "(ds/xs)e \<equiv> substs (map_upds empty xs ds) e"
+  "(ds/xs)e \<equiv> substs (map_upds Map.empty xs ds) e"
 
 abbreviation
   subst_list_syn :: "[exp list] \<Rightarrow> [varName list] \<Rightarrow> [exp list] \<Rightarrow> exp list"
     ("'[_'/_']_" [80,80,80] 80) where
-  "[ds/xs]es \<equiv> map (substs (map_upds empty xs ds)) es"
+  "[ds/xs]es \<equiv> map (substs (map_upds Map.empty xs ds)) es"
 
 
 subsection {* Lookup *}
@@ -407,7 +407,7 @@ m_typing:
      mReturn mDef = C0; mParams mDef = Cxs; mBody mDef = e0;
      varDefs_types Cxs = Cs;
      varDefs_names Cxs = xs;
-     \<Gamma> = (map_upds empty xs Cs)(this \<mapsto> C); 
+     \<Gamma> = (map_upds Map.empty xs Cs)(this \<mapsto> C); 
      CT;\<Gamma> \<turnstile> e0 : E0;
      CT \<turnstile> E0 <: C0;
      \<forall>Ds D0. (mtype(CT,m,D) = Ds \<rightarrow> D0) \<longrightarrow> (Cs=Ds \<and> C0=D0) \<rbrakk>
@@ -477,7 +477,7 @@ where
 
 | r_invk: 
   "\<lbrakk> mbody(CT,m,C) = xs . e0;
-     substs ((map_upds empty xs ds)(this \<mapsto> (New C es))) e0 = e0' \<rbrakk>
+     substs ((map_upds Map.empty xs ds)(this \<mapsto> (New C es))) e0 = e0' \<rbrakk>
   \<Longrightarrow> CT \<turnstile> MethodInvk (New C es) m ds \<rightarrow> e0'"
 
 | r_cast: 

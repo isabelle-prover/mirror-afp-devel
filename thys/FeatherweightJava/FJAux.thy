@@ -449,13 +449,13 @@ subsubsection{* Sub-Expressions *}
 
 lemma isubexpr_typing: 
   assumes "e1 \<in> isubexprs(e0)"
-  shows "\<And>C. \<lbrakk> CT;empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;empty \<turnstile> e1 : D"
+  shows "\<And>C. \<lbrakk> CT;Map.empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;Map.empty \<turnstile> e1 : D"
 using assms
   by (induct rule:isubexprs.induct) (auto elim:typing.cases simp add:mem_typings)
 
 lemma subexpr_typing: 
   assumes "e1 \<in> subexprs(e0)"
-  shows "\<And>C. \<lbrakk> CT;empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;empty \<turnstile> e1 : D"
+  shows "\<And>C. \<lbrakk> CT;Map.empty \<turnstile> e0 : C \<rbrakk> \<Longrightarrow> \<exists>D. CT;Map.empty \<turnstile> e1 : D"
 using assms
   by (induct rule:rtrancl.induct) (auto, force simp add:isubexpr_typing)
 
