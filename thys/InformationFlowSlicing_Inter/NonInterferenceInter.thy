@@ -699,7 +699,7 @@ next
         next
           case False
           with `i < length fs` 
-          have "(csppa (targetnode a) (HRB_slice S) 0 fs)!i = empty"
+          have "(csppa (targetnode a) (HRB_slice S) 0 fs)!i = Map.empty"
             by(rule csppa_Formal_in_notin_slice)
           thus ?thesis by simp
         qed }
