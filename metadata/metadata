@@ -4,7 +4,7 @@ author = Julian Brunner <http://www21.in.tum.de/~brunnerj/>
 topic = Computer Science/Automata and Formal Languages
 date = 2018-06-05
 notify = brunnerj@in.tum.de
-abstract = 
+abstract =
   This entry provides a formalization of the abstract theory of ample
   set partial order reduction. The formalization includes transition
   systems with actions, trace theory, as well as basics on finite,
@@ -1866,7 +1866,7 @@ abstract = We formalize in Isabelle/HOL the abtract syntax and a synchronous
 	checking. However the main motivation of this work is to provide a sound and
 	complete basis for reasoning on Statecharts. As a central meta theorem we
 	prove that the well-formedness of a Statechart is preserved by the semantics.
-notify = helke@cs.tu-berlin.de, nipkow@in.tum.de
+notify = nipkow@in.tum.de
 
 [Stuttering_Equivalence]
 title = Stuttering Equivalence
@@ -2669,7 +2669,7 @@ author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasse
 date = 2006-05-15
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We present an operational semantics and type safety proof for multiple inheritance in C++. The semantics models the behavior of method calls, field accesses, and two forms of casts in C++ class hierarchies. For explanations see the OOPSLA 2006 paper by Wasserrab, Nipkow, Snelting and Tip.
-notify = daniel.wasserrab@kit.edu, nipkow@in.tum.de
+notify = nipkow@in.tum.de
 
 [FeatherweightJava]
 title = A Theory of Featherweight Java in Isabelle/HOL
@@ -2751,7 +2751,7 @@ author = Ludovic Henrio <mailto:Ludovic.Henrio@sophia.inria.fr>, Florian Kammül
 date = 2010-04-30
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We present a Theory of Objects based on the original functional sigma-calculus by Abadi and Cardelli but with an additional parameter to methods. We prove confluence of the operational semantics following the outline of Nipkow's proof of confluence for the lambda-calculus reusing his theory Commutation, a generic diamond lemma reduction. We furthermore formalize a simple type system for our sigma-calculus including a proof of type safety. The entire development uses the concept of Locally Nameless representation for binders. We reuse an earlier proof of confluence for a simpler sigma-calculus based on de Bruijn indices and lists to represent objects.
-notify = flokam@cs.tu-berlin.de, nipkow@in.tum.de
+notify = nipkow@in.tum.de
 
 [AutoFocus-Stream]
 title = AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics
@@ -3057,7 +3057,7 @@ author = Gregor Snelting <http://pp.info.uni-karlsruhe.de/personhp/gregor_snelti
 date = 2008-09-02
 topic = Computer Science/Programming Languages/Type Systems, Computer Science/Security
 abstract = The Volpano/Smith/Irvine security type systems requires that variables are annotated as high (secret) or low (public), and provides typing rules which guarantee that secret values cannot leak to public output ports. This property of a program is called confidentiality. For a simple while-language without threads, our proof shows that typeability in the Volpano/Smith system guarantees noninterference. Noninterference means that if two initial states for program execution are low-equivalent, then the final states are low-equivalent as well. This indeed implies that secret values cannot leak to public ports. The proof defines an abstract syntax and operational semantics for programs, formalizes noninterference, and then proceeds by rule induction on the operational semantics. The mathematically most intricate part is the treatment of implicit flows. Note that the Volpano/Smith system is not flow-sensitive and thus quite unprecise, resulting in false alarms. However, due to the correctness property, all potential breaks of confidentiality are discovered.
-notify = daniel.wasserrab@kit.edu
+notify =
 
 [Abstract-Hoare-Logics]
 title = Abstract Hoare Logics
@@ -3286,7 +3286,7 @@ author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasse
 date = 2008-09-16
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = Slicing is a widely-used technique with applications in e.g. compiler technology and software security. Thus verification of algorithms in these areas is often based on the correctness of slicing, which should ideally be proven independent of concrete programming languages and with the help of well-known verifying techniques such as proof assistants. As a first step in this direction, this contribution presents a framework for dynamic and static intraprocedural slicing based on control flow and program dependence graphs. Abstracting from concrete syntax we base the framework on a graph representation of the program fulfilling certain structural and well-formedness properties.<br><br>The formalization consists of the basic framework (in subdirectory Basic/), the correctness proof for dynamic slicing (in subdirectory Dynamic/), the correctness proof for static intraprocedural slicing (in subdirectory StaticIntra/) and instantiations of the framework with a simple While language (in subdirectory While/) and the sophisticated object-oriented bytecode language of Jinja (in subdirectory JinjaVM/). For more information on the framework, see the TPHOLS 2008 paper by Wasserrab and Lochbihler and the PLAS 2009 paper by Wasserrab et al.
-notify = daniel.wasserrab@kit.edu
+notify =
 
 [HRB-Slicing]
 title = Backing up Slicing: Verifying the Interprocedural Two-Phase Horwitz-Reps-Binkley Slicer
@@ -3294,7 +3294,7 @@ author = Daniel Wasserrab <http://pp.info.uni-karlsruhe.de/personhp/daniel_wasse
 date = 2009-11-13
 topic = Computer Science/Programming Languages/Static Analysis
 abstract = After verifying <a href="Slicing.html">dynamic and static interprocedural slicing</a>, we present a modular framework for static interprocedural slicing. To this end, we formalized the standard two-phase slicer from Horwitz, Reps and Binkley (see their TOPLAS 12(1) 1990 paper) together with summary edges as presented by Reps et al. (see FSE 1994). The framework is again modular in the programming language by using an abstract CFG, defined via structural and well-formedness properties. Using a weak simulation between the original and sliced graph, we were able to prove the correctness of static interprocedural slicing. We also instantiate our framework with a simple While language with procedures. This shows that the chosen abstractions are indeed valid.
-notify = nipkow@in.tum.de, daniel.wasserrab@kit.edu
+notify = nipkow@in.tum.de
 
 [WorkerWrapper]
 title = The Worker/Wrapper Transformation
@@ -3358,7 +3358,7 @@ extra-history =
 	the <a href="InformationFlowSlicing_Inter.html">inter-</a> and <a
 	href="InformationFlowSlicing.html">intra-procedural</a> case was split into
 	two for easier maintenance.
-notify = daniel.wasserrab@kit.edu
+notify =
 
 [InformationFlowSlicing_Inter]
 title = Inter-Procedural Information Flow Noninterference via Slicing
@@ -3389,7 +3389,7 @@ extra-history =
 	the <a href="InformationFlowSlicing_Inter.html">inter-</a> and <a
 	href="InformationFlowSlicing.html">intra-procedural</a> case was split into
 	two for easier maintenance.
-notify = daniel.wasserrab@kit.edu
+notify =
 
 [ComponentDependencies]
 title = Formalisation and Analysis of Component Dependencies
