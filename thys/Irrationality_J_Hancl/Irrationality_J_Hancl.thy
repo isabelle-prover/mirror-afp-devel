@@ -31,115 +31,6 @@ hide_const floatarith.Max
 
 subsection \<open>Misc\<close>
 
-(*TODO: replace the lemma with the same name.*)
-lemma convergent_prod_Suc_iff:
-  fixes f :: "nat \<Rightarrow> 'a::real_normed_field"
-  shows "convergent_prod (\<lambda>n. f (Suc n)) = convergent_prod f"
-proof
-  assume "convergent_prod f"
-  then obtain M L where M_nz:"\<forall>n\<ge>M. f n \<noteq> 0" and 
-        M_L:"(\<lambda>n. \<Prod>i\<le>n. f (i + M)) \<longlonglongrightarrow> L" and "L \<noteq> 0" 
-    unfolding convergent_prod_altdef by auto
-  have "(\<lambda>n. \<Prod>i\<le>n. f (Suc (i + M))) \<longlonglongrightarrow> L / f M"
-  proof -
-    have "(\<lambda>n. \<Prod>i\<in>{0..Suc n}. f (i + M)) \<longlonglongrightarrow> L"
-      using M_L 
-      apply (subst (asm) LIMSEQ_Suc_iff[symmetric]) 
-      using atLeast0AtMost by auto
-    then have "(\<lambda>n. f M * (\<Prod>i\<in>{0..n}. f (Suc (i + M)))) \<longlonglongrightarrow> L"
-      apply (subst (asm) prod.atLeast0_atMost_Suc_shift)
-      by simp
-    then have "(\<lambda>n. (\<Prod>i\<in>{0..n}. f (Suc (i + M)))) \<longlonglongrightarrow> L/f M"
-      apply (drule_tac tendsto_divide)
-      using M_nz[rule_format,of M,simplified] by auto
-    then show ?thesis unfolding atLeast0AtMost .
-  qed
-  then show "convergent_prod (\<lambda>n. f (Suc n))" unfolding convergent_prod_altdef
-    apply (rule_tac exI[where x=M])
-    apply (rule_tac exI[where x="L/f M"])
-    using M_nz \<open>L\<noteq>0\<close> by auto
-next
-  assume "convergent_prod (\<lambda>n. f (Suc n))"
-  then obtain M where "\<exists>L. (\<forall>n\<ge>M. f (Suc n) \<noteq> 0) \<and> (\<lambda>n. \<Prod>i\<le>n. f (Suc (i + M))) \<longlonglongrightarrow> L \<and> L \<noteq> 0"
-    unfolding convergent_prod_altdef by auto
-  then show "convergent_prod f" unfolding convergent_prod_altdef
-    apply (rule_tac exI[where x="Suc M"])
-    using Suc_le_D by auto
-qed
-
-lemma convergent_prod_shift_iff:
-  fixes f :: "nat \<Rightarrow> 'a::real_normed_field"
-  shows "convergent_prod (\<lambda>n. f (n+k)) = convergent_prod f"
-  apply (induct k)
-  subgoal by simp
-  subgoal for k 
-    apply (subst (asm) convergent_prod_Suc_iff[symmetric])
-    by auto
-  done
-
-lemma raw_has_prod_Suc: 
-  "raw_has_prod f (Suc M) a \<longleftrightarrow> raw_has_prod (\<lambda>n. f (Suc n)) M a"
-  unfolding raw_has_prod_def by auto
-
-lemma has_prod_Suc_imp: 
-  fixes f :: "nat \<Rightarrow> 'a::real_normed_field"
-  assumes "(\<lambda>n. f (Suc n)) has_prod a"
-  shows "f has_prod (a * f 0)"
-proof -
-  have "f has_prod (a * f 0)" when "raw_has_prod (\<lambda>n. f (Suc n)) 0 a" 
-    apply (cases "f 0=0")
-    using that unfolding has_prod_def raw_has_prod_Suc 
-    by (auto simp add: raw_has_prod_Suc_iff)
-  moreover have "f has_prod (a * f 0)" when 
-    "(\<exists>i q. a = 0 \<and> f (Suc i) = 0 \<and> raw_has_prod (\<lambda>n. f (Suc n)) (Suc i) q)" 
-  proof -
-    from that 
-    obtain i q where "a = 0" "f (Suc i) = 0" "raw_has_prod (\<lambda>n. f (Suc n)) (Suc i) q"
-      by auto
-    then show ?thesis unfolding has_prod_def 
-      by (auto intro!:exI[where x="Suc i"] simp:raw_has_prod_Suc)
-  qed
-  ultimately show "f has_prod (a * f 0)" using assms unfolding has_prod_def by auto
-qed
-
-lemma exp_suminf_prodinf_real:
-  fixes f :: "nat \<Rightarrow> real"
-  assumes ge0:"\<forall>n. f n\<ge>0" and "abs_convergent_prod (\<lambda>n. exp (f n))"
-  shows "exp (suminf f) = prodinf (\<lambda>n. exp (f n))"
-proof -
-  define fs fp where "fs = (\<lambda>n. exp (sum f {..n}))" and "fp = (\<lambda>n. prod (\<lambda>j. exp (f j)) {..n})"
-  have "fs \<longlonglongrightarrow> exp (suminf f)" 
-  proof -
-    have "summable f" 
-      using assms(2) unfolding abs_convergent_prod_conv_summable
-    proof (elim summable_comparison_test')
-      fix n
-      show "norm (f n) \<le> norm (exp (f n) - 1)" 
-        using ge0[rule_format,of n] 
-        by (metis abs_of_nonneg add.commute diff_add_cancel diff_ge_0_iff_ge exp_ge_add_one_self 
-          exp_le_cancel_iff one_le_exp_iff real_norm_def)
-    qed
-    from summable_LIMSEQ'[OF this]
-    have "(\<lambda>n. sum f {..n}) \<longlonglongrightarrow> suminf f" .
-    from tendsto_exp[OF this] 
-    show ?thesis unfolding fs_def by simp
-  qed
-  moreover have "\<forall>\<^sub>F x in sequentially. fs x=fp x" 
-    unfolding fs_def fp_def
-    apply (rule eventuallyI)
-    by (simp add: exp_sum)
-  ultimately have "fp \<longlonglongrightarrow> exp (suminf f)" 
-    using tendsto_cong by auto
-  moreover have "fp \<longlonglongrightarrow> prodinf (\<lambda>n. exp (f n))" 
-  proof -
-    have "convergent_prod (\<lambda>n. exp (f n))"
-      using abs_convergent_prod_imp_convergent_prod[OF assms(2)] .
-    from convergent_prod_LIMSEQ[OF this] show ?thesis unfolding fp_def .
-  qed
-  ultimately show "exp (suminf f) =  prodinf (\<lambda>n. exp (f n))"
-    using LIMSEQ_unique by auto
-qed
-
 lemma filterlim_sequentially_iff:
   "filterlim f F1 sequentially \<longleftrightarrow> filterlim (\<lambda>x. f (x+k)) F1 sequentially"
   unfolding filterlim_iff
@@ -147,7 +38,7 @@ lemma filterlim_sequentially_iff:
   by auto
 
 lemma filterlim_realpow_sequentially_at_top:
-  "(x::real)>1 \<Longrightarrow> filterlim ((^) x) at_top sequentially"
+  "(x::real) > 1 \<Longrightarrow> filterlim ((^) x) at_top sequentially"
   apply (rule LIMSEQ_divide_realpow_zero[THEN filterlim_inverse_at_top,of _ 1,simplified])
   by auto
 
@@ -396,13 +287,13 @@ proof(rule,rule)
   proof -
     have "(\<Prod>j. d (j + i)) = (\<Prod>ia. d (ia + (n - i) + i)) * (\<Prod>ia<n - i. d (ia + i))"
       apply (rule prodinf_split_initial_segment) 
-      subgoal using \<open>convergent_prod d\<close> convergent_prod_shift_iff[of d i] by simp
+      subgoal using \<open>convergent_prod d\<close> convergent_prod_iff_shift[of d i] by simp
       subgoal for j using d[rule_format,of "j+i"] by auto
       done
     then have "sp i = sp n * (\<Prod>j<n - i. d (i + j))"
       unfolding sp_def using \<open>n\<ge>i\<close> by (auto simp:algebra_simps)
     moreover have "sp i>1" "sp n>1" 
-      unfolding sp_def using convergent_prod_shift_iff \<open>convergent_prod d\<close> d 
+      unfolding sp_def using convergent_prod_iff_shift \<open>convergent_prod d\<close> d 
       by (auto intro!:less_1_prodinf)
     moreover have "(\<Prod>j<n - i. d (i + j)) \<ge>1" 
       apply (rule prod_ge_1)
@@ -495,7 +386,7 @@ proof (rule ccontr)
   define B where "B=prodinf (\<lambda>j. d(t+1+j))"
   have "B>0" unfolding B_def 
     apply (rule less_0_prodinf)
-    subgoal using convergent_prod_shift_iff[of d "t+1"] \<open>convergent_prod d\<close> 
+    subgoal using convergent_prod_iff_shift[of d "t+1"] \<open>convergent_prod d\<close> 
       by (auto simp:algebra_simps)
     subgoal using d le_less_trans zero_le_one by blast
     done
@@ -509,7 +400,7 @@ proof (rule ccontr)
     proof -
       have "(\<lambda>n. \<Prod>i\<le>n. d (t + 1 + i)) \<longlonglongrightarrow> B"
         apply (rule convergent_prod_LIMSEQ[of "(\<lambda>j. d(t+1+j))",folded B_def])
-        using \<open>convergent_prod d\<close> convergent_prod_shift_iff[of d "t+1"] by (simp add:algebra_simps)
+        using \<open>convergent_prod d\<close> convergent_prod_iff_shift[of d "t+1"] by (simp add:algebra_simps)
       then have "(\<lambda>n. \<Prod>i\<in>{0..n}. d (i+(t + 1))) \<longlonglongrightarrow> B"
         using atLeast0AtMost by (auto simp:algebra_simps)
       then have "(\<lambda>n. prod d {(t + 1)..n + (t + 1)}) \<longlonglongrightarrow> B" 
@@ -831,7 +722,7 @@ proof-
         by (auto simp add:powr_divide inverse_eq_divide sqrt_divide_self_eq)
       moreover have "(\<lambda>n. d (Suc n))\<longlonglongrightarrow> 1" 
         apply (rule convergent_prod_imp_LIMSEQ)
-        using convergent_prod_shift_iff[of d 1] \<open>convergent_prod d\<close> by auto
+        using convergent_prod_iff_shift[of d 1] \<open>convergent_prod d\<close> by auto
       ultimately show ?thesis
         unfolding ff_def by (auto intro:tendsto_eq_intros)
     qed
@@ -1085,15 +976,15 @@ proof-
           ln_exp ln_less_cancel_iff mult_zero_left rel_simps(27) rel_simps(76) zero_less_one
           zero_less_power)
     moreover have "exp (\<Sum>j. ln (d (n + j))) = (\<Prod>j. d (n + j))"
-    proof (subst exp_suminf_prodinf_real)
-      show "\<forall>na. 0 \<le> ln (d (n + na))" 
+    proof (subst exp_suminf_prodinf_real [symmetric])
+      show "\<And>k. 0 \<le> ln (d (n + k))" 
         using dgt1 by (simp add: less_imp_le)
       show "abs_convergent_prod (\<lambda>na. exp (ln (d (n + na))))"
         apply (subst exp_ln)
         subgoal for j using dgt1[rule_format,of "n+j"] by auto
         subgoal unfolding abs_convergent_prod_def real_norm_def
           apply (subst abs_of_nonneg)
-          using convergent_prod_shift_iff[of d n] \<open>convergent_prod d\<close> 
+          using convergent_prod_iff_shift[of d n] \<open>convergent_prod d\<close> 
           by (auto simp add: dgt1 less_imp_le algebra_simps)
         done
       show "(\<Prod>na. exp (ln (d (n + na)))) = (\<Prod>j. d (n + j))"
