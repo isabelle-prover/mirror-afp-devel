@@ -413,7 +413,7 @@ begin
           ASSERT (p \<notin> dom m);
           RETURN (m (p \<mapsto> (k, True)))
         }
-        ) empty
+        ) Map.empty
       }"
   definition merge_4 :: "item \<Rightarrow> item option \<Rightarrow> item" where
     "merge_4 \<equiv> \<lambda> (k, c). \<lambda> None \<Rightarrow> (k, c) | Some (l, d) \<Rightarrow> (k \<sqinter> l, c \<squnion> d)"
@@ -426,7 +426,7 @@ begin
         FOREACH (succ A a p) (\<lambda> q f.
           RETURN (f (q \<mapsto> merge_4 s (f q))))
         m)
-      empty
+      Map.empty
     }"
   definition items_4 :: "('label, 'state) nba \<Rightarrow> 'state \<Rightarrow> item \<Rightarrow> item set" where
     "items_4 A p \<equiv> \<lambda> (k, c). do
@@ -442,7 +442,7 @@ begin
         ASSERT (\<forall> g \<in> X. x \<notin> dom g);
         ASSERT (\<forall> a \<in> S. \<forall> b \<in> S. a \<noteq> b \<longrightarrow> (\<lambda> y. (\<lambda> g. g (x \<mapsto> y)) ` X) a \<inter> (\<lambda> y. (\<lambda> g. g (x \<mapsto> y)) ` X) b = {});
         RETURN (\<Union> y \<in> S. (\<lambda> g. g (x \<mapsto> y)) ` X)
-      }) {empty}"
+      }) {Map.empty}"
   definition complement_succ_4 ::
     "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
     "complement_succ_4 A a f \<equiv> do
@@ -453,7 +453,7 @@ begin
       expand_4 (get_4 A f)
     }"
 
-  lemma bounds_3_empty: "bounds_3 A a empty = empty"
+  lemma bounds_3_empty: "bounds_3 A a Map.empty = Map.empty"
     unfolding bounds_3_def Let_def by auto
   lemma bounds_3_update: "bounds_3 A a (f (p \<mapsto> s)) =
     override_on (bounds_3 A a f) (Some \<circ> merge_4 s \<circ> bounds_3 A a (f (p := None))) (succ A a p)"
@@ -513,7 +513,7 @@ begin
       ASSERT (\<forall> g \<in> X. k \<notin> dom g);
       ASSERT (\<forall> a \<in> (items_4 A k v). \<forall> b \<in> (items_4 A k v). a \<noteq> b \<longrightarrow> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) a \<inter> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) b = {});
       RETURN (\<Union> y \<in> items_4 A k v. (\<lambda> g. g (k \<mapsto> y)) ` X)
-      }) {empty}"
+      }) {Map.empty}"
 
   lemma expand_map_get_5_refine: "(expand_map_get_5, expand_4 \<circ>\<circ> get_4) \<in> Id \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
     unfolding expand_map_get_5_def expand_4_def get_4_def by (auto intro: FOREACH_rule_map_map[param_fo])
