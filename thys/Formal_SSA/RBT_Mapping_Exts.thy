@@ -31,9 +31,9 @@ proof-
     fix xs :: "('a \<times> 'c) list"
     assume asm: "distinct (map fst xs)"
     hence
-      "(k, v) \<in> set xs \<Longrightarrow> Some v = foldr (\<lambda>(x, v) m. m(f x \<mapsto> v)) xs empty (f k)"
-      "k \<notin> fst ` set xs \<Longrightarrow> None = foldr (\<lambda>(x, v) m. m(f x \<mapsto> v)) xs empty (f k)"
-      "\<And>x. x \<notin> f ` UNIV \<Longrightarrow> None = foldr (\<lambda>(x, v) m. m(f x \<mapsto> v)) xs empty x"
+      "(k, v) \<in> set xs \<Longrightarrow> Some v = foldr (\<lambda>(x, v) m. m(f x \<mapsto> v)) xs Map.empty (f k)"
+      "k \<notin> fst ` set xs \<Longrightarrow> None = foldr (\<lambda>(x, v) m. m(f x \<mapsto> v)) xs Map.empty (f k)"
+      "\<And>x. x \<notin> f ` UNIV \<Longrightarrow> None = foldr (\<lambda>(x, v) m. m(f x \<mapsto> v)) xs Map.empty x"
       by (induction xs) (auto simp: image_def dest!: injD[OF assms])
   }
   note a = this[unfolded foldr_conv_fold, where xs3="rev _", simplified]
