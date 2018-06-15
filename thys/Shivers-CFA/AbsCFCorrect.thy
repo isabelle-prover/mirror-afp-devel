@@ -95,7 +95,7 @@ text {*
 Some results about the abstractions functions.
 *}
 
-lemma abs_benv_empty[simp]: "|empty| = empty"
+lemma abs_benv_empty[simp]: "|Map.empty| = Map.empty"
 unfolding abs_benv_def by simp
 
 lemma abs_benv_upd[simp]: "|\<beta>(c\<mapsto>b)| = |\<beta>| (c \<mapsto> |b| )"
@@ -111,7 +111,7 @@ lemma [simp]: "|{}| = {}" unfolding abs_ccache_def by auto
 lemma abs_cache_singleton [simp]: "|{((c,\<beta>),d)}| = {((c, |\<beta>| ), p) |p. p \<in> |d|}"
   unfolding abs_ccache_def by simp
 
-lemma abs_venv_empty[simp]: "|empty| = {}."
+lemma abs_venv_empty[simp]: "|Map.empty| = {}."
   apply (rule ext) by (auto simp add: abs_venv_def smap_empty_def)
 
 

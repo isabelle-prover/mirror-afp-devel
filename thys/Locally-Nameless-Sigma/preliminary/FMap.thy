@@ -33,18 +33,18 @@ theorem fmap_unique: "x = y \<Longrightarrow> (f::('a,'b)fmap) x = f y"
   by (erule ssubst, rule refl)
 
 theorem fmap_case:
-  "(F::('a -~> 'b)) = empty \<or> (\<exists>x y (F'::('a -~> 'b)). F = F'(x \<mapsto> y))"
-proof (cases "F = empty")
+  "(F::('a -~> 'b)) = Map.empty \<or> (\<exists>x y (F'::('a -~> 'b)). F = F'(x \<mapsto> y))"
+proof (cases "F = Map.empty")
   case True thus ?thesis by (rule disjI1)
 next
   case False thus ?thesis
   proof (simp)
-    from `F \<noteq> empty` have "\<exists>x. F x \<noteq> None"
+    from `F \<noteq> Map.empty` have "\<exists>x. F x \<noteq> None"
     proof (rule contrapos_np)
       assume "\<not> (\<exists>x. F x \<noteq> None)"
       hence "\<forall>x. F x = None" by simp
       hence "\<And>x. F x = None" by simp
-      thus "F = empty" by (rule ext)
+      thus "F = Map.empty" by (rule ext)
     qed
     thus "\<exists>x y F'. F = F'(x \<mapsto> y)"
     proof
@@ -321,7 +321,7 @@ qed
 lemma empty_dom: 
   fixes g
   assumes "{} = dom g"
-  shows "g = empty"
+  shows "g = Map.empty"
 proof 
   fix x from assms show "g x = None" by auto
 qed
@@ -329,7 +329,7 @@ qed
 theorem fmap_induct[rule_format, case_names empty insert]:
   fixes  P  :: "(('a :: finite) -~> 'b) \<Rightarrow> bool" and  F' :: "('a  -~> 'b)"
   assumes 
-  "P empty" and
+  "P Map.empty" and
   "\<forall>(F::('a -~> 'b)) x z. x \<notin> dom F \<longrightarrow> P F \<longrightarrow> P (F(x \<mapsto> z))"
   shows "P F'"
 proof -
@@ -341,8 +341,8 @@ proof -
       proof (intro strip)
         fix F' :: "'a -~> 'b" assume "{} = set_fmap F'"
         hence "\<And>a. F' a = None" unfolding set_fmap_def by auto
-        hence "F' = empty" by (rule ext)
-        with `P empty` rep_fmap_base[of P empty] 
+        hence "F' = Map.empty" by (rule ext)
+        with `P Map.empty` rep_fmap_base[of P Map.empty] 
         show "pred_set_fmap P (set_fmap F')" by simp
       qed
     next
@@ -382,27 +382,27 @@ qed
 lemma fmap_induct3[consumes 2, case_names empty insert]:
   "\<And>(F2::('a::finite) -~> 'b) (F3::('a -~> 'b)).
    \<lbrakk> dom (F1::('a -~> 'b)) = dom F2; dom F3 = dom F1; 
-     P empty empty empty;
+     P Map.empty Map.empty Map.empty;
      \<And>x a b c (F1::('a -~> 'b)) (F2::('a -~> 'b)) (F3::('a -~> 'b)).
      \<lbrakk> P F1 F2 F3; dom F1 = dom F2; dom F3 = dom F1; x \<notin> dom F1 \<rbrakk>
      \<Longrightarrow> P (F1(x \<mapsto> a)) (F2(x \<mapsto> b)) (F3(x \<mapsto> c)) \<rbrakk>
   \<Longrightarrow> P F1 F2 F3"
 proof (induct F1 rule: fmap_induct)
   case empty
-  from `dom empty = dom F2` have "F2 = empty" by (simp add: empty_dom)
+  from `dom Map.empty = dom F2` have "F2 = Map.empty" by (simp add: empty_dom)
   moreover
-  from `dom F3 = dom empty` have "F3 = empty" by (simp add: empty_dom)
+  from `dom F3 = dom Map.empty` have "F3 = Map.empty" by (simp add: empty_dom)
   ultimately
-  show ?case using `P empty empty empty` by simp
+  show ?case using `P Map.empty Map.empty Map.empty` by simp
 next
   case (insert F x y) thus ?case
-  proof (cases "F2 = empty")
+  proof (cases "F2 = Map.empty")
     case True with `dom (F(x \<mapsto> y)) = dom F2` 
     have "dom (F(x \<mapsto> y)) = {}" by auto
     thus ?thesis by auto
   next
     case False thus ?thesis
-    proof (cases "F3 = empty")
+    proof (cases "F3 = Map.empty")
       case True with `dom F3 = dom (F(x \<mapsto> y))` 
       have "dom (F(x \<mapsto> y)) = {}" by simp
       thus ?thesis by simp

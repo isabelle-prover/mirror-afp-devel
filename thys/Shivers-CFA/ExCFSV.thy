@@ -72,7 +72,7 @@ proof(cases v)
   case P thus ?thesis by simp
 qed
 
-lemma contours_in_ve_empty[simp]: "contours_in_ve empty = {}"
+lemma contours_in_ve_empty[simp]: "contours_in_ve Map.empty = {}"
   unfolding contours_in_ve_def by auto
 
 lemma contours_in_ve_upds:

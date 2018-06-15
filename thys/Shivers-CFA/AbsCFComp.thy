@@ -83,7 +83,7 @@ The initial argument vector, as created by @{text \<aPR>}.
 
 definition initial_r :: "prog \<Rightarrow> ('c::contour \<afstate> + 'c \<acstate>) discr"
   where "initial_r prog = Discr (Inl
-     (the_elem (\<aA> (L prog) empty {}.), [{AStop}], {}., \<abinit>))"
+     (the_elem (\<aA> (L prog) Map.empty {}.), [{AStop}], {}., \<abinit>))"
 
 subsection {* Towards finiteness *}
 

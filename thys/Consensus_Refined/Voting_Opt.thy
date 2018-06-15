@@ -13,7 +13,7 @@ record opt_v_state =
   decisions :: "(process, val)map"
 
 definition flv_init where
-  "flv_init = { \<lparr> next_round = 0, last_vote = empty, decisions = empty \<rparr> }"
+  "flv_init = { \<lparr> next_round = 0, last_vote = Map.empty, decisions = Map.empty \<rparr> }"
 
 context quorum_process begin
 

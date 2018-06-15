@@ -68,7 +68,7 @@ definition ts_mru_trans :: "(three_step_mru_state \<times> three_step_mru_state)
       \<union> (\<Union>r dec_f. opt_mru_step2 r dec_f) \<union> Id"
 
 definition ts_mru_init where
-  "ts_mru_init = { \<lparr> next_round = 0, mru_vote = empty, decisions = empty, candidates = {} \<rparr> }"
+  "ts_mru_init = { \<lparr> next_round = 0, mru_vote = Map.empty, decisions = Map.empty, candidates = {} \<rparr> }"
 
 definition ts_mru_TS :: "three_step_mru_state TS" where
   "ts_mru_TS = \<lparr> init = ts_mru_init, trans = ts_mru_trans \<rparr>"

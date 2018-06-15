@@ -703,10 +703,10 @@ qed
 
 text {* Typed in the Empty Environment implies typed in any Environment *}
 lemma empty_env: 
-  assumes "(Env empty) \<turnstile> t : A" and "ok env"
+  assumes "(Env Map.empty) \<turnstile> t : A" and "ok env"
   shows "env \<turnstile> t : A"
 proof -
-  from `ok env` have "env = (Env empty)+env" by (cases env, auto)
+  from `ok env` have "env = (Env Map.empty)+env" by (cases env, auto)
   with disjunct_env[OF assms(1) _ assms(2)] show ?thesis by simp
 qed
 
@@ -1264,24 +1264,24 @@ proof (cases A)
   qed
 qed
 
-lemma not_var: "Env empty \<turnstile> a : A \<Longrightarrow> \<forall>x. a \<noteq> Fvar x"
+lemma not_var: "Env Map.empty \<turnstile> a : A \<Longrightarrow> \<forall>x. a \<noteq> Fvar x"
   by (rule allI, case_tac x, auto)
 
-lemma Call_label_range: "(Env empty) \<turnstile> Call (Obj c T) l b : A \<Longrightarrow> l \<in> dom c"
+lemma Call_label_range: "(Env Map.empty) \<turnstile> Call (Obj c T) l b : A \<Longrightarrow> l \<in> dom c"
   by (erule typing_elims, erule typing.cases, simp_all)
 
-lemma  Call_subterm_type: "Env empty \<turnstile> Call t l b: T 
-  \<Longrightarrow> (\<exists>T'. Env empty \<turnstile> t : T') \<and>  (\<exists>T'. Env empty \<turnstile> b : T')"
+lemma  Call_subterm_type: "Env Map.empty \<turnstile> Call t l b: T 
+  \<Longrightarrow> (\<exists>T'. Env Map.empty \<turnstile> t : T') \<and>  (\<exists>T'. Env Map.empty \<turnstile> b : T')"
   by (erule typing.cases) auto
 
-lemma Upd_label_range: "Env empty \<turnstile> Upd (Obj c T) l x : A \<Longrightarrow> l \<in> dom c"
+lemma Upd_label_range: "Env Map.empty \<turnstile> Upd (Obj c T) l x : A \<Longrightarrow> l \<in> dom c"
   by (erule typing_elims, erule typing.cases, simp_all)
 
 lemma Upd_subterm_type: 
-  "Env empty \<turnstile> Upd t l x : T \<Longrightarrow> \<exists>T'. Env empty \<turnstile> t : T'" 
+  "Env Map.empty \<turnstile> Upd t l x : T \<Longrightarrow> \<exists>T'. Env Map.empty \<turnstile> t : T'" 
   by (erule typing.cases) auto
 
-lemma no_var: "\<exists>T. Env empty \<turnstile> Fvar x : T \<Longrightarrow> False"
+lemma no_var: "\<exists>T. Env Map.empty \<turnstile> Fvar x : T \<Longrightarrow> False"
   by (case_tac x, auto)
 
 lemma no_bvar: "e \<turnstile> Bvar x : T \<Longrightarrow> False" 
@@ -1305,16 +1305,16 @@ qed
 subsubsection{*Progress*}
 text {* Final Type Soundness Lemma *}
 theorem progress: 
-  assumes "Env empty \<turnstile> t : A" and "\<not>(\<exists>c A. t = Obj c A)"
+  assumes "Env Map.empty \<turnstile> t : A" and "\<not>(\<exists>c A. t = Obj c A)"
   shows "\<exists>b. t \<rightarrow>\<^sub>\<beta> b"
 proof -
   fix f
   have 
-    "(\<forall>A. Env empty \<turnstile> t : A \<longrightarrow> \<not>(\<exists>c T. t = Obj c T) \<longrightarrow> (\<exists>b. t \<rightarrow>\<^sub>\<beta> b))
-    &(\<forall>A. Env empty \<turnstile> Obj f A : A \<longrightarrow> \<not>(\<exists>c T. Obj f A = Obj c T) 
+    "(\<forall>A. Env Map.empty \<turnstile> t : A \<longrightarrow> \<not>(\<exists>c T. t = Obj c T) \<longrightarrow> (\<exists>b. t \<rightarrow>\<^sub>\<beta> b))
+    &(\<forall>A. Env Map.empty \<turnstile> Obj f A : A \<longrightarrow> \<not>(\<exists>c T. Obj f A = Obj c T) 
        \<longrightarrow> (\<exists>b. Obj f A \<rightarrow>\<^sub>\<beta> b))"
   proof (induct rule: sterm_induct)
-    case (Bvar b) with no_bvar[of "Env empty" b] show ?case 
+    case (Bvar b) with no_bvar[of "Env Map.empty" b] show ?case 
       by auto (* contradiction *)
   next
     case (Fvar x) with Fvar_beta[of x] show ?case
@@ -1329,18 +1329,18 @@ proof -
     case (Call t1 l t2) show ?case
     proof (clarify)
       fix T assume 
-        "Env empty \<turnstile> t1 : T" and "Env empty \<turnstile> t2 : param(the(T^l))" and "l \<in> do T"
+        "Env Map.empty \<turnstile> t1 : T" and "Env Map.empty \<turnstile> t2 : param(the(T^l))" and "l \<in> do T"
       note lc = typing_regular''[OF this(1)] typing_regular''[OF this(2)]
       from 
-        `Env empty \<turnstile> t1 : T` 
-        `\<forall>A. Env empty \<turnstile> t1 : A \<longrightarrow> \<not> (\<exists>c T. t1 = Obj c T) \<longrightarrow> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)`
+        `Env Map.empty \<turnstile> t1 : T` 
+        `\<forall>A. Env Map.empty \<turnstile> t1 : A \<longrightarrow> \<not> (\<exists>c T. t1 = Obj c T) \<longrightarrow> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)`
       have "(\<exists>c B. t1 = Obj c B) \<or> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)" by auto
       thus "\<exists>b. Call t1 l t2 \<rightarrow>\<^sub>\<beta> b"
       proof (elim disjE exE)
         fix c B assume "t1 = Obj c B" 
         with 
-          `Env empty \<turnstile> t1 : T` obj_inv[of "Env empty" c B T] 
-          `l \<in> do T` obj_inv_elim[of "Env empty" c B]
+          `Env Map.empty \<turnstile> t1 : T` obj_inv[of "Env Map.empty" c B T] 
+          `l \<in> do T` obj_inv_elim[of "Env Map.empty" c B]
         have "l \<in> dom c" by auto
         with `t1 = Obj c B` lc beta.beta[of l c B t2]
         show ?thesis by auto
@@ -1356,22 +1356,22 @@ proof -
       assume 
         "finite F" and
         "\<forall>s p. s \<notin> F \<and> p \<notin> F \<and> s \<noteq> p
-          \<longrightarrow> Env empty\<lparr>s:T\<rparr>\<lparr>p:param(the(T^l))\<rparr> 
+          \<longrightarrow> Env Map.empty\<lparr>s:T\<rparr>\<lparr>p:param(the(T^l))\<rparr> 
               \<turnstile> (t2\<^bsup>[Fvar s,Fvar p]\<^esup>) : return(the(T^l))" and
-        "Env empty \<turnstile> t1 : T" and
+        "Env Map.empty \<turnstile> t1 : T" and
         "l \<in> do T"
       from typing_regular''[OF T_Upd[OF this]] lc_upd[of t1 l t2]
       obtain "lc t1" and "body t2" by auto
       from 
-        `Env empty \<turnstile> t1 : T` 
-        `\<forall>A. Env empty \<turnstile> t1 : A \<longrightarrow> \<not> (\<exists>c T. t1 = Obj c T) \<longrightarrow> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)`
+        `Env Map.empty \<turnstile> t1 : T` 
+        `\<forall>A. Env Map.empty \<turnstile> t1 : A \<longrightarrow> \<not> (\<exists>c T. t1 = Obj c T) \<longrightarrow> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)`
       have "(\<exists>c B. t1 = Obj c B) \<or> (\<exists>b. t1 \<rightarrow>\<^sub>\<beta> b)" by auto
       thus "\<exists>b. Upd t1 l t2 \<rightarrow>\<^sub>\<beta> b"
       proof (elim disjE exE)
         fix c B assume "t1 = Obj c B" 
         with 
-          `Env empty \<turnstile> t1 : T` obj_inv[of "Env empty" c B T] 
-          `l \<in> do T` obj_inv_elim[of "Env empty" c B]
+          `Env Map.empty \<turnstile> t1 : T` obj_inv[of "Env Map.empty" c B T] 
+          `l \<in> do T` obj_inv_elim[of "Env Map.empty" c B]
         have "l \<in> dom c" by auto
         with `t1 = Obj c B` `lc t1` `body t2` beta.beta_Upd[of l c B t2]
         show ?thesis by auto

@@ -70,7 +70,7 @@ where
 definition game_1 :: "('domain, 'range) adversary \<Rightarrow> bool spmf"
 where
   "game_1 \<A> = do {
-     (b, _) \<leftarrow> exec_gpv random_oracle \<A> empty;
+     (b, _) \<leftarrow> exec_gpv random_oracle \<A> Map.empty;
      return_spmf b
    }"
 

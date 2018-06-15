@@ -110,7 +110,7 @@ lemma sterm_induct[case_names Bvar Fvar Obj Call Upd empty insert]:
    a_obj: "\<And>f T. P3 f \<Longrightarrow> P1 (Obj f T)" and
   "\<And>t1 l t2. \<lbrakk> P1 t1; P1 t2 \<rbrakk> \<Longrightarrow> P1 (Call t1 l t2)" and
   "\<And>t1 l t2. \<lbrakk> P1 t1; P1 t2 \<rbrakk> \<Longrightarrow> P1 (Upd t1 l t2)" and
-  "P3 empty" and
+  "P3 Map.empty" and
   a_f: "\<And>t1 f l . \<lbrakk> l \<notin> dom f; P1 t1; P3 f \<rbrakk> \<Longrightarrow> (P3 (f(l \<mapsto> t1)))"
   shows "P1 t \<and> P3 f"
 proof -
@@ -122,7 +122,7 @@ proof -
     proof (induct_tac t and foobar rule: compat_sterm.induct compat_sterm_option.induct, auto)
       fix f :: "Label -~> sterm" and T :: type
       assume "\<And>x. applyPropOnOption P1 (f x)"
-      with a_f `P3 empty` have "P3 f"
+      with a_f `P3 Map.empty` have "P3 f"
       proof (induct f rule: fmap_induct, simp)
         case (insert F x z)
         note 
@@ -143,7 +143,7 @@ proof -
               by (simp only: ssubst[OF eq])
           qed
         qed
-        from a_f predP3[OF _ `P3 empty` this] have P3F: "P3 F" by simp
+        from a_f predP3[OF _ `P3 Map.empty` this] have P3F: "P3 F" by simp
         from P1F'[of x]
         have "applyPropOnOption P1 (Some z)" by auto
         hence "P1 z" by simp
@@ -155,7 +155,7 @@ proof -
   with assms show ?thesis
   proof (auto)
     assume "\<And>l f t1. \<lbrakk>l \<notin> dom f; P3 f\<rbrakk> \<Longrightarrow> P3 (f(l \<mapsto> t1))"
-    with `P3 empty` show "P3 f" by (rule fmap_induct)
+    with `P3 Map.empty` show "P3 f" by (rule fmap_induct)
   qed
 qed
 
@@ -2556,9 +2556,9 @@ lemma rtrancl_beta_obj_n:
                         \<and> the(g l) = \<sigma>[s,p]t'')" and
   "dom f = dom g" and "\<forall>l\<in>dom f. body (the(f l))"
   shows "Obj f T \<rightarrow>\<^sub>\<beta>\<^sup>* Obj g T"
-proof (cases "f = empty")
+proof (cases "f = Map.empty")
   case True with `dom f = dom g` have "{} = dom g" by simp
-  from `f = empty` empty_dom[OF this] show ?thesis by simp
+  from `f = Map.empty` empty_dom[OF this] show ?thesis by simp
 next
   from rtrancl_beta_obj_lem00[OF assms]
   obtain ob :: "((Label -~> sterm) \<times> (Label set)) list" 

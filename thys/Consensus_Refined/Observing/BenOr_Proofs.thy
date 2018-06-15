@@ -319,7 +319,7 @@ proof(clarsimp simp add: PO_rhoare_defs BenOr_trans_step_def all_conj_distrib)
   next
     fix p
     case False
-    hence empty: "o_f = empty"
+    hence empty: "o_f = Map.empty"
       by(auto simp add: o_f_def)
     from False have "S \<noteq> UNIV" using UNIV_quorum
       by auto
