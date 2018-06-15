@@ -53,7 +53,7 @@ definition tso_round1
   }"
 
 definition tso_init where
-  "tso_init = { \<lparr> next_round = 0, decisions = empty, last_obs = empty, r_votes = empty \<rparr> }"
+  "tso_init = { \<lparr> next_round = 0, decisions = Map.empty, last_obs = Map.empty, r_votes = Map.empty \<rparr> }"
 
 definition tso_trans :: "(tso_state \<times> tso_state) set" where
   "tso_trans = (\<Union>r S v. tso_round0 r S v) \<union> (\<Union>r d_f o_f. tso_round1 r d_f o_f) \<union> Id"

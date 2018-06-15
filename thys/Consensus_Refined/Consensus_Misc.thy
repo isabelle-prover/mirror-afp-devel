@@ -173,7 +173,7 @@ definition const_map :: "'v \<Rightarrow> 'k set \<Rightarrow> ('k, 'v)map" wher
   "const_map v S \<equiv> (\<lambda>_. Some v) |` S"
 
 lemma const_map_empty[simp]:
-  "const_map v {} = empty"
+  "const_map v {} = Map.empty"
   by(auto simp add: const_map_def)
 
 lemma const_map_ran[simp]: "x \<in> ran (const_map v S) = (S \<noteq> {} \<and> x = v)"

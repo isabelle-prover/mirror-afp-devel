@@ -35,7 +35,7 @@ definition olv_round where
   }"
 
 definition olv_init where
-  "olv_init = { \<lparr> next_round = 0, decisions = empty, last_obs = empty \<rparr> }"
+  "olv_init = { \<lparr> next_round = 0, decisions = Map.empty, last_obs = Map.empty \<rparr> }"
 
 definition olv_trans :: "(opt_obsv_state \<times> opt_obsv_state) set" where
   "olv_trans = (\<Union>r S v D Ob. olv_round r S v D Ob) \<union> Id"

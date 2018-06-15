@@ -41,7 +41,7 @@ definition obsv_trans :: "(obsv_state \<times> obsv_state) set" where
   "obsv_trans = (\<Union>r S v d_f Os. obsv_round r S v d_f Os) \<union> Id"
 
 definition obsv_init :: "obsv_state set" where
-  "obsv_init = { \<lparr> next_round = 0, votes = \<lambda>r a. None, decisions = empty, obs = \<lambda>r a. None \<rparr> }"  
+  "obsv_init = { \<lparr> next_round = 0, votes = \<lambda>r a. None, decisions = Map.empty, obs = \<lambda>r a. None \<rparr> }"  
 
 definition obsv_TS :: "obsv_state TS" where
   "obsv_TS = \<lparr> init = obsv_init, trans = obsv_trans \<rparr>"

@@ -381,7 +381,7 @@ proof(clarsimp simp add: PO_rhoare_defs UV_trans_step_def two_step_step all_conj
   next
     fix p
     case False
-    hence empty: "o_f = empty"
+    hence empty: "o_f = Map.empty"
       by(auto simp add: o_f_def)
     note last_obs = x_origin2[OF send step step_r refl, of p]
     thus "(\<exists>q. o_f q = None \<and> opt_obsv_state.last_obs sa q = None 

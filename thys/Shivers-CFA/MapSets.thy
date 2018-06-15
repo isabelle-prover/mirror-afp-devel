@@ -11,7 +11,7 @@ definition maps_over :: "'a::type set \<Rightarrow> 'b::type set \<Rightarrow> (
   where "maps_over A B = {m. dom m \<subseteq> A \<and> ran m \<subseteq> B}"
 
 lemma maps_over_empty[simp]:
-  "empty \<in> maps_over A B"
+  "Map.empty \<in> maps_over A B"
 unfolding maps_over_def by simp
 
 lemma maps_over_upd:

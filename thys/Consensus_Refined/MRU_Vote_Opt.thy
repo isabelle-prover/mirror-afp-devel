@@ -13,7 +13,7 @@ record opt_mru_state =
   decisions :: "(process, val)map"
 
 definition opt_mru_init where
-  "opt_mru_init = { \<lparr> next_round = 0, mru_vote = empty, decisions = empty \<rparr> }"
+  "opt_mru_init = { \<lparr> next_round = 0, mru_vote = Map.empty, decisions = Map.empty \<rparr> }"
 
 context quorum_process begin
   

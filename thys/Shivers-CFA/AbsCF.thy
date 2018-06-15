@@ -179,7 +179,7 @@ Not surprisingly, the abstract semantics of a whole program is defined using @{t
 
 definition evalCPS_a :: "prog \<Rightarrow> ('c::contour) \<aans>" ("\<aPR>")
   where "\<aPR> l = (let ve = {}.;
-                          \<beta> = empty;
+                          \<beta> = Map.empty;
                           f = \<aA> (L l) \<beta> ve
                       in  \<aF>\<cdot>(Discr (the_elem f,[{AStop}],ve,\<abinit>)))"
 

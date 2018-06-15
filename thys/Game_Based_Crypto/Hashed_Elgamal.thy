@@ -25,7 +25,7 @@ where
      return_spmf (bs, \<sigma>(x \<mapsto> bs))
    } | Some bs \<Rightarrow> return_spmf (bs, \<sigma>))"
 
-abbreviation (input) initial :: "'a state" where "initial \<equiv> empty"
+abbreviation (input) initial :: "'a state" where "initial \<equiv> Map.empty"
 
 inductive invariant :: "'a state \<Rightarrow> bool"
 where

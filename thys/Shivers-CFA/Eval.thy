@@ -135,8 +135,8 @@ To evaluate a full program, it is passed to @{text \<F>} with proper initializat
 *}
 
 definition evalCPS :: "prog \<Rightarrow> ans" ("\<PR>")
-  where "\<PR> l = (let ve = empty;
-                          \<beta> = empty;
+  where "\<PR> l = (let ve = Map.empty;
+                          \<beta> = Map.empty;
                           f = \<A> (L l) \<beta> ve
                       in  \<F>\<cdot>(Discr (f,[Stop],ve,0)))"
 

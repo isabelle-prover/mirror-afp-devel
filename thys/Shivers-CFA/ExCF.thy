@@ -229,8 +229,8 @@ The exact semantics of a program again uses @{text \<F>} with properly initializ
 *}
 
 definition evalCPS :: "prog \<Rightarrow> ans" ("\<PR>")
-  where "\<PR> l = (let ve = empty;
-                          \<beta> = empty;
+  where "\<PR> l = (let ve = Map.empty;
+                          \<beta> = Map.empty;
                           f = \<A> (L l) \<beta> ve
                       in  \<F>\<cdot>(Discr (f,[Stop],ve,\<binit>)))"
 

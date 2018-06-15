@@ -17,7 +17,7 @@ text {* Initially, no rounds have been executed (the next round is 0), no votes 
   cast, and no decisions have been made. *}
 
 definition v_init :: "v_state set" where
-  "v_init = { \<lparr> next_round = 0, votes = \<lambda>r a. None, decisions = empty \<rparr> }"  
+  "v_init = { \<lparr> next_round = 0, votes = \<lambda>r a. None, decisions = Map.empty \<rparr> }"  
 
 context quorum_process begin
 
@@ -91,7 +91,7 @@ subsection {* Invariants *}
 text {* The only rounds where votes could have been cast are the ones 
   preceding the next round. *}
 definition Vinv1 where
-  "Vinv1 = {s. \<forall>r. next_round s \<le> r \<longrightarrow> votes s r = empty }"
+  "Vinv1 = {s. \<forall>r. next_round s \<le> r \<longrightarrow> votes s r = Map.empty }"
 
 lemmas Vinv1I = Vinv1_def [THEN setc_def_to_intro, rule_format]
 lemmas Vinv1E [elim] = Vinv1_def [THEN setc_def_to_elim, rule_format]
@@ -155,7 +155,7 @@ lemma process_mru_map_add:
     "process_mru ((votes s)(next_round s := v_f)) = 
     (process_mru (votes s) ++ (\<lambda>p. map_option (Pair (next_round s)) (v_f p)))"
 proof-
-  from assms[THEN Vinv1D] have empty: "\<forall>r' \<ge> next_round s. votes s r' = empty"
+  from assms[THEN Vinv1D] have empty: "\<forall>r' \<ge> next_round s. votes s r' = Map.empty"
     by simp
   show ?thesis
     by(auto  simp add: process_mru_new_votes[OF empty] map_add_def split: option.split)
