@@ -80,7 +80,7 @@ function LLL_reconstruction where
      f2 = gcd f g
     in if degree f2 = 0 then [f] 
       else let f1 = f div f2;
-       (us1, us2) = partition (\<lambda> gi. poly_mod.dvdm p gi f1) us
+       (us1, us2) = List.partition (\<lambda> gi. poly_mod.dvdm p gi f1) us
        in LLL_reconstruction f1 us1 @ LLL_reconstruction f2 us2)"
   by pat_completeness auto
 end

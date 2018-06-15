@@ -983,7 +983,7 @@ proof -
       with arg_cong[OF this, of degree] f0 have deg_f1k: "degree f = degree f1 + degree k" 
         by (auto simp: degree_mult_eq)
       from f fF have dvd: "f1 dvd F" "k dvd F" unfolding dvd_def by auto
-      obtain gs1 gs2 where part: "partition (\<lambda>gi. p.dvdm gi f1) us = (gs1, gs2)" by force
+      obtain gs1 gs2 where part: "List.partition (\<lambda>gi. p.dvdm gi f1) us = (gs1, gs2)" by force
       note IH = 1(1-2)[OF u_def cond(2) g_def k_def False f1_def part[symmetric] refl]
       obtain fs1 where fs1: "LLL_reconstruction f1 gs1 = fs1" by auto
       obtain fs2 where fs2: "LLL_reconstruction k gs2 = fs2" by auto

@@ -461,7 +461,7 @@ shows "irreducible\<^sub>d h"
 proof -
   from dvdm_power[OF hf] puh have pluh: "pl.dvdm u h" by simp
   note uf_partition = p.unique_factorization_m_factor_partition[OF l0]
-  obtain gs1 gs2 where part: "partition (\<lambda>gi. p.dvdm gi h) gs = (gs1, gs2)" by force
+  obtain gs1 gs2 where part: "List.partition (\<lambda>gi. p.dvdm gi h) gs = (gs1, gs2)" by force
   from part u_gs puh 
   have u_gs1: "u \<in> set gs1" unfolding p by auto
   have gs1: "gs1 = filter (\<lambda> gi. p.dvdm gi h) gs" using part by auto
@@ -768,7 +768,7 @@ proof -
   from f out have fh: "f = h * f'" and gs': "gs' = [gi \<leftarrow> gs. \<not> p.dvdm gi h]" by auto
   note [simp del] = out
   let ?fs = "filter (\<lambda>gi. p.dvdm gi h) gs" 
-  have part: "partition (\<lambda>gi. p.dvdm gi h) gs = (?fs, gs')" 
+  have part: "List.partition (\<lambda>gi. p.dvdm gi h) gs = (?fs, gs')" 
     unfolding gs' by (auto simp: o_def)
   from p.unique_factorization_m_factor_partition[OF l0 f_gs fh cop sf part]
   show uf: "pl.unique_factorization_m f' (lead_coeff f', mset gs')" by auto
@@ -1264,7 +1264,7 @@ proof (induction gs arbitrary: b f G G' rule: length_induct)
     fix factor
     assume factor_f: "factor dvd f" and u_factor: "p.dvdm u factor" 
     from factor_f obtain h where f: "f = factor * h" unfolding dvd_def by auto
-    obtain gs1 gs2 where part: "partition (\<lambda>gi. p.dvdm gi factor) gs = (gs1, gs2)" by force
+    obtain gs1 gs2 where part: "List.partition (\<lambda>gi. p.dvdm gi factor) gs = (gs1, gs2)" by force
     from p.unique_factorization_m_factor_partition[OF l0 f_gs_factor f cop sf part]
     have factor: "pl.unique_factorization_m factor (lead_coeff factor, mset gs1)" by auto
     from u_factor part u_gs have u_gs1: "u \<in> set gs1" by auto

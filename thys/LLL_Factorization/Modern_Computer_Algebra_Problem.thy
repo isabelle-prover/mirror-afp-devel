@@ -36,7 +36,7 @@ lemma "let f = [:1,1:] * [:1,1,0,1:];
    u = choose_u gs;
    d = degree u;
    g_star = [:2,2,0,2 :: int :];
-   (gs',hs') = partition (\<lambda>gi. poly_mod.dvdm p gi g_star) gs;
+   (gs',hs') = List.partition (\<lambda>gi. poly_mod.dvdm p gi g_star) gs;
    h_star = smult b (prod_list hs');
    f_star = primitive_part h_star
   in (hs' = [] \<and> f_star = 1)" by eval

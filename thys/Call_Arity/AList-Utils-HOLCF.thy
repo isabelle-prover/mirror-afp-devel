@@ -18,7 +18,7 @@ unfolding mapCollect_def by auto
 
 lemma lubmap_const_bottom[simp]:
   "(\<Squnion> k\<mapsto>v\<in>m. \<bottom>) = (\<bottom>::'a::Join_cpo)"
-  by (cases "m = empty") auto
+  by (cases "m = Map.empty") auto
 
 lemma lubmap_map_upd[simp]:
   fixes e :: "'a \<Rightarrow> 'b \<Rightarrow> ('c :: Join_cpo)"
