@@ -563,7 +563,7 @@ lemma nMTSort: "none_MT_rules Cp p \<Longrightarrow> none_MT_rules Cp (sort p l)
 lemma nMTSortQ: "none_MT_rules Cp p \<Longrightarrow> none_MT_rules Cp (qsort p l)"
   by (metis set_sortQ nMTeqSet)
 
-lemma wp3char[rule_format]: "none_MT_rules Cp xs \<and>  Cp (AllowPortFromTo a b po) = empty \<and> 
+lemma wp3char[rule_format]: "none_MT_rules Cp xs \<and>  Cp (AllowPortFromTo a b po) = Map.empty \<and> 
                             wellformed_policy3Pr (xs @ [DenyAllFromTo a b]) \<longrightarrow> 
                              AllowPortFromTo a b po \<notin> set xs"
   by (induct xs, simp_all) (metis domNMT wp3Conc)
@@ -881,7 +881,7 @@ lemma DARS3[rule_format]:"DenyAll \<notin> set p\<longrightarrow>DenyAll \<notin
 lemma DAnMT: "dom (Cp DenyAll) \<noteq> {}"
   by (simp add: dom_def Cp.simps PolicyCombinators.PolicyCombinators)
     
-lemma DAnMT2: "Cp DenyAll \<noteq> empty"
+lemma DAnMT2: "Cp DenyAll \<noteq> Map.empty"
   by (metis DAAux dom_eq_empty_conv empty_iff) 
 
 lemma wp1n_RS3[rule_format,simp]: 

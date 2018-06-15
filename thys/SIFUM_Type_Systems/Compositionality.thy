@@ -284,8 +284,8 @@ proof -
   from fin eval noread show "\<exists> g. change_respecting \<langle>c, mds, mem\<rangle> \<langle>c', mds', mem'\<rangle> X g"
   proof (induct "X" arbitrary: mem mem' rule: finite_induct)
     case empty
-    let ?g = "\<lambda> \<sigma>. empty"
-    have "mem [\<mapsto> empty] = mem" "mem' [\<mapsto> ?g empty] = mem'"
+    let ?g = "\<lambda> \<sigma>. Map.empty"
+    have "mem [\<mapsto> Map.empty] = mem" "mem' [\<mapsto> ?g Map.empty] = mem'"
       unfolding subst_def
       by auto
     hence "change_respecting \<langle>c, mds, mem\<rangle> \<langle>c', mds', mem'\<rangle> {} ?g"

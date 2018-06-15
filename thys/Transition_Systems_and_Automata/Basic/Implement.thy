@@ -55,7 +55,7 @@ begin
   qed
   lemma FOREACH_rule_map:
     assumes "finite (dom g)"
-    assumes "I empty s"
+    assumes "I Map.empty s"
     assumes "\<And> s. I g s \<Longrightarrow> P s"
     assumes "\<And> h k v s. h \<subseteq>\<^sub>m g \<Longrightarrow> I h s \<Longrightarrow> g k = Some v \<Longrightarrow> k \<notin> dom h \<Longrightarrow>
       f (k, v) s \<le> SPEC (I (h (k \<mapsto> v)))"
@@ -96,7 +96,7 @@ begin
     by (rule FOREACH_rule_insert[where I = "HOL.eq \<circ> X"]) (use assms in auto)
   lemma FOREACH_rule_map_eq:
     assumes "finite (dom g)"
-    assumes "X empty = s"
+    assumes "X Map.empty = s"
     assumes "X g = t"
     assumes "\<And> h k v. h \<subseteq>\<^sub>m g \<Longrightarrow> g k = Some v \<Longrightarrow> k \<notin> dom h \<Longrightarrow>
       f (k, v) (X h) \<le> SPEC (HOL.eq (X (h (k \<mapsto> v))))"

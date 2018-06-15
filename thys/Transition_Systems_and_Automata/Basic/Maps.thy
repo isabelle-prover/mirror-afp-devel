@@ -79,7 +79,7 @@ begin
     shows "dom g = dom f"
     using assms unfolding expand_map_def expand_def by (auto split: option.splits)
 
-  lemma expand_map_empty[simp]: "expand_map empty = {empty}" unfolding expand_map_def expand_def by auto
+  lemma expand_map_empty[simp]: "expand_map Map.empty = {Map.empty}" unfolding expand_map_def expand_def by auto
   lemma expand_map_update[simp]:
     "expand_map (f (x \<mapsto> S)) = (\<Union> y \<in> S. (\<lambda> g. g (x \<mapsto> y)) ` expand_map (f (x := None)))"
   proof -

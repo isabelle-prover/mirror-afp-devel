@@ -870,7 +870,7 @@ lemma DARS3[rule_format]:
 lemma DAnMT: "dom (C DenyAll) \<noteq> {}"
   by (simp add: dom_def C.simps PolicyCombinators.PolicyCombinators)
     
-lemma DAnMT2: "C DenyAll \<noteq> empty"
+lemma DAnMT2: "C DenyAll \<noteq> Map.empty"
   by (metis DAAux dom_eq_empty_conv empty_iff) 
 
 lemma wp1n_RS3[rule_format,simp]: 
