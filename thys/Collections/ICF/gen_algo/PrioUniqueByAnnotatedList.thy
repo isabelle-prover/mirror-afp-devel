@@ -848,7 +848,7 @@ proof -
         case True
         hence "\<alpha> s = []"
           using sinv isEmpty_correct by simp
-        hence "aluprio_\<alpha> \<alpha> s = empty" by (simp add:aluprio_defs)
+        hence "aluprio_\<alpha> \<alpha> s = Map.empty" by (simp add:aluprio_defs)
         hence "aluprio_\<alpha> \<alpha> s e = None" by simp
         thus "aluprio_prio splits annot isEmpty s e = aluprio_\<alpha> \<alpha> s e"
           using F1 
@@ -964,7 +964,7 @@ proof -
   proof (unfold_locales)
     fix s e a s'
     assume A: "aluprio_invar \<alpha> invar s" 
-      "aluprio_\<alpha> \<alpha> s \<noteq> empty" 
+      "aluprio_\<alpha> \<alpha> s \<noteq> Map.empty" 
       "aluprio_pop splits annot app s = (e, a, s')"
     hence v1: "\<alpha> s \<noteq> []"
       by (auto simp add: aluprio_defs)
