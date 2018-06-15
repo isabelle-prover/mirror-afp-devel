@@ -2495,7 +2495,7 @@ begin
               using fg' 1 arr_char D_def by force
             moreover have "\<F>\<^sub>SC.dom (mkarr \<^bold>\<lfloor>rep g\<^bold>\<rfloor>) = \<F>\<^sub>SC.cod (mkarr \<^bold>\<lfloor>rep f\<^bold>\<rfloor>)"
               using fg' 2 3 \<F>\<^sub>SC.dom_char rep_in_Hom mkarr_in_hom D_def
-                    Dom_Diagonalize_rep Diag_implies_Arr Diag_Diagonalize(1)
+                    Dom_Diagonalize_rep Diag_implies_Arr Diag_Diagonalize(1) \<F>\<^sub>SC.arr_char
               by force
             ultimately show ?thesis using \<F>\<^sub>SC.seqI by auto
           qed
@@ -2805,20 +2805,20 @@ begin
           using assms arr_char tensor_char by simp
         also have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor>\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
           using assms \<F>C.rep_mkarr TensorDiag_in_Hom Diag_Diagonalize
-                TensorDiag_preserves_Diag
+                TensorDiag_preserves_Diag arr_char
           by force
         also have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
-          using assms Diag_Diagonalize TensorDiag_preserves_Diag TensorDiag_assoc
+          using assms Diag_Diagonalize TensorDiag_preserves_Diag TensorDiag_assoc arr_char
           by force
         finally show ?thesis by blast
       qed
       show "f \<otimes>\<^sub>S g \<otimes>\<^sub>S h = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>)"
       proof -
         have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>\<^bold>\<rfloor>)"
-          using assms Diag_Diagonalize TensorDiag_preserves_Diag by force
+          using assms Diag_Diagonalize TensorDiag_preserves_Diag arr_char by force
         also have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor>
                                    (\<^bold>\<lfloor>\<F>C.rep (\<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep g\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep h\<^bold>\<rfloor>))\<^bold>\<rfloor>))"
-          using assms \<F>C.rep_mkarr TensorDiag_in_Hom Diag_Diagonalize by force
+          using assms \<F>C.rep_mkarr TensorDiag_in_Hom Diag_Diagonalize arr_char by force
         also have "... = \<F>C.mkarr (\<^bold>\<lfloor>\<F>C.rep f\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>\<F>C.rep (g \<otimes>\<^sub>S h)\<^bold>\<rfloor>)"
            using assms tensor_char by simp
         also have "... = f \<otimes>\<^sub>S g \<otimes>\<^sub>S h"
@@ -3308,7 +3308,7 @@ begin
         have "map (\<F>\<^sub>SC.tensor f g) = map (f \<otimes>\<^sub>S g)"
           using assms \<F>\<^sub>SC.T_simp by simp
         also have "... = map (\<F>C.D (f \<otimes> g))"
-          using assms \<F>C.tensor\<^sub>F\<^sub>M\<^sub>C_def \<F>\<^sub>SC.tensor\<^sub>S_def by force
+          using assms \<F>C.tensor\<^sub>F\<^sub>M\<^sub>C_def \<F>\<^sub>SC.tensor\<^sub>S_def \<F>\<^sub>SC.arr_char by force
         also have "... = E.map (f \<otimes> g)"
         proof -
           interpret Diag: "functor" \<F>C.comp \<F>\<^sub>SC.comp \<F>C.D

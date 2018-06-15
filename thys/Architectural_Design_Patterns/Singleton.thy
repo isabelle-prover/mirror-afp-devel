@@ -11,21 +11,40 @@ theory Singleton
 imports DynamicArchitectures.Dynamic_Architecture_Calculus
 begin
 subsection Singletons
-
+text {*
+  In the following we formalize a variant of the Singleton pattern.
+*}
 locale singleton = dynamic_component cmp active
     for active :: "'id \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
     and cmp :: "'id \<Rightarrow> cnf \<Rightarrow> 'cmp" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60) +
 assumes alwaysActive: "\<And>k. \<exists>id. \<parallel>id\<parallel>\<^bsub>k\<^esub>"
     and unique: "\<exists>id. \<forall>k. \<forall>id'. (\<parallel>id'\<parallel>\<^bsub>k\<^esub> \<longrightarrow> id = id')"
 begin
+subsubsection "Calculus Interpretation"
+text {*
+\noindent
+@{thm[source] baIA}: @{thm baIA [no_vars]}
+*}
+text {*
+\noindent
+@{thm[source] baIN1}: @{thm baIN1 [no_vars]}
+*}
+text {*
+\noindent
+@{thm[source] baIN2}: @{thm baIN2 [no_vars]}
+*}
+
+subsubsection "Architectural Guarantees"
 
 definition "the_singleton \<equiv> THE id. \<forall>k. \<forall>id'. \<parallel>id'\<parallel>\<^bsub>k\<^esub> \<longrightarrow> id' = id"
 
-lemma the_unique:
-  fixes k::cnf and id::'id
-  assumes "\<parallel>id\<parallel>\<^bsub>k\<^esub>"
-  shows "id = the_singleton"
+theorem ts_prop:
+  fixes k::cnf
+  shows "\<And>id. \<parallel>id\<parallel>\<^bsub>k\<^esub> \<Longrightarrow> id = the_singleton"
+    and "\<parallel>the_singleton\<parallel>\<^bsub>k\<^esub>"
 proof -
+  { fix id
+    assume a1: "\<parallel>id\<parallel>\<^bsub>k\<^esub>"
   have "(THE id. \<forall>k. \<forall>id'. \<parallel>id'\<parallel>\<^bsub>k\<^esub> \<longrightarrow> id' = id) = id"
   proof (rule the_equality)
     show "\<forall>k id'. \<parallel>id'\<parallel>\<^bsub>k\<^esub> \<longrightarrow> id' = id"
@@ -37,45 +56,43 @@ proof -
           assume "\<parallel>id'\<parallel>\<^bsub>k\<^esub>"
           from unique have "\<exists>id. \<forall>k. \<forall>id'. (\<parallel>id'\<parallel>\<^bsub>k\<^esub> \<longrightarrow> id = id')" .
           then obtain i'' where "\<forall>k. \<forall>id'. (\<parallel>id'\<parallel>\<^bsub>k\<^esub> \<longrightarrow> i'' = id')" by auto
-          with `\<parallel>id'\<parallel>\<^bsub>k\<^esub>` have "id=i''" and "id'=i''" using assms by auto
+            with `\<parallel>id'\<parallel>\<^bsub>k\<^esub>` have "id=i''" and "id'=i''" using a1 by auto
           thus "id' = id" by simp
         qed
       qed
     qed
   next
-    fix i'' show "\<forall>k id'. \<parallel>id'\<parallel>\<^bsub>k\<^esub> \<longrightarrow> id' = i'' \<Longrightarrow> i'' = id" using assms by auto
+      fix i'' show "\<forall>k id'. \<parallel>id'\<parallel>\<^bsub>k\<^esub> \<longrightarrow> id' = i'' \<Longrightarrow> i'' = id" using a1 by auto
   qed
-  thus ?thesis by (simp add: the_singleton_def)
-qed
+    hence "\<parallel>id\<parallel>\<^bsub>k\<^esub> \<Longrightarrow> id = the_singleton" by (simp add: the_singleton_def)
+  } note g1 = this
+  thus "\<And>id. \<parallel>id\<parallel>\<^bsub>k\<^esub> \<Longrightarrow> id = the_singleton" by simp
 
-lemma the_active[simp]:
-  fixes k
-  shows "\<parallel>the_singleton\<parallel>\<^bsub>k\<^esub>"
-proof -
   from alwaysActive obtain id where "\<parallel>id\<parallel>\<^bsub>k\<^esub>" by blast
-  with the_unique have "id = the_singleton" by simp
-  with `\<parallel>id\<parallel>\<^bsub>k\<^esub>` show ?thesis by simp
+  with g1 have "id = the_singleton" by simp
+  with `\<parallel>id\<parallel>\<^bsub>k\<^esub>` show "\<parallel>the_singleton\<parallel>\<^bsub>k\<^esub>" by simp
 qed
+declare ts_prop(2)[simp]
   
 lemma lNact_active[simp]:
   fixes cid t n
   shows "\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> = n"
-  using lNact_active the_active by auto
+  using lNact_active ts_prop(2) by auto
 
 lemma lNxt_active[simp]:
   fixes cid t n
   shows "\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub> = n"
 by (simp add: nxtAct_active)
     
-lemma assI[intro]:
+lemma baI[intro]:
   fixes t n a
   assumes "\<phi> (\<sigma>\<^bsub>the_singleton\<^esub>(t n))"
-  shows "eval the_singleton t t' n (ass \<phi>)" using assms by (simp add: assIANow)
+  shows "eval the_singleton t t' n (ba \<phi>)" using assms by (simp add: baIANow)
   
-lemma assE[elim]:
+lemma baE[elim]:
   fixes t n a
-  assumes "eval the_singleton t t' n (ass \<phi>)"                      
-  shows "\<phi> (\<sigma>\<^bsub>the_singleton\<^esub>(t n))" using assms by (simp add: assEANow)
+  assumes "eval the_singleton t t' n (ba \<phi>)"                      
+  shows "\<phi> (\<sigma>\<^bsub>the_singleton\<^esub>(t n))" using assms by (simp add: baEANow)
 
 lemma evtE[elim]:
   fixes t id n a
@@ -117,7 +134,7 @@ lemma untilI[intro]:
   assumes "n'\<ge>n"
     and "eval the_singleton t t' n' \<gamma>"
     and "\<And>n''. \<lbrakk>n\<le>n''; n''<n'\<rbrakk> \<Longrightarrow> eval the_singleton t t' n'' \<gamma>'"
-  shows "eval the_singleton t t' n (\<gamma>' \<UU> \<gamma>)"
+  shows "eval the_singleton t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)"
 proof -
   have "\<parallel>the_singleton\<parallel>\<^bsub>t n\<^esub>" by simp 
   moreover from `n'\<ge>n` have "\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" by simp

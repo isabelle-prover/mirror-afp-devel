@@ -21,10 +21,10 @@ theorem unit_group_is_group: "group unit_group"
 
 theorem (in group) unit_group_unique:
   assumes "card (carrier G) = 1"
-  shows "\<exists> h. h \<in> G \<cong> unit_group"
+  shows "\<exists> h. h \<in> iso G unit_group"
 proof-
   from assms obtain x where "carrier G = {x}" by (auto dest: card_eq_SucD)
-  hence "(\<lambda> x. ()) \<in> G \<cong> unit_group"  
+  hence "(\<lambda> x. ()) \<in> iso G unit_group"  
     by -(rule group_isoI, auto simp add:unit_group_is_group is_group, simp add:unit_group_def)
   thus ?thesis by auto
 qed

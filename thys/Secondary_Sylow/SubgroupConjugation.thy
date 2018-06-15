@@ -58,7 +58,8 @@ lemma cardeq_rcoset:
   shows "card (M #> g) = card  M"
 proof -
   have "M #> g \<in> rcosets M" by (metis assms(2) assms(3) rcosetsI)
-  thus "card (M #> g) = card M" by (metis assms(1) assms(2) card_cosets_equal)
+  thus "card (M #> g) = card M"
+    using assms(2) card_rcosets_equal by auto
 qed
 
 lemma cardeq_lcoset:

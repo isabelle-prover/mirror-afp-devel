@@ -184,12 +184,12 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       have "\<GG> ! (n - 1) \<noteq> (\<HH> ! (m - 1)) <#>\<^bsub>G\<^esub> (\<GG> ! (n - 1))" using \<HH>PmSubSetmult not\<HH>PmSub\<GG>Pn by auto
       hence set_multG:"(\<HH> ! (m - 1)) <#>\<^bsub>G\<^esub> (\<GG> ! (n - 1)) = carrier G"
         using \<GG>Pnmax.max_normal \<GG>Pnmax.is_normal \<HH>PmnormG comp\<GG>.normal_subgroup_set_mult_closed \<GG>PnSubSetmult by metis
-      then obtain \<phi> where "\<phi> \<in> (\<GG>Pn Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1))) \<cong> (G\<lparr>carrier := carrier G\<rparr> Mod \<HH> ! (m - 1))"
+      then obtain \<phi> where "\<phi> \<in> iso (\<GG>Pn Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1))) (G\<lparr>carrier := carrier G\<rparr> Mod \<HH> ! (m - 1))"
         using second_isomorphism_grp.normal_intersection_quotient_isom \<HH>PmnormG \<GG>Pnmax.is_normal normal_imp_subgroup
         unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def max_normal_subgroup_def \<GG>Pn_def by metis
-      hence \<phi>:"\<phi> \<in> (\<GG>Pn Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1))) \<cong> (G Mod \<HH> ! (m - 1))" by auto
-      then obtain \<phi>2 where \<phi>2:"\<phi>2 \<in> (G Mod \<HH> ! (m - 1)) \<cong> (\<GG>Pn Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)))"
-        using group.iso_sym grp\<GG>PnMod\<HH>Pmint\<GG>Pn.is_group by auto
+      hence \<phi>:"\<phi> \<in> iso (\<GG>Pn Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1))) (G Mod \<HH> ! (m - 1))" by auto
+      then obtain \<phi>2 where \<phi>2:"\<phi>2 \<in> iso (G Mod \<HH> ! (m - 1)) (\<GG>Pn Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)))"
+        using group.iso_set_sym grp\<GG>PnMod\<HH>Pmint\<GG>Pn.is_group by auto
       moreover have "simple_group (G\<lparr>carrier := \<HH> ! (m - 1 + 1)\<rparr> Mod \<HH> ! (m - 1))" using comp\<HH>.simplefact m'(3) by simp
       hence "simple_group (G Mod \<HH> ! (m - 1))" using comp\<HH>.last last_conv_nth comp\<HH>.notempty m'(5) by fastforce
       ultimately have simple\<GG>PnModInt:"simple_group (\<GG>Pn Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)))"
@@ -206,12 +206,14 @@ proof (induction "length \<GG>" arbitrary: \<GG> \<HH> G rule: full_nat_induct)
       have "\<HH> ! (m - 1) \<noteq> (\<GG> ! (n - 1)) <#>\<^bsub>G\<^esub> (\<HH> ! (m - 1))" using \<GG>PnSubSetmult' not\<GG>PnSub\<HH>Pm by auto
       hence set_multG:"(\<GG> ! (n - 1)) <#>\<^bsub>G\<^esub> (\<HH> ! (m - 1)) = carrier G"
         using \<HH>Pmmax.max_normal \<HH>Pmmax.is_normal \<GG>PnnormG comp\<GG>.normal_subgroup_set_mult_closed \<HH>PmSubSetmult' by metis
-      from set_multG obtain \<psi> where "\<psi> \<in> (\<HH>Pm Mod (\<GG> ! (n - 1) \<inter> \<HH> ! (m - 1))) \<cong> (G\<lparr>carrier := carrier G\<rparr> Mod \<GG> ! (n - 1))"
+      from set_multG obtain \<psi> where 
+            "\<psi> \<in> iso (\<HH>Pm Mod (\<GG> ! (n - 1) \<inter> \<HH> ! (m - 1))) (G\<lparr>carrier := carrier G\<rparr> Mod \<GG> ! (n - 1))"
         using second_isomorphism_grp.normal_intersection_quotient_isom \<GG>PnnormG \<HH>Pmmax.is_normal normal_imp_subgroup
         unfolding second_isomorphism_grp_def second_isomorphism_grp_axioms_def max_normal_subgroup_def \<HH>Pm_def by metis
-      hence \<psi>:"\<psi> \<in> (\<HH>Pm Mod (\<HH> ! (m - 1) \<inter> (\<GG> ! (n - 1)))) \<cong> (G\<lparr>carrier := carrier G\<rparr> Mod \<GG> ! (n - 1))" using Int_commute by metis
-      then obtain \<psi>2 where \<psi>2:"\<psi>2 \<in> (G Mod \<GG> ! (n - 1)) \<cong> (\<HH>Pm Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)))"
-        using group.iso_sym grp\<HH>PmMod\<HH>Pmint\<GG>Pn.is_group by auto
+      hence \<psi>:"\<psi> \<in> iso (\<HH>Pm Mod (\<HH> ! (m - 1) \<inter> (\<GG> ! (n - 1)))) (G\<lparr>carrier := carrier G\<rparr> Mod \<GG> ! (n - 1))" using Int_commute by metis
+      then obtain \<psi>2 where
+             \<psi>2:"\<psi>2 \<in> iso (G Mod \<GG> ! (n - 1)) (\<HH>Pm Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)))"
+        using group.iso_set_sym grp\<HH>PmMod\<HH>Pmint\<GG>Pn.is_group by auto
       moreover have "simple_group (G\<lparr>carrier := \<GG> ! (n - 1 + 1)\<rparr> Mod \<GG> ! (n - 1))" using comp\<GG>.simplefact n'(3) by simp
       hence "simple_group (G Mod \<GG> ! (n - 1))" using comp\<GG>.last last_conv_nth comp\<GG>.notempty n'(7) by fastforce
       ultimately have simple\<HH>PmModInt:"simple_group (\<HH>Pm Mod (\<HH> ! (m - 1) \<inter> \<GG> ! (n - 1)))" 

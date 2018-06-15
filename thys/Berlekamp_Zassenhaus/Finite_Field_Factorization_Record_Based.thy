@@ -90,7 +90,7 @@ primrec berlekamp_factorization_main_i :: "'i \<Rightarrow> 'i \<Rightarrow> nat
         facts = filter (\<lambda> w. w \<noteq> [on]) 
           [ gcd_poly_i ff_ops u (minus_poly_i ff_ops v (if s = 0 then [] else [of_int (int s)])) . 
             u \<leftarrow> divs, s \<leftarrow> [0 ..< nat p]];
-      (lin,nonlin) = partition (\<lambda> q. degree_i q = d) facts 
+      (lin,nonlin) = List.partition (\<lambda> q. degree_i q = d) facts 
       in lin @ berlekamp_factorization_main_i ze on d nonlin vs (n - length lin))"
 | "berlekamp_factorization_main_i ze on d divs [] n = divs"
 
@@ -122,7 +122,7 @@ definition finite_field_factorization_i :: "'i list \<Rightarrow> 'i \<times> 'i
      a = lead_coeff_i ff_ops f;
      u = smult_i ff_ops (arith_ops_record.inverse ff_ops a) f;
      gs = (if use_distinct_degree_factorization then distinct_degree_factorization_i u else [(1,u)]);
-     (irr,hs) = partition (\<lambda> (i,f). degree_i f = i) gs
+     (irr,hs) = List.partition (\<lambda> (i,f). degree_i f = i) gs
      in (a,map snd irr @ concat (map (\<lambda> (i,g). berlekamp_monic_factorization_i i g) hs)))"
 end
 
@@ -327,7 +327,7 @@ proof (intro rel_funI, clarify, goal_cases)
       if y = [?on] then berlekamp_factorization_main_i p ff_ops ?ze ?on d xs ys n else
       if length xs = n then xs else
       (let fac = facts;
-          (lin, nonlin) = partition (\<lambda>q. degree_i q = d) fac
+          (lin, nonlin) = List.partition (\<lambda>q. degree_i q = d) fac
              in lin @ berlekamp_factorization_main_i p ff_ops ?ze ?on d nonlin ys (n - length lin)))" 
       unfolding berlekamp_factorization_main_i.simps Facts[symmetric]
       by (simp add: o_def Facts_def Let_def)
@@ -335,7 +335,7 @@ proof (intro rel_funI, clarify, goal_cases)
       if y' = 1 then berlekamp_factorization_main d xs' ys' n
       else if length xs' = n then xs' else
       (let fac = facts';
-          (lin, nonlin) = partition (\<lambda>q. degree q = d) fac
+          (lin, nonlin) = List.partition (\<lambda>q. degree q = d) fac
               in lin @ berlekamp_factorization_main d nonlin ys' (n - length lin)))"
       by (simp add: o_def facts'_def nat_p)
     have len: "length xs = length xs'" by transfer_prover

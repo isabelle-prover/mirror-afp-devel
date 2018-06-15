@@ -30,9 +30,10 @@ lemma prod_list_map_filter: "prod_list (map g (filter f xs)) * prod_list (map g 
   = prod_list (map g xs)"
   by (induct xs, auto simp: ac_simps)
 
-lemma prod_list_map_partition: assumes "partition f xs = (ys, zs)"
+lemma prod_list_map_partition: 
+  assumes "List.partition f xs = (ys, zs)"
   shows "prod_list (map g xs) = prod_list (map g ys) * prod_list (map g zs)"
-  using assms by (subst prod_list_map_filter[symmetric, of _ f], auto simp: o_def)
+  using assms  by (subst prod_list_map_filter[symmetric, of _ f], auto simp: o_def)
 end
 
 lemma coprime_id_is_unit:
@@ -891,7 +892,7 @@ primrec berlekamp_factorization_main :: "nat \<Rightarrow> 'a mod_ring poly list
   "berlekamp_factorization_main i divs (v # vs) n = (if v = 1 then berlekamp_factorization_main i divs vs n else
     if length divs = n then divs else
     let facts = [ w . u \<leftarrow> divs, s \<leftarrow> [0 ..< CARD('a)], w \<leftarrow> [gcd u (v - [:of_int s:])], w \<noteq> 1];
-      (lin,nonlin) = partition (\<lambda> q. degree q = i) facts
+      (lin,nonlin) = List.partition (\<lambda> q. degree q = i) facts
       in lin @ berlekamp_factorization_main i nonlin vs (n - length lin))"
   | "berlekamp_factorization_main i divs [] n = divs"
   
@@ -1723,7 +1724,9 @@ interpretation vector_space_poly: vectorspace class_ring poly_abelian_monoid
        and [simp]: "(\<otimes>\<^bsub>poly_abelian_monoid\<^esub>) = (( * ))"
        and [simp]: "carrier poly_abelian_monoid = UNIV"
        and [simp]: "(\<odot>\<^bsub>poly_abelian_monoid\<^esub>) = smult"
-  by (unfold_locales, auto simp add: poly_abelian_monoid_def class_field_def smult_add_left smult_add_right)
+  apply unfold_locales
+  apply (auto simp: poly_abelian_monoid_def class_field_def smult_add_left smult_add_right Units_def)
+  by (metis add.commute add.right_inverse)
 
 lemma subspace_Berlekamp:
 assumes f: "degree f \<noteq> 0"
@@ -2944,7 +2947,8 @@ proof -
       } note udivs = this
       have facts: "facts = concat (map udivs divs)"
         unfolding facts_def by auto
-      obtain lin nonlin where part: "partition (\<lambda> q. degree q = d) facts = (lin,nonlin)" by force
+      obtain lin nonlin where part: "List.partition (\<lambda> q. degree q = d) facts = (lin,nonlin)" 
+        by force
       from Cons(6) have "f = prod_list us1 * prod_list divs" by auto
       also have "prod_list divs = prod_list facts" unfolding facts using udivs(4)
         by (induct divs, auto)
@@ -2959,7 +2963,7 @@ proof -
       } note facts = this
       have not1: "(v = 1) = False" using False by auto
       have "us = us1 @ (if length divs = n2 then divs
-          else let (lin, nonlin) = partition (\<lambda>q. degree q = d) facts
+          else let (lin, nonlin) = List.partition (\<lambda>q. degree q = d) facts
                in lin @ berlekamp_factorization_main d nonlin vs2 (n2 - length lin))"
         unfolding Cons(4) facts_def udivs_def' berlekamp_factorization_main.simps Let_def not1 if_False
         by (rule arg_cong[where f = "\<lambda> x. us1 @ x"], rule if_cong, simp_all) (* takes time *)

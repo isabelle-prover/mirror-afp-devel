@@ -14,7 +14,7 @@ subsection {* The Free Group over the empty set *}
 text {* The Free Group over an empty set of generators is isomorphic to the trivial
 group. *}
 
-lemma free_group_over_empty_set: "\<exists>h. h \<in> \<F>\<^bsub>{}\<^esub> \<cong> unit_group"
+lemma free_group_over_empty_set: "\<exists>h. h \<in> iso \<F>\<^bsub>{}\<^esub> unit_group"
 proof(rule group.unit_group_unique)
   show "group \<F>\<^bsub>{}\<^esub>" by (rule free_group_is_group)
 next
@@ -41,7 +41,8 @@ proof
     by auto
   show "carrier int_group \<subseteq> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
   proof
-    interpret int: group int_group by (simp add: int.a_group)
+    interpret int: group int_group
+      using int.a_group by auto
     fix x
     have plus1: "1 \<in> \<langle>{1}\<rangle>\<^bsub>int_group\<^esub>"
       by (auto intro:gen_span.gen_gens)
@@ -82,10 +83,10 @@ proof
   qed
 qed
 
-lemma free_group_over_one_gen: "\<exists>h. h \<in> \<F>\<^bsub>{()}\<^esub> \<cong> int_group"
+lemma free_group_over_one_gen: "\<exists>h. h \<in> iso \<F>\<^bsub>{()}\<^esub> int_group"
 proof-
-  interpret int: group int_group by (simp add: int.a_group)
-
+  interpret int: group int_group 
+    using int.a_group by auto
   define f :: "unit \<Rightarrow> int" where "f x = 1" for x
   have "f \<in> {()} \<rightarrow> carrier int_group"
     by auto
@@ -94,7 +95,7 @@ proof-
   then
   interpret hom: group_hom "\<F>\<^bsub>{()}\<^esub>" int_group "int.lift f"
     unfolding group_hom_def group_hom_axioms_def
-    by(auto intro: int.a_group free_group_is_group)
+    using int.a_group by(auto intro: free_group_is_group)
     
   { (* This shows injectiveness of the given map *)
     fix x
@@ -151,9 +152,14 @@ proof-
       hence "x = replicate (length x) a" by simp
       hence "int.lift f x = int.lift f (replicate (length x) a)" by simp
       also have "... = pow int_group (int.lift_gi f a) (length x)"
-        by (induct x,auto simp add:int.lift_def [simplified])
+        apply (induct x)
+        using local.int.nat_pow_Suc local.int.nat_pow_0
+         apply (auto simp: int.lift_def [simplified])
+        done
       also have "... = (int.lift_gi f a) * int (length x)"
-        by (induct ("length x"), auto simp add:int_distrib)
+        apply (induct x)
+        using local.int.nat_pow_Suc local.int.nat_pow_0
+        by (auto simp: int_distrib)
       finally have "\<dots> = 0" using `int.lift f x = 0` by simp
       hence "nat (abs (group.lift_gi int_group f a * int (length x))) = 0" by simp
       hence "nat (abs (group.lift_gi int_group f a)) * length x = 0" by simp
@@ -189,7 +195,7 @@ proof-
       by simp
   }
   ultimately
-  have "int.lift f \<in> \<F>\<^bsub>{()}\<^esub> \<cong> int_group"
+  have "int.lift f \<in> iso \<F>\<^bsub>{()}\<^esub> int_group"
     using `int.lift f \<in> hom \<F>\<^bsub>{()}\<^esub> int_group`
     using hom.hom_mult int.is_group
     by (auto intro:group_isoI simp add: free_group_is_group)
@@ -205,7 +211,7 @@ where "lift_generator_function f = map (map_prod id f)"
 
 theorem isomorphic_free_groups:
   assumes "bij_betw f gens1 gens2"
-  shows "lift_generator_function f \<in> \<F>\<^bsub>gens1\<^esub> \<cong> \<F>\<^bsub>gens2\<^esub>"
+  shows "lift_generator_function f \<in> iso \<F>\<^bsub>gens1\<^esub> \<F>\<^bsub>gens2\<^esub>"
 unfolding lift_generator_function_def
 proof(rule group_isoI)
   show "\<forall>x\<in>carrier \<F>\<^bsub>gens1\<^esub>.
@@ -401,13 +407,14 @@ qed
 
 lemma group_iso_betw_hom:
   assumes "group G1" and "group G2"
-      and iso: "i \<in> G1 \<cong> G2"
+      and iso: "i \<in> iso G1 G2"
   shows   "\<exists> f . bij_betw f (homr G2 H) (homr G1 H)"
 proof-
   interpret G2: group G2 by (rule `group G2`)
   let ?i' = "restrict (inv_into (carrier G1) i) (carrier G2)"
-  have "inv_into (carrier G1) i \<in> G2 \<cong> G1" by (rule group.iso_sym[OF `group G1` iso])
-  hence iso': "?i' \<in> G2 \<cong> G1"
+  have "inv_into (carrier G1) i \<in> iso G2 G1"
+    by (simp add: \<open>group G1\<close> group.iso_set_sym iso)    
+  hence iso': "?i' \<in> iso G2 G1"
     by (auto simp add:Group.iso_def hom_def G2.m_closed)
   show ?thesis
   proof(rule, induct rule: bij_betwI[of "(\<lambda>h. compose (carrier G1) h i)" _ _ "(\<lambda>h. compose (carrier G2) h ?i')"])
@@ -464,7 +471,7 @@ proof-
 qed
 
 lemma isomorphic_free_groups_bases_finite:
-  assumes iso: "i \<in> \<F>\<^bsub>X\<^esub> \<cong> \<F>\<^bsub>Y\<^esub>"
+  assumes iso: "i \<in> iso \<F>\<^bsub>X\<^esub> \<F>\<^bsub>Y\<^esub>"
       and finite: "finite X"
   shows "\<exists>f. bij_betw f X Y"
 proof-
@@ -532,7 +539,7 @@ proof-
 qed
 
 theorem isomorphic_free_groups_bases:
-  assumes iso: "i \<in> \<F>\<^bsub>X\<^esub> \<cong> \<F>\<^bsub>Y\<^esub>"
+  assumes iso: "i \<in> iso \<F>\<^bsub>X\<^esub> \<F>\<^bsub>Y\<^esub>"
   shows "\<exists>f. bij_betw f X Y"
 proof(cases "finite X")
 case True
@@ -541,8 +548,8 @@ next
 case False show ?thesis
   proof(cases "finite Y")
   case True
-  from iso obtain i' where "i' \<in> \<F>\<^bsub>Y\<^esub> \<cong> \<F>\<^bsub>X\<^esub>"
-       by (auto intro: group.iso_sym[OF free_group_is_group])
+  from iso obtain i' where "i' \<in> iso \<F>\<^bsub>Y\<^esub> \<F>\<^bsub>X\<^esub>"
+    using free_group_is_group group.iso_set_sym by blast
   with `finite Y`
   have "\<exists>f. bij_betw f Y X" by -(rule isomorphic_free_groups_bases_finite)
   thus "\<exists>f. bij_betw f X Y" by (auto intro: bij_betw_the_inv_into) next

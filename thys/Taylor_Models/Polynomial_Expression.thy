@@ -882,7 +882,7 @@ lemma funpow_isnpolyh:
   using assms by (induct k arbitrary: p) auto
 
 lemma funpow_shift1:
-  "(Ipoly bs (funpow n shift1 p) :: 'a :: {field_char_0,field}) =
+  "(Ipoly bs (funpow n shift1 p) :: 'a :: comm_ring_1) =
     Ipoly bs (Mul (Pw (Bound 0) n) p)"
   by (induct n arbitrary: p) (simp_all add: shift1_isnpoly shift1)
 
@@ -890,7 +890,7 @@ lemma shift1_isnpolyh: "isnpolyh p n0 \<Longrightarrow> p \<noteq> 0\<^sub>p \<L
   using isnpolyh_mono[where n="n0" and n'="0" and p="p"] by (simp add: shift1_def)
 
 lemma funpow_shift1_1:
-  "(Ipoly bs (funpow n shift1 p) :: 'a :: {field_char_0,field}) =
+  "(Ipoly bs (funpow n shift1 p) :: 'a :: field) =
     Ipoly bs (funpow n shift1 (1)\<^sub>p *\<^sub>p p)"
   by (simp add: funpow_shift1)
 
@@ -898,11 +898,11 @@ lemma poly_cmul[simp]:
   fixes p :: "'a::comm_ring_1 poly"
   shows "Ipoly bs (poly_cmul c p) = Ipoly bs (Mul (C c) p)"
   by (induct p, simp_all add: field_simps)
-  
+
 lemma behead:
   assumes "isnpolyh p n"
   shows "Ipoly bs (Add (Mul (head p) (Pw (Bound 0) (degree p))) (behead p)) =
-    (Ipoly bs p :: 'a :: {field_char_0,field})"
+    (Ipoly bs p :: 'a :: comm_ring_1)"
   using assms
 proof (induct p arbitrary: n rule: behead.induct)
   case (1 c p n)
@@ -1174,7 +1174,7 @@ lemma head_nz[simp]: "isnpolyh p n0 \<Longrightarrow> head p = 0\<^sub>p \<longl
   by (simp add: head_eq_headn0)
 
 lemma isnpolyh_zero_iff:
-fixes p :: "'a::field_char_0 poly"
+fixes p :: "'a::idom_char_0 poly"
   assumes nq: "isnpolyh p n0"
     and eq :"\<forall>bs. wf_bs bs p \<longrightarrow> Ipoly bs p = 0"
   shows "p = 0\<^sub>p"
@@ -1258,7 +1258,7 @@ qed
 lemma isnpolyh_unique:
   assumes np: "isnpolyh p n0"
     and nq: "isnpolyh q n1"
-  shows "(\<forall>bs. Ipoly bs p = (Ipoly bs q :: 'a::field_char_0)) \<longleftrightarrow> p = q"
+  shows "(\<forall>bs. Ipoly bs p = (Ipoly bs q :: 'a::idom_char_0)) \<longleftrightarrow> p = q"
 proof auto
   assume H: "\<forall>bs. (Ipoly bs p ::'a) = Ipoly bs q"
   then have "\<forall>bs. Ipoly bs (p -\<^sub>p q) = (0::'a)"
@@ -1273,7 +1273,7 @@ qed
 text \<open>consequences of unicity on the algorithms for polynomial normalization\<close>
 
 lemma polyadd_commute:
-  fixes p :: "'a::field_char_0 poly"
+  fixes p :: "'a::idom_char_0 poly"
   assumes np: "isnpolyh p n0"
       and nq: "isnpolyh q n1"
   shows "p +\<^sub>p q = q +\<^sub>p p"
@@ -1287,7 +1287,7 @@ lemma one_normh: "isnpolyh (1)\<^sub>p n"
   by simp
 
 lemma polyadd_0[simp]:
-  fixes p :: "'a::field_char_0 poly"
+  fixes p :: "'a::idom_char_0 poly"
   assumes np: "isnpolyh p n0"
   shows "p +\<^sub>p 0\<^sub>p = p"
     and "0\<^sub>p +\<^sub>p p = p"

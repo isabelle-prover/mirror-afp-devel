@@ -99,6 +99,11 @@ begin
 
   end
 
+  locale endofunctor =
+    "functor" A A F
+  for A :: "'a comp"     (infixr "\<cdot>" 55)
+  and F :: "'a \<Rightarrow> 'a"
+
   locale faithful_functor = "functor" A B F
   for A :: "'a comp"
   and B :: "'b comp"

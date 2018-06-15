@@ -162,7 +162,8 @@ proof
   from a have "x \<in> {y. \<exists>x\<in>\<Union>h\<in>H. {a \<otimes> h}. y = inv a \<otimes> x}" unfolding l_coset_def image_def by simp
   then have "(\<exists>x'\<in>\<Union>h\<in>H. {a \<otimes> h}. x = inv a \<otimes> x')" by blast  
   then show "x \<in> H" 
-    using \<open>H \<subseteq> carrier G\<close> \<open>a \<in> carrier G\<close> group.transpose_inv is_group by fastforce 
+    using \<open>H \<subseteq> carrier G\<close> \<open>a \<in> carrier G\<close> is_group
+    by clarify (metis inv_solve_left m_closed set_mp)
 next
   show "\<And>a. H \<subseteq> carrier G \<Longrightarrow> finite (carrier G) \<Longrightarrow> a \<in> carrier G \<Longrightarrow> c = a <# H \<Longrightarrow> finite H"
   using rev_finite_subset by blast

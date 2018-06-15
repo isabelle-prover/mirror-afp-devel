@@ -29,7 +29,7 @@ definition finite_field_factorization :: "'a mod_ring poly \<Rightarrow> 'a mod_
      a = lead_coeff f;
      u = smult (inverse a) f;
      gs = (if use_distinct_degree_factorization then distinct_degree_factorization u else [(1,u)]);
-     (irr,hs) = partition (\<lambda> (i,f). degree f = i) gs
+     (irr,hs) = List.partition (\<lambda> (i,f). degree f = i) gs
     in (a,map snd irr @ concat (map (\<lambda> (i,g). berlekamp_monic_factorization i g) hs)))"
 
 lemma finite_field_factorization_explicit:
@@ -43,7 +43,7 @@ proof (cases "degree f = 0")
   obtain gs where dist: "(if use_distinct_degree_factorization then distinct_degree_factorization g else [(1,g)]) = gs" by auto
   note us = us[unfolded finite_field_factorization_def Let_def]
   from us f have c: "c = lead_coeff f" by auto
-  obtain irr hs where part: "partition (\<lambda> (i, f). degree f = i) gs = (irr,hs)" by force
+  obtain irr hs where part: "List.partition (\<lambda> (i, f). degree f = i) gs = (irr,hs)" by force
   from arg_cong[OF this, of fst] have irr: "irr = filter (\<lambda> (i, f). degree f = i) gs" by auto
   from us[folded c, folded g_def, unfolded dist part split] f
   have us: "us = map snd irr @ concat (map (\<lambda>(x, y). berlekamp_monic_factorization x y) hs)" by auto

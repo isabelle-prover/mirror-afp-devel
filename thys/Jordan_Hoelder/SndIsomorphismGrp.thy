@@ -43,24 +43,24 @@ text {* As this is maybe the best place this fits in: Factorizing by the trivial
 is an isomorphism. *}
 
 lemma (in group) trivial_factor_iso:
-  shows "the_elem \<in> (G Mod {\<one>}) \<cong> G"
+  shows "the_elem \<in> iso (G Mod {\<one>}) G"
 proof -
   have "group_hom G G (\<lambda>x. x)" unfolding group_hom_def group_hom_axioms_def hom_def using is_group by simp
   moreover have "(\<lambda>x. x) ` carrier G = carrier G" by simp
   moreover have "kernel G G (\<lambda>x. x) = {\<one>}" unfolding kernel_def by auto
-  ultimately show ?thesis using group_hom.FactGroup_iso by force
+  ultimately show ?thesis using group_hom.FactGroup_iso_set by force
 qed
 
 text {* And the dual theorem to the previous one: Factorizing by the group itself gives the trivial group *}
 
 lemma (in group) self_factor_iso:
-  shows "(\<lambda>X. the_elem ((\<lambda>x. \<one>) ` X)) \<in> (G Mod (carrier G)) \<cong> G\<lparr> carrier := {\<one>} \<rparr>"
+  shows "(\<lambda>X. the_elem ((\<lambda>x. \<one>) ` X)) \<in> iso (G Mod (carrier G)) (G\<lparr> carrier := {\<one>} \<rparr>)"
 proof -
   have "group (G\<lparr>carrier := {\<one>}\<rparr>)" by (metis subgroup_imp_group triv_subgroup)
   hence "group_hom G (G\<lparr>carrier := {\<one>}\<rparr>) (\<lambda>x. \<one>)" unfolding group_hom_def group_hom_axioms_def hom_def using is_group by auto
   moreover have "(\<lambda>x. \<one>) ` carrier G = carrier (G\<lparr>carrier := {\<one>}\<rparr>)" by auto
   moreover have "kernel G (G\<lparr>carrier := {\<one>}\<rparr>) (\<lambda>x. \<one>) = carrier G" unfolding kernel_def by auto
-  ultimately show ?thesis using group_hom.FactGroup_iso by force
+  ultimately show ?thesis using group_hom.FactGroup_iso_set by force
 qed
 
 text {* This theory provides a proof of the second isomorphism theorems for groups. 
@@ -203,9 +203,9 @@ qed
 text {* Finally we can prove the actual isomorphism theorem: *}
 
 theorem normal_intersection_quotient_isom:
-  shows "(\<lambda>X. the_elem ((\<lambda>g. H #> g) ` X)) \<in> ((G\<lparr>carrier := S\<rparr>) Mod (H \<inter> S)) \<cong> (((G\<lparr>carrier := H <#> S\<rparr>)) Mod H)"
+  shows "(\<lambda>X. the_elem ((\<lambda>g. H #> g) ` X)) \<in> iso ((G\<lparr>carrier := S\<rparr>) Mod (H \<inter> S)) (((G\<lparr>carrier := H <#> S\<rparr>)) Mod H)"
 using normal_intersection_hom_kernel[symmetric] normal_intersection_hom normal_intersection_hom_surj
-by (metis group_hom.FactGroup_iso)
+by (metis group_hom.FactGroup_iso_set)
 
 end
 

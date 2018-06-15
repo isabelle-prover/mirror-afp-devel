@@ -29,7 +29,8 @@ proof -
   from 1 have 3: "(\<zero>\<^bsub>R\<^esub> \<oplus>\<^bsub>R\<^esub> \<zero>\<^bsub>R\<^esub>) \<odot>\<^bsub>M\<^esub> m=(\<zero>\<^bsub>R\<^esub>\<odot>\<^bsub>M\<^esub> m) \<oplus>\<^bsub>M\<^esub> (\<zero>\<^bsub>R\<^esub>\<odot>\<^bsub>M\<^esub> m)"  using [[simp_trace, simp_trace_depth_limit=3]]
     by (simp add: smult_l_distr del: R.add.r_one R.add.l_one)
   from 2 3 have 4: "\<zero>\<^bsub>R\<^esub>\<odot>\<^bsub>M\<^esub> m =(\<zero>\<^bsub>R\<^esub>\<odot>\<^bsub>M\<^esub> m) \<oplus>\<^bsub>M\<^esub> (\<zero>\<^bsub>R\<^esub>\<odot>\<^bsub>M\<^esub> m)" by auto
-  from 0 4 show ?thesis by (metis 1 M.add.l_cancel M.r_zero M.zero_closed)
+  from 0 4 show ?thesis
+    using M.l_neg M.r_neg1 by fastforce
 qed
 
 text {* Multiplication by 0 in $M$ gives 0. *} (*Add to Module.*)
@@ -68,20 +69,10 @@ lemma (in module) smult_assoc_simp:
 "[| a \<in> carrier R; b \<in> carrier R; x \<in> carrier M |] ==>
       a \<odot>\<^bsub>M\<^esub> (b \<odot>\<^bsub>M\<^esub> x) = (a \<otimes> b) \<odot>\<^bsub>M\<^esub> x "
 by (auto simp add: smult_assoc1)
-             
-(* Add to Group? *)
-lemma (in group) show_r_one [simp]:
-  "\<lbrakk>a\<in> carrier G; b\<in> carrier G\<rbrakk>\<Longrightarrow> (a \<otimes>\<^bsub>G\<^esub> b= a) = ( b= \<one>\<^bsub>G\<^esub>)"
-by (metis l_inv r_one transpose_inv)
-
-(* Add to Group? *)
-lemma (in group) show_l_one [simp]:
-  "\<lbrakk>a\<in> carrier G; b\<in> carrier G\<rbrakk>\<Longrightarrow> (a \<otimes>\<^bsub>G\<^esub> b= b) = ( a= \<one>\<^bsub>G\<^esub>)"
-by (metis l_one one_closed r_cancel)
-
+  
 (* Add to Ring? *)
-lemmas (in abelian_group) show_r_zero=add.show_r_one
-lemmas (in abelian_group) show_l_zero=add.show_l_one
+lemmas (in abelian_group) show_r_zero= add.l_cancel_one
+lemmas (in abelian_group) show_l_zero= add.r_cancel_one
 
 text {*A nontrivial ring has $0\neq 1$. *}(*Add to Ring.*)
 lemma (in ring) nontrivial_ring [simp]:
@@ -101,7 +92,7 @@ qed
 text {*Use as simp rule. To show $a-b=0$, it suffices to show $a=b$. *}(*Add to Ring.*)
 lemma (in abelian_group) minus_other_side [simp]:
   "\<lbrakk>a\<in>carrier G; b\<in>carrier G\<rbrakk> \<Longrightarrow> (a\<ominus>\<^bsub>G\<^esub>b = \<zero>\<^bsub>G\<^esub>) = (a=b)"
-by (metis add.inv_closed add.r_cancel minus_eq r_neg)
+  by (metis a_minus_def add.inv_closed add.m_comm r_neg r_neg2)
 
 subsection {*Units group*}
 text {*Define the units group $R^{\times}$ and show it is actually a group.*}(* Add to Ring.*)
