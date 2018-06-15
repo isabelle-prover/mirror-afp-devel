@@ -190,7 +190,7 @@ apply auto
 done
 
 
-lemma lconf_empty[iff]: "P,h \<turnstile> empty (:\<le>)\<^sub>w E"
+lemma lconf_empty[iff]: "P,h \<turnstile> Map.empty (:\<le>)\<^sub>w E"
 by(simp add:lconf_def)
 
 lemma lconf_upd2: "\<lbrakk>P,h \<turnstile> l (:\<le>)\<^sub>w E; P,h \<turnstile> v :\<le> T\<rbrakk> \<Longrightarrow> P,h \<turnstile> l(V\<mapsto>v) (:\<le>)\<^sub>w E(V\<mapsto>T)"

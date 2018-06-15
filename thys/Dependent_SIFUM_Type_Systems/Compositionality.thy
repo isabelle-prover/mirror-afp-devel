@@ -432,7 +432,7 @@ proof -
   from fin eval noread show "change_respecting \<langle>c, mds, mem\<rangle> \<langle>c', mds', mem'\<rangle> X"
   proof (induct "X" arbitrary: mem mem' rule: finite_induct)
     case empty
-    have "mem [\<mapsto> empty] = mem" "mem' [\<mapsto> empty] = mem'"
+    have "mem [\<mapsto> Map.empty] = mem" "mem' [\<mapsto> Map.empty] = mem'"
       unfolding subst_def
       by auto
     hence "change_respecting \<langle>c, mds, mem\<rangle> \<langle>c', mds', mem'\<rangle> {}"

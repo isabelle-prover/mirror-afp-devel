@@ -79,11 +79,11 @@ lemma [simp]: "h a = Some(C,fs) \<Longrightarrow> typeof\<^bsub>(h(a\<mapsto>(C,
  (*<*)by(induct v) (auto simp:fun_upd_apply)(*>*)
 
 text{* For literal values the first parameter of @{term typeof} can be
-set to @{term empty} because they do not contain addresses: *}
+set to @{term Map.empty} because they do not contain addresses: *}
 
 abbreviation
   typeof :: "val \<Rightarrow> ty option" where
-  "typeof v == typeof_h empty v"
+  "typeof v == typeof_h Map.empty v"
 
 lemma typeof_lit_typeof:
   "typeof v = Some T \<Longrightarrow> typeof\<^bsub>h\<^esub> v = Some T"

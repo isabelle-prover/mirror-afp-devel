@@ -61,7 +61,7 @@ where
      None \<Rightarrow> None
    | Some (rol, agts, al) \<Rightarrow> Some (rol, agts, h rol al)"
 
-lemma map_runs_empty [simp]: "map_runs h empty = empty"
+lemma map_runs_empty [simp]: "map_runs h Map.empty = Map.empty"
 by (rule ext) (auto simp add: map_runs_def)
 
 lemma map_runs_dom [simp]: "dom (map_runs h runz) = dom runz"

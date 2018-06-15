@@ -78,12 +78,12 @@ qed
 
 notation infer_type ("_,_ \<turnstile> _ :: '_" [51,51,51]100)
 
-definition test1 where "test1 = [],empty \<turnstile> testExpr1 :: _"
-definition test2 where "test2 = [], empty  \<turnstile> testExpr2 :: _"
-definition test3 where "test3 = [], empty(''V'' \<mapsto> Integer)  \<turnstile> testExpr3 :: _"
-definition test4 where "test4 = [], empty(''V'' \<mapsto> Integer)  \<turnstile> testExpr4 :: _"
-definition test5 where "test5 = [classObject, (''C'',(''Object'',[(''F'',Integer)],[]))], empty  \<turnstile> testExpr5 :: _"
-definition test6 where "test6 = [classObject, classI], empty  \<turnstile> testExpr6 :: _"
+definition test1 where "test1 = [],Map.empty \<turnstile> testExpr1 :: _"
+definition test2 where "test2 = [], Map.empty  \<turnstile> testExpr2 :: _"
+definition test3 where "test3 = [], Map.empty(''V'' \<mapsto> Integer)  \<turnstile> testExpr3 :: _"
+definition test4 where "test4 = [], Map.empty(''V'' \<mapsto> Integer)  \<turnstile> testExpr4 :: _"
+definition test5 where "test5 = [classObject, (''C'',(''Object'',[(''F'',Integer)],[]))], Map.empty  \<turnstile> testExpr5 :: _"
+definition test6 where "test6 = [classObject, classI], Map.empty  \<turnstile> testExpr6 :: _"
 
 ML_val {*
   val SOME(@{code Integer}, _) = Predicate.yield @{code test1};
@@ -94,11 +94,11 @@ ML_val {*
   val SOME(@{code Integer}, _) = Predicate.yield @{code test6};
 *}
 
-definition testmb_isNull where "testmb_isNull = [classObject, classA], empty([this] [\<mapsto>] [Class ''A'']) \<turnstile> mb_isNull :: _"
-definition testmb_add where "testmb_add = [classObject, classA], empty([this,''i''] [\<mapsto>] [Class ''A'',Integer]) \<turnstile> mb_add :: _"
-definition testmb_mult_cond where "testmb_mult_cond = [classObject, classA], empty([this,''j''] [\<mapsto>] [Class ''A'',Integer]) \<turnstile> mb_mult_cond :: _"
-definition testmb_mult_block where "testmb_mult_block = [classObject, classA], empty([this,''i'',''j'',''temp''] [\<mapsto>] [Class ''A'',Integer,Integer,Integer]) \<turnstile> mb_mult_block :: _"
-definition testmb_mult where "testmb_mult = [classObject, classA], empty([this,''i'',''j''] [\<mapsto>] [Class ''A'',Integer,Integer]) \<turnstile> mb_mult :: _"
+definition testmb_isNull where "testmb_isNull = [classObject, classA], Map.empty([this] [\<mapsto>] [Class ''A'']) \<turnstile> mb_isNull :: _"
+definition testmb_add where "testmb_add = [classObject, classA], Map.empty([this,''i''] [\<mapsto>] [Class ''A'',Integer]) \<turnstile> mb_add :: _"
+definition testmb_mult_cond where "testmb_mult_cond = [classObject, classA], Map.empty([this,''j''] [\<mapsto>] [Class ''A'',Integer]) \<turnstile> mb_mult_cond :: _"
+definition testmb_mult_block where "testmb_mult_block = [classObject, classA], Map.empty([this,''i'',''j'',''temp''] [\<mapsto>] [Class ''A'',Integer,Integer,Integer]) \<turnstile> mb_mult_block :: _"
+definition testmb_mult where "testmb_mult = [classObject, classA], Map.empty([this,''i'',''j''] [\<mapsto>] [Class ''A'',Integer,Integer]) \<turnstile> mb_mult :: _"
 
 ML_val {*
   val SOME(@{code Boolean}, _) = Predicate.yield @{code testmb_isNull};
@@ -108,7 +108,7 @@ ML_val {*
   val SOME(@{code Integer}, _) = Predicate.yield @{code testmb_mult};
 *}
 
-definition test where "test = [classObject, classA], empty \<turnstile> testExpr_ClassA :: _"
+definition test where "test = [classObject, classA], Map.empty \<turnstile> testExpr_ClassA :: _"
 
 ML_val {*
   val SOME(@{code Integer}, _) = Predicate.yield @{code test};

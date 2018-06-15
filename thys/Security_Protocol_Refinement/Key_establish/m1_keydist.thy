@@ -126,10 +126,10 @@ declare azC.intros [intro]
 
 text \<open>Misc lemmas: empty state, projections, ...\<close>
 
-lemma knC_empty [simp]: "knC empty = keySetup"
+lemma knC_empty [simp]: "knC Map.empty = keySetup"
 by (auto elim: knC.cases)
 
-lemma azC_empty [simp]: "azC empty = keySetup"
+lemma azC_empty [simp]: "azC Map.empty = keySetup"
 by (auto elim: azC.cases)
 
 
@@ -342,7 +342,7 @@ definition
   m1x_init :: "m1x_state set"
 where
   "m1x_init \<equiv> { \<lparr>
-     runs = empty,
+     runs = Map.empty,
      leak = corrKey         \<comment> \<open>statically corrupted keys initially leaked\<close>
   \<rparr> }"
 

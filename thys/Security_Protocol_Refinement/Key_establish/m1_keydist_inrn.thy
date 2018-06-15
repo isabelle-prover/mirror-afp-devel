@@ -374,7 +374,7 @@ subsubsection \<open>Lemmas about the auxiliary functions\<close>
 (******************************************************************************)
 
 lemma is_runs2sigs_empty [simp]: 
-  "runz = empty \<Longrightarrow> is_runs2sigs runz = (\<lambda>s. 0)"
+  "runz = Map.empty \<Longrightarrow> is_runs2sigs runz = (\<lambda>s. 0)"
 by (rule ext, erule rev_mp) 
    (rule is_runs2sigs.induct, auto)
 
@@ -563,7 +563,7 @@ subsubsection \<open>Lemmas about the auxiliary functions\<close>
 text \<open>Other lemmas\<close>
 
 lemma rs_runs2sigs_empty [simp]: 
-  "runz = empty \<Longrightarrow> rs_runs2sigs runz = (\<lambda>s. 0)"
+  "runz = Map.empty \<Longrightarrow> rs_runs2sigs runz = (\<lambda>s. 0)"
 by (rule ext, erule rev_mp) 
    (rule rs_runs2sigs.induct, auto)
 

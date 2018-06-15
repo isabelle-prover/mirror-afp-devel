@@ -47,7 +47,7 @@ subsubsection {* @{text "Status"} *}
 
 lemma Status_EmptySet:
  "(Abs_hierauto ((@ x . True),
-    {Abs_seqauto ({ @ x . True}, (@ x . True), {}, {})}, {}, empty(@ x . True \<mapsto> {})), 
+    {Abs_seqauto ({ @ x . True}, (@ x . True), {}, {})}, {}, Map.empty(@ x . True \<mapsto> {})), 
   {@x. True},{}, @x. True) \<in> 
   {(HA,C,E,D) | HA C E D. Status HA C E D}"
 apply (unfold Status_def CompFun_def SAs_def)

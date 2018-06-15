@@ -39,7 +39,7 @@ declare [[code drop: Mapping.is_empty]]
 
 lemma is_empty_transfer [transfer_rule]:
   includes lifting_syntax
-  shows "(pcr_mapping (=) (=) ===> (=)) (\<lambda>m. m = empty) Mapping.is_empty"
+  shows "(pcr_mapping (=) (=) ===> (=)) (\<lambda>m. m = Map.empty) Mapping.is_empty"
 unfolding mapping.pcr_cr_eq
 apply(rule rel_funI)
 apply(case_tac y)

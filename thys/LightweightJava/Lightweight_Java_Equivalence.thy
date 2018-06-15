@@ -27,7 +27,7 @@ by (induct list) simp_all
 lemma list_all_map_P [simp]: "list_all (\<lambda>b. b) (map (\<lambda>x. P x) list) = (\<forall>x \<in> set list. P x)"
 by (induct list) simp_all
 
-lemma dom_single[simp]: "a : dom (empty(k \<mapsto> v)) = (a = k)"
+lemma dom_single[simp]: "a : dom (Map.empty(k \<mapsto> v)) = (a = k)"
 by (simp add: dom_def)
 
 lemma predicted_lu[rule_format, simp]:

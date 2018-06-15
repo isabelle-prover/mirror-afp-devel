@@ -241,7 +241,7 @@ shows "P \<turnstile> C sees_methods Mm \<Longrightarrow>
 using sub
 proof (induct rule:converse_rtrancl_induct)
   assume "P \<turnstile> C sees_methods Mm"
-  hence "?Q C C Mm empty" by simp
+  hence "?Q C C Mm Map.empty" by simp
   thus "\<exists>Mm' Mm2. ?Q C C Mm' Mm2" by blast
 next
   fix C'' C'

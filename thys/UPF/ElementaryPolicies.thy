@@ -139,13 +139,13 @@ definition
 
 text{* ... and resulting properties: *}
 
-lemma "A\<^sub>I  \<Oplus> empty  = A\<^sub>I"
+lemma "A\<^sub>I  \<Oplus> Map.empty  = A\<^sub>I"
   by simp 
   
-lemma "A\<^sub>f f  \<Oplus> empty  = A\<^sub>f f"
+lemma "A\<^sub>f f  \<Oplus> Map.empty  = A\<^sub>f f"
   by simp 
   
-lemma "allow_pfun empty = empty"
+lemma "allow_pfun Map.empty = Map.empty"
   apply (rule ext)
   apply (simp add: allow_pfun_def)
   done

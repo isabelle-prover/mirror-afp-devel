@@ -30,7 +30,7 @@ lemma map_default_insert:
   "map_default b (f(a \<mapsto> b')) = (map_default b f)(a := b')"
 by(simp add: map_default_def fun_eq_iff)
 
-lemma map_default_empty [simp]: "map_default b empty = (\<lambda>a. b)"
+lemma map_default_empty [simp]: "map_default b Map.empty = (\<lambda>a. b)"
 by(simp add: fun_eq_iff map_default_def)
 
 lemma map_default_inject:
@@ -476,7 +476,7 @@ proof -
   from fin anf fg show ?thesis
   proof(induct "dom f" arbitrary: f)
     case empty
-    from \<open>{} = dom f\<close> have "f = empty" by(auto simp add: dom_def)
+    from \<open>{} = dom f\<close> have "f = Map.empty" by(auto simp add: dom_def)
     thus ?case by(simp add: finfun_const_def upd_const_same)
   next
     case (insert a' A)
@@ -514,7 +514,7 @@ proof -
   from fin anf fg show ?thesis
   proof(induct "dom f" arbitrary: f)
     case empty
-    from \<open>{} = dom f\<close> have "f = empty" by(auto simp add: dom_def)
+    from \<open>{} = dom f\<close> have "f = Map.empty" by(auto simp add: dom_def)
     thus ?case by(auto simp add: finfun_const_def finfun_update_def upd_upd_twice)
   next
     case (insert a' A)
@@ -742,9 +742,9 @@ lemma finfun_rec_const [simp]: "finfun_rec cnst upd (K$ c) = cnst c"
 proof(cases "finite (UNIV :: 'a set)")
   case False
   hence "finfun_default ((K$ c) :: 'a \<Rightarrow>f 'b) = c" by(simp add: finfun_default_const)
-  moreover have "(THE g :: 'a \<rightharpoonup> 'b. (K$ c) = Abs_finfun (map_default c g) \<and> finite (dom g) \<and> c \<notin> ran g) = empty"
+  moreover have "(THE g :: 'a \<rightharpoonup> 'b. (K$ c) = Abs_finfun (map_default c g) \<and> finite (dom g) \<and> c \<notin> ran g) = Map.empty"
   proof (rule the_equality)
-    show "(K$ c) = Abs_finfun (map_default c empty) \<and> finite (dom empty) \<and> c \<notin> ran empty"
+    show "(K$ c) = Abs_finfun (map_default c Map.empty) \<and> finite (dom Map.empty) \<and> c \<notin> ran Map.empty"
       by(auto simp add: finfun_const_def)
   next
     fix g :: "'a \<rightharpoonup> 'b"
@@ -752,8 +752,8 @@ proof(cases "finite (UNIV :: 'a set)")
     hence g: "(K$ c) = Abs_finfun (map_default c g)" and fin: "finite (dom g)" and ran: "c \<notin> ran g" by blast+
     from g map_default_in_finfun[OF fin, of c] have "map_default c g = (\<lambda>a. c)"
       by(simp add: finfun_const_def)
-    moreover have "map_default c empty = (\<lambda>a. c)" by simp
-    ultimately show "g = empty" by-(rule map_default_inject[OF disjI2[OF refl] fin ran], auto)
+    moreover have "map_default c Map.empty = (\<lambda>a. c)" by simp
+    ultimately show "g = Map.empty" by-(rule map_default_inject[OF disjI2[OF refl] fin ran], auto)
   qed
   ultimately show ?thesis by(simp add: finfun_rec_def)
 next
@@ -763,9 +763,9 @@ next
   show ?thesis
   proof(cases "c = undefined")
     case True
-    have the: "The ?the = empty"
+    have the: "The ?the = Map.empty"
     proof (rule the_equality)
-      from True show "?the empty" by(auto simp add: finfun_const_def)
+      from True show "?the Map.empty" by(auto simp add: finfun_const_def)
     next
       fix g'
       assume "?the g'"
@@ -774,7 +774,7 @@ next
       from fin have "map_default undefined g' \<in> finfun" by(rule map_default_in_finfun)
       with fg have "map_default undefined g' = (\<lambda>a. c)"
         by(auto simp add: finfun_const_def intro: Abs_finfun_inject[THEN iffD1, symmetric])
-      with True show "g' = empty"
+      with True show "g' = Map.empty"
         by -(rule map_default_inject(2)[OF _ fin g], auto)
     qed
     show ?thesis unfolding finfun_rec_def using \<open>finite UNIV\<close> True

@@ -1526,7 +1526,7 @@ lemma unique_factorization_m_factor_partition: assumes l0: "l \<noteq> 0"
   and f: "f = f1 * f2" 
   and cop: "coprime (lead_coeff f) p" 
   and sf: "square_free_m f" 
-  and part: "partition (\<lambda>gi. gi dvdm f1) gs = (gs1, gs2)" 
+  and part: "List.partition (\<lambda>gi. gi dvdm f1) gs = (gs1, gs2)" 
 shows "poly_mod.unique_factorization_m (p^l) f1 (lead_coeff f1, mset gs1)"
   "poly_mod.unique_factorization_m (p^l) f2 (lead_coeff f2, mset gs2)"
 proof -

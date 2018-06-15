@@ -47,7 +47,7 @@ type_synonym
 definition 
   m1_init :: "m1_state set" where
   "m1_init \<equiv> { \<lparr> 
-     runs = empty 
+     runs = Map.empty 
   \<rparr> }"
 
 (******************************************************************************)
@@ -172,7 +172,7 @@ subsubsection \<open>Lemmas about the auxiliary functions\<close>
 text \<open>Basic lemmas\<close>
 
 lemma runs2sigs_empty [simp]: 
-  "runz = empty \<Longrightarrow> runs2sigs runz = (\<lambda>x. 0)"
+  "runz = Map.empty \<Longrightarrow> runs2sigs runz = (\<lambda>x. 0)"
 by (rule ext, erule rev_mp) 
    (rule runs2sigs.induct, auto)
 

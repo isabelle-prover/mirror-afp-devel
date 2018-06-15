@@ -271,8 +271,8 @@ proof
 qed auto
   
 lemma map_add_eq_empty_conv[simp]:
-  "(empty = f++g) \<longleftrightarrow> f=empty \<and> g=empty"
-  "(f++g = empty) \<longleftrightarrow> f=empty \<and> g=empty"
+  "(Map.empty = f++g) \<longleftrightarrow> f=Map.empty \<and> g=Map.empty"
+  "(f++g = Map.empty) \<longleftrightarrow> f=Map.empty \<and> g=Map.empty"
   apply (metis map_add_empty map_add_subsumed1 map_le_map_add)
   by (metis map_add_None)
   
@@ -2429,7 +2429,7 @@ lemma map_of_None_filterD:
   "map_of xs x = None \<Longrightarrow> map_of (filter P xs) x = None"
 by(induct xs) auto
 
-lemma map_of_concat: "map_of (concat xss) = foldr (\<lambda>xs f. f ++ map_of xs) xss empty"
+lemma map_of_concat: "map_of (concat xss) = foldr (\<lambda>xs f. f ++ map_of xs) xss Map.empty"
 by(induct xss) simp_all
 
 lemma map_of_Some_split:
@@ -4060,7 +4060,7 @@ subsection "Maps"
 
   lemma ran_add[simp]: "dom f \<inter> dom g = {} \<Longrightarrow> ran (f++g) = ran f \<union> ran g" by (fastforce simp add: ran_def map_add_def split: option.split_asm option.split)
 
-  lemma nempty_dom: "\<lbrakk>e\<noteq>empty; !!m. m\<in>dom e \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
+  lemma nempty_dom: "\<lbrakk>e\<noteq>Map.empty; !!m. m\<in>dom e \<Longrightarrow> P \<rbrakk> \<Longrightarrow> P"
     by (subgoal_tac "dom e \<noteq> {}") (blast, auto)
 
 
@@ -4306,10 +4306,10 @@ proof (rule set_eqI)
     by auto
 qed
 
-lemma map_to_set_empty[simp]: "map_to_set empty = {}"
+lemma map_to_set_empty[simp]: "map_to_set Map.empty = {}"
   unfolding map_to_set_def by simp
 
-lemma set_to_map_empty[simp]: "set_to_map {} = empty"
+lemma set_to_map_empty[simp]: "set_to_map {} = Map.empty"
   unfolding set_to_map_def[abs_def] by simp
 
 lemma map_to_set_empty_iff: "map_to_set m = {} \<longleftrightarrow> m = Map.empty"

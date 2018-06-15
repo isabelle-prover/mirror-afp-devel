@@ -291,11 +291,11 @@ qed
 
 lemma state_update_vs_allInstances_generic_empty:
 assumes [simp]: "\<And>a. pre_post (mk a) = a"
-shows   "(mk \<lparr>heap=empty, assocs=A\<rparr>) \<Turnstile> OclAllInstances_generic pre_post Type \<doteq> Set{}"
+shows   "(mk \<lparr>heap=Map.empty, assocs=A\<rparr>) \<Turnstile> OclAllInstances_generic pre_post Type \<doteq> Set{}"
 proof -
  have state_update_vs_allInstances_empty:
-  "(OclAllInstances_generic pre_post Type) (mk \<lparr>heap=empty, assocs=A\<rparr>) =
-   Set{} (mk \<lparr>heap=empty, assocs=A\<rparr>)"
+  "(OclAllInstances_generic pre_post Type) (mk \<lparr>heap=Map.empty, assocs=A\<rparr>) =
+   Set{} (mk \<lparr>heap=Map.empty, assocs=A\<rparr>)"
  by(simp add: OclAllInstances_generic_def mtSet_def)
  show ?thesis
   apply(simp only: OclValid_def, subst StrictRefEq\<^sub>S\<^sub>e\<^sub>t.cp0,
@@ -511,7 +511,7 @@ shows      "is_represented_in_state snd x H \<tau>"
 by(rule represented_generic_objects_in_state[OF A[simplified OclAllInstances_at_post_def]])
 
 lemma state_update_vs_allInstances_at_post_empty:
-shows   "(\<sigma>, \<lparr>heap=empty, assocs=A\<rparr>) \<Turnstile> Type .allInstances() \<doteq> Set{}"
+shows   "(\<sigma>, \<lparr>heap=Map.empty, assocs=A\<rparr>) \<Turnstile> Type .allInstances() \<doteq> Set{}"
 unfolding OclAllInstances_at_post_def
 by(rule state_update_vs_allInstances_generic_empty[OF snd_conv])
 
@@ -617,7 +617,7 @@ by(rule represented_generic_objects_in_state[OF A[simplified OclAllInstances_at_
 
 
 lemma state_update_vs_allInstances_at_pre_empty:
-shows   "(\<lparr>heap=empty, assocs=A\<rparr>, \<sigma>) \<Turnstile> Type .allInstances@pre() \<doteq> Set{}"
+shows   "(\<lparr>heap=Map.empty, assocs=A\<rparr>, \<sigma>) \<Turnstile> Type .allInstances@pre() \<doteq> Set{}"
 unfolding OclAllInstances_at_pre_def
 by(rule state_update_vs_allInstances_generic_empty[OF fst_conv])
 

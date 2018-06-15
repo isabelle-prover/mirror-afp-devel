@@ -59,7 +59,7 @@ definition patient1 :: patient where "patient1 = 5"
 definition patient2 :: patient where "patient2 = 6"
 
 definition UC0 :: \<upsilon> where
- "UC0 = empty(alice\<mapsto>Nurse)(bob\<mapsto>ClinicalPractitioner)(charlie\<mapsto>Clerical)"
+ "UC0 = Map.empty(alice\<mapsto>Nurse)(bob\<mapsto>ClinicalPractitioner)(charlie\<mapsto>Clerical)"
 
 definition entry1  :: entry where
  "entry1 = (Open,alice, dummyContent)"
@@ -77,13 +77,13 @@ definition SCR2 :: SCR where
  "SCR2 =  (Map.empty)"
 
 definition Spine0 :: DB where
- "Spine0 = empty(patient1\<mapsto>SCR1)(patient2\<mapsto>SCR2)"
+ "Spine0 = Map.empty(patient1\<mapsto>SCR1)(patient2\<mapsto>SCR2)"
 
 definition LR1 :: LR where
- "LR1 =(empty(1\<mapsto>{alice}))"
+ "LR1 =(Map.empty(1\<mapsto>{alice}))"
 
 definition \<Sigma>0 :: \<Sigma> where
- "\<Sigma>0 = (empty(patient1\<mapsto>LR1))"
+ "\<Sigma>0 = (Map.empty(patient1\<mapsto>LR1))"
 
 subsection {* The Initial System State *}
 definition \<sigma>0 :: "DB \<times> \<Sigma>\<times>\<upsilon>" where

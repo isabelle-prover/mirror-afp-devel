@@ -161,12 +161,12 @@ qed
 
 notation execute ("_ \<turnstile> ((1\<langle>_,/_\<rangle>) \<Rightarrow>/ \<langle>'_, '_\<rangle>)" [51,0,0] 81)
 
-definition "test1 = [] \<turnstile> \<langle>testExpr1,(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
-definition "test2 = [] \<turnstile> \<langle>testExpr2,(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
-definition "test3 = [] \<turnstile> \<langle>testExpr3,(empty,empty(''V''\<mapsto>Intg 77))\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
-definition "test4 = [] \<turnstile> \<langle>testExpr4,(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
-definition "test5 = [(''Object'',('''',[],[])),(''C'',(''Object'',[(''F'',Integer)],[]))] \<turnstile> \<langle>testExpr5,(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
-definition "test6 = [(''Object'',('''',[],[])), classI] \<turnstile> \<langle>testExpr6,(empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
+definition "test1 = [] \<turnstile> \<langle>testExpr1,(Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
+definition "test2 = [] \<turnstile> \<langle>testExpr2,(Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
+definition "test3 = [] \<turnstile> \<langle>testExpr3,(Map.empty,Map.empty(''V''\<mapsto>Intg 77))\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
+definition "test4 = [] \<turnstile> \<langle>testExpr4,(Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
+definition "test5 = [(''Object'',('''',[],[])),(''C'',(''Object'',[(''F'',Integer)],[]))] \<turnstile> \<langle>testExpr5,(Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
+definition "test6 = [(''Object'',('''',[],[])), classI] \<turnstile> \<langle>testExpr6,(Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 
 definition "V = ''V''"
 definition "C = ''C''"
@@ -189,7 +189,7 @@ ML_val {*
   val SOME ((@{code Val} (@{code Intg} (@{code int_of_integer} 160)), _), _) = Predicate.yield @{code test6};
 *}
 
-definition "test7 = [classObject, classL] \<turnstile> \<langle>testExpr_BuildList, (empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
+definition "test7 = [classObject, classL] \<turnstile> \<langle>testExpr_BuildList, (Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 
 definition "L = ''L''"
 definition "N = ''N''"
@@ -215,7 +215,7 @@ ML_val {*
      fs4 (N, L) = SOME @{code Null});
 *}
 
-definition "test8 = [classObject, classA] \<turnstile> \<langle>testExpr_ClassA, (empty,empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
+definition "test8 = [classObject, classA] \<turnstile> \<langle>testExpr_ClassA, (Map.empty,Map.empty)\<rangle> \<Rightarrow> \<langle>_,_\<rangle>"
 definition "i = ''int''"
 definition "t = ''test''"
 definition "A = ''A''"

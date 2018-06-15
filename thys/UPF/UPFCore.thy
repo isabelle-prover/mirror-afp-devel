@@ -135,10 +135,10 @@ translations
   "_MapUpd m (_Maplets xy ms)"   \<rightleftharpoons> "_MapUpd (_MapUpd m xy) ms"
   "_MapUpd m (_policylet1 x y)"  \<rightleftharpoons> "m(x := CONST Some (CONST allow y))"
   "_MapUpd m (_policylet2 x y)"  \<rightleftharpoons> "m(x := CONST Some (CONST deny y))"
-  "\<emptyset>"                            \<rightleftharpoons> "CONST empty" 
+  "\<emptyset>"                            \<rightleftharpoons> "CONST Map.empty" 
 
 text{* Here are some lemmas essentially showing syntactic equivalences: *}
-lemma test: "empty(x\<mapsto>\<^sub>+a, y\<mapsto>\<^sub>-b) = \<emptyset>(x \<mapsto>\<^sub>+ a, y \<mapsto>\<^sub>- b)"   by simp
+lemma test: "\<emptyset>(x\<mapsto>\<^sub>+a, y\<mapsto>\<^sub>-b) = \<emptyset>(x \<mapsto>\<^sub>+ a, y \<mapsto>\<^sub>- b)"   by simp
 
 lemma test2: "p(x\<mapsto>\<^sub>+a,x\<mapsto>\<^sub>-b) = p(x\<mapsto>\<^sub>-b)"   by simp
 

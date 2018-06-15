@@ -251,7 +251,7 @@ definition
   m3_init :: "m3_state set"
 where
   "m3_init \<equiv> { \<lparr>
-     runs = empty,
+     runs = Map.empty,
      leak = shrK`bad \<times> {undefined} \<times> {undefined},
      IK = Key`shrK`bad
   \<rparr> }"

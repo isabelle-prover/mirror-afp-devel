@@ -1025,7 +1025,7 @@ next
   with select "method" wf have "Ts' = Ts \<and> P \<turnstile> T \<le> T'"
     by -(rule select_least_methods_subtypes,simp_all)
   hence eqs:"Ts' = Ts" and sub:"P \<turnstile> T \<le> T'" by auto
-  from wf wtabody have "P,empty(this\<mapsto>Class(last Cs'),pns[\<mapsto>]Ts),h \<turnstile> body : T"
+  from wf wtabody have "P,Map.empty(this\<mapsto>Class(last Cs'),pns[\<mapsto>]Ts),h \<turnstile> body : T"
     by -(rule WT_implies_WTrt,simp_all)
   hence wtbody:"P,E(this#pns [\<mapsto>] Class (last Cs')#Ts),h \<turnstile> body : T"
     by(rule WTrt_env_mono) simp
@@ -1096,7 +1096,7 @@ next
   with subo' wf lastC have "Subobjs P D ((Cs @\<^sub>p Cs'') @\<^sub>p Cs')"
     by (fastforce intro:Subobjs_appendPath)
   with Ds have suboDs:"Subobjs P D Ds" by simp
-  from wtabody have "P,empty(this#pns [\<mapsto>] Class (last Ds)#Ts),h \<turnstile> body : T"
+  from wtabody have "P,Map.empty(this#pns [\<mapsto>] Class (last Ds)#Ts),h \<turnstile> body : T"
     by(rule WT_implies_WTrt)
   hence "P,E(this#pns [\<mapsto>] Class (last Ds)#Ts),h \<turnstile> body : T"
     by(rule WTrt_env_mono) simp

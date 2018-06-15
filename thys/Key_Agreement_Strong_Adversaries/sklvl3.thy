@@ -289,7 +289,7 @@ where
   "l3_init \<equiv> { \<lparr>
     ik = ik_init,
     secret = {},
-    progress = empty,
+    progress = Map.empty,
     signalsInit = \<lambda>x. 0,
     signalsResp = \<lambda>x. 0,
     signalsInit2 = \<lambda>x. 0,
