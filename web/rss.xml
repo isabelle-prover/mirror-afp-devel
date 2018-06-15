@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>27 May 2018 00:00:00 +0000</pubDate>
+    <pubDate>14 Jun 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Projective Geometry</title>
+              <link>https://www.isa-afp.org/entries/Projective_Geometry.html</link>
+       <guid>https://www.isa-afp.org/entries/Projective_Geometry.html</guid>
+       <dc:creator> Anthony Bordg       </dc:creator>
+       <pubDate>14 Jun 2018 00:00:00 +0000</pubDate>
+       <description>
+We formalize the basics of projective geometry. In particular, we give
+a proof of the so-called Hessenberg&#39;s theorem in projective plane
+geometry. We also provide a proof of the so-called Desargues&#39;s
+theorem based on an axiomatization of (higher) projective space
+geometry using the notion of rank of a matroid. This last approach
+allows to handle incidence relations in an homogeneous way dealing
+only with points and without the need of talking explicitly about
+lines, planes or any higher entity.</description>
+    </item>
     <item>
        <title>Optimal Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/Optimal_BST.html</link>
@@ -533,23 +549,6 @@ establishing Strong Eventual Consistency for Conflict-free Replicated
 Datatypes&#34; (AFP.CRDT) from Gomes et al. Hence, we provide an
 additional example of how the recently proposed framework can be used
 to design and prove CRDTs.</description>
-    </item>
-    <item>
-       <title>Hybrid Multi-Lane Spatial Logic</title>
-              <link>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</guid>
-       <dc:creator> Sven Linker       </dc:creator>
-       <pubDate>06 Nov 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a semantic embedding of a spatio-temporal multi-modal
-logic, specifically defined to reason about motorway traffic, into
-Isabelle/HOL. The semantic model is an abstraction of a motorway,
-emphasising local spatial properties, and parameterised by the types
-of sensors deployed in the vehicles. We use the logic to define
-controller constraints to ensure safety, i.e., the absence of
-collisions on the motorway. After proving safety with a restrictive
-definition of sensors, we relax these assumptions and show how to
-amend the controller constraints to still guarantee safety.</description>
     </item>
   </channel>
 </rss>

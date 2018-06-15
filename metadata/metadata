@@ -6860,3 +6860,20 @@ abstract =
   The algorithms are memoized with the help of the AFP article
   <a href="Monad_Memo_DP.html">Monadification, Memoization and Dynamic Programming</a>,
   thus yielding dynamic programming algorithms.
+
+[Projective_Geometry]
+title = Projective Geometry
+author = Anthony Bordg <https://sites.google.com/site/anthonybordg/>
+topic = Mathematics/Geometry
+date = 2018-06-14
+notify = apdb3@cam.ac.uk
+abstract = 
+  We formalize the basics of projective geometry. In particular, we give
+  a proof of the so-called Hessenberg's theorem in projective plane
+  geometry. We also provide a proof of the so-called Desargues's
+  theorem based on an axiomatization of (higher) projective space
+  geometry using the notion of rank of a matroid. This last approach
+  allows to handle incidence relations in an homogeneous way dealing
+  only with points and without the need of talking explicitly about
+  lines, planes or any higher entity.
+
