@@ -128,12 +128,6 @@ definition ortho :: "'a pfun \<Rightarrow> 'a pfun \<Rightarrow> bool"
 lemma pfun_comm: "ortho x y \<Longrightarrow> x ++ y = y ++ x"
   by (force simp: ortho_def intro!: map_add_comm)
 
-lemma pfun_empty1: "f ++ g = Map.empty \<Longrightarrow> f = Map.empty"
-  by (meson map_add_None)
-
-lemma pfun_empty2: "f ++ g = Map.empty \<Longrightarrow> g = Map.empty"
-  by (meson map_add_None)
-
 lemma pfun_canc: "ortho z x \<Longrightarrow> ortho z y \<Longrightarrow> z ++ x = z ++ y \<Longrightarrow> x = y"
   apply (auto simp: ortho_def map_add_def option.case_eq_if fun_eq_iff)
   by (metis domIff dom_restrict option.collapse restrict_map_def)

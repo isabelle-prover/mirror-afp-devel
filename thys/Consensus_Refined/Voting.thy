@@ -346,9 +346,8 @@ proof-
         by(auto simp add: v_TS_defs v_round_def
           intro: locked_preserved[OF invs(1), THEN subsetD, OF _ _ locked_v])
       from trans obtain w where "decisions t p = Some w" using dec_j
-        apply(auto simp add: t'_def v_TS_defs v_round_def 
+        by(fastforce simp add: t'_def v_TS_defs v_round_def 
           split: option.split option.split_asm)
-         by (metis map_add_None not_Some_eq)
       thus ?thesis using invs(4)[THEN Vinv3D] locked_v_t locked_unique[OF invs(3)]
         by (metis contra_subsetD ranI)
     qed(auto)
