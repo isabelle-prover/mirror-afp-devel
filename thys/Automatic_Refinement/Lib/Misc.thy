@@ -261,24 +261,10 @@ lemma list_ee_eq_leel[simp]:
   apply (cases l1, auto) []
   apply (cases l1, auto) []
   done
-    
-subsubsection \<open>Map\<close>    
-lemma map_of_eq_empty_iff [simp]:
-  "map_of xs = Map.empty \<longleftrightarrow> xs=[]"
-proof
-  assume "map_of xs = Map.empty"
-  thus "xs = []" by (induct xs) simp_all
-qed auto
-  
-lemma map_add_eq_empty_conv[simp]:
-  "(Map.empty = f++g) \<longleftrightarrow> f=Map.empty \<and> g=Map.empty"
-  "(f++g = Map.empty) \<longleftrightarrow> f=Map.empty \<and> g=Map.empty"
-  apply (metis map_add_empty map_add_subsumed1 map_le_map_add)
-  by (metis map_add_None)
-  
-  
-  
-subsubsection \<open>Transitive Closure\<close>  
+
+
+subsubsection \<open>Transitive Closure\<close>
+
 text {* A point-free induction rule for elements reachable from an initial set *}
 lemma rtrancl_reachable_induct[consumes 0, case_names base step]:
   assumes I0: "I \<subseteq> INV"

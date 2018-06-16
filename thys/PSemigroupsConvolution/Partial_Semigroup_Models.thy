@@ -140,8 +140,7 @@ lemma pfun_canc: "ortho z x \<Longrightarrow> ortho z y \<Longrightarrow> z ++ x
 
 interpretation pfun: positive_cancellative_pam_one map_add ortho "{Map.empty}" Map.empty
   apply (standard, auto simp: ortho_def pfun_canc)
-  apply (simp_all add: inf_commute map_add_comm ortho_def pfun_canc)
-  by (meson map_add_None)+
+  by (simp_all add: inf_commute map_add_comm ortho_def pfun_canc)
     
 subsection \<open>PAM's of Disjoint Unions of Sets\<close>
   
