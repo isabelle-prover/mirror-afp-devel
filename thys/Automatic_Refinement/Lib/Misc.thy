@@ -59,34 +59,7 @@ lemma inter_compl_diff_conv[simp]: "A \<inter> -B = A - B" by auto
 lemma pair_set_inverse[simp]: "{(a,b). P a b}\<inverse> = {(b,a). P a b}"
   by auto
 
-lemma Image_empty[simp]: "{} `` X = {}"
-  by auto
-      
-(* HOL/Finite_set *)  
-lemma card_inverse[simp]: "card (R\<inverse>) = card R"
-proof -
-  have "finite (R\<inverse>) \<longleftrightarrow> finite R" by auto
-  have [simp]: "\<And>R. prod.swap`R = R\<inverse>" by auto
-  {
-    assume "\<not>finite R"
-    hence ?thesis
-      by auto
-  } moreover {
-    assume "finite R"
-    with card_image_le[of R prod.swap] card_image_le[of "R\<inverse>" prod.swap]
-    have ?thesis by auto
-  } ultimately show ?thesis by blast
-qed  
-  
 lemma card_doubleton_eq_2_iff[simp]: "card {a,b} = 2 \<longleftrightarrow> a\<noteq>b" by auto
-    
-lemma finite_Image: fixes R shows "\<lbrakk> finite R \<rbrakk> \<Longrightarrow> finite (R `` A)"
-  by (meson Image_iff finite_Range Range.intros finite_subset subsetI)
-
-lemma finite_rtrancl_Image:
-  fixes R
-  shows "\<lbrakk> finite R; finite A \<rbrakk> \<Longrightarrow> finite ((R\<^sup>*) `` A)"
-  by (metis Image_Id Un_Image finite_Image finite_trancl infinite_Un rtrancl_trancl_reflcl)  
 
 subsubsection \<open>Option\<close>
 lemma the_Some_eq_id[simp]: "(the o Some) = id" by auto
