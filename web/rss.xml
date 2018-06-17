@@ -27,6 +27,19 @@ only with points and without the need of talking explicitly about
 lines, planes or any higher entity.</description>
     </item>
     <item>
+       <title>The Localization of a Commutative Ring</title>
+              <link>https://www.isa-afp.org/entries/Localization_Ring.html</link>
+       <guid>https://www.isa-afp.org/entries/Localization_Ring.html</guid>
+       <dc:creator> Anthony Bordg       </dc:creator>
+       <pubDate>14 Jun 2018 00:00:00 +0000</pubDate>
+       <description>
+We formalize the localization of a commutative ring R with respect to
+a multiplicative subset (i.e. a submonoid of R seen as a
+multiplicative monoid). This localization is itself a commutative ring
+and we build the natural homomorphism of rings from R to its
+localization.</description>
+    </item>
+    <item>
        <title>Optimal Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/Optimal_BST.html</link>
        <guid>https://www.isa-afp.org/entries/Optimal_BST.html</guid>
@@ -532,23 +545,6 @@ stochastic matrices, link the formalization to the existing AFP-entry
 on Markov chains, and apply the Perron&amp;ndash;Frobenius theorem to
 prove that stationary distributions always exist, and they are unique
 if the stochastic matrix is irreducible.</description>
-    </item>
-    <item>
-       <title>The IMAP CmRDT</title>
-              <link>https://www.isa-afp.org/entries/IMAP-CRDT.html</link>
-       <guid>https://www.isa-afp.org/entries/IMAP-CRDT.html</guid>
-       <dc:creator> Tim Jungnickel, Lennart Oldenburg, Matthias Loibl       </dc:creator>
-       <pubDate>09 Nov 2017 00:00:00 +0000</pubDate>
-       <description>
-We provide our Isabelle/HOL formalization of a Conflict-free
-Replicated Datatype for Internet Message Access Protocol commands.
-We show that Strong Eventual Consistency (SEC) is guaranteed
-by proving the commutativity of concurrent operations. We base our
-formalization on the recently proposed &#34;framework for
-establishing Strong Eventual Consistency for Conflict-free Replicated
-Datatypes&#34; (AFP.CRDT) from Gomes et al. Hence, we provide an
-additional example of how the recently proposed framework can be used
-to design and prove CRDTs.</description>
     </item>
   </channel>
 </rss>

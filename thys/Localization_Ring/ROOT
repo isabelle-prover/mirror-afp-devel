@@ -1,0 +1,9 @@
+chapter AFP
+
+session "Localization_Ring" (AFP) = "HOL-Algebra" +
+  options [timeout=200]
+  theories
+    Localization
+  document_files
+    "root.tex"
+    "root.bib"

@@ -6877,3 +6877,16 @@ abstract =
   only with points and without the need of talking explicitly about
   lines, planes or any higher entity.
 
+[Localization_Ring]
+title = The Localization of a Commutative Ring
+author = Anthony Bordg <https://sites.google.com/site/anthonybordg/>
+topic = Mathematics/Algebra
+date = 2018-06-14
+notify = apdb3@cam.ac.uk
+abstract = 
+  We formalize the localization of a commutative ring R with respect to
+  a multiplicative subset (i.e. a submonoid of R seen as a
+  multiplicative monoid). This localization is itself a commutative ring
+  and we build the natural homomorphism of rings from R to its
+  localization.
+
