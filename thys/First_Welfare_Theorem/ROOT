@@ -8,9 +8,11 @@ session First_Welfare_Theorem (AFP) = "HOL-Analysis" +
     Argmax
     Preferences
     Utility_Functions
-    Consumers
-    Exchange_Economy
-    Private_Ownership_Economy
+    "Microeconomics/Consumers"
+    "Microeconomics/Common"
+    "Microeconomics/Exchange_Economy"
+    "Microeconomics/Private_Ownership_Economy"
+    "Microeconomics/Arrow_Debreu_Model"
   document_files
     "root.bib"
     "root.tex"

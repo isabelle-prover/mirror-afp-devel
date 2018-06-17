@@ -1,13 +1,17 @@
 (* License: LGPL *)
-(* Author: Julian Parsert *)
 
-section \<open>Arg Min and Arg Max\<close>
+
+section \<open>Arg Min and Arg Max sets\<close>
 
 theory Argmax
-imports "HOL-Analysis.Analysis"
+  imports
+    "HOL-Analysis.Analysis"
 begin
 
-text \<open>Definition of argmax and argmin returing a set.\<close>
+subsection \<open> Definitions and Lemmas by Julian Parsert \<close>
+
+
+text \<open> definition of argmax and argmin returing a set. \<close>
 
 definition arg_min_set :: "('a \<Rightarrow> 'b::ord) \<Rightarrow> 'a set \<Rightarrow> 'a set"
   where

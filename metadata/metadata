@@ -5459,6 +5459,10 @@ abstract =
   famous <i>invisible hand</i> and states that a group of
   self-interested and rational actors will eventually achieve an
   efficient allocation of goods and services.
+extra-history =
+	Change history:
+	[2018-06-17]: Added some lemmas and a theory file, also introduced Microeconomics folder.
+	<br>
 
 [Noninterference_Sequential_Composition]
 title = Conservation of CSP Noninterference Security under Sequential Composition

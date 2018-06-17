@@ -9,7 +9,8 @@ section \<open>Preference Relations\<close>
 text \<open> Preferences modeled as a set of pairs \<close>
 
 theory Preferences
-  imports "HOL-Analysis.Analysis"
+  imports
+    "HOL-Analysis.Analysis"
     Syntax
 begin
 
@@ -48,6 +49,7 @@ lemma transitivity: "trans relation"
 
 lemma indiff_trans [simp]: "x \<approx> y \<Longrightarrow> y \<approx> z \<Longrightarrow> x \<approx> z"
   by (meson transE transitivity)
+
 end
 
 
@@ -120,6 +122,11 @@ lemma strict_is_neg_transitive :
   assumes "x \<in> carrier \<and> y \<in> carrier \<and> z \<in> carrier"
   shows "x \<succ> y \<Longrightarrow> x \<succ> z \<or> z \<succ> y"
   by (meson assms compl transE transitivity)
+
+lemma weak_is_transitive:
+ assumes "x \<in> carrier \<and> y \<in> carrier \<and> z \<in> carrier"
+ shows "x \<succeq> y \<Longrightarrow> y \<succeq> z \<Longrightarrow> x \<succeq> z"
+  by (meson transD transitivity)
 
 lemma no_better_than_nonepty:
   assumes "carrier \<noteq> {}"
@@ -218,6 +225,10 @@ lemma same_nbt_same_pref:
     by (metis (mono_tags, lifting) CollectD contra_subsetD no_better_subset_pref
         no_better_than_def worse_in_no_better)
 
+lemma indifferent_imp_weak_pref: 
+  assumes "x \<approx> y"
+  shows" x \<succeq> y" "y \<succeq> x"
+  by (simp add: assms)+
 
 subsection \<open> Finite carrier\<close>
 
@@ -263,9 +274,87 @@ next
     using assms(1) assms(2) nbt_subset_imp_card_leq no_better_subset_pref by blast
 qed
 
-end
+lemma finite_ne_remove_induct:
+  assumes "finite B" "B \<noteq> {}"
+    "\<And>A. finite A  \<Longrightarrow> A \<subseteq> B \<Longrightarrow> A \<noteq> {} \<Longrightarrow>
+         (\<And>x. x \<in> A \<Longrightarrow> A - {x} \<noteq> {} \<Longrightarrow> P (A - {x})) \<Longrightarrow> P A"
+  shows "P B"
+  by (metis assms finite_remove_induct[where P = "\<lambda>F. F = {} \<or> P F" for P])
 
-end
+
+lemma finite_nempty_preorder_has_max:
+  assumes "finite B" "B \<noteq> {}" "refl_on B R" "trans R" "total_on B R"
+  shows "\<exists>x \<in> B. \<forall>y \<in> B. (x, y) \<in> R"
+  using assms(1) subset_refl[of B] assms(2)
+proof (induct B rule: finite_subset_induct)
+  case (insert x F)
+  then show ?case using assms(3-)
+    by (cases "F = {}") (auto simp: refl_onD total_on_def, metis refl_onD2 transE)
+qed auto
+
+lemma finite_nempty_preorder_has_min:
+  assumes "finite B" "B \<noteq> {}" "refl_on B R" "trans R" "total_on B R"
+  shows "\<exists>x \<in> B. \<forall>y \<in> B. (y, x) \<in> R"
+  using assms(1) subset_refl[of B] assms(2)
+proof (induct B rule: finite_subset_induct)
+  case (insert x F)
+  then show ?case using assms(3-)
+    by (cases "F = {}") (auto simp: refl_onD total_on_def, metis refl_onD2 transE)
+qed auto
+
+lemma finite_nonempty_carrier_has_maximum:
+  assumes "carrier \<noteq> {}"
+  shows "\<exists>e \<in> carrier. \<forall>m \<in> carrier. e \<succeq>[relation] m"
+  using finite_nempty_preorder_has_max[of carrier relation] assms
+     \<open>finite carrier\<close> reflexivity total transitivity by blast
+
+lemma finite_nonempty_carrier_has_minimum:
+  assumes "carrier \<noteq> {}"
+  shows "\<exists>e \<in> carrier. \<forall>m \<in> carrier. m \<succeq>[relation] e"
+  using finite_nempty_preorder_has_min[of carrier relation] assms
+     \<open>finite carrier\<close> reflexivity total transitivity by blast
+
+end (*finite carrier*)
+
+
+lemma all_carrier_ex_sub_rel: 
+  "\<forall>c \<subseteq> carrier. \<exists>r \<subseteq> relation. rational_preference c r"
+proof (standard,standard)
+  fix c
+  assume c_in: "c \<subseteq> carrier"
+  define r' where
+    "r' = {(x,y) \<in> relation. x \<in> c \<and> y \<in> c}"
+  have r'_sub: "r' \<subseteq> c \<times> c"
+    using r'_def by blast
+  have "\<forall>x \<in> c. x \<succeq>[r'] x"
+    by (metis (no_types, lifting) CollectI c_in case_prodI compl r'_def subsetCE)
+  then have refl: "refl_on c r'"
+    by (meson r'_sub refl_onI)
+  have trans: "trans r'"
+  proof
+    fix x y z
+    assume a1: "x \<succeq>[r'] y"
+    assume a2: "y \<succeq>[r'] z"
+    show " x \<succeq>[r'] z"
+      by (metis (mono_tags, lifting) CollectD CollectI a1 a2 case_prodD case_prodI r'_def transE transitivity)
+  qed
+  have total: "total_on c r'"
+  proof (standard)
+    fix x y
+    assume a1:"x \<in> c"
+    assume a2: "y \<in> c"
+    assume a3: "x \<noteq> y"
+    show "x \<succeq>[r'] y \<or> y \<succeq>[r'] x "
+      by (metis (no_types, lifting) CollectI a1 a2 c_in case_prodI compl r'_def subset_iff)
+  qed
+  have "rational_preference c r'"
+    by (meson local.refl local.trans preference.intro preorder_on_def rational_preference.intro 
+        rational_preference_axioms.intro refl_on_domain total)
+  thus "\<exists>r\<subseteq>relation. rational_preference c r"
+    by (metis (no_types, lifting) CollectD case_prodD r'_def subrelI)
+qed
+
+end (*rational preference*)
 
 
 subsection \<open> Local Non-Satiation \<close>
