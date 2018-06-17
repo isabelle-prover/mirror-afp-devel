@@ -749,10 +749,6 @@ lemma lm093:
   shows "R``X \<noteq> {}" 
   using assms by blast
 
-lemma lm094: 
-  "R``{}={}" 
-  by (metis Image_empty)
-
 lemma lm095: 
   "R \<subseteq> (Domain R) \<times> (Range R)" 
   by auto

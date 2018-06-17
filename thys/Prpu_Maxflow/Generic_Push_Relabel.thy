@@ -740,7 +740,7 @@ proof -
       proof -
         have "(\<Sum>v\<in>V. f (v, u)) = (\<Sum>v\<in>U. f (v, u)) + (\<Sum>v\<in>U'. f (v, u))" for u
           using U'_def fct1 finite_V 
-          by (metis ab_semigroup_add_class.add.commute sum_subset_split)
+          by (metis ab_semigroup_add_class.add.commute sum.subset_diff)
         thus ?thesis by (simp add: sum.distrib)
       qed
       also have "?R2 = (\<Sum>u\<in>U. (\<Sum>v\<in>V. f (u, v)))" 
@@ -749,7 +749,7 @@ proof -
       proof -
         have "(\<Sum>v\<in>V. f (u, v)) = (\<Sum>v\<in>U. f (u, v)) + (\<Sum>v\<in>U'. f (u, v))" for u
           using U'_def fct1 finite_V 
-          by (metis ab_semigroup_add_class.add.commute sum_subset_split)
+          by (metis ab_semigroup_add_class.add.commute sum.subset_diff)
         thus ?thesis by (simp add: sum.distrib)
       qed
       also have "(\<Sum>u\<in>U. (\<Sum>v\<in>U. f (u, v))) = (\<Sum>u\<in>U. (\<Sum>v\<in>U. f (v, u)))"

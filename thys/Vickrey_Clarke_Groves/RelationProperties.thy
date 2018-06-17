@@ -72,9 +72,7 @@ lemma rightUniqueInjectiveOnFirstImplication:
 text {* alternative characterization of right-uniqueness: the image of a singleton set is
    @{const trivial}, i.e.\ an empty or a singleton set. *}
 lemma runiq_alt: "runiq R \<longleftrightarrow> (\<forall> x . trivial (R `` {x}))" 
-  unfolding runiq_def 
-  using Image_empty trivial_empty_or_singleton the_elem_eq 
-  by (metis(no_types))
+  unfolding runiq_def by (metis Image_empty2 trivial_empty_or_singleton trivial_singleton) 
  
 text {* an alternative definition of right-uniqueness in terms of @{const eval_rel} *}
 (* Note that R `` {x} is the image of {x} under R and R ,, x gives you an element y such that R x y. Because of right-uniqueness in this case the element is determined, otherwise it may be undetermined *)

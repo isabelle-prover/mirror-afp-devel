@@ -45,7 +45,6 @@ text{*simplifications for sets we need in the uniqueness proof*}
     apply(subst tmp1)
     apply(fact tmp6)
     done
-  lemma tmp3: "{(b, a). False} = {}" by simp
   lemma tmp4: "{(e1, e2). e1 = vertex_1 \<and> e2 = vertex_2 \<and> (e1 = vertex_1 \<longrightarrow> e2 \<noteq> vertex_2)} = {}" by blast
   lemma tmp5: "{(b, a). a = vertex_1 \<and> b = vertex_2 \<or> a = vertex_1 \<and> b = vertex_2 \<and> (a = vertex_1 \<longrightarrow> b \<noteq> vertex_2)} = 
     {(vertex_2, vertex_1)}" by fastforce
@@ -56,14 +55,10 @@ text{*simplifications for sets we need in the uniqueness proof*}
     by(simp add: delete_edges_def)
   lemma unique_default_example_2: 
     "undirected_reachable (delete_edges \<lparr>nodes = {vertex_1, vertex_2}, edges = {(vertex_1, vertex_2)}\<rparr> {(vertex_1,vertex_2 )}) vertex_1 = {}"
-    apply(simp add: undirected_def undirected_reachable_def succ_tran_def unique_default_example_hlp1)
-    apply(subst tmp3)
-    by auto
+    by(simp add: undirected_def undirected_reachable_def succ_tran_def unique_default_example_hlp1)
   lemma unique_default_example_3: 
     "undirected_reachable (delete_edges \<lparr>nodes = {vertex_1, vertex_2}, edges = {(vertex_1, vertex_2)}\<rparr> {(vertex_1,vertex_2 )}) vertex_2 = {}"
-    apply(simp add: undirected_def undirected_reachable_def succ_tran_def unique_default_example_hlp1)
-    apply(subst tmp3)
-    by auto
+    by(simp add: undirected_def undirected_reachable_def succ_tran_def unique_default_example_hlp1)
   lemma unique_default_example_4: 
     "(undirected_reachable (add_edge vertex_1 vertex_2 (delete_edges \<lparr>nodes = {vertex_1, vertex_2}, 
     edges = {(vertex_1, vertex_2)}\<rparr> {(vertex_1, vertex_2)})) vertex_1) = {vertex_2}"
@@ -90,9 +85,7 @@ text{*simplifications for sets we need in the uniqueness proof*}
     by fastforce*)
 
   lemma empty_undirected_reachable_false: "xb \<in> undirected_reachable (delete_edges G (edges G)) na \<longleftrightarrow> False"
-    apply(simp add: undirected_reachable_def succ_tran_def undirected_def delete_edges_edges_empty)
-    apply(subst tmp3)
-    by fastforce
+    by(simp add: undirected_reachable_def succ_tran_def undirected_def delete_edges_edges_empty)
 
 subsubsection{*monotonic and preliminaries*}
   lemma sinvar_mono: "SecurityInvariant_withOffendingFlows.sinvar_mono sinvar"
@@ -181,7 +174,7 @@ and sinvar = SINVAR_NonInterference.sinvar
 hide_const (open) sinvar receiver_violation default_node_properties
 
 \<comment> \<open>Hide all the helper lemmas.\<close>
-hide_fact tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 unique_default_example 
+hide_fact tmp1 tmp2 tmp4 tmp5 tmp6 unique_default_example 
           unique_default_example_2 unique_default_example_3 unique_default_example_4
           unique_default_example_5 empty_undirected_reachable_false
 

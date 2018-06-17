@@ -59,34 +59,7 @@ lemma inter_compl_diff_conv[simp]: "A \<inter> -B = A - B" by auto
 lemma pair_set_inverse[simp]: "{(a,b). P a b}\<inverse> = {(b,a). P a b}"
   by auto
 
-lemma Image_empty[simp]: "{} `` X = {}"
-  by auto
-      
-(* HOL/Finite_set *)  
-lemma card_inverse[simp]: "card (R\<inverse>) = card R"
-proof -
-  have "finite (R\<inverse>) \<longleftrightarrow> finite R" by auto
-  have [simp]: "\<And>R. prod.swap`R = R\<inverse>" by auto
-  {
-    assume "\<not>finite R"
-    hence ?thesis
-      by auto
-  } moreover {
-    assume "finite R"
-    with card_image_le[of R prod.swap] card_image_le[of "R\<inverse>" prod.swap]
-    have ?thesis by auto
-  } ultimately show ?thesis by blast
-qed  
-  
 lemma card_doubleton_eq_2_iff[simp]: "card {a,b} = 2 \<longleftrightarrow> a\<noteq>b" by auto
-    
-lemma finite_Image: fixes R shows "\<lbrakk> finite R \<rbrakk> \<Longrightarrow> finite (R `` A)"
-  by (meson Image_iff finite_Range Range.intros finite_subset subsetI)
-
-lemma finite_rtrancl_Image:
-  fixes R
-  shows "\<lbrakk> finite R; finite A \<rbrakk> \<Longrightarrow> finite ((R\<^sup>*) `` A)"
-  by (metis Image_Id Un_Image finite_Image finite_trancl infinite_Un rtrancl_trancl_reflcl)  
 
 subsubsection \<open>Option\<close>
 lemma the_Some_eq_id[simp]: "(the o Some) = id" by auto
@@ -351,13 +324,6 @@ lemma (in su_rel_fun) repr2: "(A,B)\<in>F \<Longrightarrow> B=f A" using repr1
 lemma (in su_rel_fun) repr: "(f A = B) = ((A,B)\<in>F)" using repr1 repr2
   by (blast)
 
-
-lemma set_pair_flt_false[simp]: "{ (a,b). False } = {}"
-  by simp
-
-lemma in_pair_collect_simp[simp]: "(a,b)\<in>{(a,b). P a b} \<longleftrightarrow> P a b"
-  by auto
-
     \<comment> \<open>Contract quantification over two variables to pair\<close>
 lemma Ex_prod_contract: "(\<exists>a b. P a b) \<longleftrightarrow> (\<exists>z. P (fst z) (snd z))"
   by auto
@@ -424,18 +390,6 @@ subsection {* Sets *}
 
   lemma memb_imp_not_empty: "x\<in>S \<Longrightarrow> S\<noteq>{}"
     by auto
-
-
-  (* TODO: Groups_Big.comm_monoid_add_class.sum.subset_diff*)
-  lemma sum_subset_split: assumes P: "finite A" "B\<subseteq>A" shows "sum f A = sum f (A-B) + sum f B" proof -
-    from P have 1: "A = (A-B) \<union> B" by auto
-    have 2: "(A-B) \<inter> B = {}" by auto
-    from P have 3: "finite B" by (blast intro: finite_subset)
-    from P have 4: "finite (A-B)" by simp
-    from 2 3 4 sum.union_disjoint have "sum f ((A-B) \<union> B) = sum f (A-B) + sum f B" by blast
-    with 1 show ?thesis by simp
-  qed
-
 
   lemma disjoint_mono: "\<lbrakk> a\<subseteq>a'; b\<subseteq>b'; a'\<inter>b'={} \<rbrakk> \<Longrightarrow> a\<inter>b={}" by auto
 
@@ -778,7 +732,7 @@ subsubsection {* Union, difference and intersection *}
                 let ?SIZE = "sum (count S) (set_mset S)"
                 assume A: "t \<in># S"
                 from A have SPLITPRE: "finite (set_mset S) & {t}\<subseteq>(set_mset S)" by auto
-                hence "?SIZE = sum (count S) (set_mset S - {t}) + sum (count S) {t}" by (blast dest: sum_subset_split)
+                hence "?SIZE = sum (count S) (set_mset S - {t}) + sum (count S) {t}" by (blast dest: sum.subset_diff)
                 hence "?SIZE = sum (count S) (set_mset S - {t}) + count (S) t" by auto
                 moreover with A have "count S t = count (S-{#t#}) t + 1" by auto
                 ultimately have D: "?SIZE = sum (count S) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (arith)
@@ -800,7 +754,7 @@ subsubsection {* Union, difference and intersection *}
                         with CASE have 1: "set_mset S = set_mset (S-{#t#})"
                           by (auto simp add: in_diff_count split: if_splits)
                         moreover from D have "?SIZE = sum (count (S-{#t#})) (set_mset S - {t}) + sum (count (S-{#t#})) {t} + 1" by simp
-                        moreover from SPLITPRE sum_subset_split have "sum (count (S-{#t#})) (set_mset S) = sum (count (S-{#t#})) (set_mset S - {t}) + sum (count (S-{#t#})) {t}" by (blast)
+                        moreover from SPLITPRE sum.subset_diff have "sum (count (S-{#t#})) (set_mset S) = sum (count (S-{#t#})) (set_mset S - {t}) + sum (count (S-{#t#})) {t}" by (blast)
                         ultimately have "?SIZE = sum (count (S-{#t#})) (set_mset (S-{#t#})) + 1" by simp
                 }
                 ultimately show "?SIZE = sum (count (S-{#t#})) (set_mset (S - {#t#})) + 1" by blast
