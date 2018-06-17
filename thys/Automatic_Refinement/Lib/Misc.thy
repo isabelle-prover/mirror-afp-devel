@@ -324,13 +324,6 @@ lemma (in su_rel_fun) repr2: "(A,B)\<in>F \<Longrightarrow> B=f A" using repr1
 lemma (in su_rel_fun) repr: "(f A = B) = ((A,B)\<in>F)" using repr1 repr2
   by (blast)
 
-
-lemma set_pair_flt_false[simp]: "{ (a,b). False } = {}"
-  by simp
-
-lemma in_pair_collect_simp[simp]: "(a,b)\<in>{(a,b). P a b} \<longleftrightarrow> P a b"
-  by auto
-
     \<comment> \<open>Contract quantification over two variables to pair\<close>
 lemma Ex_prod_contract: "(\<exists>a b. P a b) \<longleftrightarrow> (\<exists>z. P (fst z) (snd z))"
   by auto
