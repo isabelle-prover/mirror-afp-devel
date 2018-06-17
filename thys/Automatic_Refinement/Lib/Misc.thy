@@ -398,18 +398,6 @@ subsection {* Sets *}
   lemma memb_imp_not_empty: "x\<in>S \<Longrightarrow> S\<noteq>{}"
     by auto
 
-
-  (* TODO: Groups_Big.comm_monoid_add_class.sum.subset_diff*)
-  lemma sum_subset_split: assumes P: "finite A" "B\<subseteq>A" shows "sum f A = sum f (A-B) + sum f B" proof -
-    from P have 1: "A = (A-B) \<union> B" by auto
-    have 2: "(A-B) \<inter> B = {}" by auto
-    from P have 3: "finite B" by (blast intro: finite_subset)
-    from P have 4: "finite (A-B)" by simp
-    from 2 3 4 sum.union_disjoint have "sum f ((A-B) \<union> B) = sum f (A-B) + sum f B" by blast
-    with 1 show ?thesis by simp
-  qed
-
-
   lemma disjoint_mono: "\<lbrakk> a\<subseteq>a'; b\<subseteq>b'; a'\<inter>b'={} \<rbrakk> \<Longrightarrow> a\<inter>b={}" by auto
 
   lemma disjoint_alt_simp1: "A-B = A \<longleftrightarrow> A\<inter>B = {}" by auto
@@ -751,7 +739,7 @@ subsubsection {* Union, difference and intersection *}
                 let ?SIZE = "sum (count S) (set_mset S)"
                 assume A: "t \<in># S"
                 from A have SPLITPRE: "finite (set_mset S) & {t}\<subseteq>(set_mset S)" by auto
-                hence "?SIZE = sum (count S) (set_mset S - {t}) + sum (count S) {t}" by (blast dest: sum_subset_split)
+                hence "?SIZE = sum (count S) (set_mset S - {t}) + sum (count S) {t}" by (blast dest: sum.subset_diff)
                 hence "?SIZE = sum (count S) (set_mset S - {t}) + count (S) t" by auto
                 moreover with A have "count S t = count (S-{#t#}) t + 1" by auto
                 ultimately have D: "?SIZE = sum (count S) (set_mset S - {t}) + count (S-{#t#}) t + 1" by (arith)
@@ -773,7 +761,7 @@ subsubsection {* Union, difference and intersection *}
                         with CASE have 1: "set_mset S = set_mset (S-{#t#})"
                           by (auto simp add: in_diff_count split: if_splits)
                         moreover from D have "?SIZE = sum (count (S-{#t#})) (set_mset S - {t}) + sum (count (S-{#t#})) {t} + 1" by simp
-                        moreover from SPLITPRE sum_subset_split have "sum (count (S-{#t#})) (set_mset S) = sum (count (S-{#t#})) (set_mset S - {t}) + sum (count (S-{#t#})) {t}" by (blast)
+                        moreover from SPLITPRE sum.subset_diff have "sum (count (S-{#t#})) (set_mset S) = sum (count (S-{#t#})) (set_mset S - {t}) + sum (count (S-{#t#})) {t}" by (blast)
                         ultimately have "?SIZE = sum (count (S-{#t#})) (set_mset (S-{#t#})) + 1" by simp
                 }
                 ultimately show "?SIZE = sum (count (S-{#t#})) (set_mset (S - {#t#})) + 1" by blast
