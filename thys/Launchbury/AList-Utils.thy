@@ -108,14 +108,6 @@ lemma map_add_domA[simp]:
     apply (metis dom_map_of_conv_domA map_add_dom_app_simps(3))
     done
 
-
-lemma map_of_empty_iff1[simp]: "map_of \<Gamma> = Map.empty \<longleftrightarrow> \<Gamma> = []"
-  by (cases "\<Gamma>") auto
-
-lemma map_of_empty_iff2[simp]: "Map.empty = map_of \<Gamma> \<longleftrightarrow> \<Gamma> = []"
-  apply (subst eq_commute)
-  by (rule map_of_empty_iff1)
-
 lemma set_delete_subset: "set (delete k al) \<subseteq> set al"
   by (auto simp add: delete_eq)
 
