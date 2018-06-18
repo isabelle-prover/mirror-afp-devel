@@ -100,7 +100,7 @@ for P :: "'addr J_prog" and t :: 'thread_id
 where
 
   red0Red:
-  "\<lbrakk> extTA2J0 P,P,t \<turnstile> \<langle>e, (h, empty)\<rangle> -ta\<rightarrow> \<langle>e', (h', xs')\<rangle>;
+  "\<lbrakk> extTA2J0 P,P,t \<turnstile> \<langle>e, (h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e', (h', xs')\<rangle>;
      \<forall>aMvs. call e = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h aMvs \<rbrakk>
   \<Longrightarrow> P,t \<turnstile>0 \<langle>e/es, h\<rangle> -ta\<rightarrow> \<langle>e'/es, h'\<rangle>"
 
@@ -827,10 +827,10 @@ apply(drule \<tau>moves0_callsD[where P=P and h=h], simp)
 done
 
 lemma \<tau>red0_into_\<tau>Red0:
-  assumes red: "\<tau>red0 (extTA2J0 P) P t h (e, empty) (e', xs')"
+  assumes red: "\<tau>red0 (extTA2J0 P) P t h (e, Map.empty) (e', xs')"
   shows "\<tau>Red0 P t h (e, es) (e', es)"
 proof -
-  from red have red: "extTA2J0 P,P,t \<turnstile> \<langle>e, (h, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>"
+  from red have red: "extTA2J0 P,P,t \<turnstile> \<langle>e, (h, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>"
     and "\<tau>move0 P h e" and "no_call P h e" by auto
   hence "P,t \<turnstile>0 \<langle>e/es,h\<rangle> -\<epsilon>\<rightarrow> \<langle>e'/es,h\<rangle>"
     by-(erule red0Red,auto simp add: no_call_def)
@@ -840,23 +840,23 @@ qed
 lemma \<tau>red0r_into_\<tau>Red0r:
   assumes wwf: "wwf_J_prog P"
   shows
-  "\<lbrakk> \<tau>red0r (extTA2J0 P) P t h (e, empty) (e'', empty); fv e = {} \<rbrakk>
+  "\<lbrakk> \<tau>red0r (extTA2J0 P) P t h (e, Map.empty) (e'', Map.empty); fv e = {} \<rbrakk>
   \<Longrightarrow> \<tau>Red0r P t h (e, es) (e'', es)"
-proof(induct e xs\<equiv>"empty :: 'addr locals" rule: converse_rtranclp_induct2)
+proof(induct e xs\<equiv>"Map.empty :: 'addr locals" rule: converse_rtranclp_induct2)
   case refl show ?case by blast
 next
   case (step e e' xs')
-  from `\<tau>red0 (extTA2J0 P) P t h (e, empty) (e', xs')`
-  have red: "extTA2J0 P,P,t \<turnstile> \<langle>e, (h, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>"
+  from `\<tau>red0 (extTA2J0 P) P t h (e, Map.empty) (e', xs')`
+  have red: "extTA2J0 P,P,t \<turnstile> \<langle>e, (h, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>"
     and "\<tau>move0 P h e"  and "no_call P h e" by auto
   from red_dom_lcl[OF red] `fv e = {}` 
   have "dom xs' = {}" by(auto split:if_split_asm)
-  hence "xs' = empty" by(auto)
+  hence "xs' = Map.empty" by(auto)
   moreover
   from wwf red have "fv e' \<subseteq> fv e" by(rule red_fv_subset)
   with `fv e = {}` have "fv e' = {}" by blast
   ultimately have "\<tau>Red0r P t h (e', es) (e'', es)" by(rule step)
-  moreover from red `\<tau>move0 P h e` `xs' = empty` `no_call P h e`
+  moreover from red `\<tau>move0 P h e` `xs' = Map.empty` `no_call P h e`
   have "\<tau>Red0 P t h (e, es) (e', es)" by(auto simp add: no_call_def intro!: red0Red)
   ultimately show ?case by(blast intro: converse_rtranclp_into_rtranclp)
 qed
@@ -865,22 +865,22 @@ qed
 lemma \<tau>red0t_into_\<tau>Red0t:
   assumes wwf: "wwf_J_prog P"
   shows
-  "\<lbrakk> \<tau>red0t (extTA2J0 P) P t h (e, empty) (e'', empty); fv e = {} \<rbrakk>
+  "\<lbrakk> \<tau>red0t (extTA2J0 P) P t h (e, Map.empty) (e'', Map.empty); fv e = {} \<rbrakk>
   \<Longrightarrow> \<tau>Red0t P t h (e, es) (e'', es)"
-proof(induct e xs\<equiv>"empty :: 'addr locals" rule: converse_tranclp_induct2)
+proof(induct e xs\<equiv>"Map.empty :: 'addr locals" rule: converse_tranclp_induct2)
   case base thus ?case
     by(blast intro!: tranclp.r_into_trancl \<tau>red0_into_\<tau>Red0)
 next
   case (step e e' xs')
-  from `\<tau>red0 (extTA2J0 P) P t h (e, empty) (e', xs')` 
-  have red: "extTA2J0 P,P,t \<turnstile> \<langle>e, (h, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>" and "\<tau>move0 P h e" and "no_call P h e" by auto
+  from `\<tau>red0 (extTA2J0 P) P t h (e, Map.empty) (e', xs')` 
+  have red: "extTA2J0 P,P,t \<turnstile> \<langle>e, (h, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h, xs')\<rangle>" and "\<tau>move0 P h e" and "no_call P h e" by auto
   from red_dom_lcl[OF red] `fv e = {}`
   have "dom xs' = {}" by(auto split:if_split_asm)
-  hence "xs' = empty" by auto
+  hence "xs' = Map.empty" by auto
   moreover from wwf red have "fv e' \<subseteq> fv e" by(rule red_fv_subset)
   with `fv e = {}` have "fv e' = {}" by blast
   ultimately have "\<tau>Red0t P t h (e', es) (e'', es)" by(rule step)
-  moreover from red `\<tau>move0 P h e` `xs' = empty` `no_call P h e`
+  moreover from red `\<tau>move0 P h e` `xs' = Map.empty` `no_call P h e`
   have "\<tau>Red0 P t h (e, es) (e', es)" by(auto simp add: no_call_def intro!: red0Red)
   ultimately show ?case by(blast intro: tranclp_into_tranclp2)
 qed

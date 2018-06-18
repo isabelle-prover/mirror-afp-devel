@@ -71,7 +71,7 @@ translations
   (type) "heap" <= (type) "nat \<Rightarrow> heapobj option"
 
 abbreviation sc_empty :: heap
-where "sc_empty \<equiv> empty"
+where "sc_empty \<equiv> Map.empty"
 
 fun the_obj :: "heapobj \<Rightarrow> cname \<times> fields" where
   "the_obj (Obj C fs) = (C, fs)"

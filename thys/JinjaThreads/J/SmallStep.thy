@@ -61,7 +61,7 @@ typ "('addr, 'thread_id, 'heap) J_state"
 
 definition extNTA2J :: "'addr J_prog \<Rightarrow> (cname \<times> mname \<times> 'addr) \<Rightarrow> 'addr expr \<times> 'addr locals"
 where "extNTA2J P = (\<lambda>(C, M, a). let (D,Ts,T,meth) = method P C M; (pns,body) = the meth
-                                 in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, empty))"
+                                 in ({this:Class D=\<lfloor>Addr a\<rfloor>; body}, Map.empty))"
 
 abbreviation J_local_start ::
   "cname \<Rightarrow> mname \<Rightarrow> ty list \<Rightarrow> ty \<Rightarrow> 'addr J_mb \<Rightarrow> 'addr val list
@@ -69,7 +69,7 @@ abbreviation J_local_start ::
 where
   "J_local_start \<equiv> 
   \<lambda>C M Ts T (pns, body) vs. 
-  (blocks (this # pns) (Class C # Ts) (Null # vs) body, empty)"
+  (blocks (this # pns) (Class C # Ts) (Null # vs) body, Map.empty)"
 
 abbreviation (in J_heap_base) 
   J_start_state :: "'addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> 'addr val list \<Rightarrow> ('addr, 'thread_id, 'heap) J_state"
@@ -78,7 +78,7 @@ where
 
 
 lemma extNTA2J_iff [simp]:
-  "extNTA2J P (C, M, a) = ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (the (snd (snd (snd (method P C M)))))}, empty)"
+  "extNTA2J P (C, M, a) = ({this:Class (fst (method P C M))=\<lfloor>Addr a\<rfloor>; snd (the (snd (snd (snd (method P C M)))))}, Map.empty)"
 by(simp add: extNTA2J_def split_beta)
 
 abbreviation extTA2J :: 

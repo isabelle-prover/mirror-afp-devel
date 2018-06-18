@@ -30,7 +30,7 @@ using start_heap_obs_not_Read
 by(clarsimp simp add: lift_start_obs_def lnth_LCons o_def eSuc_enat[symmetric] in_set_conv_nth split: nat.split_asm)
 
 lemma ta_seq_consist_start_heap_obs:
-  "ta_seq_consist P empty (llist_of (map snd (lift_start_obs start_tid start_heap_obs)))"
+  "ta_seq_consist P Map.empty (llist_of (map snd (lift_start_obs start_tid start_heap_obs)))"
 using start_heap_obs_not_Read
 by(auto intro: ta_seq_consist_nthI simp add: lift_start_obs_def o_def lnth_LCons in_set_conv_nth split: nat.split_asm)
 
@@ -2106,7 +2106,7 @@ next
     using wf wfx_start ka by(rule executions_sc_hb)
 
   from E wf_exec sc
-  have "ta_seq_consist P empty (ltake (enat r) (lmap snd E))"
+  have "ta_seq_consist P Map.empty (ltake (enat r) (lmap snd E))"
     unfolding ltake_lmap by(rule jmm.ta_seq_consist_mrwI) simp
   hence "non_speculative P (\<lambda>_. {}) (ltake (enat r) (lmap snd E))"
     by(rule ta_seq_consist_into_non_speculative) simp
@@ -2120,7 +2120,7 @@ lemma drf:
   assumes cut_and_update:
     "if.cut_and_update
        (init_fin_lift_state status (start_state f P C M vs))
-       (mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs)))"
+       (mrw_values P Map.empty (map snd (lift_start_obs start_tid start_heap_obs)))"
     (is "if.cut_and_update ?start_state (mrw_values _ _ (map _ ?start_heap_obs))")
   and wf: "wf_syscls P"
   and wfx_start: "ts_ok wfx (thr (start_state f P C M vs)) start_heap"
@@ -2218,7 +2218,7 @@ proof -
         and \<tau>Runs'': "mthr.if.mthr.Runs \<sigma>''' ?E'"
         unfolding E'_r_m by cases
 
-      let ?vs = "mrw_values P empty (map snd ?start_heap_obs)"
+      let ?vs = "mrw_values P Map.empty (map snd ?start_heap_obs)"
       { fix a
         assume "enat a < enat ?r"
           and "a \<in> read_actions E"
@@ -2230,10 +2230,10 @@ proof -
           with `enat a < enat ?r` show False by simp
         qed
         hence "P,E \<turnstile> a \<leadsto>mrw ws a" using `a \<in> read_actions E` by(rule mrw) }
-      with `E \<in> ?\<E>'` wf have "ta_seq_consist P empty (lmap snd (ltake (enat ?r) E))"
+      with `E \<in> ?\<E>'` wf have "ta_seq_consist P Map.empty (lmap snd (ltake (enat ?r) E))"
         by(rule jmm.ta_seq_consist_mrwI)
 
-      hence start_sc: "ta_seq_consist P empty (llist_of (map snd ?start_heap_obs))"
+      hence start_sc: "ta_seq_consist P Map.empty (llist_of (map snd ?start_heap_obs))"
         and "ta_seq_consist P ?vs (lmap snd (ltake (enat (?r - ?n)) E''))"
         using `?n \<le> ?r` unfolding E ltake_lappend lmap_lappend_distrib
         by(simp_all add: ta_seq_consist_lappend o_def)
@@ -2258,7 +2258,7 @@ proof -
       from if.sequential_completion[OF cut_and_update ta_seq_consist_convert_RA \<sigma>_\<sigma>'[folded mthr.if.RedT_def] this red_ra]
       obtain ta' ttas' 
         where "mthr.if.mthr.Runs \<sigma>' (LCons (t_r, ta') ttas')"
-        and sc: "ta_seq_consist P (mrw_values P empty (map snd ?start_heap_obs)) 
+        and sc: "ta_seq_consist P (mrw_values P Map.empty (map snd ?start_heap_obs)) 
                    (lconcat (lmap (\<lambda>(t, ta). llist_of \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (lappend (llist_of (list_of ?r_m_E')) (LCons (t_r, ta') ttas'))))"
           and eq_ta: "eq_upto_seq_inconsist P \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> \<lbrace>ta'\<rbrace>\<^bsub>o\<^esub> (mrw_values P ?vs (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of ?r_m_E'))))"
           by blast
@@ -2274,7 +2274,7 @@ proof -
       moreover from `?E_sc'' \<in> mthr.if.\<E> ?start_state`
       have tsa_ok: "thread_start_actions_ok ?E_sc" by(rule thread_start_actions_ok_init_fin) 
         
-      from sc have "ta_seq_consist P empty (lmap snd ?E_sc)"
+      from sc have "ta_seq_consist P Map.empty (lmap snd ?E_sc)"
         by(simp add: lmap_lappend_distrib o_def lmap_lconcat llist.map_comp split_def ta_seq_consist_lappend start_sc)
       from ta_seq_consist_imp_sequentially_consistent[OF tsa_ok jmm.\<E>_new_actions_for_fun[OF `?E_sc \<in> ?\<E>`] this]
       obtain ws_sc where "sequentially_consistent P (?E_sc, ws_sc)"
@@ -2488,8 +2488,8 @@ proof -
           and \<tau>Runs'': "mthr.if.mthr.Runs \<sigma>''' ?E'"
           unfolding E'_r_m by cases
 
-        let ?vs = "mrw_values P empty (map snd ?start_heap_obs)"
-        from `E \<in> ?\<E>` wf_exec have "ta_seq_consist P empty (lmap snd (ltake (enat r) E))"
+        let ?vs = "mrw_values P Map.empty (map snd ?start_heap_obs)"
+        from `E \<in> ?\<E>` wf_exec have "ta_seq_consist P Map.empty (lmap snd (ltake (enat r) E))"
           by(rule jmm.ta_seq_consist_mrwI)(simp add: mrw)
         hence ns: "non_speculative P (\<lambda>_. {}) (lmap snd (ltake (enat r) E))"
           by(rule ta_seq_consist_into_non_speculative) simp
@@ -2926,7 +2926,7 @@ lemma non_speculative_read_into_cut_and_update:
   defines "E \<equiv> lift_start_obs start_tid start_heap_obs"
   and "vs \<equiv> w_values P (\<lambda>_. {}) (map snd E)"
   and "s \<equiv> init_fin_lift_state status (start_state f P C M params)"
-  and "vs' \<equiv> mrw_values P empty (map snd E)"
+  and "vs' \<equiv> mrw_values P Map.empty (map snd E)"
   assumes wf: "wf_syscls P"
   and nsr: "if.non_speculative_read n s vs"
   and wt: "ts_ok (init_fin_lift wfx) (thr s) (shr s)"

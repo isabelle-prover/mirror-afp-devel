@@ -283,7 +283,7 @@ proof -
         next
           case (step x2''' m2''')
           hence "t \<turnstile> (x2, m2) -2-\<epsilon>\<rightarrow> (x2''', m2''')" by(auto dest: r2.silent_tl)
-          moreover have "r2.actions_ok (undefined, (undefined, undefined), empty, undefined) t \<epsilon>" by auto
+          moreover have "r2.actions_ok (undefined, (undefined, undefined), Map.empty, undefined) t \<epsilon>" by auto
           ultimately show ?thesis by-(rule exI conjI|assumption)+
         qed
         hence "r2.must_sync t x2 m2" unfolding r2.must_sync_def2 . }
@@ -538,7 +538,7 @@ proof(cases "\<exists>t. r1.not_final_thread s1 t")
       next
         case (step x2''' m2''')
         hence "t \<turnstile> (x2, m2) -2-\<epsilon>\<rightarrow> (x2''', m2''')" by(auto dest: r2.silent_tl)
-        moreover have "r2.actions_ok (undefined, (undefined, undefined), empty, undefined) t \<epsilon>" by auto
+        moreover have "r2.actions_ok (undefined, (undefined, undefined), Map.empty, undefined) t \<epsilon>" by auto
         ultimately show ?thesis by-(rule exI conjI|assumption)+
       qed
       hence "r2.must_sync t x2 m2" unfolding r2.must_sync_def2 . }

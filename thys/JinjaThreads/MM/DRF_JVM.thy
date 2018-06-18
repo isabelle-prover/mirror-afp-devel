@@ -1000,7 +1000,7 @@ lemma JVM_cut_and_update:
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "execd_mthr.if.cut_and_update (init_fin_lift_state status (JVM_start_state P C M vs))
-           (mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs)))"
+           (mrw_values P Map.empty (map snd (lift_start_obs start_tid start_heap_obs)))"
 proof -
   from wf_start obtain Ts T meth D where ok: "start_heap_ok"
     and sees: "P \<turnstile> C sees M:Ts\<rightarrow>T = \<lfloor>meth\<rfloor> in D"
@@ -1125,7 +1125,7 @@ proof -
   interpret jmm: executions_sc_hb ?\<E> P using assms by -(rule executions_sc)
 
   let ?start_state = "init_fin_lift_state status (JVM_start_state P C M vs)"
-  let ?start_mrw = "mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs))"
+  let ?start_mrw = "mrw_values P Map.empty (map snd (lift_start_obs start_tid start_heap_obs))"
 
   from execd_mthr.if.sequential_completion_Runs[OF execd_mthr.if.cut_and_update_imp_sc_completion[OF JVM_cut_and_update[OF assms]] ta_seq_consist_convert_RA]
   obtain ttas where Red: "execd_mthr.mthr.if.mthr.Runs P ?start_state ttas"
@@ -1134,7 +1134,7 @@ proof -
   from Red have "?E \<in> ?\<E>" by(blast intro: execd_mthr.mthr.if.\<E>.intros)
   moreover from Red have tsa: "thread_start_actions_ok ?E"
     by(blast intro: execd_mthr.thread_start_actions_ok_init_fin execd_mthr.mthr.if.\<E>.intros)
-  from sc have "ta_seq_consist P empty (lmap snd ?E)"
+  from sc have "ta_seq_consist P Map.empty (lmap snd ?E)"
     unfolding lmap_lappend_distrib lmap_lconcat llist.map_comp split_def o_def lmap_llist_of map_map snd_conv
     by(simp add: ta_seq_consist_lappend ta_seq_consist_start_heap_obs)
   from ta_seq_consist_imp_sequentially_consistent[OF tsa jmm.\<E>_new_actions_for_fun[OF `?E \<in> ?\<E>`] this]

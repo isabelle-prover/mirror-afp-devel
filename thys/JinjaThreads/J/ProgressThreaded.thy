@@ -83,7 +83,7 @@ definition J_sconf_type_ET_start :: "'m prog \<Rightarrow> cname \<Rightarrow> m
 where
   "J_sconf_type_ET_start P C M \<equiv>
    let (_, _, T, _) = method P C M
-   in ([start_tid \<mapsto> (empty, T)])"
+   in ([start_tid \<mapsto> (Map.empty, T)])"
 
 lemma fixes E :: env
   assumes wf: "wf_J_prog P"

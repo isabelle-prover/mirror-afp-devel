@@ -54,7 +54,7 @@ lemma ka_locals_update_subset:
   "ka_locals (xs(V \<mapsto> v)) \<subseteq> ka_Val v \<union> ka_locals xs"
 by(auto simp add: ka_locals_def ran_def)
 
-lemma ka_locals_empty [simp]: "ka_locals empty = {}"
+lemma ka_locals_empty [simp]: "ka_locals Map.empty = {}"
 by(simp add: ka_locals_def)
 
 lemma kas_append [simp]: "kas (es @ es') = kas es \<union> kas es'"
@@ -576,7 +576,7 @@ proof -
     then obtain T' where len1: "length pns = length Ts" and wt: "P,[this\<mapsto>Class D,pns [\<mapsto>] Ts] \<turnstile> body :: T'"
       by(auto simp add: wf_mdecl_def)
     from vs1 have len2: "length vs = length Ts" by(rule list_all2_lengthD)
-    show "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
+    show "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, Map.empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
       using sees vs2 len1 len2 WT_ka[OF wt]
       by(auto simp add: split_beta start_addrs_allocated ka_blocks intro: start_tid_start_addrs[OF wf_prog_wf_syscls[OF wf] ok])
   qed
@@ -930,7 +930,7 @@ lemma J_cut_and_update:
   and wf_start: "wf_start_state P C M vs"
   and ka: "\<Union>(ka_Val ` set vs) \<subseteq> set start_addrs"
   shows "red_mthr.if.cut_and_update (init_fin_lift_state status (J_start_state P C M vs))
-           (mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs)))"
+           (mrw_values P Map.empty (map snd (lift_start_obs start_tid start_heap_obs)))"
 proof -
   from wf_start obtain Ts T pns body D where ok: "start_heap_ok"
     and sees: "P \<turnstile> C sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
@@ -960,7 +960,7 @@ proof -
   from wf wf_start have ts_ok_start: "ts_ok (init_fin_lift (\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h)) (thr ?start_state) (shr ?start_state)"
     unfolding ts_ok_init_fin_lift_init_fin_lift_state shr_start_state by(rule J_start_state_sconf_type_ok)
   moreover
-  have ka: "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
+  have ka: "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, Map.empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
     using sees ka len1 len2 WT_ka[OF wt]
     by(auto simp add: split_beta start_addrs_allocated ka_blocks intro: start_tid_start_addrs[OF wf_prog_wf_syscls[OF wf] ok])
   ultimately show ?thesis by(rule non_speculative_read_into_cut_and_update)
@@ -983,7 +983,7 @@ proof -
     then obtain T' where len1: "length pns = length Ts" and wt: "P,[this\<mapsto>Class D,pns [\<mapsto>] Ts] \<turnstile> body :: T'"
       by(auto simp add: wf_mdecl_def)
     from conf have len2: "length vs = length Ts" by(rule list_all2_lengthD)
-    show "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
+    show "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, Map.empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
       using sees ka len1 len2 WT_ka[OF wt]
       by(auto simp add: split_beta start_addrs_allocated ka_blocks intro: start_tid_start_addrs[OF wf_prog_wf_syscls[OF wf] ok])
   qed
@@ -1022,7 +1022,7 @@ proof -
   moreover
   from wf wf_start have ts_ok_start: "ts_ok (init_fin_lift (\<lambda>t x h. \<exists>ET. sconf_type_ok ET t x h)) (thr ?start_state) (shr ?start_state)"
     unfolding ts_ok_init_fin_lift_init_fin_lift_state shr_start_state by(rule J_start_state_sconf_type_ok)
-  moreover have ka_allocated: "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
+  moreover have ka_allocated: "J_known_addrs start_tid ((\<lambda>(pns, body) vs. (blocks (this # pns) (Class (fst (method P C M)) # fst (snd (method P C M))) (Null # vs) body, Map.empty)) (the (snd (snd (snd (method P C M))))) vs) \<subseteq> allocated start_heap"
     using sees ka len1 len2 WT_ka[OF wt]
     by(auto simp add: split_beta start_addrs_allocated ka_blocks intro: start_tid_start_addrs[OF wf_prog_wf_syscls[OF wf] ok])
   ultimately have "red_mthr.if.hb_completion ?start_state (lift_start_obs start_tid start_heap_obs)"
@@ -1056,7 +1056,7 @@ proof -
   interpret jmm: executions_sc_hb ?\<E> P using assms by -(rule executions_sc)
 
   let ?start_state = "init_fin_lift_state status (J_start_state P C M vs)"
-  let ?start_mrw = "mrw_values P empty (map snd (lift_start_obs start_tid start_heap_obs))"
+  let ?start_mrw = "mrw_values P Map.empty (map snd (lift_start_obs start_tid start_heap_obs))"
 
   from red_mthr.if.sequential_completion_Runs[OF red_mthr.if.cut_and_update_imp_sc_completion[OF J_cut_and_update[OF assms]] ta_seq_consist_convert_RA]
   obtain ttas where Red: "red_mthr.mthr.if.mthr.Runs P ?start_state ttas"
@@ -1065,7 +1065,7 @@ proof -
   from Red have "?E \<in> ?\<E>" by(blast intro: red_mthr.mthr.if.\<E>.intros)
   moreover from Red have tsa: "thread_start_actions_ok ?E"
     by(blast intro: red_mthr.thread_start_actions_ok_init_fin red_mthr.mthr.if.\<E>.intros)
-  from sc have "ta_seq_consist P empty (lmap snd ?E)"
+  from sc have "ta_seq_consist P Map.empty (lmap snd ?E)"
     unfolding lmap_lappend_distrib lmap_lconcat llist.map_comp split_def o_def lmap_llist_of map_map snd_conv
     by(simp add: ta_seq_consist_lappend ta_seq_consist_start_heap_obs)
   from ta_seq_consist_imp_sequentially_consistent[OF tsa jmm.\<E>_new_actions_for_fun[OF `?E \<in> ?\<E>`] this]

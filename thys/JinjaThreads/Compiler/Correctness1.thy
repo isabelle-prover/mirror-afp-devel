@@ -1755,7 +1755,7 @@ using red
 proof(cases)
   case (red0Red XS')
   note [simp] = `es1' = es1`
-    and red = `extTA2J0 P,P,t \<turnstile> \<langle>e1,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e1',(h', XS')\<rangle>`
+    and red = `extTA2J0 P,P,t \<turnstile> \<langle>e1,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e1',(h', XS')\<rangle>`
     and notsynth = `\<forall>aMvs. call e1 = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h aMvs`
   from bisiml obtain E xs where ex2: "ex2 = (E, xs)"
     and bisim: "bisim [] e1 E xs" and fv: "fv e1 = {}" 
@@ -1763,7 +1763,7 @@ proof(cases)
     and D: "\<D> e1 \<lfloor>{}\<rfloor>" by(auto elim!: bisim_list1_elim)
   from bisim_max_vars[OF bisim] length red1_simulates_red_aux[OF wf red bisim] fv notsynth
   obtain ta' e2' xs' where sim: "sim_move01 (compP1 P) t ta e1 E h xs ta' e2' h' xs'"
-    and bisim': "bisim [] e1' e2' xs'" and XS': "XS' \<subseteq>\<^sub>m empty" by auto
+    and bisim': "bisim [] e1' e2' xs'" and XS': "XS' \<subseteq>\<^sub>m Map.empty" by auto
   from sim_move01_into_Red1[OF sim, of es1 exs2]
   have "?red (e2', xs') exs2" unfolding ex2 by auto
   moreover {
@@ -1899,10 +1899,10 @@ qed
 
 lemma sim_move10_into_red0:
   assumes wwf: "wwf_J_prog P"
-  and sim: "sim_move10 P t ta e2 e2' e h empty ta' e' h' x'"
+  and sim: "sim_move10 P t ta e2 e2' e h Map.empty ta' e' h' x'"
   and fv: "fv e = {}"
   shows "if \<tau>move1 P h e2
-         then (\<tau>Red0t P t h (e, es) (e', es) \<or> countInitBlock e2' < countInitBlock e2 \<and> e' = e \<and> x' = empty) \<and> ta = \<epsilon> \<and> h = h'
+         then (\<tau>Red0t P t h (e, es) (e', es) \<or> countInitBlock e2' < countInitBlock e2 \<and> e' = e \<and> x' = Map.empty) \<and> ta = \<epsilon> \<and> h = h'
          else \<exists>e'' ta'. \<tau>Red0r P t h (e, es) (e'', es) \<and>
                         (call1 e2 = None \<or> call e = None \<or> e'' = e) \<and>
                         P,t \<turnstile>0 \<langle>e''/es,h\<rangle> -ta'\<rightarrow> \<langle>e'/es,h'\<rangle> \<and>
@@ -1910,17 +1910,17 @@ lemma sim_move10_into_red0:
 proof(cases "\<tau>move1 P h e2")
   case True
   with sim have "\<not> final e2"
-    and red: "\<tau>red0t (extTA2J0 P) P t h (e, empty) (e', x') \<or>
-              countInitBlock e2' < countInitBlock e2 \<and> e' = e \<and> x' = empty"
+    and red: "\<tau>red0t (extTA2J0 P) P t h (e, Map.empty) (e', x') \<or>
+              countInitBlock e2' < countInitBlock e2 \<and> e' = e \<and> x' = Map.empty"
     and [simp]: "h' = h" "ta = \<epsilon>" "ta' = \<epsilon>" by(simp_all add: sim_move10_def)
   from red have "\<tau>Red0t P t h (e, es) (e', es) \<or>
-                 countInitBlock e2' < countInitBlock e2 \<and> e' = e \<and> x' = empty"
+                 countInitBlock e2' < countInitBlock e2 \<and> e' = e \<and> x' = Map.empty"
   proof
-    assume red: "\<tau>red0t (extTA2J0 P) P t h (e, empty) (e', x')"
+    assume red: "\<tau>red0t (extTA2J0 P) P t h (e, Map.empty) (e', x')"
     from \<tau>red0t_fv_subset[OF wwf red] \<tau>red0t_dom_lcl[OF wwf red] fv
     have "dom x' \<subseteq> {}" by(auto split: if_split_asm)
-    hence "x' = empty" by auto
-    with red have "\<tau>red0t (extTA2J0 P) P t h (e, empty) (e', empty)" by simp
+    hence "x' = Map.empty" by auto
+    with red have "\<tau>red0t (extTA2J0 P) P t h (e, Map.empty) (e', Map.empty)" by simp
     with wwf have "\<tau>Red0t P t h (e, es) (e', es)"
       using fv by(rule \<tau>red0t_into_\<tau>Red0t)
     thus ?thesis ..
@@ -1929,19 +1929,19 @@ proof(cases "\<tau>move1 P h e2")
 next
   case False
   with sim obtain e'' xs'' where "\<not> final e2"
-    and \<tau>red: "\<tau>red0r (extTA2J0 P) P t h (e, empty) (e'', xs'')"
+    and \<tau>red: "\<tau>red0r (extTA2J0 P) P t h (e, Map.empty) (e'', xs'')"
     and red: "extTA2J0 P,P,t \<turnstile> \<langle>e'',(h, xs'')\<rangle> -ta'\<rightarrow> \<langle>e',(h', x')\<rangle>"
     and call: "call1 e2 = None \<or> call e = None \<or> e'' = e"
     and "\<not> \<tau>move0 P h e''" "ta_bisim01 ta' (extTA2J1 (compP1 P) ta)" "no_call P h e''"
     by(auto simp add: sim_move10_def split: if_split_asm)
   from \<tau>red0r_fv_subset[OF wwf \<tau>red] \<tau>red0r_dom_lcl[OF wwf \<tau>red] fv
   have "dom xs'' \<subseteq> {}" by(auto)
-  hence "xs'' = empty" by(auto)
-  with \<tau>red have "\<tau>red0r (extTA2J0 P) P t h (e, empty) (e'', empty)" by simp
+  hence "xs'' = Map.empty" by(auto)
+  with \<tau>red have "\<tau>red0r (extTA2J0 P) P t h (e, Map.empty) (e'', Map.empty)" by simp
   with wwf have "\<tau>Red0r P t h (e, es) (e'', es)"
     using fv by(rule \<tau>red0r_into_\<tau>Red0r)
-  moreover from red `xs'' = empty`
-  have "extTA2J0 P,P,t \<turnstile> \<langle>e'',(h, empty)\<rangle> -ta'\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
+  moreover from red `xs'' = Map.empty`
+  have "extTA2J0 P,P,t \<turnstile> \<langle>e'',(h, Map.empty)\<rangle> -ta'\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
   from red0Red[OF this] `no_call P h e''` 
   have "P,t \<turnstile>0 \<langle>e''/es,h\<rangle> -ta'\<rightarrow> \<langle>e'/es,h'\<rangle>" by(simp add: no_call_def)
   moreover from `\<not> \<tau>move0 P h e''` red
@@ -1973,9 +1973,9 @@ proof(cases)
   from bisiml ex2 have bisim: "bisim [] e E xs" and fv: "fv e = {}"
     and length: "max_vars E \<le> length xs" and bsl: "bisim_list es exs2"
     and D: "\<D> e \<lfloor>{}\<rfloor>" by(auto elim: bisim_list1_elim)
-  from red_simulates_red1_aux[OF wf red, simplified, OF bisim, of empty] fv length D
-  obtain TA' e2' x' where red': "sim_move10 P t TA E E' e h empty TA' e2' h' x'"
-    and bisim'': "bisim [] e2' E' xs'" and lcl': "x' \<subseteq>\<^sub>m empty" by auto
+  from red_simulates_red1_aux[OF wf red, simplified, OF bisim, of Map.empty] fv length D
+  obtain TA' e2' x' where red': "sim_move10 P t TA E E' e h Map.empty TA' e2' h' x'"
+    and bisim'': "bisim [] e2' E' xs'" and lcl': "x' \<subseteq>\<^sub>m Map.empty" by auto
   from red have "\<not> final E" by auto
   with sim_move10_into_red0[OF wf_prog_wwf_prog[OF wf] red', of es] fv ex2 ex2'
   have red'': "?red e2' es" by fastforce
@@ -1983,14 +1983,14 @@ proof(cases)
     note bsl bisim''
     moreover from red' fv have "fv e2' = {}"
       by(fastforce simp add: sim_move10_def split: if_split_asm dest: \<tau>red0r_fv_subset[OF wf_prog_wwf_prog[OF wf]] \<tau>red0t_fv_subset[OF wf_prog_wwf_prog[OF wf]] red_fv_subset[OF wf_prog_wwf_prog[OF wf]])
-    moreover from red' have "dom x' \<subseteq> dom (empty) \<union> fv e"
+    moreover from red' have "dom x' \<subseteq> dom (Map.empty) \<union> fv e"
       unfolding sim_move10_def
       apply(auto split: if_split_asm del: subsetI dest: \<tau>red0r_dom_lcl[OF wf_prog_wwf_prog[OF wf]] \<tau>red0t_dom_lcl[OF wf_prog_wwf_prog[OF wf]])
       apply(frule_tac [1-2] \<tau>red0r_fv_subset[OF wf_prog_wwf_prog[OF wf]])
       apply(auto dest!: \<tau>red0r_dom_lcl[OF wf_prog_wwf_prog[OF wf]] red_dom_lcl del: subsetI, blast+)
       done
     with fv have "dom x' \<subseteq> {}" by(auto)
-    hence "x' = empty" by(auto)
+    hence "x' = Map.empty" by(auto)
     with D red' have "\<D> e2' \<lfloor>{}\<rfloor>"
       by(auto dest!: sim_move10_preserves_defass[OF wf] split: if_split_asm)
     moreover from red have "length xs' = length xs" by(auto dest: red1_preserves_len)

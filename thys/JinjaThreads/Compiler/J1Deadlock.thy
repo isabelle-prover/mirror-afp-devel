@@ -32,7 +32,7 @@ next
     by(fastforce simp del: split_paired_Ex dest: red_external_ta_satisfiable[where final="final_expr1 :: ('addr expr1 \<times> 'addr val list) \<times> ('addr expr1 \<times> 'addr val list) list \<Rightarrow> bool"] intro: red1_reds1.Red1CallExternal)
 next
   case Lock1Synchronized thus ?case
-    by(auto intro!: exI exI[where x="(K$ None, (empty, undefined), empty, {})"] red1_reds1.Lock1Synchronized simp del: split_paired_Ex simp add: lock_ok_las_def finfun_upd_apply may_lock.intros(1))
+    by(auto intro!: exI exI[where x="(K$ None, (Map.empty, undefined), Map.empty, {})"] red1_reds1.Lock1Synchronized simp del: split_paired_Ex simp add: lock_ok_las_def finfun_upd_apply may_lock.intros(1))
 next
   case (Synchronized1Red2 e s ta e' s' V a)
   then obtain e' ta' s'
@@ -45,16 +45,16 @@ next
   thus ?case using L aok by blast
 next
   case Unlock1Synchronized thus ?case
-    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Unlock1Synchronized simp add: lock_ok_las_def finfun_upd_apply)
+    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (Map.empty, undefined), Map.empty, {})"] red1_reds1.Unlock1Synchronized simp add: lock_ok_las_def finfun_upd_apply)
 next
   case Unlock1SynchronizedFail thus ?case
-    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Unlock1Synchronized simp add: lock_ok_las_def finfun_upd_apply collect_locks_def split: if_split_asm)
+    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (Map.empty, undefined), Map.empty, {})"] red1_reds1.Unlock1Synchronized simp add: lock_ok_las_def finfun_upd_apply collect_locks_def split: if_split_asm)
 next
   case Synchronized1Throw2 thus ?case
-    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Synchronized1Throw2 simp add: lock_ok_las_def finfun_upd_apply)
+    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (Map.empty, undefined), Map.empty, {})"] red1_reds1.Synchronized1Throw2 simp add: lock_ok_las_def finfun_upd_apply)
 next
   case Synchronized1Throw2Fail thus ?case
-    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (empty, undefined), empty, {})"] red1_reds1.Synchronized1Throw2 simp add: lock_ok_las_def finfun_upd_apply collect_locks_def split: if_split_asm)
+    by(auto simp del: split_paired_Ex intro!: exI exI[where x="(K$ \<lfloor>(t, 0)\<rfloor>, (Map.empty, undefined), Map.empty, {})"] red1_reds1.Synchronized1Throw2 simp add: lock_ok_las_def finfun_upd_apply collect_locks_def split: if_split_asm)
 qed(fastforce intro: red1_reds1.intros)+
 
 lemma IUF_Red1_taD:

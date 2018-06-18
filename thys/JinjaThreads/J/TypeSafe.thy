@@ -710,7 +710,7 @@ next
     where wtabody: "P,[this#pns [\<mapsto>] Class D#Ts] \<turnstile> body :: T''"
     and T''subT: "P \<turnstile> T'' \<le> T" and length_pns: "length pns = length Ts"
     by(fastforce simp:wf_mdecl_def simp del:map_upds_twist)
-  from wtabody have "P,empty(this#pns [\<mapsto>] Class D#Ts),hp s \<turnstile> body : T''"
+  from wtabody have "P,Map.empty(this#pns [\<mapsto>] Class D#Ts),hp s \<turnstile> body : T''"
     by(rule WT_implies_WTrt)
   hence "P,E(this#pns [\<mapsto>] Class D#Ts),hp s \<turnstile> body : T''"
     by(rule WTrt_env_mono) simp

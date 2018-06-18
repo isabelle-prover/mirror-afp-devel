@@ -255,7 +255,7 @@ lemma sees_methods_decl_mono:
 using assms
 proof (induction rule: converse_rtranclp_induct)
   case base
-  hence "?Q C C Mm empty" by simp
+  hence "?Q C C Mm Map.empty" by simp
   thus "\<exists>Mm' Mm2. ?Q C C Mm' Mm2" by blast
 next
   case (step C'' C')

@@ -233,7 +233,7 @@ lemma lconf_upd:
   "\<lbrakk> P,h \<turnstile> l (:\<le>) E; P,h \<turnstile> v :\<le> T; E V = Some T \<rbrakk> \<Longrightarrow> P,h \<turnstile> l(V\<mapsto>v) (:\<le>) E"
 unfolding lconf_def by auto
 
-lemma lconf_empty [iff]: "P,h \<turnstile> empty (:\<le>) E"
+lemma lconf_empty [iff]: "P,h \<turnstile> Map.empty (:\<le>) E"
 by(simp add:lconf_def)
 
 lemma lconf_upd2: "\<lbrakk>P,h \<turnstile> l (:\<le>) E; P,h \<turnstile> v :\<le> T\<rbrakk> \<Longrightarrow> P,h \<turnstile> l(V\<mapsto>v) (:\<le>) E(V\<mapsto>T)"

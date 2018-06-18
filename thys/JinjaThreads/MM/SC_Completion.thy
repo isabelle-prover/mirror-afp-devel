@@ -495,7 +495,7 @@ lemma llist_of_list_of_append:
 unfolding lfinite_eq_range_llist_of by(clarsimp simp add: lappend_llist_of_llist_of)
 
 lemma ta_seq_consist_most_recent_write_for:
-  assumes sc: "ta_seq_consist P empty (lmap snd E)"
+  assumes sc: "ta_seq_consist P Map.empty (lmap snd E)"
   and read: "r \<in> read_actions E"
   and new_actions_for_fun: "\<And>adal a a'. \<lbrakk> a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
   shows "\<exists>i. P,E \<turnstile> r \<leadsto>mrw i \<and> i < r"
@@ -507,8 +507,8 @@ proof -
   from nth_r r
   have E_unfold: "E = lappend (ltake (enat r) E) (LCons (t, NormalAction (ReadMem ad al v)) (ldropn (Suc r) E))"
     by (metis lappend_ltake_enat_ldropn ldropn_Suc_conv_ldropn)
-  from sc obtain b where sc': "ta_seq_consist P empty (ltake (enat r) (lmap snd E))"
-    and mrw': "mrw_values P empty (map snd (list_of (ltake (enat r) E))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
+  from sc obtain b where sc': "ta_seq_consist P Map.empty (ltake (enat r) (lmap snd E))"
+    and mrw': "mrw_values P Map.empty (map snd (list_of (ltake (enat r) E))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
     by(subst (asm) (3) E_unfold)(auto simp add: ta_seq_consist_lappend lmap_lappend_distrib)
   
   from mrw_values_mrw[OF mrw', of t] r
@@ -567,7 +567,7 @@ proof -
 qed
 
 lemma ta_seq_consist_mrw_before:
-  assumes sc: "ta_seq_consist P empty (lmap snd E)"
+  assumes sc: "ta_seq_consist P Map.empty (lmap snd E)"
   and new_actions_for_fun: "\<And>adal a a'. \<lbrakk> a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
   and mrw: "P,E \<turnstile> r \<leadsto>mrw w"
   shows "w < r"
@@ -581,7 +581,7 @@ qed
 lemma ta_seq_consist_imp_sequentially_consistent:
   assumes tsa_ok: "thread_start_actions_ok E"
   and new_actions_for_fun: "\<And>adal a a'. \<lbrakk> a \<in> new_actions_for P E adal; a' \<in> new_actions_for P E adal \<rbrakk> \<Longrightarrow> a = a'"
-  and seq: "ta_seq_consist P empty (lmap snd E)"
+  and seq: "ta_seq_consist P Map.empty (lmap snd E)"
   shows "\<exists>ws. sequentially_consistent P (E, ws) \<and> P \<turnstile> (E, ws) \<surd>"
 proof(intro exI conjI)
   define ws where "ws i = (THE w. P,E \<turnstile> i \<leadsto>mrw w)" for i
@@ -617,7 +617,7 @@ proof(intro exI conjI)
 
       let ?between = "ltake (enat (a - Suc w)) (ldropn (Suc w) E)"
       let ?prefix = "ltake (enat w) E"
-      let ?vs_prefix = "mrw_values P empty (map snd (list_of ?prefix))"
+      let ?vs_prefix = "mrw_values P Map.empty (map snd (list_of ?prefix))"
 
       { fix v'
         assume new: "is_new_action (action_obs E w)"
@@ -682,7 +682,7 @@ proof(intro exI conjI)
       hence E': "E = lappend (lappend ?prefix (LCons (lnth E w) ?between)) (LCons (lnth E a) (ldropn (Suc a) E))"
         using `w < a` `enat a < llength E` by simp
       
-      from seq have "ta_seq_consist P (mrw_values P empty (list_of (lappend (lmap snd ?prefix) (LCons (snd (lnth E w)) (lmap snd ?between))))) (lmap snd (LCons (lnth E a) (ldropn (Suc a) E)))"
+      from seq have "ta_seq_consist P (mrw_values P Map.empty (list_of (lappend (lmap snd ?prefix) (LCons (snd (lnth E w)) (lmap snd ?between))))) (lmap snd (LCons (lnth E a) (ldropn (Suc a) E)))"
         by(subst (asm) E')(simp add: lmap_lappend_distrib ta_seq_consist_lappend)
       ultimately show "value_written P E (ws a) (ad, al) = v" using adal w
         by(clarsimp simp add: action_obs_def list_of_lappend list_of_LCons)
@@ -813,14 +813,14 @@ lemma ta_seq_consist_mrwI:
   assumes E: "E \<in> \<E>"
   and wf: "P \<turnstile> (E, ws) \<surd>"
   and mrw: "\<And>a. \<lbrakk> enat a < r; a \<in> read_actions E \<rbrakk> \<Longrightarrow> P,E \<turnstile> a \<leadsto>mrw ws a"
-  shows "ta_seq_consist P empty (lmap snd (ltake r E))"
+  shows "ta_seq_consist P Map.empty (lmap snd (ltake r E))"
 proof(rule ta_seq_consist_nthI)
   fix i ad al v
   assume i_len: "enat i < llength (lmap snd (ltake r E))"
     and E_i: "lnth (lmap snd (ltake r E)) i = NormalAction (ReadMem ad al v)"
-    and sc: "ta_seq_consist P empty (ltake (enat i) (lmap snd (ltake r E)))"
+    and sc: "ta_seq_consist P Map.empty (ltake (enat i) (lmap snd (ltake r E)))"
   from i_len have "enat i < r" by simp
-  with sc have "ta_seq_consist P empty (ltake (enat i) (lmap snd E))"
+  with sc have "ta_seq_consist P Map.empty (ltake (enat i) (lmap snd E))"
     by(simp add: min_def split: if_split_asm)
   hence ns: "non_speculative P (\<lambda>_. {}) (ltake (enat i) (lmap snd E))"
     by(rule ta_seq_consist_into_non_speculative) simp
@@ -839,7 +839,7 @@ proof(rule ta_seq_consist_nthI)
   from is_write_seenD[OF this read obs_i]
   have vw_v: "value_written P E (ws i) (ad, al) = v" by simp
 
-  let ?vs = "mrw_values P empty (map snd (list_of (ltake (enat (ws i)) E)))"
+  let ?vs = "mrw_values P Map.empty (map snd (list_of (ltake (enat (ws i)) E)))"
 
   from `ws i < i` i_len have "enat (ws i) < llength (ltake (enat i) E)"
     by(simp add: less_trans[where y="enat i"])
@@ -850,8 +850,8 @@ proof(rule ta_seq_consist_nthI)
     by(simp add: lnth_ltake)(simp add: min_def)
   finally have r_E: "ltake (enat i) E = \<dots>" .
 
-  have "mrw_values P empty (list_of (ltake (enat i) (lmap snd (ltake r E)))) (ad, al)
-    = mrw_values P empty (map snd (list_of (ltake (enat i) E))) (ad, al)"
+  have "mrw_values P Map.empty (list_of (ltake (enat i) (lmap snd (ltake r E)))) (ad, al)
+    = mrw_values P Map.empty (map snd (list_of (ltake (enat i) E))) (ad, al)"
     using `enat i < r` by(auto simp add: min_def)
   also have "\<dots> = mrw_values P (mrw_value P ?vs (snd (lnth E (ws i)))) (map snd (list_of (ldropn (Suc (ws i)) (ltake (enat i) E)))) (ad, al)"
     by(subst r_E)(simp add: list_of_lappend)
@@ -939,7 +939,7 @@ proof(rule ta_seq_consist_nthI)
     apply auto
     apply blast+
     done
-  finally show "\<exists>b. mrw_values P empty (list_of (ltake (enat i) (lmap snd (ltake r E)))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
+  finally show "\<exists>b. mrw_values P Map.empty (list_of (ltake (enat i) (lmap snd (ltake r E)))) (ad, al) = \<lfloor>(v, b)\<rfloor>"
     by blast
 qed
 

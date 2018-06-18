@@ -18,7 +18,7 @@ inductive wf_state :: "'addr expr \<times> 'addr expr list \<Rightarrow> bool"
 
 inductive bisim_red_red0 :: "('addr expr \<times> 'addr locals) \<times> 'heap \<Rightarrow> ('addr expr \<times> 'addr expr list) \<times> 'heap \<Rightarrow> bool"
   where
-  "wf_state ees \<Longrightarrow> bisim_red_red0 ((collapse ees, empty), h) (ees, h)"
+  "wf_state ees \<Longrightarrow> bisim_red_red0 ((collapse ees, Map.empty), h) (ees, h)"
 
 abbreviation ta_bisim0 :: "('addr, 'thread_id, 'heap) J_thread_action \<Rightarrow> ('addr, 'thread_id, 'heap) J0_thread_action \<Rightarrow> bool"
 where "ta_bisim0 \<equiv> ta_bisim (\<lambda>t. bisim_red_red0)"
@@ -28,7 +28,7 @@ lemma wf_state_iff [simp, code]:
 by(simp add: wf_state.simps)
 
 lemma bisim_red_red0I [intro]:
-  "\<lbrakk> e' = collapse ees; xs = empty; h' = h; wf_state ees \<rbrakk> \<Longrightarrow> bisim_red_red0 ((e', xs), h') (ees, h)"
+  "\<lbrakk> e' = collapse ees; xs = Map.empty; h' = h; wf_state ees \<rbrakk> \<Longrightarrow> bisim_red_red0 ((e', xs), h') (ees, h)"
 by(simp add: bisim_red_red0.simps del: split_paired_Ex)
 
 lemma bisim_red_red0_final0D:
@@ -52,7 +52,7 @@ proof(cases)
     proof cases
       case (red0Red xs')
       hence [simp]: "es' = es"
-        and red: "extTA2J0 P,P,t \<turnstile> \<langle>e,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>" by auto
+        and red: "extTA2J0 P,P,t \<turnstile> \<langle>e,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', xs')\<rangle>" by auto
       from red_fv_subset[OF wf red] fv have "fv e' = {}" by auto
       with fv show ?thesis by simp
     next
@@ -138,7 +138,7 @@ next
 qed(fastforce intro: red_reds.intros simp add: ta_bisim_def ta_upd_simps)+
 
 lemma red_inline_call_red:
-  assumes red: "P,t \<turnstile> \<langle>e, (h, empty)\<rangle> -ta\<rightarrow> \<langle>e', (h', empty)\<rangle>"
+  assumes red: "P,t \<turnstile> \<langle>e, (h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e', (h', Map.empty)\<rangle>"
   shows "call E = \<lfloor>aMvs\<rfloor> \<Longrightarrow> P,t \<turnstile> \<langle>inline_call e E, (h, x)\<rangle> -ta\<rightarrow> \<langle>inline_call e' E, (h', x)\<rangle>"
   (is "_ \<Longrightarrow> ?concl E x")
 
@@ -228,10 +228,10 @@ lemma red_inline_call_red':
   assumes fv: "fv ee = {}"
   and eefin: "\<not> final ee"
   shows "\<lbrakk> call E = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_call ee E, (h, x)\<rangle> -ta\<rightarrow> \<langle>E', (h', x')\<rangle> \<rbrakk> 
-         \<Longrightarrow> \<exists>ee'. E' = inline_call ee' E \<and> P,t \<turnstile> \<langle>ee, (h, empty)\<rangle> -ta\<rightarrow> \<langle>ee', (h', empty)\<rangle> \<and> x = x'"
+         \<Longrightarrow> \<exists>ee'. E' = inline_call ee' E \<and> P,t \<turnstile> \<langle>ee, (h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>ee', (h', Map.empty)\<rangle> \<and> x = x'"
   (is "\<lbrakk> _; _ \<rbrakk> \<Longrightarrow> ?concl E E' x x'")
   and   "\<lbrakk> calls Es = \<lfloor>aMvs\<rfloor>; P,t \<turnstile> \<langle>inline_calls ee Es, (h, x)\<rangle> [-ta\<rightarrow>] \<langle>Es', (h', x')\<rangle> \<rbrakk> 
-         \<Longrightarrow> \<exists>ee'. Es' = inline_calls ee' Es \<and> P,t \<turnstile> \<langle>ee, (h, empty)\<rangle> -ta\<rightarrow> \<langle>ee', (h', empty)\<rangle> \<and> x = x'"
+         \<Longrightarrow> \<exists>ee'. Es' = inline_calls ee' Es \<and> P,t \<turnstile> \<langle>ee, (h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>ee', (h', Map.empty)\<rangle> \<and> x = x'"
   (is "\<lbrakk> _; _ \<rbrakk> \<Longrightarrow> ?concls Es Es' x x'")
 proof(induct E and Es arbitrary: E' x x' and Es' x x' rule: call.induct calls.induct)
   case new thus ?case by simp
@@ -283,7 +283,7 @@ next
       by(auto elim!: red_cases)
     from IHobj[OF _ red'] CallObj obtain ee' 
       where "inline_call ee' obj = obj'" "x = x'"
-      and "P,t \<turnstile> \<langle>ee,(h, empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', empty)\<rangle>" by(auto simp del: fun_upd_apply)
+      and "P,t \<turnstile> \<langle>ee,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', Map.empty)\<rangle>" by(auto simp del: fun_upd_apply)
     with `E' = obj'\<bullet>M(pns)` CallObj red' show ?thesis by(fastforce simp del: fun_upd_apply)
   next
     case (CallParams v'')
@@ -293,7 +293,7 @@ next
       by(auto elim!: red_cases)
     from IHpns[OF _ red'] CallParams obtain ee' 
       where "inline_calls ee' pns = pns'" "x = x'"
-      and "P,t \<turnstile> \<langle>ee,(h, empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', empty)\<rangle>"
+      and "P,t \<turnstile> \<langle>ee,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', Map.empty)\<rangle>"
       by(auto simp del: fun_upd_apply)
     with `E' = obj\<bullet>M(pns')` CallParams red' `\<not> is_vals pns`
     show ?thesis by(auto simp del: fun_upd_apply)
@@ -301,7 +301,7 @@ next
     case Call
     with red have red': "P,t \<turnstile> \<langle>ee,(h, x)\<rangle> -ta\<rightarrow> \<langle>E',(h', x')\<rangle>" by(auto)
     from red_lcl_sub[OF red', of "{}"] fv
-    have "P,t \<turnstile> \<langle>ee,(h, empty)\<rangle> -ta\<rightarrow> \<langle>E',(h', empty)\<rangle>" by simp
+    have "P,t \<turnstile> \<langle>ee,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>E',(h', Map.empty)\<rangle>" by simp
     moreover have "x' = x"
     proof(rule ext)
       fix V
@@ -323,7 +323,7 @@ next
     by -(erule red.cases,auto dest: inline_call_eq_Val)
   from IH[OF ic red'] obtain ee' vo' 
     where icl: "inline_call ee' exp = exp'" "x'' = fun_upd x V voo"
-    and red'': "P,t \<turnstile> \<langle>ee,(h, empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', empty)\<rangle>" by blast
+    and red'': "P,t \<turnstile> \<langle>ee,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>ee',(h', Map.empty)\<rangle>" by blast
   from `x'' = fun_upd x V voo` have "x'' V = voo" by(simp add: fun_eq_iff)
   with icl red'' `E' = {V:ty=x'' V; exp'}` `x' = fun_upd x'' V (x V)` red'
   show ?case by(auto simp del: fun_upd_apply)
@@ -378,20 +378,20 @@ lemma wf_state_ConsD: "wf_state (e, e' # es) \<Longrightarrow> wf_state (e', es)
 by(simp)
 
 lemma red_fold_exs:
-  "\<lbrakk> P,t \<turnstile> \<langle>e,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', empty)\<rangle>; wf_state (e, es) \<rbrakk>
-  \<Longrightarrow>  P,t \<turnstile> \<langle>collapse (e, es), (h, empty)\<rangle> -ta\<rightarrow> \<langle>collapse (e', es), (h', empty)\<rangle>"
+  "\<lbrakk> P,t \<turnstile> \<langle>e,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', Map.empty)\<rangle>; wf_state (e, es) \<rbrakk>
+  \<Longrightarrow>  P,t \<turnstile> \<langle>collapse (e, es), (h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>collapse (e', es), (h', Map.empty)\<rangle>"
   (is "\<lbrakk> _; _ \<rbrakk> \<Longrightarrow> ?concl e e' es")
 proof(induction es arbitrary: e e')
   case Nil thus ?case by simp
 next
   case (Cons E es)
   note wf = `wf_state (e, E # es)`
-  note red = `P,t \<turnstile> \<langle>e,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', empty)\<rangle>`
+  note red = `P,t \<turnstile> \<langle>e,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', Map.empty)\<rangle>`
   from wf obtain a M vs arrobj where call: "call E = \<lfloor>(a, M, vs)\<rfloor>" 
     by(auto simp add: is_call_def)
-  from red call have "P,t \<turnstile> \<langle>inline_call e E,(h, empty)\<rangle> -ta\<rightarrow> \<langle>inline_call e' E,(h', empty)\<rangle>"
+  from red call have "P,t \<turnstile> \<langle>inline_call e E,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>inline_call e' E,(h', Map.empty)\<rangle>"
     by(rule red_inline_call_red)
-  hence "P,t \<turnstile> \<langle>collapse (inline_call e E, es),(h, empty)\<rangle> -ta\<rightarrow>  \<langle>collapse (inline_call e' E, es),(h', empty)\<rangle>"
+  hence "P,t \<turnstile> \<langle>collapse (inline_call e E, es),(h, Map.empty)\<rangle> -ta\<rightarrow>  \<langle>collapse (inline_call e' E, es),(h', Map.empty)\<rangle>"
   proof(rule Cons.IH)
     from wf have "fv E = {}" "fv e = {}" by auto
     with fv_inline_call[of e E] have "fv (inline_call e E) = {}" by auto
@@ -401,12 +401,12 @@ next
 qed
 
 lemma red_fold_exs':
-  "\<lbrakk> P,t \<turnstile> \<langle>collapse (e, es), (h, empty)\<rangle> -ta\<rightarrow> \<langle>e', (h', x')\<rangle>; wf_state (e, es); \<not> final e \<rbrakk>
-  \<Longrightarrow> \<exists>E'. e' = collapse (E', es) \<and> P,t \<turnstile> \<langle>e, (h, empty)\<rangle> -ta\<rightarrow> \<langle>E', (h', empty)\<rangle>"
+  "\<lbrakk> P,t \<turnstile> \<langle>collapse (e, es), (h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e', (h', x')\<rangle>; wf_state (e, es); \<not> final e \<rbrakk>
+  \<Longrightarrow> \<exists>E'. e' = collapse (E', es) \<and> P,t \<turnstile> \<langle>e, (h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>E', (h', Map.empty)\<rangle>"
   (is "\<lbrakk> _; _; _ \<rbrakk> \<Longrightarrow> ?concl e es")
 proof(induction es arbitrary: e)
   case Nil
-  hence red': "P,t \<turnstile> \<langle>e,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
+  hence red': "P,t \<turnstile> \<langle>e,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
   with red_dom_lcl[OF this] `wf_state (e, [])` show ?case by auto
 next
   case (Cons E es)
@@ -414,15 +414,15 @@ next
   note nfin = `\<not> final e`
   from wf have "fv e = {}" by simp
   from wf obtain a M vs where call: "call E = \<lfloor>(a, M, vs)\<rfloor>" by(auto simp add: is_call_def)
-  from `P,t \<turnstile> \<langle>collapse (e, E # es),(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
-  have "P,t \<turnstile> \<langle>collapse (inline_call e E, es),(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
+  from `P,t \<turnstile> \<langle>collapse (e, E # es),(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>`
+  have "P,t \<turnstile> \<langle>collapse (inline_call e E, es),(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', x')\<rangle>" by simp
   moreover from wf fv_inline_call[of e E] have "wf_state (inline_call e E, es)" by auto
   moreover from nfin call have "\<not> final (inline_call e E)" by(auto elim!: final.cases)
   ultimately have "?concl (inline_call e E) es" by(rule Cons.IH)
   then obtain E' where e': "e' = collapse (E', es)" 
-    and red': "P,t \<turnstile> \<langle>inline_call e E,(h, empty)\<rangle> -ta\<rightarrow> \<langle>E',(h', empty)\<rangle>" by blast
+    and red': "P,t \<turnstile> \<langle>inline_call e E,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>E',(h', Map.empty)\<rangle>" by blast
   from red_inline_call_red'(1)[OF `fv e = {}` nfin `call E = \<lfloor>(a, M, vs)\<rfloor>` red']
-  obtain e' where "E' = inline_call e' E" "P,t \<turnstile> \<langle>e,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', empty)\<rangle>" by auto
+  obtain e' where "E' = inline_call e' E" "P,t \<turnstile> \<langle>e,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e',(h', Map.empty)\<rangle>" by auto
   thus ?case using e' by auto
 qed
 
@@ -495,26 +495,26 @@ proof -
   from red \<tau> have \<tau>: "\<not> \<tau>move0 P h2 e" and nfin: "\<not> final e"
     by(cases, auto dest: red_\<tau>_taD[where extTA="extTA2J0 P", OF extTA2J0_\<epsilon>])+
   from bisim have heap: "h1 = h2" and fold: "e1 = collapse (e, es)"
-    and x1: "x1 = empty" and wf_state: "wf_state (e, es)"
+    and x1: "x1 = Map.empty" and wf_state: "wf_state (e, es)"
     by(auto elim!: bisim_red_red0.cases)
   from red wf_state have wf_state': "wf_state (e', es')" by(rule red0_preserves_wf_state[OF wwf])
   from red show ?thesis
   proof(cases)
     case (red0Red xs')
     hence [simp]: "es' = es"
-      and "extTA2J0 P,P,t \<turnstile> \<langle>e, (h2, empty)\<rangle> -ta2\<rightarrow> \<langle>e', (h2', xs')\<rangle>" by auto
+      and "extTA2J0 P,P,t \<turnstile> \<langle>e, (h2, Map.empty)\<rangle> -ta2\<rightarrow> \<langle>e', (h2', xs')\<rangle>" by auto
     from red0_red_tabisim0[OF wwf this(2)] obtain ta1
-      where red': "P,t \<turnstile> \<langle>e,(h2, empty)\<rangle> -ta1\<rightarrow> \<langle>e',(h2', xs')\<rangle>"
+      where red': "P,t \<turnstile> \<langle>e,(h2, Map.empty)\<rangle> -ta1\<rightarrow> \<langle>e',(h2', xs')\<rangle>"
       and tasim: "ta_bisim0 ta1 ta2" by auto
     moreover from wf_state have "fv e = {}" by auto
-    with red_dom_lcl[OF red'] red_fv_subset[OF wwf red'] have "xs' = empty" by auto
-    ultimately have "P,t \<turnstile> \<langle>e,(h2, empty)\<rangle> -ta1\<rightarrow> \<langle>e',(h2', empty)\<rangle>" by simp
-    with wf_state have "P,t \<turnstile> \<langle>collapse (e, es),(h2, empty)\<rangle> -ta1\<rightarrow> \<langle>collapse (e', es),(h2', empty)\<rangle>"
+    with red_dom_lcl[OF red'] red_fv_subset[OF wwf red'] have "xs' = Map.empty" by auto
+    ultimately have "P,t \<turnstile> \<langle>e,(h2, Map.empty)\<rangle> -ta1\<rightarrow> \<langle>e',(h2', Map.empty)\<rangle>" by simp
+    with wf_state have "P,t \<turnstile> \<langle>collapse (e, es),(h2, Map.empty)\<rangle> -ta1\<rightarrow> \<langle>collapse (e', es),(h2', Map.empty)\<rangle>"
       by -(erule red_fold_exs, auto)
     moreover from \<tau> wf_state fold nfin have "\<not> \<tau>move0 P h2 e1" by(auto simp add: collapse_\<tau>move0_inv)
-    hence "\<not> \<tau>MOVE P ((collapse (e, es), empty), h2) ta1 ((collapse (e', es), empty), h2')"
+    hence "\<not> \<tau>MOVE P ((collapse (e, es), Map.empty), h2) ta1 ((collapse (e', es), Map.empty), h2')"
       unfolding fold by auto
-    moreover from wf_state' have "bisim_red_red0 ((collapse (e', es), empty), h2') s2'" 
+    moreover from wf_state' have "bisim_red_red0 ((collapse (e', es), Map.empty), h2') s2'" 
       unfolding s2' by(auto)
     ultimately show ?thesis unfolding heap s1 s2 s2' fold x1
       using tasim by(fastforce intro!: exI rtranclp.rtrancl_refl)
@@ -550,7 +550,7 @@ next
     and \<tau>: "\<tau>move0 P h1 e1" by(auto elim: \<tau>trsys.silent_move.cases)
   from bisim have heap: "h1 = h2"
     and fold: "e1 = collapse (e, es)"
-    and x1: "x1 = empty"
+    and x1: "x1 = Map.empty"
     and wf_state: "wf_state (e, es)"
     by(auto elim!: bisim_red_red0.cases)
   from \<tau>Red0r_inline_call_not_final[of P t h1 e es]
@@ -568,11 +568,11 @@ next
   hence fv: "fvs (e' # es') = {}" and icl: "\<forall>e\<in>set es'. is_call e" by auto
   from red_fold_exs'[OF red[unfolded fold x1 feq] wf_state' nfin]
   obtain E' where e1': "e1' = collapse (E', es')" 
-    and red': "P,t \<turnstile> \<langle>e',(h1, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>E',(h1', empty)\<rangle>" by auto
+    and red': "P,t \<turnstile> \<langle>e',(h1, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>E',(h1', Map.empty)\<rangle>" by auto
   from fv fv_collapse[of es e] wf_state fold feq have "fv e1 = {}" by(auto)
-  with red_dom_lcl[OF red] x1 have x1': "x1' = empty" by simp
+  with red_dom_lcl[OF red] x1 have x1': "x1' = Map.empty" by simp
   from red_red0_tabisim0[OF wf red']
-  have red'': "extTA2J0 P,P,t \<turnstile> \<langle>e',(h1, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>E',(h1', empty)\<rangle>" by simp
+  have red'': "extTA2J0 P,P,t \<turnstile> \<langle>e',(h1, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>E',(h1', Map.empty)\<rangle>" by simp
   show "bisim_red_red0 s1' s2 \<and> (\<lambda>e e'. False)^++ s1' s1 \<or>
         (\<exists>s2'. red0_mthr.silent_movet P t s2 s2' \<and> bisim_red_red0 s1' s2')"
   proof(cases "no_call P h1 e'")
@@ -624,7 +624,7 @@ next
     and \<tau>: "\<tau>move0 P h2 e \<or> final e" by(auto elim: \<tau>trsys.silent_move.cases)
   from bisim have heap: "h1 = h2"
     and fold: "e1 = collapse (e, es)"
-    and x1: "x1 = empty" and wf_state: "wf_state (e, es)"
+    and x1: "x1 = Map.empty" and wf_state: "wf_state (e, es)"
     by(auto elim!: bisim_red_red0.cases)
   from red wf_state have wf_state': "wf_state (e', es')" by(rule red0_preserves_wf_state[OF wf])
   from red show "bisim_red_red0 s1 s2' \<and> (\<lambda>((e, es), h) ((e, es'), h). length es < length es')\<^sup>+\<^sup>+ s2' s2 \<or>
@@ -632,18 +632,18 @@ next
   proof cases
     case (red0Red xs')
     hence [simp]: "es' = es"
-      and "extTA2J0 P,P,t \<turnstile> \<langle>e, (h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h2', xs')\<rangle>" by auto
-    from red0_red_tabisim0[OF wf this(2)] have red': "P,t \<turnstile> \<langle>e,(h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e',(h2', xs')\<rangle>" by auto
+      and "extTA2J0 P,P,t \<turnstile> \<langle>e, (h2, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e', (h2', xs')\<rangle>" by auto
+    from red0_red_tabisim0[OF wf this(2)] have red': "P,t \<turnstile> \<langle>e,(h2, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e',(h2', xs')\<rangle>" by auto
     moreover from wf_state have "fv e = {}" by auto
-    with red_dom_lcl[OF red'] red_fv_subset[OF wf red'] have "xs' = empty" by auto
-    ultimately have "P,t \<turnstile> \<langle>e,(h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e',(h2', empty)\<rangle>" by simp
-    hence "P,t \<turnstile> \<langle>collapse (e, es),(h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>collapse (e', es),(h2', empty)\<rangle>" 
+    with red_dom_lcl[OF red'] red_fv_subset[OF wf red'] have "xs' = Map.empty" by auto
+    ultimately have "P,t \<turnstile> \<langle>e,(h2, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>e',(h2', Map.empty)\<rangle>" by simp
+    hence "P,t \<turnstile> \<langle>collapse (e, es),(h2, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>collapse (e', es),(h2', Map.empty)\<rangle>" 
       using wf_state by(rule red_fold_exs)
     moreover from red' have "\<not> final e" by auto
     with \<tau> wf_state fold have "\<tau>move0 P h2 e1" by(auto simp add: collapse_\<tau>move0_inv)
-    ultimately have "red_mthr.silent_movet P t s1 ((collapse (e', es), empty), h2')"
+    ultimately have "red_mthr.silent_movet P t s1 ((collapse (e', es), Map.empty), h2')"
       using s1 fold \<tau> x1 heap by(auto intro: \<tau>trsys.silent_move.intros)
-    moreover from wf_state' have "bisim_red_red0 ((collapse (e', es), empty), h2') s2'"
+    moreover from wf_state' have "bisim_red_red0 ((collapse (e', es), Map.empty), h2') s2'"
       unfolding s2' by(auto)
     ultimately show ?thesis by blast
   next
@@ -653,22 +653,22 @@ next
       and ha: "typeof_addr h2 a = \<lfloor>U\<rfloor>"
       and sees: "P \<turnstile> class_type_of U sees M: Ts\<rightarrow>T = \<lfloor>(pns, body)\<rfloor> in D"
       and len: "length vs = length pns" "length Ts = length pns" by auto
-    from is_call_red_inline_call(1)[OF sees len call, of "(h2, empty)"] ha
-    have "P,t \<turnstile> \<langle>e,(h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e' e, (h2, empty)\<rangle>" by simp
-    hence "P,t \<turnstile> \<langle>collapse (e, es), (h2, empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>collapse (inline_call e' e, es), (h2, empty)\<rangle>"
+    from is_call_red_inline_call(1)[OF sees len call, of "(h2, Map.empty)"] ha
+    have "P,t \<turnstile> \<langle>e,(h2, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>inline_call e' e, (h2, Map.empty)\<rangle>" by simp
+    hence "P,t \<turnstile> \<langle>collapse (e, es), (h2, Map.empty)\<rangle> -\<epsilon>\<rightarrow> \<langle>collapse (inline_call e' e, es), (h2, Map.empty)\<rangle>"
       using wf_state by(rule red_fold_exs)
     moreover from call ha wf_state \<tau> have "\<tau>move0 P h2 (collapse (e, es))"
       by(subst collapse_\<tau>move0_inv) auto
-    hence "\<tau>MOVE P ((collapse (e, es), empty), h2) \<epsilon> ((collapse (inline_call e' e, es), empty), h2)" by auto
+    hence "\<tau>MOVE P ((collapse (e, es), Map.empty), h2) \<epsilon> ((collapse (inline_call e' e, es), Map.empty), h2)" by auto
     moreover from wf_state'
-    have "bisim_red_red0 ((collapse (inline_call e' e, es), empty), h2) ((e', es'), h2')"
+    have "bisim_red_red0 ((collapse (inline_call e' e, es), Map.empty), h2) ((e', es'), h2')"
       by(auto)
     ultimately show ?thesis unfolding s1 s2 s2' fold heap x1 by(fastforce)
   next
     case (red0Return E)
     hence [simp]: "es = E # es'" "e' = inline_call e E" "h2' = h2" by auto
     from fold wf_state'
-    have "bisim_red_red0 ((e1, empty), h1) ((inline_call e E, es'), h2)"
+    have "bisim_red_red0 ((e1, Map.empty), h1) ((inline_call e E, es'), h2)"
       unfolding heap by(auto)
     thus ?thesis using s1 s2' s2 x1 by auto
   qed
@@ -683,7 +683,7 @@ next
     and \<tau>: "\<not> \<tau>move0 P h1 e1" by(auto dest: red_\<tau>_taD[where extTA="extTA2J P", OF extTA2J_\<epsilon>])
   from bisim have heap: "h1 = h2"
     and fold: "e1 = collapse (e, es)"
-    and x1: "x1 = empty"
+    and x1: "x1 = Map.empty"
     and wf_state: "wf_state (e, es)"
     by(auto elim!: bisim_red_red0.cases)
   from \<tau>Red0r_inline_call_not_final[of P t h1 e es]
@@ -702,11 +702,11 @@ next
   hence fv: "fvs (e' # es') = {}" and icl: "\<forall>e \<in> set es'. is_call e" by auto
   from red_fold_exs'[OF red[unfolded fold x1 feq] wf_state' nfin]
   obtain E' where e1': "e1' = collapse (E', es')" 
-    and red': "P,t \<turnstile> \<langle>e',(h1, empty)\<rangle> -ta1\<rightarrow> \<langle>E',(h1', empty)\<rangle>" by auto
+    and red': "P,t \<turnstile> \<langle>e',(h1, Map.empty)\<rangle> -ta1\<rightarrow> \<langle>E',(h1', Map.empty)\<rangle>" by auto
   from fv fv_collapse[OF icl, of e'] fold feq have "fv e1 = {}" by(auto)
-  with red_dom_lcl[OF red] x1 have x1': "x1' = empty" by simp
+  with red_dom_lcl[OF red] x1 have x1': "x1' = Map.empty" by simp
   from red_red0_tabisim0[OF wf red'] obtain ta2
-    where red'': "extTA2J0 P,P,t \<turnstile> \<langle>e',(h1, Map.empty)\<rangle> -ta2\<rightarrow> \<langle>E',(h1', empty)\<rangle>"
+    where red'': "extTA2J0 P,P,t \<turnstile> \<langle>e',(h1, Map.empty)\<rangle> -ta2\<rightarrow> \<langle>E',(h1', Map.empty)\<rangle>"
     and tasim: "ta_bisim0 ta1 ta2" by auto
   from \<tau> fold feq icl nfin have "\<not> \<tau>move0 P h1 e'" by(simp add: collapse_\<tau>move0_inv)
   hence "\<forall>aMvs. call e' = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h1 aMvs"
@@ -746,7 +746,7 @@ lemma bisim_red_red0_finalD:
 proof -
   from bisim
   obtain e' e es where wf_state: "wf_state (e, es)"
-    and [simp]: "x1 = (e', empty)" "x2 = (e, es)" "e' = collapse (e, es)" "m2 = m1"
+    and [simp]: "x1 = (e', Map.empty)" "x2 = (e, es)" "e' = collapse (e, es)" "m2 = m1"
     by cases(cases x2, auto)
   from `final_expr x1` have "final (collapse (e, es))" by simp
   moreover from wf_state have "\<forall>e\<in>set es. is_call e" by auto
@@ -765,7 +765,7 @@ proof -
     with `final e` have "red0_mthr.silent_move P t ((e, e'#es), m1) ((inline_call e e', es), m1)" by auto
     ultimately show ?case by -(erule converse_rtranclp_into_rtranclp, simp)
   qed
-  moreover have "bisim_red_red0 ((collapse (e, es), empty), m1) ((collapse (e, es), []), m1)"
+  moreover have "bisim_red_red0 ((collapse (e, es), Map.empty), m1) ((collapse (e, es), []), m1)"
     using `final (collapse (e, es))` by(auto intro!: bisim_red_red0I)
   ultimately show ?thesis using `final (collapse (e, es))` by auto
 qed
@@ -778,15 +778,15 @@ lemma red0_simulates_red_not_final:
   and n\<tau>: "\<not> \<tau>move0 P h e"
   shows "\<exists>e0' ta0. P,t \<turnstile>0 \<langle>e0/es0, h\<rangle> -ta0\<rightarrow> \<langle>e0'/es0, h'\<rangle> \<and> bisim_red_red0 ((e', xs'), h') ((e0', es0), h') \<and> ta_bisim0 ta ta0"
 proof -
-  from bisim have [simp]: "xs = empty" "h0 = h" and e: "e = collapse (e0, es0)"
+  from bisim have [simp]: "xs = Map.empty" "h0 = h" and e: "e = collapse (e0, es0)"
     and wfs: "wf_state (e0, es0)" by(auto elim!: bisim_red_red0.cases)
-  with red have "P,t \<turnstile> \<langle>collapse (e0, es0), (h, empty)\<rangle> -ta\<rightarrow> \<langle>e', (h', xs')\<rangle>" by simp
+  with red have "P,t \<turnstile> \<langle>collapse (e0, es0), (h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e', (h', xs')\<rangle>" by simp
   from wfs red_fold_exs'[OF this] fin obtain e0' where e': "e' = collapse (e0', es0)"
-    and red': "P,t \<turnstile> \<langle>e0,(h, empty)\<rangle> -ta\<rightarrow> \<langle>e0',(h', empty)\<rangle>" by(auto)
+    and red': "P,t \<turnstile> \<langle>e0,(h, Map.empty)\<rangle> -ta\<rightarrow> \<langle>e0',(h', Map.empty)\<rangle>" by(auto)
   from wfs fv_collapse[of es0, of e0] e have "fv e = {}" by(auto)
-  with red_dom_lcl[OF red] have [simp]: "xs' = empty" by simp
+  with red_dom_lcl[OF red] have [simp]: "xs' = Map.empty" by simp
   from red_red0_tabisim0[OF wwf red'] obtain ta0
-    where red'': "extTA2J0 P,P,t \<turnstile> \<langle>e0,(h, Map.empty)\<rangle> -ta0\<rightarrow> \<langle>e0',(h', empty)\<rangle>"
+    where red'': "extTA2J0 P,P,t \<turnstile> \<langle>e0,(h, Map.empty)\<rangle> -ta0\<rightarrow> \<langle>e0',(h', Map.empty)\<rangle>"
     and tasim: "ta_bisim0 ta ta0" by auto
   from n\<tau> e wfs fin have "\<not> \<tau>move0 P h e0" by(auto simp add: collapse_\<tau>move0_inv)
   hence "\<forall>aMvs. call e0 = \<lfloor>aMvs\<rfloor> \<longrightarrow> synthesized_call P h aMvs"
