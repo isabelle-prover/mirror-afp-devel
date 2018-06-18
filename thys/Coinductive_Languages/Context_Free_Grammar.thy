@@ -3,21 +3,6 @@ section {* Word Problem for Context-Free Grammars  *}
 theory Context_Free_Grammar
 imports Coinductive_Language "HOL-Library.FSet"
 begin
-
-lemma fBex_mono[mono]: "P \<le> Q \<Longrightarrow> fBex S P \<le> fBex S Q"
-  by auto
-
-lemma ffUnion_fempty[simp]: "ffUnion {||} = {||}"
-  including fset.lifting
-  by transfer auto
-
-lemma ffUnion_finsert[simp]: "ffUnion (finsert A F) = A |\<union>| ffUnion F"
-  including fset.lifting
-  by transfer auto
-
-lemma ffUnion_mono: "A |\<subseteq>| B \<Longrightarrow> ffUnion A |\<subseteq>| ffUnion B"
-  including fset.lifting
-  by transfer auto
 (*>*)
 
 
@@ -95,7 +80,7 @@ lemma in_cfls_mono: "in_cfls P w \<Longrightarrow> P |\<subseteq>| Q \<Longright
 proof (induct P w arbitrary: Q rule: in_cfls.induct)
   case (2 a P w)
   from 2(3) 2(2)[of "ffUnion ((\<lambda>\<alpha>. local.\<dd>\<^sub>P \<alpha> a) |`| Q)"] show ?case
-    by (auto intro!: ffUnion_mono in_cfls.intros)
+    by (auto intro!: ffunion_mono in_cfls.intros)
 qed (auto intro!: in_cfls.intros)
 
 end

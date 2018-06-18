@@ -9,18 +9,11 @@ In this theory, we prove that if we have a graph that proves a given abstract ta
 represented as the context @{term Tasked_Proof_Graph}), then we can prove @{term solved}.
 \<close>
 
-lemma ffUnion_fempty[simp]: "ffUnion fempty = fempty"
-  by (auto simp add: fmember.rep_eq ffUnion.rep_eq)
-
-lemma ffUnion_finsert[simp]: "ffUnion (finsert x S) = x |\<union>| ffUnion S"
-  by (auto simp add: fmember.rep_eq ffUnion.rep_eq)
-
-
 context Tasked_Proof_Graph
 begin
 
 definition adjacentTo :: "'vertex \<Rightarrow> ('form, 'var) in_port \<Rightarrow> ('vertex \<times> ('form, 'var) out_port)" where
- "adjacentTo v p = (SOME ps. (ps, (v,p)) \<in> edges)" 
+ "adjacentTo v p = (SOME ps. (ps, (v,p)) \<in> edges)"
 
 fun isReg where
   "isReg v p = (case p of Hyp h c \<Rightarrow> False | Reg  c \<Rightarrow>
@@ -70,13 +63,13 @@ fun hyps_along :: "('vertex, 'form, 'var) edge' list \<Rightarrow> 'form fset" w
 lemma hyps_alongE[consumes 1, case_names Hyp Assumption]:
   assumes "f |\<in>| hyps_along pth"
   obtains v p h where "(v,p) \<in> snd ` set pth" and "f = labelAtOut v h " and "h |\<in>| hyps_for (nodeOf v) p"
-  | v pf  where "v |\<in>| vertices" and "nodeOf v = Assumption pf" "f = labelAtOut v (Reg pf)" 
+  | v pf  where "v |\<in>| vertices" and "nodeOf v = Assumption pf" "f = labelAtOut v (Reg pf)"
   using assms
   apply (auto simp add: fmember.rep_eq ffUnion.rep_eq  global_assms_simps[unfolded fmember.rep_eq])
   apply (metis image_iff snd_conv)
   done
 
-text \<open>Here we build the natural deduction tree, by walking the graph.\<close>    
+text \<open>Here we build the natural deduction tree, by walking the graph.\<close>
 
 primcorec tree :: "'vertex \<Rightarrow> ('form, 'var) in_port \<Rightarrow> ('vertex, 'form, 'var) edge' list \<Rightarrow>  (('form entailment), ('rule \<times> 'form) NatRule) dtree" where
  "root (tree v p pth) =
@@ -126,7 +119,7 @@ case (wf v p pth)
   let ?pth' = "?e#pth"
   let ?\<Gamma> = "hyps_along ?pth'"
   let ?l = "labelAtIn v p"
-  
+
   from e valid_edges have "v' |\<in>| vertices" and "p' |\<in>| outPorts (nodeOf v')" by auto
   hence "nodeOf v' \<in> sset nodes" using valid_nodes by (meson image_eqI notin_fset set_mp)
 
@@ -156,15 +149,15 @@ case (wf v p pth)
     qed
     moreover
 
-    
+
     from `hyps (nodeOf v') (Hyp h c) = Some c`
     have "Hyp h c |\<in>| hyps_for (nodeOf v') c" by simp
     hence "labelAtOut v' (Hyp h c) |\<in>| extra_assms (v',c)" by auto
     ultimately
 
-    have "labelAtOut v' (Hyp h c) |\<in>| ?\<Gamma>" 
+    have "labelAtOut v' (Hyp h c) |\<in>| ?\<Gamma>"
       by (fastforce simp add: fmember.rep_eq ffUnion.rep_eq)
-      
+
     hence "labelAtIn v p |\<in>| ?\<Gamma>" by (simp add: s[symmetric] Hyp fmember.rep_eq)
     thus ?thesis
       using Hyp
@@ -202,10 +195,10 @@ case (wf v p pth)
     {
     from `f |\<in>| f_consequent r`
     have "f \<in> set (consequent r)" by (simp add: f_consequent_def)
-    hence "natEff_Inst (r, f) f (f_antecedent r)" 
+    hence "natEff_Inst (r, f) f (f_antecedent r)"
       by (rule natEff_Inst.intros)
     hence "eff (NatRule (r, f)) (?\<Gamma> \<turnstile> subst (inst v') (freshen (vidx v') f))
-           ((\<lambda>ant. ((\<lambda>p. subst (inst v') (freshen (vidx v') p)) |`| a_hyps ant |\<union>| ?\<Gamma> \<turnstile> subst (inst v') (freshen (vidx v') (a_conc ant)))) |`| f_antecedent r)" 
+           ((\<lambda>ant. ((\<lambda>p. subst (inst v') (freshen (vidx v') p)) |`| a_hyps ant |\<union>| ?\<Gamma> \<turnstile> subst (inst v') (freshen (vidx v') (a_conc ant)))) |`| f_antecedent r)"
            (is "eff _ _ ?ants")
     proof (rule eff.intros)
       fix ant f
@@ -214,7 +207,7 @@ case (wf v p pth)
       have "valid_in_port (v',ant)" by (simp add: Rule)
 
       assume "f |\<in>| ?\<Gamma>"
-      thus "freshenLC (vidx v') ` a_fresh ant \<inter> lconsts f = {}" 
+      thus "freshenLC (vidx v') ` a_fresh ant \<inter> lconsts f = {}"
       proof(induct rule: hyps_alongE)
         case (Hyp v'' p'' h'')
 
@@ -235,7 +228,7 @@ case (wf v p pth)
         have "lconsts f \<subseteq> lconsts (freshen (vidx v'') (labelsOut (nodeOf v'') h'')) \<union> subst_lconsts (inst v'') " using `f = _`
           by (simp add: labelAtOut_def fv_subst)
         ultimately
-        show ?thesis 
+        show ?thesis
           by (fastforce simp add:  lconsts_freshen)
       next
         case (Assumption v pf)
@@ -247,7 +240,7 @@ case (wf v p pth)
         ultimately
         have "lconsts f = {}" by (simp add: closed_no_lconsts lconsts_freshen subst_closed freshen_closed)
         thus ?thesis by simp
-      qed      
+      qed
     next
       fix ant
       assume "ant |\<in>| f_antecedent r"
@@ -311,7 +304,7 @@ case (wf v p pth)
     moreover
     { fix x
       assume "x |\<in>| cont ?t"
-      
+
       hence "x = tree v' (plain_ant anyP) ?pth'"
         by (auto simp add: Helper)
       note this(1)
@@ -394,11 +387,11 @@ proof(coinduction arbitrary: v p es)
 
   from forbidden_path(2)
   obtain t' where "root (edge_tree v p) = shd es" and "t' |\<in>| cont (edge_tree v p)" and "ipath t' ?es'"
-    by rule blast 
+    by rule blast
 
   from `root (edge_tree v p) = shd es`
   have [simp]: "shd es = (adjacentTo v p, (v,p))" by simp
-    
+
   from saturated[OF `valid_in_port (v,p)`]
   obtain v' p'
   where e:"((v',p'),(v,p)) \<in> edges" and [simp]: "adjacentTo v p = (v',p')"
@@ -408,12 +401,12 @@ proof(coinduction arbitrary: v p es)
   from e have "p' |\<in>| outPorts (nodeOf v')" using valid_edges by auto
   thus ?case
   proof(cases rule: out_port_cases)
-    case Hyp 
+    case Hyp
     with  `t' |\<in>| cont (edge_tree v p)`
     have False by auto
     thus ?thesis..
   next
-    case Assumption 
+    case Assumption
     with  `t' |\<in>| cont (edge_tree v p)`
     have False by auto
     thus ?thesis..
@@ -424,22 +417,22 @@ proof(coinduction arbitrary: v p es)
 
     have "es = ?e ## ?es'" by (cases es rule: stream.exhaust_sel) simp
     moreover
-  
+
     have "?e \<in> edges" using e by simp
     moreover
-  
+
     from `p' = Reg f` `nodeOf v' = Rule r`
     have "hyps (nodeOf v') p' = None" by simp
     moreover
-   
+
     from e valid_edges have "v' |\<in>| vertices"  by auto
     with `nodeOf v' = Rule r` `a |\<in>| f_antecedent r`
     have "valid_in_port (v', a)" by simp
     moreover
-  
+
     have "ipath (edge_tree v' a) ?es'" using `ipath t' _` by simp
     ultimately
-  
+
     show ?thesis by metis
   next
     case Helper
@@ -448,22 +441,22 @@ proof(coinduction arbitrary: v p es)
 
     have "es = ?e ## ?es'" by (cases es rule: stream.exhaust_sel) simp
     moreover
-  
+
     have "?e \<in> edges" using e by simp
     moreover
-  
+
     from `p' = Reg anyP` `nodeOf v' = Helper`
     have "hyps (nodeOf v') p' = None" by simp
     moreover
-   
+
     from e valid_edges have "v' |\<in>| vertices"  by auto
     with `nodeOf v' = Helper`
     have "valid_in_port (v', plain_ant anyP)" by simp
     moreover
-  
+
     have "ipath (edge_tree v' (plain_ant anyP)) ?es'" using `ipath t' _` by simp
     ultimately
-  
+
     show ?thesis by metis
   qed
 qed
@@ -552,7 +545,7 @@ proof(intro ballI allI conjI impI)
   from `valid_in_port (v, plain_ant c)` `terminal_vertex v`
   have "tfinite ?t" by (rule finite_tree)
   ultimately
-  
+
   show "\<exists>\<Gamma> t. fst (root t) = (\<Gamma> \<turnstile> c) \<and> \<Gamma> |\<subseteq>| ass_forms \<and> wf t \<and> tfinite t" by blast
 qed
 
