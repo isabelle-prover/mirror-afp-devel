@@ -232,45 +232,16 @@ proof -
   qed
 qed
 
-lemma sorted_wrt_nth_mono:
-  assumes "transp P" and "sorted_wrt P xs" and "i < j" and "j < length xs"
-  shows "P (xs ! i) (xs ! j)"
-  using assms(2) assms(3) assms(4)
-proof (induct xs arbitrary: i j)
-  case Nil
-  from Nil(3) show ?case by simp
-next
-  case (Cons x xs)
-  from assms(1) Cons(2) have "(\<forall>y\<in>set xs. P x y) \<and> sorted_wrt P xs" by (simp)
-  hence *: "\<And>y. y \<in> set xs \<Longrightarrow> P x y" and "sorted_wrt P xs" by auto
-  from \<open>i < j\<close> have "0 < j" by simp
-  then obtain j' where "j = Suc j'" using gr0_conv_Suc by blast
-  hence j: "(x # xs) ! j = xs ! j'" by simp
-  from Cons(4) have "j' < length xs" by (simp add: \<open>j = Suc j'\<close>)
-  show ?case unfolding j
-  proof (cases i)
-    case 0
-    hence i: "(x # xs) ! i = x" by simp
-    show "P ((x # xs) ! i) (xs ! j')" unfolding i by (rule *, rule nth_mem, fact)
-  next
-    case (Suc i')
-    hence i: "(x # xs) ! i = xs ! i'" by simp
-    from Cons(3) have "i' < j'" by (simp add: \<open>j = Suc j'\<close> \<open>i = Suc i'\<close>)
-    from \<open>sorted_wrt P xs\<close> this \<open>j' < length xs\<close> show "P ((x # xs) ! i) (xs ! j')"
-      unfolding i by (rule Cons(1))
-  qed
-qed
-
 lemma sorted_wrt_refl_nth_mono:
-  assumes "transp P" and "reflp P" and "sorted_wrt P xs" and "i \<le> j" and "j < length xs"
+  assumes "reflp P" and "sorted_wrt P xs" and "i \<le> j" and "j < length xs"
   shows "P (xs ! i) (xs ! j)"
 proof (cases "i < j")
   case True
-  from assms(1) assms(3) this assms(5) show ?thesis by (rule sorted_wrt_nth_mono)
+  from assms(2) this assms(4) show ?thesis by (rule sorted_wrt_nth_less)
 next
   case False
-  with assms(4) have "i = j" by simp
-  from assms(2) show ?thesis unfolding \<open>i = j\<close> by (rule reflpD)
+  with assms(3) have "i = j" by simp
+  from assms(1) show ?thesis unfolding \<open>i = j\<close> by (rule reflpD)
 qed
 
 fun merge_wrt :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" where

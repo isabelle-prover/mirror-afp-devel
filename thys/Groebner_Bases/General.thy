@@ -148,4 +148,23 @@ next
   show ?case unfolding eq by (simp add: Cons del: upt_Suc)
 qed
 
+lemma map_idx_eq_map: "map_idx f xs n = map (\<lambda>i. f (xs ! i) (i + n)) [0..<length xs]"
+proof (induct xs arbitrary: n)
+  case Nil
+  show ?case by simp
+next
+  case (Cons x xs)
+  have eq: "[0..<length (x # xs)] = 0 # [Suc 0..<Suc (length xs)]"
+    by (metis length_Cons upt_conv_Cons zero_less_Suc)
+  have "map (\<lambda>i. f ((x # xs) ! i) (i + n)) [Suc 0..<Suc (length xs)] =
+        map ((\<lambda>i. f ((x # xs) ! i) (i + n)) \<circ> Suc) [0..<length xs]"
+    by (metis map_Suc_upt map_map)
+  also have "... = map (\<lambda>i. f (xs ! i) (Suc (i + n))) [0..<length xs]"
+    by (rule map_cong, fact refl, simp)
+  finally show ?case unfolding eq by (simp add: Cons del: upt_Suc)
+qed
+
+lemma set_map_idx: "set (map_idx f xs n) = (\<lambda>i. f (xs ! i) (i + n)) ` {0..<length xs}"
+  by (simp add: map_idx_eq_map)
+
 end (* theory *)
