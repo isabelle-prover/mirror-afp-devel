@@ -36,9 +36,9 @@ abbreviation aodv_init :: "ip \<Rightarrow> state"
 where "aodv_init i \<equiv> \<lparr>
          ip = i,
          sn = 1,
-         rt = empty,
+         rt = Map.empty,
          rreqs = {},
-         store = empty,
+         store = Map.empty,
 
          msg    = (SOME x. True),
          data   = (SOME x. True),
