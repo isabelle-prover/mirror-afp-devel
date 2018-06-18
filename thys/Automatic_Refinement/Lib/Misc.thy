@@ -61,9 +61,6 @@ lemma pair_set_inverse[simp]: "{(a,b). P a b}\<inverse> = {(b,a). P a b}"
 
 lemma card_doubleton_eq_2_iff[simp]: "card {a,b} = 2 \<longleftrightarrow> a\<noteq>b" by auto
 
-subsubsection \<open>Option\<close>
-lemma the_Some_eq_id[simp]: "(the o Some) = id" by auto
-
     
 subsubsection \<open>List\<close>  
 (* TODO: Move, analogous to List.length_greater_0_conv *) 
