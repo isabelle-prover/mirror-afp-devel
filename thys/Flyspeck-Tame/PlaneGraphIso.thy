@@ -549,7 +549,7 @@ corollary pr_iso_test0_corr:
  "\<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F;
    distinct Fs\<^sub>1; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
    distinct Fs\<^sub>2; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
-       pr_iso_test0 empty Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
+       pr_iso_test0 Map.empty Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
 apply(subst pr_iso_test0_correct)
  apply assumption+
  apply simp
@@ -591,7 +591,7 @@ corollary pr_iso_test1_corr:
  "\<lbrakk> \<forall>F\<in>set Fs\<^sub>1. distinct F; \<forall>F\<in>set Fs\<^sub>2. distinct F; [] \<notin> set Fs\<^sub>2;
    distinct Fs\<^sub>1; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>1);
    distinct Fs\<^sub>2; inj_on (\<lambda>xs.{xs}//{\<cong>}) (set Fs\<^sub>2) \<rbrakk> \<Longrightarrow>
-       pr_iso_test1 empty Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
+       pr_iso_test1 Map.empty Fs\<^sub>1 Fs\<^sub>2 = (\<exists>\<phi>. is_pr_iso \<phi> Fs\<^sub>1 Fs\<^sub>2)"
 by(simp add: test0_conv_test1 pr_iso_test0_corr)
 
 subsubsection{* Implementing maps by lists *}
