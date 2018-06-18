@@ -2114,8 +2114,8 @@ lemma lookup_plus_fun: "lookup (s + t) = lookup s + lookup t"
 lemma lookup_uminus_fun: "lookup (- s) = - lookup s"
   by (fact uminus_poly_mapping.rep_eq)
 
-lemma lookup_minus_fun: "lookup (s - (t::'a \<Rightarrow>\<^sub>0 'b::ab_group_add)) = lookup s - lookup t"
-  by (simp only: diff_conv_add_uminus, simp only: lookup_plus_fun lookup_uminus_fun)
+lemma lookup_minus_fun: "lookup (s - t) = lookup s - lookup t"
+  by (simp only: minus_poly_mapping.rep_eq, rule, simp only: minus_apply)
 
 lemma poly_mapping_adds_iff: "s adds t \<longleftrightarrow> lookup s adds lookup t"
   unfolding adds_def
