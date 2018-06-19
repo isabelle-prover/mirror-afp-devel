@@ -537,7 +537,8 @@ text \<open>
 A useful consequence:
 \<close>
 
-lemma RP_model: "St \<leadsto> St' \<Longrightarrow> I \<Turnstile>s grounding_of_state St' \<longleftrightarrow> I \<Turnstile>s grounding_of_state St"
+theorem RP_model:
+  "St \<leadsto> St' \<Longrightarrow> I \<Turnstile>s grounding_of_state St' \<longleftrightarrow> I \<Turnstile>s grounding_of_state St"
 proof (drule RP_ground_derive, erule sr_ext.derive.cases, hypsubst)
   let
     ?gSt = "grounding_of_state St" and
