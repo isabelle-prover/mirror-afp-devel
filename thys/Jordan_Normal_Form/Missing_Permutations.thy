@@ -55,7 +55,7 @@ proof -
   show ?thesis unfolding o_def .
 qed
 
-lemma finprod_singleton[simp]: assumes "f a \<in> carrier G"
+lemma finprod_singleton_set[simp]: assumes "f a \<in> carrier G"
   shows "finprod G f {a} = f a"
 proof -
   have "finprod G f {a} = f a \<otimes> finprod G f {}"
@@ -66,7 +66,7 @@ qed
 end
 
 lemmas (in semiring) finsum_permute = add.finprod_permute
-lemmas (in semiring) finsum_singleton = add.finprod_singleton
+lemmas (in semiring) finsum_singleton_set = add.finprod_singleton_set
 
 lemma permutes_less[simp]: assumes p: "p permutes {0..<(n :: nat)}"
   shows "i < n \<Longrightarrow> p i < n" "i < n \<Longrightarrow> Hilbert_Choice.inv p i < n" 
