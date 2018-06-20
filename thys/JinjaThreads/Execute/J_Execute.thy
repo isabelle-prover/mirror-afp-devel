@@ -10,7 +10,7 @@ imports
   "../J/Threaded"
 begin
 
-interpretation sc: 
+interpretation sc:
   J_heap_base
     "addr2thread_id"
     "thread_id2addr"
@@ -22,7 +22,7 @@ interpretation sc:
     "sc_heap_write"
   for P .
 
-abbreviation sc_red :: 
+abbreviation sc_red ::
   "((addr, thread_id, heap) external_thread_action \<Rightarrow> (addr, thread_id, 'o, heap) Jinja_thread_action)
   \<Rightarrow> addr J_prog \<Rightarrow> thread_id \<Rightarrow> addr expr \<Rightarrow> heap \<times> addr locals
   \<Rightarrow> (addr, thread_id, 'o, heap) Jinja_thread_action \<Rightarrow> addr expr \<Rightarrow> heap \<times> addr locals \<Rightarrow> bool"
@@ -33,23 +33,23 @@ where
 fun sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o
 where
   "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P t ((e, xs), h) =
-  red_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o 
+  red_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o
     addr2thread_id thread_id2addr sc_spurious_wakeups
     sc_empty (sc_allocate P) sc_typeof_addr sc_heap_read_i_i_i_o sc_heap_write_i_i_i_i_o
     (extTA2J P) P t e (h, xs)
   \<bind> (\<lambda>(ta, e, h, xs). Predicate.single (ta, (e, xs), h))"
 
-abbreviation sc_J_start_state_refine :: 
-  "addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> 
+abbreviation sc_J_start_state_refine ::
+  "addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow>
   (addr, thread_id, heap, (thread_id, (addr expr \<times> addr locals) \<times> addr released_locks) rm, (thread_id, addr wait_set_status) rm, thread_id rs) state_refine"
 where
-  "sc_J_start_state_refine \<equiv> 
+  "sc_J_start_state_refine \<equiv>
    sc_start_state_refine
      (rm_empty ()) rm_update (rm_empty ()) (rs_empty ())
-     (\<lambda>C M Ts T (pns, body) vs. (blocks (this # pns) (Class C # Ts) (Null # vs) body, empty))"
+     (\<lambda>C M Ts T (pns, body) vs. (blocks (this # pns) (Class C # Ts) (Null # vs) body, Map.empty))"
 
 lemma eval_sc_red_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o:
-  "(\<lambda>t xm ta x'm'. Predicate.eval (sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P t xm) (ta, x'm')) = 
+  "(\<lambda>t xm ta x'm'. Predicate.eval (sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P t xm) (ta, x'm')) =
   (\<lambda>t ((e, xs), h) ta ((e', xs'), h'). extTA2J P,P,t \<turnstile>sc \<langle>e, (h, xs)\<rangle> -ta\<rightarrow> \<langle>e', (h', xs')\<rangle>)"
 by(auto elim!: red_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oE intro!: red_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_oI ext SUP1_I simp add: eval_sc_heap_write_i_i_i_i_o eval_sc_heap_read_i_i_i_o)
 
@@ -58,7 +58,7 @@ by simp
 
 subsection {* Round-robin scheduler *}
 
-interpretation J_rr: 
+interpretation J_rr:
   sc_round_robin_base
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA Jinja_output
   for P
@@ -68,20 +68,20 @@ definition sc_rr_J_start_state :: "nat \<Rightarrow> 'm prog \<Rightarrow> threa
 where "sc_rr_J_start_state n0 P = J_rr.round_robin_start n0 (sc_start_tid P)"
 
 definition exec_J_rr ::
-  "nat \<Rightarrow> addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> 
-  (thread_id \<times> (addr, thread_id) obs_event list, 
+  "nat \<Rightarrow> addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow>
+  (thread_id \<times> (addr, thread_id) obs_event list,
    (addr, thread_id) locks \<times> ((thread_id, (addr expr \<times> addr locals) \<times> addr released_locks) rm \<times> heap) \<times>
    (thread_id, addr wait_set_status) rm \<times> thread_id rs) tllist"
 where
   "exec_J_rr n0 P C M vs = J_rr.exec P n0 (sc_rr_J_start_state n0 P) (sc_J_start_state_refine P C M vs)"
 
 interpretation J_rr:
-  sc_round_robin 
+  sc_round_robin
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA Jinja_output
   for P
 by(unfold_locales)
 
-interpretation J_rr: 
+interpretation J_rr:
   sc_scheduler
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA
     "J_rr.round_robin P n0" Jinja_output "pick_wakeup_via_sel (\<lambda>s P. rm_sel s (\<lambda>(k,v). P k v))" J_rr.round_robin_invar
@@ -96,7 +96,7 @@ done
 
 subsection {* Random scheduler *}
 
-interpretation J_rnd: 
+interpretation J_rnd:
   sc_random_scheduler_base
     final_expr "sc_red_i_i_i_i_i_i_i_i_Fii_i_oB_Fii_i_i_oB_i_i_i_i_i_o_o_o P" convert_RA Jinja_output
   for P
@@ -106,7 +106,7 @@ definition sc_rnd_J_start_state :: "Random.seed \<Rightarrow> random_scheduler"
 where "sc_rnd_J_start_state seed = seed"
 
 definition exec_J_rnd ::
-  "Random.seed \<Rightarrow> addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow> 
+  "Random.seed \<Rightarrow> addr J_prog \<Rightarrow> cname \<Rightarrow> mname \<Rightarrow> addr val list \<Rightarrow>
   (thread_id \<times> (addr, thread_id) obs_event list,
    (addr, thread_id) locks \<times> ((thread_id, (addr expr \<times> addr locals) \<times> addr released_locks) rm \<times> heap) \<times>
    (thread_id, addr wait_set_status) rm \<times> thread_id rs) tllist"
