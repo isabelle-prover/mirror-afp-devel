@@ -109,7 +109,6 @@ proof -
   define fi where "fi = fs ! i"
   have list_id: "[0..<i] = [0..<j] @ [j..<i]" 
     using assms by (metis append.simps(1) neq0_conv upt.simps(1) upt_append)
-
   have "\<mu> i j = (fs ! i) \<bullet> (gso j) / sq_norm (gso j) "
     unfolding \<mu>.simps using assms by auto
   also have " ... = fs ! i \<bullet> (fs ! j + ?neg_sum) / sq_norm (gso j)" 
@@ -177,7 +176,7 @@ qed
 context gram_schmidt_fs_lin_indpt
 begin
 
-abbreviation d where "d \<equiv> Gramian_determinant fs" 
+
 definition \<mu>' where "\<mu>' i j \<equiv> d (Suc j) * \<mu> i j" 
 
 
@@ -289,93 +288,13 @@ proof -
   ultimately show ?thesis using assms by auto
 qed
 
-lemma fs_i_fs_j_sum_\<kappa>:
-  assumes "i < m" "l \<le> i" "j < l"
-  shows "- (fs ! i \<bullet> fs ! j) = (\<Sum>t = 0..<l. fs ! t \<bullet> fs ! j * \<kappa> i l t)"
-proof -
-  have [simp]: "M.sumlist (map (\<lambda>j. \<kappa> i l j \<cdot>\<^sub>v fs ! j) [0..<l]) \<in> carrier_vec n"
-    using assms by (auto intro!: sumlist_carrier simp add: dim_sumlist)
-  have "0  = (fs ! i + M.sumlist (map (\<lambda>j. \<kappa> i l j \<cdot>\<^sub>v fs ! j) [0..<l])) \<bullet> fs ! j"
-    using fs_i_sumlist_\<kappa> assms by simp
-  also have "\<dots> = fs ! i \<bullet> fs ! j + M.sumlist (map (\<lambda>j. \<kappa> i l j \<cdot>\<^sub>v fs ! j) [0..<l]) \<bullet> fs ! j"
-    using assms by (subst add_scalar_prod_distrib[of _ n]) (auto)
-  also have "M.sumlist (map (\<lambda>j. \<kappa> i l j \<cdot>\<^sub>v fs ! j) [0..<l]) \<bullet> fs ! j =
-             (\<Sum>v\<leftarrow>map (\<lambda>j. \<kappa> i l j \<cdot>\<^sub>v fs ! j) [0..<l]. v \<bullet> fs ! j)"
-    using assms by (intro scalar_prod_left_sum_distrib) (auto)
-  also have "\<dots> = (\<Sum>t\<leftarrow>[0..<l]. (\<kappa> i l t \<cdot>\<^sub>v fs ! t) \<bullet> fs ! j)"
-    by (rule arg_cong[where f=sum_list]) (auto)
-  also have "\<dots> =  (\<Sum>t = 0..<l. (\<kappa> i l t \<cdot>\<^sub>v fs ! t) \<bullet> fs ! j) "
-    by (subst interv_sum_list_conv_sum_set_nat) (auto)
-  also have "\<dots> = (\<Sum>t = 0..<l. fs ! t \<bullet> fs ! j * \<kappa> i l t)"
-    using assms by (intro sum.cong) auto
-  finally show ?thesis by (simp add: field_simps)
-qed
-
-
-lemma Gramian_matrix_times_\<kappa>:
-  assumes "i < m" "l \<le> i"
-  shows "Gramian_matrix fs l *\<^sub>v (vec l (\<lambda>t. \<kappa> i l t)) = (vec l (\<lambda>j. - (fs ! i \<bullet> fs ! j)))"
-proof -
-  have "- (fs ! i \<bullet> fs ! j) = (\<Sum>t = 0..<l. fs ! t \<bullet> fs ! j * \<kappa> i l t)" if "j < l" for j
-    using fs_i_fs_j_sum_\<kappa> assms that by simp
-  then show ?thesis using assms
-    by (subst Gramian_matrix_alt_alt_def) (auto simp add: scalar_prod_def algebra_simps)
-qed
 
 end (* gram_schmidt_fs_lin_indpt *)
 
 context gram_schmidt_fs_int
 begin
 
-lemma d_\<kappa>_int :
-  assumes "i < m" "l \<le> i" "t < l"
-  shows "d l * \<kappa> i l t \<in> \<int>"
-proof -
-  let ?A = "Gramian_matrix fs l"
-  let ?B = "replace_col ?A (Gramian_matrix fs l *\<^sub>v vec l (\<kappa> i l)) t" 
-  have deteq: "d l = det ?A"
-    unfolding Gramian_determinant_def
-    using Gramian_determinant_Ints
-    by auto
 
-  have **: "Gramian_matrix fs l \<in> carrier_mat l l" unfolding Gramian_matrix_def Let_def  using fs_carrier by auto
-      
-  then have " \<kappa> i l t * det ?A = det ?B"
-    using assms fs_carrier cramer_lemma_mat[of ?A l " (vec l (\<lambda>t. \<kappa> i l t))" t]
-    by auto
-
-  also have " ... \<in> \<int> "
-  proof -
-    have *: "t<l \<Longrightarrow> (?A *\<^sub>v vec l (\<kappa> i l)) $ t \<in> \<int>" for t
-      using assms
-      apply(subst Gramian_matrix_times_\<kappa>, force, force)
-      using fs_int fs_carrier
-      by (auto intro!: fs_scalar_Ints Ints_minus)
-
-    define B where "B = ?B"
-
-    have Bint: "t1<l \<longrightarrow> s1 < l \<longrightarrow> B $$ (t1,s1) \<in> \<int>" for t1 s1
-    proof (cases "s1 = t")
-      case True
-      from * ** this show ?thesis 
-        unfolding replace_col_def B_def
-        by auto
-    next
-      case False
-      from * ** Gramian_matrix_def this fs_carrier assms show ?thesis
-        unfolding replace_col_def B_def
-        by (auto simp: Gramian_matrix_def Let_def scalar_prod_def intro!: Ints_sum Ints_mult fs_int)
-    qed
-    have B: "B \<in> carrier_mat l l"
-      using ** replace_col_def unfolding B_def
-      by (auto simp: replace_col_def)
-    have "det B \<in> \<int>"
-      using B Bint assms  det_col[of B l]
-      by (auto intro!: Ints_sum Ints_mult Ints_prod simp: signof_def)
-    thus ?thesis unfolding B_def.
-  qed
-  finally show ?thesis using deteq by (auto simp add: algebra_simps)
-qed
 
 lemma \<beta>_pos : "i < m \<Longrightarrow> \<beta> fs i > 0" 
   using Gramian_determinant(2) unfolding lin_indpt_list_def \<beta>_def by auto
@@ -440,18 +359,13 @@ proof -
 	  finally have id: " \<sigma> l i j = fs ! j \<bullet> - M.sumlist (map (\<lambda>k. d l * \<kappa> i l k \<cdot>\<^sub>v fs ! k) [0..<l]) " .
 	  (* now we are able to apply d_\<kappa>_int *)
 	  show "\<sigma> l i j \<in> \<int>" unfolding id
-	    using i_l_m fs_carr assms fs_int d_\<kappa>_int
+	    using i_l_m fs_carr assms fs_int d_\<kappa>_Ints
 	    by (auto simp: dim_sumlist sumlist_nth smult 
 	        intro!: sumlist_carrier Ints_minus Ints_sum Ints_mult[of _ "fs ! _ $ _"]  Ints_scalar_prod[OF fs_carr])
 	qed
 
 end (* gram_schmidt_fs_int *)
 
-context cof_vec_space
-begin
-
-
-end
 
 
 context fs_int_indpt
@@ -669,7 +583,6 @@ proof -
   finally show ?thesis
     by simp
 qed
-
 
 end
 
