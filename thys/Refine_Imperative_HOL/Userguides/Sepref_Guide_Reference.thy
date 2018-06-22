@@ -811,7 +811,7 @@ text \<open>For re-using Lifting/Transfer style theorems, the constants
   @{const p2rel} and @{const rel2p} may be helpful, however, there is no
   automation available yet.
 
-  Usage examples can be found in, e.g., @{theory "IICF_Multiset"}, where we 
+  Usage examples can be found in, e.g., @{theory Refine_Imperative_HOL.IICF_Multiset}, where we 
   import parametricity lemmas for multisets from the Lifting/Transfer package.
 \<close>
 

@@ -15,7 +15,7 @@ text {* We prove that the proof rules for graphical ribbon proofs are sound
 
   We first describe how to extract proofchains from a diagram. This process is
   similar to the process of extracting commands from a diagram, which was
-  described in @{theory Ribbons_Graphical}. When we extract a proofchain, we
+  described in @{theory Ribbon_Proofs.Ribbons_Graphical}. When we extract a proofchain, we
   don't just include the commands, but the assertions in between them. Our
   main lemma for proving soundness says that each of these proofchains
   corresponds to a valid separation logic proof.
@@ -131,7 +131,7 @@ text {* In order to perform induction over our diagrams, we shall wish
   and can be thought of as having been removed from @{term G}.
 
   We now give an updated version of the @{term "lins G"} function. This was
-  originally defined in @{theory Ribbons_Graphical}. We provide an extra
+  originally defined in @{theory Ribbon_Proofs.Ribbons_Graphical}. We provide an extra
   parameter, @{term S}, which denotes the subset of @{term G}'s initial nodes
   that shouldn't be included in the linear extensions. *}
 

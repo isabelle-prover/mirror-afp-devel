@@ -21,7 +21,7 @@ text \<open>
 
 text \<open>
   We need to hide some constants again since we imported something from HOL
-  not via @{theory HOLCF_Main}.
+  not via @{theory "HOLCF-Prelude.HOLCF_Main"}.
 \<close>
 
 no_notation

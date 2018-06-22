@@ -8,7 +8,7 @@ imports
 begin
 
 text {*
-Based on the work in @{theory Cancelation}, the free group is now easily defined
+Based on the work in @{theory "Free-Groups.Cancelation"}, the free group is now easily defined
 over the set of fully canceled words with the corresponding operations.
 *}
 

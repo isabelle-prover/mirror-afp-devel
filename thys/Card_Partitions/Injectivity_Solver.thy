@@ -70,7 +70,7 @@ clones should only remain in the stable branches of the AFP from Isabelle2016 to
 to work with their corresponding release versions.
 In the development version, I have now consolidated the three versions here.
 In the next step, I will move this version of the injectivity solver in
-the @{theory Disjoint_Sets} and it will hopefully only evolve further there.
+the @{theory "HOL-Library.Disjoint_Sets"} and it will hopefully only evolve further there.
 \<close>
 
 lemma disjoint_family_onI:

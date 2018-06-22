@@ -1235,7 +1235,7 @@ text {*
   exploration problem. 
 
   In this section, the DFS-algorithm for state-space exploration 
-  (cf. Theory~@{theory "Exploration"} in the Isabelle Collections Framework) is refined to compute the product automaton.
+  (cf. Theory~@{theory Collections_Examples.Exploration} in the Isabelle Collections Framework) is refined to compute the product automaton.
 *}
 
 type_synonym ('Q1,'Q2,'L) frp_state = 

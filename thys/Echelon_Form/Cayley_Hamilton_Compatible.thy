@@ -6,7 +6,7 @@ theory Cayley_Hamilton_Compatible
 begin
 
 
-subsection \<open>Compatibility layer btw @{theory Square_Matrix} and @{theory Determinants2} \<close>
+subsection \<open>Compatibility layer btw @{theory Cayley_Hamilton.Square_Matrix} and @{theory Gauss_Jordan.Determinants2} \<close>
 
 hide_const (open) Square_Matrix.det
 hide_const (open) Square_Matrix.row

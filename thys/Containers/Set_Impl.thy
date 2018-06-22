@@ -1243,7 +1243,7 @@ lemmas [code] = ord.sorted_list_subset_fusion_code
 
 text {* 
   Define a new constant for the subset operation
-  because @{theory Cardinality} introduces @{const "Cardinality.subset'"}
+  because @{theory "HOL-Library.Cardinality"} introduces @{const "Cardinality.subset'"}
   and rewrites @{const "subset"} to @{const "Cardinality.subset'"} 
   based on the sort of the element type.
 *}

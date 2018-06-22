@@ -22,7 +22,7 @@ by rule auto
 
 subsection \<open>Introduction and Elimination Rules\<close>
 
-text \<open>The definition of @{const partition_on} is in @{theory Disjoint_Sets}.\<close>
+text \<open>The definition of @{const partition_on} is in @{theory "HOL-Library.Disjoint_Sets"}.\<close>
 
 (* TODO: move the following theorems to Disjoint Sets *)
 

@@ -24,8 +24,8 @@ begin
     quickstart guide assumes some familiarity with Isabelel/HOL, and will not 
     explain standard Isabelle/HOL techniques.
 
-    Sepref is based on Imperative/HOL (@{theory Imperative_HOL}) and the Isabelle Refinement Framework (@{theory Refine_Monadic}).
-    It makes extensive use of the Separation logic formalization for Imperative/HOL (@{theory Sep_Main}).
+    Sepref is based on Imperative/HOL (@{theory "HOL-Imperative_HOL.Imperative_HOL"}) and the Isabelle Refinement Framework (@{theory Refine_Monadic.Refine_Monadic}).
+    It makes extensive use of the Separation logic formalization for Imperative/HOL (@{theory Separation_Logic_Imperative_HOL.Sep_Main}).
     
     For a thorough introduction to these tools, we refer to their documentation.
     However, we try to explain their most basic features when we use them.

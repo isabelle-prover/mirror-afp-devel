@@ -59,9 +59,9 @@ section {* Getting started *}
 text_raw {* \label{section:getting:started} *}
 
 text {*
-  Add the entry theory @{theory Containers} for LC to the end of your imports.
+  Add the entry theory @{theory Containers.Containers} for LC to the end of your imports.
   This will reconfigure the code generator such that it implements the types @{typ "'a set"} for sets and @{typ "('a, 'b) mapping"} for maps with one of the data structures supported.
-  As with all the theories that adapt the code generator setup, it is important that @{theory Containers} comes at the end of the imports.
+  As with all the theories that adapt the code generator setup, it is important that @{theory Containers.Containers} comes at the end of the imports.
 
   Run the following command, e.g., to check that LC works correctly and implements sets of @{typ int}s as red-black trees (RBT):
 *}
@@ -270,7 +270,7 @@ text {*
   The type classes @{class set_impl} and @{class mapping_impl} are used for this.
 
   They define the overloaded operations @{term [source] "SET_IMPL('a) :: ('a, set_impl) phantom" } and @{term [source] "MAPPING_IMPL('a) :: ('a, mapping_impl) phantom"}, respectively.
-  The phantom type @{typ "('a, 'b) phantom"} from theory @{theory "Phantom_Type"} is isomorphic to @{typ "'b"}, but formally depends on @{typ "'a"}.
+  The phantom type @{typ "('a, 'b) phantom"} from theory @{theory "HOL-Library.Phantom_Type"} is isomorphic to @{typ "'b"}, but formally depends on @{typ "'a"}.
   This way, the type class operations meet the requirement that their type contains exactly one type variable.
   The Haskell and ML compiler will get rid of the extra type constructor again.
 
@@ -393,7 +393,7 @@ text {*
   For types that define @{term "CENUM('a)"}, set comprehensions evaluate to a list of their elements.
   Otherwise, set comprehensions are represented as a closure.
   This means that if the generated code contains at least one set comprehension, all element types of a set must instantiate @{class cenum}.
-  Infinite types default to @{term None}, and enumerations for finite types are canoncial, see @{theory Collection_Enum} for examples.
+  Infinite types default to @{term None}, and enumerations for finite types are canoncial, see @{theory Containers.Collection_Enum} for examples.
 *}
 (*<*)end(*>*)
 
@@ -431,10 +431,10 @@ text_raw {* \label{subsection:finite_UNIV} \label{subsection:card_UNIV} \label{s
 text {*
   To deal with nested sets such as @{typ "expr set set"}, the element type must provide three operations from three type classes:
   \begin{itemize}
-  \item @{class finite_UNIV} from theory @{theory Cardinality} defines the constant @{term [source] "finite_UNIV :: ('a, bool) phantom"} which designates whether the type is finite.
-  \item @{class card_UNIV} from theory @{theory Cardinality} defines the constant @{term [source] "card_UNIV :: ('a, nat) phantom"} which returns @{term "CARD('a)"}, i.e., the number of values in @{typ 'a}.
+  \item @{class finite_UNIV} from theory @{theory "HOL-Library.Cardinality"} defines the constant @{term [source] "finite_UNIV :: ('a, bool) phantom"} which designates whether the type is finite.
+  \item @{class card_UNIV} from theory @{theory "HOL-Library.Cardinality"} defines the constant @{term [source] "card_UNIV :: ('a, nat) phantom"} which returns @{term "CARD('a)"}, i.e., the number of values in @{typ 'a}.
     If @{typ "'a"} is infinite, @{term "CARD('a) = 0"}.
-  \item @{class cproper_interval} from theory @{theory Collection_Order} defines the function @{term [source] "cproper_interval :: 'a option \<Rightarrow> 'a option \<Rightarrow> bool"}.
+  \item @{class cproper_interval} from theory @{theory Containers.Collection_Order} defines the function @{term [source] "cproper_interval :: 'a option \<Rightarrow> 'a option \<Rightarrow> bool"}.
     If the type @{typ "'a"} is finite and @{term "CCOMPARE('a)"} yields a linear order on @{typ "'a"}, then @{term "cproper_interval x y"} returns whether the open interval between @{term "x"} and @{term "y"} is non-empty.
     The bound @{term "None"} denotes unboundedness.
   \end{itemize}
@@ -445,7 +445,7 @@ text {*
 (*<*)end(*>*)
 
 text {* 
-  For datatypes, the theory @{theory Card_Datatype} defines some machinery to assist in proving that the type is (in)finite and has a given number of elements -- see @{file "Examples/Card_Datatype_Ex.thy"} for examples.
+  For datatypes, the theory @{theory Containers.Card_Datatype} defines some machinery to assist in proving that the type is (in)finite and has a given number of elements -- see @{file "Examples/Card_Datatype_Ex.thy"} for examples.
   With this, it is easy to instantiate @{class card_UNIV} for our running examples:
 *}
 
@@ -961,28 +961,28 @@ text {*
     \begin{tabular}{lll}
       \textbf{type class} & \textbf{user guide} & \textbf{theory}
       \\
-      @{class card_UNIV} & \S\ref{subsection:card_UNIV} & @{theory Cardinality} 
+      @{class card_UNIV} & \S\ref{subsection:card_UNIV} & @{theory "HOL-Library.Cardinality"} 
       %@{term "Cardinality.card_UNIV_class"}
       \\
-      @{class cenum} & \S\ref{subsection:cenum} & @{theory Collection_Enum}
+      @{class cenum} & \S\ref{subsection:cenum} & @{theory Containers.Collection_Enum}
       %@{term "Collection_Enum.cenum_class"}
       \\
-      @{class ceq} & \S\ref{subsection:ceq} & @{theory Collection_Eq}
+      @{class ceq} & \S\ref{subsection:ceq} & @{theory Containers.Collection_Eq}
       %@{term "Collection_Eq.ceq_class"}
       \\
-      @{class ccompare} & \S\ref{subsection:ccompare} & @{theory Collection_Order}
+      @{class ccompare} & \S\ref{subsection:ccompare} & @{theory Containers.Collection_Order}
       %@{term "Collection_Order.ccompare_class"}
       \\
-      @{class cproper_interval} & \S\ref{subsection:cproper_interval} & @{theory Collection_Order}
+      @{class cproper_interval} & \S\ref{subsection:cproper_interval} & @{theory Containers.Collection_Order}
       %@{term "Collection_Order.cproper_interval_class"}
       \\
-      @{class finite_UNIV} & \S\ref{subsection:finite_UNIV} & @{theory Cardinality}
+      @{class finite_UNIV} & \S\ref{subsection:finite_UNIV} & @{theory "HOL-Library.Cardinality"}
       %@{term "Cardinality.finite_UNIV_class"}
       \\
-      @{class mapping_impl} & \S\ref{subsection:mapping_impl} & @{theory Mapping_Impl}
+      @{class mapping_impl} & \S\ref{subsection:mapping_impl} & @{theory Containers.Mapping_Impl}
       %@{term "Mapping_Impl.mapping_impl_class"}
       \\
-      @{class set_impl} & \S\ref{subsection:set_impl} & @{theory Set_Impl}
+      @{class set_impl} & \S\ref{subsection:set_impl} & @{theory Containers.Set_Impl}
       %@{term "Set_Impl.set_impl_class"}
       \\
     \end{tabular}

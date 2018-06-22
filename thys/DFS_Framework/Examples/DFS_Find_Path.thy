@@ -11,7 +11,7 @@ text \<open>
   Finding any path, and finding path of at least length one, combined with
   searching the whole graph, and searching the graph restricted to a given set 
   of nodes. The restricted variants are efficiently implemented by 
-  pre-initializing the visited set (cf. @{theory Restr_Impl}).
+  pre-initializing the visited set (cf. @{theory DFS_Framework.Restr_Impl}).
 
   The restricted variants can be used for incremental search, ignoring already 
   searched nodes in further searches. This is required, e.g., for the inner 

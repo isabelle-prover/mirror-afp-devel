@@ -4,7 +4,7 @@ imports SetMap Utils
 begin
 
 text {*
-In the section about the finiteness of the argument space, we need the fact that the set of maps from a finite domain to a finite range is finite, and the same for the set-valued maps defined in @{theory SetMap}. Both these sets are defined (@{text maps_over}, @{text smaps_over}) and the finiteness is shown.
+In the section about the finiteness of the argument space, we need the fact that the set of maps from a finite domain to a finite range is finite, and the same for the set-valued maps defined in @{theory "Shivers-CFA.SetMap"}. Both these sets are defined (@{text maps_over}, @{text smaps_over}) and the finiteness is shown.
 *}
 
 definition maps_over :: "'a::type set \<Rightarrow> 'b::type set \<Rightarrow> ('a \<rightharpoonup> 'b) set"

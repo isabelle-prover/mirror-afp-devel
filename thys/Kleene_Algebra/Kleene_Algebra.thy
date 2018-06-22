@@ -12,7 +12,7 @@ begin
 
 subsection {* Left Near Kleene Algebras *}
 
-text {* Extending the hierarchy developed in @{theory Dioid} we now
+text {* Extending the hierarchy developed in @{theory Kleene_Algebra.Dioid} we now
 add an operation of Kleene star, finite iteration, or reflexive
 transitive closure to variants of Dioids. Since a multiplicative unit
 is needed for defining the star we only consider variants with~$1$;

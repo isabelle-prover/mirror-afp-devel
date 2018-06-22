@@ -19,7 +19,7 @@ codatatype ('a,'b,'c,'d) resumption =
 
 *}
 
-subsection {* Auxiliary definitions and lemmata similar to @{theory Old_Datatype} *}
+subsection {* Auxiliary definitions and lemmata similar to @{theory "HOL-Library.Old_Datatype"} *}
 
 lemma Lim_mono: "(\<And>d. rs d \<subseteq> rs' d) \<Longrightarrow> Old_Datatype.Lim rs \<subseteq> Old_Datatype.Lim rs'"
 by(simp add: Lim_def) blast

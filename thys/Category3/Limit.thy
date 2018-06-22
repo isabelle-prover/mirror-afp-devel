@@ -3972,8 +3972,8 @@ begin
       there is an injective map, from the space of extensional functions from
       @{term I} to @{term Univ}, to @{term Univ}.  However for a convenient
       statement and proof of the desired result, the definition of extensional
-      function from theory @{theory FuncSet} needs to be modified.
-      The theory @{theory FuncSet} uses the definite, but arbitrarily chosen value
+      function from theory @{theory "HOL-Library.FuncSet"} needs to be modified.
+      The theory @{theory "HOL-Library.FuncSet"} uses the definite, but arbitrarily chosen value
       @{term undefined} as the value to be assumed by an extensional function outside
       of its domain.  In the context of the @{text set_category}, though, it is
       more natural to use @{text S.unity}, which is guaranteed to be an element of the
@@ -3982,10 +3982,10 @@ begin
       @{term unity} and the set of extensional functions @{term d} that map
       each arrow @{term j} of @{term J} to an element @{term "d j"} of @{term "set (D j)"}.
       Possibly it makes sense to go back and make this change in @{text set_category},
-      but that would mean completely abandoning @{theory FuncSet} and essentially
+      but that would mean completely abandoning @{theory "HOL-Library.FuncSet"} and essentially
       introducing a duplicate version for use with @{text set_category}.
       As a compromise, what I have done here is to locally redefine the few notions from
-      @{theory FuncSet} that I need in order to prove the next set of results.
+      @{theory "HOL-Library.FuncSet"} that I need in order to prove the next set of results.
     *}
 
     definition extensional

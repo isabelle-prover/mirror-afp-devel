@@ -209,7 +209,7 @@ by (fact valid6)+
 end
 
 
-subsection \<open>Interaction with @{theory Lazy_Case}\<close>
+subsection \<open>Interaction with @{theory Lazy_Case.Lazy_Case}\<close>
 
 datatype 'a tree = Node | Fork 'a "'a tree list"
 

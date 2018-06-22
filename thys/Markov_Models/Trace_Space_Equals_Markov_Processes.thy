@@ -8,7 +8,7 @@ begin
 
 text {*
   We can construct for each time-homogeneous discrete-time Markov chain a corresponding
-  probability space using @{theory Discrete_Time_Markov_Chain}. The constructed probability space
+  probability space using @{theory Markov_Models.Discrete_Time_Markov_Chain}. The constructed probability space
   has the same probabilities.
 *}
 

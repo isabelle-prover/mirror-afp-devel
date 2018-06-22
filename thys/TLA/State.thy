@@ -161,7 +161,7 @@ subsection "Temporal Quantifiers"
 text{*
   In \cite{Lamport94}, Lamport gives a stuttering invariant definition
   of quantification over (flexible) variables. It relies on similarity
-  of two sequences (as supported in our @{theory Sequence} theory), and
+  of two sequences (as supported in our @{theory TLA.Sequence} theory), and
   equivalence of two sequences up to a variable (the bound variable).
   However, sequence equaivalence up to a variable, requires state
   equaivalence up to a variable. Our state representation above does not

@@ -10,14 +10,14 @@ begin
 
 subsection {* Preliminaries *}
 
-subsubsection {* Additions to @{theory Finite_Set} Theory *}
+subsubsection {* Additions to @{theory HOL.Finite_Set} Theory *}
 
 lemma card_product_dependent:
   assumes "finite S" "\<forall>x \<in> S. finite (T x)"
   shows "card {(x, y). x \<in> S \<and> y \<in> T x} = (\<Sum>x \<in> S. card (T x))"
 using card_SigmaI[OF assms, symmetric] by (auto intro!: arg_cong[where f=card] simp add: Sigma_def)
 
-subsubsection {* Additions to @{theory Permutations} Theory *}
+subsubsection {* Additions to @{theory "HOL-Library.Permutations"} Theory *}
 
 lemma permutes_imp_bij':
   assumes "p permutes S"

@@ -132,18 +132,18 @@ ML_val {* @{code big_test} (@{code int_of_integer} 9000) *}
 subsection "Theories"
 text {*
   To make available the whole collections framework to your formalization, 
-  import the theory @{theory Collections} which includes everything. Here is a
+  import the theory @{theory Collections.Collections} which includes everything. Here is a
   small selection:
   \begin{description}
-    \item[@{theory SetSpec}] Specification of sets and set functions
-    \item[@{theory SetGA}] Generic algorithms for sets
-    \item[@{theory SetStdImpl}] Standard set implementations (list, rb-tree, hashing, tries)
-    \item[@{theory MapSpec}] Specification of maps
-    \item[@{theory MapGA}] Generic algorithms for maps
-    \item[@{theory MapStdImpl}] Standard map implementations (list,rb-tree, hashing, tries)
-    \item[@{theory ListSpec}] Specification of lists
-    \item[@{theory Fifo}] Amortized fifo queue
-    \item[@{theory DatRef}] Data refinement for the while combinator
+    \item[@{theory Collections.SetSpec}] Specification of sets and set functions
+    \item[@{theory Collections.SetGA}] Generic algorithms for sets
+    \item[@{theory Collections.SetStdImpl}] Standard set implementations (list, rb-tree, hashing, tries)
+    \item[@{theory Collections.MapSpec}] Specification of maps
+    \item[@{theory Collections.MapGA}] Generic algorithms for maps
+    \item[@{theory Collections.MapStdImpl}] Standard map implementations (list,rb-tree, hashing, tries)
+    \item[@{theory Collections.ListSpec}] Specification of lists
+    \item[@{theory Collections.Fifo}] Amortized fifo queue
+    \item[@{theory Collections.DatRef}] Data refinement for the while combinator
   \end{description}
 
 *}
@@ -450,7 +450,7 @@ text_raw {*\label{sec:userguide.design}*}
     The interfaces of this framework use explicit invariants.
     This provides a more general specification which allows some operations to
     be implemented more efficiently, cf. @{const "lsi.ins_dj"} 
-    in @{theory ListSetImpl_Invar}.
+    in @{theory Collections.ListSetImpl_Invar}.
     
     Most implementations, however, hide the invariant in a typedef and setup
     the code generator appropriately.

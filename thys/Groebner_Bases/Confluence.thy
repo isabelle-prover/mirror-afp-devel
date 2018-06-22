@@ -184,7 +184,7 @@ lemma dw_closed_empty: "dw_closed {}"
 lemma dw_closed_UNIV: "dw_closed UNIV"
   by (rule, intro UNIV_I)
 
-subsection \<open>Setup for Connection to Theory @{theory Abstract_Rewriting}\<close>
+subsection \<open>Setup for Connection to Theory @{theory "Abstract-Rewriting.Abstract_Rewriting"}\<close>
 
 abbreviation (input) relset::"('a * 'a) set" where
   "relset \<equiv> {(x, y). x \<rightarrow> y}"

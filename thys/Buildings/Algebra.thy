@@ -869,7 +869,7 @@ subsubsection {* Sets with a suitable binary operation *}
 
 text {*
   We have chosen to only consider groups in types of class @{class group_add} so that we can take
-  advantage of all the algebra lemmas already proven in @{theory Groups} in HOL, as well as
+  advantage of all the algebra lemmas already proven in @{theory HOL.Groups}, as well as
   constructs like @{const sum_list}. The following locale builds a bridge between this restricted
   view of groups and the usual notion of a binary operation on a set satisfying the group axioms,
   by constructing an injective map into type @{type permutation} (which is of class

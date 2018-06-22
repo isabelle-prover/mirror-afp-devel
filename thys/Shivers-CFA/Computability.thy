@@ -12,7 +12,7 @@ subsection {* Non-branching case *}
 
 text {*
 
-After the following lemma (which could go into @{theory Set_Interval}), we show Shivers' Theorem 10. This says that the least fixed point of the equation
+After the following lemma (which could go into @{theory HOL.Set_Interval}), we show Shivers' Theorem 10. This says that the least fixed point of the equation
 \[
 f\ x = g\ x \cup f\ (r\ x)
 \]

@@ -139,7 +139,7 @@ The set returned by @{text \<F>} and @{text \<C>} is actually a partial map from
 We would like to show an auxiliary result about the contour counter passed to @{text \<F>} and @{text \<C>} (such that it is an unused counter when passed to @{text \<F>} and others) first. Unfortunately, this is not possible with induction proofs over fixed points: While proving the inductive case, one does not show results for the function in question, but for an information-theoretical approximation. Thus, any previously shown results are not available.
 We therefore intertwine the two inductions in one large proof.
 
-This is a proof by fixpoint induction, so we have are obliged to show that the predicate is admissible and that it holds for the base case, i.e. the empty set. For the proof of admissibiliy, @{theory HOLCF} provides a number of introduction lemmas that, together with some additions in @{theory HOLCFUtils} and the continuity lemmas, mechanically proove admissibiliy. The base case is trivial.
+This is a proof by fixpoint induction, so we have are obliged to show that the predicate is admissible and that it holds for the base case, i.e. the empty set. For the proof of admissibiliy, @{theory HOLCF} provides a number of introduction lemmas that, together with some additions in @{theory "Shivers-CFA.HOLCFUtils"} and the continuity lemmas, mechanically proove admissibiliy. The base case is trivial.
 
 The remaining case is the preservation of the properties when applying the recursive equations to a function known to have have the desired property. Here, we break the proof into the various cases that occur in the definitions of @{text \<F>} and @{text \<C>} and use the induction hypothesises.
 *}

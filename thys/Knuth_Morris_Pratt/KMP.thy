@@ -66,7 +66,7 @@ qed
 lemma sublist_all_positions: "sublist_at xs ys i \<Longrightarrow> \<forall>jj<length xs. ys!(i+jj) = xs!jj"
   by (induction xs ys i rule: sublist_at.induct) (auto simp: nth_Cons')
 
-text\<open>It also connects well to theory @{theory Sublist} (compare @{thm[source] sublist_def}):\<close>
+text\<open>It also connects well to theory @{theory "HOL-Library.Sublist"} (compare @{thm[source] sublist_def}):\<close>
 lemma sublist_at_altdef:
   "sublist_at xs ys i \<longleftrightarrow> (\<exists>ps ss. ys = ps@xs@ss \<and> i = length ps)"
 proof (induction xs ys i rule: sublist_at.induct)
@@ -95,7 +95,7 @@ corollary sublist_iff_sublist_at: "Sublist.sublist xs ys \<longleftrightarrow> (
 subsection\<open>Sublist-check algorithms\<close>
 
 text\<open>
-  We use the Isabelle Refinement Framework (Theory @{theory Refine_Monadic}) to
+  We use the Isabelle Refinement Framework (Theory @{theory Refine_Monadic.Refine_Monadic}) to
   phrase the specification and the algorithm. 
 \<close>
 text\<open>@{term s} for "searchword" / "searchlist", @{term t} for "text"\<close>
@@ -163,7 +163,7 @@ definition "naive_algorithm s t \<equiv> do {
 
 subsection\<open>Correctness\<close>
 
-text\<open>The basic lemmas on @{const sublist_at} from the previous chapter together with @{theory Refine_Monadic}'s verification condition generator / solver suffice:\<close>
+text\<open>The basic lemmas on @{const sublist_at} from the previous chapter together with @{theory Refine_Monadic.Refine_Monadic}'s verification condition generator / solver suffice:\<close>
 
 lemma "s \<noteq> [] \<Longrightarrow> naive_algorithm s t \<le> kmp_SPEC s t"
   unfolding naive_algorithm_def kmp_SPEC_def I_out_na_def I_in_na_def
@@ -905,7 +905,7 @@ lemmas kmp_impl_correct' = kmp_impl.refine[FCOMP kmp3_correct']
 subsection \<open>Overall Correctness Theorem\<close>
 text \<open>The following theorem relates the final Imperative HOL algorithm to its specification,
   using, beyond basic HOL concepts
-    \<^item> Hoare triples for Imperative/HOL, provided by the Separation Logic Framework for Imperative/HOL (Theory @{theory Sep_Main});
+    \<^item> Hoare triples for Imperative/HOL, provided by the Separation Logic Framework for Imperative/HOL (Theory @{theory Separation_Logic_Imperative_HOL.Sep_Main});
     \<^item> The assertion @{const arl_assn} to specify array-lists, which we use to represent the input strings of the algorithm;
     \<^item> The @{const sublist_at} function that we defined in section \ref{sec:spec}.
   \<close>

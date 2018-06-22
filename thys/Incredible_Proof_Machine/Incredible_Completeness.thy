@@ -3,7 +3,7 @@ imports Natural_Deduction Incredible_Deduction Build_Incredible_Tree
 begin
 
 text \<open>
-This theory takes the tree produced in @{theory Build_Incredible_Tree}, globalizes it using
+This theory takes the tree produced in @{theory Incredible_Proof_Machine.Build_Incredible_Tree}, globalizes it using
 @{term globalize}, and then builds the incredible proof graph out of it.
 \<close>
 

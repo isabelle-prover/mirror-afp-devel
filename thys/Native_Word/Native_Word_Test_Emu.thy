@@ -13,7 +13,7 @@ subsection {* Tests for @{typ uint16} *}
 
 text {*
   Test that @{typ uint16} is emulated for PolyML and OCaml via @{typ "16 word"} 
-  if @{theory Code_Target_Bits_Int} is imported.
+  if @{theory Native_Word.Code_Target_Bits_Int} is imported.
 *}
 
 definition test_uint16_emulation :: bool where
@@ -43,7 +43,7 @@ subsection {* Tests for @{typ uint8} *}
 
 text {*
   Test that @{typ uint8} is emulated for OCaml via @{typ "8 word"} 
-  if @{theory Code_Target_Bits_Int} is imported.
+  if @{theory Native_Word.Code_Target_Bits_Int} is imported.
 *}
 
 definition test_uint8_emulation :: bool where

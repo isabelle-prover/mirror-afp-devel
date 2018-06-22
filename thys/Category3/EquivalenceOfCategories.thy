@@ -390,7 +390,7 @@ begin
   text {*
     Notably absent here is a proof that a fully faithful and essentially surjective
     functor extends to an adjoint equivalence.  To prove this without repeating things
-    that were already proved in @{theory Adjunction} requires that the development in
+    that were already proved in @{theory Category3.Adjunction} requires that the development in
     that theory be modified to allow the unit or counit of the adjunction to be a specified
     initial or terminal arrow, rather than an arbitrarily chosen one.
     I did not need this result this time around, so it is left for the future.

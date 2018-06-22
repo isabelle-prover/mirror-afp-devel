@@ -4,7 +4,7 @@ theory pEquivalence_Checking
 imports Equivalence_Checking Derivatives
 begin
 
-text\<open>\noindent Similar to theory @{theory Equivalence_Checking}, but
+text\<open>\noindent Similar to theory @{theory "Regular-Sets.Equivalence_Checking"}, but
 with partial derivatives instead of derivatives.\<close>
 
 text\<open>Lifting many notions to sets:\<close>

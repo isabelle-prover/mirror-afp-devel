@@ -80,7 +80,7 @@ text {*
 
 
 text {* \textbf{Since in the meantime, all of these algorithms have been generalized to arbitrary
-  $p$-th roots in @{theory NthRoot_Impl}, we just instantiate the general algorithms by $p = 2$ and then provide 
+  $p$-th roots in @{theory Sqrt_Babylonian.NthRoot_Impl}, we just instantiate the general algorithms by $p = 2$ and then provide 
   specialized code equations which are more efficient than the general purpose algorithms.} *}
 
 definition sqrt_int_main' :: "int \<Rightarrow> int \<Rightarrow> int \<times> bool" where
@@ -267,7 +267,7 @@ text {*
   The difference to the previous algorithms is that now we abort, once the distance is below
   $\epsilon$.  
   Moreover, here we use standard division and not integer division.
-  This part is not yet generalized by @{theory NthRoot_Impl}.
+  This part is not yet generalized by @{theory Sqrt_Babylonian.NthRoot_Impl}.
 
   We first provide the executable version without guard @{term "x > 0"} as partial function,
   and afterwards prove termination and soundness for a similar algorithm that is defined within the upcoming

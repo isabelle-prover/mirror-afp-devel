@@ -207,7 +207,7 @@ shiftrUnbounded x n
 shiftrBounded :: (Ord a, Data.Bits.Bits a) => a -> Integer -> a;
 shiftrBounded x n = Data.Bits.shiftR x (fromInteger n);*}
 
-  and \<comment> \<open>@{theory Quickcheck_Narrowing} maps @{typ integer} to 
+  and \<comment> \<open>@{theory HOL.Quickcheck_Narrowing} maps @{typ integer} to 
             Haskell's Prelude.Int type instead of Integer. For compatibility
             with the Haskell target, we nevertheless provide bounded and 
             unbounded functions.\<close>

@@ -11,7 +11,7 @@ begin
 
 subsection {* Preliminaries *}
 
-text {* transfer @{term "refl_on"} et al. from @{theory Relation} to predicates *}
+text {* transfer @{term "refl_on"} et al. from @{theory HOL.Relation} to predicates *}
 
 abbreviation refl_onP :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
 where "refl_onP A r \<equiv> refl_on A {(x, y). r x y}"

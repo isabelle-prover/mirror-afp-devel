@@ -377,7 +377,7 @@ instantiation pnat :: action_algebra
 begin
 
 text {* The Kleene star for type~@{typ pnat} has already been defined in theory
-@{theory Kleene_Algebra_Models}. *}
+@{theory Kleene_Algebra.Kleene_Algebra_Models}. *}
 
   instance
   proof

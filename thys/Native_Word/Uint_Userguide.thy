@@ -50,7 +50,7 @@ text {*
   code generation. For example, PolyML does not provide the Word16
   structure, and OCaml provides neither Word8 nor Word16.
   You can still use these theories provided that you also import
-  the theory @{theory "Code_Target_Bits_Int"} (which implements
+  the theory @{theory Native_Word.Code_Target_Bits_Int} (which implements
   @{typ int} by target-language integers), but these words will
   be implemented via Isabelle's @{text "HOL-Word"} library, i.e.,
   you do not gain anything in terms of efficiency.
@@ -94,16 +94,16 @@ definition sum_squares_int :: "int \<Rightarrow> 16 word" where
 text {*
   The generated code for @{term sum_squares} and @{term sum_squares_int} 
   emulates words with unbounded integers and explicit modulus as specified 
-  in the theory @{theory Word}. But for efficiency, we want that the
+  in the theory @{theory "HOL-Word.Word"}. But for efficiency, we want that the
   generated code uses machine words and machine arithmetic. Unfortunately,
   as @{typ "'a word"} is polymorphic in the word length, the code generator
   can only do this if we use another type for machine words. The theory
-  @{theory Uint16} defines the type @{typ uint16} for machine words of
+  @{theory Native_Word.Uint16} defines the type @{typ uint16} for machine words of
   16~bits. We just have to follow two steps to use it:
   
   First, we lift all our functions from @{typ "16 word"} to @{typ uint16},
   i.e., @{term sum_squares}, @{term gen_sum_squares}, and 
-  @{term sum_squares_int} in our case. The theory @{theory Uint16} sets
+  @{term sum_squares_int} in our case. The theory @{theory Native_Word.Uint16} sets
   up the lifting package for this and has already taken care of the
   arithmetic and bit-wise operations.
 *}

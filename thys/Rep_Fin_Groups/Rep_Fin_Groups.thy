@@ -56,7 +56,7 @@ lemma zip_truncate_right : "zip xs ys = zip xs (take (length xs) ys)"
   by (induct xs ys rule:list_induct2') auto
 
 text {*
-  Lemmas @{text "zip_append1"} and @{text"zip_append2"} in theory @{theory List} have unnecessary
+  Lemmas @{text "zip_append1"} and @{text"zip_append2"} in theory @{theory HOL.List} have unnecessary
   @{text "take (length _)"} in them. Here are replacements.
 *}
 
@@ -1509,7 +1509,7 @@ subsubsection {* Inner direct sums *}
 definition inner_dirsum :: "'a::monoid_add set list \<Rightarrow> 'a set"
   where "inner_dirsum As = (if add_independentS As then \<Sum>A\<leftarrow>As. A else 0)"
 
-text{* Some syntactic sugar for @{text "inner_dirsum"}, borrowed from theory @{theory List}. *}
+text{* Some syntactic sugar for @{text "inner_dirsum"}, borrowed from theory @{theory HOL.List}. *}
 
 syntax 
   "_inner_dirsum" :: "pttrn => 'a list => 'b => 'b"

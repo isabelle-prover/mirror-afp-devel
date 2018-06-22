@@ -95,7 +95,7 @@ begin
     the problem as a state machine, and prove properties over runs.
     
     For this polished solution, we make use of a small library for
-    transition systems and simulations: @{theory "DF_System"}.
+    transition systems and simulations: @{theory VerifyThis2018.DF_System}.
     Note, however, that our definitions are still quite ad-hoc, 
     and there are lots of opportunities to define libraries that make similar 
     proofs simpler and more canonical.

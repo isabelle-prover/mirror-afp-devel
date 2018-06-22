@@ -28,7 +28,7 @@ end
 text {*
 Analogous to the previous section, we define types for binding environments, closures, procedures, semantic values (which are now sets of possible procedures) and variable environment. Their types are parametrized by the chosen set of abstract contours.
 
-The abstract variable environment is a partial map to sets in Shivers' dissertation. As he does not need to distinguish between a key not in the map and a key mapped to the empty set, this presentation is redundant. Therefore, I encoded this as a function from keys to sets of values. The theory @{theory SetMap} contains functions and lemmas to work with such maps, symbolized by an appended dot (e.g. @{text "{}."}, @{text "\<union>."}).
+The abstract variable environment is a partial map to sets in Shivers' dissertation. As he does not need to distinguish between a key not in the map and a key mapped to the empty set, this presentation is redundant. Therefore, I encoded this as a function from keys to sets of values. The theory @{theory "Shivers-CFA.SetMap"} contains functions and lemmas to work with such maps, symbolized by an appended dot (e.g. @{text "{}."}, @{text "\<union>."}).
 *}
 
 type_synonym 'c a_benv = "label \<rightharpoonup> 'c" ("_ \<abenv>" [1000])

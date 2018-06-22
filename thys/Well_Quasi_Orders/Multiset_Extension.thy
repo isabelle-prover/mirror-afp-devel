@@ -217,7 +217,7 @@ lemma mulex_on_union_right' [simp]:
   shows "mulex_on P F A (B + K)"
   using mulex_on_union_right [OF assms] by (simp add: ac_simps)
 
-text \<open>Adapted from @{thm all_accessible} in @{theory Multiset}.\<close>
+text \<open>Adapted from @{thm all_accessible} in @{theory "HOL-Library.Multiset"}.\<close>
 lemma accessible_on_mulex1_multisets:
   assumes wf: "wfp_on P A"
   shows "\<forall>M\<in>multisets A. accessible_on (mulex1 P) (multisets A) M"

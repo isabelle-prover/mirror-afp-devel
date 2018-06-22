@@ -315,7 +315,7 @@ text {* For comparisons we first check for equality. Then, if the bases are
   In this way, we have an implementation of comparisons which can compare
   all representable numbers.
 
-  Note that in @{theory Real_Impl} we did not use @{const real_lt} as there
+  Note that in @{theory Real_Impl.Real_Impl} we did not use @{const real_lt} as there
   the code-equations for equality already require identical bases.
  *}
 lemma comparison_impl: 

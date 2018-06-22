@@ -169,7 +169,7 @@ lemma [code]:
   by (cases p) auto
 
 
-subsection \<open>Connection to @{theory Partial_Function_MR}\<close>
+subsection \<open>Connection to @{theory Partial_Function_MR.Partial_Function_MR}\<close>
 
 lemma sum_bot_map_mono [partial_function_mono]:
   assumes mf: "mono_sum_bot B"

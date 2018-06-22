@@ -7,7 +7,7 @@ imports
   Abstract_Rules
 begin
 
-text \<open>In this theory, the abstract rules given in @{theory Abstract_Rules} are used to
+text \<open>In this theory, the abstract rules given in @{theory Incredible_Proof_Machine.Abstract_Rules} are used to
 create a proper signature.\<close>
 
 text \<open>Besides the rules given there, we have nodes for assumptions, conclusions, and the helper

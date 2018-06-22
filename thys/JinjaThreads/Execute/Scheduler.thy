@@ -174,7 +174,7 @@ where
 | "thread_ok ts (ThreadExists t b) = (b \<noteq> free_thread_id ts t)"
 
 text {*
-  We use @{term "redT_updT"} in @{text "thread_ok"} instead of @{term "redT_updT'"} like in theory @{theory FWThread}.
+  We use @{term "redT_updT"} in @{text "thread_ok"} instead of @{term "redT_updT'"} like in theory @{theory JinjaThreads.FWThread}.
   This fixes @{typ "'x"} in the @{typ "('t,'x,'m) new_thread_action list"} type, but avoids @{term "undefined"},
   which raises an exception during execution in the generated code.
 *}

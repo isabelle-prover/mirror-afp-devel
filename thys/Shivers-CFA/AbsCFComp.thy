@@ -104,7 +104,7 @@ definition arg_poss :: "prog \<Rightarrow> ('c::contour a_fstate + 'c a_cstate) 
   where "arg_poss p = Discr ` (fstate_poss p <+> cstate_poss p)"
 
 text {*
-Using the auxiliary results from @{theory CPSUtils}, we see that the argument space as defined here is finite.
+Using the auxiliary results from @{theory "Shivers-CFA.CPSUtils"}, we see that the argument space as defined here is finite.
 *}
 
 lemma finite_arg_space: "finite (arg_poss p)"
@@ -375,7 +375,7 @@ done
 subsection {* The iterative equation *}
 
 text {*
-Because of the special form of @{text \<aF>} (and thus @{text \<aPR>}) derived in the previous lemma, we can apply our generic results from @{theory Computability} and express the abstract semantics as the image of a finite set under a computable function.
+Because of the special form of @{text \<aF>} (and thus @{text \<aPR>}) derived in the previous lemma, we can apply our generic results from @{theory "Shivers-CFA.Computability"} and express the abstract semantics as the image of a finite set under a computable function.
 *}
 
 lemma a_evalF_iterative:

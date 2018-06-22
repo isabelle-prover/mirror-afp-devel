@@ -192,7 +192,7 @@ As general remark, all the future translating steps
 will extensively use Isabelle expressions,
 represented by its Meta-Model, for example lots of functions will use @{term "Term_app"}...
 So the overall can be simplified by the use of polymorphic cartouches.
-It looks feasible to add a new front-end for cartouches in @{theory "Init"}
+It looks feasible to add a new front-end for cartouches in @{theory Isabelle_Meta_Model.Init}
 supporting the use of Isabelle syntax in cartouches,
 then we could obtain at the end a parsed Isabelle Meta-Model in Isabelle.\<close>
 

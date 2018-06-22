@@ -8,7 +8,7 @@ begin
 lemma real_of_float_eq_zero_iff[simp]: "real_of_float x = 0 \<longleftrightarrow> x = 0"
   by (simp add: real_of_float_eq)
 
-text \<open>Theory @{theory Polynomial_Expression} contains a, more or less, 1:1 generalization
+text \<open>Theory @{theory Taylor_Models.Polynomial_Expression} contains a, more or less, 1:1 generalization
    of theory \<open>Multivariate_Polynomial\<close>. Any additions belong here.\<close>
 
 declare [[coercion_map map_poly]]

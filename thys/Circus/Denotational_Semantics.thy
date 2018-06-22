@@ -1018,7 +1018,7 @@ universal least fix-point operator "@{const lfp}" defined in the HOL library for
 The operator "@{const lfp}" is inherited from the "Complete Lattice class" under some conditions. 
 All theorems defined over this operator can be reused. *}
 
-text {* In the @{theory Circus_Actions} theory, we presented the proof that Circus actions 
+text {* In the @{theory Circus.Circus_Actions} theory, we presented the proof that Circus actions 
 form a complete lattice. The Knaster-Tarski Theorem (in its simplest formulation) states 
 that any monotone function on a complete lattice has a least fixed-point. 
 This is a consequence of the basic boundary properties of the complete lattice operations. 

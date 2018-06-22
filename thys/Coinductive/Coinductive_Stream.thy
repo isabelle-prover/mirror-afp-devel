@@ -69,7 +69,7 @@ text {* induction rules *}
 
 lemmas stream_set_induct = sset_induct
 
-subsection {* Lemmas about operations from @{theory Stream} *}
+subsection {* Lemmas about operations from @{theory "HOL-Library.Stream"} *}
 
 lemma szip_iterates:
   "szip (siterate f a) (siterate g b) = siterate (map_prod f g) (a, b)"

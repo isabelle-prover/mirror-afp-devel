@@ -44,9 +44,9 @@ begin
 
     text{*
       The development of the @{text set_category} locale makes heavy use of the
-      theory @{theory FuncSet}.  However, in some cases, I found that @{theory FuncSet}
-      did not provide results about restriction in the form that was most useful to me.
-      I used the following additional results in various places.
+      theory @{theory "HOL-Library.FuncSet"}.  However, in some cases, I found that
+      @{theory "HOL-Library.FuncSet"} did not provide results about restriction in the form that was
+      most useful to me. I used the following additional results in various places.
     *}
 
   (* This variant of FuncSet.restrict_ext is sometimes useful. *)

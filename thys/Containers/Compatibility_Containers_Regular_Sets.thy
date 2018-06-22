@@ -9,9 +9,9 @@ theory Compatibility_Containers_Regular_Sets imports
 begin
 
 text {*
-  Adaptation theory to make @{text regexp} work when @{theory Containers} are loaded.
+  Adaptation theory to make @{text regexp} work when @{theory Containers.Containers} are loaded.
 
-  Warning: Each invocation of @{text regexp} takes longer than without @{theory Containers}
+  Warning: Each invocation of @{text regexp} takes longer than without @{theory Containers.Containers}
   because the code generator takes longer to generate the evaluation code for @{text regexp}.
 *}
 

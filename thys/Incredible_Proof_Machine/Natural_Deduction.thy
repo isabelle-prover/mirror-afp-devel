@@ -5,16 +5,16 @@ imports
   Entailment
 begin
 
-text \<open>Our formalization of natural deduction builds on @{theory Abstract_Completeness} and refines and
+text \<open>Our formalization of natural deduction builds on @{theory Abstract_Completeness.Abstract_Completeness} and refines and
 concretizes the structure given there as follows
  \<^item> The judgements are entailments consisting of a finite set of assumptions and a conclusion, which
-   are abstract formulas in the sense of @{theory Abstract_Formula}.
- \<^item> The abstract rules given in @{theory Abstract_Rules} are used to decide the validity of a
+   are abstract formulas in the sense of @{theory Incredible_Proof_Machine.Abstract_Formula}.
+ \<^item> The abstract rules given in @{theory Incredible_Proof_Machine.Abstract_Rules} are used to decide the validity of a
    step in the derivation.
 \<close>
 
 text \<open>A single setep in the derivation can either be the axiom rule, the cut rule, or one
-of the given rules in @{theory Abstract_Rules}.\<close>
+of the given rules in @{theory Incredible_Proof_Machine.Abstract_Rules}.\<close>
 
 datatype 'rule NatRule = Axiom | NatRule 'rule | Cut
 

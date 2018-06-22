@@ -10,7 +10,7 @@ begin
 
 subsection {* Bijection between Equivalence Relations and Set Partitions *}
 
-subsubsection {* Possibly Interesting Theorem for @{theory Equiv_Relations} *}
+subsubsection {* Possibly Interesting Theorem for @{theory HOL.Equiv_Relations} *}
 
 text {* This theorem was historically useful in this theory, but
 is now after some proof refactoring not needed here anymore.
