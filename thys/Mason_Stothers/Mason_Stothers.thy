@@ -2,7 +2,7 @@
   File:     Mason_Stothers.thy
   Author:   Manuel Eberl, TU München
 
-  A simple proof of the Mason–Stothers theorem, the analogue of the abc conjecture
+  A simple proof of the Mason--Stothers theorem, the analogue of the abc conjecture
   for polynomials.
 *)
 section \<open>The Mason--Stother's Theorem\<close>

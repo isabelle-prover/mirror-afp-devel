@@ -180,7 +180,7 @@ lemma "s \<noteq> [] \<Longrightarrow> naive_algorithm s t \<le> kmp_SPEC s t"
 
 text\<open>Note that the precondition cannot be removed without an extra branch: If @{prop \<open>s = []\<close>}, the inner while-condition accesses out-of-bound memory. This will apply to KMP, too.\<close>
 
-section\<open>Knuth–Morris–Pratt algorithm\<close>
+section\<open>Knuth--Morris--Pratt algorithm\<close>
 
 text\<open>Just like our templates@{cite KMP77}@{cite GAD}, we first verify the main routine and discuss the computation of the auxiliary values @{term \<open>\<ff> s\<close>} only in a later section.\<close>
 
