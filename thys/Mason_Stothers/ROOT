@@ -1,7 +1,7 @@
 chapter AFP
 
 session "Mason_Stothers" (AFP) = "HOL-Computational_Algebra" +
-  options [timeout = 30]
+  options [timeout = 300]
   theories
     Mason_Stothers
   document_files

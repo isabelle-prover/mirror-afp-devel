@@ -2,7 +2,7 @@ chapter AFP
 
 session "UPF" (AFP) = HOL +
   description {* The Unified Policy Framework (UPF) *}
-  options [timeout=300]
+  options [timeout = 300]
   theories
     Monads
     UPF

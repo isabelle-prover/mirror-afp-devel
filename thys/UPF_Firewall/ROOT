@@ -2,7 +2,7 @@ chapter AFP
 
 session "UPF_Firewall" (AFP) = UPF +
   description {* Formal Network Models and Their Application to Firewall Policies *}
-  options [timeout=600]
+  options [timeout = 600]
   theories
     "Examples/Examples"
   document_files

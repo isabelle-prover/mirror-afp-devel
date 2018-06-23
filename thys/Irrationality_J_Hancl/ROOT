@@ -1,8 +1,7 @@
 chapter AFP
 
 session Irrationality_J_Hancl (AFP) = "HOL-Analysis" +
-  options [timeout=200]
-  
+  options [timeout = 300]
   sessions
     "HOL-Decision_Procs"
   theories

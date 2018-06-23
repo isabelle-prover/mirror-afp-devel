@@ -1,7 +1,7 @@
 chapter AFP
 
 session Falling_Factorial_Sum (AFP) = "HOL-Library" +
-  options [timeout=120]
+  options [timeout = 300]
   sessions
     Discrete_Summation
     Card_Partitions
