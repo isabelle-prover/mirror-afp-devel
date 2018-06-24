@@ -5321,10 +5321,6 @@ lemma word_le_not_less:
   "((b::'a::len word) \<le> a) = (\<not>(a < b))"
   by fastforce
 
-lemma nat_add_less_by_max:
-  "\<lbrakk> (x::nat) \<le> xmax ; y < k - xmax \<rbrakk> \<Longrightarrow> x + y < k"
-  by simp
-
 lemma ucast_or_distrib:
   fixes x :: "'a::len word"
   fixes y :: "'a::len word"
@@ -5340,17 +5336,6 @@ lemma shiftr_less:
 
 lemma word_and_notzeroD:
   "w && w' \<noteq> 0 \<Longrightarrow> w \<noteq> 0 \<and> w' \<noteq> 0"
-  by auto
-
-lemma mod_lemma: "[| (0::nat) < c; r < b |] ==> b * (q mod c) + r < b * c"
-  apply (cut_tac m = q and n = c in mod_less_divisor)
-  apply (drule_tac [2] m = "q mod c" in less_imp_Suc_add, auto)
-  apply (erule_tac P = "%x. lhs < rhs x" for lhs rhs in ssubst)
-  apply (simp add: add_mult_distrib2)
-  done
-
-lemma nat_Suc_less_le_imp:
-  "(k::nat) < Suc n \<Longrightarrow> k \<le> n"
   by auto
 
 lemma word_clz_max:
@@ -5425,16 +5410,6 @@ lemma unat_max_word_pos[simp]: "0 < unat max_word"
 
 
 (* Miscellaneous conditional injectivity rules. *)
-
-lemma drop_eq_mono:
-  assumes le: "m \<le> n"
-  assumes drop: "drop m xs = drop m ys"
-  shows "drop n xs = drop n ys"
-proof -
-  have ex: "\<exists>p. n = p + m" by (rule exI[of _ "n - m"]) (simp add: le)
-  then obtain p where p: "n = p + m" by blast
-  show ?thesis unfolding p drop_drop[symmetric] drop by simp
-qed
 
 lemma mult_pow2_inj:
   assumes ws: "m + n \<le> LENGTH('a)"
@@ -5640,5 +5615,36 @@ lemma of_nat_eq_signed_scast:
   "(of_nat x = (y :: ('a::len) signed word))
    = (of_nat x = (scast y :: 'a word))"
   by (metis scast_of_nat scast_scast_id(2))
+
+lemma word_ctz_le:
+  "word_ctz (w :: ('a::len word)) \<le> LENGTH('a)"
+  apply (clarsimp simp: word_ctz_def)
+  apply (rule nat_le_Suc_less_imp[where y="LENGTH('a) + 1" , simplified])
+  apply (rule order_le_less_trans[OF List.length_takeWhile_le])
+  apply simp
+  done
+
+lemma word_ctz_less:
+  "w \<noteq> 0 \<Longrightarrow> word_ctz (w :: ('a::len word)) < LENGTH('a)"
+  apply (clarsimp simp: word_ctz_def eq_zero_set_bl)
+  apply (rule order_less_le_trans[OF length_takeWhile_less])
+   apply fastforce+
+  done
+
+lemma word_ctz_not_minus_1:
+  "1 < LENGTH('a) \<Longrightarrow> of_nat (word_ctz (w :: ('a :: len) word)) \<noteq> (- 1 :: ('a::len) word)"
+  apply (cut_tac w=w in word_ctz_le)
+  apply (subst word_unat.Rep_inject[symmetric])
+  apply (subst unat_of_nat_eq)
+   apply (erule order_le_less_trans, fastforce)
+  apply (subst unat_minus_one_word)
+  apply (rule less_imp_neq)
+  apply (erule order_le_less_trans)
+  apply (subst less_eq_Suc_le)
+  apply (subst le_diff_conv2, fastforce)
+  apply (clarsimp simp: le_diff_conv2 less_eq_Suc_le[symmetric] suc_le_pow_2)
+  done
+
+lemmas word_ctz_not_minus_1_32 = word_ctz_not_minus_1[where 'a=32, simplified]
 
 end
