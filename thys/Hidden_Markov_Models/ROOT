@@ -1,11 +1,11 @@
 chapter AFP
 
 session Hidden_Markov_Models (AFP) = "Markov_Models" +
-  options [timeout = 200]
+  options [timeout = 300]
   sessions
     "HOL-Library"
     "Monad_Memo_DP"
-  theories [ document = false ]
+  theories [document = false]
     Auxiliary
   theories
     HMM_Example

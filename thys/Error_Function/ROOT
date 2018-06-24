@@ -1,7 +1,7 @@
 chapter AFP
 
 session Error_Function (AFP) = "HOL-Analysis" +
-  options [timeout=100]
+  options [timeout = 300]
   sessions
     Landau_Symbols
   theories

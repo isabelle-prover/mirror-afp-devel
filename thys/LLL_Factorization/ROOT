@@ -2,7 +2,7 @@ chapter AFP
 
 session LLL_Factorization (AFP) = LLL_Basis_Reduction +
   description {* LLL Factorization Algorithm *}
-  options [timeout = 240]
+  options [timeout = 300]
   sessions
     Perron_Frobenius
   theories
