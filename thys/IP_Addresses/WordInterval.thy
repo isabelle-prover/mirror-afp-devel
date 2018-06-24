@@ -3,14 +3,13 @@
 *)
 theory WordInterval
 imports Main
-  Word_Next
-  "HOL-Word.Word"
+  "Word_Lib.Word_Lemmas"
 begin
 
 section\<open>WordInterval: Executable datatype for Machine Word Sets\<close>
-text\<open>Stores ranges of machine words as interval. This has been proven quite efficient for 
+text\<open>Stores ranges of machine words as interval. This has been proven quite efficient for
      IP Addresses.\<close>
-(*NOTE: All algorithms here use a straight-forward implementation. There is a lot of room for 
+(*NOTE: All algorithms here use a straight-forward implementation. There is a lot of room for
         improving the computation complexity, for example by making the WordInterval a balanced,
         sorted tree.*)
 
@@ -44,20 +43,20 @@ subsection\<open>Basic operations\<close>
   lemma wordinterval_element_set_eq[simp]:
     "wordinterval_element el rg = (el \<in> wordinterval_to_set rg)"
     by(induction rg rule: wordinterval_element.induct) simp_all
-  
+
   definition wordinterval_union
-    :: "'a::len0 wordinterval \<Rightarrow> 'a::len0 wordinterval \<Rightarrow> 'a::len0 wordinterval" where 
+    :: "'a::len0 wordinterval \<Rightarrow> 'a::len0 wordinterval \<Rightarrow> 'a::len0 wordinterval" where
     "wordinterval_union r1 r2 = RangeUnion r1 r2"
   lemma wordinterval_union_set_eq[simp]:
     "wordinterval_to_set (wordinterval_union r1 r2) = wordinterval_to_set r1 \<union> wordinterval_to_set r2"
     unfolding wordinterval_union_def by simp
-  
+
   fun wordinterval_empty :: "'a::len0 wordinterval \<Rightarrow> bool" where
     "wordinterval_empty (WordInterval s e) \<longleftrightarrow> e < s" |
     "wordinterval_empty (RangeUnion r1 r2) \<longleftrightarrow> wordinterval_empty r1 \<and> wordinterval_empty r2"
   lemma wordinterval_empty_set_eq[simp]: "wordinterval_empty r \<longleftrightarrow> wordinterval_to_set r = {}"
     by(induction r) auto
-  
+
   definition Empty_WordInterval :: "'a::len wordinterval" where
     "Empty_WordInterval \<equiv> WordInterval 1 0"
   lemma wordinterval_empty_Empty_WordInterval: "wordinterval_empty Empty_WordInterval"
@@ -74,13 +73,13 @@ subsection\<open>WordInterval and Lists\<close>
   fun wi2l :: "'a::len0 wordinterval \<Rightarrow> ('a::len0 word \<times> 'a::len0 word) list" where
     "wi2l (RangeUnion r1 r2) = wi2l r1 @ wi2l r2" |
     "wi2l (WordInterval s e) = (if e < s then [] else [(s,e)])"
-  
+
   text\<open>list to wordinterval\<close>
   fun l2wi :: "('a::len word \<times> 'a word) list \<Rightarrow> 'a wordinterval" where
-    "l2wi [] = Empty_WordInterval" | 
-    "l2wi [(s,e)] = (WordInterval s e)" | 
+    "l2wi [] = Empty_WordInterval" |
+    "l2wi [(s,e)] = (WordInterval s e)" |
     "l2wi ((s,e)#rs) = (RangeUnion (WordInterval s e) (l2wi rs))"
-  
+
 
   lemma l2wi_append: "wordinterval_to_set (l2wi (l1@l2)) =
                       wordinterval_to_set (l2wi l1) \<union> wordinterval_to_set (l2wi l2)"
@@ -91,7 +90,7 @@ subsection\<open>WordInterval and Lists\<close>
     next
     case 3 thus ?case by force
     qed
-  
+
   lemma l2wi_wi2l: "wordinterval_to_set (l2wi (wi2l r)) = wordinterval_to_set r"
     by(induction r) (simp_all add: l2wi_append)
 
@@ -296,7 +295,7 @@ begin
     interval_of A \<subseteq> (\<Union>s \<in> set ss. interval_of s)"
     using listwordinterval_compress by blast
 
-  private lemma listwordinterval_compress_disjoint: 
+  private lemma listwordinterval_compress_disjoint:
     "A \<in> set (listwordinterval_compress ss) \<Longrightarrow> B \<in> set (listwordinterval_compress ss) \<Longrightarrow>
       A \<noteq> B \<Longrightarrow> disjoint (interval_of A) (interval_of B)"
     apply(induction ss arbitrary: rule: listwordinterval_compress.induct)
@@ -323,7 +322,7 @@ begin
        then (s', e)#ss
        else (s',e')#merge_adjacent (s,e) ss)"
 
-  private lemma merge_adjacent_helper: 
+  private lemma merge_adjacent_helper:
   "interval_of A \<union> (\<Union>s \<in> set ss. interval_of s) = (\<Union>s \<in> set (merge_adjacent A ss). interval_of s)"
     apply(induction ss)
      apply(simp; fail)
@@ -424,11 +423,11 @@ subsection\<open>Further operations\<close>
   text\<open>@{text "\<Union>"}\<close>
   definition wordinterval_Union :: "('a::len) wordinterval list \<Rightarrow> 'a wordinterval" where
     "wordinterval_Union ws = wordinterval_compress (foldr wordinterval_union ws Empty_WordInterval)"
-  
+
   lemma wordinterval_Union:
     "wordinterval_to_set (wordinterval_Union ws) = (\<Union> w \<in> (set ws). wordinterval_to_set w)"
     by(induction ws) (simp_all add: wordinterval_compress wordinterval_Union_def)
-   
+
 
 context
 begin
@@ -452,21 +451,21 @@ begin
         wordinterval_setminus' (wordinterval_setminus' t r1) r2"
 
   private lemma wordinterval_setminus'_rr_set_eq:
-    "wordinterval_to_set(wordinterval_setminus' (WordInterval s e) (WordInterval ms me)) = 
+    "wordinterval_to_set(wordinterval_setminus' (WordInterval s e) (WordInterval ms me)) =
     wordinterval_to_set (WordInterval s e) - wordinterval_to_set (WordInterval ms me)"
      apply(simp only: wordinterval_setminus'.simps)
-     apply(case_tac "e < s") 
+     apply(case_tac "e < s")
       apply simp
-     apply(case_tac "me < ms") 
+     apply(case_tac "me < ms")
       apply simp
      apply(case_tac [!] "e \<le> me")
-      apply(case_tac [!] "ms = 0") 
-        apply(case_tac [!] "ms \<le> s") 
+      apply(case_tac [!] "ms = 0")
+        apply(case_tac [!] "ms \<le> s")
             apply(case_tac [!] "me = max_word")
                     apply(simp_all add: word_prev_def word_next_def min_def max_def)
             apply(safe)
                                   apply(auto)
-                          apply(uint_arith) 
+                          apply(uint_arith)
                          apply(uint_arith)
                         apply(uint_arith)
                        apply(uint_arith)
@@ -506,7 +505,7 @@ begin
     :: "'a::len wordinterval \<Rightarrow> 'a::len wordinterval \<Rightarrow> 'a::len wordinterval" where
     "wordinterval_setminus r1 r2 = wordinterval_compress (wordinterval_setminus' r1 r2)"
 
-  lemma wordinterval_setminus_set_eq[simp]: "wordinterval_to_set (wordinterval_setminus r1 r2) = 
+  lemma wordinterval_setminus_set_eq[simp]: "wordinterval_to_set (wordinterval_setminus r1 r2) =
     wordinterval_to_set r1 - wordinterval_to_set r2"
     by(simp add: wordinterval_setminus_def wordinterval_compress wordinterval_setminus'_set_eq)
 end
@@ -516,7 +515,7 @@ definition wordinterval_UNIV :: "'a::len wordinterval" where
 lemma wordinterval_UNIV_set_eq[simp]: "wordinterval_to_set wordinterval_UNIV = UNIV"
   unfolding wordinterval_UNIV_def
   using max_word_max by fastforce
-  
+
 fun wordinterval_invert :: "'a::len wordinterval \<Rightarrow> 'a::len wordinterval" where
   "wordinterval_invert r = wordinterval_setminus wordinterval_UNIV r"
 lemma wordinterval_invert_set_eq[simp]:
@@ -545,7 +544,7 @@ begin
     "wordinterval_intersection' t (RangeUnion r1 r2) =
         RangeUnion (wordinterval_intersection' t r1) (wordinterval_intersection' t r2)"
 
-  private lemma wordinterval_intersection'_set_eq: 
+  private lemma wordinterval_intersection'_set_eq:
     "wordinterval_to_set (wordinterval_intersection' r1 r2) =
       wordinterval_to_set r1 \<inter> wordinterval_to_set r2"
     by(induction r1 r2 rule: wordinterval_intersection'.induct) (auto)
@@ -556,10 +555,10 @@ begin
           RangeUnion (RangeUnion (WordInterval 1 3) (WordInterval 1 0)) (WordInterval 1 3)" by eval
 
   definition wordinterval_intersection
-    :: "'a::len wordinterval \<Rightarrow> 'a::len wordinterval \<Rightarrow> 'a::len wordinterval" where 
+    :: "'a::len wordinterval \<Rightarrow> 'a::len wordinterval \<Rightarrow> 'a::len wordinterval" where
     "wordinterval_intersection r1 r2 \<equiv> wordinterval_compress (wordinterval_intersection' r1 r2)"
 
-  lemma wordinterval_intersection_set_eq[simp]: 
+  lemma wordinterval_intersection_set_eq[simp]:
     "wordinterval_to_set (wordinterval_intersection r1 r2) =
       wordinterval_to_set r1 \<inter> wordinterval_to_set r2"
     by(simp add: wordinterval_intersection_def
@@ -578,7 +577,7 @@ lemma wordinterval_subset_set_eq[simp]:
   "wordinterval_subset r1 r2 = (wordinterval_to_set r1 \<subseteq> wordinterval_to_set r2)"
   unfolding wordinterval_subset_def by simp
 
-definition wordinterval_eq :: "'a::len wordinterval \<Rightarrow> 'a::len wordinterval \<Rightarrow> bool" where 
+definition wordinterval_eq :: "'a::len wordinterval \<Rightarrow> 'a::len wordinterval \<Rightarrow> bool" where
   "wordinterval_eq r1 r2 = (wordinterval_subset r1 r2 \<and> wordinterval_subset r2 r1)"
 lemma wordinterval_eq_set_eq:
   "wordinterval_eq r1 r2 \<longleftrightarrow> wordinterval_to_set r1 = wordinterval_to_set r2"
@@ -599,7 +598,7 @@ lemma wordinterval_un_emty_b:
   "wordinterval_empty r2 \<Longrightarrow> wordinterval_eq (wordinterval_union r1 r2) r1"
   by(subst wordinterval_eq_set_eq, simp)
 
-lemma wordinterval_Diff_triv: 
+lemma wordinterval_Diff_triv:
   "wordinterval_empty (wordinterval_intersection a b) \<Longrightarrow> wordinterval_eq (wordinterval_setminus a b) a"
   unfolding wordinterval_eq_set_eq
   by simp blast
@@ -639,14 +638,14 @@ text\<open>The smallest element in the interval\<close>
   definition is_lowest_element :: "'a::ord \<Rightarrow> 'a set \<Rightarrow> bool" where
     "is_lowest_element x S = (x \<in> S \<and> (\<forall>y\<in>S. y \<le> x \<longrightarrow> y = x))"
 
-  lemma 
+  lemma
   	fixes x :: "'a :: complete_lattice"
   	assumes "x \<in> S"
   	shows " x = Inf S \<Longrightarrow> is_lowest_element x S"
   using assms apply(simp add: is_lowest_element_def)
    by (simp add: Inf_lower eq_iff)
 
-  lemma 
+  lemma
   	fixes x :: "'a :: linorder"
   	assumes "finite S" and "x \<in> S"
   	shows "is_lowest_element x S \<longleftrightarrow> x = Min S"
@@ -659,7 +658,7 @@ text\<open>The smallest element in the interval\<close>
 
 text\<open>Smallest element in the interval\<close>
   fun wordinterval_lowest_element :: "'a::len0 wordinterval \<Rightarrow> 'a word option" where
-    "wordinterval_lowest_element (WordInterval s e) = (if s \<le> e then Some s else None)" | 
+    "wordinterval_lowest_element (WordInterval s e) = (if s \<le> e then Some s else None)" |
     "wordinterval_lowest_element (RangeUnion A B) =
       (case (wordinterval_lowest_element A, wordinterval_lowest_element B) of
           (Some a, Some b) \<Rightarrow> Some (if a < b then a else b) |
@@ -673,7 +672,7 @@ text\<open>Smallest element in the interval\<close>
     next
     case RangeUnion thus ?case by fastforce
     qed
-    
+
 
   lemma wordinterval_lowest_element_correct_A:
     "wordinterval_lowest_element r = Some x \<Longrightarrow> is_lowest_element x (wordinterval_to_set r)"
@@ -704,17 +703,17 @@ text\<open>Smallest element in the interval\<close>
         next
         case (2 A B x)
 
-        have is_lowest_RangeUnion: "is_lowest_element x (wordinterval_to_set A \<union> wordinterval_to_set B) \<Longrightarrow> 
+        have is_lowest_RangeUnion: "is_lowest_element x (wordinterval_to_set A \<union> wordinterval_to_set B) \<Longrightarrow>
           is_lowest_element x (wordinterval_to_set A) \<or> is_lowest_element x (wordinterval_to_set B)"
           by(simp add: is_lowest_element_def)
-      
+
          (*why \<And> A B?*)
          have wordinterval_lowest_element_RangeUnion:
           "\<And>a b A B. wordinterval_lowest_element A = Some a \<Longrightarrow>
                   wordinterval_lowest_element B = Some b \<Longrightarrow>
                   wordinterval_lowest_element (RangeUnion A B) = Some (min a b)"
            by(auto dest!: wordinterval_lowest_element_correct_A simp add: is_lowest_element_def min_def)
-         
+
         from 2 show ?case
         apply(case_tac     "wordinterval_lowest_element B")
          apply(case_tac[!] "wordinterval_lowest_element A")
@@ -728,7 +727,7 @@ text\<open>Smallest element in the interval\<close>
          apply(elim disjE)
           apply(simp add: is_lowest_element_def)
          apply(clarsimp simp add: wordinterval_lowest_none_empty)
-        
+
         apply(simp add: is_lowest_element_def)
         apply(clarsimp simp add: wordinterval_lowest_none_empty)
         using wordinterval_lowest_element_correct_A[simplified is_lowest_element_def]
@@ -767,5 +766,5 @@ begin
 
   text\<open>With @{thm wordinterval_compress} it should be possible to get the exact cardinality\<close>
 end
-    
+
 end

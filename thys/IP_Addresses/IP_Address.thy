@@ -2,7 +2,7 @@
     Authors:    Cornelius Diekmann
 *)
 theory IP_Address
-imports Word_More
+imports "Word_Lib.Word_Lemmas"
         Hs_Compat
         WordInterval
 begin
@@ -20,12 +20,12 @@ section \<open>Modelling IP Adresses\<close>
     The files @{file "IPv4.thy"} @{file "IPv6.thy"} concrete this for IPv4 and IPv6.\<close>
 
   text\<open>The maximum IP address\<close>
-  definition max_ip_addr :: "'i::len word" where 
+  definition max_ip_addr :: "'i::len word" where
     "max_ip_addr \<equiv> of_nat ((2^(len_of(TYPE('i)))) - 1)"
 
   lemma max_ip_addr_max_word: "max_ip_addr = max_word"
     by(simp add: max_ip_addr_def max_word_def word_of_int_minus)
-    
+
   lemma max_ip_addr_max: "\<forall>a. a \<le> max_ip_addr"
     by(simp add: max_ip_addr_max_word)
   lemma range_0_max_UNIV: "UNIV = {0 .. max_ip_addr}" (*not in the simp set, for a reason*)
@@ -42,19 +42,19 @@ subsection\<open>Sets of IP Addresses\<close>
         network_prefix = (addr AND netmask)
       in
         {network_prefix .. network_prefix OR (NOT netmask)}"
-  
+
   text\<open>Example (pseudo syntax):
     @{const ipset_from_netmask} @{text "192.168.1.129  255.255.255.0"} =
         @{text "{192.168.1.0 .. 192.168.1.255}"}\<close>
 
   text{*A network mask of all ones (i.e. @{term "(- 1)::'i::len word"}).*}
-  lemma ipset_from_netmask_minusone: 
-    "ipset_from_netmask ip (- 1) = {ip}" by (simp add: ipset_from_netmask_def) 
-  lemma ipset_from_netmask_maxword: 
-    "ipset_from_netmask ip max_word = {ip}" by (simp add: ipset_from_netmask_def) 
+  lemma ipset_from_netmask_minusone:
+    "ipset_from_netmask ip (- 1) = {ip}" by (simp add: ipset_from_netmask_def)
+  lemma ipset_from_netmask_maxword:
+    "ipset_from_netmask ip max_word = {ip}" by (simp add: ipset_from_netmask_def)
 
-  lemma ipset_from_netmask_zero: 
-    "ipset_from_netmask ip 0 = UNIV" by (auto simp add: ipset_from_netmask_def) 
+  lemma ipset_from_netmask_zero:
+    "ipset_from_netmask ip 0 = UNIV" by (auto simp add: ipset_from_netmask_def)
 
 
   text\<open>Specifying sets in Classless Inter-domain Routing (CIDR) notation: 192.168.0.0/24\<close>
@@ -74,7 +74,7 @@ subsection\<open>Sets of IP Addresses\<close>
 
   text\<open>A prefix length of word size gives back the singleton set with the IP address.
        Example: @{text "192.168.1.2/32 = {192.168.1.2}"}\<close>
-  lemma ipset_from_cidr_wordlength: 
+  lemma ipset_from_cidr_wordlength:
     fixes ip :: "'i::len word"
     shows "ipset_from_cidr ip (len_of TYPE('i)) = {ip}"
     by(simp add: ipset_from_cidr_def ipset_from_netmask_def Let_def mask_def)
@@ -82,12 +82,12 @@ subsection\<open>Sets of IP Addresses\<close>
   text\<open>Alternative definition: Considering words as bit lists:\<close>
   lemma ipset_from_cidr_bl:
     fixes addr :: "'i::len word"
-    shows "ipset_from_cidr addr pflength \<equiv> 
+    shows "ipset_from_cidr addr pflength \<equiv>
             ipset_from_netmask addr (of_bl ((replicate pflength True) @
                                             (replicate ((len_of(TYPE('i))) - pflength)) False))"
     by(simp add: ipset_from_cidr_def mask_bl Word.shiftl_of_bl)
 
-  lemma ipset_from_cidr_alt: 
+  lemma ipset_from_cidr_alt:
     fixes pre :: "'i::len word"
     shows "ipset_from_cidr pre len =
             {pre AND (mask len << len_of TYPE('i) - len)
@@ -100,11 +100,11 @@ subsection\<open>Sets of IP Addresses\<close>
 
   lemma ipset_from_cidr_alt2:
     fixes base ::"'i::len word"
-    shows "ipset_from_cidr base len = 
+    shows "ipset_from_cidr base len =
            ipset_from_netmask base (NOT mask (len_of TYPE('i) - len))"
     apply(simp add: ipset_from_cidr_def)
     using NOT_mask_shifted_lenword by(metis word_not_not)
-  
+
   text\<open>In CIDR notation, we cannot express the empty set.\<close>
   lemma ipset_from_cidr_not_empty: "ipset_from_cidr base len \<noteq> {}"
     by(simp add: ipset_from_cidr_alt bitmagic_zeroLast_leq_or1Last)
@@ -116,7 +116,7 @@ subsection\<open>Sets of IP Addresses\<close>
   proof -
     have maskshift_eq_not_mask_generic:
       "((mask l << len_of TYPE('i) - l) :: 'i::len word) = NOT mask (len_of TYPE('i) - l)"
-      using NOT_mask_shifted_lenword by (metis word_not_not) 
+      using NOT_mask_shifted_lenword by (metis word_not_not)
     have *: "base AND NOT mask (len_of TYPE('i) - l) = base"
       unfolding mask_eq_0_eq_x[symmetric] using assms word_bw_comms(1)[of base] by simp
     hence **: "base AND NOT mask (len_of TYPE('i) - l) OR mask (len_of TYPE('i) - l) =
@@ -162,7 +162,7 @@ subsection\<open>Sets of IP Addresses\<close>
   proof -
     have maskshift_eq_not_mask_generic:
       "((mask len << len_of TYPE('a) - len) :: 'a::len word) = NOT mask (len_of TYPE('a) - len)"
-      using NOT_mask_shifted_lenword by (metis word_not_not) 
+      using NOT_mask_shifted_lenword by (metis word_not_not)
     have 1: "mask (len - m) AND base AND NOT mask (len - m) = 0"
       for len m and base::"'i::len word"
       by(simp add: word_bw_lcs)
@@ -208,7 +208,7 @@ subsection\<open>IP Addresses as WordIntervals\<close>
     by(simp add: iprange_single_def)
   lemma "wordinterval_to_set (iprange_interval (ip1, ip2)) = {ip1 .. ip2}"
     by(simp add: iprange_interval.simps)
-  
+
   text\<open>Now we can use the set operations on @{typ "'i::len wordinterval"}s\<close>
   term wordinterval_to_set
   term wordinterval_element
@@ -275,7 +275,7 @@ subsection\<open>IP Addresses in CIDR Notation\<close>
 subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
   text\<open>Intersecting two intervals may result in a new interval.
     Example: @{text "{1..10} \<inter> {5..20} = {5..10}"}
-    
+
     Intersecting two IP address ranges represented as CIDR ranges results either in the empty set
     or the smaller of the two ranges. It will never create a new range.
     \<close>
@@ -294,7 +294,7 @@ subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
         using \<open>r2 \<le> r1\<close> by (simp add: and_not_mask_twice max_def)
       finally show ?thesis .
     qed
-    
+
     lemma ip_cidr_set_less:
       fixes i :: "'i::len word"
       shows "r1 \<le> r2 \<Longrightarrow> ip_cidr_set i r2 \<subseteq> ip_cidr_set i r1"
@@ -303,7 +303,7 @@ subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
       apply (rule less_and_not_mask_eq[where ?r2.0="len_of TYPE('i) - r2"])
       apply auto
       done
-    
+
     private lemma ip_cidr_set_intersect_subset_helper:
       fixes i1 r1 i2 r2
       assumes disj: "ip_cidr_set i1 r1 \<inter> ip_cidr_set i2 r2 \<noteq> {}" and  "r1 \<le> r2"
@@ -312,7 +312,7 @@ subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
       from disj obtain j where "j \<in> ip_cidr_set i1 r1" "j \<in> ip_cidr_set i2 r2" by auto
       with \<open>r1 \<le> r2\<close> have "j \<in> ip_cidr_set j r1" "j \<in> ip_cidr_set j r1"
         using ip_cidr_set_change_base ip_cidr_set_less by blast+
-    
+
       show "ip_cidr_set i2 r2 \<subseteq> ip_cidr_set i1 r1"
       proof
         fix i assume "i \<in> ip_cidr_set i2 r2"
@@ -322,7 +322,7 @@ subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
         finally show "i \<in> ip_cidr_set i1 r1" .
       qed
     qed
-    
+
     lemma ip_cidr_set_notsubset_empty_inter:
       "\<not> ip_cidr_set i1 r1 \<subseteq> ip_cidr_set i2 r2 \<Longrightarrow>
        \<not> ip_cidr_set i2 r2 \<subseteq> ip_cidr_set i1 r1 \<Longrightarrow>
@@ -343,25 +343,25 @@ subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
     using ip_cidr_set_notsubset_empty_inter by blast
 
   text\<open>Computing the intersection of two IP address ranges in CIDR notation\<close>
-  fun ipcidr_conjunct :: "('i::len word \<times> nat) \<Rightarrow> ('i word \<times> nat) \<Rightarrow> ('i word \<times> nat) option" where 
+  fun ipcidr_conjunct :: "('i::len word \<times> nat) \<Rightarrow> ('i word \<times> nat) \<Rightarrow> ('i word \<times> nat) option" where
     "ipcidr_conjunct (base1, m1) (base2, m2) = (
        if
          ipset_from_cidr base1 m1 \<inter> ipset_from_cidr base2 m2 = {}
        then
          None
-       else if 
+       else if
          ipset_from_cidr base1 m1 \<subseteq> ipset_from_cidr base2 m2
-       then 
+       then
          Some (base1, m1)
        else
          Some (base2, m2)
       )"
-  
+
   text{*Intersecting with an address with prefix length zero always yields a non-empty result.*}
   lemma ipcidr_conjunct_any: "ipcidr_conjunct a (x,0) \<noteq> None" "ipcidr_conjunct (y,0) b \<noteq> None"
      apply(cases a, simp add: ipset_from_cidr_0 ipset_from_cidr_not_empty)
     by(cases b, simp add: ipset_from_cidr_0 ipset_from_cidr_not_empty)
-  
+
   lemma ipcidr_conjunct_correct: "(case ipcidr_conjunct (b1, m1) (b2, m2)
                                           of Some (bx, mx) \<Rightarrow> ipset_from_cidr bx mx
                                           |  None \<Rightarrow> {}) =
@@ -369,20 +369,20 @@ subsection\<open>Clever Operations on IP Addresses in CIDR Notation\<close>
     apply(simp split: if_split_asm)
     using ip_cidr_intersect by fast
   declare ipcidr_conjunct.simps[simp del]
-  
+
 
 subsection\<open>Code Equations\<close>
   text\<open>Executable definition using word intervals\<close>
-  lemma ipcidr_conjunct_word[code_unfold]: 
+  lemma ipcidr_conjunct_word[code_unfold]:
   "ipcidr_conjunct ips1 ips2 = (
      if
       wordinterval_empty (wordinterval_intersection
                             (ipcidr_tuple_to_wordinterval ips1) (ipcidr_tuple_to_wordinterval ips2))
      then
        None
-     else if 
+     else if
        wordinterval_subset (ipcidr_tuple_to_wordinterval ips1) (ipcidr_tuple_to_wordinterval ips2)
-     then 
+     then
        Some ips1
      else
        Some ips2
@@ -398,12 +398,12 @@ subsection\<open>Code Equations\<close>
   export_code ipcidr_conjunct checking SML
 
   text\<open>making element check executable\<close>
-  lemma addr_in_ipset_from_netmask_code[code_unfold]: 
+  lemma addr_in_ipset_from_netmask_code[code_unfold]:
     "addr \<in> (ipset_from_netmask base netmask) \<longleftrightarrow>
       (base AND netmask) \<le> addr \<and> addr \<le> (base AND netmask) OR (NOT netmask)"
     by(simp add: ipset_from_netmask_def Let_def)
   lemma addr_in_ipset_from_cidr_code[code_unfold]:
-    "(addr::'i::len word) \<in> (ipset_from_cidr pre len) \<longleftrightarrow> 
+    "(addr::'i::len word) \<in> (ipset_from_cidr pre len) \<longleftrightarrow>
        (pre AND ((mask len) << (len_of TYPE('i) - len))) \<le> addr \<and>
         addr \<le> pre OR (mask (len_of TYPE('i) - len))"
   unfolding ipset_from_cidr_alt by simp

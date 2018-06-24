@@ -19,7 +19,7 @@ section \<open>IPv4 Adresses\<close>
     "ipv4addr_of_nat n =  of_nat n"
 
   text\<open>The maximum IPv4 addres\<close>
-  definition max_ipv4_addr :: "ipv4addr" where 
+  definition max_ipv4_addr :: "ipv4addr" where
     "max_ipv4_addr \<equiv> ipv4addr_of_nat ((2^32) - 1)"
 
   lemma max_ipv4_addr_number: "max_ipv4_addr = 4294967295"
@@ -47,9 +47,9 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
     "ipv4addr_of_dotdecimal (a,b,c,d) = ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a )"
 
   fun dotdecimal_of_ipv4addr :: "ipv4addr \<Rightarrow> nat \<times> nat \<times> nat \<times> nat" where
-    "dotdecimal_of_ipv4addr a = (nat_of_ipv4addr ((a >> 24) AND 0xFF), 
-                                    nat_of_ipv4addr ((a >> 16) AND 0xFF), 
-                                    nat_of_ipv4addr ((a >> 8) AND 0xFF), 
+    "dotdecimal_of_ipv4addr a = (nat_of_ipv4addr ((a >> 24) AND 0xFF),
+                                    nat_of_ipv4addr ((a >> 16) AND 0xFF),
+                                    nat_of_ipv4addr ((a >> 8) AND 0xFF),
                                     nat_of_ipv4addr (a AND 0xff))"
 
   declare ipv4addr_of_dotdecimal.simps[simp del]
@@ -63,7 +63,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
     by(simp add: dotdecimal_of_ipv4addr.simps nat_of_ipv4addr_def)
 
   text\<open>a different notation for @{term ipv4addr_of_dotdecimal}\<close>
-  lemma ipv4addr_of_dotdecimal_bit: 
+  lemma ipv4addr_of_dotdecimal_bit:
     "ipv4addr_of_dotdecimal (a,b,c,d) =
       (ipv4addr_of_nat a << 24) + (ipv4addr_of_nat b << 16) +
        (ipv4addr_of_nat c << 8) + ipv4addr_of_nat d"
@@ -90,13 +90,13 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
   qed
 
   lemma size_ipv4addr: "size (x::ipv4addr) = 32" by(simp add:word_size)
- 
+
   lemma dotdecimal_of_ipv4addr_ipv4addr_of_dotdecimal:
   "\<lbrakk> a < 256; b < 256; c < 256; d < 256 \<rbrakk> \<Longrightarrow>
     dotdecimal_of_ipv4addr (ipv4addr_of_dotdecimal (a,b,c,d)) = (a,b,c,d)"
   proof -
     assume  "a < 256" and "b < 256" and "c < 256" and "d < 256"
-    note assms= \<open>a < 256\<close> \<open>b < 256\<close> \<open>c < 256\<close> \<open>d < 256\<close> 
+    note assms= \<open>a < 256\<close> \<open>b < 256\<close> \<open>c < 256\<close> \<open>d < 256\<close>
     hence a:  "nat_of_ipv4addr ((ipv4addr_of_nat (d + 256 * c + 65536 * b + 16777216 * a) >> 24) AND mask 8) = a"
       apply(simp add: ipv4addr_of_nat_def word_of_nat)
       apply(simp add: nat_of_ipv4addr_def unat_def)
@@ -124,7 +124,7 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       (*The [simplified] is needed because Word_Lib adds some additional simp rules*)
       done
       \<comment> \<open>When @{file "../Word_Lib/Word_Lemmas.thy"} is imported,
-         some @{file "Word_More.thy"} and @{file "NumberWang_IPv4.thy"} lemmas need the
+         some @{file "NumberWang_IPv4.thy"} lemmas need the
          [simplified] attribute because @{text Word_Lib} adds some simp rules.
          This theory should also work without @{file "../Word_Lib/Word_Lemmas.thy"}\<close>
     from assms have c:
@@ -149,8 +149,8 @@ subsection\<open>Representing IPv4 Adresses (Syntax)\<close>
       apply(simp add: mask_def)
       done
   qed
-  
-  lemma ipv4addr_of_dotdecimal_dotdecimal_of_ipv4addr: 
+
+  lemma ipv4addr_of_dotdecimal_dotdecimal_of_ipv4addr:
     "(ipv4addr_of_dotdecimal (dotdecimal_of_ipv4addr ip)) = ip"
   proof -
     have ip_and_mask8_bl_drop24: "(ip::ipv4addr) AND mask 8 = of_bl (drop 24 (to_bl ip))"
@@ -206,7 +206,7 @@ subsection\<open>IP Ranges: Examples\<close>
   lemma "ipset_from_netmask (ipv4addr_of_dotdecimal (192,168,0,42)) (ipv4addr_of_dotdecimal (0,0,0,0)) = UNIV"
     by(simp add: UNIV_ipv4addrset ipset_from_netmask_def ipv4addr_of_dotdecimal.simps
                  ipv4addr_of_nat_def max_ipv4_addr_max_word)
-  
+
   text\<open>192.168.0.0/24\<close>
 
   lemma fixes addr :: ipv4addr
@@ -214,7 +214,7 @@ subsection\<open>IP Ranges: Examples\<close>
             ipset_from_netmask addr ((mask pflength) << (32 - pflength))"
     by(simp add: ipset_from_cidr_def)
 
-  lemma "ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,42)) 16 = 
+  lemma "ipset_from_cidr (ipv4addr_of_dotdecimal (192,168,0,42)) 16 =
           {ipv4addr_of_dotdecimal (192,168,0,0) .. ipv4addr_of_dotdecimal (192,168,255,255)}"
    by(simp add: ipset_from_cidr_alt mask_def  ipv4addr_of_dotdecimal.simps ipv4addr_of_nat_def)
 
@@ -230,14 +230,14 @@ subsection\<open>IP Ranges: Examples\<close>
     by (simp add: ipset_from_cidr_alt ipset_from_cidr_def)
 
   text\<open>making element check executable\<close>
-  lemma addr_in_ipv4set_from_netmask_code[code_unfold]: 
+  lemma addr_in_ipv4set_from_netmask_code[code_unfold]:
     fixes addr :: ipv4addr
     shows "addr \<in> (ipset_from_netmask base netmask) \<longleftrightarrow>
             (base AND netmask) \<le> addr \<and> addr \<le> (base AND netmask) OR (NOT netmask)"
     by (simp add: addr_in_ipset_from_netmask_code)
-  lemma addr_in_ipv4set_from_cidr_code[code_unfold]: 
+  lemma addr_in_ipv4set_from_cidr_code[code_unfold]:
     fixes addr :: ipv4addr
-    shows "addr \<in> (ipset_from_cidr pre len) \<longleftrightarrow> 
+    shows "addr \<in> (ipset_from_cidr pre len) \<longleftrightarrow>
               (pre AND ((mask len) << (32 - len))) \<le> addr \<and> addr \<le> pre OR (mask (32 - len))"
     by(simp add: addr_in_ipset_from_cidr_code)
 
@@ -247,10 +247,10 @@ subsection\<open>IP Ranges: Examples\<close>
                     ipset_from_netmask_def mask_def)
 
   definition ipv4range_UNIV :: "32 wordinterval" where "ipv4range_UNIV \<equiv> wordinterval_UNIV"
-  
+
   lemma ipv4range_UNIV_set_eq: "wordinterval_to_set ipv4range_UNIV = UNIV"
     by(simp only: ipv4range_UNIV_def wordinterval_UNIV_set_eq)
- 
+
 
   thm iffD1[OF wordinterval_eq_set_eq]
   (*TODO: probably the following is a good idea?*)
@@ -265,5 +265,5 @@ subsection\<open>IP Ranges: Examples\<close>
           network_prefix = (pre AND netmask)
       in (network_prefix, network_prefix OR (NOT netmask)))"
   by(simp add: ipcidr_to_interval_def Let_def ipcidr_to_interval_start.simps ipcidr_to_interval_end.simps)
- 
+
 end

@@ -9,9 +9,7 @@ session "IP_Addresses" (AFP) = Word_Lib +
     Automatic_Refinement.Misc (* mergesort *)
     NumberWang_IPv4
     NumberWang_IPv6
-    Word_More
   theories
-    Word_Next
     WordInterval
     IP_Address
     IPv4
