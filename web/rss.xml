@@ -9,7 +9,43 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>14 Jun 2018 00:00:00 +0000</pubDate>
+    <pubDate>23 Jun 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Pell's Equation</title>
+              <link>https://www.isa-afp.org/entries/Pell.html</link>
+       <guid>https://www.isa-afp.org/entries/Pell.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>23 Jun 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; This article gives the basic theory of Pell&#39;s equation
+&lt;em&gt;x&lt;/em&gt;&lt;sup&gt;2&lt;/sup&gt; = 1 +
+&lt;em&gt;D&lt;/em&gt;&amp;thinsp;&lt;em&gt;y&lt;/em&gt;&lt;sup&gt;2&lt;/sup&gt;,
+where
+&lt;em&gt;D&lt;/em&gt;&amp;thinsp;&amp;isin;&amp;thinsp;&amp;#8469; is
+a parameter and &lt;em&gt;x&lt;/em&gt;, &lt;em&gt;y&lt;/em&gt; are
+integer variables. &lt;/p&gt; &lt;p&gt; The main result that is proven
+is the following: If &lt;em&gt;D&lt;/em&gt; is not a perfect square,
+then there exists a &lt;em&gt;fundamental solution&lt;/em&gt;
+(&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;,
+&lt;em&gt;y&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;) that is not the
+trivial solution (1, 0) and which generates all other solutions
+(&lt;em&gt;x&lt;/em&gt;, &lt;em&gt;y&lt;/em&gt;) in the sense that
+there exists some
+&lt;em&gt;n&lt;/em&gt;&amp;thinsp;&amp;isin;&amp;thinsp;&amp;#8469;
+such that |&lt;em&gt;x&lt;/em&gt;| +
+|&lt;em&gt;y&lt;/em&gt;|&amp;thinsp;&amp;radic;&lt;span
+style=&#34;text-decoration:
+overline&#34;&gt;&lt;em&gt;D&lt;/em&gt;&lt;/span&gt; =
+(&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt; +
+&lt;em&gt;y&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;&amp;thinsp;&amp;radic;&lt;span
+style=&#34;text-decoration:
+overline&#34;&gt;&lt;em&gt;D&lt;/em&gt;&lt;/span&gt;)&lt;sup&gt;&lt;em&gt;n&lt;/em&gt;&lt;/sup&gt;.
+This also implies that the set of solutions is infinite, and it gives
+us an explicit and executable characterisation of all the solutions.
+&lt;/p&gt; &lt;p&gt; Based on this, simple executable algorithms for
+computing the fundamental solution and the infinite sequence of all
+non-negative solutions are also provided. &lt;/p&gt;</description>
+    </item>
     <item>
        <title>Projective Geometry</title>
               <link>https://www.isa-afp.org/entries/Projective_Geometry.html</link>
@@ -529,22 +565,6 @@ Refinement Framework to formulate and verify the algorithm. Via
 refinement, we apply some optimisations and finally use the
 &lt;em&gt;Sepref&lt;/em&gt; tool to obtain executable code in
 &lt;em&gt;Imperative/HOL&lt;/em&gt;.</description>
-    </item>
-    <item>
-       <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
-              <link>https://www.isa-afp.org/entries/Stochastic_Matrices.html</link>
-       <guid>https://www.isa-afp.org/entries/Stochastic_Matrices.html</guid>
-       <dc:creator> René Thiemann       </dc:creator>
-       <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
-       <description>
-Stochastic matrices are a convenient way to model discrete-time and
-finite state Markov chains. The Perron&amp;ndash;Frobenius theorem
-tells us something about the existence and uniqueness of non-negative
-eigenvectors of a stochastic matrix.  In this entry, we formalize
-stochastic matrices, link the formalization to the existing AFP-entry
-on Markov chains, and apply the Perron&amp;ndash;Frobenius theorem to
-prove that stationary distributions always exist, and they are unique
-if the stochastic matrix is irreducible.</description>
     </item>
   </channel>
 </rss>
