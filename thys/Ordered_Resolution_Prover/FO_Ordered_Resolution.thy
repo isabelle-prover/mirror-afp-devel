@@ -299,7 +299,7 @@ proof (cases rule: ord_resolve_rename.cases)
   case (ord_resolve_rename n \<rho> \<rho>s)
   note \<rho>s = this(7) and res = this(8)
   have len: "length \<rho>s = length CAs"
-    using \<rho>s renames_apart by auto
+    using \<rho>s renamings_apart_length by auto
   have "\<And>\<sigma>. is_ground_subst \<sigma> \<Longrightarrow> I \<Turnstile>m (mset (CAs \<cdot>\<cdot>cl \<rho>s) + {#DA \<cdot> \<rho>#}) \<cdot>cm \<sigma>"
     using subst_sound_scl[OF len, of I] subst_sound cc_d_true by auto
   then show "I \<Turnstile> E \<cdot> \<eta>"
@@ -342,7 +342,7 @@ lemma ord_resolve_max_side_prems: "ord_resolve CAs DA AAs As \<sigma> E \<Longri
 
 lemma ord_resolve_rename_max_side_prems:
   "ord_resolve_rename CAs DA AAs As \<sigma> E \<Longrightarrow> length CAs \<le> size DA"
-  by (elim ord_resolve_rename.cases, drule ord_resolve_max_side_prems, simp add: renames_apart)
+  by (elim ord_resolve_rename.cases, drule ord_resolve_max_side_prems, simp add: renamings_apart_length)
 
 
 subsection \<open>Inference System\<close>
@@ -932,7 +932,7 @@ proof (cases rule: ord_resolve.cases)
   note n = \<open>length CAs0 = n\<close> \<open>length \<eta>s0 = n\<close> \<open>length As0 = n\<close> \<open>length AAs0 = n\<close> \<open>length Cs0 = n\<close> n
 
   have "length (renamings_apart (DA0 # CAs0)) = Suc n"
-    using n renames_apart by auto
+    using n renamings_apart_length by auto
 
   note n = this n
 
@@ -958,11 +958,11 @@ proof (cases rule: ord_resolve.cases)
     "\<eta>s0' = map inv_renaming \<rho>s \<odot>s \<eta>s0"
 
   have renames_DA0: "is_renaming \<rho>"
-    using renames_apart unfolding \<rho>_def
+    using renamings_apart_length renamings_apart_renaming unfolding \<rho>_def
     by (metis length_greater_0_conv list.exhaust_sel list.set_intros(1) list.simps(3))
 
   have renames_CAs0: "is_renaming_list \<rho>s"
-    using renames_apart unfolding \<rho>s_def
+    using renamings_apart_length renamings_apart_renaming unfolding \<rho>s_def
     by (metis is_renaming_list_def length_greater_0_conv list.set_sel(2) list.simps(3))
 
   have "length \<rho>s = n"
@@ -989,9 +989,9 @@ proof (cases rule: ord_resolve.cases)
   have "S DA0' \<cdot> \<eta>0' = S_M S M DA"
     using as0(5) unfolding \<eta>0'_def DA0'_def using renames_DA0 sel_stable by auto
   have CAs0'_CAs: "CAs0' \<cdot>\<cdot>cl \<eta>s0' = CAs"
-    using as0(7) unfolding CAs0'_def \<eta>s0'_def using renames_apart renames_CAs0 n by auto
+    using as0(7) unfolding CAs0'_def \<eta>s0'_def using renames_CAs0 n by auto
   have Cs0'_Cs: "Cs0' \<cdot>\<cdot>cl \<eta>s0' = Cs"
-    using as0(18) unfolding Cs0'_def \<eta>s0'_def using renames_apart renames_CAs0 n by auto
+    using as0(18) unfolding Cs0'_def \<eta>s0'_def using renames_CAs0 n by auto
   have AAs0'_AAs: "AAs0' \<cdot>\<cdot>aml \<eta>s0' = AAs"
     using as0(12) unfolding \<eta>s0'_def AAs0'_def using renames_CAs0 using n by auto
   have "map S CAs0' \<cdot>\<cdot>cl \<eta>s0' = map (S_M S M) CAs"
@@ -1024,7 +1024,7 @@ proof (cases rule: ord_resolve.cases)
   qed
 
   have vd: "var_disjoint (DA0' # CAs0')"
-    unfolding DA0'_def CAs0'_def using renames_apart[of "DA0 # CAs0"]
+    unfolding DA0'_def CAs0'_def using renamings_apart_var_disjoint
     unfolding \<rho>_def \<rho>s_def
     by (metis length_greater_0_conv list.exhaust_sel n(6) substitution.subst_cls_lists_Cons
         substitution_axioms zero_less_Suc)

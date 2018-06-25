@@ -487,7 +487,7 @@ next
             apply (rule disjI1)
             apply (rule Set.CollectI)
             apply (rule_tac x="(\<rho>s ! i) \<odot> \<sigma> \<odot> \<mu>" in exI)
-            using \<rho>s_def using renames_apart apply (auto;fail)
+            using \<rho>s_def using renamings_apart_length apply (auto;fail)
             done
           subgoal
             apply (rule disjI2)
@@ -499,7 +499,7 @@ next
             subgoal
               apply (rule Set.CollectI)
               apply (rule_tac x="(\<rho>s ! i) \<odot> \<sigma> \<odot> \<mu>" in exI)
-              using \<rho>s_def using renames_apart apply (auto;fail)
+              using \<rho>s_def using renamings_apart_length apply (auto;fail)
               done
             done
           done

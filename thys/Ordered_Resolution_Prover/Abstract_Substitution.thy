@@ -225,20 +225,19 @@ locale substitution = substitution_ops subst_atm id_subst comp_subst
     id_subst :: 's and
     comp_subst :: "'s \<Rightarrow> 's \<Rightarrow> 's" +
   fixes
-    atm_of_atms :: "'a list \<Rightarrow> 'a" and
-    renamings_apart :: "'a clause list \<Rightarrow> 's list"
+    renamings_apart :: "'a clause list \<Rightarrow> 's list" and
+    atm_of_atms :: "'a list \<Rightarrow> 'a"
   assumes
     subst_atm_id_subst[simp]: "A \<cdot>a id_subst = A" and
-    subst_atm_comp_subst[simp]: "A \<cdot>a (\<tau> \<odot> \<sigma>) = (A \<cdot>a \<tau>) \<cdot>a \<sigma>" and
+    subst_atm_comp_subst[simp]: "A \<cdot>a (\<sigma> \<odot> \<tau>) = (A \<cdot>a \<sigma>) \<cdot>a \<tau>" and
     subst_ext: "(\<And>A. A \<cdot>a \<sigma> = A \<cdot>a \<tau>) \<Longrightarrow> \<sigma> = \<tau>" and
     make_ground_subst: "is_ground_cls (C \<cdot> \<sigma>) \<Longrightarrow> \<exists>\<tau>. is_ground_subst \<tau> \<and>C \<cdot> \<tau> = C \<cdot> \<sigma>" and
-    renames_apart: (* FIXME: break conjunction into three property *)
-      "\<And>Cs. length (renamings_apart Cs) = length Cs \<and>
-         (\<forall>\<rho> \<in> set (renamings_apart Cs). is_renaming \<rho>) \<and>
-         var_disjoint (Cs \<cdot>\<cdot>cl (renamings_apart Cs))" and
+    wf_strictly_generalizes_atm: "wfP strictly_generalizes_atm" and
+    renamings_apart_length:  "length (renamings_apart Cs) = length Cs" and
+    renamings_apart_renaming: "\<rho> \<in> set (renamings_apart Cs) \<Longrightarrow> is_renaming \<rho>" and
+    renamings_apart_var_disjoint: "var_disjoint (Cs \<cdot>\<cdot>cl (renamings_apart Cs))" and
     atm_of_atms_subst:
-      "\<And>As Bs. atm_of_atms As \<cdot>a \<sigma> = atm_of_atms Bs \<longleftrightarrow> map (\<lambda>A. A \<cdot>a \<sigma>) As = Bs" and
-    wf_strictly_generalizes_atm: "wfP strictly_generalizes_atm"
+      "\<And>As Bs. atm_of_atms As \<cdot>a \<sigma> = atm_of_atms Bs \<longleftrightarrow> map (\<lambda>A. A \<cdot>a \<sigma>) As = Bs"
 begin
 
 lemma subst_ext_iff: "\<sigma> = \<tau> \<longleftrightarrow> (\<forall>A. A \<cdot>a \<sigma> = A \<cdot>a \<tau>)"
@@ -1111,7 +1110,7 @@ end
 
 subsection \<open>Most General Unifiers\<close>
 
-locale mgu = substitution subst_atm id_subst comp_subst atm_of_atms renamings_apart
+locale mgu = substitution subst_atm id_subst comp_subst renamings_apart atm_of_atms
   for
     subst_atm :: "'a \<Rightarrow> 's \<Rightarrow> 'a" and
     id_subst :: 's and
