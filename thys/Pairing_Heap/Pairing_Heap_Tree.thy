@@ -5,7 +5,7 @@ section \<open>Pairing Heap in Binary Tree Representation\<close>
 theory Pairing_Heap_Tree
 imports  
   "HOL-Library.Tree_Multiset"
-  "HOL-Data_Structures.Priority_Queue"
+  "HOL-Data_Structures.Priority_Queue_Specs"
 begin
 
 subsection \<open>Definitions\<close>

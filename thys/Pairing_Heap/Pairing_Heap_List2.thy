@@ -5,7 +5,7 @@ section \<open>Pairing Heap According to Oksaki (Modified)\<close>
 theory Pairing_Heap_List2
 imports
   "HOL-Library.Multiset"
-  "HOL-Data_Structures.Priority_Queue"
+  "HOL-Data_Structures.Priority_Queue_Specs"
 begin
 
 subsection \<open>Definitions\<close>

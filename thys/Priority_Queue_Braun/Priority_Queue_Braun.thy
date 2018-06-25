@@ -4,7 +4,7 @@ theory Priority_Queue_Braun
 imports
   "HOL-Library.Tree_Multiset"
   "HOL-Library.Pattern_Aliases"
-  "HOL-Data_Structures.Priority_Queue"
+  "HOL-Data_Structures.Priority_Queue_Specs"
 begin
 
 subsection "Introduction"
