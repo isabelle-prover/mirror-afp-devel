@@ -112,7 +112,7 @@ lemma
   shows
     Rf_Sup_subset_Rf_Liminf: "Rf (Sup_llist Ns) \<subseteq> Rf (Liminf_llist Ns)" and
     Ri_Sup_subset_Ri_Liminf: "Ri (Sup_llist Ns) \<subseteq> Ri (Liminf_llist Ns)" and
-    sat_deriv_Liminf_iff: "satisfiable (Liminf_llist Ns) \<longleftrightarrow> satisfiable (lhd Ns)"
+    sat_limit_iff: "satisfiable (Liminf_llist Ns) \<longleftrightarrow> satisfiable (lhd Ns)"
 proof -
   {
     fix C i j
@@ -183,8 +183,8 @@ qed
 lemma
   assumes "chain (\<triangleright>) Ns"
   shows
-    Rf_Liminf_eq_Rf_Sup: "Rf (Liminf_llist Ns) = Rf (Sup_llist Ns)" and
-    Ri_Liminf_eq_Ri_Sup: "Ri (Liminf_llist Ns) = Ri (Sup_llist Ns)"
+    Rf_limit_Sup: "Rf (Liminf_llist Ns) = Rf (Sup_llist Ns)" and
+    Ri_limit_Sup: "Ri (Liminf_llist Ns) = Ri (Sup_llist Ns)"
   using assms
   by (auto simp: Rf_Sup_subset_Rf_Liminf Rf_mono Ri_Sup_subset_Ri_Liminf Ri_mono
       Liminf_llist_subset_Sup_llist subset_antisym)

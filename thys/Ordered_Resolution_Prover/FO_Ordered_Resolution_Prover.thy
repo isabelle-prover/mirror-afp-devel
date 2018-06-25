@@ -1270,7 +1270,7 @@ proof -
   then have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
     using true_clss_def by auto
   then have "\<not> satisfiable (lhd (lmap grounding_of_state Sts))"
-    using sr_ext.sat_deriv_Liminf_iff RP_ground_derive_chain by metis
+    using sr_ext.sat_limit_iff RP_ground_derive_chain by metis
   then show ?thesis
     unfolding lhd_lmap_Sts .
 qed
@@ -1528,7 +1528,7 @@ corollary RP_complete_if_fair:
   shows "{#} \<in> Q_of_state (Liminf_state Sts)"
 proof -
   have "\<not> satisfiable (Liminf_llist (lmap grounding_of_state Sts))"
-    unfolding sr_ext.sat_deriv_Liminf_iff[OF RP_ground_derive_chain]
+    unfolding sr_ext.sat_limit_iff[OF RP_ground_derive_chain]
     by (rule unsat[folded lhd_lmap_Sts[of grounding_of_state]])
   moreover have "sr.saturated_upto (Liminf_llist (lmap grounding_of_state Sts))"
     by (rule RP_saturated_if_fair[OF fair, simplified])
