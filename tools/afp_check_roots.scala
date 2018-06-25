@@ -16,16 +16,17 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
     selected.flatMap { name =>
       val info = tree(name)
       val entry = info.dir.base.implode
-      if (info.options.real("timeout") == 0)
+      val timeout = info.options.real("timeout")
+      if (timeout == 0 || timeout % 300 != 0)
         Some((entry, name))
       else
         None
     } match {
       case Nil =>
-        print_good("All sessions specify a timeout.")
+        print_good("All sessions specify a correct timeout.")
         true
       case offenders =>
-        print_bad("The following entries contain sessions without timeouts:")
+        print_bad("The following entries contain sessions without timeouts or with timeouts not divisible by 300:")
         offenders.groupBy(_._1).mapValues(_.map(_._2)).foreach { case (entry, sessions) =>
           println(s"""  $entry ${sessions.mkString("(", ", ", ")")}""")
         }
