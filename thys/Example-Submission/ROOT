@@ -1,11 +1,15 @@
 chapter AFP
 
-(* There must be one session with the name of the entry.
-   This session generates the web document.
-   There may be further sessions.
-   All sessions should be in group (AFP) - otherwise they are not
+(* There must be one session with the (short) name of the entry.
+   This session generates the web document and HTML files.
+
+   It is strongly encouraged to have precisely one session, but it
+   if needed, further sessions are permitted.
+
+   All sessions must be in group (AFP) - otherwise they are not
    run upon submission and by the later automatic regression tests.
-   Every theory should be included in at least one of the sessions.
+
+   Every theory must be included in at least one of the sessions.
 *)
 
 (* Session name, add to AFP group, list base session: *)
@@ -24,7 +28,7 @@ session "Example-Submission" (AFP) = HOL +
 (* The top-level theories of the submission: *)
   theories
     Submission
-    
+
 (* Dependencies on document source files: *)
   document_files
     "root.bib"
