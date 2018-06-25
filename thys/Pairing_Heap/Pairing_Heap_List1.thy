@@ -6,7 +6,7 @@ theory Pairing_Heap_List1
 imports
   "HOL-Library.Multiset"
   "HOL-Library.Pattern_Aliases"
-  "HOL-Data_Structures.Priority_Queue"
+  "HOL-Data_Structures.Priority_Queue_Specs"
 begin
 
 subsection \<open>Definitions\<close>

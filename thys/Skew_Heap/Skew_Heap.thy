@@ -4,7 +4,7 @@ theory Skew_Heap
 imports
   "HOL-Library.Tree_Multiset"
   "HOL-Library.Pattern_Aliases"
-  "HOL-Data_Structures.Priority_Queue"
+  "HOL-Data_Structures.Priority_Queue_Specs"
 begin
 
 unbundle pattern_aliases
