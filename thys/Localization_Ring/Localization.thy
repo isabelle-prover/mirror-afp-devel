@@ -736,7 +736,8 @@ proof-
       (t \<otimes> t') \<otimes> ((snd x' \<otimes> snd y') \<otimes> (s \<otimes> r')) \<ominus> (t \<otimes> t') \<otimes> ((s \<otimes> s') \<otimes> (snd x' \<otimes> fst y'))"
       using f32 f33 \<open>snd x' \<otimes> snd y' \<in> carrier R\<close> \<open>t \<otimes> s \<otimes> snd x' \<in> carrier R\<close> assms(2) f17 f18 f19 
         f25 f30 f5 f7 f9 l_zero r_null rel_def zero_closed 
-      by auto
+      apply clarsimp
+      using l_zero semiring_simprules(3) by presburger
     then have f40:"((t' \<otimes> s' \<otimes> snd y') \<otimes> (t \<otimes> (snd x' \<otimes> r \<ominus> s \<otimes> fst x'))) \<oplus> 
       ((t \<otimes> s \<otimes> snd x') \<otimes> (t' \<otimes> (snd y' \<otimes> r' \<ominus> s' \<otimes> fst y'))) = 
       ((t \<otimes> t') \<otimes> ((snd x' \<otimes> snd y') \<otimes> (s' \<otimes> r) \<ominus> (s \<otimes> s') \<otimes> (snd y' \<otimes> fst x'))) \<oplus> 
@@ -758,7 +759,7 @@ proof-
     have "(snd x' \<otimes> snd y') \<otimes> (s' \<otimes> r) \<ominus> (s \<otimes> s') \<otimes> (snd y' \<otimes> fst x') \<oplus> (snd x' \<otimes> snd y') \<otimes> (s \<otimes> r') \<ominus> (s \<otimes> s') \<otimes> (snd x' \<otimes> fst y') =
       (snd x' \<otimes> snd y') \<otimes> (s' \<otimes> r) \<oplus> (snd x' \<otimes> snd y') \<otimes> (s \<otimes> r') \<ominus> (s \<otimes> s') \<otimes> (snd y' \<otimes> fst x') \<ominus> (s \<otimes> s') \<otimes> (snd x' \<otimes> fst y')"
       using four_elem_comm[of "(snd x' \<otimes> snd y') \<otimes> (s' \<otimes> r)" "(snd x' \<otimes> snd y') \<otimes> (s \<otimes> r')" "(s \<otimes> s') \<otimes> (snd y' \<otimes> fst x')" "(s \<otimes> s') \<otimes> (snd x' \<otimes> fst y')"]
-      by (smt BNF_Def.Collect_case_prodD assms(1) assms(2) eq_class_of_rng_of_frac_def f1 f2 
+      by (smt BNF_Def.Collect_case_prodD assms eq_class_of_rng_of_frac_def f1 f2 
           mem_Sigma_iff partial_object.select_convs(1) rel_def semiring_simprules(3) subset subset_iff)
     then have "(snd x' \<otimes> snd y') \<otimes> (s' \<otimes> r) \<ominus> (s \<otimes> s') \<otimes> (snd y' \<otimes> fst x') \<oplus> (snd x' \<otimes> snd y') \<otimes> (s \<otimes> r') \<ominus> (s \<otimes> s') \<otimes> (snd x' \<otimes> fst y') =
       ((snd x' \<otimes> snd y') \<otimes> (s' \<otimes> r) \<oplus> (snd x' \<otimes> snd y') \<otimes> (s \<otimes> r')) \<ominus> (s \<otimes> s') \<otimes> (snd y' \<otimes> fst x') \<ominus> (s \<otimes> s') \<otimes> (snd x' \<otimes> fst y')"
@@ -771,7 +772,7 @@ proof-
       using \<open>snd x' \<otimes> snd y' \<in> carrier R\<close> assms(2) f19 rel_def 
       by auto
     have "(s \<otimes> s') \<otimes> (snd x' \<otimes> fst y') \<in> carrier R"
-      by (metis (no_types, lifting) BNF_Def.Collect_case_prodD assms(1) assms(2) 
+      by (metis (no_types, lifting) BNF_Def.Collect_case_prodD assms 
           eq_class_of_rng_of_frac_def f1 f2 mem_Sigma_iff partial_object.select_convs(1) rel_def 
           semiring_simprules(3) subset subset_iff)
     then have f43bis:"((snd x' \<otimes> snd y') \<otimes> (s' \<otimes> r) \<ominus> (s \<otimes> s') \<otimes> (snd y' \<otimes> fst x')) \<oplus> ((snd x' \<otimes> snd y') \<otimes> (s \<otimes> r') \<ominus> (s \<otimes> s') \<otimes> (snd x' \<otimes> fst y')) =
@@ -781,7 +782,7 @@ proof-
     have f44:"s \<otimes> s' \<otimes> (snd y' \<otimes> fst x') \<in> carrier R"
       by (simp add: f14)
     have f45:"s \<otimes> s' \<otimes> (snd x' \<otimes> fst y') \<in> carrier R"
-      by (metis (no_types, lifting) BNF_Def.Collect_case_prodD assms(1) assms(2) 
+      by (metis (no_types, lifting) BNF_Def.Collect_case_prodD assms 
           eq_class_of_rng_of_frac_def f1 f2 mem_Sigma_iff partial_object.select_convs(1) rel_def 
           semiring_simprules(3) subset subset_iff)
     then have "\<ominus> ((s \<otimes> s') \<otimes> (snd y' \<otimes> fst x') \<oplus> (s \<otimes> s') \<otimes> (snd x' \<otimes> fst y')) =
@@ -1020,59 +1021,45 @@ qed
 lemma abelian_group_rng_of_frac:
   shows "abelian_group (rec_rng_of_frac)"
 proof
-  show "\<And>x y. x \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-           y \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-           x \<otimes>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub> y
-           \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>"
+  show "\<And>x y. \<lbrakk>x \<in> carrier (add_monoid rec_rng_of_frac);
+            y \<in> carrier (add_monoid rec_rng_of_frac)\<rbrakk>
+           \<Longrightarrow> x \<otimes>\<^bsub>add_monoid rec_rng_of_frac\<^esub> y
+               \<in> carrier (add_monoid rec_rng_of_frac)"
     using closed_add_rng_of_frac
     by (smt mem_Collect_eq monoid.select_convs(1) partial_object.select_convs(1) rec_rng_of_frac_def 
         set_eq_class_of_rng_of_frac_def)
-  show "\<And>x y z. x \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-             y \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-             z \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-             x \<otimes>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub>
-             y \<otimes>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub>
-             z =
-             x \<otimes>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub>
-             (y \<otimes>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub> z)"
+  show "\<And>x y z.
+       \<lbrakk>x \<in> carrier (add_monoid rec_rng_of_frac);
+        y \<in> carrier (add_monoid rec_rng_of_frac);
+        z \<in> carrier (add_monoid rec_rng_of_frac)\<rbrakk>
+       \<Longrightarrow> x \<otimes>\<^bsub>add_monoid rec_rng_of_frac\<^esub> y \<otimes>\<^bsub>add_monoid rec_rng_of_frac\<^esub> z =
+           x \<otimes>\<^bsub>add_monoid rec_rng_of_frac\<^esub> (y \<otimes>\<^bsub>add_monoid rec_rng_of_frac\<^esub> z)"
     using assoc_add_rng_of_frac
     by (smt mem_Collect_eq monoid.simps(1) partial_object.select_convs(1) rec_rng_of_frac_def 
         set_eq_class_of_rng_of_frac_def)
-  show "\<one>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub>
-    \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>"
-    using add_rng_of_frac_zero
-    by (simp add: rec_rng_of_frac_def)
-  show "\<And>x. x \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-         \<one>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub> \<otimes>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub>
-         x =
-         x"
+  show "\<one>\<^bsub>add_monoid rec_rng_of_frac\<^esub> \<in> carrier (add_monoid rec_rng_of_frac)"
+    using add_rng_of_frac_zero by (simp add: rec_rng_of_frac_def)
+  show "\<And>x. x \<in> carrier (add_monoid rec_rng_of_frac) \<Longrightarrow>
+         \<one>\<^bsub>add_monoid rec_rng_of_frac\<^esub> \<otimes>\<^bsub>add_monoid rec_rng_of_frac\<^esub> x = x"
     using l_unit_add_rng_of_frac
     by (smt mem_Collect_eq monoid.select_convs(1) monoid.select_convs(2) partial_object.select_convs(1) 
         rec_rng_of_frac_def set_eq_class_of_rng_of_frac_def)
-  show "\<And>x. x \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-         x \<otimes>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub>
-         \<one>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub> =
-         x"
+  show "\<And>x. x \<in> carrier (add_monoid rec_rng_of_frac) \<Longrightarrow>
+         x \<otimes>\<^bsub>add_monoid rec_rng_of_frac\<^esub> \<one>\<^bsub>add_monoid rec_rng_of_frac\<^esub> = x"
     using r_unit_add_rng_of_frac
     by (smt mem_Collect_eq monoid.select_convs(1) monoid.select_convs(2) partial_object.select_convs(1) 
         rec_rng_of_frac_def set_eq_class_of_rng_of_frac_def)
-  show "\<And>x y. x \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-           y \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-           x \<otimes>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub> y =
-           y \<otimes>\<^bsub>\<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>\<^esub> x"
+  show "\<And>x y. \<lbrakk>x \<in> carrier (add_monoid rec_rng_of_frac); y \<in> carrier (add_monoid rec_rng_of_frac)\<rbrakk>
+           \<Longrightarrow> x \<otimes>\<^bsub>add_monoid rec_rng_of_frac\<^esub> y = y \<otimes>\<^bsub>add_monoid rec_rng_of_frac\<^esub> x"
     using comm_add_rng_of_frac
     by (smt mem_Collect_eq monoid.select_convs(1) partial_object.select_convs(1) rec_rng_of_frac_def 
         set_eq_class_of_rng_of_frac_def)
-  show "carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>
-    \<subseteq> Units \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>"
+  show "carrier (add_monoid rec_rng_of_frac) \<subseteq> Units (add_monoid rec_rng_of_frac)"
   proof
-    show "\<And>x. x \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr> \<Longrightarrow>
-         x \<in> Units \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>"
+    show "x \<in> Units (add_monoid rec_rng_of_frac)" if "x \<in> carrier (add_monoid rec_rng_of_frac)" for x
     proof-
-      fix x
-      assume a1:"x \<in> carrier \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>"
-      then have "x \<in> set_class_of\<^bsub>rel\<^esub>"
-        using rec_rng_of_frac_def by simp
+      have "x \<in> set_class_of\<^bsub>rel\<^esub>"
+        using that rec_rng_of_frac_def by simp
       then obtain r and s where f1:"(r, s) \<in> carrier rel" and f2:"x = (r |\<^bsub>rel\<^esub> s)"
         using set_eq_class_of_rng_of_frac_def
         by (smt mem_Collect_eq)
@@ -1087,9 +1074,8 @@ proof
         by (metis (no_types, lifting) abelian_group.a_inv_closed class_of_zero_rng_of_frac 
             closed_add_rng_of_frac f1 is_abelian_group mem_Sigma_iff partial_object.select_convs(1) 
             rel_def r_unit_add_rng_of_frac zero_closed) 
-      thus "x \<in> Units \<lparr>carrier = carrier rec_rng_of_frac, mult = op \<oplus>\<^bsub>rec_rng_of_frac\<^esub>, one = \<zero>\<^bsub>rec_rng_of_frac\<^esub>\<rparr>"
-        using Units_def rec_rng_of_frac_def a1
-        by (simp add: \<open>\<And>G. Units G = {y \<in> carrier G. \<exists>x\<in>carrier G. x \<otimes>\<^bsub>G\<^esub> y = \<one>\<^bsub>G\<^esub> \<and> y \<otimes>\<^bsub>G\<^esub> x = \<one>\<^bsub>G\<^esub>}\<close>)
+      thus "x \<in> Units (add_monoid rec_rng_of_frac)"
+        using rec_rng_of_frac_def that by (simp add: Units_def)
     qed
   qed
 qed
