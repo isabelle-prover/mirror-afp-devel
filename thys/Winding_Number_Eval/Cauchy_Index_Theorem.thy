@@ -1994,7 +1994,7 @@ proof -
     have "uniform_discrete S"
     proof -
       have "a' \<noteq> 0 \<or> b' \<noteq> 0 \<or> c' \<noteq> 0" 
-        using assms complex_Re_Im_cancel_iff unfolding a'_def b'_def c'_def 
+        using assms complex_eq_iff unfolding a'_def b'_def c'_def 
         by auto
       then have "periodic_set (roots f) (4 * pi)"
         using periodic_set_sin_cos_linear[of a' b' c',folded f_def] by auto
