@@ -41,13 +41,13 @@ definition is_norm_1 :: "complex \<Rightarrow> bool" where
   "is_norm_1 z = ((Re z)\<^sup>2 + (Im z)\<^sup>2 = 1)"
 
 lemma is_norm_1[simp]: "is_norm_1 x = (norm x = 1)"
-  unfolding is_norm_1_def complex_norm_def by simp
+  unfolding is_norm_1_def norm_complex_def by simp
 
 definition is_norm_le_1 :: "complex \<Rightarrow> bool" where
   "is_norm_le_1 z = ((Re z)\<^sup>2 + (Im z)\<^sup>2 \<le> 1)"
 
 lemma is_norm_le_1[simp]: "is_norm_le_1 x = (norm x \<le> 1)"
-  unfolding is_norm_le_1_def complex_norm_def by simp
+  unfolding is_norm_le_1_def norm_complex_def by simp
 
 instantiation complex :: finite_UNIV
 begin

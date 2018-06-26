@@ -2157,7 +2157,7 @@ next
         using \<open>p\<noteq>0\<close> img_ll img_rr unfolding lr_def 
         by (auto simp add:path_image_join path_image_compose path_compose_join 
             pathstart_compose pathfinish_compose valid_path_imp_path)
-      then show ?thesis by (simp add: complex_equality complex_is_Int_iff)
+      then show ?thesis by (simp add: complex_eqI complex_is_Int_iff)
     qed
     also have "... =  Re (winding_number (poly p \<circ> ll) 0) + Re (winding_number (poly p \<circ> rr) 0)"
       unfolding lr_def path_compose_join using img_ll img_rr
@@ -2248,7 +2248,7 @@ proof -
         assume "\<not> (\<forall>x\<in>proots pp. Im x \<noteq> 0)"
         then obtain x where "x\<in>proots pp" and "Im x=0" by auto
         then obtain t where "x = of_real t"
-          by (simp add: complex_Re_Im_cancel_iff)
+          by (simp add: complex_eq_iff)
         then have "poly pp (of_real t) = 0"
           using \<open>x\<in>proots pp\<close> by auto
         then have "Re (poly pp (of_real t)) = 0" "Im (poly pp (of_real t)) = 0"

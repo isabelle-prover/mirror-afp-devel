@@ -461,7 +461,7 @@ instance real :: conjugatable_ring_1_abs_real_line
 
 instance complex :: semiring_1_real_line
   apply intro_classes
-  by (auto simp: complex_Re_Im_cancel_iff mult_le_cancel_left mult_le_cancel_right mult_neg_neg)
+  by (auto simp: complex_eq_iff mult_le_cancel_left mult_le_cancel_right mult_neg_neg)
 
 text {*
   Due to the assumption @{thm abs_ge_self} from Groups.thy,

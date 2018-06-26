@@ -47,10 +47,10 @@ definition "to_rat_real (x :: real) = (if x \<in> \<rat> then (THE y. x = of_rat
 end
 
 lemma of_nat_complex: "of_nat n = Complex (of_nat n) 0"
-  by (simp add: complex_equality)
+  by (simp add: complex_eqI)
 
 lemma of_int_complex: "of_int z = Complex (of_int z) 0"
-  by (simp add: complex_Re_Im_cancel_iff)
+  by (simp add: complex_eq_iff)
 
 lemma of_rat_complex: "of_rat q = Complex (of_rat q) 0"
 proof -

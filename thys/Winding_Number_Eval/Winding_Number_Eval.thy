@@ -467,7 +467,7 @@ proof -
           moreover have "d1 =0 \<longrightarrow> c1\<noteq>0" 
           proof (rule ccontr)
             assume "\<not> (d1 = 0 \<longrightarrow> c1 \<noteq> 0)"
-            then have "a=z" unfolding d1_def c1_def by (simp add: complex_equality)  
+            then have "a=z" unfolding d1_def c1_def by (simp add: complex_eqI)  
             then have "z\<in>path_image (linepath a b)" by auto
             then show False using \<open>z\<notin>closed_segment a b\<close> by auto
           qed    
@@ -552,7 +552,7 @@ proof -
           moreover have "d2 =0 \<longrightarrow> c2\<noteq>0" 
           proof (rule ccontr)
             assume "\<not> (d2 = 0 \<longrightarrow> c2 \<noteq> 0)"
-            then have "b=z" unfolding d2_def c2_def by (simp add: complex_equality)  
+            then have "b=z" unfolding d2_def c2_def by (simp add: complex_eqI)  
             then have "z\<in>path_image (linepath a b)" by auto
             then show False using \<open>z\<notin>closed_segment a b\<close> by auto
           qed    
@@ -752,7 +752,7 @@ proof -
         proof (rule ccontr)
           assume "\<not> Im (linepath a b u - z) \<noteq> 0 "
           then have "?g u = 0" using \<open>Re(?g u) = 0\<close> 
-            by (simp add: complex_Re_Im_cancel_iff)
+            by (simp add: complex_eq_iff)
           then have "z \<in> closed_segment a b" using \<open>0<u\<close> \<open>u<1\<close>
             by (auto intro:linepath_in_path)
           thus False using \<open>z \<notin> closed_segment a b\<close> by simp   
@@ -1001,7 +1001,7 @@ proof -
         proof (rule ccontr)
           assume "\<not> Im (linepath a b u - z) \<noteq> 0 "
           then have "?g u = 0" using \<open>Re(?g u) = 0\<close> 
-            by (simp add: complex_Re_Im_cancel_iff)
+            by (simp add: complex_eq_iff)
           thus False using assms \<open>0<u\<close> \<open>u<1\<close> unfolding path_image_def by fastforce
         qed
         show "((\<lambda>t. Re (linepath a b t - z)) has_real_derivative Re b - Re a) (at u)"
