@@ -9,25 +9,6 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-<<<<<<< working copy
-    <pubDate>05 Jun 2018 00:00:00 +0000</pubDate>
-    <item>
-       <title>Partial Order Reduction</title>
-              <link>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</link>
-       <guid>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</guid>
-       <dc:creator> Julian Brunner       </dc:creator>
-       <pubDate>05 Jun 2018 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a formalization of the abstract theory of ample
-set partial order reduction. The formalization includes transition
-systems with actions, trace theory, as well as basics on finite,
-infinite, and lazy sequences. We also provide a basic framework for
-static analysis on concurrent systems with respect to the ample set
-condition.</description>
-    </item>
-||||||| base
-    <pubDate>27 May 2018 00:00:00 +0000</pubDate>
-=======
     <pubDate>23 Jun 2018 00:00:00 +0000</pubDate>
     <item>
        <title>Pell's Equation</title>
@@ -94,7 +75,20 @@ multiplicative monoid). This localization is itself a commutative ring
 and we build the natural homomorphism of rings from R to its
 localization.</description>
     </item>
->>>>>>> merge rev
+    <item>
+       <title>Partial Order Reduction</title>
+              <link>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</link>
+       <guid>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</guid>
+       <dc:creator> Julian Brunner       </dc:creator>
+       <pubDate>05 Jun 2018 00:00:00 +0000</pubDate>
+       <description>
+This entry provides a formalization of the abstract theory of ample
+set partial order reduction. The formalization includes transition
+systems with actions, trace theory, as well as basics on finite,
+infinite, and lazy sequences. We also provide a basic framework for
+static analysis on concurrent systems with respect to the ample set
+condition.</description>
+    </item>
     <item>
        <title>Optimal Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/Optimal_BST.html</link>
@@ -566,154 +560,5 @@ combinatorial proof first requires the introduction of list
 interleavings, and significant more detail than its informal
 presentation.</description>
     </item>
-    <item>
-       <title>The Median-of-Medians Selection Algorithm</title>
-              <link>https://www.isa-afp.org/entries/Median_Of_Medians_Selection.html</link>
-       <guid>https://www.isa-afp.org/entries/Median_Of_Medians_Selection.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>21 Dec 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This entry provides an executable functional implementation
-of the Median-of-Medians algorithm for selecting the
-&lt;em&gt;k&lt;/em&gt;-th smallest element of an unsorted list
-deterministically in linear time. The size bounds for the recursive
-call that lead to the linear upper bound on the run-time of the
-algorithm are also proven. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The Mason–Stothers Theorem</title>
-              <link>https://www.isa-afp.org/entries/Mason_Stothers.html</link>
-       <guid>https://www.isa-afp.org/entries/Mason_Stothers.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>21 Dec 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides a formalisation of Snyder’s simple and
-elegant proof of the Mason&amp;ndash;Stothers theorem, which is the
-polynomial analogue of the famous abc Conjecture for integers.
-Remarkably, Snyder found this very elegant proof when he was still a
-high-school student.&lt;/p&gt; &lt;p&gt;In short, the statement of the
-theorem is that three non-zero coprime polynomials
-&lt;em&gt;A&lt;/em&gt;, &lt;em&gt;B&lt;/em&gt;, &lt;em&gt;C&lt;/em&gt;
-over a field which sum to 0 and do not all have vanishing derivatives
-fulfil max{deg(&lt;em&gt;A&lt;/em&gt;), deg(&lt;em&gt;B&lt;/em&gt;),
-deg(&lt;em&gt;C&lt;/em&gt;)} &lt; deg(rad(&lt;em&gt;ABC&lt;/em&gt;))
-where the rad(&lt;em&gt;P&lt;/em&gt;) denotes the
-&lt;em&gt;radical&lt;/em&gt; of &lt;em&gt;P&lt;/em&gt;,
-i.&amp;thinsp;e. the product of all unique irreducible factors of
-&lt;em&gt;P&lt;/em&gt;.&lt;/p&gt; &lt;p&gt;This theorem also implies a
-kind of polynomial analogue of Fermat’s Last Theorem for polynomials:
-except for trivial cases,
-&lt;em&gt;A&lt;sup&gt;n&lt;/sup&gt;&lt;/em&gt; +
-&lt;em&gt;B&lt;sup&gt;n&lt;/sup&gt;&lt;/em&gt; +
-&lt;em&gt;C&lt;sup&gt;n&lt;/sup&gt;&lt;/em&gt; = 0 implies
-n&amp;nbsp;&amp;le;&amp;nbsp;2 for coprime polynomials
-&lt;em&gt;A&lt;/em&gt;, &lt;em&gt;B&lt;/em&gt;, &lt;em&gt;C&lt;/em&gt;
-over a field.&lt;/em&gt;&lt;/p&gt;</description>
-    </item>
-    <item>
-<<<<<<< working copy
-       <title>Dirichlet L-Functions and Dirichlet's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Dirichlet_L.html</link>
-       <guid>https://www.isa-afp.org/entries/Dirichlet_L.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>21 Dec 2017 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This article provides a formalisation of Dirichlet characters
-and Dirichlet &lt;em&gt;L&lt;/em&gt;-functions including proofs of
-their basic properties &amp;ndash; most notably their analyticity,
-their areas of convergence, and their non-vanishing for &amp;Re;(s)
-&amp;ge; 1. All of this is built in a very high-level style using
-Dirichlet series. The proof of the non-vanishing follows a very short
-and elegant proof by Newman, which we attempt to reproduce faithfully
-in a similar level of abstraction in Isabelle.&lt;/p&gt; &lt;p&gt;This
-also leads to a relatively short proof of Dirichlet’s Theorem, which
-states that, if &lt;em&gt;h&lt;/em&gt; and &lt;em&gt;n&lt;/em&gt; are
-coprime, there are infinitely many primes &lt;em&gt;p&lt;/em&gt; with
-&lt;em&gt;p&lt;/em&gt; &amp;equiv; &lt;em&gt;h&lt;/em&gt; (mod
-&lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;</description>
-    </item>
-||||||| base
-       <title>The string search algorithm by Knuth, Morris and Pratt</title>
-              <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
-       <guid>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
-       <dc:creator> Fabian Hellauer, Peter Lammich       </dc:creator>
-       <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
-       <description>
-The Knuth-Morris-Pratt algorithm is often used to show that the
-problem of finding a string &lt;i&gt;s&lt;/i&gt; in a text
-&lt;i&gt;t&lt;/i&gt; can be solved deterministically in
-&lt;i&gt;O(|s| + |t|)&lt;/i&gt; time. We use the Isabelle
-Refinement Framework to formulate and verify the algorithm. Via
-refinement, we apply some optimisations and finally use the
-&lt;em&gt;Sepref&lt;/em&gt; tool to obtain executable code in
-&lt;em&gt;Imperative/HOL&lt;/em&gt;.</description>
-    </item>
-    <item>
-       <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
-              <link>https://www.isa-afp.org/entries/Stochastic_Matrices.html</link>
-       <guid>https://www.isa-afp.org/entries/Stochastic_Matrices.html</guid>
-       <dc:creator> René Thiemann       </dc:creator>
-       <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
-       <description>
-Stochastic matrices are a convenient way to model discrete-time and
-finite state Markov chains. The Perron&amp;ndash;Frobenius theorem
-tells us something about the existence and uniqueness of non-negative
-eigenvectors of a stochastic matrix.  In this entry, we formalize
-stochastic matrices, link the formalization to the existing AFP-entry
-on Markov chains, and apply the Perron&amp;ndash;Frobenius theorem to
-prove that stationary distributions always exist, and they are unique
-if the stochastic matrix is irreducible.</description>
-    </item>
-    <item>
-       <title>The IMAP CmRDT</title>
-              <link>https://www.isa-afp.org/entries/IMAP-CRDT.html</link>
-       <guid>https://www.isa-afp.org/entries/IMAP-CRDT.html</guid>
-       <dc:creator> Tim Jungnickel, Lennart Oldenburg, Matthias Loibl       </dc:creator>
-       <pubDate>09 Nov 2017 00:00:00 +0000</pubDate>
-       <description>
-We provide our Isabelle/HOL formalization of a Conflict-free
-Replicated Datatype for Internet Message Access Protocol commands.
-We show that Strong Eventual Consistency (SEC) is guaranteed
-by proving the commutativity of concurrent operations. We base our
-formalization on the recently proposed &#34;framework for
-establishing Strong Eventual Consistency for Conflict-free Replicated
-Datatypes&#34; (AFP.CRDT) from Gomes et al. Hence, we provide an
-additional example of how the recently proposed framework can be used
-to design and prove CRDTs.</description>
-    </item>
-    <item>
-       <title>Hybrid Multi-Lane Spatial Logic</title>
-              <link>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
-       <guid>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</guid>
-       <dc:creator> Sven Linker       </dc:creator>
-       <pubDate>06 Nov 2017 00:00:00 +0000</pubDate>
-       <description>
-We present a semantic embedding of a spatio-temporal multi-modal
-logic, specifically defined to reason about motorway traffic, into
-Isabelle/HOL. The semantic model is an abstraction of a motorway,
-emphasising local spatial properties, and parameterised by the types
-of sensors deployed in the vehicles. We use the logic to define
-controller constraints to ensure safety, i.e., the absence of
-collisions on the motorway. After proving safety with a restrictive
-definition of sensors, we relax these assumptions and show how to
-amend the controller constraints to still guarantee safety.</description>
-    </item>
-=======
-       <title>The string search algorithm by Knuth, Morris and Pratt</title>
-              <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
-       <guid>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
-       <dc:creator> Fabian Hellauer, Peter Lammich       </dc:creator>
-       <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
-       <description>
-The Knuth-Morris-Pratt algorithm is often used to show that the
-problem of finding a string &lt;i&gt;s&lt;/i&gt; in a text
-&lt;i&gt;t&lt;/i&gt; can be solved deterministically in
-&lt;i&gt;O(|s| + |t|)&lt;/i&gt; time. We use the Isabelle
-Refinement Framework to formulate and verify the algorithm. Via
-refinement, we apply some optimisations and finally use the
-&lt;em&gt;Sepref&lt;/em&gt; tool to obtain executable code in
-&lt;em&gt;Imperative/HOL&lt;/em&gt;.</description>
-    </item>
->>>>>>> merge rev
   </channel>
 </rss>
