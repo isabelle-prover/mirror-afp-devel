@@ -9,6 +9,7 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
+<<<<<<< working copy
     <pubDate>05 Jun 2018 00:00:00 +0000</pubDate>
     <item>
        <title>Partial Order Reduction</title>
@@ -24,6 +25,76 @@ infinite, and lazy sequences. We also provide a basic framework for
 static analysis on concurrent systems with respect to the ample set
 condition.</description>
     </item>
+||||||| base
+    <pubDate>27 May 2018 00:00:00 +0000</pubDate>
+=======
+    <pubDate>23 Jun 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Pell's Equation</title>
+              <link>https://www.isa-afp.org/entries/Pell.html</link>
+       <guid>https://www.isa-afp.org/entries/Pell.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>23 Jun 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; This article gives the basic theory of Pell&#39;s equation
+&lt;em&gt;x&lt;/em&gt;&lt;sup&gt;2&lt;/sup&gt; = 1 +
+&lt;em&gt;D&lt;/em&gt;&amp;thinsp;&lt;em&gt;y&lt;/em&gt;&lt;sup&gt;2&lt;/sup&gt;,
+where
+&lt;em&gt;D&lt;/em&gt;&amp;thinsp;&amp;isin;&amp;thinsp;&amp;#8469; is
+a parameter and &lt;em&gt;x&lt;/em&gt;, &lt;em&gt;y&lt;/em&gt; are
+integer variables. &lt;/p&gt; &lt;p&gt; The main result that is proven
+is the following: If &lt;em&gt;D&lt;/em&gt; is not a perfect square,
+then there exists a &lt;em&gt;fundamental solution&lt;/em&gt;
+(&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;,
+&lt;em&gt;y&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;) that is not the
+trivial solution (1, 0) and which generates all other solutions
+(&lt;em&gt;x&lt;/em&gt;, &lt;em&gt;y&lt;/em&gt;) in the sense that
+there exists some
+&lt;em&gt;n&lt;/em&gt;&amp;thinsp;&amp;isin;&amp;thinsp;&amp;#8469;
+such that |&lt;em&gt;x&lt;/em&gt;| +
+|&lt;em&gt;y&lt;/em&gt;|&amp;thinsp;&amp;radic;&lt;span
+style=&#34;text-decoration:
+overline&#34;&gt;&lt;em&gt;D&lt;/em&gt;&lt;/span&gt; =
+(&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt; +
+&lt;em&gt;y&lt;/em&gt;&lt;sub&gt;0&lt;/sub&gt;&amp;thinsp;&amp;radic;&lt;span
+style=&#34;text-decoration:
+overline&#34;&gt;&lt;em&gt;D&lt;/em&gt;&lt;/span&gt;)&lt;sup&gt;&lt;em&gt;n&lt;/em&gt;&lt;/sup&gt;.
+This also implies that the set of solutions is infinite, and it gives
+us an explicit and executable characterisation of all the solutions.
+&lt;/p&gt; &lt;p&gt; Based on this, simple executable algorithms for
+computing the fundamental solution and the infinite sequence of all
+non-negative solutions are also provided. &lt;/p&gt;</description>
+    </item>
+    <item>
+       <title>Projective Geometry</title>
+              <link>https://www.isa-afp.org/entries/Projective_Geometry.html</link>
+       <guid>https://www.isa-afp.org/entries/Projective_Geometry.html</guid>
+       <dc:creator> Anthony Bordg       </dc:creator>
+       <pubDate>14 Jun 2018 00:00:00 +0000</pubDate>
+       <description>
+We formalize the basics of projective geometry. In particular, we give
+a proof of the so-called Hessenberg&#39;s theorem in projective plane
+geometry. We also provide a proof of the so-called Desargues&#39;s
+theorem based on an axiomatization of (higher) projective space
+geometry using the notion of rank of a matroid. This last approach
+allows to handle incidence relations in an homogeneous way dealing
+only with points and without the need of talking explicitly about
+lines, planes or any higher entity.</description>
+    </item>
+    <item>
+       <title>The Localization of a Commutative Ring</title>
+              <link>https://www.isa-afp.org/entries/Localization_Ring.html</link>
+       <guid>https://www.isa-afp.org/entries/Localization_Ring.html</guid>
+       <dc:creator> Anthony Bordg       </dc:creator>
+       <pubDate>14 Jun 2018 00:00:00 +0000</pubDate>
+       <description>
+We formalize the localization of a commutative ring R with respect to
+a multiplicative subset (i.e. a submonoid of R seen as a
+multiplicative monoid). This localization is itself a commutative ring
+and we build the natural homomorphism of rings from R to its
+localization.</description>
+    </item>
+>>>>>>> merge rev
     <item>
        <title>Optimal Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/Optimal_BST.html</link>
@@ -540,6 +611,7 @@ n&amp;nbsp;&amp;le;&amp;nbsp;2 for coprime polynomials
 over a field.&lt;/em&gt;&lt;/p&gt;</description>
     </item>
     <item>
+<<<<<<< working copy
        <title>Dirichlet L-Functions and Dirichlet's Theorem</title>
               <link>https://www.isa-afp.org/entries/Dirichlet_L.html</link>
        <guid>https://www.isa-afp.org/entries/Dirichlet_L.html</guid>
@@ -560,5 +632,88 @@ coprime, there are infinitely many primes &lt;em&gt;p&lt;/em&gt; with
 &lt;em&gt;p&lt;/em&gt; &amp;equiv; &lt;em&gt;h&lt;/em&gt; (mod
 &lt;em&gt;n&lt;/em&gt;).&lt;/p&gt;</description>
     </item>
+||||||| base
+       <title>The string search algorithm by Knuth, Morris and Pratt</title>
+              <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
+       <guid>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
+       <dc:creator> Fabian Hellauer, Peter Lammich       </dc:creator>
+       <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
+       <description>
+The Knuth-Morris-Pratt algorithm is often used to show that the
+problem of finding a string &lt;i&gt;s&lt;/i&gt; in a text
+&lt;i&gt;t&lt;/i&gt; can be solved deterministically in
+&lt;i&gt;O(|s| + |t|)&lt;/i&gt; time. We use the Isabelle
+Refinement Framework to formulate and verify the algorithm. Via
+refinement, we apply some optimisations and finally use the
+&lt;em&gt;Sepref&lt;/em&gt; tool to obtain executable code in
+&lt;em&gt;Imperative/HOL&lt;/em&gt;.</description>
+    </item>
+    <item>
+       <title>Stochastic Matrices and the Perron-Frobenius Theorem</title>
+              <link>https://www.isa-afp.org/entries/Stochastic_Matrices.html</link>
+       <guid>https://www.isa-afp.org/entries/Stochastic_Matrices.html</guid>
+       <dc:creator> René Thiemann       </dc:creator>
+       <pubDate>22 Nov 2017 00:00:00 +0000</pubDate>
+       <description>
+Stochastic matrices are a convenient way to model discrete-time and
+finite state Markov chains. The Perron&amp;ndash;Frobenius theorem
+tells us something about the existence and uniqueness of non-negative
+eigenvectors of a stochastic matrix.  In this entry, we formalize
+stochastic matrices, link the formalization to the existing AFP-entry
+on Markov chains, and apply the Perron&amp;ndash;Frobenius theorem to
+prove that stationary distributions always exist, and they are unique
+if the stochastic matrix is irreducible.</description>
+    </item>
+    <item>
+       <title>The IMAP CmRDT</title>
+              <link>https://www.isa-afp.org/entries/IMAP-CRDT.html</link>
+       <guid>https://www.isa-afp.org/entries/IMAP-CRDT.html</guid>
+       <dc:creator> Tim Jungnickel, Lennart Oldenburg, Matthias Loibl       </dc:creator>
+       <pubDate>09 Nov 2017 00:00:00 +0000</pubDate>
+       <description>
+We provide our Isabelle/HOL formalization of a Conflict-free
+Replicated Datatype for Internet Message Access Protocol commands.
+We show that Strong Eventual Consistency (SEC) is guaranteed
+by proving the commutativity of concurrent operations. We base our
+formalization on the recently proposed &#34;framework for
+establishing Strong Eventual Consistency for Conflict-free Replicated
+Datatypes&#34; (AFP.CRDT) from Gomes et al. Hence, we provide an
+additional example of how the recently proposed framework can be used
+to design and prove CRDTs.</description>
+    </item>
+    <item>
+       <title>Hybrid Multi-Lane Spatial Logic</title>
+              <link>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Hybrid_Multi_Lane_Spatial_Logic.html</guid>
+       <dc:creator> Sven Linker       </dc:creator>
+       <pubDate>06 Nov 2017 00:00:00 +0000</pubDate>
+       <description>
+We present a semantic embedding of a spatio-temporal multi-modal
+logic, specifically defined to reason about motorway traffic, into
+Isabelle/HOL. The semantic model is an abstraction of a motorway,
+emphasising local spatial properties, and parameterised by the types
+of sensors deployed in the vehicles. We use the logic to define
+controller constraints to ensure safety, i.e., the absence of
+collisions on the motorway. After proving safety with a restrictive
+definition of sensors, we relax these assumptions and show how to
+amend the controller constraints to still guarantee safety.</description>
+    </item>
+=======
+       <title>The string search algorithm by Knuth, Morris and Pratt</title>
+              <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
+       <guid>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
+       <dc:creator> Fabian Hellauer, Peter Lammich       </dc:creator>
+       <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
+       <description>
+The Knuth-Morris-Pratt algorithm is often used to show that the
+problem of finding a string &lt;i&gt;s&lt;/i&gt; in a text
+&lt;i&gt;t&lt;/i&gt; can be solved deterministically in
+&lt;i&gt;O(|s| + |t|)&lt;/i&gt; time. We use the Isabelle
+Refinement Framework to formulate and verify the algorithm. Via
+refinement, we apply some optimisations and finally use the
+&lt;em&gt;Sepref&lt;/em&gt; tool to obtain executable code in
+&lt;em&gt;Imperative/HOL&lt;/em&gt;.</description>
+    </item>
+>>>>>>> merge rev
   </channel>
 </rss>

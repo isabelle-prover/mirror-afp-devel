@@ -225,6 +225,7 @@ List-Infinite
 List_Interleaving
 List_Update
 LocalLexing
+Localization_Ring
 Locally-Nameless-Sigma
 Lowe_Ontological_Argument
 Lower_Semicontinuous
@@ -277,6 +278,7 @@ Ordinals_and_Cardinals
 Ordinary_Differential_Equations
 PCF
 PLM
+Pell
 POPLmark-deBruijn
 PSemigroupsConvolution
 Pairing_Heap
@@ -303,6 +305,7 @@ Probabilistic_Noninterference
 Probabilistic_System_Zoo
 Probabilistic_Timed_Automata
 Probabilistic_While
+Projective_Geometry
 Program-Conflict-Analysis
 Promela
 Proof_Strategy_Language

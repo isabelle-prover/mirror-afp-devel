@@ -26,6 +26,42 @@ abstract =
   theory files that adapt the exported code to Isabelle and port proofs
   from the HOL4 formalization, e.g. termination and equivalence proofs.
 
+[Pell]
+title = Pell's Equation
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2018-06-23
+notify = eberlm@in.tum.de
+abstract =
+  <p> This article gives the basic theory of Pell's equation
+  <em>x</em><sup>2</sup> = 1 +
+  <em>D</em>&thinsp;<em>y</em><sup>2</sup>,
+  where
+  <em>D</em>&thinsp;&isin;&thinsp;&#8469; is
+  a parameter and <em>x</em>, <em>y</em> are
+  integer variables. </p> <p> The main result that is proven
+  is the following: If <em>D</em> is not a perfect square,
+  then there exists a <em>fundamental solution</em>
+  (<em>x</em><sub>0</sub>,
+  <em>y</em><sub>0</sub>) that is not the
+  trivial solution (1, 0) and which generates all other solutions
+  (<em>x</em>, <em>y</em>) in the sense that
+  there exists some
+  <em>n</em>&thinsp;&isin;&thinsp;&#8469;
+  such that |<em>x</em>| +
+  |<em>y</em>|&thinsp;&radic;<span
+  style="text-decoration:
+  overline"><em>D</em></span> =
+  (<em>x</em><sub>0</sub> +
+  <em>y</em><sub>0</sub>&thinsp;&radic;<span
+  style="text-decoration:
+  overline"><em>D</em></span>)<sup><em>n</em></sup>.
+  This also implies that the set of solutions is infinite, and it gives
+  us an explicit and executable characterisation of all the solutions.
+  </p> <p> Based on this, simple executable algorithms for
+  computing the fundamental solution and the infinite sequence of all
+  non-negative solutions are also provided. </p>
+
 [WebAssembly]
 title = WebAssembly
 author = Conrad Watt <http://www.cl.cam.ac.uk/~caw77/>
@@ -7024,3 +7060,33 @@ abstract =
   The algorithms are memoized with the help of the AFP article
   <a href="Monad_Memo_DP.html">Monadification, Memoization and Dynamic Programming</a>,
   thus yielding dynamic programming algorithms.
+
+[Projective_Geometry]
+title = Projective Geometry
+author = Anthony Bordg <https://sites.google.com/site/anthonybordg/>
+topic = Mathematics/Geometry
+date = 2018-06-14
+notify = apdb3@cam.ac.uk
+abstract =
+  We formalize the basics of projective geometry. In particular, we give
+  a proof of the so-called Hessenberg's theorem in projective plane
+  geometry. We also provide a proof of the so-called Desargues's
+  theorem based on an axiomatization of (higher) projective space
+  geometry using the notion of rank of a matroid. This last approach
+  allows to handle incidence relations in an homogeneous way dealing
+  only with points and without the need of talking explicitly about
+  lines, planes or any higher entity.
+
+[Localization_Ring]
+title = The Localization of a Commutative Ring
+author = Anthony Bordg <https://sites.google.com/site/anthonybordg/>
+topic = Mathematics/Algebra
+date = 2018-06-14
+notify = apdb3@cam.ac.uk
+abstract =
+  We formalize the localization of a commutative ring R with respect to
+  a multiplicative subset (i.e. a submonoid of R seen as a
+  multiplicative monoid). This localization is itself a commutative ring
+  and we build the natural homomorphism of rings from R to its
+  localization.
+

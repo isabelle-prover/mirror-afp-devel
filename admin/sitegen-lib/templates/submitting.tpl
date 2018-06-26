@@ -46,10 +46,17 @@
     <li>If there are proof steps that take significant time, i.e. longer
     than roughly 1 min, please add a short comment to that step, so
     maintainers will know what to expect.</li>
+
+    <li>The entry must contain a ROOT file with one session that has the
+        name of the entry. We strongly encourage precisely one session per
+        entry, but exceptions can be made. All sessions must be in group
+        (AFP), and all theory files of the submission must be contained in
+        at least one session. See also the example <a href="https://bitbucket.org/isa-afp/afp-2017/src/default/thys/Example-Submission/ROOT">ROOT</a> file
+        in the <a href="entries/Example-Submission.html">Example submission</a>.
 </ul>
 
 <p>It is possible and encouraged to build on other archive entries
-   in your submission. There is a standardised way to 
+   in your submission. There is a standardised way to
    <a href="using.html">refer to other AFP entries</a> in your
    theories.</p>
 
