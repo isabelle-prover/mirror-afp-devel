@@ -37,6 +37,9 @@ DEPENDENCIES_FILE="$(mktemp /tmp/afp.XXX)"
 echo "Obtaining dependency information ..."
 "$ISABELLE_TOOL" afp_dependencies > "$DEPENDENCIES_FILE" || fail "Could not obtain dependency information"
 
+echo "Checking ROOTs ..."
+"$ISABELLE_TOOL" afp_check_roots || exit 2
+
 echo "Checking presence of Python ..."
 
 case "$(uname -s)" in
