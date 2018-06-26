@@ -53,15 +53,15 @@ proof safe
       by simp
   with assms have "real (q ^ 2) * real a = real (p ^ 2)"
     by (simp add: field_simps)
-  also have "real (q ^ 2) * real a = real (q ^ 2 * a)" 
+  also have "real (q ^ 2) * real a = real (q ^ 2 * a)"
     by simp
   finally have "p ^ 2 = q ^ 2 * a"
     by (subst (asm) of_nat_eq_iff) auto
-  hence "q ^ 2 dvd p ^ 2" 
+  hence "q ^ 2 dvd p ^ 2"
     by simp
   hence "q dvd p"
-    by (subst (asm) pow_divs_eq) auto
-  with coprime have "q = 1" 
+    by simp
+  with coprime have "q = 1"
     by auto
   with x and \<open>x \<notin> \<nat>\<close> show False
     by simp
@@ -75,17 +75,17 @@ corollary sqrt_nat_or_irrat:
   shows   "x \<in> \<int> \<or> x \<notin> \<rat>"
 proof (cases "x \<ge> 0")
   case True
-  with nonneg_sqrt_nat_or_irrat[OF assms this] 
+  with nonneg_sqrt_nat_or_irrat[OF assms this]
     show ?thesis by (auto simp: Nats_altdef2)
 next
   case False
-  from assms have "(-x) ^ 2 = real a" 
+  from assms have "(-x) ^ 2 = real a"
     by simp
-  moreover from False have "-x \<ge> 0" 
+  moreover from False have "-x \<ge> 0"
     by simp
   ultimately have "-x \<in> \<nat> \<or> -x \<notin> \<rat>"
     by (rule nonneg_sqrt_nat_or_irrat)
-  thus ?thesis 
+  thus ?thesis
     by (auto simp: Nats_altdef2)
 qed
 
@@ -187,7 +187,7 @@ text \<open>
   from the trivial solution \<open>(1, 0)\<close>). For this, we first need a lemma about the existence
   of rational approximations of real numbers.
 
-  The following lemma states that for any positive integer \<open>s\<close> and real number \<open>x\<close>, we can find a 
+  The following lemma states that for any positive integer \<open>s\<close> and real number \<open>x\<close>, we can find a
   rational approximation \<open>t / u\<close> to \<open>x\<close> with an error of most \<open>1 / (u * s)\<close> where the denominator
   \<open>u\<close> is at most \<open>s\<close>.
 \<close>
@@ -215,14 +215,14 @@ proof -
   define u1 and u2 where "u1 = max a b" and "u2 = min a b"
   have u12: "u1 \<le> s" "u2 \<le> s" "u2 < u1" "g u1 = g u2"
     using ab by (auto simp: u1_def u2_def)
-  
+
   define u t where "u = u1 - u2" and "t = \<lfloor>u1 * x\<rfloor> - \<lfloor>u2 * x\<rfloor>"
   have u: "u > 0" "\<bar>u\<bar> \<le> s"
     using u12 by (simp_all add: u_def)
 
   from \<open>g u1 = g u2\<close> have "\<bar>frac (u2 * x) * s - frac (u1 * x) * s\<bar> < 1"
     unfolding g_def by linarith
-  also have "\<bar>frac (u2 * x) * s - frac (u1 * x) * s\<bar> = 
+  also have "\<bar>frac (u2 * x) * s - frac (u1 * x) * s\<bar> =
                \<bar>real s\<bar> * \<bar>frac (u2 * x) - frac (u1 * x)\<bar>"
     by (subst abs_mult [symmetric]) (simp add: algebra_simps)
   finally have "\<bar>t - u * x\<bar> * s < 1" using \<open>u1 > u2\<close>
@@ -234,7 +234,7 @@ proof -
   from u have "d \<noteq> 0"
     by (intro notI) (auto simp: d_def)
   have "int (gcd (nat \<bar>t\<bar>) u) = gcd \<bar>t\<bar> (int u)"
-    by (auto simp: gcd_int_def)
+    by simp
   hence t'_u': "t = t' * d" "u = u' * d"
     by (auto simp: t'_def u'_def d_def nat_dvd_iff)
 
@@ -256,7 +256,7 @@ proof -
     have "gcd u t = gcd t' u' * int d"
       by (simp add: t'_u' gcd_mult_right gcd.commute)
     also have "int d = gcd u t"
-      by (simp add: d_def gcd.commute gcd_int_def)
+      by (simp add: d_def gcd.commute)
     finally have "gcd u' t' = 1" using u by (simp add: gcd.commute)
   }
   ultimately show ?thesis by blast
@@ -289,7 +289,7 @@ proof
   finally obtain M :: nat where M: "M \<noteq> 0" "inverse M < Min (insert 1 (?f ` ?A))"
     by blast
   hence "M > 0" by simp
-  
+
   from pell_approximation_lemma[OF this, of x] obtain u :: nat and t :: int
     where ut: "u > 0" "coprime u t" "1 / real M \<in> {?f (t, u)<..1 / u}" by auto
   from ut have "?f (t, u) < 1 / real M" by simp
@@ -329,7 +329,7 @@ proof -
 
   have subset: "?f ` S \<subseteq> {-M..M}"
   proof safe
-    fix u :: nat and t :: int    
+    fix u :: nat and t :: int
     assume tu: "(t, u) \<in> S"
     from tu have [simp]: "u > 0" by (auto simp: S_def)
     have "\<bar>t + u * sqrt D\<bar> = \<bar>t - u * sqrt D + 2 * u * sqrt D\<bar>" by simp
@@ -339,7 +339,7 @@ proof -
     also have "\<bar>t - u * sqrt D\<bar> \<le> 1 / u"
       using tu by (simp add: S_def)
     finally have le: "\<bar>t + u * sqrt D\<bar> \<le> 1 / u + 2 * u * sqrt D" by simp
-  
+
     have "\<bar>t\<^sup>2 - u\<^sup>2 * D\<bar> = \<bar>t - u * sqrt D\<bar> * \<bar>t + u * sqrt D\<bar>"
       by (subst abs_mult [symmetric]) (simp add: algebra_simps power2_eq_square)
     also have "\<dots> \<le> 1 / u * (1 / u + 2 * u * sqrt D)"
@@ -383,7 +383,7 @@ proof -
     hence "{z\<in>S. ?f z = k} = {}" by auto
     finally show False by simp
   qed
-    
+
   let ?h = "\<lambda>(t :: int, u :: nat). (t mod (abs k), u mod (abs k))"
   have "?h ` {z\<in>S. ?f z = k} \<subseteq> {0..<abs k} \<times> {0..< abs k}"
     using k_nz by (auto simp: case_prod_unfold)
@@ -460,7 +460,7 @@ proof -
     moreover from S' have "coprime u1 t1" "coprime u2 t2"
       by (auto simp: S'_def S_def)
     ultimately have eq: "\<bar>t1\<bar> = \<bar>t2\<bar> \<and> u1 = u2"
-      by (subst (asm) coprime_crossproduct_int) (auto simp: S'_def S_def gcd.commute)
+      by (subst (asm) coprime_crossproduct_int) (auto simp: S'_def S_def gcd.commute coprime_commute)
     moreover from S' have "u1 \<noteq> 0" "u2 \<noteq> 0" by (auto simp: S'_def S_def)
     ultimately have "t1 = t2" using * by auto
     with eq and neq show False by auto
@@ -515,12 +515,12 @@ qed
 
 lemma solution_of_nat_of_nat [simp]:
   "solution (of_nat a, of_nat b :: 'a :: {comm_ring_1, ring_char_0}) \<longleftrightarrow> solution (a, b)"
-  by (simp only: solution_def prod.case of_nat_power [symmetric] 
+  by (simp only: solution_def prod.case of_nat_power [symmetric]
                  of_nat_1 [symmetric, where ?'a = 'a] of_nat_add [symmetric]
                  of_nat_mult [symmetric] of_nat_eq_iff of_nat_id)
 
 lemma solution_of_nat_of_nat' [simp]:
-  "solution (case z of (a, b) \<Rightarrow> (of_nat a, of_nat b :: 'a :: {comm_ring_1, ring_char_0})) \<longleftrightarrow> 
+  "solution (case z of (a, b) \<Rightarrow> (of_nat a, of_nat b :: 'a :: {comm_ring_1, ring_char_0})) \<longleftrightarrow>
      solution z"
   by (auto simp: case_prod_unfold)
 
@@ -541,7 +541,7 @@ lemma nontriv_solution_of_nat_of_nat [simp]:
   by (auto simp: nontriv_solution_altdef)
 
 lemma nontriv_solution_of_nat_of_nat' [simp]:
-  "nontriv_solution (case z of (a, b) \<Rightarrow> (of_nat a, of_nat b :: 'a :: {comm_ring_1, ring_char_0})) \<longleftrightarrow> 
+  "nontriv_solution (case z of (a, b) \<Rightarrow> (of_nat a, of_nat b :: 'a :: {comm_ring_1, ring_char_0})) \<longleftrightarrow>
      nontriv_solution z"
   by (auto simp: case_prod_unfold)
 
@@ -683,7 +683,7 @@ qed
 subsection \<open>The fundamental solution\<close>
 
 text \<open>
-  The \<^emph>\<open>fundamental solution\<close> is the non-trivial solution \<open>(x, y)\<close> with non-negative \<open>x\<close> and \<open>y\<close> 
+  The \<^emph>\<open>fundamental solution\<close> is the non-trivial solution \<open>(x, y)\<close> with non-negative \<open>x\<close> and \<open>y\<close>
   for which the Pell valuation $x + y\sqrt{D}$ is minimal, or, equivalently, for which \<open>x\<close> and \<open>y\<close>
   are minimal.
 \<close>
@@ -692,7 +692,7 @@ definition fund_sol :: "nat \<times> nat" where
 
 text \<open>
   The well-definedness of this follows from the injectivity of the Pell valuation and the fact
-  that smaller Pell valuation of a solution is smaller than that of another iff the components 
+  that smaller Pell valuation of a solution is smaller than that of another iff the components
   are both smaller.
 \<close>
 theorem fund_sol_is_arg_min:
@@ -771,7 +771,7 @@ text \<open>
     \<^item> The trivial solution \<open>(1, 0)\<close> has valuation \<open>1\<close>, which is the neutral element of
       $\mathbb{Z}[\sqrt{D}]^*$
 
-    \<^item> Multiplication of two solutions $a + b \sqrt D$ and 
+    \<^item> Multiplication of two solutions $a + b \sqrt D$ and
       $x + y \sqrt D$ leads to $\bar x + \bar y\sqrt D$
       with $\bar x = xa + ybD$ and $\bar y = xb + ya$, which is again a solution.
 
@@ -889,7 +889,7 @@ proof -
   finally show ?thesis using pell_valuation_solution_pos_nat[OF assms]
     by (auto simp: divide_simps)
 qed
-  
+
 lemma pell_valuation_power [simp]: "pell_valuation (pell_power z n) = pell_valuation z ^ n"
   by (induction n) (simp_all add: pell_power_Suc)
 
@@ -933,7 +933,7 @@ proof -
   obtain c d where [simp]: "z2 = (c, d)" by (cases z2)
   from assms show ?thesis
     by (simp add: solution_def pell_mul_def case_prod_unfold power2_eq_square algebra_simps)
-qed  
+qed
 
 lemma solution_pell_cnj [intro]:
   assumes "solution z"
@@ -947,11 +947,11 @@ lemma pell_mul_eq_trivial_nat_iff:
   "pell_mul z1 z2 = (Suc 0, 0) \<longleftrightarrow> z1 = (Suc 0, 0) \<and> z2 = (Suc 0, 0)"
   using D_gt_1 by (cases z1; cases z2) (auto simp: pell_mul_def)
 
-lemma nontriv_solution_pell_nat_mul1: 
+lemma nontriv_solution_pell_nat_mul1:
   "solution (z1 :: nat \<times> nat) \<Longrightarrow> nontriv_solution z2 \<Longrightarrow> nontriv_solution (pell_mul z1 z2)"
   by (auto simp: nontriv_solution_altdef pell_mul_eq_trivial_nat_iff)
 
-lemma nontriv_solution_pell_nat_mul2: 
+lemma nontriv_solution_pell_nat_mul2:
   "nontriv_solution (z1 :: nat \<times> nat) \<Longrightarrow> solution z2 \<Longrightarrow> nontriv_solution (pell_mul z1 z2)"
   by (auto simp: nontriv_solution_altdef pell_mul_eq_trivial_nat_iff)
 
@@ -969,7 +969,7 @@ qed
 subsection \<open>The different regions of the valuation function\<close>
 
 text \<open>
-  Next, we shall explore what happens to the valuation function for solutions \<open>(x, y)\<close> for 
+  Next, we shall explore what happens to the valuation function for solutions \<open>(x, y)\<close> for
   different signs of \<open>x\<close> and \<open>y\<close>:
 
     \<^item> If \<open>x > 0\<close> and \<open>y > 0\<close>, we have  $x + y \sqrt D > 1$.
@@ -1012,17 +1012,17 @@ proof -
     by (simp add: pell_valuation_def)
 qed
 
-lemma pell_valuation_pos_neg: 
+lemma pell_valuation_pos_neg:
   assumes "x > 0" "y < 0" "solution (x, y)"
   shows   "pell_valuation (x, y) \<in> {0<..<1}"
   using pell_valuation_pos_neg_aux[of x "-y"] assms by simp
 
-lemma pell_valuation_neg_neg: 
+lemma pell_valuation_neg_neg:
   assumes "x < 0" "y < 0" "solution (x, y)"
   shows   "pell_valuation (x, y) < -1"
   using pell_valuation_pos_pos[of "-x" "-y"] assms by simp
 
-lemma pell_valuation_neg_pos: 
+lemma pell_valuation_neg_pos:
   assumes "x < 0" "y > 0" "solution (x, y)"
   shows   "pell_valuation (x, y) \<in> {-1<..<0}"
   using pell_valuation_pos_neg[of "-x" "-y"] assms by simp
@@ -1043,7 +1043,7 @@ subsection \<open>Generating property of the fundamental solution\<close>
 text \<open>
   We now show that the fundamental solution generates the set of the (non-negative) solutions
   in the sense that each solution is a power of the fundamental solution. Combined with the
-  symmetry property that \<open>(x,y)\<close> is a solution iff \<open>(\<plusminus>x, \<plusminus>y)\<close> is a solution, this gives us 
+  symmetry property that \<open>(x,y)\<close> is a solution iff \<open>(\<plusminus>x, \<plusminus>y)\<close> is a solution, this gives us
   a complete characterisation of all solutions of Pell's equation.
 \<close>
 definition nth_solution :: "nat \<Rightarrow> nat \<times> nat" where
@@ -1088,7 +1088,7 @@ next
   proof (rule ccontr)
     assume "\<not>?thesis"
     hence *: "pell_power fund_sol n \<noteq> z" for n unfolding nth_solution_def by blast
-  
+
     define u where "u = pell_valuation fund_sol"
     define v where "v = pell_valuation z"
     define n where "n = nat \<lfloor>log u v\<rfloor>"
@@ -1096,7 +1096,7 @@ next
     have v_pos: "v > 0" unfolding v_def using assms
       by (intro pell_valuation_solution_pos_nat) auto
     have u_le_v: "u \<le> v" unfolding u_def v_def by (rule fund_sol_minimal') fact
-  
+
     have u_power_neq_v: "u ^ k \<noteq> v" for k
     proof
       assume "u ^ k = v"
@@ -1106,15 +1106,15 @@ next
         unfolding v_def by (subst pell_valuation_eq_iff) (auto split: prod.splits)
       finally show False using * by blast
     qed
-  
+
     from u_le_v v_pos u_ge_2 have log_ge_1: "log u v \<ge> 1"
       by (subst one_le_log_cancel_iff) auto
-  
+
     define z' where "z' = pell_mul z (pell_power (pell_cnj fund_sol) n)"
     define x and y where "x = nat \<bar>fst z'\<bar>" and "y = nat \<bar>snd z'\<bar>"
     have "solution z'" using assms fund_sol_is_nontriv_solution unfolding z'_def
       by (intro solution_pell_mul solution_pell_power solution_pell_cnj) (auto simp: case_prod_unfold)
-  
+
     have "u ^ n < v"
     proof -
       from u_ge_2 have "u ^ n = u powr real n" by (subst powr_realpow) auto
@@ -1142,15 +1142,15 @@ next
       using fund_sol_is_nontriv_solution
       by (auto simp add: z'_def u_def v_def pell_valuation_cnj_solution field_simps)
     finally have val: "pell_valuation z' \<in> {1<..<u}" .
-  
+
     from val and \<open>solution z'\<close> have "nontriv_solution z'"
       by (auto simp: nontriv_solution_altdef)
     from \<open>solution z'\<close> and val have "fst z' > 0 \<and> snd z' > 0"
       by (intro pell_valuation_solution_gt1D) auto
-  
+
     hence [simp]: "z' = (int x, int y)"
       by (auto simp: x_def y_def)
-  
+
     from \<open>nontriv_solution z'\<close> have "pell_valuation (int x, int y) \<ge> u"
       unfolding u_def by (intro fund_sol_minimal) auto
     with val show False by simp
@@ -1247,7 +1247,7 @@ proof -
     using fund_sol_minimal''[of "(a, 1)"] by auto
   with solutions_linorder_strict[of a 1 "fst fund_sol" "snd fund_sol"]
        fund_sol_is_nontriv_solution sol
-  show "fund_sol = (a, 1)" 
+  show "fund_sol = (a, 1)"
     by (cases fund_sol) (auto simp: nontriv_solution_altdef)
 qed
 
