@@ -9,7 +9,7 @@ export HUFFMAN_TEX=Huffman.tex
 perl -pi -i.bak -e 's/\{\\isacharprime\}a/\$\\alpha\$/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\{\\isacharprime\}b/\$\\beta\$/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\{\\isacharbraceleft\}\{\\isacharbraceright\}/\{\\ensuremath\{\\emptyset\}\}/g' $HUFFMAN_TEX
-perl -pi -i.bak -e 's/\{\\isacharunderscore\}\{\\isadigit{([0-9])\}\}/\{\\isacharunderscore\}\{\1\}/g' $HUFFMAN_TEX
+perl -pi -i.bak -e 's/\{\\isacharunderscore\}\{\\isadigit\{([0-9])\}\}/\{\\isacharunderscore\}\{\1\}/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/([a-z]|\{\\isacharparenright\})\{\\isacharplus\}/\1\$\{\}^+\$/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\b(if|then|else(\\ if)?)\\( |isanewline)/\\ensuremath\{\\mathrm\{\1\}\}\\vthinspace\\\3/g' $HUFFMAN_TEX
 perl -pi -i.bak -e 's/\\isactrlisub F/\\isactrlisub\{\\ensuremath\{\\mathsf\{\\scriptscriptstyle F\}\}\}/g' $HUFFMAN_TEX
