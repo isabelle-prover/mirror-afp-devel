@@ -7,17 +7,21 @@ session LLL_Basis_Reduction (AFP) = Berlekamp_Zassenhaus +
     Algebraic_Numbers
     Perron_Frobenius
   theories
-    List_Representation
-    Norms
-    Missing_Lemmas
-    More_IArray
+    Cost
     Gram_Schmidt_2
+    Gram_Schmidt_Int
+    Int_Rat_Operations
     LLL    
     LLL_GSO_Impl    
     LLL_GSO_Impl_Complexity
+    LLL_Integer_Equations
     LLL_Mu_Integer_Impl    
     LLL_Mu_Integer_Impl_Complexity    
     LLL_Number_Bounds
+    List_Representation
+    Missing_Lemmas
+    More_IArray
+    Norms
   document_files
     "root.tex"
     "root.bib"
