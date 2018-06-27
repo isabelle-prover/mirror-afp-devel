@@ -7,6 +7,7 @@ session Groebner_Bases (AFP) = Polynomials +
     Polynomials.MPoly_Type_Class_FMap
   theories
     Buchberger_Examples
+    Reduced_GB_Examples
   document_files
     "root.tex"
     "root.bib"

@@ -8,6 +8,10 @@ text \<open>A couple of general-purpose functions and lemmas, mainly related to 
 
 subsection \<open>Lists\<close>
 
+lemma distinct_reorder: "distinct (xs @ (y # ys)) = distinct (y # (xs @ ys))" by auto
+    
+lemma set_reorder: "set (xs @ (y # ys)) = set (y # (xs @ ys))" by simp
+
 primrec insort_wrt :: "('c \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> 'c \<Rightarrow> 'c list \<Rightarrow> 'c list" where
   "insort_wrt _ x [] = [x]" |
   "insort_wrt r x (y # ys) =
@@ -100,7 +104,104 @@ definition insert_list :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list"
 lemma set_insert_list: "set (insert_list x xs) = insert x (set xs)"
   by (auto simp add: insert_list_def)
 
-subsection \<open>@{term map_idx}\<close>
+subsubsection \<open>\<open>remdups_wrt\<close>\<close>
+
+primrec remdups_wrt :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  remdups_wrt_base: "remdups_wrt _ [] = []" |
+  remdups_wrt_rec: "remdups_wrt f (x # xs) = (if f x \<in> f ` set xs then remdups_wrt f xs else x # remdups_wrt f xs)"
+    
+lemma set_remdups_wrt: "f ` set (remdups_wrt f xs) = f ` set xs"
+proof (induct xs)
+  case Nil
+  show ?case unfolding remdups_wrt_base ..
+next
+  case (Cons a xs)
+  show ?case unfolding remdups_wrt_rec
+  proof (simp only: split: if_splits, intro conjI, intro impI)
+    assume "f a \<in> f ` set xs"
+      have "f ` set (a # xs) = insert (f a) (f ` set xs)" by simp
+    have "f ` set (remdups_wrt f xs) = f ` set xs" by fact
+    also from \<open>f a \<in> f ` set xs\<close> have "... = insert (f a) (f ` set xs)" by (simp add: insert_absorb)
+    also have "... = f ` set (a # xs)" by simp
+    finally show "f ` set (remdups_wrt f xs) = f ` set (a # xs)" .
+  qed (simp add: Cons.hyps)
+qed
+
+lemma subset_remdups_wrt: "set (remdups_wrt f xs) \<subseteq> set xs"
+  by (induct xs, auto)
+
+lemma remdups_wrt_distinct_wrt:
+  assumes "x \<in> set (remdups_wrt f xs)" and "y \<in> set (remdups_wrt f xs)" and "x \<noteq> y"
+  shows "f x \<noteq> f y"
+  using assms(1) assms(2)
+proof (induct xs)
+  case Nil
+  thus ?case unfolding remdups_wrt_base by simp
+next
+  case (Cons a xs)
+  from Cons(2) Cons(3) show ?case unfolding remdups_wrt_rec
+  proof (simp only: split: if_splits)
+    assume "x \<in> set (remdups_wrt f xs)" and "y \<in> set (remdups_wrt f xs)"
+    thus "f x \<noteq> f y" by (rule Cons.hyps)
+  next
+    assume "\<not> True"
+    thus "f x \<noteq> f y" by simp
+  next
+    assume "f a \<notin> f ` set xs" and xin: "x \<in> set (a # remdups_wrt f xs)" and yin: "y \<in> set (a # remdups_wrt f xs)"
+    from yin have y: "y = a \<or> y \<in> set (remdups_wrt f xs)" by simp
+    from xin have "x = a \<or> x \<in> set (remdups_wrt f xs)" by simp
+    thus "f x \<noteq> f y"
+    proof
+      assume "x = a"
+      from y show ?thesis
+      proof
+        assume "y = a"
+        with \<open>x \<noteq> y\<close> show ?thesis unfolding \<open>x = a\<close> by simp
+      next
+        assume "y \<in> set (remdups_wrt f xs)"
+        have "y \<in> set xs" by (rule, fact, rule subset_remdups_wrt)
+        hence "f y \<in> f ` set xs" by simp
+        with \<open>f a \<notin> f ` set xs\<close> show ?thesis unfolding \<open>x = a\<close> by auto
+      qed
+    next
+      assume "x \<in> set (remdups_wrt f xs)"
+      from y show ?thesis
+      proof
+        assume "y = a"
+        have "x \<in> set xs" by (rule, fact, rule subset_remdups_wrt)
+        hence "f x \<in> f ` set xs" by simp
+        with \<open>f a \<notin> f ` set xs\<close> show ?thesis unfolding \<open>y = a\<close> by auto
+      next
+        assume "y \<in> set (remdups_wrt f xs)"
+        with \<open>x \<in> set (remdups_wrt f xs)\<close> show ?thesis by (rule Cons.hyps)
+      qed
+    qed
+  qed
+qed
+  
+lemma distinct_remdups_wrt: "distinct (remdups_wrt f xs)"
+proof (induct xs)
+  case Nil
+  show ?case unfolding remdups_wrt_base by simp
+next
+  case (Cons a xs)
+  show ?case unfolding remdups_wrt_rec
+  proof (split if_split, intro conjI impI, rule Cons.hyps)
+    assume "f a \<notin> f ` set xs"
+    hence "a \<notin> set xs" by auto
+    hence "a \<notin> set (remdups_wrt f xs)" using subset_remdups_wrt[of f xs] by auto
+    with Cons.hyps show "distinct (a # remdups_wrt f xs)" by simp
+  qed
+qed
+
+lemma map_remdups_wrt: "map f (remdups_wrt f xs) = remdups (map f xs)"
+  by (induct xs, auto)
+
+lemma remdups_wrt_append:
+  "remdups_wrt f (xs @ ys) = (filter (\<lambda>a. f a \<notin> f ` set ys) (remdups_wrt f xs)) @ (remdups_wrt f ys)"
+  by (induct xs, auto)
+
+subsubsection \<open>\<open>map_idx\<close>\<close>
 
 primrec map_idx :: "('a \<Rightarrow> nat \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> 'b list" where
   "map_idx f [] n = []"|
