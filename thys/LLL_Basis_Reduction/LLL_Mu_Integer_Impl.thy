@@ -272,10 +272,10 @@ next
   from fi_state[OF impl Linv state i] have fi: "fi_state state = fs ! i" by auto
   have id: "Suc j - 1 = j" by simp
   note mu = dmu_ij_state[OF impl Linv state j i]
-  let ?c = "floor_ceil (\<mu> fs i j)" 
+  let ?c = "round (\<mu> fs i j)" 
   interpret fs: fs_int' n m fs_init \<alpha> True i fs
     by standard (use Linv in auto)
-  have floor: "floor_ceil_num_denom (d\<mu> fs i j) (d fs (Suc j)) = floor_ceil (fs.gs.\<mu> i j)"
+  have floor: "floor_ceil_num_denom (d\<mu> fs i j) (d fs (Suc j)) = round (fs.gs.\<mu> i j)"
     using jj i inv unfolding d\<mu>_def d_def 
     by (intro fs.floor_ceil_num_denom_d\<mu>_d[unfolded fs.d\<mu>_def fs.d_def]) auto
   from LLL_d_pos[OF Linv] j i have dj: "d fs (Suc j) > 0" by auto

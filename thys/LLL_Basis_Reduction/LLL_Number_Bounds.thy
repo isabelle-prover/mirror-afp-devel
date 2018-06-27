@@ -167,7 +167,7 @@ text \<open>Addition step preserves @{term "LLL_bound_invariant False"}\<close>
 
 lemma basis_reduction_add_row_main_bound: assumes Linv: "LLL_bound_invariant False True i fs"
   and i: "i < m"  and j: "j < i" 
-  and c: "c = floor_ceil (\<mu> fs i j)" 
+  and c: "c = round (\<mu> fs i j)" 
   and fs': "fs' = fs[ i := fs ! i - c \<cdot>\<^sub>v fs ! j]" 
   and mu_small: "\<mu>_small_row i fs (Suc j)" 
   and mu_bnd: "\<mu>_bound_row_inner fs i (Suc j)" 
@@ -220,7 +220,7 @@ proof (rule bound_invI)
         also have "\<dots> = abs (?mu i k) + abs (?R c) * abs (?mu j k)" unfolding abs_mult ..
         also have "\<dots> \<le> abs (?mu i k) + (abs (?mu i j) + 1/2) * (1/2)" 
         proof (rule add_left_mono[OF mult_mono], unfold c)
-          show "\<bar>?R (floor_ceil (?mu i j))\<bar> \<le> \<bar>?mu i j\<bar> + 1 / 2" unfolding floor_ceil_def by linarith
+          show "\<bar>?R (round (?mu i j))\<bar> \<le> \<bar>?mu i j\<bar> + 1 / 2" unfolding round_def by linarith
           from inv(10)[unfolded gs.reduced_def, THEN conjunct2, rule_format, OF \<open>j < i\<close> k_j]
           show "\<bar>?mu j k\<bar> \<le> 1/2" .
         qed auto
@@ -403,7 +403,7 @@ next
   note binv = Suc(2)
   note Linv = bound_invD(1)[OF binv]
   from Suc have j: "j < i" by auto
-  let ?c = "floor_ceil (\<mu> fs i j)" 
+  let ?c = "round (\<mu> fs i j)" 
   note step = basis_reduction_add_row_main_bound[OF Suc(2) i j refl refl Suc(3-4)]
   note step' = basis_reduction_add_row_main(1,2,3)[OF Linv i j refl refl Suc(3)]
   show ?case
