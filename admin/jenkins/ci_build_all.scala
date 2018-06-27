@@ -135,12 +135,9 @@ object profile extends isabelle.CI_Profile
         entry_of_session(results.info(name)) -> name
       }.groupBy(_._1).mapValues(_.map(_._2))
 
-    def results_as_json(results: Build.Results): String =
+    def status_as_json(status: Map[Option[String], Status]): String =
     {
-      val entries_status =
-        group_by_entry(results).mapValues(sessions => Status.merge(sessions.map(Status.from_results(results, _))))
-
-      val entries_strings = entries_status.collect {
+      val entries_strings = status.collect {
         case (Some(entry), status) =>
           s"""{"entry": "$entry", "status": "${status.str}"}"""
       }
@@ -160,9 +157,25 @@ object profile extends isabelle.CI_Profile
         }
       """
     }
+
+    def status_as_html(status: Map[Option[String], Status]): String =
+    {
+      val entries_strings = status.collect {
+        case (None, Failed) =>
+          s"<li>Distribution</li>"
+        case (Some(entry), Failed) =>
+          s"""<li><a href="https://devel.isa-afp.org/entries/$entry.html">$entry</a></li>"""
+      }
+
+      if (entries_strings.isEmpty)
+        ""
+      else
+        entries_strings.mkString("Failed entries: <ul>", "\n", "</ul>")
+    }
   }
 
   val status_file = Path.explode("$ISABELLE_HOME/status.json").file
+  val report_file = Path.explode("$ISABELLE_HOME/report.html").file
   val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
   def can_send_mails = System.getProperties().containsKey("mail.smtp.host")
 
@@ -201,9 +214,18 @@ object profile extends isabelle.CI_Profile
       new Metadata(ini)
     }
 
+    val status =
+      metadata.group_by_entry(results).mapValues { sessions =>
+        Status.merge(sessions.map(Status.from_results(results, _)))
+      }
+
+    print_section("REPORT")
+    println("Writing report file ...")
+    File.write(report_file, metadata.status_as_html(status))
+
     print_section("SITEGEN")
     println("Writing status file ...")
-    File.write(status_file, metadata.results_as_json(results))
+    File.write(status_file, metadata.status_as_json(status))
     println("Running sitegen ...")
 
     val script = afp + Path.explode("admin/sitegen-devel")
