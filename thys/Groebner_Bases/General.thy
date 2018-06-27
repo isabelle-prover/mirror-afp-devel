@@ -12,6 +12,143 @@ lemma distinct_reorder: "distinct (xs @ (y # ys)) = distinct (y # (xs @ ys))" by
     
 lemma set_reorder: "set (xs @ (y # ys)) = set (y # (xs @ ys))" by simp
 
+lemma distinctI:
+  assumes "\<And>i j. i < j \<Longrightarrow> i < length xs \<Longrightarrow> j < length xs \<Longrightarrow> xs ! i \<noteq> xs ! j"
+  shows "distinct xs"
+  using assms
+proof (induct xs)
+  case Nil
+  show ?case by simp
+next
+  case (Cons x xs)
+  show ?case
+  proof (simp, intro conjI, rule)
+    assume "x \<in> set xs"
+    then obtain j where "j < length xs" and "x = xs ! j" by (metis in_set_conv_nth)
+    hence "Suc j < length (x # xs)" by simp
+    have "(x # xs) ! 0 \<noteq> (x # xs) ! (Suc j)" by (rule Cons(2), simp, simp, fact)
+    thus False by (simp add: \<open>x = xs ! j\<close>)
+  next
+    show "distinct xs"
+    proof (rule Cons(1))
+      fix i j
+      assume "i < j" and "i < length xs" and "j < length xs"
+      hence "Suc i < Suc j" and "Suc i < length (x # xs)" and "Suc j < length (x # xs)" by simp_all
+      hence "(x # xs) ! (Suc i) \<noteq> (x # xs) ! (Suc j)" by (rule Cons(2))
+      thus "xs ! i \<noteq> xs ! j" by simp
+    qed
+  qed
+qed
+
+lemma filter_nth_pairE:
+  assumes "i < j" and "i < length (filter P xs)" and "j < length (filter P xs)"
+  obtains i' j' where "i' < j'" and "i' < length xs" and "j' < length xs"
+    and "(filter P xs) ! i = xs ! i'" and "(filter P xs) ! j = xs ! j'"
+  using assms
+proof (induct xs arbitrary: i j thesis)
+  case Nil
+  from Nil(3) show ?case by simp
+next
+  case (Cons x xs)
+  let ?ys = "filter P (x # xs)"
+  show ?case
+  proof (cases "P x")
+    case True
+    hence *: "?ys = x # (filter P xs)" by simp
+    from \<open>i < j\<close> obtain j0 where j: "j = Suc j0" using lessE by blast
+    have len_ys: "length ?ys = Suc (length (filter P xs))" and ys_j: "?ys ! j = (filter P xs) ! j0"
+      by (simp only: * length_Cons, simp only: j * nth_Cons_Suc)
+    from Cons(5) have "j0 < length (filter P xs)" unfolding len_ys j by auto
+    show ?thesis
+    proof (cases "i = 0")
+      case True
+      from \<open>j0 < length (filter P xs)\<close> obtain j' where "j' < length xs" and **: "(filter P xs) ! j0 = xs ! j'"
+        by (metis (no_types, lifting) in_set_conv_nth mem_Collect_eq nth_mem set_filter)
+      have "0 < Suc j'" by simp
+      thus ?thesis
+        by (rule Cons(2), simp, simp add: \<open>j' < length xs\<close>, simp only: True * nth_Cons_0,
+            simp only: ys_j nth_Cons_Suc **)
+    next
+      case False
+      then obtain i0 where i: "i = Suc i0" using lessE by blast
+      have ys_i: "?ys ! i = (filter P xs) ! i0" by (simp only: i * nth_Cons_Suc)
+      from Cons(3) have "i0 < j0" by (simp add: i j)
+      from Cons(4) have "i0 < length (filter P xs)" unfolding len_ys i by auto
+      from _ \<open>i0 < j0\<close> this \<open>j0 < length (filter P xs)\<close> obtain i' j'
+        where "i' < j'" and "i' < length xs" and "j' < length xs"
+          and i': "filter P xs ! i0 = xs ! i'" and j': "filter P xs ! j0 = xs ! j'"
+        by (rule Cons(1))
+      from \<open>i' < j'\<close> have "Suc i' < Suc j'" by simp
+      thus ?thesis
+        by (rule Cons(2), simp add: \<open>i' < length xs\<close>, simp add: \<open>j' < length xs\<close>,
+            simp only: ys_i nth_Cons_Suc i', simp only: ys_j nth_Cons_Suc j')
+    qed
+  next
+    case False
+    hence *: "?ys = filter P xs" by simp
+    with Cons(4) Cons(5) have "i < length (filter P xs)" and "j < length (filter P xs)" by simp_all
+    with _ \<open>i < j\<close> obtain i' j' where "i' < j'" and "i' < length xs" and "j' < length xs"
+      and i': "filter P xs ! i = xs ! i'" and j': "filter P xs ! j = xs ! j'"
+      by (rule Cons(1))
+    from \<open>i' < j'\<close> have "Suc i' < Suc j'" by simp
+    thus ?thesis
+      by (rule Cons(2), simp add: \<open>i' < length xs\<close>, simp add: \<open>j' < length xs\<close>,
+          simp only: * nth_Cons_Suc i', simp only: * nth_Cons_Suc j')
+  qed
+qed
+
+lemma distinct_filterI:
+  assumes "\<And>i j. i < j \<Longrightarrow> i < length xs \<Longrightarrow> j < length xs \<Longrightarrow> P (xs ! i) \<Longrightarrow> P (xs ! j) \<Longrightarrow> xs ! i \<noteq> xs ! j"
+  shows "distinct (filter P xs)"
+proof (rule distinctI)
+  fix i j::nat
+  assume "i < j" and "i < length (filter P xs)" and "j < length (filter P xs)"
+  then obtain i' j' where "i' < j'" and "i' < length xs" and "j' < length xs"
+    and i: "(filter P xs) ! i = xs ! i'" and j: "(filter P xs) ! j = xs ! j'" by (rule filter_nth_pairE)
+  from \<open>i' < j'\<close> \<open>i' < length xs\<close> \<open>j' < length xs\<close> show "(filter P xs) ! i \<noteq> (filter P xs) ! j" unfolding i j
+  proof (rule assms)
+    from \<open>i < length (filter P xs)\<close> show "P (xs ! i')" unfolding i[symmetric] using nth_mem by force
+  next
+    from \<open>j < length (filter P xs)\<close> show "P (xs ! j')" unfolding j[symmetric] using nth_mem by force
+  qed
+qed
+
+lemma set_zip_map: "set (zip (map f xs) (map g xs)) = (\<lambda>x. (f x, g x)) ` (set xs)"
+proof -
+  have "{(map f xs ! i, map g xs ! i) |i. i < length xs} = {(f (xs ! i), g (xs ! i)) |i. i < length xs}"
+  proof (rule Collect_eqI, rule, elim exE conjE, intro exI conjI, simp add: map_nth, assumption,
+      elim exE conjE, intro exI)
+    fix x i
+    assume "x = (f (xs ! i), g (xs ! i))" and "i < length xs"
+    thus "x = (map f xs ! i, map g xs ! i) \<and> i < length xs" by (simp add: map_nth)
+  qed
+  also have "... = (\<lambda>x. (f x, g x)) ` {xs ! i | i. i < length xs}" by blast
+  finally show "set (zip (map f xs) (map g xs)) = (\<lambda>x. (f x, g x)) ` (set xs)"
+    by (simp add: set_zip set_conv_nth[symmetric])
+qed
+
+lemma set_zip_map1: "set (zip (map f xs) xs) = (\<lambda>x. (f x, x)) ` (set xs)"
+proof -
+  have "set (zip (map f xs) (map id xs)) = (\<lambda>x. (f x, id x)) ` (set xs)" by (rule set_zip_map)
+  thus ?thesis by simp
+qed
+
+lemma set_zip_map2: "set (zip xs (map f xs)) = (\<lambda>x. (x, f x)) ` (set xs)"
+proof -
+  have "set (zip (map id xs) (map f xs)) = (\<lambda>x. (id x, f x)) ` (set xs)" by (rule set_zip_map)
+  thus ?thesis by simp
+qed
+
+subsubsection \<open>\<open>max_list\<close>\<close>
+
+fun (in ord) max_list :: "'a list \<Rightarrow> 'a" where
+  "max_list (x # xs) = (case xs of [] \<Rightarrow> x | _ \<Rightarrow> max x (max_list xs))"
+
+lemma (in linorder) max_list_Max: "xs \<noteq> [] \<Longrightarrow> max_list xs = Max (set xs)"
+  by (induct xs rule: induct_list012, auto)
+
+subsubsection \<open>\<open>insort_wrt\<close>\<close>
+
 primrec insort_wrt :: "('c \<Rightarrow> 'c \<Rightarrow> bool) \<Rightarrow> 'c \<Rightarrow> 'c list \<Rightarrow> 'c list" where
   "insort_wrt _ x [] = [x]" |
   "insort_wrt r x (y # ys) =
@@ -83,6 +220,8 @@ next
   assume ?r
   with assms show ?l by (rule sorted_wrt_imp_sorted_wrt_insort_wrt)
 qed
+
+subsubsection \<open>\<open>diff_list\<close> and \<open>insert_list\<close>\<close>
 
 definition diff_list :: "'a list \<Rightarrow> 'a list \<Rightarrow> 'a list" (infixl "--" 65)
   where "diff_list xs ys = fold removeAll ys xs"
@@ -267,5 +406,28 @@ qed
 
 lemma set_map_idx: "set (map_idx f xs n) = (\<lambda>i. f (xs ! i) (i + n)) ` {0..<length xs}"
   by (simp add: map_idx_eq_map)
+
+subsubsection \<open>\<open>map_dup\<close>\<close>
+
+primrec map_dup :: "('a \<Rightarrow> 'b) \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'b list" where
+  "map_dup _ _ [] = []"|
+  "map_dup f g (x # xs) = (if x \<in> set xs then g x else f x) # (map_dup f g xs)"
+
+lemma length_map_dup[simp]: "length (map_dup f g xs) = length xs"
+  by (induct xs, simp_all)
+
+lemma map_dup_distinct:
+  assumes "distinct xs"
+  shows "map_dup f g xs = map f xs"
+  using assms by (induct xs, simp_all)
+
+lemma filter_map_dup_const:
+  "filter (\<lambda>x. x \<noteq> c) (map_dup f (\<lambda>_. c) xs) = filter (\<lambda>x. x \<noteq> c) (map f (remdups xs))"
+  by (induct xs, simp_all)
+
+lemma filter_zip_map_dup_const:
+  "filter (\<lambda>(a, b). a \<noteq> c) (zip (map_dup f (\<lambda>_. c) xs) xs) =
+    filter (\<lambda>(a, b). a \<noteq> c) (zip (map f (remdups xs)) (remdups xs))"
+  by (induct xs, simp_all)
 
 end (* theory *)

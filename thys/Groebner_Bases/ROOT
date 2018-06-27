@@ -1,13 +1,17 @@
 chapter AFP
 
-session Groebner_Bases (AFP) = Polynomials +
+session Groebner_Bases (AFP) = "HOL-Algebra" +
   options [timeout = 600]
+  sessions
+    Polynomials
+    Jordan_Normal_Form
   theories [document = false]
     "Abstract-Rewriting.Abstract_Rewriting"
     Polynomials.MPoly_Type_Class_FMap
   theories
     Buchberger_Examples
     Reduced_GB_Examples
+    F4_Examples
   document_files
     "root.tex"
     "root.bib"
