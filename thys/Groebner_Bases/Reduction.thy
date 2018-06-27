@@ -3,22 +3,22 @@
 section \<open>Polynomial Reduction\<close>
 
 theory Reduction
-imports Polynomials.MPoly_Type_Class Confluence
+imports "Polynomials.MPoly_Type_Class_Ordered" Confluence
 begin
 
 text \<open>This theory formalizes the concept of @{emph \<open>reduction\<close>} of polynomials by polynomials.\<close>
 
-context ordered_powerprod
+context ordered_term
 begin
 
-definition red_single::"('a \<Rightarrow>\<^sub>0 'b::field) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> 'a \<Rightarrow> bool"
-  where "red_single p q f t \<longleftrightarrow> (f \<noteq> 0 \<and> lookup p (t + lp f) \<noteq> 0 \<and>
-                                q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f)"
+definition red_single :: "('t \<Rightarrow>\<^sub>0 'b::field) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> 'a \<Rightarrow> bool"
+  where "red_single p q f t \<longleftrightarrow> (f \<noteq> 0 \<and> lookup p (t \<oplus> lt f) \<noteq> 0 \<and>
+                                q = p - monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f)"
 
-definition red::"('a \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
+definition red :: "('t \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
   where "red F p q \<longleftrightarrow> (\<exists>f\<in>F. \<exists>t. red_single p q f t)"
 
-definition is_red::"('a \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
+definition is_red :: "('t \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
   where "is_red F a \<longleftrightarrow> \<not> relation.is_final (red F) a"
 
 subsection \<open>Basic Properties of Reduction\<close>
@@ -34,10 +34,10 @@ next
 qed
 
 lemma red_setE:
-  assumes a: "red F p q"
-  obtains f::"'a \<Rightarrow>\<^sub>0 'b::field" and t where "f \<in> F" and "red_single p q f t"
+  assumes "red F p q"
+  obtains f and t where "f \<in> F" and "red_single p q f t"
 proof -
-  from a obtain f where "f \<in> F" and t: "\<exists>t. red_single p q f t" unfolding red_def by auto
+  from assms obtain f where "f \<in> F" and t: "\<exists>t. red_single p q f t" unfolding red_def by auto
   from t obtain t where "red_single p q f t" ..
   from \<open>f \<in> F\<close> this show "?thesis" ..
 qed
@@ -86,7 +86,6 @@ lemma red_unionI2:
   unfolding red_union by (rule disjI2, fact)
 
 lemma red_subset:
-  fixes p q::"('a, 'b::field) poly_mapping" and F G::"('a, 'b) poly_mapping set"
   assumes "red G p q" and "G \<subseteq> F"
   shows "red F p q"
 proof -
@@ -134,54 +133,53 @@ qed
 
 lemma red_single_lookup:
   assumes "red_single p q f t"
-  shows "lookup q (t + lp f) = 0"
+  shows "lookup q (t \<oplus> lt f) = 0"
   using assms unfolding red_single_def
 proof
-  assume "f \<noteq> 0" and "lookup p (t + lp f) \<noteq> 0 \<and> q = p - monom_mult (lookup p (t + lp f) / lc f) t f"
-  hence "lookup p (t + lp f) \<noteq> 0" and q_def: "q = p - monom_mult (lookup p (t + lp f) / lc f) t f"
+  assume "f \<noteq> 0" and "lookup p (t \<oplus> lt f) \<noteq> 0 \<and> q = p - monom_mult (lookup p (t \<oplus> lt f) / lc f) t f"
+  hence "lookup p (t \<oplus> lt f) \<noteq> 0" and q_def: "q = p - monom_mult (lookup p (t \<oplus> lt f) / lc f) t f"
     by auto
-  from lookup_minus[of p "monom_mult (lookup p (t + lp f) / lc f) t f" "t + lp f"]
-       lookup_monom_mult_plus[of "lookup p (t + lp f) / lc f" t f "lp f"]
+  from lookup_minus[of p "monom_mult (lookup p (t \<oplus> lt f) / lc f) t f" "t \<oplus> lt f"]
+       lookup_monom_mult_plus[of "lookup p (t \<oplus> lt f) / lc f" t f "lt f"]
        lc_not_0[OF \<open>f \<noteq> 0\<close>]
     show ?thesis unfolding q_def lc_def by simp
 qed
 
 lemma red_single_higher:
   assumes "red_single p q f t"
-  shows "higher q (t + lp f) = higher p (t + lp f)"
+  shows "higher q (t \<oplus> lt f) = higher p (t \<oplus> lt f)"
   using assms unfolding higher_eq_iff red_single_def
 proof (intro allI, intro impI)
-  fix s
-  assume a: "t + lp f \<prec> s"
-    and "f \<noteq> 0 \<and> lookup p (t + lp f) \<noteq> 0 \<and> q = p - monom_mult (lookup p (t + lp f) / lc f) t f"
+  fix u
+  assume a: "t \<oplus> lt f \<prec>\<^sub>t u"
+    and "f \<noteq> 0 \<and> lookup p (t \<oplus> lt f) \<noteq> 0 \<and> q = p - monom_mult (lookup p (t \<oplus> lt f) / lc f) t f"
   hence "f \<noteq> 0"
-    and "lookup p (t + lp f) \<noteq> 0"
-    and q_def: "q = p - monom_mult (lookup p (t + lp f) / lc f) t f"
+    and "lookup p (t \<oplus> lt f) \<noteq> 0"
+    and q_def: "q = p - monom_mult (lookup p (t \<oplus> lt f) / lc f) t f"
     by simp_all
-  from \<open>lookup p (t + lp f) \<noteq> 0\<close> lc_not_0[OF \<open>f \<noteq> 0\<close>] have c_not_0: "lookup p (t + lp f) / lc f \<noteq> 0"
+  from \<open>lookup p (t \<oplus> lt f) \<noteq> 0\<close> lc_not_0[OF \<open>f \<noteq> 0\<close>] have c_not_0: "lookup p (t \<oplus> lt f) / lc f \<noteq> 0"
     by (simp add: field_simps)
-  from q_def lookup_minus[of p "monom_mult (lookup p (t + lp f) / lc f) t f"]
-    have q_lookup: "\<And>s. lookup q s = lookup p s - lookup (monom_mult (lookup p (t + lp f) / lc f) t f) s"
+  from q_def lookup_minus[of p "monom_mult (lookup p (t \<oplus> lt f) / lc f) t f"]
+    have q_lookup: "\<And>s. lookup q s = lookup p s - lookup (monom_mult (lookup p (t \<oplus> lt f) / lc f) t f) s"
     by simp
-  from a lp_monom_mult[OF c_not_0 \<open>f \<noteq> 0\<close>, of t]
-    have "\<not> s \<preceq> lp (monom_mult (lookup p (t + lp f) / lc f) t f)" by simp
-  with lp_max[of "monom_mult (lookup p (t + lp f) / lc f) t f" s]
-  have "lookup (monom_mult (lookup p (t + lp f) / lc f) t f) s = 0"
-      apply (auto)
-      by (metis lookup_not_eq_zero_eq_in_keys)
-  thus "lookup q s = lookup p s" using q_lookup[of s] by simp
+  from a lt_monom_mult[OF c_not_0 \<open>f \<noteq> 0\<close>, of t]
+    have "\<not> u \<preceq>\<^sub>t lt (monom_mult (lookup p (t \<oplus> lt f) / lc f) t f)" by simp
+  with lt_max[of "monom_mult (lookup p (t \<oplus> lt f) / lc f) t f" u]
+  have "lookup (monom_mult (lookup p (t \<oplus> lt f) / lc f) t f) u = 0"
+      apply auto by (metis lookup_not_eq_zero_eq_in_keys)
+  thus "lookup q u = lookup p u" using q_lookup[of u] by simp
 qed
 
 lemma red_single_ord:
   assumes "red_single p q f t"
-  shows "q \<prec>p p"
+  shows "q \<prec>\<^sub>p p"
   unfolding ord_strict_higher
 proof (intro exI, intro conjI)
-  from red_single_lookup[OF assms] show "lookup q (t + lp f) = 0" .
+  from red_single_lookup[OF assms] show "lookup q (t \<oplus> lt f) = 0" .
 next
-  from assms show "lookup p (t + lp f) \<noteq> 0" unfolding red_single_def by simp
+  from assms show "lookup p (t \<oplus> lt f) \<noteq> 0" unfolding red_single_def by simp
 next
-  from red_single_higher[OF assms] show "higher q (t + lp f) = higher p (t + lp f)" .
+  from red_single_higher[OF assms] show "higher q (t \<oplus> lt f) = higher p (t \<oplus> lt f)" .
 qed
 
 lemma red_single_nonzero1:
@@ -189,7 +187,7 @@ lemma red_single_nonzero1:
   shows "p \<noteq> 0"
 proof
   assume "p = 0"
-  from this red_single_ord[OF assms] ord_p_0_min[of q] show False by simp
+  from this red_single_ord[OF assms] ord_p_zero_min[of q] show False by simp
 qed
 
 lemma red_single_nonzero2:
@@ -197,7 +195,7 @@ lemma red_single_nonzero2:
   shows "f \<noteq> 0"
 proof
   assume "f = 0"
-  from assms monom_mult_right0 have "f \<noteq> 0" unfolding red_single_def by simp
+  from assms monom_mult_zero_right have "f \<noteq> 0" by (simp add: red_single_def)
   from this \<open>f = 0\<close> show False by simp
 qed
 
@@ -210,29 +208,27 @@ proof -
   proof (intro conjI)
     show "p \<noteq> 0" by fact
   next
-    from lc show "lookup p (0 + lp p) \<noteq> 0" unfolding lc_def by simp
+    from lc show "lookup p (0 \<oplus> lt p) \<noteq> 0" unfolding lc_def by (simp add: term_simps)
   next
-    from lc have "(lookup p (0 + lp p)) / lc p = 1" unfolding lc_def by simp
-    from this monom_mult_left1[of p] show "0 = p - monom_mult (lookup p (0 + lp p) / lc p) 0 p"
+    from lc have "(lookup p (0 \<oplus> lt p)) / lc p = 1" unfolding lc_def by (simp add: term_simps)
+    from this monom_mult_one_left[of p] show "0 = p - monom_mult (lookup p (0 \<oplus> lt p) / lc p) 0 p"
       by simp
   qed
 qed
 
 lemma red_single_trans:
-  assumes "red_single p p0 f t" and "lp g adds lp f" and "g \<noteq> 0"
+  assumes "red_single p p0 f t" and "lt g adds\<^sub>t lt f" and "g \<noteq> 0"
   obtains p1 where "red_single p p1 g (t + (lp f - lp g))"
 proof -
   let ?s = "t + (lp f - lp g)"
-  let ?p = "p - monom_mult (lookup p (?s + lp g) / lc g) ?s g"
+  let ?p = "p - monom_mult (lookup p (?s \<oplus> lt g) / lc g) ?s g"
   have "red_single p ?p g ?s" unfolding red_single_def
   proof (intro conjI)
-    from add_minus_2[of "lp g" "lp f"]
-    have eq: "t + (lp f - lp g) + lp g = t + lp f"
-      apply (auto simp: algebra_simps)
-      by (metis add.commute adds_minus assms(2))
-    from \<open>red_single p p0 f t\<close> have "lookup p (t + lp f) \<noteq> 0" unfolding red_single_def by simp
-    thus "lookup p (t + (lp f - lp g) + lp g) \<noteq> 0" by (simp add: eq)
-  qed (fact, simp)
+    from assms(2) have eq: "?s \<oplus> lt g = t \<oplus> lt f" using adds_term_alt splus_assoc
+      by (auto simp: term_simps)
+    from \<open>red_single p p0 f t\<close> have "lookup p (t \<oplus> lt f) \<noteq> 0" unfolding red_single_def by simp
+    thus "lookup p (?s \<oplus> lt g) \<noteq> 0" by (simp add: eq)
+  qed (fact, fact refl)
   thus ?thesis ..
 qed
 
@@ -254,51 +250,50 @@ qed
 
 lemma red_ord:
   assumes "red F p q"
-  shows "q \<prec>p p"
+  shows "q \<prec>\<^sub>p p"
 proof -
   from red_setE[OF assms] obtain f and t where "red_single p q f t" .
-  from red_single_ord[OF this] show "q \<prec>p p" .
+  from red_single_ord[OF this] show "q \<prec>\<^sub>p p" .
 qed
 
 lemma red_indI1:
-  assumes "f \<in> F" and "f \<noteq> 0" and "p \<noteq> 0" and adds: "lp f adds lp p"
+  assumes "f \<in> F" and "f \<noteq> 0" and "p \<noteq> 0" and adds: "lt f adds\<^sub>t lt p"
   shows "red F p (p - monom_mult (lc p / lc f) (lp p - lp f) f)"
 proof (intro red_setI[OF \<open>f \<in> F\<close>])
-  have c: "lookup p (lp p - lp f + lp f) = lc p" unfolding lc_def
-    by (metis adds adds_minus)
-  show "red_single p (p - monom_mult (lc p / lc f) (lp p - lp f) f) f (lp p - lp f)"
-    unfolding red_single_def
+  let ?s = "lp p - lp f"
+  have c: "lookup p (?s \<oplus> lt f) = lc p" unfolding lc_def
+    by (metis add_diff_cancel_right' adds adds_termE pp_of_term_splus)
+  show "red_single p (p - monom_mult (lc p / lc f) ?s f) f ?s" unfolding red_single_def
   proof (intro conjI, fact)
-    from c lc_not_0[OF \<open>p \<noteq> 0\<close>] show "lookup p (lp p - lp f + lp f) \<noteq> 0" by simp
+    from c lc_not_0[OF \<open>p \<noteq> 0\<close>] show "lookup p (?s \<oplus> lt f) \<noteq> 0" by simp
   next
-    from c show "p - monom_mult (lc p / lc f) (lp p - lp f) f =
-                  p - monom_mult (lookup p (lp p - lp f + lp f) / lc f) (lp p - lp f) f"
+    from c show "p - monom_mult (lc p / lc f) ?s f = p - monom_mult (lookup p (?s \<oplus> lt f) / lc f) ?s f"
       by simp
   qed
 qed
 
 lemma red_indI2:
   assumes "p \<noteq> 0" and r: "red F (tail p) q"
-  shows "red F p (q + monomial (lc p) (lp p))"
+  shows "red F p (q + monomial (lc p) (lt p))"
 proof -
   from red_setE[OF r] obtain f t where "f \<in> F" and rs: "red_single (tail p) q f t" by auto
-  from rs have "f \<noteq> 0" and ct: "lookup (tail p) (t + lp f) \<noteq> 0"
-    and q: "q = tail p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
+  from rs have "f \<noteq> 0" and ct: "lookup (tail p) (t \<oplus> lt f) \<noteq> 0"
+    and q: "q = tail p - monom_mult (lookup (tail p) (t \<oplus> lt f) / lc f) t f"
     unfolding red_single_def by simp_all
-  from ct lookup_tail[of p "t + lp f"] have "t + lp f \<prec> lp p" by (auto split: if_splits)
-  hence c: "lookup (tail p) (t + lp f) = lookup p (t + lp f)" using lookup_tail[of p] by simp
+  from ct lookup_tail[of p "t \<oplus> lt f"] have "t \<oplus> lt f \<prec>\<^sub>t lt p" by (auto split: if_splits)
+  hence c: "lookup (tail p) (t \<oplus> lt f) = lookup p (t \<oplus> lt f)" using lookup_tail[of p] by simp
   show ?thesis
   proof (intro red_setI[OF \<open>f \<in> F\<close>])
-    show "red_single p (q + Poly_Mapping.single (lp p) (lc p)) f t" unfolding red_single_def
+    show "red_single p (q + Poly_Mapping.single (lt p) (lc p)) f t" unfolding red_single_def
     proof (intro conjI, fact)
-      from ct c show "lookup p (t + lp f) \<noteq> 0" by simp
+      from ct c show "lookup p (t \<oplus> lt f) \<noteq> 0" by simp
     next
-      from q have "q + monomial (lc p) (lp p) =
-                  (monomial (lc p) (lp p) + tail p) - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
+      from q have "q + monomial (lc p) (lt p) =
+                  (monomial (lc p) (lt p) + tail p) - monom_mult (lookup (tail p) (t \<oplus> lt f) / lc f) t f"
         by simp
-      also have "\<dots> = p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
+      also have "\<dots> = p - monom_mult (lookup (tail p) (t \<oplus> lt f) / lc f) t f"
         using leading_monomial_tail[of p] by auto
-      finally show "q + monomial (lc p) (lp p) = p - monom_mult (lookup p (t + lp f) / lc f) t f"
+      finally show "q + monomial (lc p) (lt p) = p - monom_mult (lookup p (t \<oplus> lt f) / lc f) t f"
         by (simp only: c)
     qed
   qed
@@ -306,45 +301,46 @@ qed
 
 lemma red_indE:
   assumes "red F p q"
-  shows "(\<exists>f\<in>F. f \<noteq> 0 \<and> lp f adds lp p \<and>
+  shows "(\<exists>f\<in>F. f \<noteq> 0 \<and> lt f adds\<^sub>t lt p \<and>
             (q = p - monom_mult (lc p / lc f) (lp p - lp f) f)) \<or>
-            red F (tail p) (q - monomial (lc p) (lp p))"
+            red F (tail p) (q - monomial (lc p) (lt p))"
 proof -
   from red_nonzero[OF assms] have "p \<noteq> 0" .
   from red_setE[OF assms] obtain f t where "f \<in> F" and rs: "red_single p q f t" by auto
   from rs have "f \<noteq> 0"
-    and cn0: "lookup p (t + lp f) \<noteq> 0"
-    and q: "q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f"
+    and cn0: "lookup p (t \<oplus> lt f) \<noteq> 0"
+    and q: "q = p - monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f"
     unfolding red_single_def by simp_all
   show ?thesis
-  proof (cases "lp p = t + lp f")
+  proof (cases "lt p = t \<oplus> lt f")
     case True
-    hence "lp f adds lp p" by simp
-    from True have eq1: "lp p - lp f = t" by simp
-    from True have eq2: "lc p = lookup p (t + lp f)" unfolding lc_def by simp
+    hence "lt f adds\<^sub>t lt p" by (simp add: term_simps)
+    from True have eq1: "lp p - lp f = t" by (simp add: term_simps)
+    from True have eq2: "lc p = lookup p (t \<oplus> lt f)" unfolding lc_def by simp
     show ?thesis
     proof (intro disjI1, rule bexI[of _ f], intro conjI, fact+)
-      from q eq1 eq2 show "q = p - monom_mult (lc p / lc f) (lp p - lp f) f" by simp
+      from q eq1 eq2 show "q = p - monom_mult (lc p / lc f) (lp p - lp f) f"
+        by simp
     qed (fact)
   next
     case False
-    from this lookup_tail_2[of p "t + lp f"]
-      have ct: "lookup (tail p) (t + lp f) = lookup p (t + lp f)" by simp
+    from this lookup_tail_2[of p "t \<oplus> lt f"]
+      have ct: "lookup (tail p) (t \<oplus> lt f) = lookup p (t \<oplus> lt f)" by simp
     show ?thesis
     proof (intro disjI2, intro red_setI[of f], fact)
-      show "red_single (tail p) (q - monomial (lc p) (lp p)) f t" unfolding red_single_def
+      show "red_single (tail p) (q - monomial (lc p) (lt p)) f t" unfolding red_single_def
       proof (intro conjI, fact)
-        from cn0 ct show "lookup (tail p) (t + lp f) \<noteq> 0" by simp
+        from cn0 ct show "lookup (tail p) (t \<oplus> lt f) \<noteq> 0" by simp
       next
         from leading_monomial_tail[of p]
-          have "p - monomial (lc p) (lp p) = (monomial (lc p) (lp p) + tail p) - monomial (lc p) (lp p)"
+          have "p - monomial (lc p) (lt p) = (monomial (lc p) (lt p) + tail p) - monomial (lc p) (lt p)"
           by simp
         also have "\<dots> = tail p" by simp
-        finally have eq: "p - monomial (lc p) (lp p) = tail p" .
-        from q have "q - monomial (lc p) (lp p) =
-                    (p - monomial (lc p) (lp p)) - monom_mult ((lookup p (t + lp f)) / lc f) t f" by simp
-        also from eq have "\<dots> = tail p - monom_mult ((lookup p (t + lp f)) / lc f) t f" by simp
-        finally show "q - monomial (lc p) (lp p) = tail p - monom_mult (lookup (tail p) (t + lp f) / lc f) t f"
+        finally have eq: "p - monomial (lc p) (lt p) = tail p" .
+        from q have "q - monomial (lc p) (lt p) =
+                    (p - monomial (lc p) (lt p)) - monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f" by simp
+        also from eq have "\<dots> = tail p - monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f" by simp
+        finally show "q - monomial (lc p) (lt p) = tail p - monom_mult (lookup (tail p) (t \<oplus> lt f) / lc f) t f"
           using ct by simp
       qed
     qed
@@ -354,12 +350,12 @@ qed
 lemma is_redI:
   assumes "red F a b"
   shows "is_red F a"
-unfolding is_red_def relation.is_final_def by (simp, intro exI[of _ b], fact)
+  unfolding is_red_def relation.is_final_def by (simp, intro exI[of _ b], fact)
 
 lemma is_redE:
   assumes "is_red F a"
   obtains b where "red F a b"
-using assms unfolding is_red_def relation.is_final_def
+  using assms unfolding is_red_def relation.is_final_def
 proof simp
   assume r: "\<And>b. red F a b \<Longrightarrow> thesis" and b: "\<exists>x. red F a x"
   from b obtain b where "red F a b" ..
@@ -379,7 +375,6 @@ next
 qed
 
 lemma is_red_singletonI:
-  fixes F::"('a, 'b::field) poly_mapping set" and q::"('a, 'b) poly_mapping"
   assumes "is_red F q"
   obtains p where "p \<in> F" and "is_red {p} q"
 proof -
@@ -393,7 +388,6 @@ proof -
 qed
 
 lemma is_red_singletonD:
-  fixes F::"('a, 'b::field) poly_mapping set" and p q::"('a, 'b) poly_mapping"
   assumes "is_red {p} q" and "p \<in> F"
   shows "is_red F q"
 proof -
@@ -405,12 +399,12 @@ proof -
 qed
 
 lemma is_red_singleton_trans:
-  assumes "is_red {f} p" and "lp g adds lp f" and "g \<noteq> 0"
+  assumes "is_red {f} p" and "lt g adds\<^sub>t lt f" and "g \<noteq> 0"
   shows "is_red {g} p"
 proof -
   from \<open>is_red {f} p\<close> obtain q where "red {f} p q" unfolding is_red_alt ..
   from this red_singleton[of f p q] obtain t where "red_single p q f t" by auto
-  from red_single_trans[OF this \<open>lp g adds lp f\<close> \<open>g \<noteq> 0\<close>] obtain q0 where
+  from red_single_trans[OF this assms(2, 3)] obtain q0 where
     "red_single p q0 g (t + (lp f - lp g))" .
   show ?thesis
   proof (rule is_redI[of "{g}" p q0])
@@ -435,11 +429,11 @@ lemma irred_0:
 proof (rule, rule is_redE)
   fix b
   assume "red F 0 b"
-  from ord_p_0_min[of b] red_ord[OF this] show False by simp
+  from ord_p_zero_min[of b] red_ord[OF this] show False by simp
 qed
 
 lemma is_red_indI1:
-  assumes "f \<in> F" and "f \<noteq> 0" and "p \<noteq> 0" and "lp f adds lp p"
+  assumes "f \<in> F" and "f \<noteq> 0" and "p \<noteq> 0" and "lt f adds\<^sub>t lt p"
   shows "is_red F p"
 by (intro is_redI, rule red_indI1[OF assms])
 
@@ -453,16 +447,16 @@ qed
 
 lemma is_red_indE:
   assumes "is_red F p"
-  shows "(\<exists>f\<in>F. f \<noteq> 0 \<and> lp f adds lp p) \<or> is_red F (tail p)"
+  shows "(\<exists>f\<in>F. f \<noteq> 0 \<and> lt f adds\<^sub>t lt p) \<or> is_red F (tail p)"
 proof -
   from is_redE[OF assms] obtain q where "red F p q" .
   from red_indE[OF this] show ?thesis
   proof
-    assume "\<exists>f\<in>F. f \<noteq> 0 \<and> lp f adds lp p \<and> q = p - monom_mult (lc p / lc f) (lp p - lp f) f"
-    from this obtain f where "f \<in> F" and "f \<noteq> 0" and "lp f adds lp p" by auto
+    assume "\<exists>f\<in>F. f \<noteq> 0 \<and> lt f adds\<^sub>t lt p \<and> q = p - monom_mult (lc p / lc f) (lp p - lp f) f"
+    from this obtain f where "f \<in> F" and "f \<noteq> 0" and "lt f adds\<^sub>t lt p" by auto
     show ?thesis by (intro disjI1, rule bexI[of _ f], intro conjI, fact+)
   next
-    assume "red F (tail p) (q - monomial (lc p) (lp p))"
+    assume "red F (tail p) (q - monomial (lc p) (lt p))"
     show ?thesis by (intro disjI2, intro is_redI, fact)
   qed
 qed
@@ -477,45 +471,86 @@ qed
 
 lemma red_rtrancl_ord:
   assumes "(red F)\<^sup>*\<^sup>* p q"
-  shows "q \<preceq>p p"
+  shows "q \<preceq>\<^sub>p p"
   using assms
 proof induct
   case base
   show ?case ..
 next
   case (step y z)
-  from step(2) have "z \<prec>p y" by (rule red_ord)
-  hence "z \<preceq>p y" by simp
+  from step(2) have "z \<prec>\<^sub>p y" by (rule red_ord)
+  hence "z \<preceq>\<^sub>p y" by simp
   also note step(3)
+  finally show ?case .
+qed
+
+lemma components_red_subset:
+  assumes "red F p q"
+  shows "component_of_term ` keys q \<subseteq> component_of_term ` keys p \<union> component_of_term ` Keys F"
+proof -
+  from assms obtain f t where "f \<in> F" and "red_single p q f t" by (rule red_setE)
+  from this(2) have q: "q = p - monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f"
+    by (simp add: red_single_def)
+  have "component_of_term ` keys q \<subseteq>
+        component_of_term ` (keys p \<union> keys (monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f))"
+    by (rule image_mono, simp add: q keys_minus)
+  also have "... \<subseteq> component_of_term ` keys p \<union> component_of_term ` Keys F"
+  proof (simp add: image_Un, rule)
+    fix k
+    assume "k \<in> component_of_term ` keys (monom_mult (lookup p (t \<oplus> lt f) / lc f) t f)"
+    then obtain v where "v \<in> keys (monom_mult (lookup p (t \<oplus> lt f) / lc f) t f)"
+      and "k = component_of_term v" ..
+    from this(1) keys_monom_mult_subset have "v \<in> (\<oplus>) t ` keys f" ..
+    then obtain u where "u \<in> keys f" and "v = t \<oplus> u" ..
+    have "k = component_of_term u" by (simp add: \<open>k = component_of_term v\<close> \<open>v = t \<oplus> u\<close> term_simps)
+    with \<open>u \<in> keys f\<close> have "k \<in> component_of_term ` keys f" by fastforce
+    also have "... \<subseteq> component_of_term ` Keys F" by (rule image_mono, rule keys_subset_Keys, fact)
+    finally show "k \<in> component_of_term ` keys p \<union> component_of_term ` Keys F" by simp
+  qed
+  finally show ?thesis .
+qed
+
+corollary components_red_rtrancl_subset:
+  assumes "(red F)\<^sup>*\<^sup>* p q"
+  shows "component_of_term ` keys q \<subseteq> component_of_term ` keys p \<union> component_of_term ` Keys F"
+  using assms
+proof (induct)
+  case base
+  show ?case by simp
+next
+  case (step q r)
+  from step(2) have "component_of_term ` keys r \<subseteq> component_of_term ` keys q \<union> component_of_term ` Keys F"
+    by (rule components_red_subset)
+  also from step(3) have "... \<subseteq> component_of_term ` keys p \<union> component_of_term ` Keys F" by blast
   finally show ?case .
 qed
 
 subsection \<open>Reducibility and Addition \& Multiplication\<close>
 
 lemma red_single_monom_mult:
-  assumes a: "red_single p q f t" and "c \<noteq> 0"
+  assumes "red_single p q f t" and "c \<noteq> 0"
   shows "red_single (monom_mult c s p) (monom_mult c s q) f (s + t)"
 proof -
-  from a have "f \<noteq> 0"
-    and "lookup p (t + lp f) \<noteq> 0"
-    and q_def: "q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f"
+  from assms(1) have "f \<noteq> 0"
+    and "lookup p (t \<oplus> lt f) \<noteq> 0"
+    and q_def: "q = p - monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f"
     unfolding red_single_def by auto
-  have assoc: "(s + t) + lp f = s + (t + lp f)" by (simp add: ac_simps)
-  have g2: "lookup (monom_mult c s p) ((s + t) + lp f) \<noteq> 0"
+  have assoc: "(s + t) \<oplus> lt f = s \<oplus> (t \<oplus> lt f)" by (simp add: ac_simps)
+  have g2: "lookup (monom_mult c s p) ((s + t) \<oplus> lt f) \<noteq> 0"
   proof
-    assume "lookup (monom_mult c s p) ((s + t) + lp f) = 0"
-    hence "c * lookup p (t + lp f) = 0" using assoc by (simp add: lookup_monom_mult_plus)
-    thus False using \<open>c \<noteq> 0\<close> \<open>lookup p (t + lp f) \<noteq> 0\<close> by simp
+    assume "lookup (monom_mult c s p) ((s + t) \<oplus> lt f) = 0"
+    hence "c * lookup p (t \<oplus> lt f) = 0" using assoc by (simp add: lookup_monom_mult_plus)
+    thus False using \<open>c \<noteq> 0\<close> \<open>lookup p (t \<oplus> lt f) \<noteq> 0\<close> by simp
   qed
   have g3: "monom_mult c s q =
-    (monom_mult c s p) - monom_mult ((lookup (monom_mult c s p) ((s + t) + lp f)) / lc f) (s + t) f"
+    (monom_mult c s p) - monom_mult ((lookup (monom_mult c s p) ((s + t) \<oplus> lt f)) / lc f) (s + t) f"
   proof -
     from q_def monom_mult_dist_right_minus[of c s p]
       have "monom_mult c s q =
-            monom_mult c s p - monom_mult c s (monom_mult (lookup p (t + lp f) / lc f) t f)" by simp
-    also from monom_mult_assoc[of c s "lookup p (t + lp f) / lc f" t f] assoc
-      have "monom_mult c s (monom_mult (lookup p (t + lp f) / lc f) t f) =
-            monom_mult ((lookup (monom_mult c s p) ((s + t) + lp f)) / lc f) (s + t) f"
+            monom_mult c s p - monom_mult c s (monom_mult (lookup p (t \<oplus> lt f) / lc f) t f)" by simp
+    also from monom_mult_assoc[of c s "lookup p (t \<oplus> lt f) / lc f" t f] assoc
+      have "monom_mult c s (monom_mult (lookup p (t \<oplus> lt f) / lc f) t f) =
+            monom_mult ((lookup (monom_mult c s p) ((s + t) \<oplus> lt f)) / lc f) (s + t) f"
         by (simp add: lookup_monom_mult_plus)
     finally show ?thesis .
   qed
@@ -523,77 +558,78 @@ proof -
 qed
 
 lemma red_single_plus_1:
-  assumes "red_single p q f t" and "t + lp f \<notin> keys (p + r)"
+  assumes "red_single p q f t" and "t \<oplus> lt f \<notin> keys (p + r)"
   shows "red_single (q + r) (p + r) f t"
 proof -
-  from assms have "f \<noteq> 0" and "lookup p (t + lp f) \<noteq> 0"
-    and q: "q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f"
+  from assms have "f \<noteq> 0" and "lookup p (t \<oplus> lt f) \<noteq> 0"
+    and q: "q = p - monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f"
     by (simp_all add: red_single_def)
-  from assms(1) have cq_0: "lookup q (t + lp f) = 0" by (rule red_single_lookup)
-  from assms(2) have "lookup (p + r) (t + lp f) = 0" by simp
-  with neg_eq_iff_add_eq_0[of "lookup p (t + lp f)" "lookup r (t + lp f)"]
-    have cr: "lookup r (t + lp f) = - (lookup p (t + lp f))" by (simp add: lookup_add)
-  hence cr_not_0: "lookup r (t + lp f) \<noteq> 0" using \<open>lookup p (t + lp f) \<noteq> 0\<close> by simp
+  from assms(1) have cq_0: "lookup q (t \<oplus> lt f) = 0" by (rule red_single_lookup)
+  from assms(2) have "lookup (p + r) (t \<oplus> lt f) = 0" by simp
+  with neg_eq_iff_add_eq_0[of "lookup p (t \<oplus> lt f)" "lookup r (t \<oplus> lt f)"]
+    have cr: "lookup r (t \<oplus> lt f) = - (lookup p (t \<oplus> lt f))" by (simp add: lookup_add)
+  hence cr_not_0: "lookup r (t \<oplus> lt f) \<noteq> 0" using \<open>lookup p (t \<oplus> lt f) \<noteq> 0\<close> by simp
   from \<open>f \<noteq> 0\<close> show ?thesis unfolding red_single_def
   proof (intro conjI)
-    from cr_not_0 show "lookup (q + r) (t + lp f) \<noteq> 0" by (simp add: lookup_add cq_0)
+    from cr_not_0 show "lookup (q + r) (t \<oplus> lt f) \<noteq> 0" by (simp add: lookup_add cq_0)
   next
     from lc_not_0[OF \<open>f \<noteq> 0\<close>]
-      have "monom_mult ((lookup (q + r) (t + lp f)) / lc f) t f =
-                  monom_mult ((lookup r (t + lp f)) / lc f) t f"
+      have "monom_mult ((lookup (q + r) (t \<oplus> lt f)) / lc f) t f =
+                  monom_mult ((lookup r (t \<oplus> lt f)) / lc f) t f"
         by (simp add: field_simps lookup_add cq_0)
-    thus "p + r = q + r - monom_mult (lookup (q + r) (t + lp f) / lc f) t f"
+    thus "p + r = q + r - monom_mult (lookup (q + r) (t \<oplus> lt f) / lc f) t f"
       by (simp add: cr q monom_mult_uminus_left)
   qed
 qed
 
 lemma red_single_plus_2:
-  assumes "red_single p q f t" and "t + lp f \<notin> keys (q + r)"
+  assumes "red_single p q f t" and "t \<oplus> lt f \<notin> keys (q + r)"
   shows "red_single (p + r) (q + r) f t"
 proof -
-  from assms have "f \<noteq> 0" and cp: "lookup p (t + lp f) \<noteq> 0"
-    and q: "q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f"
+  from assms have "f \<noteq> 0" and cp: "lookup p (t \<oplus> lt f) \<noteq> 0"
+    and q: "q = p - monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f"
     by (simp_all add: red_single_def)
-  from assms(1) have cq_0: "lookup q (t + lp f) = 0" by (rule red_single_lookup)
-  with assms(2) have cr_0: "lookup r (t + lp f) = 0" by (simp add: lookup_add)
+  from assms(1) have cq_0: "lookup q (t \<oplus> lt f) = 0" by (rule red_single_lookup)
+  with assms(2) have cr_0: "lookup r (t \<oplus> lt f) = 0" by (simp add: lookup_add)
   from \<open>f \<noteq> 0\<close> show ?thesis unfolding red_single_def
   proof (intro conjI)
-    from cp show "lookup (p + r) (t + lp f) \<noteq> 0" by (simp add: lookup_add cr_0)
+    from cp show "lookup (p + r) (t \<oplus> lt f) \<noteq> 0" by (simp add: lookup_add cr_0)
   next
-    show "q + r = p + r - monom_mult (lookup (p + r) (t + lp f) / lc f) t f"
+    show "q + r = p + r - monom_mult (lookup (p + r) (t \<oplus> lt f) / lc f) t f"
       by (simp add: cr_0 q lookup_add)
   qed
 qed
 
 lemma red_single_plus_3:
-  assumes "red_single p q f t" and "t + lp f \<in> keys (p + r)" and "t + lp f \<in> keys (q + r)"
+  assumes "red_single p q f t" and "t \<oplus> lt f \<in> keys (p + r)" and "t \<oplus> lt f \<in> keys (q + r)"
   shows "\<exists>s. red_single (p + r) s f t \<and> red_single (q + r) s f t"
 proof -
-  from assms have "f \<noteq> 0" and "lookup p (t + lp f) \<noteq> 0"
-    and q: "q = p - monom_mult ((lookup p (t + lp f)) / lc f) t f"
+  let ?t = "t \<oplus> lt f"
+  from assms have "f \<noteq> 0" and "lookup p ?t \<noteq> 0"
+    and q: "q = p - monom_mult ((lookup p ?t) / lc f) t f"
     by (simp_all add: red_single_def)
-  from assms(2) have cpr: "lookup (p + r) (t + lp f) \<noteq> 0" by simp
-  from assms(3) have cqr: "lookup (q + r) (t + lp f) \<noteq> 0" by simp
-  from assms(1) have cq_0: "lookup q (t + lp f) = 0" by (rule red_single_lookup)
-  let ?s = "(p + r) - monom_mult ((lookup (p + r) (t + lp f)) / lc f) t f"
+  from assms(2) have cpr: "lookup (p + r) ?t \<noteq> 0" by simp
+  from assms(3) have cqr: "lookup (q + r) ?t \<noteq> 0" by simp
+  from assms(1) have cq_0: "lookup q ?t = 0" by (rule red_single_lookup)
+  let ?s = "(p + r) - monom_mult ((lookup (p + r) ?t) / lc f) t f"
   from \<open>f \<noteq> 0\<close> cpr have "red_single (p + r) ?s f t" by (simp add: red_single_def)
   moreover from \<open>f \<noteq> 0\<close> have "red_single (q + r) ?s f t" unfolding red_single_def
   proof (intro conjI)
-    from cqr show "lookup (q + r) (t + lp f) \<noteq> 0" .
+    from cqr show "lookup (q + r) ?t \<noteq> 0" .
   next
     from lc_not_0[OF \<open>f \<noteq> 0\<close>]
-      monom_mult_dist_left[of "(lookup p (t + lp f)) / lc f" "(lookup r (t + lp f)) / lc f" t f]
-      have "monom_mult ((lookup (p + r) (t + lp f)) / lc f) t f =
-                (monom_mult ((lookup p (t + lp f)) / lc f) t f) +
-                  (monom_mult ((lookup r (t + lp f)) / lc f) t f)"
+      monom_mult_dist_left[of "(lookup p ?t) / lc f" "(lookup r ?t) / lc f" t f]
+      have "monom_mult ((lookup (p + r) ?t) / lc f) t f =
+                (monom_mult ((lookup p ?t) / lc f) t f) +
+                  (monom_mult ((lookup r ?t) / lc f) t f)"
         by (simp add: field_simps lookup_add)
     moreover from lc_not_0[OF \<open>f \<noteq> 0\<close>]
-      monom_mult_dist_left[of "(lookup q (t + lp f)) / lc f" "(lookup r (t + lp f)) / lc f" t f]
-      have "monom_mult ((lookup (q + r) (t + lp f)) / lc f) t f =
-                monom_mult ((lookup r (t + lp f)) / lc f) t f"
+      monom_mult_dist_left[of "(lookup q ?t) / lc f" "(lookup r ?t) / lc f" t f]
+      have "monom_mult ((lookup (q + r) ?t) / lc f) t f =
+                monom_mult ((lookup r ?t) / lc f) t f"
         by (simp add: field_simps lookup_add cq_0)
-    ultimately show "p + r - monom_mult (lookup (p + r) (t + lp f) / lc f) t f =
-                     q + r - monom_mult (lookup (q + r) (t + lp f) / lc f) t f" by (simp add: q)
+    ultimately show "p + r - monom_mult (lookup (p + r) ?t / lc f) t f =
+                     q + r - monom_mult (lookup (q + r) ?t / lc f) t f" by (simp add: q)
   qed
   ultimately show ?thesis by auto
 qed
@@ -603,12 +639,12 @@ lemma red_single_plus:
   shows "red_single (p + r) (q + r) f t \<or>
           red_single (q + r) (p + r) f t \<or>
           (\<exists>s. red_single (p + r) s f t \<and> red_single (q + r) s f t)" (is "?A \<or> ?B \<or> ?C")
-proof (cases "t + lp f \<in> keys (p + r)")
+proof (cases "t \<oplus> lt f \<in> keys (p + r)")
   case True
   show ?thesis
-  proof (cases "t + lp f \<in> keys (q + r)")
+  proof (cases "t \<oplus> lt f \<in> keys (q + r)")
     case True
-    with assms \<open>t + lp f \<in> keys (p + r)\<close> have ?C by (rule red_single_plus_3)
+    with assms \<open>t \<oplus> lt f \<in> keys (p + r)\<close> have ?C by (rule red_single_plus_3)
     thus ?thesis by simp
   next
     case False
@@ -626,7 +662,7 @@ lemma red_single_diff:
   shows "red_single p (r + q) f t \<or> red_single q (p - r) f t \<or>
           (\<exists>p' q'. red_single p p' f t \<and> red_single q q' f t \<and> r = p' - q')" (is "?A \<or> ?B \<or> ?C")
 proof -
-  let ?s = "t + lp f"
+  let ?s = "t \<oplus> lt f"
   from assms have "f \<noteq> 0"
     and "lookup (p - q) ?s \<noteq> 0"
     and r: "r = p - q - monom_mult ((lookup (p - q) ?s) / lc f) t f"
@@ -660,8 +696,8 @@ proof -
         from \<open>f \<noteq> 0\<close> \<open>?s \<in> keys q\<close> show "red_single q ?q f t" by (simp add: red_single_def)
       next
         from \<open>f \<noteq> 0\<close> have "lc f \<noteq> 0" by (rule lc_not_0)
-        hence eq: "(lookup p (t + lp f) - lookup q (t + lp f)) / lc f =
-                   lookup p (t + lp f) / lc f - lookup q (t + lp f) / lc f" by (simp add: field_simps)
+        hence eq: "(lookup p ?s - lookup q ?s) / lc f =
+                   lookup p ?s / lc f - lookup q ?s / lc f" by (simp add: field_simps)
         show "r = ?p - ?q" by (simp add: r lookup_minus eq monom_mult_dist_left_minus)
       qed
       thus ?thesis by simp
@@ -684,27 +720,27 @@ proof -
   from assms(1) obtain f t where "f \<in> F" and *: "red_single p q f t" by (rule red_setE)
   from this(2) have "red_single (p + r) (q + r) f t"
   proof (rule red_single_plus_2)
-    from * have "lookup q (t + lp f) = 0"
-      by (simp add: red_single_def lookup_minus lookup_monom_mult lc_def[symmetric] lc_not_0)
-    hence "t + lp f \<notin> keys q" by simp
-    moreover have "t + lp f \<notin> keys r"
+    from * have "lookup q (t \<oplus> lt f) = 0"
+      by (simp add: red_single_def lookup_minus lookup_monom_mult lc_def[symmetric] lc_not_0 term_simps)
+    hence "t \<oplus> lt f \<notin> keys q" by simp
+    moreover have "t \<oplus> lt f \<notin> keys r"
     proof
-      assume "t + lp f \<in> keys r"
-      moreover from * have "t + lp f \<in> keys p" by (simp add: red_single_def)
-      ultimately have "t + lp f \<in> keys p \<inter> keys r" by simp
+      assume "t \<oplus> lt f \<in> keys r"
+      moreover from * have "t \<oplus> lt f \<in> keys p" by (simp add: red_single_def)
+      ultimately have "t \<oplus> lt f \<in> keys p \<inter> keys r" by simp
       with assms(2) show False by simp
     qed
-    ultimately have "t + lp f \<notin> keys q \<union> keys r" by simp
-    thus "t + lp f \<notin> keys (q + r)" using keys_add_subset[of q r] by blast
+    ultimately have "t \<oplus> lt f \<notin> keys q \<union> keys r" by simp
+    thus "t \<oplus> lt f \<notin> keys (q + r)" using keys_add_subset[of q r] by blast
   qed
   with \<open>f \<in> F\<close> show ?thesis by (rule red_setI)
 qed
 
 lemma red_plus:
-  assumes a: "red F p q"
+  assumes "red F p q"
   obtains s where "(red F)\<^sup>*\<^sup>* (p + r) s" and "(red F)\<^sup>*\<^sup>* (q + r) s"
 proof -
-  from red_setE[OF a] obtain f and t where "f \<in> F" and rs: "red_single p q f t" by auto
+  from red_setE[OF assms] obtain f and t where "f \<in> F" and rs: "red_single p q f t" by auto
   from red_single_plus[OF rs, of r] show ?thesis
   proof
     assume c1: "red_single (p + r) (q + r) f t"
@@ -750,7 +786,7 @@ qed
 lemma red_uminus:
   assumes "red F p q"
   shows "red F (-p) (-q)"
-  using red_monom_mult[OF assms, of "-1" 0] by simp
+  using red_monom_mult[OF assms, of "-1" 0] by (simp add: uminus_monom_mult)
 
 lemma red_diff:
   assumes "red F (p - q) r"
@@ -832,33 +868,33 @@ subsection \<open>Confluence of Reducibility\<close>
 
 lemma confluent_distinct_aux:
   assumes r1: "red_single p q1 f1 t1" and r2: "red_single p q2 f2 t2"
-    and "t1 + lp f1 \<prec> t2 + lp f2" and "f1 \<in> F" and "f2 \<in> F"
+    and "t1 \<oplus> lt f1 \<prec>\<^sub>t t2 \<oplus> lt f2" and "f1 \<in> F" and "f2 \<in> F"
   obtains s where "(red F)\<^sup>*\<^sup>* q1 s" and "(red F)\<^sup>*\<^sup>* q2 s"
 proof -
-  from r1 have "f1 \<noteq> 0" and c1: "lookup p (t1 + lp f1) \<noteq> 0"
-    and q1_def: "q1 = p - monom_mult (lookup p (t1 + lp f1) / lc f1) t1 f1"
+  from r1 have "f1 \<noteq> 0" and c1: "lookup p (t1 \<oplus> lt f1) \<noteq> 0"
+    and q1_def: "q1 = p - monom_mult (lookup p (t1 \<oplus> lt f1) / lc f1) t1 f1"
     unfolding red_single_def by auto
-  from r2 have "f2 \<noteq> 0" and c2: "lookup p (t2 + lp f2) \<noteq> 0"
-    and q2_def: "q2 = p - monom_mult (lookup p (t2 + lp f2) / lc f2) t2 f2"
+  from r2 have "f2 \<noteq> 0" and c2: "lookup p (t2 \<oplus> lt f2) \<noteq> 0"
+    and q2_def: "q2 = p - monom_mult (lookup p (t2 \<oplus> lt f2) / lc f2) t2 f2"
     unfolding red_single_def by auto
-  from \<open>t1 + lp f1 \<prec> t2 + lp f2\<close>
-  have "lookup (monom_mult (lookup p (t1 + lp f1) / lc f1) t1 f1) (t2 + lp f2) = 0"
-    by (metis lookup_mult_0)
-  from lookup_minus[of p _ "t2 + lp f2"] this have c: "lookup q1 (t2 + lp f2) = lookup p (t2 + lp f2)"
+  from \<open>t1 \<oplus> lt f1 \<prec>\<^sub>t t2 \<oplus> lt f2\<close>
+  have "lookup (monom_mult (lookup p (t1 \<oplus> lt f1) / lc f1) t1 f1) (t2 \<oplus> lt f2) = 0"
+    by (simp add: lookup_monom_mult_eq_zero)
+  from lookup_minus[of p _ "t2 \<oplus> lt f2"] this have c: "lookup q1 (t2 \<oplus> lt f2) = lookup p (t2 \<oplus> lt f2)"
     unfolding q1_def by simp
-  define q3 where "q3 \<equiv> q1 - monom_mult ((lookup q1 (t2 + lp f2)) / lc f2) t2 f2"
+  define q3 where "q3 \<equiv> q1 - monom_mult ((lookup q1 (t2 \<oplus> lt f2)) / lc f2) t2 f2"
   have "red_single q1 q3 f2 t2" unfolding red_single_def
   proof (rule, fact, rule)
-    from c c2 show "lookup q1 (t2 + lp f2) \<noteq> 0" by simp
+    from c c2 show "lookup q1 (t2 \<oplus> lt f2) \<noteq> 0" by simp
   next
-    show "q3 = q1 - monom_mult (lookup q1 (t2 + lp f2) / lc f2) t2 f2" unfolding q3_def ..
+    show "q3 = q1 - monom_mult (lookup q1 (t2 \<oplus> lt f2) / lc f2) t2 f2" unfolding q3_def ..
   qed
   hence "red F q1 q3" by (intro red_setI[OF \<open>f2 \<in> F\<close>])
   hence q1q3: "(red F)\<^sup>*\<^sup>* q1 q3" by (intro r_into_rtranclp)
   from r1 have "red F p q1" by (intro red_setI[OF \<open>f1 \<in> F\<close>])
-  from red_plus[OF this, of "- monom_mult ((lookup p (t2 + lp f2)) / lc f2) t2 f2"] obtain s
-    where r3: "(red F)\<^sup>*\<^sup>* (p - monom_mult (lookup p (t2 + lp f2) / lc f2) t2 f2) s"
-    and r4: "(red F)\<^sup>*\<^sup>* (q1 - monom_mult (lookup p (t2 + lp f2) / lc f2) t2 f2) s" by auto
+  from red_plus[OF this, of "- monom_mult ((lookup p (t2 \<oplus> lt f2)) / lc f2) t2 f2"] obtain s
+    where r3: "(red F)\<^sup>*\<^sup>* (p - monom_mult (lookup p (t2 \<oplus> lt f2) / lc f2) t2 f2) s"
+    and r4: "(red F)\<^sup>*\<^sup>* (q1 - monom_mult (lookup p (t2 \<oplus> lt f2) / lc f2) t2 f2) s" by auto
   from r3 have q2s: "(red F)\<^sup>*\<^sup>* q2 s" unfolding q2_def by simp
   from r4 c have q3s: "(red F)\<^sup>*\<^sup>* q3 s" unfolding q3_def by simp
   show ?thesis
@@ -871,18 +907,18 @@ qed
 
 lemma confluent_distinct:
   assumes r1: "red_single p q1 f1 t1" and r2: "red_single p q2 f2 t2"
-    and ne: "t1 + lp f1 \<noteq> t2 + lp f2" and "f1 \<in> F" and "f2 \<in> F"
+    and ne: "t1 \<oplus> lt f1 \<noteq> t2 \<oplus> lt f2" and "f1 \<in> F" and "f2 \<in> F"
   obtains s where "(red F)\<^sup>*\<^sup>* q1 s" and "(red F)\<^sup>*\<^sup>* q2 s"
 proof -
-  from ne have "t1 + lp f1 \<prec> t2 + lp f2 \<or> t2 + lp f2 \<prec> t1 + lp f1" by auto
+  from ne have "t1 \<oplus> lt f1 \<prec>\<^sub>t t2 \<oplus> lt f2 \<or> t2 \<oplus> lt f2 \<prec>\<^sub>t t1 \<oplus> lt f1" by auto
   thus ?thesis
   proof
-    assume a1: "t1 + lp f1 \<prec> t2 + lp f2"
+    assume a1: "t1 \<oplus> lt f1 \<prec>\<^sub>t t2 \<oplus> lt f2"
     from confluent_distinct_aux[OF r1 r2 a1 \<open>f1 \<in> F\<close> \<open>f2 \<in> F\<close>] obtain s where
       "(red F)\<^sup>*\<^sup>* q1 s" and "(red F)\<^sup>*\<^sup>* q2 s" .
     thus ?thesis ..
   next
-    assume a2: "t2 + lp f2 \<prec> t1 + lp f1"
+    assume a2: "t2 \<oplus> lt f2 \<prec>\<^sub>t t1 \<oplus> lt f1"
     from confluent_distinct_aux[OF r2 r1 a2 \<open>f2 \<in> F\<close> \<open>f1 \<in> F\<close>] obtain s where
       "(red F)\<^sup>*\<^sup>* q1 s" and "(red F)\<^sup>*\<^sup>* q2 s" .
     thus ?thesis ..
@@ -903,72 +939,72 @@ proof (cases "t1 = t2")
   qed
 next
   case False
-  hence "t1 + lp f \<noteq> t2 + lp f" by simp
+  hence "t1 \<oplus> lt f \<noteq> t2 \<oplus> lt f" by (simp add: term_simps)
   from r1 r2 this \<open>f \<in> F\<close> \<open>f \<in> F\<close> obtain s where "(red F)\<^sup>*\<^sup>* q1 s" and "(red F)\<^sup>*\<^sup>* q2 s"
     by (rule confluent_distinct)
   thus ?thesis ..
 qed
 
-subsection \<open>Reducibility and Ideal Membership\<close>
+subsection \<open>Reducibility and Module Membership\<close>
 
-lemma srtc_in_pideal:
+lemma srtc_in_pmdl:
   assumes "relation.srtc (red F) p q"
-  shows "p - q \<in> pideal F"
+  shows "p - q \<in> pmdl F"
   using assms unfolding relation.srtc_def
 proof (induct rule: rtranclp.induct)
   fix p
-  from ideal.module_0[of F] show "p - p \<in> pideal F" by simp
+  show "p - p \<in> pmdl F" by (simp add: pmdl.module_0)
 next
   fix p r q
-  assume pr_in: "p - r \<in> pideal F" and red: "red F r q \<or> red F q r"
+  assume pr_in: "p - r \<in> pmdl F" and red: "red F r q \<or> red F q r"
   from red obtain f c t where "f \<in> F" and "q = r - monom_mult c t f"
   proof
     assume "red F r q"
     from red_setE[OF this] obtain f t where "f \<in> F" and "red_single r q f t" .
-    hence "q = r - monom_mult (lookup r (t + lp f) / lc f) t f" unfolding red_single_def by simp
+    hence "q = r - monom_mult (lookup r (t \<oplus> lt f) / lc f) t f" by (simp add: red_single_def)
     show thesis by (rule, fact, fact)
   next
     assume "red F q r"
     from red_setE[OF this] obtain f t where "f \<in> F" and "red_single q r f t" .
-    hence "r = q - monom_mult (lookup q (t + lp f) / lc f) t f" unfolding red_single_def by simp
-    hence "q = r + monom_mult (lookup q (t + lp f) / lc f) t f" by simp
-    hence "q = r - monom_mult (-(lookup q (t + lp f) / lc f)) t f"
+    hence "r = q - monom_mult (lookup q (t \<oplus> lt f) / lc f) t f" by (simp add: red_single_def)
+    hence "q = r + monom_mult (lookup q (t \<oplus> lt f) / lc f) t f" by simp
+    hence "q = r - monom_mult (-(lookup q (t \<oplus> lt f) / lc f)) t f"
       using monom_mult_uminus_left[of _ t f] by simp
     show thesis by (rule, fact, fact)
   qed
   hence eq: "p - q = (p - r) + monom_mult c t f" by simp
-  show "p - q \<in> pideal F" unfolding eq
-    by (rule ideal.module_closed_plus, fact, rule monom_mult_in_pideal, fact)
+  show "p - q \<in> pmdl F" unfolding eq
+    by (rule pmdl.module_closed_plus, fact, rule monom_mult_in_pmdl, fact)
 qed
 
-lemma in_pideal_srtc:
-  assumes "p \<in> pideal F"
+lemma in_pmdl_srtc:
+  assumes "p \<in> pmdl F"
   shows "relation.srtc (red F) p 0"
   using assms
-proof (induct p rule: pideal_induct)
+proof (induct p rule: pmdl_induct)
   show "relation.srtc (red F) 0 0" unfolding relation.srtc_def ..
 next
   fix a f c t
-  assume a_in: "a \<in> pideal F" and IH: "relation.srtc (red F) a 0" and "f \<in> F"
+  assume a_in: "a \<in> pmdl F" and IH: "relation.srtc (red F) a 0" and "f \<in> F"
   show "relation.srtc (red F) (a + monom_mult c t f) 0"
   proof (cases "c = 0")
     assume "c = 0"
-    hence "a + monom_mult c t f = a" using monom_mult_left0[of t f] by simp
+    hence "a + monom_mult c t f = a" by simp
     thus ?thesis using IH by simp
   next
     assume "c \<noteq> 0"
     show ?thesis
     proof (cases "f = 0")
       assume "f = 0"
-      hence "a + monom_mult c t f = a" using monom_mult_right0[of c t] by simp
+      hence "a + monom_mult c t f = a" by simp
       thus ?thesis using IH by simp
     next
       assume "f \<noteq> 0"
       from lc_not_0[OF this] have "lc f \<noteq> 0" .
       have "red F (monom_mult c t f) 0"
       proof (intro red_setI[OF \<open>f \<in> F\<close>])
-        from lookup_monom_mult_plus[of c t f "lp f"]
-          have eq: "lookup (monom_mult c t f) (t + lp f) = c * lc f" unfolding lc_def .
+        from lookup_monom_mult_plus[of c t f "lt f"]
+          have eq: "lookup (monom_mult c t f) (t \<oplus> lt f) = c * lc f" unfolding lc_def .
         show "red_single (monom_mult c t f) 0 f t" unfolding red_single_def eq
         proof (intro conjI, fact)
           from \<open>c \<noteq> 0\<close> \<open>lc f \<noteq> 0\<close> show "c * lc f \<noteq> 0" by simp
@@ -989,36 +1025,36 @@ next
   qed
 qed
 
-lemma red_rtranclp_diff_in_pideal:
+lemma red_rtranclp_diff_in_pmdl:
   assumes "(red F)\<^sup>*\<^sup>* p q"
-  shows "p - q \<in> pideal F"
+  shows "p - q \<in> pmdl F"
 proof -
   from assms have "relation.srtc (red F) p q"
     by (simp add: r_into_rtranclp relation.rtc_implies_srtc)
-  thus ?thesis by (rule srtc_in_pideal)
+  thus ?thesis by (rule srtc_in_pmdl)
 qed
 
-corollary red_diff_in_pideal:
+corollary red_diff_in_pmdl:
   assumes "red F p q"
-  shows "p - q \<in> pideal F"
-  by (rule red_rtranclp_diff_in_pideal, rule r_into_rtranclp, fact)
+  shows "p - q \<in> pmdl F"
+  by (rule red_rtranclp_diff_in_pmdl, rule r_into_rtranclp, fact)
   
-corollary red_rtranclp_0_in_pideal:
+corollary red_rtranclp_0_in_pmdl:
   assumes "(red F)\<^sup>*\<^sup>* p 0"
-  shows "p \<in> pideal F"
-  using assms red_rtranclp_diff_in_pideal by fastforce
+  shows "p \<in> pmdl F"
+  using assms red_rtranclp_diff_in_pmdl by fastforce
 
-lemma pideal_closed_red:
-  assumes "pideal B \<subseteq> pideal A" and "p \<in> pideal A" and "red B p q"
-  shows "q \<in> pideal A"
+lemma pmdl_closed_red:
+  assumes "pmdl B \<subseteq> pmdl A" and "p \<in> pmdl A" and "red B p q"
+  shows "q \<in> pmdl A"
 proof -
-  have "q - p \<in> pideal A"
+  have "q - p \<in> pmdl A"
   proof
-    have "p - q \<in> pideal B" by (rule red_diff_in_pideal, fact)
-    hence "- (p - q) \<in> pideal B" by (rule ideal.module_closed_uminus)
-    thus "q - p \<in> pideal B" by simp
+    have "p - q \<in> pmdl B" by (rule red_diff_in_pmdl, fact)
+    hence "- (p - q) \<in> pmdl B" by (rule pmdl.module_closed_uminus)
+    thus "q - p \<in> pmdl B" by simp
   qed fact
-  from ideal.module_closed_plus[OF this \<open>p \<in> pideal A\<close>] show ?thesis by simp
+  from pmdl.module_closed_plus[OF this \<open>p \<in> pmdl A\<close>] show ?thesis by simp
 qed
 
 subsection \<open>More Properties of @{const red}, @{const red_single} and @{const is_red}\<close>
@@ -1029,7 +1065,7 @@ lemma red_rtrancl_mult:
 proof (cases "c = 0")
   case True
   have "(red F)\<^sup>*\<^sup>* 0 0" by simp
-  thus ?thesis by (simp only: True monom_mult_left0[of t])
+  thus ?thesis by (simp only: True monom_mult_zero_left)
 next
   case False
   from assms show ?thesis
@@ -1048,7 +1084,7 @@ qed
 corollary red_rtrancl_uminus:
   assumes "(red F)\<^sup>*\<^sup>* p q"
   shows "(red F)\<^sup>*\<^sup>* (-p) (-q)"
-  using red_rtrancl_mult[OF assms, of "-1" 0] by simp
+  using red_rtrancl_mult[OF assms, of "-1" 0] by (simp add: uminus_monom_mult)
 
 lemma red_rtrancl_diff_induct [consumes 1, case_names base step]:
   assumes a: "(red F)\<^sup>*\<^sup>* (p - q) r"
@@ -1076,47 +1112,45 @@ qed
 lemma is_red_union: "is_red (A \<union> B) p \<longleftrightarrow> (is_red A p \<or> is_red B p)"
   unfolding is_red_alt red_union by auto
 
-lemma red_single_0_lp:
-  fixes f h t
+lemma red_single_0_lt:
   assumes "red_single f 0 h t"
-  shows "lp f = lp h + t"
+  shows "lt f = t \<oplus> lt h"
 proof -
   from red_single_nonzero1[OF assms] have "f \<noteq> 0" .
   {
-    assume "h \<noteq> 0" and neq: "lookup f (t + lp h) \<noteq> 0" and
-      eq: "f = monom_mult (lookup f (t + lp h) / lc h) t h"
+    assume "h \<noteq> 0" and neq: "lookup f (t \<oplus> lt h) \<noteq> 0" and
+      eq: "f = monom_mult (lookup f (t \<oplus> lt h) / lc h) t h"
     from lc_not_0[OF \<open>h \<noteq> 0\<close>] have "lc h \<noteq> 0" .
-    with neq have "(lookup f (t + lp h) / lc h) \<noteq> 0" by simp
-    from eq lp_monom_mult[OF this \<open>h \<noteq> 0\<close>, of t] have "lp f = t + lp h" by simp
-    hence "lp f = lp h + t" by (simp add: ac_simps)
+    with neq have "(lookup f (t \<oplus> lt h) / lc h) \<noteq> 0" by simp
+    from eq lt_monom_mult[OF this \<open>h \<noteq> 0\<close>, of t] have "lt f = t \<oplus> lt h" by simp
+    hence "lt f = t \<oplus> lt h" by (simp add: ac_simps)
   }
   with assms show ?thesis unfolding red_single_def by auto
 qed
 
-lemma red_single_lp_distinct_lp:
-  fixes f g h t
-  assumes rs: "red_single f g h t" and "g \<noteq> 0" and "lp g \<noteq> lp f"
-  shows "lp f = lp h + t"
+lemma red_single_lt_distinct_lt:
+  assumes rs: "red_single f g h t" and "g \<noteq> 0" and "lt g \<noteq> lt f"
+  shows "lt f = t \<oplus> lt h"
 proof -
   from red_single_nonzero1[OF rs] have "f \<noteq> 0" .
-  from red_single_ord[OF rs] have "g \<preceq>p f" by simp
-  from ord_p_lp[OF this] \<open>lp g \<noteq> lp f\<close> have "lp g \<prec> lp f" by simp
+  from red_single_ord[OF rs] have "g \<preceq>\<^sub>p f" by simp
+  from ord_p_lt[OF this] \<open>lt g \<noteq> lt f\<close> have "lt g \<prec>\<^sub>t lt f" by simp
   {
-    assume "h \<noteq> 0" and neq: "lookup f (t + lp h) \<noteq> 0" and
-      eq: "f = g + monom_mult (lookup f (t + lp h) / lc h) t h" (is "f = g + ?R")
+    assume "h \<noteq> 0" and neq: "lookup f (t \<oplus> lt h) \<noteq> 0" and
+      eq: "f = g + monom_mult (lookup f (t \<oplus> lt h) / lc h) t h" (is "f = g + ?R")
     from lc_not_0[OF \<open>h \<noteq> 0\<close>] have "lc h \<noteq> 0" .
-    with neq have "(lookup f (t + lp h) / lc h) \<noteq> 0" (is "?c \<noteq> 0") by simp
-    from eq lp_monom_mult[OF this \<open>h \<noteq> 0\<close>, of t] have lpR: "lp ?R = t + lp h" by simp
-    from monom_mult_0_iff[of ?c t h] \<open>?c \<noteq> 0\<close> \<open>h \<noteq> 0\<close> have "?R \<noteq> 0" by auto
-    from lp_plus_lessE[of g] eq \<open>lp g \<prec> lp f\<close> have "lp g \<prec> lp ?R" by auto
-    from lp_plus_eqI[OF this] eq lpR have "lp f = lp h + t" by (simp add: ac_simps)
+    with neq have "(lookup f (t \<oplus> lt h) / lc h) \<noteq> 0" (is "?c \<noteq> 0") by simp
+    from eq lt_monom_mult[OF this \<open>h \<noteq> 0\<close>, of t] have ltR: "lt ?R = t \<oplus> lt h" by simp
+    from monom_mult_eq_zero_iff[of ?c t h] \<open>?c \<noteq> 0\<close> \<open>h \<noteq> 0\<close> have "?R \<noteq> 0" by auto
+    from lt_plus_lessE[of g] eq \<open>lt g \<prec>\<^sub>t lt f\<close> have "lt g \<prec>\<^sub>t lt ?R" by auto
+    from lt_plus_eqI[OF this] eq ltR have "lt f = t \<oplus> lt h" by (simp add: ac_simps)
   }
   with assms show ?thesis unfolding red_single_def by auto
 qed
 
-lemma zero_reducibility_implies_lp_divisibility':
+lemma zero_reducibility_implies_lt_divisibility':
   assumes "(red F)\<^sup>*\<^sup>* f 0" and "f \<noteq> 0"
-  shows "\<exists>h\<in>F. h \<noteq> 0 \<and> (lp h adds lp f)"
+  shows "\<exists>h\<in>F. h \<noteq> 0 \<and> (lt h adds\<^sub>t lt f)"
   using assms
 proof (induct rule: converse_rtranclp_induct)
   case base
@@ -1130,14 +1164,14 @@ next
     from red_setE[OF this] obtain h t where "h \<in> F" and rs: "red_single f 0 h t" by auto
     show ?thesis
     proof
-      from red_single_0_lp[OF rs] have "lp h adds lp f" by simp
+      from red_single_0_lt[OF rs] have "lt h adds\<^sub>t lt f" by (simp add: term_simps)
       also from rs have "h \<noteq> 0" by (simp add: red_single_def) 
-      ultimately show "h \<noteq> 0 \<and> lp h adds lp f" by simp
+      ultimately show "h \<noteq> 0 \<and> lt h adds\<^sub>t lt f" by simp
     qed (rule \<open>h \<in> F\<close>)
   next
     case False
     show ?thesis
-    proof (cases "lp g = lp f")
+    proof (cases "lt g = lt f")
       case True
       with False step.hyps show ?thesis by simp
     next
@@ -1145,39 +1179,40 @@ next
       from red_setE[OF \<open>red F f g\<close>] obtain h t where "h \<in> F" and rs: "red_single f g h t" by auto
       show ?thesis
       proof
-        from red_single_lp_distinct_lp[OF rs \<open>g \<noteq> 0\<close> False] have "lp h adds lp f" by simp
+        from red_single_lt_distinct_lt[OF rs \<open>g \<noteq> 0\<close> False] have "lt h adds\<^sub>t lt f"
+          by (simp add: term_simps)
         also from rs have "h \<noteq> 0" by (simp add: red_single_def) 
-        ultimately show "h \<noteq> 0 \<and> lp h adds lp f" by simp
+        ultimately show "h \<noteq> 0 \<and> lt h adds\<^sub>t lt f" by simp
       qed (rule \<open>h \<in> F\<close>)
     qed
   qed
 qed
   
-lemma zero_reducibility_implies_lp_divisibility:
+lemma zero_reducibility_implies_lt_divisibility:
   assumes "(red F)\<^sup>*\<^sup>* f 0" and "f \<noteq> 0"
-  obtains h where "h \<in> F" and "h \<noteq> 0" and "lp h adds lp f"
-  using zero_reducibility_implies_lp_divisibility'[OF assms] by auto
+  obtains h where "h \<in> F" and "h \<noteq> 0" and "lt h adds\<^sub>t lt f"
+  using zero_reducibility_implies_lt_divisibility'[OF assms] by auto
 
 lemma is_red_addsI:
-  assumes "f \<in> F" and "f \<noteq> 0" and "t \<in> (keys p)" and "lp f adds t"
+  assumes "f \<in> F" and "f \<noteq> 0" and "v \<in> keys p" and "lt f adds\<^sub>t v"
   shows "is_red F p"
   using assms
 proof (induction p rule: poly_mapping_tail_induct)
   case 0
-  from \<open>t \<in> (keys 0)\<close> keys_eq_empty_iff[of 0] show ?case by auto
+  from \<open>v \<in> keys 0\<close> keys_eq_empty_iff[of 0] show ?case by auto
 next
   case (tail p)
-  from "tail.IH"[OF \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> _ \<open>lp f adds t\<close>] have imp: "t \<in> (keys (tail p)) \<Longrightarrow> is_red F (tail p)" .
+  from "tail.IH"[OF \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> _ \<open>lt f adds\<^sub>t v\<close>] have imp: "v \<in> keys (tail p) \<Longrightarrow> is_red F (tail p)" .
   show ?case
-  proof (cases "t = lp p")
+  proof (cases "v = lt p")
     case True
     show ?thesis
     proof (rule is_red_indI1[OF \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> \<open>p \<noteq> 0\<close>])
-      from \<open>lp f adds t\<close> True show "lp f adds lp p" by simp
+      from \<open>lt f adds\<^sub>t v\<close> True show "lt f adds\<^sub>t lt p" by simp
     qed
   next
     case False
-    with \<open>t \<in> (keys p)\<close> \<open>p \<noteq> 0\<close> have "t \<in> (keys (tail p))"
+    with \<open>v \<in> keys p\<close> \<open>p \<noteq> 0\<close> have "v \<in> keys (tail p)"
       by (simp add: lookup_tail_2 in_keys_iff del: lookup_not_eq_zero_eq_in_keys) 
     from is_red_indI2[OF \<open>p \<noteq> 0\<close> imp[OF this]] show ?thesis .
   qed
@@ -1185,7 +1220,7 @@ qed
 
 lemma is_red_addsE':
   assumes "is_red F p"
-  shows "\<exists>f\<in>F. \<exists>t\<in>(keys p). f \<noteq> 0 \<and> lp f adds t"
+  shows "\<exists>f\<in>F. \<exists>v\<in>keys p. f \<noteq> 0 \<and> lt f adds\<^sub>t v"
   using assms
 proof (induction p rule: poly_mapping_tail_induct)
   case 0
@@ -1194,42 +1229,42 @@ next
   case (tail p)
   from is_red_indE[OF \<open>is_red F p\<close>] show ?case
   proof
-    assume "\<exists>f\<in>F. f \<noteq> 0 \<and> lp f adds lp p"
-    then obtain f where "f \<in> F" and "f \<noteq> 0" and "lp f adds lp p" by auto
+    assume "\<exists>f\<in>F. f \<noteq> 0 \<and> lt f adds\<^sub>t lt p"
+    then obtain f where "f \<in> F" and "f \<noteq> 0" and "lt f adds\<^sub>t lt p" by auto
     show ?case
     proof
-      show "\<exists>t\<in>keys p. f \<noteq> 0 \<and> lp f adds t"
+      show "\<exists>v\<in>keys p. f \<noteq> 0 \<and> lt f adds\<^sub>t v"
       proof (intro bexI, intro conjI)
-        from \<open>p \<noteq> 0\<close> show "lp p \<in> (keys p)" by (metis in_keys_iff lc_def lc_not_0)
-      qed (rule \<open>f \<noteq> 0\<close>, rule \<open>lp f adds lp p\<close>)
+        from \<open>p \<noteq> 0\<close> show "lt p \<in> keys p" by (metis in_keys_iff lc_def lc_not_0)
+      qed (rule \<open>f \<noteq> 0\<close>, rule \<open>lt f adds\<^sub>t lt p\<close>)
     qed (rule \<open>f \<in> F\<close>)
   next
     assume "is_red F (tail p)"
-    from "tail.IH"[OF this] obtain f t
-      where "f \<in> F" and "f \<noteq> 0" and t_in_keys_tail: "t \<in> (keys (tail p))" and "lp f adds t" by auto
-    from "tail.hyps" t_in_keys_tail have t_in_keys: "t \<in> (keys p)" by (metis lookup_tail in_keys_iff)
+    from "tail.IH"[OF this] obtain f v
+      where "f \<in> F" and "f \<noteq> 0" and v_in_keys_tail: "v \<in> keys (tail p)" and "lt f adds\<^sub>t v" by auto
+    from "tail.hyps" v_in_keys_tail have v_in_keys: "v \<in> keys p" by (metis lookup_tail in_keys_iff)
     show ?case
     proof
-      show "\<exists>t\<in>keys p. f \<noteq> 0 \<and> lp f adds t"
-        by (intro bexI, intro conjI, rule \<open>f \<noteq> 0\<close>, rule \<open>lp f adds t\<close>, rule t_in_keys)
+      show "\<exists>v\<in>keys p. f \<noteq> 0 \<and> lt f adds\<^sub>t v"
+        by (intro bexI, intro conjI, rule \<open>f \<noteq> 0\<close>, rule \<open>lt f adds\<^sub>t v\<close>, rule v_in_keys)
     qed (rule \<open>f \<in> F\<close>)
   qed
 qed
 
 lemma is_red_addsE:
   assumes "is_red F p"
-  obtains f t where "f \<in> F" and "t \<in> (keys p)" and "f \<noteq> 0" and "lp f adds t"
+  obtains f v where "f \<in> F" and "v \<in> keys p" and "f \<noteq> 0" and "lt f adds\<^sub>t v"
   using is_red_addsE'[OF assms] by auto
 
 lemma is_red_adds_iff:
-  shows "(is_red F p) \<longleftrightarrow> (\<exists>f\<in>F. \<exists>t\<in>(keys p). f \<noteq> 0 \<and> lp f adds t)"
+  shows "(is_red F p) \<longleftrightarrow> (\<exists>f\<in>F. \<exists>v\<in>keys p. f \<noteq> 0 \<and> lt f adds\<^sub>t v)"
   using is_red_addsE' is_red_addsI by auto
     
 lemma is_red_subset:
   assumes red: "is_red A p" and sub: "A \<subseteq> B"
   shows "is_red B p"
 proof -
-  from red obtain f t where "f \<in> A" and "t \<in> keys p" and "f \<noteq> 0" and "lp f adds t" by (rule is_red_addsE)
+  from red obtain f v where "f \<in> A" and "v \<in> keys p" and "f \<noteq> 0" and "lt f adds\<^sub>t v" by (rule is_red_addsE)
   show ?thesis by (rule is_red_addsI, rule, fact+)
 qed
 
@@ -1240,25 +1275,25 @@ lemma red_single_mult_const:
   assumes "red_single p q f t" and "c \<noteq> 0"
   shows "red_single p q (monom_mult c 0 f) t"
 proof -
-  let ?s = "t + lp f"
+  let ?s = "t \<oplus> lt f"
   let ?f = "monom_mult c 0 f"
   from assms(1) have "f \<noteq> 0" and "lookup p ?s \<noteq> 0"
     and "q = p - monom_mult ((lookup p ?s) / lc f) t f" by (simp_all add: red_single_def)
-  from this(1) assms(2) have lp: "lp ?f = lp f" and lc: "lc ?f = c * lc f"
-    by (simp add: lp_monom_mult, simp add: lc_monom_mult)
+  from this(1) assms(2) have lt: "lt ?f = lt f" and lc: "lc ?f = c * lc f"
+    by (simp add: lt_monom_mult term_simps, simp)
   show ?thesis unfolding red_single_def
   proof (intro conjI)
-    from \<open>f \<noteq> 0\<close> assms(2) show "?f \<noteq> 0" by (simp add: monom_mult_0_iff)
+    from \<open>f \<noteq> 0\<close> assms(2) show "?f \<noteq> 0" by (simp add: monom_mult_eq_zero_iff)
   next
-    from \<open>lookup p ?s \<noteq> 0\<close> show "lookup p (t + lp ?f) \<noteq> 0" by (simp add: lp)
+    from \<open>lookup p ?s \<noteq> 0\<close> show "lookup p (t \<oplus> lt ?f) \<noteq> 0" by (simp add: lt)
   next
-    show "q = p - monom_mult (lookup p (t + lp ?f) / lc ?f) t ?f"
-      by (simp add: lp monom_mult_assoc lc assms(2), fact)
+    show "q = p - monom_mult (lookup p (t \<oplus> lt ?f) / lc ?f) t ?f"
+      by (simp add: lt monom_mult_assoc lc assms(2), fact)
   qed
 qed
 
 lemma red_rtrancl_plus_higher:
-  assumes "(red F)\<^sup>*\<^sup>* p q" and "\<And>s t. s \<in> keys p \<Longrightarrow> t \<in> keys r \<Longrightarrow> s \<prec> t"
+  assumes "(red F)\<^sup>*\<^sup>* p q" and "\<And>u v. u \<in> keys p \<Longrightarrow> v \<in> keys r \<Longrightarrow> u \<prec>\<^sub>t v"
   shows "(red F)\<^sup>*\<^sup>* (p + r) (q + r)"
   using assms(1)
 proof induct
@@ -1266,135 +1301,139 @@ proof induct
   show ?case ..
 next
   case (step y z)
-  from step(1) have "y \<preceq>p p" by (rule red_rtrancl_ord)
-  hence "lp y \<preceq> lp p" by (rule ord_p_lp)
+  from step(1) have "y \<preceq>\<^sub>p p" by (rule red_rtrancl_ord)
+  hence "lt y \<preceq>\<^sub>t lt p" by (rule ord_p_lt)
   from step(2) have "red F (y + r) (z + r)"
   proof (rule red_plus_keys_disjoint)
     show "keys y \<inter> keys r = {}"
     proof (rule ccontr)
       assume "keys y \<inter> keys r \<noteq> {}"
-      then obtain t where "t \<in> keys y" and "t \<in> keys r" by auto
-      from this(1) have "t \<preceq> lp y" and "y \<noteq> 0" using lp_max by auto
-      with \<open>y \<preceq>p p\<close> have "p \<noteq> 0" using ord_p_0_min[of y] by auto
-      hence "lp p \<in> keys p" by (rule lp_in_keys)
-      from this \<open>t \<in> keys r\<close> have "lp p \<prec> t" by (rule assms(2))
-      with \<open>lp y \<preceq> lp p\<close> have "lp y \<prec> t" by simp
-      with \<open>t \<preceq> lp y\<close>  show False by simp
+      then obtain v where "v \<in> keys y" and "v \<in> keys r" by auto
+      from this(1) have "v \<preceq>\<^sub>t lt y" and "y \<noteq> 0" using lt_max by auto
+      with \<open>y \<preceq>\<^sub>p p\<close> have "p \<noteq> 0" using ord_p_zero_min[of y] by auto
+      hence "lt p \<in> keys p" by (rule lt_in_keys)
+      from this \<open>v \<in> keys r\<close> have "lt p \<prec>\<^sub>t v" by (rule assms(2))
+      with \<open>lt y \<preceq>\<^sub>t lt p\<close> have "lt y \<prec>\<^sub>t v" by simp
+      with \<open>v \<preceq>\<^sub>t lt y\<close>  show False by simp
     qed
   qed
   with step(3) show ?case ..
 qed
 
-lemma red_monom_mult_leading_monomial: "(red {f})\<^sup>*\<^sup>* (monom_mult (lc f) (lp f) p) (- p * tail f)"
+lemma red_mult_scalar_leading_monomial: "(red {f})\<^sup>*\<^sup>* (p \<odot> monomial (lc f) (lt f)) (- p \<odot> tail f)"
 proof (cases "f = 0")
   case True
-  show ?thesis by (simp add: True lc_def monom_mult_left0)
+  show ?thesis by (simp add: True lc_def)
 next
   case False
   show ?thesis
-  proof (induct p rule: poly_mapping_tail_induct)
+  proof (induct p rule: punit.poly_mapping_tail_induct)
     case 0
-    show ?case by (simp add: monom_mult_right0)
+    show ?case by simp
   next
     case (tail p)
     from False have "lc f \<noteq> 0" by (rule lc_not_0)
-    from tail(1) have "lc p \<noteq> 0" by (rule lc_not_0)
-    let ?t = "monom_mult (lc f) (lp f) (tail p)"
-    let ?m = "monom_mult (lc f) (lp f) (monomial (lc p) (lp p))"
-    have m: "?m = monom_mult (lc p) (lp p) (monomial (lc f) (lp f))"
-      by (simp add: monom_mult_monomial ac_simps)
-    from \<open>lc f \<noteq> 0\<close> have kt: "keys ?t = plus (lp f) ` keys (tail p)" by (rule keys_monom_mult)
-    thm keys_monom_mult[OF \<open>lc f \<noteq> 0\<close>] keys_single
-    have km: "keys ?m = {lp f + lp p}" by (simp add: keys_monom_mult[OF \<open>lc f \<noteq> 0\<close>] \<open>lc p \<noteq> 0\<close>)
-    from tail(2) have "(red {f})\<^sup>*\<^sup>* (?t + ?m) (- tail p * tail f + ?m)"
+    from tail(1) have "punit.lc p \<noteq> 0" by (rule punit.lc_not_0)
+    let ?t = "punit.tail p \<odot> monomial (lc f) (lt f)"
+    let ?m = "monom_mult (punit.lc p) (punit.lt p) (monomial (lc f) (lt f))"
+    from \<open>lc f \<noteq> 0\<close> have kt: "keys ?t = (\<lambda>t. t \<oplus> lt f) ` keys (punit.tail p)"
+      by (rule keys_mult_scalar_monomial_right)
+    have km: "keys ?m = {punit.lt p \<oplus> lt f}"
+      by (simp add: keys_monom_mult[OF \<open>punit.lc p \<noteq> 0\<close>] \<open>lc f \<noteq> 0\<close>)
+    from tail(2) have "(red {f})\<^sup>*\<^sup>* (?t + ?m) (- punit.tail p \<odot> tail f + ?m)"
     proof (rule red_rtrancl_plus_higher)
-      fix s t
-      assume "s \<in> keys ?t" and "t \<in> keys ?m"
-      from this(1) obtain u where "u \<in> keys (tail p)" and s: "s = lp f + u" unfolding kt ..
-      from this(1) have "tail p \<noteq> 0" and "u \<preceq> lp (tail p)" using lp_max by auto
-      moreover from \<open>tail p \<noteq> 0\<close> have "lp (tail p) \<prec> lp p" by (rule lp_tail)
-      ultimately have "u \<prec> lp p" by simp
-      moreover from \<open>t \<in> keys ?m\<close> have "t = lp f + lp p" by (simp only: km, simp)
-      ultimately show "s \<prec> t" by (simp add: s plus_monotone_strict_left)
+      fix u v
+      assume "u \<in> keys ?t" and "v \<in> keys ?m"
+      from this(1) obtain s where "s \<in> keys (punit.tail p)" and u: "u = s \<oplus> lt f" unfolding kt ..
+      from this(1) have "punit.tail p \<noteq> 0" and "s \<preceq> punit.lt (punit.tail p)" using punit.lt_max by auto
+      moreover from \<open>punit.tail p \<noteq> 0\<close> have "punit.lt (punit.tail p) \<prec> punit.lt p" by (rule punit.lt_tail)
+      ultimately have "s \<prec> punit.lt p" by simp
+      moreover from \<open>v \<in> keys ?m\<close> have "v = punit.lt p \<oplus> lt f" by (simp only: km, simp)
+      ultimately show "u \<prec>\<^sub>t v" by (simp add: u splus_mono_strict_left)
     qed
-    hence *: "(red {f})\<^sup>*\<^sup>* (monom_mult (lc f) (lp f) p) (?m - tail p * tail f)"
-      by (simp add: leading_monomial_tail[symmetric, of p] add.commute[of "tail p"] monom_mult_dist_right[symmetric])
-    have "red {f} ?m (- (monomial (lc p) (lp p)) * tail f)" unfolding red_singleton
+    hence *: "(red {f})\<^sup>*\<^sup>* (p \<odot> monomial (lc f) (lt f)) (?m - punit.tail p \<odot> tail f)"
+      by (simp add: punit.leading_monomial_tail[symmetric, of p] mult_scalar_monomial[symmetric]
+            mult_scalar_distrib_right[symmetric] add.commute[of "punit.tail p"])
+    have "red {f} ?m (- (monomial (punit.lc p) (punit.lt p)) \<odot> tail f)" unfolding red_singleton
     proof
-      have lp: "lp p + lp f = lp f + lp p" by (simp only: add.commute)
-      thm times_monomial_left
-      show "red_single ?m (- (monomial (lc p) (lp p)) * tail f) f (lp p)"
-      proof (simp add: red_single_def \<open>f \<noteq> 0\<close> km lp lookup_monom_mult \<open>lc f \<noteq> 0\<close> \<open>lc p \<noteq> 0\<close>,
-              simp add: m monom_mult_dist_right_minus[symmetric] times_monomial_left)
-        have "monom_mult (lc p) (lp p) (monomial (lc f) (lp f) - f) =
-              - monom_mult (lc p) (lp p) (f - monomial (lc f) (lp f))"
+      show "red_single ?m (- (monomial (punit.lc p) (punit.lt p)) \<odot> tail f) f (punit.lt p)"
+      proof (simp add: red_single_def \<open>f \<noteq> 0\<close> km lookup_monom_mult \<open>lc f \<noteq> 0\<close> \<open>punit.lc p \<noteq> 0\<close> term_simps,
+              simp add: monom_mult_dist_right_minus[symmetric] mult_scalar_monomial)
+        have "monom_mult (punit.lc p) (punit.lt p) (monomial (lc f) (lt f) - f) =
+              - monom_mult (punit.lc p) (punit.lt p) (f - monomial (lc f) (lt f))"
           by (metis minus_diff_eq monom_mult_uminus_right)
-        also have "... = - monom_mult (lc p) (lp p) (tail f)" by (simp only: tail_alt_2)
-        finally show "- monom_mult (lc p) (lp p) (tail f) =
-                      monom_mult (lc p) (lp p) (monomial (lc f) (lp f) - f)" by simp
+        also have "... = - monom_mult (punit.lc p) (punit.lt p) (tail f)" by (simp only: tail_alt_2)
+        finally show "- monom_mult (punit.lc p) (punit.lt p) (tail f) =
+                      monom_mult (punit.lc p) (punit.lt p) (monomial (lc f) (lt f) - f)" by simp
       qed
     qed
-    hence "red {f} (?m + (- tail p * tail f)) (- (monomial (lc p) (lp p)) * tail f + (- tail p * tail f))"
+    hence "red {f} (?m + (- punit.tail p \<odot> tail f))
+                    (- (monomial (punit.lc p) (punit.lt p)) \<odot> tail f + (- punit.tail p \<odot> tail f))"
     proof (rule red_plus_keys_disjoint)
-      show "keys ?m \<inter> keys (- tail p * tail f) = {}"
-      proof (cases "tail p = 0")
+      show "keys ?m \<inter> keys (- punit.tail p \<odot> tail f) = {}"
+      proof (cases "punit.tail p = 0")
         case True
         show ?thesis by (simp add: True)
       next
         case False
-        from tail(2) have "- tail p * tail f \<preceq>p ?t" by (rule red_rtrancl_ord)
-        hence "lp (- tail p * tail f) \<preceq> lp ?t" by (rule ord_p_lp)
-        also from \<open>lc f \<noteq> 0\<close> False have "... = lp f + lp (tail p)" by (rule lp_monom_mult)
-        also from lp_tail[OF False] have "... \<prec> lp f + lp p" by (rule plus_monotone_strict_left)
-        finally have "lp f + lp p \<notin> keys (- tail p * tail f)" using lp_gr_keys by blast
+        from tail(2) have "- punit.tail p \<odot> tail f \<preceq>\<^sub>p ?t" by (rule red_rtrancl_ord)
+        hence "lt (- punit.tail p \<odot> tail f) \<preceq>\<^sub>t lt ?t" by (rule ord_p_lt)
+        also from \<open>lc f \<noteq> 0\<close> False have "... = punit.lt (punit.tail p) \<oplus> lt f"
+          by (rule lt_mult_scalar_monomial_right)
+        also from punit.lt_tail[OF False] have "... \<prec>\<^sub>t punit.lt p \<oplus> lt f" by (rule splus_mono_strict_left)
+        finally have "punit.lt p \<oplus> lt f \<notin> keys (- punit.tail p \<odot> tail f)" using lt_gr_keys by blast
         thus ?thesis by (simp add: km)
       qed
     qed
-    hence "red {f} (?m - tail p * tail f) (- (monomial (lc p) (lp p)) * tail f - tail p * tail f)"
-      by simp
-    also have "... = - p * tail f" using leading_monomial_tail[symmetric, of p]
-      by (metis (no_types, lifting) ab_group_add_class.ab_diff_conv_add_uminus distrib_right
-            minus_add_distrib mult_minus_left)
-    finally have "red {f} (?m - tail p * tail f) (- p * tail f)" .
+    hence "red {f} (?m - punit.tail p \<odot> tail f)
+            (- (monomial (punit.lc p) (punit.lt p)) \<odot> tail f - punit.tail p \<odot> tail f)"
+      by (simp add: term_simps)
+    also have "... = - p \<odot> tail f" using punit.leading_monomial_tail[symmetric, of p]
+      by (metis (mono_tags, lifting) add_uminus_conv_diff minus_add_distrib mult_scalar_distrib_right
+          mult_scalar_minus_mult_left)
+    finally have "red {f} (?m - punit.tail p \<odot> tail f) (- p \<odot> tail f)" .
     with * show ?case ..
   qed
 qed
 
-corollary red_monom_mult_lp:
+corollary red_mult_scalar_lt:
   assumes "f \<noteq> 0"
-  shows "(red {f})\<^sup>*\<^sup>* (monom_mult c (lp f) p) (monom_mult (- c / lc f) 0 (p * tail f))"
+  shows "(red {f})\<^sup>*\<^sup>* (p \<odot> monomial c (lt f)) (monom_mult (- c / lc f) 0 (p \<odot> tail f))"
 proof -
   from assms have "lc f \<noteq> 0" by (rule lc_not_0)
-  hence 1: "monom_mult c (lp f) p = monom_mult (lc f) (lp f) (monom_mult (c / lc f) 0 p)"
-    by (simp add: monom_mult_assoc)
-  have 2: "monom_mult (- c / lc f) 0 (p * tail f) = - (monom_mult (c / lc f) 0 p) * tail f"
-    by (simp add: monom_mult_uminus_left, simp add: times_monomial_left[symmetric])
-  show ?thesis unfolding 1 2 by (fact red_monom_mult_leading_monomial)
+  hence 1: "p \<odot> monomial c (lt f) = punit.monom_mult (c / lc f) 0 p \<odot> monomial (lc f) (lt f)"
+    by (simp add: punit.mult_scalar_monomial[symmetric] mult.commute
+        mult_scalar_assoc mult_scalar_monomial_monomial term_simps)
+  have 2: "monom_mult (- c / lc f) 0 (p \<odot> tail f) = - punit.monom_mult (c / lc f) 0 p \<odot> tail f"
+    by (simp add: times_monomial_left[symmetric] mult_scalar_assoc
+        monom_mult_uminus_left mult_scalar_monomial)
+  show ?thesis unfolding 1 2 by (fact red_mult_scalar_leading_monomial)
 qed
 
-lemma is_red_monomial_iff: "is_red F (monomial c t) \<longleftrightarrow> (c \<noteq> 0 \<and> (\<exists>f\<in>F. f \<noteq> 0 \<and> lp f adds t))"
+lemma is_red_monomial_iff: "is_red F (monomial c v) \<longleftrightarrow> (c \<noteq> 0 \<and> (\<exists>f\<in>F. f \<noteq> 0 \<and> lt f adds\<^sub>t v))"
   by (simp add: is_red_adds_iff)
 
 lemma is_red_monomialI:
-  assumes "c \<noteq> 0" and "f \<in> F" and "f \<noteq> 0" and "lp f adds t"
-  shows "is_red F (monomial c t)"
+  assumes "c \<noteq> 0" and "f \<in> F" and "f \<noteq> 0" and "lt f adds\<^sub>t v"
+  shows "is_red F (monomial c v)"
   unfolding is_red_monomial_iff using assms by blast
 
 lemma is_red_monomialD:
-  assumes "is_red F (monomial c t)"
+  assumes "is_red F (monomial c v)"
   shows "c \<noteq> 0"
   using assms unfolding is_red_monomial_iff ..
 
 lemma is_red_monomialE:
-  assumes "is_red F (monomial c t)"
-  obtains f where "f \<in> F" and "f \<noteq> 0" and "lp f adds t"
+  assumes "is_red F (monomial c v)"
+  obtains f where "f \<in> F" and "f \<noteq> 0" and "lt f adds\<^sub>t v"
   using assms unfolding is_red_monomial_iff by blast
 
-lemma replace_lp_adds_stable_is_red:
-  assumes red: "is_red F f" and "q \<noteq> 0" and "lp q adds lp p"
+lemma replace_lt_adds_stable_is_red:
+  assumes red: "is_red F f" and "q \<noteq> 0" and "lt q adds\<^sub>t lt p"
   shows "is_red (insert q (F - {p})) f"
 proof -
-  from red obtain g t where "g \<in> F" and "g \<noteq> 0" and "t \<in> keys f" and "lp g adds t" by (rule is_red_addsE)
+  from red obtain g v where "g \<in> F" and "g \<noteq> 0" and "v \<in> keys f" and "lt g adds\<^sub>t v"
+    by (rule is_red_addsE)
   show ?thesis
   proof (cases "g = p")
     case True
@@ -1402,14 +1441,14 @@ proof -
     proof (rule is_red_addsI)
       show "q \<in> insert q (F - {p})" by simp
     next
-      have "lp q adds lp p" by fact
-      also have "... adds t" using \<open>lp g adds t\<close> unfolding True .
-      finally show "lp q adds t" .
+      have "lt q adds\<^sub>t lt p" by fact
+      also have "... adds\<^sub>t v" using \<open>lt g adds\<^sub>t v\<close> unfolding True .
+      finally show "lt q adds\<^sub>t v" .
     qed (fact+)
   next
     case False
     with \<open>g \<in> F\<close> have "g \<in> insert q (F - {p})" by blast
-    from this \<open>g \<noteq> 0\<close> \<open>t \<in> keys f\<close> \<open>lp g adds t\<close> show ?thesis by (rule is_red_addsI)
+    from this \<open>g \<noteq> 0\<close> \<open>v \<in> keys f\<close> \<open>lt g adds\<^sub>t v\<close> show ?thesis by (rule is_red_addsI)
   qed
 qed
   
@@ -1417,56 +1456,58 @@ lemma conversion_property:
   assumes "is_red {p} f" and "red {r} p q"
   shows "is_red {q} f \<or> is_red {r} f"
 proof -
-  from \<open>is_red {p} f\<close> obtain t where "t \<in> keys f" and "lp p adds t" and "p \<noteq> 0" by (rule is_red_addsE, simp)
+  let ?s = "lp p - lp r"
+  from \<open>is_red {p} f\<close> obtain v where "v \<in> keys f" and "lt p adds\<^sub>t v" and "p \<noteq> 0"
+    by (rule is_red_addsE, simp)
   from red_indE[OF \<open>red {r} p q\<close>]
-    have "(r \<noteq> 0 \<and> lp r adds lp p \<and> q = p - monom_mult (lc p / lc r) (lp p - lp r) r) \<or>
-          red {r} (tail p) (q - monomial (lc p) (lp p))" by simp
+    have "(r \<noteq> 0 \<and> lt r adds\<^sub>t lt p \<and> q = p - monom_mult (lc p / lc r) ?s r) \<or>
+          red {r} (tail p) (q - monomial (lc p) (lt p))" by simp
   thus ?thesis
   proof
-    assume "r \<noteq> 0 \<and> lp r adds lp p \<and> q = p - monom_mult (lc p / lc r) (lp p - lp r) r"
-    hence "r \<noteq> 0" and "lp r adds lp p" by simp_all
+    assume "r \<noteq> 0 \<and> lt r adds\<^sub>t lt p \<and> q = p - monom_mult (lc p / lc r) ?s r"
+    hence "r \<noteq> 0" and "lt r adds\<^sub>t lt p" by simp_all
     show ?thesis by (intro disjI2, rule is_red_singleton_trans, rule \<open>is_red {p} f\<close>, fact+)
   next
-    assume "red {r} (tail p) (q - monomial (lc p) (lp p))" (is "red _ ?p' ?q'")
-    with red_ord have "?q' \<prec>p ?p'" .
+    assume "red {r} (tail p) (q - monomial (lc p) (lt p))" (is "red _ ?p' ?q'")
+    with red_ord have "?q' \<prec>\<^sub>p ?p'" .
     hence "?p' \<noteq> 0"
-      and assm: "(?q' = 0 \<or> ((lp ?q') \<prec> (lp ?p') \<or> (lp ?q') = (lp ?p')))"
+      and assm: "(?q' = 0 \<or> ((lt ?q') \<prec>\<^sub>t (lt ?p') \<or> (lt ?q') = (lt ?p')))"
       unfolding ord_strict_p_rec[of ?q' ?p'] by (auto simp add: Let_def lc_def)
-    have "lp ?p' \<prec> lp p" by (rule lp_tail, fact)
-    let ?m = "monomial (lc p) (lp p)"
-    from monomial_0D[of "lp p" "lc p"] lc_not_0[OF \<open>p \<noteq> 0\<close>] have "?m \<noteq> 0" by blast
-    have "lp ?m = lp p" by (rule lp_monomial, rule lc_not_0, fact)
-    have "q \<noteq> 0 \<and> lp q = lp p"
+    have "lt ?p' \<prec>\<^sub>t lt p" by (rule lt_tail, fact)
+    let ?m = "monomial (lc p) (lt p)"
+    from monomial_0D[of "lt p" "lc p"] lc_not_0[OF \<open>p \<noteq> 0\<close>] have "?m \<noteq> 0" by blast
+    have "lt ?m = lt p" by (rule lt_monomial, rule lc_not_0, fact)
+    have "q \<noteq> 0 \<and> lt q = lt p"
     proof (cases "?q' = 0")
       case True
       hence "q = ?m" by simp
-      with \<open>?m \<noteq> 0\<close> \<open>lp ?m = lp p\<close> show ?thesis by simp
+      with \<open>?m \<noteq> 0\<close> \<open>lt ?m = lt p\<close> show ?thesis by simp
     next
       case False
       from assm show ?thesis
       proof
-        assume "(lp ?q') \<prec> (lp ?p') \<or> (lp ?q') = (lp ?p')"
-        hence "lp ?q' \<preceq> lp ?p'" by auto
-        also have "... \<prec> lp p" by fact
-        finally have "lp ?q' \<prec> lp p" .
-        hence "lp ?q' \<prec> lp ?m" unfolding \<open>lp ?m = lp p\<close> .
-        from lp_plus_eqI[OF this] \<open>lp ?m = lp p\<close> have "lp q = lp p" by simp
+        assume "(lt ?q') \<prec>\<^sub>t (lt ?p') \<or> (lt ?q') = (lt ?p')"
+        hence "lt ?q' \<preceq>\<^sub>t lt ?p'" by auto
+        also have "... \<prec>\<^sub>t lt p" by fact
+        finally have "lt ?q' \<prec>\<^sub>t lt p" .
+        hence "lt ?q' \<prec>\<^sub>t lt ?m" unfolding \<open>lt ?m = lt p\<close> .
+        from lt_plus_eqI[OF this] \<open>lt ?m = lt p\<close> have "lt q = lt p" by simp
         show ?thesis
         proof (intro conjI, rule ccontr)
           assume "\<not> q \<noteq> 0"
           hence "q = 0" by simp
           hence "?q' = -?m" by simp
-          hence "lp ?q' = lp (-?m)" by simp
-          also have "... = lp ?m" using lp_uminus .
-          finally have "lp ?q' = lp ?m" .
-          with \<open>lp ?q' \<prec> lp ?m\<close> show False by simp
+          hence "lt ?q' = lt (-?m)" by simp
+          also have "... = lt ?m" using lt_uminus .
+          finally have "lt ?q' = lt ?m" .
+          with \<open>lt ?q' \<prec>\<^sub>t lt ?m\<close> show False by simp
         qed (fact)
       next
         assume "?q' = 0"
         with False show ?thesis ..
       qed
     qed
-    hence "q \<noteq> 0" and "lp q adds lp p" by simp_all
+    hence "q \<noteq> 0" and "lt q adds\<^sub>t lt p" by (simp_all add: term_simps)
     show ?thesis by (intro disjI1, rule is_red_singleton_trans, rule \<open>is_red {p} f\<close>, fact+)
   qed
 qed
@@ -1505,52 +1546,56 @@ proof -
   qed
 qed
 
-end (* ordered_powerprod *)
+end (* ordered_term *)
 
 subsection \<open>Well-foundedness and Termination\<close>
 
-context gd_powerprod
+context gd_term
 begin
 
 lemma dgrad_set_le_red_single:
   assumes "dickson_grading (+) d" and "red_single p q f t"
-  shows "dgrad_set_le d {t} (keys p)"
+  shows "dgrad_set_le d {t} (pp_of_term ` keys p)"
 proof (rule dgrad_set_leI, simp)
   have "t adds t + lp f" by simp
-  with assms(1) have "d t \<le> d (t + lp f)" by (rule dickson_grading_adds_imp_le)
-  moreover from assms(2) have "t + lp f \<in> keys p" by (simp add: red_single_def)
-  ultimately show "\<exists>s\<in>keys p. d t \<le> d s" ..
+  with assms(1) have "d t \<le> d (pp_of_term (t \<oplus> lt f))"
+    by (simp add: term_simps, rule dickson_grading_adds_imp_le)
+  moreover from assms(2) have "t \<oplus> lt f \<in> keys p" by (simp add: red_single_def)
+  ultimately show "\<exists>v\<in>keys p. d t \<le> d (pp_of_term v)" ..
 qed
 
 lemma dgrad_p_set_le_red_single:
   assumes "dickson_grading (+) d" and "red_single p q f t"
   shows "dgrad_p_set_le d {q} {f, p}"
 proof -
-  let ?f = "monom_mult ((lookup p (t + lp f)) / lc f) t f"
-  from assms(2) have "t + lp f \<in> keys p" and q: "q = p - ?f" by (simp_all add: red_single_def)
+  let ?f = "monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f"
+  from assms(2) have "t \<oplus> lt f \<in> keys p" and q: "q = p - ?f" by (simp_all add: red_single_def)
   have "dgrad_p_set_le d {q} {p, ?f}" unfolding q by (fact dgrad_p_set_le_minus)
   also have "dgrad_p_set_le d ... {f, p}"
   proof (rule dgrad_p_set_leI_insert)
-    from assms(1) have "dgrad_set_le d (keys ?f) (insert t (keys f))"
+    from assms(1) have "dgrad_set_le d (pp_of_term ` keys ?f) (insert t (pp_of_term ` keys f))"
       by (rule dgrad_set_le_monom_mult)
-    also have "dgrad_set_le d ... (keys f \<union> keys p)"
+    also have "dgrad_set_le d ... (pp_of_term ` (keys f \<union> keys p))"
     proof (rule dgrad_set_leI, simp)
       fix s
-      assume "s = t \<or> s \<in> keys f"
-      thus "\<exists>u\<in>keys f \<union> keys p. d s \<le> d u"
+      assume "s = t \<or> s \<in> pp_of_term ` keys f"
+      thus "\<exists>u\<in>keys f \<union> keys p. d s \<le> d (pp_of_term u)"
       proof
         assume "s = t"
-        from assms have "dgrad_set_le d {s} (keys p)" unfolding \<open>s = t\<close>
+        from assms have "dgrad_set_le d {s} (pp_of_term ` keys p)" unfolding \<open>s = t\<close>
           by (rule dgrad_set_le_red_single)
         moreover have "s \<in> {s}" ..
-        ultimately obtain u where "u \<in> keys p" and "d s \<le> d u" by (rule dgrad_set_leE)
+        ultimately obtain s0 where "s0 \<in> pp_of_term ` keys p" and "d s \<le> d s0" by (rule dgrad_set_leE)
+        from this(1) obtain u where "u \<in> keys p" and "s0 = pp_of_term u" ..
         from this(1) have "u \<in> keys f \<union> keys p" by simp
-        with \<open>d s \<le> d u\<close> show ?thesis ..
+        with \<open>d s \<le> d s0\<close> show ?thesis unfolding \<open>s0 = pp_of_term u\<close> ..
       next
-        assume "s \<in> keys f"
-        hence "s \<in> keys f \<union> keys p" by simp
+        assume "s \<in> pp_of_term ` keys f"
+        hence "s \<in> pp_of_term ` (keys f \<union> keys p)" by blast
+        then obtain u where "u \<in> keys f \<union> keys p" and "s = pp_of_term u" ..
+        note this(1)
         moreover have "d s \<le> d s" ..
-        ultimately show ?thesis ..
+        ultimately show ?thesis unfolding \<open>s = pp_of_term u\<close> ..
       qed
     qed
     finally show "dgrad_p_set_le d {?f} {f, p}" by (simp add: dgrad_p_set_le_def Keys_insert)
@@ -1591,11 +1636,12 @@ lemma dgrad_p_set_red_single_pp:
   assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m" and "red_single p q f t"
   shows "d t \<le> m"
 proof -
-  from assms(1) assms(3) have "dgrad_set_le d {t} (keys p)" by (rule dgrad_set_le_red_single)
+  from assms(1) assms(3) have "dgrad_set_le d {t} (pp_of_term ` keys p)" by (rule dgrad_set_le_red_single)
   moreover have "t \<in> {t}" ..
-  ultimately obtain s where "s \<in> keys p" and "d t \<le> d s" by (rule dgrad_set_leE)
-  from assms(2) this(1) have "d s \<le> m" by (rule dgrad_p_setD)
-  with \<open>d t \<le> d s\<close> show ?thesis by (rule le_trans)
+  ultimately obtain s where "s \<in> pp_of_term ` keys p" and "d t \<le> d s" by (rule dgrad_set_leE)
+  from this(1) obtain u where "u \<in> keys p" and "s = pp_of_term u" ..
+  from assms(2) this(1) have "d (pp_of_term u) \<le> m" by (rule dgrad_p_setD)
+  with \<open>d t \<le> d s\<close> show ?thesis unfolding \<open>s = pp_of_term u\<close> by (rule le_trans)
 qed
 
 lemma dgrad_p_set_closed_red_single:
@@ -1633,30 +1679,30 @@ qed
 
 lemma is_relation_order_red:
   assumes "dickson_grading (+) d"
-  shows "Confluence.relation_order (red F) (\<prec>p) (dgrad_p_set d m)"
+  shows "Confluence.relation_order (red F) (\<prec>\<^sub>p) (dgrad_p_set d m)"
 proof
-  show "wfP_on (dgrad_p_set d m) (\<prec>p)"
+  show "wfP_on (dgrad_p_set d m) (\<prec>\<^sub>p)"
   proof (rule wfP_onI_min)
-    fix x::"'a \<Rightarrow>\<^sub>0 'c" and Q
+    fix x::"'t \<Rightarrow>\<^sub>0 'c" and Q
     assume "x \<in> Q" and "Q \<subseteq> dgrad_p_set d m"
-    with assms obtain q where "q \<in> Q" and *: "\<And>y. y \<prec>p q \<Longrightarrow> y \<notin> Q"
+    with assms obtain q where "q \<in> Q" and *: "\<And>y. y \<prec>\<^sub>p q \<Longrightarrow> y \<notin> Q"
       by (rule ord_p_minimum_dgrad_p_set, auto)
-    from this(1) show "\<exists>z\<in>Q. \<forall>y\<in>dgrad_p_set d m. y \<prec>p z \<longrightarrow> y \<notin> Q"
+    from this(1) show "\<exists>z\<in>Q. \<forall>y\<in>dgrad_p_set d m. y \<prec>\<^sub>p z \<longrightarrow> y \<notin> Q"
     proof
-      from * show "\<forall>y\<in>dgrad_p_set d m. y \<prec>p q \<longrightarrow> y \<notin> Q" by auto
+      from * show "\<forall>y\<in>dgrad_p_set d m. y \<prec>\<^sub>p q \<longrightarrow> y \<notin> Q" by auto
     qed
   qed
 next
-  show "red F \<le> (\<prec>p)\<inverse>\<inverse>" by (simp add: predicate2I red_ord)
+  show "red F \<le> (\<prec>\<^sub>p)\<inverse>\<inverse>" by (simp add: predicate2I red_ord)
 qed (fact ord_strict_p_transitive)
 
 lemma red_wf_dgrad_p_set_aux:
   assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
   shows "wfP_on (dgrad_p_set d m) (red F)\<inverse>\<inverse>"
 proof (rule wfP_onI_min)
-  fix x::"'a \<Rightarrow>\<^sub>0 'b" and Q
+  fix x::"'t \<Rightarrow>\<^sub>0 'b" and Q
   assume "x \<in> Q" and "Q \<subseteq> dgrad_p_set d m"
-  with assms(1) obtain q where "q \<in> Q" and *: "\<And>y. y \<prec>p q \<Longrightarrow> y \<notin> Q"
+  with assms(1) obtain q where "q \<in> Q" and *: "\<And>y. y \<prec>\<^sub>p q \<Longrightarrow> y \<notin> Q"
     by (rule ord_p_minimum_dgrad_p_set, auto)
   from this(1) show "\<exists>z\<in>Q. \<forall>y\<in>dgrad_p_set d m. (red F)\<inverse>\<inverse> y z \<longrightarrow> y \<notin> Q"
   proof
@@ -1664,7 +1710,7 @@ proof (rule wfP_onI_min)
     proof (intro ballI impI, simp)
       fix y
       assume "red F q y"
-      hence "y \<prec>p q" by (rule red_ord)
+      hence "y \<prec>\<^sub>p q" by (rule red_ord)
       thus "y \<notin> Q" by (rule *)
     qed
   qed
@@ -1674,7 +1720,7 @@ lemma red_wf_dgrad_p_set:
   assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
   shows "wfP (red F)\<inverse>\<inverse>"
 proof (rule wfI_min[to_pred])
-  fix x::"'a \<Rightarrow>\<^sub>0 'b" and Q
+  fix x::"'t \<Rightarrow>\<^sub>0 'b" and Q
   assume "x \<in> Q"
   from assms(2) obtain n where "m \<le> n" and "x \<in> dgrad_p_set d n" and "F \<subseteq> dgrad_p_set d n"
     by (rule dgrad_p_set_insert)
@@ -1704,8 +1750,8 @@ lemmas red_wf_finite = red_wf_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p
 
 lemma cbelow_on_monom_mult:
   assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "d t \<le> m" and "c \<noteq> 0"
-    and "cbelow_on (dgrad_p_set d m) (\<prec>p) z (\<lambda>a b. red F a b \<or> red F b a) p q"
-  shows "cbelow_on (dgrad_p_set d m) (\<prec>p) (monom_mult c t z) (\<lambda>a b. red F a b \<or> red F b a)
+    and "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) z (\<lambda>a b. red F a b \<or> red F b a) p q"
+  shows "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) (monom_mult c t z) (\<lambda>a b. red F a b \<or> red F b a)
           (monom_mult c t p) (monom_mult c t q)"
   using assms(5)
 proof (induct rule: cbelow_on_induct)
@@ -1715,8 +1761,8 @@ proof (induct rule: cbelow_on_induct)
     from assms(5) have "p \<in> dgrad_p_set d m" by (rule cbelow_on_first_in)
     with assms(1) assms(3) show "monom_mult c t p \<in> dgrad_p_set d m" by (rule dgrad_p_set_closed_monom_mult)
   next
-    from assms(5) have "p \<prec>p z" by (rule cbelow_on_first_below)
-    from this assms(4) show "monom_mult c t p \<prec>p monom_mult c t z" by (rule ord_strict_p_monom_mult)
+    from assms(5) have "p \<prec>\<^sub>p z" by (rule cbelow_on_first_below)
+    from this assms(4) show "monom_mult c t p \<prec>\<^sub>p monom_mult c t z" by (rule ord_strict_p_monom_mult)
   qed
 next
   case (step q' q)
@@ -1727,20 +1773,20 @@ next
   next
     from step(2) red_monom_mult[OF _ assms(4)] show "?R (monom_mult c t q') (monom_mult c t q)" by auto
   next
-    from step(4) assms(4) show "monom_mult c t q \<prec>p monom_mult c t z" by (rule ord_strict_p_monom_mult)
+    from step(4) assms(4) show "monom_mult c t q \<prec>\<^sub>p monom_mult c t z" by (rule ord_strict_p_monom_mult)
   qed
 qed
 
 lemma cbelow_on_monom_mult_monomial:
   assumes "c \<noteq> 0"
-    and "cbelow_on (dgrad_p_set d m) (\<prec>p) (monomial c' t) (\<lambda>a b. red F a b \<or> red F b a) p q"
-  shows "cbelow_on (dgrad_p_set d m) (\<prec>p) (monomial c (s + t)) (\<lambda>a b. red F a b \<or> red F b a) p q"
+    and "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) (monomial c' v) (\<lambda>a b. red F a b \<or> red F b a) p q"
+  shows "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) (monomial c (t \<oplus> v)) (\<lambda>a b. red F a b \<or> red F b a) p q"
 proof -
-  have *: "f \<prec>p monomial c' t \<Longrightarrow> f \<prec>p monomial c (s + t)" for f
+  have *: "f \<prec>\<^sub>p monomial c' v \<Longrightarrow> f \<prec>\<^sub>p monomial c (t \<oplus> v)" for f
   proof (simp add: ord_strict_p_monomial_iff assms(1), elim conjE disjE, erule disjI1, rule disjI2)
-    assume "lp f \<prec> t"
-    also have "... \<preceq> s + t" using local.zero_min plus_monotone by fastforce
-    finally show "lp f \<prec> s + t" .
+    assume "lt f \<prec>\<^sub>t v"
+    also have "... \<preceq>\<^sub>t t \<oplus> v" using local.zero_min using splus_mono_left splus_zero by fastforce
+    finally show "lt f \<prec>\<^sub>t t \<oplus> v" .
   qed
   from assms(2) show ?thesis
   proof (induct rule: cbelow_on_induct)
@@ -1749,15 +1795,15 @@ proof -
     proof (rule disjI1, intro conjI, fact refl)
       from assms(2) show "p \<in> dgrad_p_set d m" by (rule cbelow_on_first_in)
     next
-      from assms(2) have "p \<prec>p monomial c' t" by (rule cbelow_on_first_below)
-      thus "p \<prec>p monomial c (s + t)" by (rule *)
+      from assms(2) have "p \<prec>\<^sub>p monomial c' v" by (rule cbelow_on_first_below)
+      thus "p \<prec>\<^sub>p monomial c (t \<oplus> v)" by (rule *)
     qed
   next
     case (step q' q)
     let ?R = "\<lambda>a b. red F a b \<or> red F b a"
     from step(5) step(3) step(2) show ?case
     proof
-      from step(4) show "q \<prec>p monomial c (s + t)" by (rule *)
+      from step(4) show "q \<prec>\<^sub>p monomial c (t \<oplus> v)" by (rule *)
     qed
   qed
 qed
@@ -1765,8 +1811,8 @@ qed
 lemma cbelow_on_plus:
   assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "r \<in> dgrad_p_set d m"
     and "keys r \<inter> keys z = {}"
-    and "cbelow_on (dgrad_p_set d m) (\<prec>p) z (\<lambda>a b. red F a b \<or> red F b a) p q"
-  shows "cbelow_on (dgrad_p_set d m) (\<prec>p) (z + r) (\<lambda>a b. red F a b \<or> red F b a) (p + r) (q + r)"
+    and "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) z (\<lambda>a b. red F a b \<or> red F b a) p q"
+  shows "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) (z + r) (\<lambda>a b. red F a b \<or> red F b a) (p + r) (q + r)"
   using assms(5)
 proof (induct rule: cbelow_on_induct)
   case base
@@ -1775,15 +1821,15 @@ proof (induct rule: cbelow_on_induct)
     from assms(5) have "p \<in> dgrad_p_set d m" by (rule cbelow_on_first_in)
     from this assms(3) show "p + r \<in> dgrad_p_set d m" by (rule dgrad_p_set_closed_plus)
   next
-    from assms(5) have "p \<prec>p z" by (rule cbelow_on_first_below)
-    from this assms(4) show "p + r \<prec>p z + r" by (rule ord_strict_p_plus)
+    from assms(5) have "p \<prec>\<^sub>p z" by (rule cbelow_on_first_below)
+    from this assms(4) show "p + r \<prec>\<^sub>p z + r" by (rule ord_strict_p_plus)
   qed
 next
   case (step q' q)
   let ?RS = "\<lambda>a b. red F a b \<or> red F b a"
   let ?A = "dgrad_p_set d m"
   let ?R = "red F"
-  let ?ord = "(\<prec>p)"
+  let ?ord = "(\<prec>\<^sub>p)"
   from assms(1) have ro: "relation_order ?R ?ord ?A"
     by (rule is_relation_order_red)
   have dw: "relation.dw_closed ?R ?A"
@@ -1804,26 +1850,75 @@ next
   next
     from step(3) assms(3) show "q + r \<in> ?A" by (rule dgrad_p_set_closed_plus)
   next
-    from step(1) have "q' \<prec>p z" by (rule cbelow_on_second_below)
-    from this assms(4) show "q' + r \<prec>p z + r" by (rule ord_strict_p_plus)
+    from step(1) have "q' \<prec>\<^sub>p z" by (rule cbelow_on_second_below)
+    from this assms(4) show "q' + r \<prec>\<^sub>p z + r" by (rule ord_strict_p_plus)
   next
-    from step(4) assms(4) show "q + r \<prec>p z + r" by (rule ord_strict_p_plus)
+    from step(4) assms(4) show "q + r \<prec>\<^sub>p z + r" by (rule ord_strict_p_plus)
   qed
   with step(5) show ?case by (rule cbelow_on_transitive)
 qed
 
-end (* gd_powerprod *)
+lemma is_full_pmdlI_lt_dgrad_p_set:
+  assumes "dickson_grading (+) d" and "B \<subseteq> dgrad_p_set d m"
+  assumes "\<And>k. k \<in> component_of_term ` Keys (B::('t \<Rightarrow>\<^sub>0 'b::field) set) \<Longrightarrow>
+            (\<exists>b\<in>B. b \<noteq> 0 \<and> component_of_term (lt b) = k \<and> lp b = 0)"
+  shows "is_full_pmdl B"
+proof (rule is_full_pmdlI)
+  fix p::"'t \<Rightarrow>\<^sub>0 'b"
+  from assms(1, 2) have "wfP (red B)\<inverse>\<inverse>" by (rule red_wf_dgrad_p_set)
+  moreover assume "component_of_term ` keys p \<subseteq> component_of_term ` Keys B"
+  ultimately show "p \<in> pmdl B"
+  proof (induct p)
+    case (less p)
+    show ?case
+    proof (cases "p = 0")
+      case True
+      show ?thesis by (simp add: True pmdl.module_0)
+    next
+      case False
+      hence "lt p \<in> keys p" by (rule lt_in_keys)
+      hence "component_of_term (lt p) \<in> component_of_term ` keys p" by simp
+      also have "... \<subseteq> component_of_term ` Keys B" by fact
+      finally have "\<exists>b\<in>B. b \<noteq> 0 \<and> component_of_term (lt b) = component_of_term (lt p) \<and> lp b = 0"
+        by (rule assms(3))
+      then obtain b where "b \<in> B" and "b \<noteq> 0" and "component_of_term (lt b) = component_of_term (lt p)"
+        and "lp b = 0" by blast
+      from this(3, 4) have eq: "lp p \<oplus> lt b = lt p" by (simp add: splus_def term_of_pair_pair)
+      define q where "q = p - monom_mult (lookup p ((lp p) \<oplus> lt b) / lc b) (lp p) b"
+      have "red_single p q b (lp p)"
+        by (simp add: red_single_def \<open>b \<noteq> 0\<close> q_def eq \<open>lt p \<in> keys p\<close>)
+      with \<open>b \<in> B\<close> have "red B p q" by (rule red_setI)
+      hence "(red B)\<inverse>\<inverse> q p" ..
+      moreover have "component_of_term ` keys q \<subseteq> component_of_term ` Keys B"
+      proof (rule subset_trans)
+        from \<open>red B p q\<close> show "component_of_term ` keys q \<subseteq> component_of_term ` keys p \<union> component_of_term ` Keys B"
+          by (rule components_red_subset)
+      next
+        from less(2) show "component_of_term ` keys p \<union> component_of_term ` Keys B \<subseteq> component_of_term ` Keys B"
+          by blast
+      qed
+      ultimately have "q \<in> pmdl B" by (rule less.hyps)
+      have "q + monom_mult (lookup p ((lp p) \<oplus> lt b) / lc b) (lp p) b \<in> pmdl B"
+        by (rule pmdl.module_closed_plus, fact, rule pmdl_closed_monom_mult, rule pmdl.generator_in_module, fact)
+      thus ?thesis by (simp add: q_def)
+    qed
+  qed
+qed
+
+lemmas is_full_pmdlI_lt_finite = is_full_pmdlI_lt_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
+
+end (* gd_term *)
 
 subsection \<open>Algorithms\<close>
 
 subsubsection \<open>Function \<open>find_adds\<close>\<close>
 
-context ordered_powerprod
+context ordered_term
 begin
 
-primrec find_adds :: "('a \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> 'a \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::zero) option" where
+primrec find_adds :: "('t \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> 't \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::zero) option" where
   "find_adds [] _ = None"|
-  "find_adds (f # fs) u = (if f \<noteq> 0 \<and> lp f adds u then Some f else find_adds fs u)"
+  "find_adds (f # fs) u = (if f \<noteq> 0 \<and> lt f adds\<^sub>t u then Some f else find_adds fs u)"
 
 lemma find_adds_SomeD1:
   assumes "find_adds fs u = Some f"
@@ -1837,12 +1932,12 @@ lemma find_adds_SomeD2:
 
 lemma find_adds_SomeD3:
   assumes "find_adds fs u = Some f"
-  shows "lp f adds u"
+  shows "lt f adds\<^sub>t u"
   using assms by (induct fs, simp, simp split: if_splits)
 
 lemma find_adds_NoneE:
   assumes "find_adds fs u = None" and "f \<in> set fs"
-  assumes "f = 0 \<Longrightarrow> thesis" and "f \<noteq> 0 \<Longrightarrow> \<not> lp f adds u \<Longrightarrow> thesis"
+  assumes "f = 0 \<Longrightarrow> thesis" and "f \<noteq> 0 \<Longrightarrow> \<not> lt f adds\<^sub>t u \<Longrightarrow> thesis"
   shows thesis
   using assms
 proof (induct fs arbitrary: thesis)
@@ -1850,7 +1945,7 @@ proof (induct fs arbitrary: thesis)
   from Nil(2) show ?case by simp
 next
   case (Cons a fs)
-  from Cons(2) have 1: "a = 0 \<or> \<not> lp a adds u" and 2: "find_adds fs u = None"
+  from Cons(2) have 1: "a = 0 \<or> \<not> lt a adds\<^sub>t u" and 2: "find_adds fs u = None"
     by (simp_all split: if_splits)
   from Cons(3) have "f = a \<or> f \<in> set fs" by simp
   thus ?case
@@ -1862,7 +1957,7 @@ next
       show ?thesis by (rule Cons(4), simp add: \<open>f = a\<close> True)
     next
       case False
-      with 1 have *: "\<not> lp a adds u" by simp
+      with 1 have *: "\<not> lt a adds\<^sub>t u" by simp
       show ?thesis by (rule Cons(5), simp_all add: \<open>f = a\<close> * False)
     qed
   next
@@ -1872,38 +1967,39 @@ next
       assume "f = 0"
       thus ?thesis by (rule Cons(4))
     next
-      assume "f \<noteq> 0" and "\<not> lp f adds u"
+      assume "f \<noteq> 0" and "\<not> lt f adds\<^sub>t u"
       thus ?thesis by (rule Cons(5))
     qed
   qed
 qed
 
 lemma find_adds_SomeD_red_single:
-  assumes "p \<noteq> 0" and "find_adds fs (lp p) = Some f"
+  assumes "p \<noteq> 0" and "find_adds fs (lt p) = Some f"
   shows "red_single p (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f)) f (lp p - lp f)"
 proof -
   let ?f = "monom_mult (lc p / lc f) (lp p - lp f) f"
-  from assms(2) have "f \<noteq> 0" and "lp f adds lp p" by (rule find_adds_SomeD2, rule find_adds_SomeD3)
-  from this(2) have eq: "(lp p - lp f) + lp f = lp p" by (simp add: adds_minus)
+  from assms(2) have "f \<noteq> 0" and "lt f adds\<^sub>t lt p" by (rule find_adds_SomeD2, rule find_adds_SomeD3)
+  from this(2) have eq: "(lp p - lp f) \<oplus> lt f = lt p"
+    by (simp add: adds_minus_splus adds_term_def term_of_pair_pair)
   from assms(1) have "lc p \<noteq> 0" by (rule lc_not_0)
   moreover from \<open>f \<noteq> 0\<close> have "lc f \<noteq> 0" by (rule lc_not_0)
   ultimately have "lc p / lc f \<noteq> 0" by simp
-  hence "lp ?f = (lp p - lp f) + lp f" by (simp add: lp_monom_mult \<open>f \<noteq> 0\<close>)
-  hence lp_f: "lp ?f = lp p" by (simp only: eq)
-  have "lookup ?f (lp p) = lookup ?f ((lp p - lp f) + lp f)" by (simp only: eq)
-  also have "... = (lc p / lc f) * lookup f (lp f)" by (rule lookup_monom_mult_plus)
-  also from \<open>lc f \<noteq> 0\<close> have "... = lookup p (lp p)" by (simp add: lc_def)
-  finally have lc_f: "lookup ?f (lp p) = lookup p (lp p)" .
+  hence "lt ?f = (lp p - lp f) \<oplus> lt f" by (simp add: lt_monom_mult \<open>f \<noteq> 0\<close>)
+  hence lt_f: "lt ?f = lt p" by (simp only: eq)
+  have "lookup ?f (lt p) = lookup ?f ((lp p - lp f) \<oplus> lt f)" by (simp only: eq)
+  also have "... = (lc p / lc f) * lookup f (lt f)" by (rule lookup_monom_mult_plus)
+  also from \<open>lc f \<noteq> 0\<close> have "... = lookup p (lt p)" by (simp add: lc_def)
+  finally have lc_f: "lookup ?f (lt p) = lookup p (lt p)" .
   have "red_single p (p - ?f) f (lp p - lp f)"
-    by (simp add: red_single_def eq lc_def \<open>f \<noteq> 0\<close> lp_in_keys assms(1))
+    by (simp add: red_single_def eq lc_def \<open>f \<noteq> 0\<close> lt_in_keys assms(1))
   moreover have "p - ?f = tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f)"
     by (rule poly_mapping_eqI,
-        simp add: tail_monom_mult[symmetric] lookup_minus lookup_tail_2 lp_f lc_f split: if_split)
+        simp add: tail_monom_mult[symmetric] lookup_minus lookup_tail_2 lt_f lc_f split: if_split)
   ultimately show ?thesis by simp
 qed
 
 lemma find_adds_SomeD_red:
-  assumes "p \<noteq> 0" and "find_adds fs (lp p) = Some f"
+  assumes "p \<noteq> 0" and "find_adds fs (lt p) = Some f"
   shows "red (set fs) p (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f))"
 proof (rule red_setI)
   from assms(2) show "f \<in> set fs" by (rule find_adds_SomeD1)
@@ -1912,23 +2008,22 @@ next
     by (rule find_adds_SomeD_red_single)
 qed
 
-end (* ordered_powerprod *)
+end (* ordered_term *)
 
 subsubsection \<open>Function \<open>trd\<close>\<close>
 
-context gd_powerprod
+context gd_term
 begin
 
-definition trd_term :: "('a \<Rightarrow> nat) \<Rightarrow> ((('a \<Rightarrow>\<^sub>0 'b::field) list \<times> ('a \<Rightarrow>\<^sub>0 'b) \<times> ('a \<Rightarrow>\<^sub>0 'b)) \<times>
-                                        (('a \<Rightarrow>\<^sub>0 'b) list \<times> ('a \<Rightarrow>\<^sub>0 'b) \<times> ('a \<Rightarrow>\<^sub>0 'b))) set"
-  where "trd_term d = {(x, y). dgrad_p_set_le d (set (fst (snd x) # fst x)) (set (fst (snd y) # fst y)) \<and>
-                                fst (snd x) \<prec>p fst (snd y)}"
+definition trd_term :: "('a \<Rightarrow> nat) \<Rightarrow> ((('t \<Rightarrow>\<^sub>0 'b::field) list \<times> ('t \<Rightarrow>\<^sub>0 'b) \<times> ('t \<Rightarrow>\<^sub>0 'b)) \<times>
+                                        (('t \<Rightarrow>\<^sub>0 'b) list \<times> ('t \<Rightarrow>\<^sub>0 'b) \<times> ('t \<Rightarrow>\<^sub>0 'b))) set"
+  where "trd_term d = {(x, y). dgrad_p_set_le d (set (fst (snd x) # fst x)) (set (fst (snd y) # fst y)) \<and> fst (snd x) \<prec>\<^sub>p fst (snd y)}"
 
 lemma trd_term_wf:
   assumes "dickson_grading (+) d"
   shows "wf (trd_term d)"
 proof (rule wfI_min)
-  fix x :: "('a \<Rightarrow>\<^sub>0 'b::field) list \<times> ('a \<Rightarrow>\<^sub>0 'b) \<times> ('a \<Rightarrow>\<^sub>0 'b)" and Q
+  fix x :: "('t \<Rightarrow>\<^sub>0 'b::field) list \<times> ('t \<Rightarrow>\<^sub>0 'b) \<times> ('t \<Rightarrow>\<^sub>0 'b)" and Q
   assume "x \<in> Q"
   let ?A = "set (fst (snd x) # fst x)"
   have "finite ?A" ..
@@ -1940,7 +2035,7 @@ proof (rule wfI_min)
     by (rule, fact refl, rule, fact refl, simp only: mem_Collect_eq A \<open>x \<in> Q\<close>)
   moreover have "fst ` snd ` ?Q \<subseteq> ?B" by auto
   ultimately obtain z0 where "z0 \<in> fst ` snd ` ?Q"
-    and *: "\<And>y. y \<prec>p z0 \<Longrightarrow> y \<notin> fst ` snd ` ?Q" by (rule ord_p_minimum_dgrad_p_set, blast)
+    and *: "\<And>y. y \<prec>\<^sub>p z0 \<Longrightarrow> y \<notin> fst ` snd ` ?Q" by (rule ord_p_minimum_dgrad_p_set, blast)
   from this(1) obtain z where "z \<in> {q \<in> Q. set (fst (snd q) # fst q) \<subseteq> ?B}" and z0: "z0 = fst (snd z)"
     by fastforce
   from this(1) have "z \<in> Q" and a: "set (fst (snd z) # fst z) \<subseteq> ?B" by simp_all
@@ -1950,8 +2045,7 @@ proof (rule wfI_min)
     proof (intro allI impI)
       fix y
       assume "(y, z) \<in> trd_term d"
-      hence b: "dgrad_p_set_le d (set (fst (snd y) # fst y)) (set (fst (snd z) # fst z))"
-        and "fst (snd y) \<prec>p z0"
+      hence b: "dgrad_p_set_le d (set (fst (snd y) # fst y)) (set (fst (snd z) # fst z))" and "fst (snd y) \<prec>\<^sub>p z0"
         by (simp_all add: trd_term_def z0)
       from this(2) have "fst (snd y) \<notin> fst ` snd ` ?Q" by (rule *)
       hence "y \<notin> Q \<or> \<not> set (fst (snd y) # fst y) \<subseteq> ?B" by auto
@@ -1961,13 +2055,13 @@ proof (rule wfI_min)
   qed
 qed
 
-function trd_aux :: "('a \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::field)" where
+function trd_aux :: "('t \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::field)" where
   "trd_aux fs p r =
     (if p = 0 then
       r
     else
-      case find_adds fs (lp p) of
-        None   \<Rightarrow> trd_aux fs (tail p) (r + monomial (lc p) (lp p))
+      case find_adds fs (lt p) of
+        None   \<Rightarrow> trd_aux fs (tail p) (r + monomial (lc p) (lt p))
       | Some f \<Rightarrow> trd_aux fs (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f)) r
     )"
   by auto
@@ -1976,22 +2070,23 @@ termination proof -
   let ?R = "trd_term d"
   show ?thesis
   proof (rule, rule trd_term_wf, fact)
-    fix fs and p r::"'a \<Rightarrow>\<^sub>0 'b"
+    fix fs and p r::"'t \<Rightarrow>\<^sub>0 'b"
     assume "p \<noteq> 0"
-    show "((fs, tail p, r + monomial (lc p) (lp p)), fs, p, r) \<in> trd_term d"
+    show "((fs, tail p, r + monomial (lc p) (lt p)), fs, p, r) \<in> trd_term d"
     proof (simp add: trd_term_def, rule)
       show "dgrad_p_set_le d (insert (tail p) (set fs)) (insert p (set fs))"
       proof (rule dgrad_p_set_leI_insert_keys, rule dgrad_p_set_le_subset, rule subset_insertI,
             rule dgrad_set_le_subset, simp add: Keys_insert image_Un)
         have "keys (tail p) \<subseteq> keys p" by (auto simp: keys_tail)
-        thus "keys (tail p) \<subseteq> keys p \<union> Keys (set fs)" by blast
+        hence "pp_of_term ` keys (tail p) \<subseteq> pp_of_term ` keys p" by (rule image_mono)
+        thus "pp_of_term ` keys (tail p) \<subseteq> pp_of_term ` keys p \<union> pp_of_term ` Keys (set fs)" by blast
       qed
     next
-      from \<open>p \<noteq> 0\<close> show "tail p \<prec>p p" by (rule tail_ord_p)
+      from \<open>p \<noteq> 0\<close> show "tail p \<prec>\<^sub>p p" by (rule tail_ord_p)
     qed
   next
-    fix fs::"('a \<Rightarrow>\<^sub>0 'b) list" and p r f ::"'a \<Rightarrow>\<^sub>0 'b"
-    assume "p \<noteq> 0" and "find_adds fs (lp p) = Some f"
+    fix fs::"('t \<Rightarrow>\<^sub>0 'b) list" and p r f ::"'t \<Rightarrow>\<^sub>0 'b"
+    assume "p \<noteq> 0" and "find_adds fs (lt p) = Some f"
     hence "red (set fs) p (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f))"
       (is "red _ p ?q") by (rule find_adds_SomeD_red)
     show "((fs, ?q, r), fs, p, r) \<in> trd_term d"
@@ -2000,7 +2095,7 @@ termination proof -
   qed
 qed
 
-definition trd :: "('a \<Rightarrow>\<^sub>0 'b::field) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)"
+definition trd :: "('t \<Rightarrow>\<^sub>0 'b::field) list \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b)"
   where "trd fs p = trd_aux fs p 0"
 
 lemma trd_aux_red_rtrancl: "(red (set fs))\<^sup>*\<^sup>* p (trd_aux fs p r - r)"
@@ -2008,24 +2103,24 @@ proof (induct fs p r rule: trd_aux.induct)
   case (1 fs p r)
   show ?case
   proof (simp, split option.split, intro conjI impI allI)
-    assume "p \<noteq> 0" and "find_adds fs (lp p) = None"
-    hence "(red (set fs))\<^sup>*\<^sup>* (tail p) (trd_aux fs (tail p) (r + monomial (lc p) (lp p)) - (r + monomial (lc p) (lp p)))"
+    assume "p \<noteq> 0" and "find_adds fs (lt p) = None"
+    hence "(red (set fs))\<^sup>*\<^sup>* (tail p) (trd_aux fs (tail p) (r + monomial (lc p) (lt p)) - (r + monomial (lc p) (lt p)))"
       by (rule 1(1))
-    hence "(red (set fs))\<^sup>*\<^sup>* (tail p + monomial (lc p) (lp p))
-              (trd_aux fs (tail p) (r + monomial (lc p) (lp p)) - (r + monomial (lc p) (lp p)) + monomial (lc p ) (lp p))"
+    hence "(red (set fs))\<^sup>*\<^sup>* (tail p + monomial (lc p) (lt p))
+              (trd_aux fs (tail p) (r + monomial (lc p) (lt p)) - (r + monomial (lc p) (lt p)) + monomial (lc p ) (lt p))"
     proof (rule red_rtrancl_plus_higher)
       fix u v
       assume "u \<in> keys (tail p)"
-      assume "v \<in> keys (monomial (lc p) (lp p))"
-      also have "... \<subseteq> {lp p}" by (simp add: keys_monomial)
-      finally have "v = lp p" by simp
-      from \<open>u \<in> keys (tail p)\<close> show "u \<prec> v" unfolding \<open>v = lp p\<close> by (rule keys_tail_less_lp)
+      assume "v \<in> keys (monomial (lc p) (lt p))"
+      also have "... \<subseteq> {lt p}" by (simp add: keys_monomial)
+      finally have "v = lt p" by simp
+      from \<open>u \<in> keys (tail p)\<close> show "u \<prec>\<^sub>t v" unfolding \<open>v = lt p\<close> by (rule keys_tail_less_lt)
     qed
-    thus "(red (set fs))\<^sup>*\<^sup>* p (trd_aux fs (tail p) (r + monomial (lc p) (lp p)) - r)"
-      by (simp only: leading_monomial_tail[symmetric] add.commute[of _ "monomial (lc p) (lp p)"], simp)
+    thus "(red (set fs))\<^sup>*\<^sup>* p (trd_aux fs (tail p) (r + monomial (lc p) (lt p)) - r)"
+      by (simp only: leading_monomial_tail[symmetric] add.commute[of _ "monomial (lc p) (lt p)"], simp)
   next
     fix f
-    assume "p \<noteq> 0" and "find_adds fs (lp p) = Some f"
+    assume "p \<noteq> 0" and "find_adds fs (lt p) = Some f"
     hence "(red (set fs))\<^sup>*\<^sup>* (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f))
                     (trd_aux fs (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f)) r - r)"
       and *: "red (set fs) p (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f))"
@@ -2051,39 +2146,39 @@ proof (induct fs p r rule: trd_aux.induct)
   case (1 fs p r)
   show ?case
   proof (simp add: 1(3), split option.split, intro impI conjI allI)
-    assume "p \<noteq> 0" and *: "find_adds fs (lp p) = None"
-    thus "\<not> is_red (set fs) (trd_aux fs (tail p) (r + monomial (lc p) (lp p)))"
+    assume "p \<noteq> 0" and *: "find_adds fs (lt p) = None"
+    thus "\<not> is_red (set fs) (trd_aux fs (tail p) (r + monomial (lc p) (lt p)))"
     proof (rule 1(1))
-      show "\<not> is_red (set fs) (r + monomial (lc p) (lp p))"
+      show "\<not> is_red (set fs) (r + monomial (lc p) (lt p))"
       proof
-        assume "is_red (set fs) (r + monomial (lc p) (lp p))"
-        then obtain f u where "f \<in> set fs" and "f \<noteq> 0" and "u \<in> keys (r + monomial (lc p) (lp p))"
-          and "lp f adds u" by (rule is_red_addsE)
+        assume "is_red (set fs) (r + monomial (lc p) (lt p))"
+        then obtain f u where "f \<in> set fs" and "f \<noteq> 0" and "u \<in> keys (r + monomial (lc p) (lt p))"
+          and "lt f adds\<^sub>t u" by (rule is_red_addsE)
         note this(3)
-        also have "keys (r + monomial (lc p) (lp p)) \<subseteq> keys r \<union> keys (monomial (lc p) (lp p))"
+        also have "keys (r + monomial (lc p) (lt p)) \<subseteq> keys r \<union> keys (monomial (lc p) (lt p))"
           by (rule keys_add_subset)
-        also have "... \<subseteq> insert (lp p) (keys r)" by auto
+        also have "... \<subseteq> insert (lt p) (keys r)" by auto
         finally show False
         proof
-          assume "u = lp p"
+          assume "u = lt p"
           from * \<open>f \<in> set fs\<close> show ?thesis
           proof (rule find_adds_NoneE)
             assume "f = 0"
             with \<open>f \<noteq> 0\<close> show ?thesis ..
           next
-            assume "\<not> lp f adds lp p"
-            from this \<open>lp f adds u\<close> show ?thesis unfolding \<open>u = lp p\<close> ..
+            assume "\<not> lt f adds\<^sub>t lt p"
+            from this \<open>lt f adds\<^sub>t u\<close> show ?thesis unfolding \<open>u = lt p\<close> ..
           qed
         next
           assume "u \<in> keys r"
-          from \<open>f \<in> set fs\<close> \<open>f \<noteq> 0\<close> this \<open>lp f adds u\<close> have "is_red (set fs) r" by (rule is_red_addsI)
+          from \<open>f \<in> set fs\<close> \<open>f \<noteq> 0\<close> this \<open>lt f adds\<^sub>t u\<close> have "is_red (set fs) r" by (rule is_red_addsI)
           with 1(3) show ?thesis ..
         qed
       qed
     qed
   next
     fix f
-    assume "p \<noteq> 0" and "find_adds fs (lp p) = Some f"
+    assume "p \<noteq> 0" and "find_adds fs (lt p) = Some f"
     from this 1(3) show "\<not> is_red (set fs) (trd_aux fs (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f)) r)" 
       by (rule 1(2))
   qed
@@ -2092,19 +2187,19 @@ qed
 corollary trd_irred: "\<not> is_red (set fs) (trd fs p)"
   unfolding trd_def using irred_0 by (rule trd_aux_irred)
 
-lemma trd_in_pideal: "p - (trd fs p) \<in> pideal (set fs)"
-  using trd_red_rtrancl by (rule red_rtranclp_diff_in_pideal)
+lemma trd_in_pmdl: "p - (trd fs p) \<in> pmdl (set fs)"
+  using trd_red_rtrancl by (rule red_rtranclp_diff_in_pmdl)
 
-lemma pideal_closed_trd:
-  assumes "p \<in> pideal B" and "set fs \<subseteq> pideal B"
-  shows "(trd fs p) \<in> pideal B"
+lemma pmdl_closed_trd:
+  assumes "p \<in> pmdl B" and "set fs \<subseteq> pmdl B"
+  shows "(trd fs p) \<in> pmdl B"
 proof -
-  from assms(2) have "pideal (set fs) \<subseteq> pideal B" by (rule ideal.module_subset_moduleI)
-  with trd_in_pideal have "p - trd fs p \<in> pideal B" ..
-  with assms(1) have "p - (p - trd fs p) \<in> pideal B" by (rule ideal.module_closed_minus)
+  from assms(2) have "pmdl (set fs) \<subseteq> pmdl B" by (rule pmdl.module_subset_moduleI)
+  with trd_in_pmdl have "p - trd fs p \<in> pmdl B" ..
+  with assms(1) have "p - (p - trd fs p) \<in> pmdl B" by (rule pmdl.module_closed_minus)
   thus ?thesis by simp
 qed
 
-end (* gd_powerprod *)
+end (* gd_term *)
 
 end (* theory *)

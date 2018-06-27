@@ -4,7 +4,7 @@ section \<open>Executable Representation of Polynomial Mappings as Association L
 
 theory MPoly_Type_Class_FMap
   imports
-    MPoly_Type_Class
+    MPoly_Type_Class_Ordered
     Poly_Mapping_Finite_Map
 begin
 
@@ -14,17 +14,6 @@ text \<open>In this theory, (type class) multivariate polynomials of type
 text \<open>In principle, one could also build upon theory \<open>Polynomials\<close>, although there the representations of
   power-products and polynomials additionally have to satisfy certain invariants, which we do not
   require here.\<close>
-
-
-subsection \<open>Auxiliary lemmas, TODO: move\<close>
-
-lemma fmdom'_fmap_of_list: "fmdom' (fmap_of_list xs) = set (map fst xs)"
-  by (auto simp: fmdom'_def fmdom'I fmap_of_list.rep_eq weak_map_of_SomeI)
-    (metis map_of_eq_None_iff option.distinct(1))
-
-lemma finite_fmdom'[simp]: "finite (fmdom' f)"
-  by (simp add: fmdom'_alt_def)
-
 
 subsection \<open>Power Products\<close>
 
@@ -47,7 +36,7 @@ proof -
   finally show ?thesis .
 qed
 
-definition adds_pp_add_linorder::"('b \<Rightarrow>\<^sub>0 'a::add_linorder) \<Rightarrow> _ \<Rightarrow> bool"
+definition adds_pp_add_linorder :: "('b \<Rightarrow>\<^sub>0 'a::add_linorder) \<Rightarrow> _ \<Rightarrow> bool"
   where [code_abbrev]: "adds_pp_add_linorder = (adds)"
 
 lemma compute_adds_pp[code]:
@@ -148,83 +137,16 @@ subsection \<open>Implementation of Multivariate Polynomials as Association List
 
 subsubsection \<open>Unordered Power-Products\<close>
 
-context includes fmap.lifting begin
-lift_definition shift_keys::"'a::comm_powerprod \<Rightarrow> ('a, 'b) fmap \<Rightarrow> ('a, 'b) fmap"
-  is "\<lambda>t m x. if t adds x then m (x - t) else None"
-proof -
-  fix a and f::"'a \<Rightarrow> 'b option"
-  assume "finite (dom f)"
-  have "dom (\<lambda>x. if a adds x then f (x - a) else None) \<subseteq> (+) a ` dom f"
-    by (auto simp: adds_def domI split: if_splits)
-  also have "finite \<dots>"
-    using \<open>finite (dom f)\<close> by simp
-  finally (finite_subset) show "finite (dom (\<lambda>x. if a adds x then f (x - a) else None))" .
-qed
-
-definition "shift_map_keys t f m = fmmap f (shift_keys t m)"
-
-lemma compute_shift_map_keys[code]:
-  "shift_map_keys t f (fmap_of_list xs) = fmap_of_list (map (\<lambda>(k, v). (t + k, f v)) xs)"
-  unfolding shift_map_keys_def
-  apply transfer
-  subgoal for f t xs
-  proof -
-    show ?thesis
-      apply (rule ext)
-      subgoal for x
-        apply (cases "t adds x")
-        subgoal by (induction xs) (auto simp: adds_def )
-        subgoal by (induction xs) (auto simp: adds_def )
-        done
-      done
-  qed
-  done
-
-end
-
-lemmas [simp] = compute_zero_pp[symmetric]
-
-lemma compute_monom_mult_poly_mapping[code]:
-  "monom_mult c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys t (( * ) c) xs)"
-proof (cases "c = 0")
-  case True
-  hence "monom_mult c t (Pm_fmap xs) = 0" using monom_mult_left0 by simp
-  thus ?thesis using True
-    by simp
-next
-  case False
-  thus ?thesis
-    by (auto simp: simp: fmlookup_default_def shift_map_keys_def monom_mult.rep_eq
-        adds_def group_eq_aux shift_keys.rep_eq
-        intro!: poly_mapping_eqI split: option.splits)
-qed
-
-lemma compute_monomial[code]:
+lemma compute_monomial [code]:
   "monomial c t = (if c = 0 then 0 else sparse\<^sub>0 [(t, c)])"
   by (auto intro!: poly_mapping_eqI simp: sparse\<^sub>0_def fmlookup_default_def lookup_single)
 
 lemma compute_one_poly_mapping [code]: "1 = sparse\<^sub>0 [(0, 1)]"
   by (metis compute_monomial single_one zero_neq_one)
 
-lemma compute_mult_poly_mapping[code]:
-  "Pm_fmap (fmap_of_list xs) * q = (case xs of ((t, c) # ys) \<Rightarrow>
-    (monom_mult c t q + except (Pm_fmap (fmap_of_list ys)) {t} * q) | _ \<Rightarrow>
-    Pm_fmap fmempty)"
-proof (split list.splits, simp, intro conjI impI allI, goal_cases)
-  case (1 t c ys)
-  have "Pm_fmap (fmupd t c (fmap_of_list ys)) = sparse\<^sub>0 [(t, c)] + except (sparse\<^sub>0 ys) {t}"
-    by (auto simp: sparse\<^sub>0_def fmlookup_default_def lookup_add lookup_except
-        split: option.splits intro!: poly_mapping_eqI)
-  also have "sparse\<^sub>0 [(t, c)] = monomial c t"
-    by (auto simp: sparse\<^sub>0_def lookup_single fmlookup_default_def intro!: poly_mapping_eqI)
-  finally show ?case
-    by (simp add: algebra_simps times_monomial_left sparse\<^sub>0_def)
-qed
-
-lemma compute_except_poly_mapping[code]:
+lemma compute_except_poly_mapping [code]:
   "except (Pm_fmap xs) S = Pm_fmap (fmfilter (\<lambda>k. k \<notin> S) xs)"
   by (auto simp: fmlookup_default_def lookup_except split: option.splits intro!: poly_mapping_eqI)
-
 
 lemma lookup0_fmap_of_list_simps:
   "lookup0 (fmap_of_list ((x, y)#xs)) i = (if x = i then y else lookup0 (fmap_of_list xs) i)"
@@ -240,49 +162,77 @@ lemma keys_add_eq: "keys (a + b) = keys a \<union> keys b - {x \<in> keys a \<in
   by (auto simp: in_keys_iff lookup_add add_eq_0_iff
       simp del: lookup_not_eq_zero_eq_in_keys)
 
-definition keys_list :: "('a \<times> 'b::zero) list \<Rightarrow> 'a list"
-  where "keys_list xs = map fst [x\<leftarrow>AList.clearjunk xs. snd x \<noteq> 0]"
+context term_powerprod
+begin
 
-lemma distinct_keys_list: "distinct (keys_list xs)"
-  unfolding keys_list_def using distinct_clearjunk by (rule distinct_map_filter)
+context includes fmap.lifting begin
 
-lemma compute_keys_alt [code]: "keys (Pm_fmap (fmap_of_list xs)) = set (keys_list xs)"
-proof (simp add: compute_keys_pp clearjunk0_def fmlookup_of_list fmdom'_alt_def fset_of_list.rep_eq
-      keys_list_def)
-  show "{x. map_of xs x \<noteq> Some 0} \<inter> fst ` set xs = fst ` {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}"
-      (is "?l = ?r")
-  proof
-    show "?l \<subseteq> ?r"
-    proof (rule, simp, elim conjE)
-      fix t
-      assume "map_of xs t \<noteq> Some 0" and "t \<in> fst ` set xs"
-      hence "map_of (AList.clearjunk xs) t \<noteq> Some 0" and "t \<in> fst ` set (AList.clearjunk xs)"
-        by (simp_all add: map_of_clearjunk dom_clearjunk)
-      then obtain c where "(t, c) \<in> set (AList.clearjunk xs)" and "c \<noteq> 0"
-        by (metis domD dom_map_of_conv_image_fst map_of_SomeD)
-      hence "(t, c) \<in> {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}" by simp
-      thus "t \<in> fst ` {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}" by force
-    qed
-  next
-    show "?r \<subseteq> ?l"
-    proof (rule, simp)
-      fix t
-      assume "t \<in> fst ` {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}"
-      then obtain c where "(t, c) \<in> {x \<in> set (AList.clearjunk xs). snd x \<noteq> 0}" by fastforce
-      hence 1: "(t, c) \<in> set (AList.clearjunk xs)" and "c \<noteq> 0" by simp_all
-      from 1 have "map_of (AList.clearjunk xs) t = Some c" by simp
-      hence "map_of xs t = Some c" by (simp only: map_of_clearjunk)
-      with \<open>c \<noteq> 0\<close> have "map_of xs t \<noteq> Some 0" by simp
-      moreover from 1 have "t \<in> fst ` set xs"
-      proof -
-        from 1 have "t \<in> fst ` set (AList.clearjunk xs)" by force
-        thus ?thesis by (simp only: dom_clearjunk)
-      qed
-      ultimately show "map_of xs t \<noteq> Some 0 \<and> t \<in> fst ` set xs" ..
-    qed
-  qed
+lift_definition shift_keys::"'a \<Rightarrow> ('t, 'b) fmap \<Rightarrow> ('t, 'b) fmap"
+  is "\<lambda>t m x. if t adds\<^sub>p x then m (x \<ominus> t) else None"
+proof -
+  fix t and f::"'t \<Rightarrow> 'b option"
+  assume "finite (dom f)"
+  have "dom (\<lambda>x. if t adds\<^sub>p x then f (x \<ominus> t) else None) \<subseteq> (\<oplus>) t ` dom f"
+    by (auto simp: adds_pp_alt domI term_simps split: if_splits)
+  also have "finite \<dots>"
+    using \<open>finite (dom f)\<close> by simp
+  finally (finite_subset) show "finite (dom (\<lambda>x. if t adds\<^sub>p x then f (x \<ominus> t) else None))" .
 qed
 
+definition "shift_map_keys t f m = fmmap f (shift_keys t m)"
+
+lemma compute_shift_map_keys[code]:
+  "shift_map_keys t f (fmap_of_list xs) = fmap_of_list (map (\<lambda>(k, v). (t \<oplus> k, f v)) xs)"
+  unfolding shift_map_keys_def
+  apply transfer
+  subgoal for f t xs
+  proof -
+    show ?thesis
+      apply (rule ext)
+      subgoal for x
+        apply (cases "t adds\<^sub>p x")
+        subgoal by (induction xs) (auto simp: adds_pp_alt term_simps)
+        subgoal by (induction xs) (auto simp: adds_pp_alt term_simps)
+        done
+      done
+  qed
+  done
+
+end
+
+lemmas [simp] = compute_zero_pp[symmetric]
+
+lemma compute_monom_mult_poly_mapping [code]:
+  "monom_mult c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys t (( * ) c) xs)"
+proof (cases "c = 0")
+  case True
+  hence "monom_mult c t (Pm_fmap xs) = 0" using monom_mult_zero_left by simp
+  thus ?thesis using True
+    by simp
+next
+  case False
+  thus ?thesis
+    by (auto simp: simp: fmlookup_default_def shift_map_keys_def lookup_monom_mult
+        adds_def group_eq_aux shift_keys.rep_eq
+        intro!: poly_mapping_eqI split: option.splits)
+qed
+
+lemma compute_mult_scalar_poly_mapping [code]:
+  "Pm_fmap (fmap_of_list xs) \<odot> q = (case xs of ((t, c) # ys) \<Rightarrow>
+    (monom_mult c t q + except (Pm_fmap (fmap_of_list ys)) {t} \<odot> q) | _ \<Rightarrow>
+    Pm_fmap fmempty)"
+proof (split list.splits, simp, intro conjI impI allI, goal_cases)
+  case (1 t c ys)
+  have "Pm_fmap (fmupd t c (fmap_of_list ys)) = sparse\<^sub>0 [(t, c)] + except (sparse\<^sub>0 ys) {t}"
+    by (auto simp: sparse\<^sub>0_def fmlookup_default_def lookup_add lookup_except
+        split: option.splits intro!: poly_mapping_eqI)
+  also have "sparse\<^sub>0 [(t, c)] = monomial c t"
+    by (auto simp: sparse\<^sub>0_def lookup_single fmlookup_default_def intro!: poly_mapping_eqI)
+  finally show ?case
+    by (simp add: algebra_simps mult_scalar_monomial sparse\<^sub>0_def)
+qed
+
+end (* term_powerprod *)
 
 subsubsection \<open>restore constructor view\<close>
 
@@ -374,92 +324,87 @@ next
     show "foldl f (f a b) (x # xs) = f a (foldl f b (x # xs))" unfolding foldl_Cons by simp
 qed
 
-context ordered_powerprod
+context ordered_term
 begin
 
-definition list_max::"'a list \<Rightarrow> 'a" where
-  "list_max xs \<equiv> foldl ordered_powerprod_lin.max 0 xs"
+definition list_max::"'t list \<Rightarrow> 't" where
+  "list_max xs \<equiv> foldl ord_term_lin.max min_term xs"
 
-lemma list_max_Cons:
-  shows "list_max (x # xs) = ordered_powerprod_lin.max x (list_max xs)"
-unfolding list_max_def foldl_Cons
+lemma list_max_Cons: "list_max (x # xs) = ord_term_lin.max x (list_max xs)"
+  unfolding list_max_def foldl_Cons
 proof -
-  have "foldl ordered_powerprod_lin.max (ordered_powerprod_lin.max x 0) xs =
-          ordered_powerprod_lin.max x (foldl ordered_powerprod_lin.max 0 xs)"
-    by (rule foldl_assoc, rule ordered_powerprod_lin.max.assoc)
-  from this ordered_powerprod_lin.max.commute[of 0 x]
-    show "foldl ordered_powerprod_lin.max (ordered_powerprod_lin.max 0 x) xs =
-            ordered_powerprod_lin.max x (foldl ordered_powerprod_lin.max 0 xs)" by simp
+  have "foldl ord_term_lin.max (ord_term_lin.max x min_term) xs =
+          ord_term_lin.max x (foldl ord_term_lin.max min_term xs)"
+    by (rule foldl_assoc, rule ord_term_lin.max.assoc)
+  from this ord_term_lin.max.commute[of min_term x]
+    show "foldl ord_term_lin.max (ord_term_lin.max min_term x) xs =
+            ord_term_lin.max x (foldl ord_term_lin.max min_term xs)" by simp
 qed
 
-lemma list_max_empty:
-  shows "list_max [] = 0"
-unfolding list_max_def by simp
+lemma list_max_empty: "list_max [] = min_term"
+  unfolding list_max_def by simp
 
 lemma list_max_in_list:
-  fixes xs::"'a list"
   assumes "xs \<noteq> []"
   shows "list_max xs \<in> set xs"
-using assms
+  using assms
 proof (induct xs, simp)
   fix x xs
   assume IH: "xs \<noteq> [] \<Longrightarrow> list_max xs \<in> set xs"
   show "list_max (x # xs) \<in> set (x # xs)"
   proof (cases "xs = []")
     case True
-    hence "list_max (x # xs) = ordered_powerprod_lin.max 0 x" unfolding list_max_def by simp
-    also have "\<dots> = x" unfolding ordered_powerprod_lin.max_def by (simp add: zero_min)
+    hence "list_max (x # xs) = ord_term_lin.max min_term x" unfolding list_max_def by simp
+    also have "\<dots> = x" unfolding ord_term_lin.max_def by (simp add: min_term_min)
     finally show ?thesis by simp
   next
     assume "xs \<noteq> []"
     show ?thesis
-    proof (cases "x \<preceq> list_max xs")
+    proof (cases "x \<preceq>\<^sub>t list_max xs")
       case True
       hence "list_max (x # xs) = list_max xs"
-        unfolding list_max_Cons ordered_powerprod_lin.max_def by simp
+        unfolding list_max_Cons ord_term_lin.max_def by simp
       thus ?thesis using IH[OF \<open>xs \<noteq> []\<close>] by simp
     next
       case False
-      hence "list_max (x # xs) = x" unfolding list_max_Cons ordered_powerprod_lin.max_def by simp
+      hence "list_max (x # xs) = x" unfolding list_max_Cons ord_term_lin.max_def by simp
       thus ?thesis by simp
     qed
   qed
 qed
 
 lemma list_max_maximum:
-  fixes xs::"'a list"
   assumes "a \<in> set xs"
-  shows "a \<preceq> (list_max xs)"
-using assms
+  shows "a \<preceq>\<^sub>t (list_max xs)"
+  using assms
 proof (induct xs)
   assume "a \<in> set []"
-  thus "a \<preceq> list_max []" by simp
+  thus "a \<preceq>\<^sub>t list_max []" by simp
 next
   fix x xs
-  assume IH: "a \<in> set xs \<Longrightarrow> a \<preceq> list_max xs" and a_in: "a \<in> set (x # xs)"
+  assume IH: "a \<in> set xs \<Longrightarrow> a \<preceq>\<^sub>t list_max xs" and a_in: "a \<in> set (x # xs)"
   from a_in have "a = x \<or> a \<in> set xs" by simp
-  thus "a \<preceq> list_max (x # xs)" unfolding list_max_Cons
+  thus "a \<preceq>\<^sub>t list_max (x # xs)" unfolding list_max_Cons
   proof
     assume "a = x"
-    thus "a \<preceq> ordered_powerprod_lin.max x (list_max xs)" by simp
+    thus "a \<preceq>\<^sub>t ord_term_lin.max x (list_max xs)" by simp
   next
     assume "a \<in> set xs"
-    from IH[OF this] show "a \<preceq> ordered_powerprod_lin.max x (list_max xs)"
-      by (simp add: ordered_powerprod_lin.le_max_iff_disj)
+    from IH[OF this] show "a \<preceq>\<^sub>t ord_term_lin.max x (list_max xs)"
+      by (simp add: ord_term_lin.le_max_iff_disj)
   qed
 qed
 
 lemma list_max_nonempty:
-  fixes xs::"'a list"
   assumes "xs \<noteq> []"
-  shows "list_max xs = ordered_powerprod_lin.Max (set xs)"
+  shows "list_max xs = ord_term_lin.Max (set xs)"
 proof -
   have fin: "finite (set xs)" by simp
-  have "ordered_powerprod_lin.Max (set xs) = list_max xs"
-  proof (rule ordered_powerprod_lin.Max_eqI[OF fin, of "list_max xs"])
+  have "ord_term_lin.Max (set xs) = list_max xs"
+  proof (rule ord_term_lin.Max_eqI[OF fin, of "list_max xs"])
     fix y
     assume "y \<in> set xs"
-    from list_max_maximum[OF this] show "y \<preceq> list_max xs" .
+    from list_max_maximum[OF this] show "y \<preceq>\<^sub>t list_max xs" .
   next
     from list_max_in_list[OF assms] show "list_max xs \<in> set xs" .
   qed
@@ -478,40 +423,65 @@ lemma Pm_fmap_of_list_eq_zero_iff:
 lemma fmdom'_clearjunk0: "fmdom' (clearjunk0 xs) = fmdom' xs - {x. fmlookup xs x = Some 0}"
   by (metis (no_types, lifting) clearjunk0_def fmdom'_drop_set fmfilter_alt_defs(2) fmfilter_cong' mem_Collect_eq)
 
-lemma compute_lp_poly_mapping[code]:
-  "lp (Pm_fmap (fmap_of_list xs)) = list_max (map fst [(k, v) \<leftarrow> AList.clearjunk xs. v \<noteq> 0])"
+lemma compute_lt_poly_mapping[code]:
+  "lt (Pm_fmap (fmap_of_list xs)) = list_max (map fst [(k, v) \<leftarrow> AList.clearjunk xs. v \<noteq> 0])"
 proof -
   have "keys (Pm_fmap (fmap_of_list xs)) = fst ` {x \<in> set (AList.clearjunk xs). case x of (k, v) \<Rightarrow> v \<noteq> 0}"
     by (auto simp: compute_keys_pp fmdom'_clearjunk0 fmap_of_list.rep_eq
         in_set_clearjunk_iff_map_of_eq_Some fmdom'I image_iff fmlookup_dom'_iff)
   then show ?thesis
-    unfolding lp_def
+    unfolding lt_def
     by (auto simp: Pm_fmap_of_list_eq_zero_iff list_max_empty list_max_nonempty)
 qed
 
-lemma compute_higher_poly_mapping[code]:
-  "higher (Pm_fmap xs) t = Pm_fmap (fmfilter (\<lambda>k. t \<prec> k) xs)"
+lemma compute_higher_poly_mapping [code]:
+  "higher (Pm_fmap xs) t = Pm_fmap (fmfilter (\<lambda>k. t \<prec>\<^sub>t k) xs)"
   unfolding higher_def compute_except_poly_mapping
-  by (metis mem_Collect_eq ordered_powerprod_lin.leD ordered_powerprod_lin.leI)
+  by (metis mem_Collect_eq ord_term_lin.leD ord_term_lin.leI)
 
-lemma compute_lower_poly_mapping[code]:
-  "lower (Pm_fmap xs) t = Pm_fmap (fmfilter (\<lambda>k. k \<prec> t) xs)"
+lemma compute_lower_poly_mapping [code]:
+  "lower (Pm_fmap xs) t = Pm_fmap (fmfilter (\<lambda>k. k \<prec>\<^sub>t t) xs)"
   unfolding lower_def compute_except_poly_mapping
-  by (metis mem_Collect_eq ordered_powerprod_lin.leD ordered_powerprod_lin.leI)
+  by (metis mem_Collect_eq ord_term_lin.leD ord_term_lin.leI)
 
-lemma compute_keys_to_list [code]:
-  "keys_to_list (Pm_fmap (fmap_of_list xs)) = rev (ordered_powerprod_lin.sort (keys_list xs))"
-  by (simp add: compute_keys_alt distinct_keys_list distinct_remdups_id keys_to_list_def
-      ordered_powerprod_lin.sorted_list_of_set_sort_remdups pps_to_list_def)
-
-end (* ordered_powerprod *)
+end (* ordered_term *)
 
 lifting_update poly_mapping.lifting
 lifting_forget poly_mapping.lifting
 
 subsection \<open>Computations\<close>
 
+subsubsection \<open>Scalar Polynomials\<close>
+
 type_synonym 'a mpoly_tc = "(nat \<Rightarrow>\<^sub>0 nat)\<Rightarrow>\<^sub>0'a"
+
+definition "shift_map_keys_punit = term_powerprod.shift_map_keys to_pair_unit fst"
+
+lemma compute_shift_map_keys_punit [code]:
+  "shift_map_keys_punit t f (fmap_of_list xs) = fmap_of_list (map (\<lambda>(k, v). (t + k, f v)) xs)"
+  by (simp add: punit.compute_shift_map_keys shift_map_keys_punit_def)
+
+global_interpretation punit: term_powerprod to_pair_unit fst
+  rewrites "punit.adds_term = (adds)"
+  and "punit.pp_of_term = (\<lambda>x. x)"
+  and "punit.component_of_term = (\<lambda>_. ())"
+  defines monom_mult_punit = punit.monom_mult
+  and mult_scalar_punit = punit.mult_scalar
+  apply (fact MPoly_Type_Class.punit.term_powerprod_axioms)
+  apply (fact MPoly_Type_Class.punit_adds_term)
+  apply (fact MPoly_Type_Class.punit_pp_of_term)
+  apply (fact MPoly_Type_Class.punit_component_of_term)
+  done
+
+lemma compute_monom_mult_punit [code]:
+  "monom_mult_punit c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys_punit t (( * ) c) xs)"
+  by (simp add: monom_mult_punit_def punit.compute_monom_mult_poly_mapping shift_map_keys_punit_def)
+
+lemma compute_mult_scalar_punit [code]:
+  "Pm_fmap (fmap_of_list xs) * q = (case xs of ((t, c) # ys) \<Rightarrow>
+    (monom_mult_punit c t q + except (Pm_fmap (fmap_of_list ys)) {t} * q) | _ \<Rightarrow>
+    Pm_fmap fmempty)"
+  by (simp only: punit_mult_scalar[symmetric] punit.compute_mult_scalar_poly_mapping monom_mult_punit_def)
 
 locale trivariate\<^sub>0_rat
 begin
@@ -549,44 +519,121 @@ lemma
 
 lemma
   "X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2 + X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2 = X\<^sup>2 * Z ^ 7 + X\<^sup>2 * Z ^ 4"
-by eval
+  by eval
 
 lemma
   "X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2 - X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2 =
     X\<^sup>2 * Z ^ 7 - X\<^sup>2 * Z ^ 4"
-by eval
+  by eval
 
 lemma
   "lookup (X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2 + 2) (sparse\<^sub>0 [(0, 2), (2, 7)]) = 1"
-by eval
+  by eval
 
 lemma
   "X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2 \<noteq>
    X\<^sup>2 * Z ^ 4 + - 2 * Y ^ 3 * Z\<^sup>2"
-by eval
+  by eval
 
 
 lemma
   "0 * X^2 * Z^7 + 0 * Y^3*Z\<^sup>2 = 0"
-by eval
+  by eval
 
 lemma
-  "monom_mult 3 (sparse\<^sub>0 [(1, 2::nat)]) (X\<^sup>2 * Z + 2 * Y ^ 3 * Z\<^sup>2) =
+  "monom_mult_punit 3 (sparse\<^sub>0 [(1, 2::nat)]) (X\<^sup>2 * Z + 2 * Y ^ 3 * Z\<^sup>2) =
     3 * Y\<^sup>2 * Z * X\<^sup>2 + 6 * Y ^ 5 * Z\<^sup>2"
-by eval
+  by eval
 
 lemma
   "monomial (-4) (sparse\<^sub>0 [(0, 2::nat)]) = - 4 * X\<^sup>2"
-by eval
+  by eval
 
-lemma
-  "monomial (0::rat) (sparse\<^sub>0 [(0::nat, 2::nat)]) = 0"
+lemma "monomial (0::rat) (sparse\<^sub>0 [(0::nat, 2::nat)]) = 0"
   by eval
 
 lemma
   "(X\<^sup>2 * Z + 2 * Y ^ 3 * Z\<^sup>2) * (X\<^sup>2 * Z ^ 3 + - 2 * Y ^ 3 * Z\<^sup>2) =
     X ^ 4 * Z ^ 4 + - 2 * X\<^sup>2 * Z ^ 3 * Y ^ 3 +
  - 4 * Y ^ 6 * Z ^ 4 + 2 * Y ^ 3 * Z ^ 5 * X\<^sup>2"
+  by eval
+
+end
+
+subsubsection \<open>Vector-Polynomials\<close>
+
+type_synonym 'a vmpoly_tc = "((nat \<Rightarrow>\<^sub>0 nat) \<times> nat) \<Rightarrow>\<^sub>0 'a"
+
+definition "shift_map_keys_pprod = pprod.shift_map_keys"
+
+global_interpretation pprod: term_powerprod "\<lambda>x. x" "\<lambda>x. x"
+  rewrites "pprod.pp_of_term = fst"
+  and "pprod.component_of_term = snd"
+  defines splus_pprod = pprod.splus
+  and monom_mult_pprod = pprod.monom_mult
+  and mult_scalar_pprod = pprod.mult_scalar
+  and adds_term_pprod = pprod.adds_term
+  apply (fact MPoly_Type_Class.pprod.term_powerprod_axioms)
+  apply (fact MPoly_Type_Class.pprod_pp_of_term)
+  apply (fact MPoly_Type_Class.pprod_component_of_term)
+  done
+
+lemma compute_adds_term_pprod [code_unfold]:
+  "adds_term_pprod u v = (snd u = snd v \<and> adds_pp_add_linorder (fst u) (fst v))"
+  by (simp add: adds_term_pprod_def pprod.adds_term_def adds_pp_add_linorder_def)
+
+lemma compute_splus_pprod [code]: "splus_pprod t (s, i) = (t + s, i)"
+  by (simp add: splus_pprod_def pprod.splus_def)
+
+lemma compute_shift_map_keys_pprod [code]:
+  "shift_map_keys_pprod t f (fmap_of_list xs) = fmap_of_list (map (\<lambda>(k, v). (splus_pprod t k, f v)) xs)"
+  by (simp add: pprod.compute_shift_map_keys shift_map_keys_pprod_def splus_pprod_def)
+
+lemma compute_monom_mult_pprod [code]:
+  "monom_mult_pprod c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys_pprod t (( * ) c) xs)"
+  by (simp add: monom_mult_pprod_def pprod.compute_monom_mult_poly_mapping shift_map_keys_pprod_def)
+
+lemma compute_mult_scalar_pprod [code]:
+  "mult_scalar_pprod (Pm_fmap (fmap_of_list xs)) q = (case xs of ((t, c) # ys) \<Rightarrow>
+    (monom_mult_pprod c t q + mult_scalar_pprod (except (Pm_fmap (fmap_of_list ys)) {t}) q) | _ \<Rightarrow>
+    Pm_fmap fmempty)"
+  by (simp only: mult_scalar_pprod_def pprod.compute_mult_scalar_poly_mapping monom_mult_pprod_def)
+
+definition Vec\<^sub>0 :: "nat \<Rightarrow> (('a \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'b) \<Rightarrow> (('a \<Rightarrow>\<^sub>0 nat) \<times> nat) \<Rightarrow>\<^sub>0 'b::semiring_1" where
+  "Vec\<^sub>0 i p = mult_scalar_pprod p (Poly_Mapping.single (0, i) 1)"
+
+experiment begin interpretation trivariate\<^sub>0_rat .
+
+lemma
+  "keys (Vec\<^sub>0 0 (X\<^sup>2 * Z ^ 3) + Vec\<^sub>0 1 (2 * Y ^ 3 * Z\<^sup>2)) =
+    {(sparse\<^sub>0 [(0, 2), (2, 3)], 0), (sparse\<^sub>0 [(1, 3), (2, 2)], 1)}"
+  by eval
+
+lemma
+  "keys (Vec\<^sub>0 0 (X\<^sup>2 * Z ^ 3) + Vec\<^sub>0 2 (2 * Y ^ 3 * Z\<^sup>2)) =
+    {(sparse\<^sub>0 [(0, 2), (2, 3)], 0), (sparse\<^sub>0 [(1, 3), (2, 2)], 2)}"
+  by eval
+
+lemma
+  "Vec\<^sub>0 1 (X\<^sup>2 * Z ^ 7 + 2 * Y ^ 3 * Z\<^sup>2) + Vec\<^sub>0 3 (X\<^sup>2 * Z ^ 4) + Vec\<^sub>0 1 (- 2 * Y ^ 3 * Z\<^sup>2) =
+    Vec\<^sub>0 1 (X\<^sup>2 * Z ^ 7) + Vec\<^sub>0 3 (X\<^sup>2 * Z ^ 4)"
+  by eval
+
+lemma
+  "lookup (Vec\<^sub>0 0 (X\<^sup>2 * Z ^ 7) + Vec\<^sub>0 1 (2 * Y ^ 3 * Z\<^sup>2 + 2)) (sparse\<^sub>0 [(0, 2), (2, 7)], 0) = 1"
+  by eval
+
+lemma
+  "lookup (Vec\<^sub>0 0 (X\<^sup>2 * Z ^ 7) + Vec\<^sub>0 1 (2 * Y ^ 3 * Z\<^sup>2 + 2)) (sparse\<^sub>0 [(0, 2), (2, 7)], 1) = 0"
+  by eval
+
+lemma
+  "Vec\<^sub>0 0 (0 * X^2 * Z^7) + Vec\<^sub>0 1 (0 * Y^3*Z\<^sup>2) = 0"
+  by eval
+
+lemma
+  "monom_mult_pprod 3 (sparse\<^sub>0 [(1, 2::nat)]) (Vec\<^sub>0 0 (X\<^sup>2 * Z) + Vec\<^sub>0 1 (2 * Y ^ 3 * Z\<^sup>2)) =
+    Vec\<^sub>0 0 (3 * Y\<^sup>2 * Z * X\<^sup>2) + Vec\<^sub>0 1 (6 * Y ^ 5 * Z\<^sup>2)"
   by eval
 
 end
@@ -616,7 +663,6 @@ experiment begin interpretation trivariate .
 
 lemmas [mpoly_simps] = plus_mpoly.abs_eq
 
-value [code] "content_primitive (4 * X * Y^2 * Z^3 + 6 * X\<^sup>2 * Y^4 + 8 * X\<^sup>2 * Y^5)::(int \<times> int mpoly)"
 lemma "content_primitive (4 * X * Y^2 * Z^3 + 6 * X\<^sup>2 * Y^4 + 8 * X\<^sup>2 * Y^5) =
     (2::int, 2 * X * Y\<^sup>2 * Z ^ 3 + 3 * X\<^sup>2 * Y ^ 4 + 4 * X\<^sup>2 * Y ^ 5)"
   by eval
