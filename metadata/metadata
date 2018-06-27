@@ -6594,7 +6594,7 @@ abstract =
   formally verified solver for homogeneous linear diophantine equations.
 
 [Winding_Number_Eval]
-title = Evaluate winding numbers through Cauchy indices
+title = Evaluate Winding Numbers through Cauchy Indices
 author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
 topic = Mathematics/Analysis
 date = 2017-10-17
