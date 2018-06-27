@@ -160,15 +160,13 @@ proof (auto del: equalityI simp: group_hom_def group_hom_axioms_def hom_def grou
   with gr show "group ((G\<lparr>carrier := H <#> S\<rparr>) Mod H)" by (metis normal.factorgroup_is_group)
 next
   fix g
-  assume g:"g \<in> S"
+  assume g: "g \<in> S"
   with subgrpS have "\<one> \<otimes> g \<in> H <#> S" unfolding set_mult_def by fastforce
   with g have "g \<in> H <#> S" by (metis l_one subgroup.mem_carrier subgrpS)
   thus "H #> g \<in> carrier ((G\<lparr>carrier := H <#> S\<rparr>) Mod H)" unfolding FactGroup_def RCOSETS_def r_coset_def by auto
 next
-  fix g g' xa
-  assume g:"g \<in> S" and g':"g' \<in> S"
-  hence "(H #> g) <#> (H #> g') = H #> (g \<otimes> g')" by (metis rcos_sum subgroup.mem_carrier subgrpS)
-  thus "H #> (g \<otimes> g') = (H #> g) <#>\<^bsub>G\<lparr>carrier := H <#> S\<rparr>\<^esub> (H #> g')" unfolding set_mult_def by auto
+  show "\<And>x y. \<lbrakk>x \<in> S; y \<in> S\<rbrakk> \<Longrightarrow> H #> x \<otimes> y = H #> x <#> (H #> y)"
+    using normal.rcos_sum normal_axioms subgroup.mem_carrier subgrpS by fastforce
 qed
 
 lemma normal_intersection_hom_kernel:
