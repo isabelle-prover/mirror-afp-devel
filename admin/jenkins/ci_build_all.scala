@@ -6,6 +6,7 @@ object profile extends isabelle.CI_Profile
   import org.apache.commons.configuration2._
 
   override def clean = false
+  override def numa = true
 
   val afp = Path.explode("$AFP_BASE")
   val afp_thys = afp + Path.explode("thys")
