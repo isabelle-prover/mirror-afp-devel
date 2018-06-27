@@ -48,7 +48,7 @@ fun basis_reduction_add_rows_loop where
   "basis_reduction_add_rows_loop state [] = state" 
 | "basis_reduction_add_rows_loop state ((fj,gj,ngj) # rest) = (
      let fi = fi_state state;
-         c = floor_ceil ((fi \<bullet>i gj) / ngj);
+         c = round ((fi \<bullet>i gj) / ngj);
          state' = (if c = 0 then state else upd_fi_state state (fi - c \<cdot>\<^sub>v fj))
       in basis_reduction_add_rows_loop state' rest)" 
 
@@ -188,7 +188,7 @@ next
     unfolding scalar_prod_int_rat_def gs1.\<mu>.simps id if_True
     by (subst comm_scalar_prod, insert j i inv, auto)
   note res = Suc(5)[unfolded map_rev_Suc basis_reduction_add_rows_loop.simps fi Let_def mu]
-  let ?c = "floor_ceil (\<mu> fs i j)" 
+  let ?c = "round (\<mu> fs i j)" 
   show ?case
   proof (cases "?c = 0")
     case True

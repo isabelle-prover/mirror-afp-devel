@@ -478,9 +478,10 @@ next
   from result_costD'[OF IH rec_c]
   have rec: "dmu_array fs m dmus' (Suc i) = res" 
     and c_rec: "c_rec \<le> (\<Sum>ii = Suc i..<m. ?c ii)" by auto
-  have "c_row + c_rec \<le> ?c i + (\<Sum>ii = Suc i..<m. ?c ii)" using c_rec c_row by auto
+  have "c_row + c_rec \<le> ?c i + (\<Sum>ii = Suc i..<m. ?c ii)" 
+    using c_rec c_row by auto
   also have "\<dots> = (\<Sum>ii = i..<m. ?c ii)" 
-    by (subst (2) sum.remove[of _ i], insert Suc(2-), auto intro: sum.cong)
+    by (subst sum_head_upt_Suc [of i]) (use Suc in auto)
   finally show ?case unfolding dmu_array_cost.simps[of _ i] 
     dmu_array.simps[of _ _ _ i] id if_False Let_def rec_c row_c row rec split cost_simps by auto
 qed  

@@ -32,7 +32,7 @@ fun basis_reduction_add_rows_loop_cost where
   "basis_reduction_add_rows_loop_cost state [] = (state, 0)" 
 | "basis_reduction_add_rows_loop_cost state ((fj,gj,ngj) # rest) = (
      let fi = fi_state state;
-         c = floor_ceil ((fi \<bullet>i gj) / ngj); \<comment> \<open>2n arithmetic operations in scalar product\<close>
+         c = round ((fi \<bullet>i gj) / ngj); \<comment> \<open>2n arithmetic operations in scalar product\<close>
          state' = (if c = 0 then state else upd_fi_state state (fi - c \<cdot>\<^sub>v fj)) 
             \<comment> \<open>2n arithmetic operations in subtraction and scalar multiplication\<close>
       in case basis_reduction_add_rows_loop_cost state' rest of (state'',c_rec) \<Rightarrow> (state'', c_rec + (2 + 2) * n * arith_cost))" 
@@ -44,7 +44,7 @@ proof (atomize(full), induct xs arbitrary: state)
   case (Cons fgn xs state)
   obtain f g n where fgn: "fgn = (f,g,n)" by (cases fgn, auto)
   let ?fi = "fi_state state"
-  let ?c = "floor_ceil ((?fi \<bullet>i g) / n)" 
+  let ?c = "round ((?fi \<bullet>i g) / n)" 
   let ?state' = "if ?c = 0 then state else upd_fi_state state (?fi - ?c \<cdot>\<^sub>v f)" 
   obtain state'' c_rec where rec: "basis_reduction_add_rows_loop_cost ?state' xs = (state'', c_rec)" (is "?rec = _")
     by (cases ?rec, auto)

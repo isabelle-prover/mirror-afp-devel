@@ -25,7 +25,7 @@ begin
 
 lemma d_d\<mu>_add_row: assumes Linv: "LLL_invariant True i fs"
   and i: "i < m"  and j: "j < i" 
-  and c: "c = floor_ceil (\<mu> fs i j)" 
+  and c: "c = round (\<mu> fs i j)" 
   and fs': "fs' = fs[ i := fs ! i - c \<cdot>\<^sub>v fs ! j]" 
   and mu_small: "\<mu>_small_row i fs (Suc j)" 
 shows  

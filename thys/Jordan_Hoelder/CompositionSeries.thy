@@ -760,7 +760,7 @@ next
   hence Gimax:"max_normal_subgroup (\<GG> ! i) (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)"
     using normal.max_normal_simple_quotient GiSi finGSi by force
   from GSiKnormGSi GiSi have "\<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> \<GG> ! (i + 1) \<inter> K \<lhd> (G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>)"
-    using groupGSi group.normal_subgroup_set_mult_closed by simp
+    using groupGSi group.normal_subgroup_set_mult_closed set_mult_consistent by fastforce
   hence "\<GG> ! i <#> \<GG> ! (i + 1) \<inter> K \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" unfolding set_mult_def by auto
   hence "\<GG> ! i <#> K \<inter> \<GG> ! (i + 1) \<lhd> G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>" using inf_commute by metis
   moreover have "\<GG> ! i \<subseteq> \<GG> ! i <#>\<^bsub>G\<lparr>carrier := \<GG> ! (i + 1)\<rparr>\<^esub> K \<inter> \<GG> ! (i + 1)"
