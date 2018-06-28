@@ -7,38 +7,8 @@ section \<open>Some useful lemmas in topology\<close>
 theory Missing_Topology imports "HOL-Analysis.Analysis"
 begin
 
-subsection \<open>Misc\<close>
-
-(*refined version of the library one with the same name by relaxing type restrictions*)    
-lemma at_bot_mirror : 
-  shows "(at_bot::('a::{ordered_ab_group_add,linorder} filter)) = filtermap uminus at_top" 
-  apply (rule filtermap_fun_inverse[of uminus, symmetric])
-  subgoal unfolding filterlim_at_top eventually_at_bot_linorder using le_minus_iff by auto
-  subgoal unfolding filterlim_at_bot eventually_at_top_linorder using minus_le_iff by auto
-  by auto
-   
-(*refined version of the library one with the same name by relaxing type restrictions*)    
-lemma at_top_mirror : 
-  shows "(at_top::('a::{ordered_ab_group_add,linorder} filter)) = filtermap uminus at_bot"  
-  apply (subst at_bot_mirror)
-  by (auto simp add:filtermap_filtermap)
+subsection \<open>Misc\<close>    
  
-lemma finite_ball_include:
-  fixes a :: "'a::metric_space"
-  assumes "finite S" 
-  shows "\<exists>e>0. S \<subseteq> ball a e"
-proof (induct rule:finite_induct[OF \<open>finite S\<close>])
-  case 1
-  then show ?case using zero_less_one by blast
-next
-  case (2 x F)
-  then obtain e0 where "e0>0" and e0:"F \<subseteq> ball a e0" by auto
-  define e where "e = max e0 (2 * dist a x)"
-  have "e>0" unfolding e_def using \<open>e0>0\<close> by auto
-  moreover have "insert x F \<subseteq> ball a e" using e0 \<open>e>0\<close>unfolding e_def by auto
-  ultimately show ?case by auto
-qed  
-  
 lemma open_times_image:
   fixes S::"'a::real_normed_field set"
   assumes "open S" "c\<noteq>0"

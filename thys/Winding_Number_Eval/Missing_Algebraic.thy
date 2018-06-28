@@ -37,37 +37,12 @@ proof (induction "degree p" arbitrary: p rule: less_induct)
   ultimately show ?case by auto
 qed
 
-(*refined version of the library one with the same name, by relaxing type restrictions.*)  
-lemma poly_isCont[simp]: 
-  fixes x::"'a::real_normed_field"
-  shows "isCont (\<lambda>x. poly p x) x"
-by (rule poly_DERIV [THEN DERIV_isCont])
-
-lemma order_uminus[simp]: "order x (-p) = order x p"
-  by (metis neg_equal_0_iff_equal order_smult smult_1_left smult_minus_left) 
-
-lemma tendsto_poly [tendsto_intros]: "(f \<longlongrightarrow> a) F \<Longrightarrow> ((\<lambda>x. poly p (f x)) \<longlongrightarrow> poly p a) F"
-  for f :: "_ \<Rightarrow> 'a::real_normed_field"  
-  by (rule isCont_tendsto_compose [OF poly_isCont])
-
-lemma continuous_within_poly: "continuous (at z within s) (poly p)"
-  for z :: "'a::{real_normed_field}"
-  by (simp add: continuous_within tendsto_poly)  
-    
-lemma continuous_poly [continuous_intros]: "continuous F f \<Longrightarrow> continuous F (\<lambda>x. poly p (f x))"
-  for f :: "_ \<Rightarrow> 'a::real_normed_field"
-  unfolding continuous_def by (rule tendsto_poly)
-    
-lemma continuous_on_poly [continuous_intros]: "continuous_on s f \<Longrightarrow> continuous_on s (\<lambda>x. poly p (f x))"
-  for f :: "_ \<Rightarrow> 'a::real_normed_field"
-  unfolding continuous_on_def by (auto intro: tendsto_poly)
-      
 lemma poly_holomorphic_on[simp]:
   "(poly p) holomorphic_on s"
-apply (rule holomorphic_onI)
-apply (unfold field_differentiable_def)
-apply (rule_tac x="poly (pderiv p) x" in exI)
-by (simp add:has_field_derivative_at_within)
+  apply (rule holomorphic_onI)
+  apply (unfold field_differentiable_def)
+  apply (rule_tac x="poly (pderiv p) x" in exI)
+  by (simp add:has_field_derivative_at_within)
     
 lemma order_zorder:
   fixes p::"complex poly" and z::complex

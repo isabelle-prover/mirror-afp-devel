@@ -78,7 +78,7 @@ proof-
        using r_def tendsto_explicit[of "f \<circ> x \<circ> r" l] S_def by auto
     hence False using x_def X_def by auto
   } hence l_prop: "l \<notin> S \<and> l\<le>f x0"
-    using r_def x_def X_def Lim_bounded_ereal[of "f \<circ> x \<circ> r"]
+    using r_def x_def X_def Lim_bounded[of "f \<circ> x \<circ> r"]
     by auto
   { assume "f x0 \<le> l" hence "f x0 = l" using l_prop by auto
     hence False using l_prop S_def by auto
@@ -102,7 +102,7 @@ moreover
         using tendsto_explicit[of "f \<circ> x" A] x_def by auto
      hence "\<forall>n\<ge>(max N1 N2). \<not>(f(x n) \<le> f x0)" using SV_def * by auto
      hence "\<forall>n\<ge>(max N1 N2). f(x n) \<ge> f x0" by auto
-     hence "f x0 \<le> A" using Lim_bounded2_ereal[of "f \<circ> x" A "max N1 N2" "f x0"] x_def by auto
+     hence "f x0 \<le> A" using Lim_bounded2[of "f \<circ> x" A "max N1 N2" "f x0"] x_def by auto
    } hence "f x0 \<le> A" by auto
  } hence "?lhs" unfolding lsc_at_def by blast
 } ultimately show ?thesis by blast
