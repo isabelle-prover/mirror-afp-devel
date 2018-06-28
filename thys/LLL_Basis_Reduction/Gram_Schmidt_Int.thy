@@ -295,7 +295,6 @@ context gram_schmidt_fs_int
 begin
 
 
-
 lemma \<beta>_pos : "i < m \<Longrightarrow> \<beta> fs i > 0" 
   using Gramian_determinant(2) unfolding lin_indpt_list_def \<beta>_def by auto
 
@@ -319,19 +318,14 @@ proof -
   also have " ... = d l * (\<Sum>k < l. \<mu> i k * ((fs ! j) \<bullet> (gso k) /  sq_norm (gso k)) * \<beta> fs k)" (is "_ = _ * ?sum")
     unfolding \<mu>.simps using assms by auto
   also have "?sum =  (\<Sum>k < l. \<mu> i k * ((fs ! j) \<bullet> (gso k) /  \<beta> fs k) * \<beta> fs k)"
-    apply (rule sum.cong [OF refl])
-    apply (subst gso_norm_beta[symmetric])
-    using assms
-    by auto
+    using assms by (auto simp add: gso_norm_beta[symmetric] intro!: sum.cong)
 
   also have "... = (\<Sum>k < l. \<mu> i k * ((fs ! j) \<bullet> (gso k) ))"
-    apply (rule sum.cong[OF refl])
-    using \<beta>_zero assms by auto
+    using \<beta>_zero assms by (auto intro!: sum.cong)
 
   also have " ... = (fs ! j) \<bullet> M.sumlist (map (\<lambda>k. (\<mu> i k) \<cdot>\<^sub>v (gso k)) [0..<l] )"
-    apply (subst scalar_prod_right_sum_distrib, unfold map_map o_def)
     using assms fs_carr[of j] gso_carrier
-    by (auto intro!: gso_carrier fs_carr sum.cong simp: sum_list_sum_nth)
+    by (subst scalar_prod_right_sum_distrib) (auto intro!: gso_carrier fs_carr sum.cong simp: sum_list_sum_nth)
 
   also have "d l * \<dots> = (fs ! j) \<bullet> (d l \<cdot>\<^sub>v M.sumlist (map (\<lambda>k. (\<mu> i k) \<cdot>\<^sub>v (gso k)) [0..<l]))" (is "_ = _ \<bullet> (_ \<cdot>\<^sub>v ?sum2)")
     apply (rule scalar_prod_smult_distrib[symmetric])
@@ -545,11 +539,10 @@ lemma d\<mu>_impl: "d\<mu>_impl fs = IArray.of_fun (\<lambda> i. IArray.of_fun (
 
 end (* fs_int_indpt *)
 
-
+section \<open>Bounds on $\sigma$ and $\mu'$\<close>
 
 context gram_schmidt_fs_int
 begin
-
 
 lemma A_mu':
   assumes "i < m" "j \<le> i"
@@ -584,6 +577,416 @@ proof -
     by simp
 qed
 
+lemma A_\<sigma>:
+  assumes "i < m" "j \<le> i" "l \<le> j"
+  shows "\<bar>\<sigma> l i j\<bar>  \<le>  of_nat l * A ^ (2 * l + 2)"
+proof -
+  have 1: "\<bar>d l\<bar> = d l"
+    using Gramian_determinant(2) assms by (intro abs_of_pos) auto
+  then have "\<bar>\<sigma> l i j\<bar> = d l * \<bar>\<Sum>k<l. \<mu> i k * \<mu> j k * \<beta> fs k\<bar>"
+    using assms by (subst \<sigma>, fastforce, subst abs_mult) auto
+  also have "\<dots> \<le> A ^ l * (of_nat l * A ^ (l + 2))"
+  proof -
+    have "\<bar>\<Sum>k<l. \<mu> i k * \<mu> j k * \<beta> fs k\<bar> \<le> of_nat l * A ^ (l + 2)"
+    proof -
+      have [simp]: "0 \<le> \<beta> fs k" "\<parallel>gso k\<parallel>\<^sup>2 \<le> A" if "k < l" for k
+        using that assms A_gso \<beta>_pos[of k] by auto
+      have [simp]: "0 \<le> A * A ^ k" for k
+        using A_ge_0 assms by fastforce
+      have "\<bar>(\<Sum>k < l. \<mu> i k * \<mu> j k * \<beta> fs k)\<bar> \<le> (\<Sum>k < l. \<bar>\<mu> i k * \<mu> j k * \<beta> fs k\<bar>)"
+        using sum_abs by blast
+      also have "\<dots> = (\<Sum>k < l. \<bar>\<mu> i k * \<mu> j k\<bar> * \<beta> fs k)"
+        using assms by (auto intro!: sum.cong simp add: gso_norm_beta abs_mult_pos sq_norm_vec_ge_0)
+      also have "\<dots> = (\<Sum>k < l. \<bar>\<mu> i k\<bar> * \<bar>\<mu> j k\<bar> * \<beta> fs k)"
+        using abs_mult by (fastforce intro!: sum.cong)
+      also have "\<dots> \<le> (\<Sum>k < l. (max \<bar>\<mu> i k\<bar> \<bar>\<mu> j k\<bar>) * (max \<bar>\<mu> i k\<bar> \<bar>\<mu> j k\<bar>) * \<beta> fs k)"
+        by (auto intro!: sum_mono mult_mono)
+      also have "\<dots> = (\<Sum>k < l. (max \<bar>\<mu> i k\<bar> \<bar>\<mu> j k\<bar>)\<^sup>2 * \<beta> fs k)"
+        by (auto simp add: power2_eq_square)
+      also have "\<dots> \<le> (\<Sum>k < l. A ^ (Suc k) * \<beta> fs k)"
+        using assms A_mu[of i] A_mu[of j] assms
+        by (auto intro!: sum_mono mult_right_mono simp add: max_def)
+      also have "\<dots> \<le> (\<Sum>k < l. A ^ (Suc k) * A)"
+        using assms by (auto simp add: gso_norm_beta intro!: sum_mono mult_left_mono)
+      also have "\<dots> \<le> (\<Sum>k < l. A ^ (Suc l) * A)"
+        using assms A_1 A_ge_0 assms by (fastforce intro!: sum_mono mult_right_mono power_increasing)
+      also have "\<dots> = of_nat l * A ^ (l + 2)"
+        by (auto)
+      finally show ?thesis
+        by auto
+    qed
+    then show ?thesis
+      using assms A_d A_ge_0 by (fastforce intro!: mult_mono zero_le_power)
+  qed
+  also have "\<dots> = of_nat l * A ^ (2 * l + 2)"
+    by (auto simp add: field_simps mult_2_right simp flip: power_add)
+  finally show ?thesis
+    by simp
+qed
+
+end (* gram_schmidt_fs_int *)
+
+section \<open>Calculate $g_i' = d_i \g_i$\<close>
+
+fun vec_div :: "int list \<Rightarrow> int \<Rightarrow> int list" where
+  "vec_div v n = (map (\<lambda>x. x div n) v)"
+
+context gram_schmidt_fs_int
+begin
+
+definition gso' where "gso' i = d i \<cdot>\<^sub>v (gso i)"
+
+fun a where
+  "a i 0 = fs ! i" |
+  "a i (Suc l) = (1 / d l) \<cdot>\<^sub>v ((d (Suc l) \<cdot>\<^sub>v (a i l)) - ( \<mu>' i l) \<cdot>\<^sub>v gso' l)"
+
+lemma gso'_carrier_vec: 
+  assumes "i < m"
+  shows "gso' i \<in> carrier_vec n"
+  using assms by (auto simp add: gso'_def)
+
+lemma a_carrier_vec: 
+  assumes "l \<le> i" "i < m"
+  shows "a i l \<in> carrier_vec n"
+  using assms by (induction l arbitrary: i) (auto simp add: gso'_def)
+
+lemma a_l: 
+  assumes "l \<le> i" "i < m"
+  shows "a i l = d l \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<l]))"
+using assms proof (induction l)
+  case 0
+  then show ?case by auto
+next
+  case (Suc l)
+  have fsi: "fs ! i \<in> carrier_vec n" using f_carrier[of i] assms by auto
+  have l_i_m: "l \<le> i \<Longrightarrow> l < m" using assms by auto
+  let ?a = "fs ! i"
+  let ?sum = "M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<l])" 
+  let ?term = "(- \<mu> i l \<cdot>\<^sub>v gso l)" 
+  have carr: "{?a,?sum,?term} \<subseteq> carrier_vec n" 
+    using gso_dim l_i_m Suc(2) sumlist_dim assms
+    by (auto intro!: sumlist_carrier)
+  have "a i (Suc l) = 
+        (1 / d l) \<cdot>\<^sub>v ((d (Suc l) \<cdot>\<^sub>v (d l \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<l]))))
+        - ( \<mu>' i l) \<cdot>\<^sub>v gso' l)" using a.simps Suc by auto
+  also have "\<dots> = (1 / d l) \<cdot>\<^sub>v ((d (Suc l) \<cdot>\<^sub>v (d l \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<l]))))
+        + -d (Suc l) * \<mu> i l * d l \<cdot>\<^sub>v gso l )"  (is "_ = _ \<cdot>\<^sub>v (?t1 + ?t2)")
+    unfolding \<mu>'_def gso'_def by auto
+  also have "?t2 = d l \<cdot>\<^sub>v (-d (Suc l) * \<mu> i l \<cdot>\<^sub>v gso l )" (is "_ = d l \<cdot>\<^sub>v ?tt2")
+    using smult_smult_assoc by (auto)
+  also have "?t1 = d l \<cdot>\<^sub>v ((d (Suc l) \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<l]))))" (is "_ = d l \<cdot>\<^sub>v ?tt1")
+    using smult_smult_assoc smult_smult_assoc[symmetric] by (auto)
+  also have "d l \<cdot>\<^sub>v ?tt1 + d l \<cdot>\<^sub>v ?tt2 = d l \<cdot>\<^sub>v (?tt1 + ?tt2)"
+    using gso_carrier l_i_m Suc fsi 
+    by (auto intro!: smult_add_distrib_vec[symmetric, of _ n] add_carrier_vec sumlist_carrier)
+  also have "(1 / d l) \<cdot>\<^sub>v \<dots> = (d l / d l) \<cdot>\<^sub>v (?tt1 + ?tt2)"
+    by (intro eq_vecI, auto)
+  also have "d l / d l = 1" 
+     using Gramian_determinant(2)[of l] l_i_m Suc by(auto simp: field_simps)
+  also have  "1 \<cdot>\<^sub>v (?tt1 + ?tt2) = ?tt1 + ?tt2"  by simp
+  also have "?tt2 = d (Suc l) \<cdot>\<^sub>v (- \<mu> i l \<cdot>\<^sub>v gso l)" by auto
+  also have "d (Suc l) \<cdot>\<^sub>v (fs ! i + ?sum) + \<dots> =
+             d (Suc l) \<cdot>\<^sub>v (fs ! i + ?sum + ?term)"
+    using carr by (subst smult_add_distrib_vec) (auto)
+  also have "(?a + ?sum) + ?term = ?a + (?sum + ?term)"
+    using carr by auto
+  also have "?term = M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [l..<Suc l])"
+    using gso_carrier Suc l_i_m by auto
+  also have "?sum + ... = M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<Suc l])"
+    apply(subst sumlist_append[symmetric])
+    using fsi l_i_m Suc sumlist_carrier gso_carrier by (auto intro!: sumlist_carrier)
+  finally show ?case by auto
+qed
+
+lemma a_l': 
+  assumes "i < m"
+  shows "a i i = gso' i"
+proof -
+  have "a i i = d i \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<i]))"
+    using a_l assms by auto
+  also have "\<dots> = d i \<cdot>\<^sub>v gso i"
+    by (subst gso.simps, auto)
+  finally have "a i i = gso' i" using gso'_def by auto
+  from this show ?thesis by auto
+qed
+
+lemma 
+  assumes "i < m" "l' \<le> i"
+  shows "a i l' = (case l' of
+         0 \<Rightarrow> fs ! i |
+         Suc l \<Rightarrow> (1 / d l) \<cdot>\<^sub>v (d (Suc l) \<cdot>\<^sub>v (a i l) - (\<mu>' i l) \<cdot>\<^sub>v a l l))"
+proof (cases l')
+  case (Suc l)
+  have "a i (Suc l) = (1 / d l) \<cdot>\<^sub>v ((d (Suc l) \<cdot>\<^sub>v (a i l)) - ( \<mu>' i l) \<cdot>\<^sub>v a l l)" 
+    using assms a_l Suc by(subst a_l', auto)
+  from this Suc show ?thesis by auto
+qed auto
+
+lemma a_Ints:
+  assumes "i < m" "l \<le> i" "k < n"
+  shows "a i l $ k \<in> \<int>"
+proof -
+  have fsi: "fs ! i \<in> carrier_vec n" using f_carrier[of i] assms by auto
+  have "a i l = d l \<cdot>\<^sub>v (fs ! i + M.sumlist (map (\<lambda>j. - \<mu> i j \<cdot>\<^sub>v gso j) [0..<l]))" 
+    (is "_ = _ \<cdot>\<^sub>v (_ + ?sum)")
+    using assms by (subst a_l, auto)
+  also have "?sum = sumlist (map (\<lambda>k. \<kappa> i l k \<cdot>\<^sub>v fs ! k) [0..<l])"
+    using assms gso_carrier
+    by (subst \<kappa>_def, auto)
+  also have "d l \<cdot>\<^sub>v (fs ! i + sumlist (map (\<lambda>k. \<kappa> i l k \<cdot>\<^sub>v fs ! k) [0..<l])) 
+           = d l \<cdot>\<^sub>v fs ! i + d l \<cdot>\<^sub>v sumlist (map (\<lambda>k. \<kappa> i l k \<cdot>\<^sub>v fs ! k) [0..<l])"
+    (is "_ = _ + ?sum")
+    using sumlist_carrier fsi apply
+      (subst smult_add_distrib_vec[symmetric])
+      apply force
+    using assms fsi by (subst sumlist_carrier, auto) 
+  also have "?sum = sumlist  (map (\<lambda>k. (d l * \<kappa> i l k) \<cdot>\<^sub>v fs ! k) [0..<l])"
+    apply(subst eq_vecI sumlist_nth)
+    using fsi assms
+    by (auto simp: dim_sumlist sum_distrib_left sumlist_nth smult_smult_assoc algebra_simps)
+  finally have "a i l = d l \<cdot>\<^sub>v fs ! i + sumlist  (map (\<lambda>k. (d l * \<kappa> i l k) \<cdot>\<^sub>v fs ! k) [0..<l])"
+    by auto
+  
+  hence "a i l $ k = (d l \<cdot>\<^sub>v fs ! i + sumlist (map (\<lambda>k. (d l * \<kappa> i l k) \<cdot>\<^sub>v fs ! k) [0..<l])) $ k" by simp
+  also have "\<dots> = (d l \<cdot>\<^sub>v fs ! i) $ k + (sumlist (map (\<lambda>k. (d l * \<kappa> i l k) \<cdot>\<^sub>v fs ! k) [0..<l])) $ k" 
+    apply (subst index_add_vec)
+    using assms fsi by (subst sumlist_dim, auto)
+  finally have id: "a i l $ k = (d l \<cdot>\<^sub>v fs ! i) $ k + (sumlist (map (\<lambda>k. (d l * \<kappa> i l k) \<cdot>\<^sub>v fs ! k) [0..<l])) $ k".
+  
+  show ?thesis unfolding id
+    using fsi assms d_\<kappa>_Ints fs_int
+    by (auto simp: dim_sumlist sumlist_nth
+      intro!: Gramian_determinant_Ints sumlist_carrier Ints_minus Ints_add Ints_sum Ints_mult[of _ "fs ! _ $ _"]  Ints_scalar_prod[OF fsi])
+qed
+
+lemma a_alt_def:
+  assumes "l < length fs"
+  shows "a i (Suc l) = (let v = \<mu>' l l \<cdot>\<^sub>v (a i l) - ( \<mu>' i l) \<cdot>\<^sub>v a l l in
+                       (if l = 0 then v else (1 / \<mu>' (l - 1) (l - 1)) \<cdot>\<^sub>v v))"
+proof -
+  have [simp]: "\<mu>' (l - Suc 0) (l - Suc 0) = d l" if "0 < l"
+    using that unfolding \<mu>'_def by (auto simp add: \<mu>.simps)
+  have [simp]: "\<mu>' l l = d (Suc l)"
+    unfolding \<mu>'_def by (auto simp add: \<mu>.simps)
+  show ?thesis
+    using assms by (auto simp add: Let_def a_l')
+qed
+
+end (* gram_schmidt_fs_int *)
+
+
+context fs_int_indpt
+begin
+
+
+fun gso_int :: "nat \<Rightarrow> nat \<Rightarrow> int vec" where
+  "gso_int i 0 = fs ! i" |
+  "gso_int i (Suc l) = (let v = \<mu>' l l \<cdot>\<^sub>v (gso_int i l) - \<mu>' i l \<cdot>\<^sub>v gso_int l l in
+                         (if l = 0 then v else map_vec (\<lambda>k. k div \<mu>' (l - 1) (l - 1)) v))"
+
+lemma gso_int_carrier_vec:
+  assumes "i < length fs" "l \<le> i"
+  shows "gso_int i l \<in> carrier_vec n"
+  using assms by (induction l arbitrary: i) (fastforce simp add: Let_def)+
+
+lemma gso_int:
+  assumes "i < length fs" "l \<le> i"
+  shows "of_int_hom.vec_hom (gso_int i l) = gs.a i l"
+proof -
+  have "dim_vec (gso_int i l) = n" "dim_vec (gs.a i l) = n"
+    using gs.a_carrier_vec assms gso_int_carrier_vec carrier_dim_vec by auto
+  moreover have "of_int_hom.vec_hom (gso_int i l) $ k = gs.a i l $ k" if k: "k < n" for k
+    using assms proof (induction l arbitrary: i)
+    case (Suc l)
+    note IH = Suc(1)
+    have [simp]: "dim_vec (gso_int i l) = n" "dim_vec (gs.a i l) = n" "dim_vec (gso_int l l) = n"
+      "dim_vec (gs.a l l) = n"
+      using Suc gs.a_carrier_vec gso_int_carrier_vec carrier_dim_vec gs.gso'_carrier_vec by auto
+    have "rat_of_int (gso_int i l $v k) = gs.a i l $ k" "rat_of_int (gso_int l l $v k) = gs.a l l $ k"
+      using that Suc(1)[of l] Suc(1)[of i] Suc by auto
+    then have ?case if "l = 0"
+    proof -
+      have [simp]: "fs \<noteq> []"
+        using Suc by auto
+      have [simp]: "dim_vec (gso_int i 0) = n" "dim_vec (gso_int 0 0) = n" "dim_vec (gs.a i 0) = n"
+        "dim_vec (gs.a 0 0) = n"
+        using Suc fs_carrier carrier_dim_vec gs.a_carrier_vec f_carrier by auto
+      have [simp]: "rat_of_int (\<mu>' i 0) = gs.\<mu>' i 0" "rat_of_int (\<mu>' 0 0) = gs.\<mu>' 0 0"
+        using Suc \<sigma>s_\<mu>' by (auto intro!: \<sigma>s_\<mu>')
+      then show ?thesis
+        using that k Suc IH[of i ] Suc(1)[of 0]
+        by (subst gso_int.simps, subst gs.a_alt_def) (auto simp del: gso_int.simps gs.a.simps)
+    qed
+    moreover have ?case if "0 < l"
+    proof -
+      have *: "rat_of_int (\<mu>' l l * gso_int i l $v k - \<mu>' i l * gso_int l l $v k) / rat_of_int (\<mu>' (l - Suc 0) (l - Suc 0))
+     = gs.a i (Suc l) $v k"
+        using Suc IH[of l] IH[of i] \<sigma>s_\<mu>' k that by (subst gs.a_alt_def) (auto simp add: Let_def )
+      have "of_int_hom.vec_hom (gso_int i (Suc l)) $v k =
+            rat_of_int ((\<mu>' l l * gso_int i l $v k - \<mu>' i l * gso_int l l $v k) 
+                        div \<mu>' (l - Suc 0) (l - Suc 0))"
+        using that gso_int_carrier_vec k by (auto)
+      also have "\<dots> = rat_of_int (\<mu>' l l * gso_int i l $v k - \<mu>' i l * gso_int l l $v k) / rat_of_int (\<mu>' (l - Suc 0) (l - Suc 0))"
+        using gs.a_Ints k Suc by (intro exact_division, subst *, force)
+      also note *
+      finally show ?thesis
+        by (auto)
+    qed
+    ultimately show ?case
+      by blast
+  qed (auto)
+  ultimately show ?thesis
+    by auto
+qed
+
+function gso_int_tail' :: "nat \<Rightarrow> nat \<Rightarrow> int vec \<Rightarrow> int vec" where
+  "gso_int_tail' i l acc = (if l \<ge> i then acc
+    else (let v = \<mu>' l l \<cdot>\<^sub>v acc - \<mu>' i l \<cdot>\<^sub>v gso_int l l;
+              acc' = (map_vec (\<lambda>k. k div \<mu>' (l - 1) (l - 1)) v)
+        in gso_int_tail' i (l + 1) acc'))"
+  by pat_completeness auto
+termination
+  by  (relation "(\<lambda>(i,l,acc). i - l)  <*mlex*> {}",  goal_cases) (auto intro!: mlex_less wf_mlex)
+
+fun gso_int_tail :: "nat \<Rightarrow> int vec" where
+  "gso_int_tail i = (if i = 0 then fs ! 0 else
+     let acc = \<mu>' 0 0 \<cdot>\<^sub>v fs ! i - \<mu>' i 0 \<cdot>\<^sub>v fs ! 0 in
+     gso_int_tail' i 1 acc)"
+
+lemma gso_int_tail':
+  assumes "acc = gso_int i l" "0 < i" "0 < l" "l \<le> i"
+  shows "gso_int_tail' i l acc = gso_int i i"
+  using assms proof (induction i l acc rule: gso_int_tail'.induct)
+  case (1 i l acc)
+  { assume li: "l < i"
+    then have "gso_int_tail' i l acc =
+        gso_int_tail' i (l + 1) (map_vec (\<lambda>k. k div \<mu>' (l - 1) (l - 1)) (\<mu>' l l \<cdot>\<^sub>v acc - \<mu>' i l \<cdot>\<^sub>v gso_int l l))"  
+      using 1 by (auto simp add: Let_def)
+    also have "\<dots> = gso_int i i"
+      using 1 li by (intro 1) (auto)
+  }
+  then show ?case
+    using 1 by fastforce
+qed
+
+lemma gso_int_tail: "gso_int_tail i = gso_int i i"
+proof (cases "0 < i")
+  assume i: "0 < i"
+  then have "gso_int_tail i = gso_int_tail' i (Suc 0) (gso_int i 1)"
+    by (subst gso_int_tail.simps) (auto)
+  also have "\<dots> = gso_int i i"
+    using i by (intro gso_int_tail') (auto intro!: gso_int_tail')
+  finally show "gso_int_tail i = gso_int i i"
+    by simp
+qed (auto)
+
 end
+
+locale gso_array
+begin
+
+function while :: "nat \<Rightarrow> nat \<Rightarrow> int vec iarray \<Rightarrow> int iarray iarray \<Rightarrow> int vec \<Rightarrow> int vec" where
+  "while i l gsa dmusa acc =  (if l \<ge> i then acc
+    else (let v = dmusa !! l !! l \<cdot>\<^sub>v acc - dmusa !! i !! l \<cdot>\<^sub>v gsa !! l;
+              acc' = (map_vec (\<lambda>k. k div dmusa !! (l - 1) !! (l - 1)) v)
+        in while i (l + 1) gsa dmusa acc'))"
+  by pat_completeness auto
+termination
+  by  (relation "(\<lambda>(i,l,acc). i - l)  <*mlex*> {}",  goal_cases) (auto intro!: mlex_less wf_mlex)
+
+declare while.simps[simp del]
+
+definition gso' where
+  "gso' i fsa gsa dmusa = (if i = 0 then fsa !! 0 else
+     let acc = dmusa !! 0 !! 0 \<cdot>\<^sub>v fsa !! i - dmusa !! i !! 0 \<cdot>\<^sub>v fsa !! 0 in
+     while i 1 gsa dmusa acc)"
+
+function gsos' where
+  "gsos' i n dmusa fsa gsa = (if i \<ge> n then gsa else
+    gsos' (i + 1) n dmusa fsa (iarray_append gsa (gso' i fsa gsa dmusa)))"
+  by pat_completeness auto
+termination
+  by  (relation "(\<lambda>(i,n,dmusa,fsa,gsa). n - i)  <*mlex*> {}",  goal_cases) (auto intro!: mlex_less wf_mlex)
+
+declare gsos'.simps[simp del]
+
+definition gso'_array where
+  "gso'_array dmusa fs = gsos' 0 (length fs) dmusa (IArray fs) (IArray [])"
+
+definition gso_array where
+  "gso_array fs = (let dmusa = d\<mu>_impl fs; gsa = gso'_array dmusa fs
+                   in IArray.of_fun (\<lambda>i. (if i = 0 then 1 else inverse (rat_of_int (dmusa !! (i - 1) !! (i - 1))))
+                      \<cdot>\<^sub>v of_int_hom.vec_hom (gsa !! i)) (length fs))"
+
+end
+
+declare gso_array.gso_array_def[code]
+declare gso_array.gso'_array_def[code]
+declare gso_array.gsos'.simps[code]
+declare gso_array.gso'_def[code]
+declare gso_array.while.simps[code]
+
+lemma map_vec_id[simp]: "map_vec id = id"
+  by (auto intro!: eq_vecI)
+
+context fs_int_indpt
+begin
+
+lemma "gso_array.gso'_array (d\<mu>_impl fs) fs = IArray (map (\<lambda>k. gso_int k k) [0..<length fs])"
+proof -
+  have a[simp]: "IArray (IArray.list_of a) = a" for a:: "'a iarray"
+    by (metis iarray.exhaust list_of.simps)
+  have [simp]: "length (IArray.list_of (iarray_append xs x)) = Suc (IArray.length xs)" for x xs
+    unfolding iarray_append_code by (simp)
+  have [simp]: "map_iarray f as = IArray (map f (IArray.list_of as))" for f as
+    by (metis a iarray.simps(4))
+  have d[simp]: "IArray.list_of (IArray.list_of (d\<mu>_impl fs) ! i) ! j = \<mu>' i j"
+    if "i < length fs" "j \<le> i" for j i
+    using that by (auto simp add: \<mu>' d\<mu>_impl nth_append)
+  let ?rat_vec = "of_int_hom.vec_hom"
+  have *: "gso_array.while i j gsa (d\<mu>_impl fs) acc = gso_int_tail' i j acc'"
+      if "i < length fs" "j \<le> i" "acc = acc'"
+         "\<And>k. k < i \<Longrightarrow> gsa !! k = gso_int k k" for i j gsa acc acc'
+    using that apply (induction i j acc arbitrary: acc' rule: gso_int_tail'.induct)
+    by (subst gso_array.while.simps, subst gso_int_tail'.simps, auto)
+  then have *: "gso_array.gso' i (IArray fs) gsa (d\<mu>_impl fs) = gso_int i i"
+    if assms: "i < length fs" "\<And>k. k < i \<Longrightarrow> gsa !! k = gso_int k k" for i gsa
+  proof -
+    have "IArray.list_of (IArray.list_of (d\<mu>_impl fs) ! 0) ! 0 = \<mu>' 0 0"
+      using that by (subst d) (auto)
+    then have "gso_array.gso' i (IArray fs) gsa (d\<mu>_impl fs) = gso_int_tail i"
+      unfolding gso_array.gso'_def gso_int_tail.simps Let_def
+      using that * by (auto simp del: gso_int_tail'.simps)
+    then show ?thesis
+      using gso_int_tail by simp
+  qed
+  then have *: "gso_array.gsos' i n (d\<mu>_impl fs) (IArray fs) gsa =
+         IArray (IArray.list_of gsa @ (map (\<lambda>k. gso_int k k) [i..<n]))"
+    if "n \<le> length fs"
+       "gsa = IArray.of_fun (\<lambda>k. gso_int k k) i" for i n gsa
+    using that proof (induction i n "(d\<mu>_impl fs)" "(IArray fs)" gsa rule: gso_array.gsos'.induct)
+    case (1 i n gsa)
+    { assume i_n: "i < n"
+      have [simp]: "gso_array.gso' i (IArray fs) gsa (d\<mu>_impl fs) = gso_int i i"
+        using 1 i_n by (intro *) auto
+      have "gso_array.gsos' i n (d\<mu>_impl fs) (IArray fs) gsa = gso_array.gsos' (i + 1) n (d\<mu>_impl fs) (IArray fs) (iarray_append gsa (gso_array.gso' i (IArray fs) gsa (d\<mu>_impl fs)))"
+        using i_n by (simp add: gso_array.gsos'.simps)
+      also have "\<dots> = IArray (IArray.list_of gsa @ gso_int i i # map (\<lambda>k. gso_int k k) [Suc i..<n])"
+        using 1 i_n by (subst 1) (auto simp add: iarray_append_code)
+      also have "\<dots> = IArray (IArray.list_of gsa @ map (\<lambda>k. gso_int k k) [i..<n])"
+        using i_n by (auto simp add: upt_conv_Cons)
+      finally have ?case
+        by simp }
+    then show ?case
+      by (auto simp add: gso_array.gsos'.simps)
+  qed
+  then show ?thesis
+    unfolding gso_array.gso'_array_def by (subst *) auto
+qed
+
+end
+
+value (code) "let v = map vec_of_list [[1,2,3],[4,5,6],[7,8,10]] in (gso_array.gso'_array (d\<mu>_impl v) v, d\<mu>_impl v)"
+value (code) "gram_schmidt 3 (map vec_of_list [[1::int,2,3],[4,5,6],[7,8,10]])"
 
 end
