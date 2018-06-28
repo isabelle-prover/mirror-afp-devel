@@ -183,8 +183,8 @@ proof
     using Rep_real_int by auto      
   obtain x where  x_def:" x  = (left r + right r) / 2" 
     by blast
-  have x_gr:"x > left r" using ff1 real_less_half_sum x_def by blast
-  have x_le:"x < right r" using ff1 x_def by (simp add: real_sum_of_halves)
+  have x_gr:"x > left r" using ff1 field_less_half_sum x_def by blast
+  have x_le:"x < right r" using ff1 x_def by (simp add: field_sum_of_halves)
   obtain s where s_def:"s = Abs_real_int(left r, x)"  by simp
   obtain t where t_def:"t = Abs_real_int(x, right r)"  by simp
   have s_in_type:"(left r, x) \<in> {r :: real*real . fst r \<le> snd r }" 

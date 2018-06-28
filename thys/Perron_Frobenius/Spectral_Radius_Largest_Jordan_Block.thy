@@ -718,7 +718,7 @@ proof -
         from diff[OF this] have norm: "norm (M k - E) < E / 2" .
         have "M k \<ge> 0" unfolding M_def by auto
         with E norm have "M k \<ge> E / 2"
-          by (smt real_norm_def real_sum_of_halves)
+          by (smt real_norm_def field_sum_of_halves)
         with ge[of k] E have "G k \<ge> E / 2" by auto
         also have "E / 2 = B" unfolding E_def B_def j norm_mult norm_power 
           cmod_Lam[OF iI] by auto
@@ -779,7 +779,7 @@ proof -
     from Bound obtain kk' where kk': "\<And> k. k \<ge> kk' \<Longrightarrow> B \<le> G k" by auto
     define k where "k = max kk kk'" 
     with kk kk' have 1: "norm (G k - Re F) < B / 2" "B \<le> G k" by auto
-    with B have "Re F > 0" by (smt real_norm_def real_sum_of_halves)
+    with B have "Re F > 0" by (smt real_norm_def field_sum_of_halves)
   }
   thus ?thesis by blast
 qed

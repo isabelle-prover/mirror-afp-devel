@@ -915,7 +915,7 @@ proof -
     using sums_unique[OF power_half_series, symmetric] by (auto intro!: summable_divide summable_geometric)
   finally have "emeasure M Ogood \<ge> 1 - d2" by simp
   then have "emeasure M Ogood > 1 - d" unfolding d2_def using \<open>d>0\<close> \<open>d \<le> 1\<close>
-    by (simp add: emeasure_eq_measure real_sum_of_halves ennreal_less_iff)
+    by (simp add: emeasure_eq_measure field_sum_of_halves ennreal_less_iff)
 
   have Ogood_union: "Ogood = (\<Union>(K::nat). Ogood \<inter> {x \<in> space M. \<forall>n \<in> {1..Nf 1}. \<forall>l \<in> {1..n}. u n x - u (n-l) x > - (real K * l)})"
   apply auto using sets.sets_into_space[OF \<open>Ogood \<in> sets M\<close>] apply blast
