@@ -626,7 +626,7 @@ qed
 
 end (* gram_schmidt_fs_int *)
 
-section \<open>Calculate $g_i' = d_i \g_i$\<close>
+section \<open>Calculate $g_i' = d_i g_i$\<close>
 
 fun vec_div :: "int list \<Rightarrow> int \<Rightarrow> int list" where
   "vec_div v n = (map (\<lambda>x. x div n) v)"
