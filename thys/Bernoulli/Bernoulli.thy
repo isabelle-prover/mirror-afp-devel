@@ -89,7 +89,7 @@ lemma bernoulli_in_Rats: "bernoulli n \<in> \<rat>"
 proof (induction n rule: less_induct)
   case (less n)
   thus ?case
-    by (cases n) (auto simp: bernoulli_Suc intro!: Rats_minus Rats_sum Rats_divide Rats_mult)
+    by (cases n) (auto simp: bernoulli_Suc intro!: Rats_sum Rats_divide)
 qed
 
 lemma bernoulli'_in_Rats: "bernoulli' n \<in> \<rat>"
