@@ -1660,7 +1660,7 @@ proof -
   have b: "(\<lambda>n::nat. 1 - 1 / (n + 2)) \<longlonglongrightarrow> ennreal(1 - 0)"
     by (intro tendsto_intros LIMSEQ_ignore_initial_segment)
   have "emeasure M V \<ge> 1 - 0"
-    apply (rule Lim_bounded_ereal) using a b by auto
+    apply (rule Lim_bounded) using a b by auto
   then have "emeasure M V = 1"
     by (simp add: emeasure_ge_1_iff)
   then have "AE x in M. x \<in> V"
