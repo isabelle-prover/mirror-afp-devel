@@ -1252,4 +1252,48 @@ proof -
 qed
 
 end
+
+
+subsection \<open>Alternative presentation of the main results\<close>
+
+theorem pell_solutions:
+ fixes D :: nat
+ assumes "\<nexists>k. D = k\<^sup>2"
+ obtains x\<^sub>0 y\<^sub>0 :: nat
+ where   "\<forall>(x::int) (y::int).
+            x\<^sup>2 - D * y\<^sup>2 = 1 \<longleftrightarrow>
+            (\<exists>n::nat. nat \<bar>x\<bar> + sqrt D * nat \<bar>y\<bar> = (x\<^sub>0 + sqrt D * y\<^sub>0) ^ n)"
+proof -
+  from assms interpret pell
+    by unfold_locales (auto simp: is_nth_power_def)
+  show ?thesis
+  proof (rule that[of "fst fund_sol" "snd fund_sol"], intro allI, goal_cases)
+    case (1 x y)
+    have "(x\<^sup>2 - int D * y\<^sup>2 = 1) \<longleftrightarrow> solution (x, y)"
+      by (auto simp: solution_def)
+    also have "\<dots> \<longleftrightarrow> (\<exists>n. (nat \<bar>x\<bar>, nat \<bar>y\<bar>) = nth_solution n)"
+      by (subst solution_iff_nth_solution') blast
+    also have "(\<lambda>n. (nat \<bar>x\<bar>, nat \<bar>y\<bar>) = nth_solution n) =
+                 (\<lambda>n. pell_valuation (nat \<bar>x\<bar>, nat \<bar>y\<bar>) = pell_valuation (nth_solution n))"
+      by (subst pell_valuation_eq_iff) (auto simp add: case_prod_unfold prod_eq_iff fun_eq_iff)
+    also have "\<dots> = (\<lambda>n. nat \<bar>x\<bar> + sqrt D * nat \<bar>y\<bar> = (fst fund_sol + sqrt D * snd fund_sol) ^ n)"
+      by (subst pell_valuation_nth_solution)
+         (simp add: pell_valuation_def case_prod_unfold mult_ac)
+    finally show ?case .
+  qed
+qed
+
+corollary pell_solutions_infinite:
+ fixes D :: nat
+ assumes "\<nexists>k. D = k\<^sup>2"
+ shows   "infinite {(x :: int, y :: int). x\<^sup>2 - D * y\<^sup>2 = 1}"
+proof -
+  from assms interpret pell
+    by unfold_locales (auto simp: is_nth_power_def)
+  have "{(x :: int, y :: int). x\<^sup>2 - D * y\<^sup>2 = 1} = {z. solution z}"
+    by (auto simp: solution_def)
+  also have "infinite \<dots>" by (rule infinite_solutions')
+  finally show ?thesis .
+qed
+
 end
