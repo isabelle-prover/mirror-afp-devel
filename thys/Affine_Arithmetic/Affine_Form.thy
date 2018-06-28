@@ -1972,14 +1972,14 @@ lemma Inf_aform_aform_of_ivl:
   shows "Inf_aform (aform_of_ivl l u) = l"
   using assms
   by (auto simp: Inf_aform_def aform_of_ivl_def tdev_pdevs_of_ivl abs_diff_eq1 algebra_simps)
-    (metis real_sum_of_halves scaleR_add_left scaleR_one)
+    (metis field_sum_of_halves scaleR_add_left scaleR_one)
 
 lemma Sup_aform_aform_of_ivl:
   assumes "l \<le> u"
   shows "Sup_aform (aform_of_ivl l u) = u"
   using assms
   by (auto simp: Sup_aform_def aform_of_ivl_def tdev_pdevs_of_ivl abs_diff_eq1 algebra_simps)
-    (metis real_sum_of_halves scaleR_add_left scaleR_one)
+    (metis field_sum_of_halves scaleR_add_left scaleR_one)
 
 lemma Affine_aform_of_ivl:
   "a \<le> b \<Longrightarrow> Affine (aform_of_ivl a b) = {a .. b}"

@@ -111,7 +111,7 @@ lemma diamond_cube_valid_two_cube:
   shows "valid_two_cube (diamond_cube)"
   apply (auto simp add: valid_two_cube_def boundary_def horizontal_boundary_def vertical_boundary_def diamond_cube_def 
       diamond_x_def card_insert_if)
-   apply (metis (no_types, hide_lams) cancel_comm_monoid_add_class.diff_cancel d_gt_0 mult.commute mult_2 mult_zero_right order_less_irrefl prod.inject real_sum_of_halves)
+   apply (metis (no_types, hide_lams) cancel_comm_monoid_add_class.diff_cancel d_gt_0 mult.commute mult_2 mult_zero_right order_less_irrefl prod.inject field_sum_of_halves)
   apply (metis (no_types, hide_lams) add_diff_cancel_right' d_gt_0 mult_cancel_left mult_zero_right order_less_irrefl prod.inject)
   done
 
@@ -228,7 +228,7 @@ lemma diamond_top_left_edge_neq_diamond_top_right_edge:
   apply (simp add: diamond_top_left_edge_def diamond_top_right_edge_def diamond_x_def diamond_y_def)
     using d_gt_0
     apply (auto simp add: algebra_simps divide_simps)
-    by (metis (no_types, hide_lams) diff_zero div_0 divide_divide_eq_right order_less_irrefl prod.inject real_sum_of_halves)
+    by (metis (no_types, hide_lams) diff_zero div_0 divide_divide_eq_right order_less_irrefl prod.inject field_sum_of_halves)
 
 lemma neqs1:
   shows "(\<lambda>x. (diamond_x x, diamond_y (diamond_x x))) \<noteq> (\<lambda>x. (diamond_x x, - diamond_y (diamond_x x)))"
