@@ -338,7 +338,6 @@ end
 
 context vec_space
 begin
-sublocale vec_module _ n .
 
 
 lemma in_orthogonal_complement_span[simp]:
@@ -746,7 +745,7 @@ end
 
 
 locale gram_schmidt = cof_vec_space n f_ty
-  for n :: nat and f_ty :: "'a :: {linordered_field,trivial_conjugatable_ordered_field} itself"
+  for n :: nat and f_ty :: "'a :: {trivial_conjugatable_linordered_field} itself"
 begin
 
 definition Gramian_matrix where
@@ -1009,7 +1008,7 @@ end
 
 
 locale gram_schmidt_fs = gram_schmidt n f_ty
-  for n :: nat and f_ty :: "'a :: {linordered_field,trivial_conjugatable_ordered_field} itself" +
+  for n :: nat and f_ty :: "'a :: {trivial_conjugatable_linordered_field} itself" +
   fixes fs :: "'a vec list"
 begin
 
@@ -2051,11 +2050,10 @@ proof(induct x rule:nat_less_induct[rule_format])
   case (1 x)
   interpret f1: gram_schmidt_fs n f_ty f1 .
   interpret f2: gram_schmidt_fs n f_ty f2 .
-  from 1 have fg:"(+) (f1 ! x) = (+) (f2 ! x)" by auto
+  have *: "map (\<lambda>j. - f1.\<mu> x j \<cdot>\<^sub>v f1.gso j) [0..<x] = map (\<lambda>j. - f2.\<mu> x j \<cdot>\<^sub>v f2.gso j) [0..<x]"
+    using 1 by (intro map_cong) (auto simp add: f1.\<mu>.simps f2.\<mu>.simps)
   show ?case
-    apply(subst f1.gso.simps) apply(subst f2.gso.simps) unfolding f1.\<mu>.simps f2.\<mu>.simps
-    apply(rule cong[OF fg cong[OF refl[of "sumlist"]]])
-    using 1 by auto
+    using 1 by (subst f1.gso.simps, subst f2.gso.simps, subst *) auto
 qed
 
 lemma \<mu>_cong:

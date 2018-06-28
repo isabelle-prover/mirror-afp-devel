@@ -600,9 +600,21 @@ using assms proof (induction v arbitrary: i)
   qed auto
 qed auto
 
-class trivial_conjugatable_ordered_field = 
-  conjugatable_ordered_field + linordered_idom +
+class trivial_conjugatable =
+  conjugate +
   assumes conjugate_id [simp]: "conjugate x = x"
+
+class trivial_conjugatable_ordered_field = 
+  conjugatable_ordered_field + trivial_conjugatable
+
+class trivial_conjugatable_linordered_field = 
+  trivial_conjugatable_ordered_field + linordered_idom
+
+instance rat :: trivial_conjugatable_linordered_field 
+  by (standard, auto)
+
+instance real :: trivial_conjugatable_linordered_field 
+  by (standard, auto)
 
 lemma scalar_prod_ge_0: "(x :: 'a :: linordered_idom vec) \<bullet> x \<ge> 0" 
   unfolding scalar_prod_def
@@ -612,14 +624,9 @@ lemma cscalar_prod_is_scalar_prod[simp]: "(x :: 'a :: trivial_conjugatable_order
   unfolding conjugate_id
   by (rule arg_cong[of _ _ "scalar_prod x"], auto)
 
-instance rat :: trivial_conjugatable_ordered_field 
-  by (standard, auto)
-
-instance real :: trivial_conjugatable_ordered_field 
-  by (standard, auto)
 
 lemma scalar_prod_Cauchy:
-  fixes u v::"'a :: {trivial_conjugatable_ordered_field, linordered_field} Matrix.vec"
+  fixes u v::"'a :: {trivial_conjugatable_linordered_field} Matrix.vec"
   assumes "u \<in> carrier_vec n" "v \<in> carrier_vec n"
   shows "(u \<bullet> v)\<^sup>2 \<le> \<parallel>u\<parallel>\<^sup>2 * \<parallel>v\<parallel>\<^sup>2 "
 proof -
