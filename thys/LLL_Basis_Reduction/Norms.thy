@@ -608,7 +608,7 @@ class trivial_conjugatable_ordered_field =
   conjugatable_ordered_field + trivial_conjugatable
 
 class trivial_conjugatable_linordered_field = 
-  trivial_conjugatable_ordered_field + linordered_idom
+  trivial_conjugatable_ordered_field + linordered_field
 
 instance rat :: trivial_conjugatable_linordered_field 
   by (standard, auto)
