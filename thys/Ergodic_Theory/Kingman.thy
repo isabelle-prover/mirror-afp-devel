@@ -952,7 +952,7 @@ proof -
         using ereal_truncation_real_bottom by auto
       moreover have "eventually (\<lambda>K. limsup (\<lambda>n. u n x / n) \<le> real_of_ereal(max (l x) (-ereal K))) sequentially"
         using H by (metis (no_types, lifting) eventually_at_top_linorder eventually_gt_at_top greaterThan_iff)
-      ultimately show "limsup (\<lambda>n. u n x / n) \<le> l x" using Lim_bounded2_ereal eventually_sequentially by auto
+      ultimately show "limsup (\<lambda>n. u n x / n) \<le> l x" using Lim_bounded2 eventually_sequentially by auto
     qed (simp)
     then have "limsup (\<lambda>n. ereal (u n x / real n)) = l x"
       using Liminf_le_Limsup l_def eq_iff sequentially_bot by blast
@@ -1233,7 +1233,7 @@ proof -
       apply (intro tendsto_intros) using H(2) tendsto_norm[OF H(1)] by auto
     then have "(\<lambda>n. ereal(?f n)) \<longlonglongrightarrow> real_cond_exp M Invariants (\<lambda>x. u N x / N) x"
       by auto
-    with ereal_lim_mono[OF \<open>\<And>n. n \<ge> 2*N+1 \<Longrightarrow> u n x / n \<le> ereal(?f n)\<close> H(3) this]
+    with lim_mono[OF \<open>\<And>n. n \<ge> 2*N+1 \<Longrightarrow> u n x / n \<le> ereal(?f n)\<close> H(3) this]
     have "subcocycle_lim_ereal u x \<le> real_cond_exp M Invariants (\<lambda>x. u N x / N) x" by simp
   }
   ultimately show ?thesis by auto
@@ -1944,7 +1944,7 @@ proof -
       then have "c \<le> (\<integral>x. u N x / N \<partial>M)" by auto
     }
     then have "\<forall>N\<ge>1. c \<le> (\<integral>x. u N x / N \<partial>M)" by auto
-    with Lim_bounded2_ereal[OF subcocycle_int_tendsto_avg_ereal[OF assms] this]
+    with Lim_bounded2[OF subcocycle_int_tendsto_avg_ereal[OF assms] this]
     have "c \<le> subcocycle_avg_ereal u" by simp
     then show ?thesis using True by auto
   next

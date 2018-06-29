@@ -2278,7 +2278,7 @@ proof -
   proof
     fix e
     have "f' e \<le> Sup {..capacity \<Delta> e}" using _ f
-      by(rule ereal_Sup_lim)(simp add: flowD_capacity[OF fn.g])
+      by(rule Sup_lim)(simp add: flowD_capacity[OF fn.g])
     then show "f' e \<le> capacity \<Delta> e" by simp
   next
     fix x
@@ -6837,7 +6837,7 @@ proof(rule ccontr)
     done
   then have "(INF n. ennreal (\<epsilon> n)) = 0" using wb_pos \<delta>
     apply(simp add: \<epsilon>_def)
-    apply(rule INF_Lim_ereal)
+    apply(rule INF_Lim)
     apply(rule decseq_SucI)
     apply(simp add: field_simps min_def)
     apply(simp add: add.commute ennreal_0[symmetric] del: ennreal_0)
