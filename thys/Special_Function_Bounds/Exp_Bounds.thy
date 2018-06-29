@@ -78,7 +78,7 @@ proof -
     apply (sos "((R<1 + ((R<1 * ((R<1323/13 * [~15/49*x + 1]^2) + (R<1/637 * [x]^2))) + (((A<0 * R<1) * (R<50/13 * [1]^2)) + ((A<=0 * R<1) * ((R<56/13 * [~5/56*x + 1]^2) + (R<199/728 * [x]^2)))))))")
     done
   also have "... = inverse (exp x)"
-    by (metis exp_minus mult_exp_exp power2_eq_square real_sum_of_halves)
+    by (metis exp_minus mult_exp_exp power2_eq_square field_sum_of_halves)
   finally have 2: "(-(x^3) + 6*x^2 - 24*x + 48)^2 / 2304 \<le> inverse (exp x)" .
   have "6 * x\<^sup>2 - x ^ 3 - 24 * x + 48 \<noteq> 0" using assms
     by (sos "((R<1 + (([~400/13] * A=0) + ((R<1 * ((R<1323/13 * [~15/49*x + 1]^2) + (R<1/637 * [x]^2))) + ((A<=0 * R<1) * ((R<56/13 * [~5/56*x + 1]^2) + (R<199/728 * [x]^2)))))))")

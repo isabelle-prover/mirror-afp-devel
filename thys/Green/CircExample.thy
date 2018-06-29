@@ -702,7 +702,7 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
         using circle_top_bot_edges_neq' d_gt_0 apply auto[1]
           apply (smt atLeastAtMost_iff divide_less_eq_1_pos zero_less_divide_1_iff)
          apply (smt atLeastAtMost_iff divide_less_eq_1_pos zero_less_divide_iff)
-        apply (smt atLeastAtMost_iff divide_cancel_left divide_less_eq_1_pos real_sum_of_halves zero_less_divide_1_iff)
+        apply (smt atLeastAtMost_iff divide_cancel_left divide_less_eq_1_pos field_sum_of_halves zero_less_divide_1_iff)
         done
       show "(\<forall>x\<in>?one_chaini. finite (?f x))"
         by (auto simp add: circle_cube_boundary_to_polarcircle_def circle_cube_boundary_explicit)
@@ -752,7 +752,7 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
         using circle_arcs_neq circle_arcs_neq_2 
         apply (auto simp add: rot_circle_cube_boundary_to_polarcircle_def neq_commute)
          apply (metis add.right_neutral divide_less_eq_1_pos dual_order.order_iff_strict num.distinct(1) one_less_numeral_iff prod.sel(1) prod.sel(2) semiring_norm(68) subcube_def zero_less_divide_1_iff zero_less_numeral)
-        apply (smt real_sum_of_halves)
+        apply (smt field_sum_of_halves)
         done
       show "(\<forall>x\<in>?one_chain2.0. finite (?f x))"
         by (auto simp add: rot_circle_cube_boundary_to_polarcircle_def UNION_eq rw)
