@@ -79,7 +79,28 @@ object profile extends isabelle.CI_Profile
     println(s"AFP id $afp_id")
 
   def post_hook(results: Build.Results) =
+  {
+    val metadata = {
+      val path = afp + Path.explode("metadata/metadata")
+      val ini = new INIConfiguration()
+      if (path.is_file) {
+        val reader = new FileReader(path.file)
+        ini.read(reader)
+        reader.close()
+      }
+      new Metadata(ini)
+    }
+
+    val status =
+      metadata.group_by_entry(results).mapValues { sessions =>
+        Status.merge(sessions.map(Status.from_results(results, _)))
+      }
+
+    print_section("REPORT")
+    println("Writing report file ...")
+    File.write(report_file, metadata.status_as_html(status))
     print_section("COMPLETED")
+  }
 
   def selection =
     Sessions.Selection(
