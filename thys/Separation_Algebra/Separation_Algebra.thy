@@ -649,8 +649,10 @@ end
 interpretation sep: ab_semigroup_mult "( ** )"
   by (rule ab_semigroup_mult_sep_conj)
 
+declare [[pending_shyps]]
 interpretation sep: comm_monoid_add "( ** )" \<box>
   by (rule comm_monoid_add)
+declare [[pending_shyps = false]]
 
 
 section {* Separation Algebra with Stronger, but More Intuitive Disjunction Axiom *}

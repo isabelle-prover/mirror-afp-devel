@@ -100,7 +100,7 @@ lemma HSem_edom_subset:  "edom (\<lbrace>\<Gamma>\<rbrace>\<rho>) \<subseteq> ed
   apply (auto simp add: lookup_HSem_other)
   done
 
-lemma env_restr_override_onI:"-S2 \<subseteq> S \<Longrightarrow> env_restr S \<rho>1 ++\<^bsub>S2\<^esub> \<rho>2 = \<rho>1 ++\<^bsub>S2\<^esub> \<rho>2"
+lemma (in -) env_restr_override_onI:"-S2 \<subseteq> S \<Longrightarrow> env_restr S \<rho>1 ++\<^bsub>S2\<^esub> \<rho>2 = \<rho>1 ++\<^bsub>S2\<^esub> \<rho>2"
   by (rule ext) (auto simp add: lookup_override_on_eq )
 
 lemma HSem_restr:

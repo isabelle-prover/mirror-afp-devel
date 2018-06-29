@@ -60,15 +60,15 @@ text {* The following lemmas corresponds to inference rules in LS\_PASL.
   Thus these lemmas prove the soundness of LS\_PASL. 
   We also show the invertibility of those rules. *}
 
-lemma lspasl_id: 
+lemma (in -) lspasl_id: 
   "Gamma \<and> (A h) \<Longrightarrow> (A h) \<or> Delta"
   by simp
 
-lemma lspasl_botl: 
+lemma (in -) lspasl_botl: 
   "Gamma \<and> (sep_false h) \<Longrightarrow> Delta"
   by simp
 
-lemma lspasl_topr: 
+lemma (in -) lspasl_topr: 
   "gamma \<Longrightarrow> (sep_true h) \<or> Delta"
   by simp
 
@@ -94,6 +94,8 @@ lemma lspasl_empl_eq: "(sep_empty h) = (h = 0)"
 lemma lspasl_empr: 
   "Gamma \<longrightarrow> (sep_empty 0) \<or> Delta"
   by simp
+
+end
 
 lemma lspasl_notl: 
   "Gamma \<longrightarrow> (A h) \<or> Delta \<Longrightarrow> 
@@ -174,6 +176,9 @@ lemma lspasl_impr_inv:
   "Gamma \<longrightarrow> ((A imp B) h) \<or> Delta \<Longrightarrow>
   Gamma \<and> (A h) \<longrightarrow> (B h) \<or> Delta"
   by simp
+
+context heap_sep_algebra
+begin
 
 text {* We don't provide lemmas for derivations for the classical connectives,
   as Isabelle proof methods can easily deal with them. *}

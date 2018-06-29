@@ -93,19 +93,19 @@ end
 
 instantiation u :: (plus_cpo) plus
 begin
-  definition "plus_u x y = (\<Lambda>(up\<cdot>a) (up\<cdot>b). up\<cdot>(a + b))\<cdot>x\<cdot>y"
+  definition "plus_u x y = (\<Lambda>(up\<cdot>a) (up\<cdot>b). up\<cdot>(a + b))\<cdot>x\<cdot>y" for x y :: "'a\<^sub>\<bottom>"
   instance ..
 end
 
 instantiation u :: (minus_cpo) minus
 begin
-  definition "minus_u x y = (\<Lambda>(up\<cdot>a) (up\<cdot>b). up\<cdot>(a - b))\<cdot>x\<cdot>y"
+  definition "minus_u x y = (\<Lambda>(up\<cdot>a) (up\<cdot>b). up\<cdot>(a - b))\<cdot>x\<cdot>y" for x y :: "'a\<^sub>\<bottom>"
   instance ..
 end
 
 instantiation u :: (times_cpo) times
 begin
-  definition "times_u x y = (\<Lambda>(up\<cdot>a) (up\<cdot>b). up\<cdot>(a * b))\<cdot>x\<cdot>y"
+  definition "times_u x y = (\<Lambda>(up\<cdot>a) (up\<cdot>b). up\<cdot>(a * b))\<cdot>x\<cdot>y" for x y :: "'a\<^sub>\<bottom>"
   instance ..
 end
 

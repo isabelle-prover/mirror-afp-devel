@@ -82,6 +82,8 @@ text {*
   derive a relation algebra.
 *}
 
+declare [[pending_shyps]]
+
 class residuated_ra = residuated_boolean_monoid +
   assumes conv: "x \<rhd> y = (x \<rhd> 1)\<cdot>y"
 begin
@@ -114,5 +116,7 @@ proof
 qed
 
 end (* residuated_ra *)
-  
+
+declare [[pending_shyps = false]]
+
 end
