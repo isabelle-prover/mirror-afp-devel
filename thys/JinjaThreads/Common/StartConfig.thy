@@ -101,11 +101,11 @@ proof -
   show ?thesis unfolding start_heap_def start_addrs_def start_heap_data_def by simp
 qed
 
-lemma distinct_initialization_list:
+lemma (in -) distinct_initialization_list:
   "distinct initialization_list"
 by(simp add: initialization_list_def sys_xcpts_list_def sys_xcpts_neqs Thread_neq_sys_xcpts)
 
-lemma wf_syscls_initialization_list_is_class:
+lemma (in -) wf_syscls_initialization_list_is_class:
   "\<lbrakk> wf_syscls P; C \<in> set initialization_list \<rbrakk> \<Longrightarrow> is_class P C"
 by(auto simp add: initialization_list_def sys_xcpts_list_def wf_syscls_is_class_xcpt)
 

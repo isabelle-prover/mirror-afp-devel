@@ -355,11 +355,11 @@ lemma WTrt_new_types_types: "P,E,h \<turnstile> e : T \<Longrightarrow> new_type
   and WTrts_new_typess_types: "P,E,h \<turnstile> es [:] Ts \<Longrightarrow> new_typess es \<subseteq> types P"
 by(induct rule: WTrt_WTrts.inducts) simp_all
 
+end
+
 lemma WT_new_types_types: "P,E \<turnstile> e :: T \<Longrightarrow> new_types e \<subseteq> types P"
   and WTs_new_typess_types: "P,E \<turnstile> es [::] Ts \<Longrightarrow> new_typess es \<subseteq> types P"
 by(induct rule: WT_WTs.inducts) simp_all
-
-end
 
 context J_heap_conf begin
 

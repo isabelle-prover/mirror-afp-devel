@@ -1138,6 +1138,21 @@ definition
 definition
   "second x = snd (Rep_OrdSum x)" 
 
+lemma if_unfold_left: "((if a then b else c) = d) = ((a\<longrightarrow> b = d) \<and> (\<not> a \<longrightarrow> c = d))"
+  apply auto
+  done
+
+lemma if_unfold_right: "(d = (if a then b else c)) = ((a \<longrightarrow> d = b) \<and> (\<not> a \<longrightarrow> d = c))"
+  apply auto
+  done
+
+lemma fst_snd_eq: "fst a = x \<Longrightarrow> snd a = y \<Longrightarrow> (x, y) = a"
+  apply (subgoal_tac "x = fst a")
+  apply (subgoal_tac "y = snd a")
+  apply (drule drop_assumption)
+  apply (drule drop_assumption)
+  by simp_all
+
 instantiation "OrdSum" :: (pseudo_hoop_algebra, pseudo_hoop_algebra) pseudo_hoop_algebra
 begin
 
@@ -1201,21 +1216,6 @@ lemma Rep_OrdSum_eq: "Rep_OrdSum x = Rep_OrdSum y \<Longrightarrow> x = y"
 lemma Abs_OrdSum_eq: "x \<in> OrdSum \<Longrightarrow> y \<in> OrdSum \<Longrightarrow> Abs_OrdSum x = Abs_OrdSum y \<Longrightarrow> x = y"
   apply (subgoal_tac "Rep_OrdSum (Abs_OrdSum x) = Rep_OrdSum (Abs_OrdSum y)")
   apply (unfold Abs_OrdSum_inverse) [1]
-  by simp_all
-
-lemma if_unfold_left: "((if a then b else c) = d) = ((a\<longrightarrow> b = d) \<and> (\<not> a \<longrightarrow> c = d))"
-  apply auto
-  done
-
-lemma if_unfold_right: "(d = (if a then b else c)) = ((a \<longrightarrow> d = b) \<and> (\<not> a \<longrightarrow> d = c))"
-  apply auto
-  done
-
-lemma fst_snd_eq: "fst a = x \<Longrightarrow> snd a = y \<Longrightarrow> (x, y) = a"
-  apply (subgoal_tac "x = fst a")
-  apply (subgoal_tac "y = snd a")
-  apply (drule drop_assumption)
-  apply (drule drop_assumption)
   by simp_all
 
 lemma [simp]: "fst (Rep_OrdSum a) \<noteq> 1 \<Longrightarrow> (snd (Rep_OrdSum a) \<noteq> 1 = False)"

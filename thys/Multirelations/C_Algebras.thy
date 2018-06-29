@@ -2111,6 +2111,7 @@ class proto_quantale = complete_lattice + proto_monoid +
 
 begin
 
+declare [[pending_shyps]]
 sublocale pd?: proto_dioid "1\<^sub>\<sigma>" "(\<cdot>)" sup "(\<le>)" "(<)" "Sup {}"
 proof
   show "\<And>x y. (x \<le> y) = (sup x y = y)"
@@ -2146,6 +2147,7 @@ qed
       using calculation by presburger
   qed
 qed
+declare [[pending_shyps = false]]
 
 definition star_rd :: "'a \<Rightarrow> 'a" where
   "star_rd x = Sup {power_rd x i |i. i \<in> \<nat>}"

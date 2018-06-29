@@ -215,6 +215,7 @@ text {* The Schr\"oder laws allow us, finally, to prove the annihilation laws
 for zero. We formalise this by proving that relation algebras form dioids with
 zero. *}
 
+declare [[pending_shyps]]
 sublocale relation_algebra < dioid_one_zero "(+)" "(;)" "1'" 0 "(\<le>)" "(<)"
 proof
   fix x :: 'a
@@ -225,6 +226,7 @@ proof
   show "x ; 0 = 0"
     by (metis f_strict schroeder_1_var)
 qed
+declare [[pending_shyps = false]]
 
 context relation_algebra
 begin

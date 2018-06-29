@@ -379,7 +379,7 @@ begin
   qed
 
 
-  lemma lemLineIdentity: 
+  lemma (in -) lemLineIdentity: 
     assumes "lineA = \<lparr> basepoint = basepoint lineB, direction = direction lineB \<rparr>"
     shows "lineA = lineB"
   proof -
