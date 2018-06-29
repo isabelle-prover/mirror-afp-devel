@@ -2000,12 +2000,12 @@ locale GroupHom = Group G
   and     supp: "supp T \<subseteq> G" 
 
 abbreviation (in GroupHom) "Ker \<equiv> ker T \<inter> G"
-abbreviation (in GroupHom) "Im \<equiv> T ` G"
+abbreviation (in GroupHom) "ImG \<equiv> T ` G"
 
 locale GroupEnd = GroupHom G T
   for G :: "'g::group_add set"
   and T :: "'g \<Rightarrow> 'g"
-+ assumes endomorph: "Im \<subseteq> G"
++ assumes endomorph: "ImG \<subseteq> G"
 
 locale GroupIso = GroupHom G T
   for   G :: "'g::group_add set"
@@ -2071,7 +2071,7 @@ lemma distrib_comp_sum_left :
   "range S \<subseteq> G \<Longrightarrow> range S' \<subseteq> G \<Longrightarrow> T \<circ> (S + S') = (T \<circ> S) + (T \<circ> S')"
   using hom by (auto simp add: fun_eq_iff)
 
-lemma Ker_Im_iff : "(Ker = G) = (Im = 0)"
+lemma Ker_Im_iff : "(Ker = G) = (ImG = 0)"
   using nonempty ker_im_iff[of G T] by fast
 
 lemma Ker0_imp_inj_on :
@@ -2102,13 +2102,13 @@ next
     using im_diff kerD[of g T] kerD[of h T] diff_closed kerI[of T] by auto
 qed
 
-lemma Group_Im : "Group Im"
+lemma Group_Im : "Group ImG"
 proof
-  show "Im \<noteq> {}" using nonempty by fast
+  show "ImG \<noteq> {}" using nonempty by fast
 next
-  fix g' h' assume "g' \<in> Im" "h' \<in> Im"
+  fix g' h' assume "g' \<in> ImG" "h' \<in> ImG"
   from this obtain g h where gh: "g \<in> G" "g' = T g" "h \<in> G" "h' = T h" by fast
-  thus "g' - h' \<in> Im" using im_diff diff_closed by force
+  thus "g' - h' \<in> ImG" using im_diff diff_closed by force
 qed
 
 lemma GroupHom_restrict0_subgroup  :
@@ -2124,17 +2124,17 @@ qed
 
 lemma im_subgroup :
   assumes "Subgroup H"
-  shows   "Group.Subgroup Im (T ` H)"
+  shows   "Group.Subgroup ImG (T ` H)"
 proof
   from assms have "Group ((T \<down> H) ` H)"
     using GroupHom_restrict0_subgroup GroupHom.Group_Im by fast
   moreover have "(T \<down> H) ` H = T ` H" by auto
   ultimately show "Group (T ` H)" by simp
-  from assms show "T ` H \<subseteq> Im" by fast
+  from assms show "T ` H \<subseteq> ImG" by fast
 qed
 
 lemma GroupHom_composite_left :
-  assumes "Im \<subseteq> H" "GroupHom H S"
+  assumes "ImG \<subseteq> H" "GroupHom H S"
   shows   "GroupHom G (S \<circ> T)"
 proof
   fix g g' assume "g \<in> G" "g' \<in> G"
@@ -2170,7 +2170,7 @@ qed
 
 lemma proj_decomp :
   assumes "\<And>g. g \<in> G \<Longrightarrow> T (T g) = T g"
-  shows   "G = Ker \<oplus> Im"
+  shows   "G = Ker \<oplus> ImG"
 proof (rule inner_dirsum_doubleI, rule subset_antisym, rule subsetI)
   fix g assume g: "g \<in> G"
   have "g = (g - T g) + T g" using diff_add_cancel[of g] by simp
@@ -2180,14 +2180,14 @@ proof (rule inner_dirsum_doubleI, rule subset_antisym, rule subsetI)
     thus "g - T g \<in> ker T" using kerI by fast
     from g endomorph show "g - T g \<in> G" using diff_closed by fast
   qed
-  moreover from g have "T g \<in> Im" by fast
-  ultimately show "g \<in> Ker + Im"
+  moreover from g have "T g \<in> ImG" by fast
+  ultimately show "g \<in> Ker + ImG"
     using set_plus_intro[of "g - T g" Ker "T g"] by simp
 next
-  from endomorph show "G \<supseteq> Ker + Im" using set_plus_closed by simp
-  show "add_independentS [Ker,Im]"
+  from endomorph show "G \<supseteq> Ker + ImG" using set_plus_closed by simp
+  show "add_independentS [Ker,ImG]"
   proof (rule add_independentS_doubleI)
-    fix g h assume gh: "h \<in> Im" "g \<in> Ker" "g + h = 0"
+    fix g h assume gh: "h \<in> ImG" "g \<in> Ker" "g + h = 0"
     from gh(1) obtain g' where "g' \<in> G" "h = T g'" by fast
     with gh(2,3) endomorph assms have "h = 0"
       using im_zero hom[of g "T g'"] kerD by fastforce
@@ -2204,15 +2204,15 @@ begin
 
 abbreviation "invT \<equiv> (the_inv_into G T) \<down> H"
 
-lemma Im : "Im = H" using bijective bij_betw_imp_surj_on by fast
+lemma ImG : "ImG = H" using bijective bij_betw_imp_surj_on by fast
 
-lemma GroupH : "Group H" using Im Group_Im by fast
+lemma GroupH : "Group H" using ImG Group_Im by fast
 
 lemma invT_onto : "invT ` H = G"
-  using bijective bij_betw_imp_inj_on[of T] Im the_inv_into_onto[of T] by force
+  using bijective bij_betw_imp_inj_on[of T] ImG the_inv_into_onto[of T] by force
 
 lemma inj_on_invT : "inj_on invT H"
-  using     bijective bij_betw_imp_inj_on[of T G] Im inj_on_the_inv_into[of T]
+  using     bijective bij_betw_imp_inj_on[of T G] ImG inj_on_the_inv_into[of T]
   unfolding inj_on_def
   by        force
 
@@ -2220,13 +2220,13 @@ lemma bijective_invT : "bij_betw invT H G"
   using inj_on_invT invT_onto unfolding bij_betw_def by fast
 
 lemma invT_into : "h \<in> H \<Longrightarrow> invT h \<in> G"
-  using bijective bij_betw_imp_inj_on Im the_inv_into_into[of T] by force
+  using bijective bij_betw_imp_inj_on ImG the_inv_into_into[of T] by force
 
 lemma T_invT : "h \<in> H \<Longrightarrow> T (invT h) = h"
-  using bijective bij_betw_imp_inj_on Im f_the_inv_into_f[of T] by force
+  using bijective bij_betw_imp_inj_on ImG f_the_inv_into_f[of T] by force
 
 lemma invT_eq: "g \<in> G \<Longrightarrow> T g = h \<Longrightarrow> invT h = g"
-  using bijective bij_betw_imp_inj_on Im the_inv_into_f_eq[of T] by force
+  using bijective bij_betw_imp_inj_on ImG the_inv_into_f_eq[of T] by force
 
 lemma inv : "GroupIso H invT G"
 proof (intro_locales, rule GroupH, unfold_locales)
@@ -4298,7 +4298,7 @@ locale RModuleEnd = RModuleHom R smult M smult T
   and smult :: "'r \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
   and M     :: "'m set"
   and T     :: "'m \<Rightarrow> 'm"
-+ assumes endomorph: "Im \<subseteq> M"
++ assumes endomorph: "ImG \<subseteq> M"
 
 locale ModuleHom = RModuleHom UNIV smult M smult' T
   for smult  :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
@@ -4313,7 +4313,7 @@ lemmas (in Module) ModuleHomI = RModuleHomI[THEN ModuleHom.intro]
 locale ModuleEnd = ModuleHom smult M smult T
   for smult :: "'r::ring_1 \<Rightarrow> 'm::ab_group_add \<Rightarrow> 'm" (infixr "\<cdot>" 70)
   and M     :: "'m set" and T :: "'m \<Rightarrow> 'm"
-+ assumes endomorph: "Im \<subseteq> M"
++ assumes endomorph: "ImG \<subseteq> M"
 
 locale RModuleIso = RModuleHom R smult M smult' T
   for   R      :: "'r::ring_1 set"
@@ -4371,7 +4371,7 @@ proof (rule Domain.RSubmoduleI, rule conjI, rule Group_Ker)
     by    simp
 qed fast
 
-lemma RModule_Im : "RModule R smult' Im"
+lemma RModule_Im : "RModule R smult' ImG"
   using Ring1 Group_Im
 proof (rule RModuleI, unfold_locales)
   show "\<And>n. n \<in> T ` M \<Longrightarrow> 1 \<star> n = n" using one_closed R_map[of 1] by auto
@@ -4394,7 +4394,7 @@ qed
 
 lemma im_submodule :
   assumes "RSubmodule N"
-  shows   "RModule.RSubmodule R smult' Im (T ` N)"
+  shows   "RModule.RSubmodule R smult' ImG (T ` N)"
 proof (rule RModule.RSubmoduleI, rule RModule_Im)
   from assms show "Group.Subgroup (T ` M) (T ` N)"
     using im_subgroup Subgroup_RSubmodule by fast
@@ -4537,13 +4537,13 @@ proof (rule GroupIso.intro)
   from bijective show "GroupIso_axioms M T N" by unfold_locales
 qed
 
-lemmas Im           = GroupIso.Im         [OF GroupIso]
+lemmas ImG           = GroupIso.ImG         [OF GroupIso]
 lemmas GroupHom_inv = GroupIso.inv        [OF GroupIso]
 lemmas invT_into    = GroupIso.invT_into  [OF GroupIso]
 lemmas T_invT       = GroupIso.T_invT     [OF GroupIso]
 lemmas invT_eq      = GroupIso.invT_eq    [OF GroupIso]
 
-lemma RModuleN : "RModule R smult' N" using RModule_Im Im by fast
+lemma RModuleN : "RModule R smult' N" using RModule_Im ImG by fast
 
 lemma inv : "RModuleIso R smult' N smult invT M"
   using RModuleN GroupHom_inv
@@ -5196,7 +5196,7 @@ locale VectorSpaceEnd = VectorSpaceHom smult V smult T
   for smult :: "'f::field \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
   and V     :: "'v set"
   and T     :: "'v \<Rightarrow> 'v"
-+ assumes endomorph: "Im \<subseteq> V"
++ assumes endomorph: "ImG \<subseteq> V"
 
 abbreviation (in VectorSpace) "VEnd \<equiv> VectorSpaceEnd smult V"
 
@@ -5253,7 +5253,7 @@ lemmas same_image_on_spanset_imp_same_hom
       OF ModuleHom.axioms(1), OF VectorSpaceHom.axioms(1)
     ]
 
-lemma VectorSpace_Im : "VectorSpace smult' Im"
+lemma VectorSpace_Im : "VectorSpace smult' ImG"
   using RModule_Im VectorSpace.intro Module.intro by fast
 
 lemma VectorSpaceHom_scalar_mul :
@@ -5274,7 +5274,7 @@ proof
 qed
 
 lemma VectorSpaceHom_composite_left :
-  assumes "Im \<subseteq> W" "VectorSpaceHom smult' W smult'' S"
+  assumes "ImG \<subseteq> W" "VectorSpaceHom smult' W smult'' S"
   shows   "VectorSpaceHom smult V smult'' (S \<circ> T)"
 proof-
   have "RModuleHom UNIV smult' W smult'' S"
@@ -5287,17 +5287,17 @@ qed
 
 lemma findim_domain_findim_image :
   assumes "findim V"
-  shows   "fscalar_mult.findim smult' Im"
+  shows   "fscalar_mult.findim smult' ImG"
 proof-
   from assms obtain vs where vs: "set vs \<subseteq> V" "scalar_mult.Span smult vs = V"
     by fast
   define ws where "ws = map T vs"
-  with vs(1) have 1: "set ws \<subseteq> Im" by auto
-  moreover have "Span ws = Im"
+  with vs(1) have 1: "set ws \<subseteq> ImG" by auto
+  moreover have "Span ws = ImG"
   proof
-    show "Span ws \<subseteq> Im"
+    show "Span ws \<subseteq> ImG"
       using 1 VectorSpace.Span_closed[OF VectorSpace_Im] by fast
-    from vs ws_def show "Span ws \<supseteq> Im"
+    from vs ws_def show "Span ws \<supseteq> ImG"
       using 1 SpanD_lincomb_arb_len_coeffs distrib_lincomb
             VectorSpace.SpanD_lincomb_arb_len_coeffs[OF VectorSpace_Im]
       by auto
@@ -6391,7 +6391,7 @@ locale FGModuleEnd = FGModuleHom G smult V smult T
   and smult :: "('f, 'g) aezfun \<Rightarrow> 'v::ab_group_add \<Rightarrow> 'v" (infixr "\<cdot>" 70)
   and V     :: "'v set"
   and T     :: "'v \<Rightarrow> 'v"
-+ assumes endomorph: "Im \<subseteq> V"
++ assumes endomorph: "ImG \<subseteq> V"
 
 locale FGModuleIso = FGModuleHom G smult V smult' T
   for   G      :: "'g::group_add set"
@@ -6546,7 +6546,7 @@ lemma VectorSpaceHom : "VectorSpaceHom fsmult V fsmult' T"
 
 lemmas distrib_flincomb = VectorSpaceHom.distrib_lincomb[OF VectorSpaceHom]
 
-lemma FGModule_Im : "FGModule G smult' Im"
+lemma FGModule_Im : "FGModule G smult' ImG"
   by (rule FGModule.intro, rule GroupG, rule RModule_Im, unfold_locales)
 
 lemma FGModHom_composite_left :
@@ -6687,7 +6687,7 @@ proof (rule RModuleIso.intro)
     by    fast
 qed (unfold_locales, rule bijective)
 
-lemmas Im = RModuleIso.Im[OF RModuleIso]
+lemmas ImG = RModuleIso.ImG[OF RModuleIso]
 
 lemma FGModuleIso_restrict0_GSubspace :
   assumes "GSubspace U"
@@ -6716,7 +6716,7 @@ lemma FGModIso_composite_left :
   shows   "FGModuleIso G smult V smult'' (S \<circ> T) X"
 proof (rule FGModuleIso.intro)
   from assms show "FGModuleHom G (\<cdot>) V smult'' (S \<circ> T)"
-    using FGModuleIso.axioms(1) Im FGModHom_composite_left by fast
+    using FGModuleIso.axioms(1) ImG FGModHom_composite_left by fast
   show "FGModuleIso_axioms V (S \<circ> T) X"
     using bijective FGModuleIso.bijective[OF assms] bij_betw_trans by unfold_locales
 qed
@@ -6747,7 +6747,7 @@ proof-
       using bij_betw_imp_inj_on[of T V W] inj_onD[of T V] by fast
     with UV bijective have "T ` U \<noteq> W" using bij_betw_imp_surj_on by fast
     moreover from U have "FGModule.GSubspace G smult' W (T ` U)"
-      using Im im_submodule by fast
+      using ImG im_submodule by fast
     ultimately show "U = 0" 
       using assms U FGModuleIso_restrict0_GSubspace
             FGModuleIso.isomorphic_to_zero_right
@@ -7605,10 +7605,10 @@ lemma isomorphic_imp_GRep :
   shows   "FinGroupRepresentation G smult' W"
 proof (rule FinGroupRepresentation.intro)
   from assms show "FGModule G smult' W"
-    using FGModuleIso.Im FGModuleHom.FGModule_Im[OF FGModuleIso.axioms(1)]
+    using FGModuleIso.ImG FGModuleHom.FGModule_Im[OF FGModuleIso.axioms(1)]
     by    fast
   from assms have "fscalar_mult.findim (aezfun_scalar_mult.fsmult smult') W"
-    using FGModuleIso.Im findim FGModuleIso.VectorSpaceHom
+    using FGModuleIso.ImG findim FGModuleIso.VectorSpaceHom
           VectorSpaceHom.findim_domain_findim_image
     by    fastforce
   with good_char show "FinGroupRepresentation_axioms G smult' W" by unfold_locales
