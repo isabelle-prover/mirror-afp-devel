@@ -280,8 +280,31 @@ using assms(1) proof (induct xs rule: lfinite_less_induct)
 qed
 
 coinductive emb :: "'a llist \<Rightarrow> 'a llist \<Rightarrow> bool" where
-  "emb LNil xs"
+  "lfinite xs \<Longrightarrow> emb LNil xs"
 | "emb xs ys \<Longrightarrow> emb (LCons x xs) (prepend zs (LCons x ys))"
+
+inductive_cases emb_LConsE: "emb (LCons z zs) ys"
+inductive_cases emb_LNil1E: "emb LNil ys"
+inductive_cases emb_LNil2E: "emb xs LNil"
+
+lemma emb_lfinite:
+  assumes "emb xs ys"
+  shows "lfinite ys \<longleftrightarrow> lfinite xs"
+proof
+  assume "lfinite xs"
+  then show "lfinite ys" using assms
+    by (induct xs arbitrary: ys rule: lfinite_induct)
+      (auto simp: lnull_def neq_LNil_conv elim!: emb_LNil1E emb_LConsE)
+next
+  assume "lfinite ys"
+  then show "lfinite xs" using assms
+  proof (induction ys arbitrary: xs rule: lfinite_less_induct)
+    case (less ys)
+    from less.prems \<open>lfinite ys\<close> show ?case
+      by (cases xs)
+        (auto simp: eSuc_enat elim!: emb_LNil1E emb_LConsE less.IH[rotated] dest!: lfinite_llength_enat)
+  qed
+qed
 
 inductive prepend_cong1 for X where
   prepend_cong1_base: "X xs \<Longrightarrow> prepend_cong1 X xs"
@@ -289,7 +312,7 @@ inductive prepend_cong1 for X where
 
 lemma emb_prepend_coinduct[rotated, case_names emb]:
   assumes "(\<And>x1 x2. X x1 x2 \<Longrightarrow>
-    (\<exists>xs. x1 = LNil \<and> x2 = xs)
+    (\<exists>xs. x1 = LNil \<and> x2 = xs \<and> lfinite xs)
      \<or> (\<exists>xs ys x zs. x1 = LCons x xs \<and> x2 = prepend zs (LCons x ys)
        \<and> (prepend_cong1 (X xs) ys \<or> emb xs ys)))" (is "\<And>x1 x2. X x1 x2 \<Longrightarrow> ?bisim x1 x2")
   shows "X x1 x2 \<Longrightarrow> emb x1 x2"
@@ -499,16 +522,12 @@ qed
 
 lemma chain_tranclp_imp_exists_chain:
   "chain R\<^sup>+\<^sup>+ xs \<Longrightarrow>
-   \<exists>ys. chain R ys \<and> emb xs ys \<and> (lfinite ys \<longleftrightarrow> lfinite xs) \<and> lhd ys = lhd xs
-     \<and> llast ys = llast xs"
+   \<exists>ys. chain R ys \<and> emb xs ys \<and> lhd ys = lhd xs \<and> llast ys = llast xs"
 proof (intro exI[of _ "wit xs"] conjI, coinduction arbitrary: xs rule: chain_prepend_coinduct)
   case chain
   then show ?case
     by (subst (1 2) wit_alt; assumption?) (erule chain.cases; force split: llist.splits)
 qed auto
-
-inductive_cases emb_LConsE: "emb (LCons z zs) ys"
-inductive_cases emb_LNil2E: "emb xs LNil"
 
 lemma emb_lset_mono[rotated]: "x \<in> lset xs \<Longrightarrow> emb xs ys \<Longrightarrow> x \<in> lset ys"
   by (induct x xs arbitrary: ys rule: llist.set_induct) (auto elim!: emb_LConsE)
@@ -585,7 +604,7 @@ proof (coinduction arbitrary: xs ys rule: emb.coinduct)
       using emb' by blast
     ultimately show ?thesis
       by blast
-  qed simp
+  qed (simp add: emb_lfinite[OF emb])
 qed
 
 end
@@ -678,16 +697,15 @@ inductive_cases full_chain_nontrivE: "full_chain R (LCons x (LCons y xs))"
 
 lemma full_chain_tranclp_imp_exists_full_chain:
   assumes full: "full_chain R\<^sup>+\<^sup>+ xs"
-  shows "\<exists>ys. full_chain R ys \<and> emb xs ys \<and> lfinite ys = lfinite xs \<and> lhd ys = lhd xs
-    \<and> llast ys = llast xs"
+  shows "\<exists>ys. full_chain R ys \<and> emb xs ys \<and> lhd ys = lhd xs \<and> llast ys = llast xs"
 proof -
   obtain ys where ys:
-    "chain R ys" "emb xs ys" "lfinite ys = lfinite xs" "lhd ys = lhd xs" "llast ys = llast xs"
+    "chain R ys" "emb xs ys" "lhd ys = lhd xs" "llast ys = llast xs"
     using full_chain_imp_chain[OF full] chain_tranclp_imp_exists_chain by blast
   have "full_chain R ys"
-    using ys(1,3,5) full unfolding full_chain_iff_chain by auto
+    using ys(1,4) emb_lfinite[OF ys(2)] full unfolding full_chain_iff_chain by auto
   then show ?thesis
-    using ys(2-5) by auto
+    using ys(2-4) by auto
 qed
 
 end
