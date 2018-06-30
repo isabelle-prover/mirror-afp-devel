@@ -374,7 +374,7 @@ next
   with BlockRed show ?case by(simp)
 qed(fastforce split: if_split_asm)+
 
-lemma wf_state_ConsD: "wf_state (e, e' # es) \<Longrightarrow> wf_state (e', es)"
+lemma (in -) wf_state_ConsD: "wf_state (e, e' # es) \<Longrightarrow> wf_state (e', es)"
 by(simp)
 
 lemma red_fold_exs:

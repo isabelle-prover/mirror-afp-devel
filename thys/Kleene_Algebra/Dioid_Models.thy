@@ -571,6 +571,7 @@ lattice is a dioid with one and zero. *}
 
 class bounded_distributive_lattice = bounded_lattice + distrib_lattice
 
+declare [[pending_shyps]]
 sublocale bounded_distributive_lattice \<subseteq> dioid_one_zero sup inf top bot less_eq
 proof
   fix x y z
@@ -601,6 +602,7 @@ proof
   show "inf x (sup y z) = sup (inf x y) (inf x z)"
     by (fact inf_sup_distrib1)
 qed
+declare [[pending_shyps = false]]
 
 
 subsection {* The Boolean Dioid *}

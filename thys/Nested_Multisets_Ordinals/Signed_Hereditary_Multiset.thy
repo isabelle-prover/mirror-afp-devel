@@ -92,7 +92,7 @@ lemma hmsetmset_0[simp]: "hmsetmset 0 = {#}"
   by (rule hmultiset.inject[THEN iffD1]) (simp add: zero_hmultiset_def)
 
 instance
-  by (intro_classes; transfer) (auto intro: linordered_field_class.sign_simps(1) add.commute)
+  by (intro_classes; transfer) (auto intro: mult.assoc add.commute)
 
 end
 

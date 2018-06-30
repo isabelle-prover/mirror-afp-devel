@@ -429,8 +429,9 @@ instantiation prod :: (type, partial_semigroup) partial_semigroup
 begin
 
 definition "D_prod x y = (fst x = fst y \<and> D (snd x) (snd y))"
+  for x y :: "'a \<times> 'b"
 
-definition times_prod :: "'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b" where 
+definition times_prod :: "'a \<times> 'b \<Rightarrow> 'a \<times> 'b \<Rightarrow> 'a \<times> 'b" where
   "times_prod x y = (fst x, snd x \<cdot> snd y)"
 
 instance

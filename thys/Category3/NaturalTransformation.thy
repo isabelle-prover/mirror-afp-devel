@@ -462,6 +462,91 @@ begin
   definition naturally_isomorphic
   where "naturally_isomorphic A B F G = (\<exists>\<tau>. natural_isomorphism A B F G \<tau>)"
 
+  lemma naturally_isomorphic_respects_full_functor:
+  assumes "naturally_isomorphic A B F G"
+  and "full_functor A B F"
+  shows "full_functor A B G"
+  proof -
+    obtain \<phi> where \<phi>: "natural_isomorphism A B F G \<phi>"
+      using assms naturally_isomorphic_def by blast
+    interpret \<phi>: natural_isomorphism A B F G \<phi>
+      using \<phi> by auto
+    interpret \<phi>.F: full_functor A B F
+      using assms by auto
+    write A (infixr "\<cdot>\<^sub>A" 55)
+    write B (infixr "\<cdot>\<^sub>B" 55)
+    write \<phi>.A.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>")
+    write \<phi>.B.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
+    show "full_functor A B G"
+    proof
+      fix a a' g
+      assume a': "\<phi>.A.ide a'" and a: "\<phi>.A.ide a"
+      and g: "\<guillemotleft>g : G a' \<rightarrow>\<^sub>B G a\<guillemotright>"
+      show "\<exists>f. \<guillemotleft>f : a' \<rightarrow>\<^sub>A a\<guillemotright> \<and> G f = g"
+      proof -
+        let ?g' = "\<phi>.B.inv (\<phi> a) \<cdot>\<^sub>B g \<cdot>\<^sub>B \<phi> a'"
+        have g': "\<guillemotleft>?g' : F a' \<rightarrow>\<^sub>B F a\<guillemotright>"
+          using a a' g \<phi>.preserves_hom \<phi>.components_are_iso \<phi>.B.inv_in_hom by force
+        obtain f' where f': "\<guillemotleft>f' : a' \<rightarrow>\<^sub>A a\<guillemotright> \<and> F f' = ?g'"
+          using a a' g' \<phi>.F.is_full [of a a' ?g'] by blast
+        moreover have "G f' = g"
+        proof -
+          have "G f' = \<phi> a \<cdot>\<^sub>B ?g' \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a')"
+          proof -
+            have "\<phi>.B.seq (\<phi> a) (F f')"
+              using a f' by (metis \<phi>.A.in_homE \<phi>.is_natural_2 \<phi>.preserves_reflects_arr)
+            moreover have "G f' \<cdot>\<^sub>B \<phi> a' = \<phi> a \<cdot>\<^sub>B F f'"
+              using a a' f' \<phi>.naturality [of f'] by force
+            ultimately show ?thesis
+              using a a' f' \<phi>.components_are_iso \<phi>.B.invert_side_of_triangle(2)
+              by (metis \<phi>.B.comp_assoc \<phi>.B.match_3 \<phi>.B.seqE)
+          qed
+          also have "... = (\<phi> a \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a)) \<cdot>\<^sub>B g \<cdot>\<^sub>B \<phi> a' \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a')"
+            using a a' g \<phi>.components_are_iso by auto
+          also have "... = g"
+            using a a' g \<phi>.B.comp_arr_dom \<phi>.B.comp_cod_arr \<phi>.B.comp_arr_inv \<phi>.B.comp_inv_arr
+                  \<phi>.B.inv_is_inverse
+            by auto
+          finally show ?thesis by blast
+        qed
+        ultimately show ?thesis by auto
+      qed
+    qed
+  qed
+
+  lemma naturally_isomorphic_respects_faithful_functor:
+  assumes "naturally_isomorphic A B F G"
+  and "faithful_functor A B F"
+  shows "faithful_functor A B G"
+  proof -
+    obtain \<phi> where \<phi>: "natural_isomorphism A B F G \<phi>"
+      using assms naturally_isomorphic_def by blast
+    interpret \<phi>: natural_isomorphism A B F G \<phi>
+      using \<phi> by auto
+    interpret \<phi>.F: faithful_functor A B F
+      using assms by auto
+    write A (infixr "\<cdot>\<^sub>A" 55)
+    write B (infixr "\<cdot>\<^sub>B" 55)
+    write \<phi>.A.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>A _\<guillemotright>")
+    write \<phi>.B.in_hom ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>B _\<guillemotright>")
+    show "faithful_functor A B G"
+    proof
+      fix \<mu> \<mu>'
+      assume par: "\<phi>.A.par \<mu> \<mu>'" and eq: "G \<mu> = G \<mu>'"
+      show "\<mu> = \<mu>'"
+      proof -
+        have "\<phi> (\<phi>.A.cod \<mu>) \<cdot>\<^sub>B F \<mu> = \<phi> (\<phi>.A.cod \<mu>) \<cdot>\<^sub>B F \<mu>'"
+          using par eq \<phi>.naturality by metis
+        moreover have "\<phi>.B.mono (\<phi> (\<phi>.A.cod \<mu>))"
+          using par \<phi>.components_are_iso \<phi>.B.iso_is_section \<phi>.B.section_is_mono by auto
+        ultimately have "F \<mu> = F \<mu>'"
+          using par \<phi>.B.monoE [of "\<phi> (\<phi>.A.cod \<mu>)" "F \<mu>" "F \<mu>'"] by auto
+        thus "\<mu> = \<mu>'"
+          using par \<phi>.F.is_faithful by blast
+      qed
+    qed
+  qed
+
   locale inverse_transformation =
     A: category A +
     B: category B +

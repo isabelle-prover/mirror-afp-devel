@@ -352,6 +352,13 @@ lemma (in left_kleene_algebra) add_star_eq:
   "x + y \<cdot> y\<^sup>\<star> \<cdot> x = y\<^sup>\<star> \<cdot> x"
 by (metis add.commute mult_onel star2 star_one troeger)
 
+declare rev_conj_cong[fundef_cong]
+  \<comment> \<open>required for the function package to prove termination of @{term star_fps_rep}\<close>
+
+fun star_fps_rep where
+  star_fps_rep_Nil: "star_fps_rep f [] = (f [])\<^sup>\<star>"
+| star_fps_rep_Cons: "star_fps_rep f n = (f [])\<^sup>\<star> \<cdot> \<Sum>{f y \<cdot> star_fps_rep f z |y z. n = y @ z \<and> y \<noteq> []}"
+
 instantiation fps :: (type,kleene_algebra) kleene_algebra
 begin
 
@@ -361,13 +368,6 @@ begin
 
   This definition of the star is from an unpublished manuscript by
   Esik and Kuich. *}
-
-  declare rev_conj_cong[fundef_cong]
-    \<comment> \<open>required for the function package to prove termination of @{term star_fps_rep}\<close>
-
-  fun star_fps_rep where
-    star_fps_rep_Nil: "star_fps_rep f [] = (f [])\<^sup>\<star>"
-  | star_fps_rep_Cons: "star_fps_rep f n = (f [])\<^sup>\<star> \<cdot> \<Sum>{f y \<cdot> star_fps_rep f z |y z. n = y @ z \<and> y \<noteq> []}"
 
   lift_definition star_fps :: "('a, 'b) fps \<Rightarrow> ('a, 'b) fps" is star_fps_rep ..
 

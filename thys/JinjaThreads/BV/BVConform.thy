@@ -136,10 +136,12 @@ lemma confTs_map [iff]:
   "(P,h \<turnstile> vs [:\<le>\<^sub>\<top>] map OK Ts) = (P,h \<turnstile> vs [:\<le>] Ts)"
   by (induct Ts arbitrary: vs) (auto simp add: list_all2_Cons2)
 
-lemma reg_widen_Err [iff]:
+lemma (in -) reg_widen_Err:
   "(P \<turnstile> replicate n Err [\<le>\<^sub>\<top>] LT) = (LT = replicate n Err)"
   by (induct n arbitrary: LT) (auto simp add: list_all2_Cons1)
-    
+
+declare reg_widen_Err [iff]
+
 lemma confTs_Err [iff]:
   "P,h \<turnstile> replicate n v [:\<le>\<^sub>\<top>] replicate n Err"
   by (induct n) auto

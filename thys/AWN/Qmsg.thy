@@ -11,7 +11,7 @@ begin
 
 text \<open>Define the queue process\<close>
 
-fun \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G :: "(('m::msg) list, 'm, unit, unit label) seqp_env"
+fun \<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G :: "('m list, 'm, unit, unit label) seqp_env"
 where
   "\<Gamma>\<^sub>Q\<^sub>M\<^sub>S\<^sub>G () = labelled () (receive(\<lambda>msg msgs. msgs @ [msg]). call(())
            \<oplus> \<langle>msgs. msgs \<noteq> []\<rangle>

@@ -22,15 +22,9 @@ begin
 
   locale discrete_category =
     fixes Obj :: "'a set"
-    assumes Obj_not_UNIV: "Obj \<noteq> UNIV"
+    and Null :: 'a
+    assumes Null_not_in_Obj: "Null \<notin> Obj"
   begin
-
-    definition Null :: 'a
-    where "Null \<equiv> (SOME x. x \<notin> Obj)"
-
-    lemma Null_not_in_Obj:
-    shows "Null \<notin> Obj"
-      using Null_def Obj_not_UNIV someI_ex [of "\<lambda>x. x \<notin> Obj"] by auto
 
     definition comp :: "'a comp"      (infixr "\<cdot>" 55)
     where "y \<cdot> x \<equiv> (if x \<in> Obj \<and> x = y then x else Null)"
@@ -96,7 +90,7 @@ begin
       using comp_def null_char by auto
 
     lemma is_discrete:
-    shows "ide f \<longleftrightarrow> arr f"
+    shows "ide = arr"
       using arr_char ide_char by auto
 
   end

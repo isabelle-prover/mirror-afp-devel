@@ -46,9 +46,11 @@ begin
 
 sublocale semiring_one_zero "(\<squnion>)" "(\<cdot>)" "1" "bot" 
   by (standard, auto simp: sup.assoc sup.commute sup_left_commute left_distrib right_distrib sup_absorb1)   
-  
+
+declare [[pending_shyps]]
 sublocale dioid_one_zero "(\<squnion>)" "(\<cdot>)" "1" bot "(\<le>)" "(<)"
   by (standard, simp add: le_iff_sup, auto)
+declare [[pending_shyps = false]]
 
 end
 
@@ -250,8 +252,10 @@ lemma sup_distr: "(x \<squnion> y) \<cdot> z = x \<cdot> z \<squnion> y \<cdot> 
 sublocale semiring_one_zero "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" 
   by (standard, auto simp: sup.assoc sup.commute sup_left_commute sup_distl sup_distr)     
 
+declare [[pending_shyps]]
 sublocale dioid_one_zero "(\<squnion>)" "(\<cdot>)" "1" "\<bottom>" "(\<le>)" "(<)"
   by (standard, simp add: le_iff_sup, auto)
+declare [[pending_shyps = false]]
 
 lemma Sup_sup_pred: "x \<squnion> Sup{y. P y} = Sup{y. y = x \<or> P y}"
   apply (rule antisym)

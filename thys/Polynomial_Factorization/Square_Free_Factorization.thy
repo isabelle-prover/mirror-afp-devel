@@ -1289,7 +1289,9 @@ lemma square_free_factorization_factorI: fixes p :: "'a poly"
   and a: "a = r * s"
   shows "square_free_factorization p (c, bs1 @ ((r,i) # (s,i) # bs2))"
   using square_free_factorization_prod_listI[of p c bs1 "[r,s]" i bs2] sff r s a by auto
-  
+
+end
+
 lemma monic_square_free_irreducible_factorization: assumes mon: "monic (f :: 'b :: field poly)" 
   and sf: "square_free f"
   shows "\<exists> P. finite P \<and> f = \<Prod>P \<and> P \<subseteq> {q. irreducible q \<and> monic q}"
@@ -1312,6 +1314,9 @@ proof -
   with P show ?thesis by auto
 qed
 
+context 
+  assumes "SORT_CONSTRAINT('a :: {field, factorial_ring_gcd})" 
+begin
 lemma monic_factorization_uniqueness:
 fixes P::"'a poly set"
 assumes finite_P: "finite P" 

@@ -388,12 +388,258 @@ begin
   end
 
   text {*
-    Notably absent here is a proof that a fully faithful and essentially surjective
-    functor extends to an adjoint equivalence.  To prove this without repeating things
-    that were already proved in @{theory Category3.Adjunction} requires that the development in
-    that theory be modified to allow the unit or counit of the adjunction to be a specified
-    initial or terminal arrow, rather than an arbitrarily chosen one.
-    I did not need this result this time around, so it is left for the future.
+    Every fully faithful and essentially surjective functor underlies an adjoint equivalence.
+    To prove this without repeating things that were already proved in @{theory Category3.Adjunction},
+    we first show that a fully faithful and essentially surjective functor is a left adjoint
+    functor, and then we show that if the left adjoint in a unit-counit adjunction is
+    fully faithful and essentially surjective, then the unit and counit are natural isomorphisms;
+    hence the adjunction is in fact an adjoint equivalence.
   *}
+
+  locale fully_faithful_and_essentially_surjective_functor =
+    C: category C +
+    D: category D +
+    fully_faithful_functor D C F +
+    essentially_surjective_functor D C F
+    for C :: "'c comp"     (infixr "\<cdot>\<^sub>C" 55)
+    and D :: "'d comp"     (infixr "\<cdot>\<^sub>D" 55)
+    and F :: "'d \<Rightarrow> 'c"
+  begin
+
+    notation C.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>C _\<guillemotright>")
+    notation D.in_hom      ("\<guillemotleft>_ : _ \<rightarrow>\<^sub>D _\<guillemotright>")
+
+    lemma is_left_adjoint_functor:
+    shows "left_adjoint_functor D C F"
+    proof
+      fix y
+      assume y: "C.ide y"
+      let ?x = "SOME x. D.ide x \<and> (\<exists>e. C.iso e \<and> \<guillemotleft>e : F x \<rightarrow>\<^sub>C y\<guillemotright>)"
+      let ?e = "SOME e. C.iso e \<and> \<guillemotleft>e : F ?x \<rightarrow>\<^sub>C y\<guillemotright>"
+      have "\<exists>x e. C.iso e \<and> terminal_arrow_from_functor D C F x y e"
+      proof -
+        have "\<exists>x. C.iso ?e \<and> terminal_arrow_from_functor D C F x y ?e"
+        proof -
+          have x: "D.ide ?x \<and> (\<exists>e. C.iso e \<and> \<guillemotleft>e : F ?x \<rightarrow>\<^sub>C y\<guillemotright>)"
+          proof -
+            obtain x where x: "D.ide x \<and> C.isomorphic (F x) y"
+              using y essentially_surjective D.isomorphic_def by blast
+            obtain e where e: "C.iso e \<and> \<guillemotleft>e : F x \<rightarrow>\<^sub>C y\<guillemotright>"
+              using y x by auto
+            hence "\<exists>x. D.ide x \<and> (\<exists>e. C.iso e \<and> \<guillemotleft>e : F x \<rightarrow>\<^sub>C y\<guillemotright>)"
+              using x by auto
+            thus "D.ide ?x \<and> (\<exists>e. C.iso e \<and> \<guillemotleft>e : F ?x \<rightarrow>\<^sub>C y\<guillemotright>)"
+              using someI_ex [of "\<lambda>x. D.ide x \<and> (\<exists>e. C.iso e \<and> \<guillemotleft>e : F x \<rightarrow>\<^sub>C y\<guillemotright>)"] by blast
+          qed
+          hence e: "C.iso ?e \<and> \<guillemotleft>?e : F ?x \<rightarrow>\<^sub>C y\<guillemotright>"
+            using someI_ex [of "\<lambda>e. C.iso e \<and> \<guillemotleft>e : F ?x \<rightarrow>\<^sub>C y\<guillemotright>"] by blast
+          interpret arrow_from_functor D C F ?x y ?e
+            using x e by (unfold_locales, simp)
+          interpret terminal_arrow_from_functor D C F ?x y ?e
+          proof
+            fix x' f
+            assume 1: "arrow_from_functor D C F x' y f"
+            interpret f: arrow_from_functor D C F x' y f
+              using 1 by simp
+            have f: "\<guillemotleft>f: F x' \<rightarrow>\<^sub>C y\<guillemotright>"
+              by (meson f.arrow)
+            show "\<exists>!g. is_coext x' f g"
+            proof
+              let ?g = "SOME g. \<guillemotleft>g : x' \<rightarrow>\<^sub>D ?x\<guillemotright> \<and> F g = C.inv ?e \<cdot>\<^sub>C f"
+              have g: "\<guillemotleft>?g : x' \<rightarrow>\<^sub>D ?x\<guillemotright> \<and> F ?g = C.inv ?e \<cdot>\<^sub>C f"
+              proof -
+                have "\<exists>g. \<guillemotleft>g : x' \<rightarrow>\<^sub>D ?x\<guillemotright> \<and> F g = C.inv ?e \<cdot>\<^sub>C f"
+                  using f e x f.arrow
+                  by (meson C.comp_in_homI C.inv_in_hom is_full)
+                thus ?thesis
+                  using someI_ex [of "\<lambda>g. \<guillemotleft>g : x' \<rightarrow>\<^sub>D ?x\<guillemotright> \<and> F g = C.inv ?e \<cdot>\<^sub>C f"] by blast
+              qed
+              show 1: "is_coext x' f ?g"
+              proof -
+                have "\<guillemotleft>?g : x' \<rightarrow>\<^sub>D ?x\<guillemotright>"
+                  using g by simp
+                moreover have "?e \<cdot>\<^sub>C F ?g = f"
+                proof -
+                  have "?e \<cdot>\<^sub>C F ?g = ?e \<cdot>\<^sub>C C.inv ?e \<cdot>\<^sub>C f"
+                    using g by simp
+                  also have "... = (?e \<cdot>\<^sub>C C.inv ?e) \<cdot>\<^sub>C f"
+                    using e f C.inv_in_hom
+                    by (metis (no_types, lifting) C.comp_assoc C.in_homE C.seqI)
+                  also have "... = f"
+                  proof -
+                    have "?e \<cdot>\<^sub>C C.inv ?e = y"
+                      using e C.comp_arr_inv [of ?e] C.inv_is_inverse by auto
+                    thus ?thesis
+                      using f C.comp_cod_arr by auto
+                  qed
+                  finally show ?thesis by blast
+                qed
+                ultimately show ?thesis
+                  unfolding is_coext_def by simp
+              qed
+              show "\<And>g'. is_coext x' f g' \<Longrightarrow> g' = ?g"
+              proof -
+                fix g'
+                assume g': "is_coext x' f g'"
+                have 2: "\<guillemotleft>g' : x' \<rightarrow>\<^sub>D ?x\<guillemotright> \<and> ?e \<cdot>\<^sub>C F g' = f" using g' is_coext_def by simp
+                have 3: "\<guillemotleft>?g : x' \<rightarrow>\<^sub>D ?x\<guillemotright> \<and> ?e \<cdot>\<^sub>C F ?g = f" using 1 is_coext_def by simp
+                have "F g' = F ?g"
+                  using e 2 3 C.iso_is_section C.section_is_mono C.monoE by blast
+                moreover have "D.par g' ?g"
+                  using 2 3 by fastforce
+                ultimately show "g' = ?g"
+                  using is_faithful [of g' ?g] by simp
+              qed
+            qed
+          qed
+          show ?thesis
+            using e terminal_arrow_from_functor_axioms by auto
+        qed
+        thus ?thesis by auto
+      qed
+      thus "\<exists>x e. terminal_arrow_from_functor D C F x y e" by blast
+    qed
+
+    lemma is_equivalence_functor:
+    shows "equivalence_functor D C F"
+    proof
+      interpret left_adjoint_functor D C F
+        using is_left_adjoint_functor by blast
+      interpret equivalence_of_categories C D F G \<eta> \<epsilon>
+      proof
+        show 1: "\<And>a. C.ide a \<Longrightarrow> C.iso (\<epsilon> a)"
+        proof -
+          fix a
+          assume a: "C.ide a"
+          interpret \<epsilon>a: terminal_arrow_from_functor D C F "G a" a "\<epsilon> a"
+            using a \<phi>\<psi>.has_terminal_arrows_from_functor [of a] by blast
+          have "C.retraction (\<epsilon> a)"
+          proof -
+            obtain b \<phi> where \<phi>: "D.ide b \<and> C.iso \<phi> \<and> \<guillemotleft>\<phi>: F b \<rightarrow>\<^sub>C a\<guillemotright>"
+              using a essentially_surjective by blast
+            interpret \<phi>: arrow_from_functor D C F b a \<phi>
+              using \<phi> by (unfold_locales, simp)
+            let ?g = "\<epsilon>a.the_coext b \<phi>"
+            have 1: "\<guillemotleft>?g : b \<rightarrow>\<^sub>D G a\<guillemotright> \<and> \<epsilon> a \<cdot>\<^sub>C F ?g = \<phi>"
+              using \<phi>.arrow_from_functor_axioms \<epsilon>a.the_coext_prop [of b \<phi>] by simp
+            have "a = (\<epsilon> a \<cdot>\<^sub>C F ?g) \<cdot>\<^sub>C C.inv \<phi>"
+              using a 1 \<phi> C.comp_cod_arr \<epsilon>.preserves_hom [of a a a]
+                    C.invert_side_of_triangle(2) [of "\<epsilon> a \<cdot>\<^sub>C F ?g" a \<phi>]
+               by auto
+            also have "... = \<epsilon> a \<cdot>\<^sub>C F ?g \<cdot>\<^sub>C C.inv \<phi>"
+            proof -
+              have "C.seq (\<epsilon> a) (F ?g)"
+                using a 1 \<epsilon>.preserves_hom [of a a a] by fastforce
+              moreover have "C.seq (F ?g) (C.inv \<phi>)"
+                using a 1 \<phi> C.inv_in_hom [of \<phi> "F b" a] by blast
+              ultimately show ?thesis by auto
+            qed
+            finally have "\<exists>f. C.ide (\<epsilon> a \<cdot>\<^sub>C f)"
+              using a by metis
+            thus ?thesis
+              unfolding C.retraction_def by blast
+          qed
+          moreover have "C.mono (\<epsilon> a)"
+          proof
+            show "C.arr (\<epsilon> a)"
+              using a by simp
+            show "\<And>f f'. C.seq (\<epsilon> a) f \<and> C.seq (\<epsilon> a) f' \<and> \<epsilon> a \<cdot>\<^sub>C f = \<epsilon> a \<cdot>\<^sub>C f' \<Longrightarrow> f = f'"
+            proof -
+              fix f f'
+              assume ff': "C.seq (\<epsilon> a) f \<and> C.seq (\<epsilon> a) f' \<and> \<epsilon> a \<cdot>\<^sub>C f = \<epsilon> a \<cdot>\<^sub>C f'"
+              have f: "\<guillemotleft>f : C.dom f \<rightarrow>\<^sub>C F (G a)\<guillemotright>"
+                using a ff' \<epsilon>.preserves_hom [of a a a] by fastforce
+              have f': "\<guillemotleft>f' : C.dom f' \<rightarrow>\<^sub>C F (G a)\<guillemotright>"
+                using a ff' \<epsilon>.preserves_hom [of a a a] by fastforce
+              have par: "C.par f f'"
+                using f f' ff' C.dom_comp [of "\<epsilon> a" f] by force
+              obtain b' \<phi> where \<phi>: "D.ide b' \<and> C.iso \<phi> \<and> \<guillemotleft>\<phi>: F b' \<rightarrow>\<^sub>C C.dom f\<guillemotright>"
+                using par essentially_surjective C.ide_dom [of f] by blast
+              have 1: "\<epsilon> a \<cdot>\<^sub>C f \<cdot>\<^sub>C \<phi> = \<epsilon> a \<cdot>\<^sub>C f' \<cdot>\<^sub>C \<phi>"
+              proof -
+                have "\<epsilon> a \<cdot>\<^sub>C f \<cdot>\<^sub>C \<phi> = (\<epsilon> a \<cdot>\<^sub>C f) \<cdot>\<^sub>C \<phi>"
+                proof -
+                  have "C.seq f \<phi>" using par \<phi> by auto
+                  moreover have "C.seq (\<epsilon> a) f" using ff' by blast
+                  ultimately show ?thesis by auto
+                qed
+                also have "... = (\<epsilon> a \<cdot>\<^sub>C f') \<cdot>\<^sub>C \<phi>"
+                  using ff' by argo
+                also have "... = \<epsilon> a \<cdot>\<^sub>C f' \<cdot>\<^sub>C \<phi>"
+                proof -
+                  have "C.seq f' \<phi>" using par \<phi> by auto
+                  moreover have "C.seq (\<epsilon> a) f'" using ff' by blast
+                  ultimately show ?thesis by auto
+                qed
+                finally show ?thesis by blast
+              qed
+              obtain g where g: "\<guillemotleft>g : b' \<rightarrow>\<^sub>D G a\<guillemotright> \<and> F g = f \<cdot>\<^sub>C \<phi>"
+                using a f \<phi> is_full [of "G a" b' "f \<cdot>\<^sub>C \<phi>"] by auto
+              obtain g' where g': "\<guillemotleft>g' : b' \<rightarrow>\<^sub>D G a\<guillemotright> \<and> F g' = f' \<cdot>\<^sub>C \<phi>"
+                using a f' par \<phi> is_full [of "G a" b' "f' \<cdot>\<^sub>C \<phi>"] by auto
+              interpret f\<phi>: arrow_from_functor D C F b' a "\<epsilon> a \<cdot>\<^sub>C f \<cdot>\<^sub>C \<phi>"
+                using a \<phi> f \<epsilon>.preserves_hom [of a a a]
+                by (unfold_locales, fastforce)
+              interpret f'\<phi>: arrow_from_functor D C F b' a "\<epsilon> a \<cdot>\<^sub>C f' \<cdot>\<^sub>C \<phi>"
+                using a \<phi> f' par \<epsilon>.preserves_hom [of a a a]
+                by (unfold_locales, fastforce)
+              have "\<epsilon>a.is_coext b' (\<epsilon> a \<cdot>\<^sub>C f \<cdot>\<^sub>C \<phi>) g"
+                unfolding \<epsilon>a.is_coext_def using g 1 by auto
+              moreover have "\<epsilon>a.is_coext b' (\<epsilon> a \<cdot>\<^sub>C f' \<cdot>\<^sub>C \<phi>) g'"
+                unfolding \<epsilon>a.is_coext_def using g' 1 by auto
+              ultimately have "g = g'"
+                using 1 f\<phi>.arrow_from_functor_axioms f'\<phi>.arrow_from_functor_axioms
+                      \<epsilon>a.the_coext_unique [of b' "\<epsilon> a \<cdot>\<^sub>C f \<cdot>\<^sub>C \<phi>" g]
+                      \<epsilon>a.the_coext_unique [of b' "\<epsilon> a \<cdot>\<^sub>C f' \<cdot>\<^sub>C \<phi>" g']
+                by auto
+              hence "f \<cdot>\<^sub>C \<phi> = f' \<cdot>\<^sub>C \<phi>"
+                using g g' is_faithful by argo
+              thus "f = f'"
+                using \<phi> f f' par C.iso_is_retraction C.retraction_is_epi
+                      C.epiE [of \<phi> f f']
+                by auto
+            qed
+          qed
+          ultimately show "C.iso (\<epsilon> a)"
+            using C.iso_iff_mono_and_retraction by simp
+        qed
+        interpret \<epsilon>: natural_isomorphism C C "F o G" C.map \<epsilon>
+          using 1 by (unfold_locales, auto)
+        interpret \<epsilon>F: natural_isomorphism D C "F o G o F" F "\<epsilon>F.map"
+          using \<epsilon>.components_are_iso by (unfold_locales, simp)
+        show "\<And>a. D.ide a \<Longrightarrow> D.iso (\<eta> a)"
+        proof -
+          fix a
+          assume a: "D.ide a"
+          have 1: "C.iso (\<epsilon>F.map a)"
+            using a \<epsilon>.components_are_iso by simp
+          moreover have "\<epsilon>F.map a \<cdot>\<^sub>C F\<eta>.map a = F a"
+            using a \<eta>\<epsilon>.triangle_F \<epsilon>FoF\<eta>.map_simp_ide by simp
+          ultimately have "C.inverse_arrows (\<epsilon>F.map a) (F\<eta>.map a)"
+            using a C.section_retraction_of_iso by simp
+          hence "C.iso (F\<eta>.map a)"
+            using C.iso_inv_iso by blast
+          thus "D.iso (\<eta> a)"
+            using a reflects_iso [of "\<eta> a"] by fastforce
+        qed
+      qed
+      (*
+       * Uggh, I should have started with "right_adjoint_functor C D G" so that the
+       * following would come out right.  Instead, another step is needed to dualize.
+       * TODO: Maybe re-work this later.
+       *)
+      interpret adjoint_equivalence C D F G \<eta> \<epsilon> ..
+      interpret \<epsilon>': inverse_transformation C C "F o G" C.map \<epsilon> ..
+      interpret \<eta>': inverse_transformation D D D.map "G o F" \<eta> ..
+      interpret E: adjoint_equivalence D C G F \<epsilon>'.map \<eta>'.map
+        using adjoint_equivalence_axioms dual_equivalence by blast
+      have "equivalence_of_categories D C G F \<epsilon>'.map \<eta>'.map" ..
+      thus "\<exists>G \<eta> \<epsilon>. equivalence_of_categories D C G F \<eta> \<epsilon>" by blast
+    qed
+
+  end
+
+  sublocale fully_faithful_and_essentially_surjective_functor \<subseteq> equivalence_functor D C F
+    using is_equivalence_functor by blast
 
 end
