@@ -416,17 +416,16 @@ definition ker:: "'c set"
 lemma f0_is_0[simp]: "f \<zero>\<^bsub>M\<^esub>=\<zero>\<^bsub>N\<^esub>"
 proof -
   have 1: "f \<zero>\<^bsub>M\<^esub> = f (\<zero>\<^bsub>R\<^esub> \<odot>\<^bsub>M\<^esub> \<zero>\<^bsub>M\<^esub>)" by simp
-  have 2: "f (\<zero>\<^bsub>R\<^esub> \<odot>\<^bsub>M\<^esub> \<zero>\<^bsub>M\<^esub>) = \<zero>\<^bsub>N\<^esub>" by (simp del: M.lmult_0 M.rmult_0 add:f_smult f_im)
+  have 2: "f (\<zero>\<^bsub>R\<^esub> \<odot>\<^bsub>M\<^esub> \<zero>\<^bsub>M\<^esub>) = \<zero>\<^bsub>N\<^esub>"
+    using M.M.zero_closed N.lmult_0 R.zero_closed f_im f_smult by presburger
   from 1 2 show ?thesis by auto
 qed
 
-lemma f_neg [simp]:
-  "v\<in>carrier M\<Longrightarrow>f (\<ominus>\<^bsub>M\<^esub> v) = \<ominus>\<^bsub>N\<^esub> f v"
-by (simp add: M.smult_minus_1[THEN sym] N.smult_minus_1[THEN sym] f_smult)
+lemma f_neg [simp]: "v \<in> carrier M\<Longrightarrow>f (\<ominus>\<^bsub>M\<^esub> v) = \<ominus>\<^bsub>N\<^esub> f v"
+  by (simp flip: M.smult_minus_1 N.smult_minus_1)
 
-lemma f_minus [simp]:
-  "\<lbrakk>v\<in>carrier M; w\<in>carrier M\<rbrakk>\<Longrightarrow>f (v\<ominus>\<^bsub>M\<^esub>w) = f v \<ominus>\<^bsub>N\<^esub> f w"
-by (simp add: a_minus_def f_neg f_add)
+lemma f_minus [simp]: "\<lbrakk>v\<in>carrier M; w\<in>carrier M\<rbrakk>\<Longrightarrow>f (v\<ominus>\<^bsub>M\<^esub>w) = f v \<ominus>\<^bsub>N\<^esub> f w"
+  by (simp add: a_minus_def)
 
 lemma ker_is_submodule: "submodule R ker M"
 proof - 
