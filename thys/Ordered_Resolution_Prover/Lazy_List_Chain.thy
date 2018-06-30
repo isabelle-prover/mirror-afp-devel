@@ -177,16 +177,11 @@ proof (induct rule: lfinite.induct)
 qed simp
 
 lemma tranclp_imp_exists_finite_chain_list:
-  "R\<^sup>+\<^sup>+ x y \<Longrightarrow> \<exists>xs. xs \<noteq> [] \<and> tl xs \<noteq> [] \<and> chain R (llist_of xs) \<and> hd xs = x \<and> last xs = y"
+  "R\<^sup>+\<^sup>+ x y \<Longrightarrow> \<exists>xs. chain R (llist_of (x # xs @ [y]))"
 proof (induct rule: tranclp.induct)
   case (r_into_trancl x y)
-  note r_xy = this
-
-  define xs where
-    "xs = [x, y]"
-
-  have "xs \<noteq> []" and "tl xs \<noteq> []" and "chain R (llist_of xs)" and "hd xs = x" and "last xs = y"
-    unfolding xs_def using r_xy by (auto intro: chain.intros)
+  then have "chain R (llist_of (x # [] @ [y]))"
+    by (auto intro: chain.intros)
   then show ?case
     by blast
 next
@@ -194,14 +189,14 @@ next
   note rstar_xy = this(1) and ih = this(2) and r_yz = this(3)
 
   obtain xs where
-    xs: "xs \<noteq> []" "tl xs \<noteq> []" "chain R (llist_of xs)" "hd xs = x" "last xs = y"
+    xs: "chain R (llist_of (x # xs @ [y]))"
     using ih by blast
   define ys where
-    "ys = xs @ [z]"
+    "ys = xs @ [y]"
 
-  have "ys \<noteq> []" and "tl ys \<noteq> []" and "chain R (llist_of ys)" and "hd ys = x" and "last ys = z"
-    unfolding ys_def using xs r_yz
-    by (auto simp: lappend_llist_of_llist_of[symmetric] intro: chain_singleton chain_lappend)
+  have "chain R (llist_of (x # ys @ [z]))"
+    unfolding ys_def using r_yz chain_lappend[OF xs chain_singleton, of z]
+    by (auto simp: lappend_llist_of_LCons llast_LCons)
   then show ?case
     by blast
 qed
@@ -212,10 +207,6 @@ inductive_cases chain_nontrivE: "chain R (LCons x (LCons y xs))"
 primrec prepend where
   "prepend [] ys = ys"
 | "prepend (x # xs) ys = LCons x (prepend xs ys)"
-
-lemma prepend_butlast:
-  "xs \<noteq> [] \<Longrightarrow> \<not> lnull ys \<Longrightarrow> last xs = lhd ys \<Longrightarrow> prepend (butlast xs) ys = prepend xs (ltl ys)"
-  by (induct xs) auto
 
 lemma lnull_prepend[simp]: "lnull (prepend xs ys) = (xs = [] \<and> lnull ys)"
   by (induct xs) auto
@@ -328,8 +319,8 @@ begin
 
 private coinductive chain' for R where
   "chain' R (LCons x LNil)"
-| "chain R (llist_of zs) \<Longrightarrow> zs \<noteq> [] \<Longrightarrow> tl zs \<noteq> [] \<Longrightarrow> \<not> lnull xs \<Longrightarrow> last zs = lhd xs \<Longrightarrow>
-     ys = ltl xs \<Longrightarrow> chain' R xs \<Longrightarrow> chain' R (prepend zs ys)"
+| "chain R (llist_of (x # zs @ [lhd xs])) \<Longrightarrow>
+   chain' R xs \<Longrightarrow> chain' R (LCons x (prepend zs xs))"
 
 private lemma chain_imp_chain': "chain R xs \<Longrightarrow> chain' R xs"
 proof (coinduction arbitrary: xs rule: chain'.coinduct)
@@ -338,56 +329,21 @@ proof (coinduction arbitrary: xs rule: chain'.coinduct)
   proof (cases rule: chain.cases)
     case (chain_cons zs z)
     then show ?thesis
-      by (intro disjI2) (force intro: chain.intros exI[of _ "[z, lhd zs]"] exI[of _ zs]
-          elim: chain.cases)
+      by (intro disjI2 exI[of _ z] exI[of _ "[]"] exI[of _ "zs"])
+        (auto intro: chain.intros)
   qed simp
 qed
-
-private inductive_cases chain'_LConsE: "chain' R (LCons x xs)"
-
-private lemma chain'_stepD1:
-  assumes "chain' R (LCons x (LCons y xs))"
-  shows "chain' R (LCons y xs)"
-proof (cases xs)
-  case [simp]: (LCons z zs)
-  with assms show ?thesis
-  proof (cases rule: chain'.cases)
-    case (2 as ys xs)
-    then show ?thesis
-    proof (cases "tl (tl as)")
-      case Nil
-      with 2 show ?thesis by (auto simp: neq_Nil_conv)
-    next
-      case (Cons b bs)
-      with 2 have "chain' R (prepend (y # b # bs) xs)"
-        by (intro chain'.intros)
-          (auto simp: chain_cons not_lnull_conv neq_Nil_conv elim: chain_nontrivE)
-      with 2 Cons show ?thesis
-        by (auto simp: neq_Nil_conv)
-    qed
-  qed
-qed (simp only: chain'.intros(1))
-
-private lemma chain'_stepD2: "chain' R (LCons x (LCons y xs)) \<Longrightarrow> R x y"
-  by (erule chain'.cases) (auto simp: neq_Nil_conv elim!: chain_nontrivE split: if_splits)
 
 private lemma chain'_imp_chain: "chain' R xs \<Longrightarrow> chain R xs"
 proof (coinduction arbitrary: xs rule: chain.coinduct)
   case chain
   then show ?case
   proof (cases rule: chain'.cases)
-    case (2 ys zs xs)
+    case (2 y zs ys)
     then show ?thesis
-    proof (cases "ltl zs")
-      case LNil
-      with chain 2 show ?thesis
-        by (auto 0 4 simp: neq_Nil_conv not_lnull_conv elim: chain'_stepD1 chain'_stepD2)
-    next
-      case (LCons b bs)
-      with chain 2 show ?thesis
-        unfolding neq_Nil_conv not_lnull_conv
-        by (elim exE) (auto elim: chain'_stepD1 chain_nontrivE)
-    qed
+      by (intro disjI2 exI[of _ "prepend zs ys"] exI[of _ y])
+        (force dest!: neq_Nil_conv[THEN iffD1] elim: chain.cases chain_nontrivE
+          intro: chain'.intros)
   qed simp
 qed
 
@@ -397,9 +353,9 @@ private lemma chain_chain': "chain = chain'"
 lemma chain_prepend_coinduct[case_names chain]:
   "X x \<Longrightarrow> (\<And>x. X x \<Longrightarrow>
     (\<exists>z. x = LCons z LNil) \<or>
-    (\<exists>xs zs. x = prepend zs (ltl xs) \<and> zs \<noteq> [] \<and> tl zs \<noteq> [] \<and> \<not> lnull xs \<and> last zs = lhd xs \<and>
-      (X xs \<or> chain R xs) \<and> chain R (llist_of zs))) \<Longrightarrow> chain R x"
-  by (subst chain_chain', erule chain'.coinduct) (auto simp: chain_chain')
+    (\<exists>y xs zs. x = LCons y (prepend zs xs) \<and>
+      (X xs \<or> chain R xs) \<and> chain R (llist_of (y # zs @ [lhd xs])))) \<Longrightarrow> chain R x"
+  by (subst chain_chain', erule chain'.coinduct) (force simp: chain_chain')
 
 end
 
@@ -408,16 +364,12 @@ context
 begin
 
 private definition pick where
-  "pick x y = (SOME xs. xs \<noteq> [] \<and> tl xs \<noteq> [] \<and> chain R (llist_of xs) \<and> hd xs = x \<and> last xs = y)"
+  "pick x y = (SOME xs. chain R (llist_of (x # xs @ [y])))"
 
 private lemma pick[simp]:
   assumes "R\<^sup>+\<^sup>+ x y"
-  shows "pick x y \<noteq> []" "tl (pick x y) \<noteq> []" "chain R (llist_of (pick x y))"
-    "hd (pick x y) = x" "last (pick x y) = y"
+  shows "chain R (llist_of (x # pick x y @ [y]))"
   unfolding pick_def using tranclp_imp_exists_finite_chain_list[THEN someI_ex, OF assms] by auto
-
-private lemma butlast_pick[simp]: "R\<^sup>+\<^sup>+ x y \<Longrightarrow> butlast (pick x y) \<noteq> []"
-  by (cases "pick x y"; cases "tl (pick x y)") (auto dest: pick(2))
 
 private friend_of_corec prepend where
   "prepend xs ys = (case xs of [] \<Rightarrow> 
@@ -426,18 +378,14 @@ private friend_of_corec prepend where
 
 private corec wit where
   "wit xs = (case xs of LCons x (LCons y xs) \<Rightarrow>
-     let zs = pick x y in LCons (hd zs) (prepend (butlast (tl zs)) (wit (LCons y xs))) | _ \<Rightarrow> xs)"
+     LCons x (prepend (pick x y) (wit (LCons y xs))) | _ \<Rightarrow> xs)"
 
 private lemma
   wit_LNil[simp]: "wit LNil = LNil" and
   wit_lsingleton[simp]: "wit (LCons x LNil) = LCons x LNil" and
   wit_LCons2: "wit (LCons x (LCons y xs)) =
-     (let zs = pick x y in LCons (hd zs) (prepend (butlast (tl zs)) (wit (LCons y xs))))"
+     (LCons x (prepend (pick x y) (wit (LCons y xs))))"
   by (subst wit.code; auto)+
-
-private lemma wit_LCons: "wit (LCons x xs) = (case xs of LNil \<Rightarrow> LCons x LNil | LCons y xs \<Rightarrow>
-     (let zs = pick x y in LCons (hd zs) (prepend (butlast (tl zs)) (wit (LCons y xs)))))"
-  by (subst wit.code; auto split: llist.splits)+
 
 private lemma lnull_wit[simp]: "lnull (wit xs) \<longleftrightarrow> lnull xs"
   by (subst wit.code) (auto split: llist.splits simp: Let_def)
@@ -445,67 +393,8 @@ private lemma lnull_wit[simp]: "lnull (wit xs) \<longleftrightarrow> lnull xs"
 private lemma lhd_wit[simp]: "chain R\<^sup>+\<^sup>+ xs \<Longrightarrow> lhd (wit xs) = lhd xs"
   by (erule chain.cases; subst wit.code) (auto split: llist.splits simp: Let_def)
 
-private lemma butlast_alt: "butlast xs = (if tl xs = [] then [] else hd xs # butlast (tl xs))"
-  by (cases xs) auto
-
-private lemma wit_alt:
-  "chain R\<^sup>+\<^sup>+ xs \<Longrightarrow> wit xs = (case xs of LCons x (LCons y xs) \<Rightarrow>
-     prepend (pick x y) (ltl (wit (LCons y xs))) | _ \<Rightarrow> xs)"
-  by (auto split: llist.splits simp: prepend_butlast[symmetric] wit_LCons2 Let_def
-    prepend.simps(2)[symmetric] butlast_alt[of "pick _ _"]
-    simp del: prepend.simps elim!: chain_nontrivE)
-
-private lemma wit_alt2:
-  "chain R\<^sup>+\<^sup>+ xs \<Longrightarrow> wit xs = (case xs of LCons x (LCons y xs) \<Rightarrow>
-     prepend (butlast (pick x y)) (wit (LCons y xs)) | _ \<Rightarrow> xs)"
-  by (auto split: llist.splits simp: wit_LCons2 Let_def
-    prepend.simps(2)[symmetric] butlast_alt[of "pick _ _"]
-    simp del: prepend.simps elim!: chain_nontrivE)
-
 private lemma LNil_eq_iff_lnull: "LNil = xs \<longleftrightarrow> lnull xs"
   by (cases xs) auto
-
-private lemma lfinite_wit[simp]:
-  assumes "chain R\<^sup>+\<^sup>+ xs"
-  shows "lfinite (wit xs) \<longleftrightarrow> lfinite xs"
-proof
-  assume "lfinite (wit xs)"
-  from this assms show "lfinite xs"
-  proof (induct "wit xs" arbitrary: xs rule: lfinite_prepend_induct)
-    case (prepend zs)
-    then show ?case
-    proof (cases zs)
-      case [simp]: (LCons x xs)
-      then show ?thesis
-      proof (cases xs)
-        case [simp]: LCons
-        with prepend show ?thesis
-          by (subst (asm) (2) wit_alt2) (force split: llist.splits elim!: chain_nontrivE)+
-      qed simp
-    qed simp
-  qed (simp add: LNil_eq_iff_lnull)
-next
-  assume "lfinite xs"
-  then show "lfinite (wit xs)"
-  proof (induct xs rule: lfinite.induct)
-    case (lfinite_LConsI xs x)
-    then show ?case
-      by (cases xs) (auto simp: wit_LCons Let_def)
-  qed simp
-qed
-
-private lemma llast_wit[simp]:
-  assumes "chain R\<^sup>+\<^sup>+ xs"
-  shows "llast (wit xs) = llast xs"
-proof (cases "lfinite xs")
-  case True
-  from this assms show ?thesis
-  proof (induct rule: lfinite.induct)
-    case (lfinite_LConsI xs x)
-    then show ?case
-      by (cases xs) (auto simp: wit_LCons2 llast_LCons elim: chain_nontrivE)
-  qed auto
-qed (auto simp: llast_linfinite assms)
 
 lemma emb_wit[simp]: "chain R\<^sup>+\<^sup>+ xs \<Longrightarrow> emb xs (wit xs)"
 proof (coinduction arbitrary: xs rule: emb_prepend_coinduct)
@@ -520,13 +409,31 @@ proof (coinduction arbitrary: xs rule: emb_prepend_coinduct)
   qed (auto intro!: exI[of _ LNil] exI[of _ "[]"] emb.intros)
 qed
 
+private lemma lfinite_wit[simp]:
+  assumes "chain R\<^sup>+\<^sup>+ xs"
+  shows "lfinite (wit xs) \<longleftrightarrow> lfinite xs"
+  using emb_wit emb_lfinite assms by blast
+
+private lemma llast_wit[simp]:
+  assumes "chain R\<^sup>+\<^sup>+ xs"
+  shows "llast (wit xs) = llast xs"
+proof (cases "lfinite xs")
+  case True
+  from this assms show ?thesis
+  proof (induct rule: lfinite.induct)
+    case (lfinite_LConsI xs x)
+    then show ?case
+      by (cases xs) (auto simp: wit_LCons2 llast_LCons elim: chain_nontrivE)
+  qed auto
+qed (auto simp: llast_linfinite assms)
+
 lemma chain_tranclp_imp_exists_chain:
   "chain R\<^sup>+\<^sup>+ xs \<Longrightarrow>
    \<exists>ys. chain R ys \<and> emb xs ys \<and> lhd ys = lhd xs \<and> llast ys = llast xs"
 proof (intro exI[of _ "wit xs"] conjI, coinduction arbitrary: xs rule: chain_prepend_coinduct)
   case chain
   then show ?case
-    by (subst (1 2) wit_alt; assumption?) (erule chain.cases; force split: llist.splits)
+    by (subst (1 2) wit.code) (erule chain.cases; force split: llist.splits dest: pick)
 qed auto
 
 lemma emb_lset_mono[rotated]: "x \<in> lset xs \<Longrightarrow> emb xs ys \<Longrightarrow> x \<in> lset ys"
