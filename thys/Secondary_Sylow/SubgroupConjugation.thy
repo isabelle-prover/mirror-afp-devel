@@ -24,7 +24,7 @@ lemma (in subgroup) subgroup_of_subset:
   assumes PH:"H \<subseteq> K"
   assumes KG:"subgroup K G"
   shows "subgroup H (G\<lparr>carrier := K\<rparr>)"
-using assms subgroup_def group.subgroup_inv_equality m_inv_closed by fastforce
+using assms subgroup_def group.m_inv_consistent m_inv_closed by fastforce
 
 context group
 begin

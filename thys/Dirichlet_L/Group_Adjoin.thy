@@ -51,7 +51,7 @@ proof -
     with H.subset have x': "x \<in> H'" by auto
     from x have "inv\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> x \<in> H" by (rule H.m_inv_closed)
     also have "inv\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> x = inv\<^bsub>G\<^esub> x"
-      using x' assms by (intro subgroup_inv_equality) auto
+      using x' assms by (intro m_inv_consistent) auto
     finally show "inv\<^bsub>G\<^esub> x \<in> H" .
   qed
 qed
@@ -67,7 +67,7 @@ proof -
     hence x': "x \<in> H'" using assms by auto
     from m_inv_closed [OF x] have "inv x \<in> H" by simp
     also have "inv x = inv\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> x" using x'
-      by (intro subgroup_inv_equality [symmetric] assms) auto
+      by (intro m_inv_consistent [symmetric] assms) auto
     finally show "inv\<^bsub>G\<lparr>carrier := H'\<rparr>\<^esub> x \<in> H" .
   qed (insert assms, auto)
 qed

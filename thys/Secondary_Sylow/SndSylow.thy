@@ -308,7 +308,7 @@ proof -
       from cardP PN have PsizeN:"P \<in> groupN.subgroups_of_size (p ^ a)" unfolding groupN.subgroups_of_size_def by auto
       from cardQ QN have QsizeN:"Q \<in> groupN.subgroups_of_size (p ^ a)" unfolding groupN.subgroups_of_size_def by auto
       from QsizeN PsizeN obtain g where g:"g \<in> carrier (G\<lparr>carrier := N\<rparr>)" "P = g <#\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> (Q #>\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> inv\<^bsub>G\<lparr>carrier := N\<rparr>\<^esub> g)" by (rule Nsylow.sylow_conjugate)
-      with NG have "P = g <# (Q #> inv g)" unfolding r_coset_def l_coset_def by (auto simp:subgroup_inv_equality)
+      with NG have "P = g <# (Q #> inv g)" unfolding r_coset_def l_coset_def by (auto simp:m_inv_consistent)
       with NG g Qsize have "conjugation_action (p ^ a) g Q = P" unfolding conjugation_action_def using subgroup.subset by force
       with g NfixesQ show "Q = P" by auto
     qed
