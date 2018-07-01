@@ -110,7 +110,6 @@ next
   thus "h \<unlhd>jmm h'" by cases auto
 qed simp
 
-declare [[pending_shyps]]
 interpretation jmm: heap
   addr2thread_id thread_id2addr
   jmm_spurious_wakeups
@@ -118,13 +117,11 @@ interpretation jmm: heap
   P
   for P
 by(rule jmm_heap)
-declare [[pending_shyps = false]]
 
 declare jmm.typeof_addr_thread_id2_addr_addr2thread_id [simp del]
 
 lemmas jmm'_heap = jmm_heap
 
-declare [[pending_shyps]]
 interpretation jmm': heap
   addr2thread_id thread_id2addr
   jmm_spurious_wakeups
@@ -132,7 +129,6 @@ interpretation jmm': heap
   P
   for P
 by(rule jmm'_heap)
-declare [[pending_shyps = false]]
 
 declare jmm'.typeof_addr_thread_id2_addr_addr2thread_id [simp del]
 

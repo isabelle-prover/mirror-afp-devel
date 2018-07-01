@@ -34,8 +34,6 @@ no_notation range_op ("r")
 
 end
 
-declare [[pending_shyps]]
-
 sublocale range_semiring \<subseteq> rdual: domain_semiring "(+)" "\<lambda>x y. y \<cdot> x" 1 0 range_op "(\<le>)" "(<)"
   rewrites "rdual.fd x y = \<langle>x| y"
 proof -
@@ -45,8 +43,6 @@ proof -
   show "rdual.fd x y = \<langle>x| y"
     unfolding rdual.fd_def bd_def by auto
 qed
-
-declare [[pending_shyps = false]]
 
 sublocale domain_semiring \<subseteq> ddual: range_semiring "(+)" "\<lambda>x y. y \<cdot> x" 1 0 domain_op "(\<le>)" "(<)"
   rewrites "ddual.bd x y = domain_semiringl_class.fd x y"
@@ -83,8 +79,6 @@ definition bbox :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" ("[_| _" [61,81] 82) w
 
 end
 
-declare [[pending_shyps]]
-
 sublocale antirange_semiring \<subseteq> ardual: antidomain_semiring antirange_op "(+)" "\<lambda>x y. y \<cdot> x" 1 0 "(\<le>)" "(<)"
   rewrites "ardual.ads_d x = r x"
   and "ardual.fdia x y = \<langle>x| y"
@@ -100,8 +94,6 @@ proof -
   show "ardual.fbox x y = [x| y"
     unfolding ardual.fbox_def bbox_def by auto
 qed
-
-declare [[pending_shyps = false]]
 
 context antirange_semiring
 

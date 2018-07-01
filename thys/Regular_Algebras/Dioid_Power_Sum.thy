@@ -39,9 +39,7 @@ lemma power_inductr_var: "y \<cdot> x \<le> y \<Longrightarrow> y \<cdot> x\<^bs
 definition powsum :: "'a \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a"  ("_\<^bsub>_\<^esub>\<^bsup>_\<^esup>" [101,50,50] 100) where
   "powsum x m n = sum ((^) x) {m..n + m}"
 
-declare [[pending_shyps]]
 lemmas powsum_simps = powsum_def atLeastAtMostSuc_conv numerals
-declare [[pending_shyps = false]]
 
 lemma powsum1 [simp]: "x\<^bsub>n\<^esub>\<^bsup>0\<^esup> = x\<^bsup>n\<^esup>"
   by (simp add:powsum_simps)

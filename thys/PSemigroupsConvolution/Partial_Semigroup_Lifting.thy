@@ -125,12 +125,10 @@ instance "fun" :: (pam, bool_ab_quantale) bool_ab_quantale ..
 
 instance "fun" :: (pam, bool_ab_unital_quantale) bool_ab_unital_quantale ..
 
-declare [[pending_shyps]]
 sublocale ab_quantale < abq: pas "( * )" "\<lambda>_ _. True"
   apply standard
   apply (simp_all add: mult_assoc)
   by (simp add: mult_commute)
-declare [[pending_shyps = false]]
 
 text \<open>Finally we prove some identities that hold in function spaces.\<close>
     
