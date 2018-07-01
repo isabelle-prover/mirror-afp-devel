@@ -174,10 +174,8 @@ definition mat_less_eq :: "('a, 'b, 'c::dioid_one_zero) matrix \<Rightarrow> ('a
 definition mat_less :: "('a, 'b, 'c::dioid_one_zero) matrix \<Rightarrow> ('a, 'b, 'c) matrix \<Rightarrow> bool" where
   "mat_less f g  = (mat_less_eq f g \<and> f \<noteq> g)"
 
-declare [[pending_shyps]]
 interpretation matrix_dioid: dioid_one_zero  mat_add mat_mult mat_one mat_zero mat_less_eq mat_less
   by (unfold_locales) (metis mat_add_assoc mat_add_comm mat_mult_assoc[symmetric] mat_distr mat_onel mat_oner mat_zeror mat_annil mat_annir mat_less_eq_def mat_less_def mat_add_idem mat_distl)+
-declare [[pending_shyps = false]]
 
 text {* As in the case of formal power series we currently do not
 implement the Kleene star of matrices, since this is complicated. *}

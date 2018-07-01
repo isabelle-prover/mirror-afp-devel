@@ -21,7 +21,6 @@ begin
 
 hide_const (open) up_ring.coeff up_ring.monom Modules.module
 
-declare [[pending_shyps]]
 
 subsection \<open>Auxiliary lemmas\<close>
 
@@ -3140,7 +3139,5 @@ proof -
     insert mon deg d, auto)
 qed
 end
-
-declare [[pending_shyps = false]]
 
 end
