@@ -46,7 +46,7 @@ begin
 
 sublocale semiring_one_zero "(\<squnion>)" "(\<cdot>)" "1" "bot" 
   by (standard, auto simp: sup.assoc sup.commute sup_left_commute left_distrib right_distrib sup_absorb1)   
-  
+
 sublocale dioid_one_zero "(\<squnion>)" "(\<cdot>)" "1" bot "(\<le>)" "(<)"
   by (standard, simp add: le_iff_sup, auto)
 

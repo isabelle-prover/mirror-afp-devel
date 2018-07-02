@@ -91,9 +91,9 @@ proof(auto simp: groupS.normal_inv_iff)
 next
   fix g h
   assume g:"g \<in> S" and hH:"h \<in> H" and hS:"h \<in> S" {
-    from g hH subgrpS show "g \<otimes> h \<otimes> inv\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> g \<in> H" by (metis inv_op_closed2 subgroup.mem_carrier subgroup_inv_equality)
+    from g hH subgrpS show "g \<otimes> h \<otimes> inv\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> g \<in> H" by (metis inv_op_closed2 subgroup.mem_carrier m_inv_consistent)
   } {
-    from g hS subgrpS show "g \<otimes> h \<otimes> inv\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> g \<in> S" by (metis subgroup.m_closed subgroup.m_inv_closed subgroup_inv_equality)
+    from g hS subgrpS show "g \<otimes> h \<otimes> inv\<^bsub>G\<lparr>carrier := S\<rparr>\<^esub> g \<in> S" by (metis subgroup.m_closed subgroup.m_inv_closed m_inv_consistent)
   }
 qed
 

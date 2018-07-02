@@ -135,6 +135,10 @@ lemma RatFPS_parametric: "(rel_prod (=) (=) ===> (=))
 end
 
 
+lemma normalize_quot_quot_of_fract [simp]: 
+  "normalize_quot (quot_of_fract x) = quot_of_fract x"
+  by (rule normalize_quot_id, rule quot_of_fract_in_normalized_fracts)
+
 context
 assumes "SORT_CONSTRAINT('a::{field,factorial_ring_gcd})"
 begin
@@ -146,10 +150,6 @@ lift_definition quot_to_ratfps :: "('a poly \<times> 'a poly) \<Rightarrow> 'a r
   "\<lambda>(x,y). let (x',y') = normalize_quot (x,y) 
            in  if coeff y' 0 = 0 then 0 else quot_to_fract (x',y')"
   by (simp add: case_prod_unfold Let_def quot_of_fract_quot_to_fract)
-
-lemma normalize_quot_quot_of_fract [simp]: 
-  "normalize_quot (quot_of_fract x) = quot_of_fract x"
-  by (rule normalize_quot_id, rule quot_of_fract_in_normalized_fracts)
 
 lemma quot_to_ratfps_quot_of_ratfps [code abstype]:
   "quot_to_ratfps (quot_of_ratfps x) = x"
@@ -837,14 +837,21 @@ proof (transfer, goal_cases)
   thus ?case by (auto simp add: Let_def case_prod_unfold x'_def y'_def)
 qed
 
-lemma fps_of_ratfps_quot_to_ratfps_code_post [code_post]:
+lemma fps_of_ratfps_quot_to_ratfps_code_post1:
   "fps_of_ratfps (quot_to_ratfps (x,pCons 1 y)) = fps_of_poly x / fps_of_poly (pCons 1 y)"
   "fps_of_ratfps (quot_to_ratfps (x,pCons (-1) y)) = fps_of_poly x / fps_of_poly (pCons (-1) y)"
+  by (simp_all add: fps_of_ratfps_quot_to_ratfps)
+
+lemma fps_of_ratfps_quot_to_ratfps_code_post2:
   "fps_of_ratfps (quot_to_ratfps (x'::'a::{field_char_0,factorial_ring_gcd} poly,pCons (numeral n) y')) = 
      fps_of_poly x' / fps_of_poly (pCons (numeral n) y')"
   "fps_of_ratfps (quot_to_ratfps (x'::'a::{field_char_0,factorial_ring_gcd} poly,pCons (-numeral n) y')) = 
      fps_of_poly x' / fps_of_poly (pCons (-numeral n) y')"
   by (simp_all add: fps_of_ratfps_quot_to_ratfps)
+
+lemmas fps_of_ratfps_quot_to_ratfps_code_post [code_post] =
+  fps_of_ratfps_quot_to_ratfps_code_post1
+  fps_of_ratfps_quot_to_ratfps_code_post2
 
 lemma fps_dehorner: 
   fixes a b c :: "'a :: semiring_1 fps" and d e f :: "'b :: ring_1 fps"

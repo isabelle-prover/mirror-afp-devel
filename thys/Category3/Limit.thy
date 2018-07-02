@@ -2523,11 +2523,12 @@ begin
   *}
 
   locale discrete_diagram_from_map =
-    J: DiscreteCategory.discrete_category I +
+    J: discrete_category I null +
     C: category C
   for I :: "'i set"
   and C :: "'c comp"      (infixr "\<cdot>" 55)
-  and D :: "'i \<Rightarrow> 'c" +
+  and D :: "'i \<Rightarrow> 'c"
+  and null :: 'i +
   assumes maps_to_ide: "i \<in> I \<Longrightarrow> C.ide (D i)"
   begin
 
@@ -2666,8 +2667,8 @@ begin
     definition has_products
     where "has_products (I :: 'i set) \<equiv>
              I \<noteq> UNIV \<and>
-             (\<forall>D. diagram (DiscreteCategory.discrete_category.comp I) C D
-                    \<longrightarrow> (\<exists>a. has_as_product (DiscreteCategory.discrete_category.comp I) D a))"
+             (\<forall>J D. discrete_diagram J C D \<and> Collect (partial_magma.arr J) = I
+                      \<longrightarrow> (\<exists>a. has_as_product J D a))"
 
     lemma ex_productE:
     assumes "\<exists>a. has_as_product J D a"
@@ -2677,28 +2678,30 @@ begin
     lemma has_products_if_has_limits:
     assumes "has_limits (undefined :: 'j)" and "I \<noteq> (UNIV :: 'j set)"
     shows "has_products I"
-    proof (unfold has_products_def)
-      interpret J: DiscreteCategory.discrete_category I
-        using assms(2) by (unfold_locales, auto)
-      have "\<And>D. diagram J.comp C D \<Longrightarrow> \<exists>a. has_as_product J.comp D a"
+    proof -
+      have "\<And>J D. \<lbrakk> discrete_diagram J C D; Collect (partial_magma.arr J) = I \<rbrakk>
+                   \<Longrightarrow> (\<exists>a. has_as_product J D a)"
       proof -
-        fix D
-        assume D: "diagram J.comp C D"
-        interpret D: diagram J.comp C D using D by auto
-        interpret D: discrete_diagram J.comp C D
-          using J.is_discrete by (unfold_locales, auto)
+        fix J :: "'j comp" and D
+        assume D: "discrete_diagram J C D"
+        interpret J: category J
+          using D discrete_diagram.axioms by auto
+        interpret D: discrete_diagram J C D
+          using D by auto
+        assume J: "Collect J.arr = I"
         obtain a \<pi> where \<pi>: "D.limit_cone a \<pi>"
-          using assms(1) has_limits_def has_limits_of_shape_def [of J.comp] D J.is_category
+          using assms(1) J has_limits_def has_limits_of_shape_def [of J]
+                D.diagram_axioms J.category_axioms
           by metis
-        have "product_cone J.comp C D a \<pi>"
+        have "product_cone J C D a \<pi>"
           using \<pi> D.product_coneI by auto
-        hence "has_as_product J.comp D a"
+        hence "has_as_product J D a"
           using has_as_product_def by blast
-        thus "\<exists>a. has_as_product J.comp D a"
+        thus "\<exists>a. has_as_product J D a"
           by auto
       qed
-      thus "I \<noteq> UNIV \<and> (\<forall>D. diagram J.comp C D \<longrightarrow> (\<exists>a. has_as_product J.comp D a))"
-        using assms(2) by auto
+      thus ?thesis
+        unfolding has_products_def using assms(2) by auto
     qed
 
   end
@@ -3045,26 +3048,26 @@ begin
         text{*
           First, construct the two required products and their cones.
         *}
-        interpret Obj: DiscreteCategory.discrete_category "Collect J.ide"
-          using J.not_arr_null mem_Collect_eq by (unfold_locales, blast)
-        interpret \<Delta>o: discrete_diagram_from_map "Collect J.ide" C D
+        interpret Obj: discrete_category "Collect J.ide" J.null
+          using J.not_arr_null J.ideD(1) mem_Collect_eq by (unfold_locales, blast)
+        interpret \<Delta>o: discrete_diagram_from_map "Collect J.ide" C D J.null
           using D.preserves_ide by (unfold_locales, auto)
         have "\<exists>p. has_as_product Obj.comp \<Delta>o.map p"
-          using assms(2) \<Delta>o.diagram_axioms has_products_def by metis
+          using assms(2) \<Delta>o.diagram_axioms has_products_def Obj.arr_char
+          by (metis (no_types, lifting) Collect_cong \<Delta>o.discrete_diagram_axioms mem_Collect_eq)
         from this obtain \<Pi>o \<pi>o where \<pi>o: "product_cone Obj.comp C \<Delta>o.map \<Pi>o \<pi>o"
            using ex_productE [of Obj.comp \<Delta>o.map] by auto
         interpret \<pi>o: product_cone Obj.comp C \<Delta>o.map \<Pi>o \<pi>o using \<pi>o by auto
         have \<pi>o_in_hom: "\<And>j. Obj.arr j \<Longrightarrow> \<guillemotleft>\<pi>o j : \<Pi>o \<rightarrow> D j\<guillemotright>"
           using \<pi>o.preserves_dom \<pi>o.preserves_cod \<Delta>o.map_def by auto
 
-        interpret Arr: DiscreteCategory.discrete_category "Collect J.arr"
+        interpret Arr: discrete_category "Collect J.arr" J.null
           using J.not_arr_null by (unfold_locales, blast)
-        interpret \<Delta>a: discrete_diagram_from_map "Collect J.arr" C "D o J.cod"
+        interpret \<Delta>a: discrete_diagram_from_map "Collect J.arr" C "D o J.cod" J.null
           by (unfold_locales, auto)
-        have "discrete_diagram Arr.comp C \<Delta>a.map" ..
-        hence "\<exists>p. has_as_product Arr.comp \<Delta>a.map p"
-          using assms(3) has_products_def [of "Collect J.arr"]
-          by (simp add: discrete_diagram_def subsetI)
+        have "\<exists>p. has_as_product Arr.comp \<Delta>a.map p"
+          using assms(3) has_products_def [of "Collect J.arr"] \<Delta>a.discrete_diagram_axioms
+          by blast
         from this obtain \<Pi>a \<pi>a where \<pi>a: "product_cone Arr.comp C \<Delta>a.map \<Pi>a \<pi>a"
           using ex_productE [of Arr.comp \<Delta>a.map] by auto
         interpret \<pi>a: product_cone Arr.comp C \<Delta>a.map \<Pi>a \<pi>a using \<pi>a by auto
@@ -4200,17 +4203,18 @@ begin
       *}
       assume has_products: "has_products I"
       have I: "I \<noteq> UNIV" using has_products has_products_def by auto
-      interpret J: DiscreteCategory.discrete_category I
-        using has_products has_products_def by (unfold_locales, auto)
+      interpret J: discrete_category I "SOME x. x \<notin> I"
+        using I someI_ex [of "\<lambda>x. x \<notin> I"] by (unfold_locales, auto)
       let ?D = "\<lambda>i. mkIde Univ"
-      interpret D: discrete_diagram_from_map I S ?D
+      interpret D: discrete_diagram_from_map I S ?D "SOME j. j \<notin> I"
+        using J.not_arr_null J.arr_char
         by (unfold_locales, auto)
       interpret D: discrete_diagram_in_set_category J.comp S D.map ..
       have "discrete_diagram J.comp S D.map" ..
       from this obtain \<Pi>D \<chi> where \<chi>: "product_cone J.comp S D.map \<Pi>D \<chi>"
         using has_products has_products_def [of I] ex_productE [of "J.comp" D.map]
               D.diagram_axioms
-        by auto
+        by blast
       interpret \<chi>: product_cone J.comp S D.map \<Pi>D \<chi>
         using \<chi> by auto
       have "D.has_as_limit \<Pi>D"
@@ -4279,8 +4283,6 @@ begin
         using I admits_tupling_def by auto
       next
       assume ex_\<pi>: "I \<noteq> UNIV \<and> admits_tupling I"
-      interpret J: DiscreteCategory.discrete_category I
-        using ex_\<pi> has_products_def by (unfold_locales, auto)
       show "has_products I"
       proof (unfold has_products_def)
         from ex_\<pi> obtain \<pi>
@@ -4294,21 +4296,23 @@ begin
           The elements of @{term \<Pi>D} are in bijective correspondence with the set of cones
           over @{term D}, hence @{term \<Pi>D} is a limit of @{term D}.
         *}
-        have "\<And>D. diagram J.comp S D \<Longrightarrow> \<exists>\<Pi>D. has_as_product J.comp D \<Pi>D"
+        have "\<And>J D. discrete_diagram J S D \<and> Collect (partial_magma.arr J) = I
+                 \<Longrightarrow> \<exists>\<Pi>D. has_as_product J D \<Pi>D"
         proof
-          fix D
-          assume D: "diagram J.comp S D"
-          interpret D: diagram J.comp S D using D by auto
-          interpret D: discrete_diagram J.comp S D
-            using J.is_discrete by (unfold_locales, auto)
-          interpret D: discrete_diagram_in_set_category J.comp S D ..
+          fix J :: "'i comp" and D
+          assume D: "discrete_diagram J S D \<and> Collect (partial_magma.arr J) = I"
+          interpret J: category J
+            using D discrete_diagram.axioms(1) by blast
+          interpret D: discrete_diagram J S D
+            using D by simp
+          interpret D: discrete_diagram_in_set_category J S D ..
           let ?\<Pi>D = "mkIde (\<pi> ` PiE I (set o D))"
           have 0: "ide ?\<Pi>D"
           proof -
             have "set o D \<in> I \<rightarrow> Pow Univ"
               using Pow_iff incl_in_def o_apply elem_set_implies_incl_in
                     set_subset_Univ subsetI
-              by auto
+              by (metis (mono_tags, lifting) Pi_I')
             hence "\<pi> ` PiE I (set o D) \<subseteq> Univ"
               using \<pi> by blast
             thus ?thesis using \<pi> ide_mkIde by simp
@@ -4328,7 +4332,7 @@ begin
             have "PiE I (set o D) \<subseteq> PiE I (\<lambda>x. Univ)"
               using set_subset_Univ elem_set_implies_incl_in elem_set_implies_set_eq_singleton
                     incl_in_def PiE_mono
-              by (metis D.preserves_ide comp_apply J.ide_char)
+              by (metis comp_apply subsetI)
             thus ?thesis using \<pi> subset_inj_on set_\<Pi>D Pi_I' imageI by fastforce
           qed
           have 2: "inv_into (PiE I (set o D)) \<pi> \<in> set ?\<Pi>D \<rightarrow> PiE I (set o D)"
@@ -4343,7 +4347,8 @@ begin
             using set_\<Pi>D by (simp add: f_inv_into_f)
           have 4: "\<And>d. d \<in> PiE I (set o D) \<Longrightarrow> inv_into (PiE I (set o D)) \<pi> (\<pi> d) = d"
             using 1 by auto
-          have 5: "D.I = I" by auto
+          have 5: "D.I = I"
+            using D by auto
           have "bij_betw ?\<phi> (D.cones unity) (hom unity ?\<Pi>D)"
           proof (intro bij_betwI)
             show "?\<phi> \<in> D.cones unity \<rightarrow> hom unity ?\<Pi>D"
@@ -4351,10 +4356,20 @@ begin
               fix \<chi>
               assume \<chi>: "\<chi> \<in> D.cones unity"
               show "?\<phi> \<chi> \<in> hom unity ?\<Pi>D"
-                using \<chi> 0 1 5 D.coneToFun_mapsto mkPoint_in_hom [of ?\<Pi>D] by force
+                using \<chi> 0 1 5 D.coneToFun_mapsto mkPoint_in_hom [of ?\<Pi>D]
+                by (simp, blast)
             qed
             show "?\<phi>' \<in> hom unity ?\<Pi>D \<rightarrow> D.cones unity"
-              using 2 5 img_point_elem_set D.funToCone_mapsto by force
+            proof
+              fix x
+              assume x: "x \<in> hom unity ?\<Pi>D"
+              hence "img x \<in> set ?\<Pi>D"
+                using img_point_elem_set by blast
+              hence "inv_into (PiE I (set o D)) \<pi> (img x) \<in> Pi I (set \<circ> D) \<inter> local.extensional I"
+                using 2 by blast
+              thus "?\<phi>' x \<in> D.cones unity"
+                using 5 D.funToCone_mapsto by auto
+            qed
             show "\<And>x. x \<in> hom unity ?\<Pi>D \<Longrightarrow> ?\<phi> (?\<phi>' x) = x"
             proof -
               fix x
@@ -4377,10 +4392,10 @@ begin
               show "?\<phi>' (?\<phi> \<chi>) = \<chi>"
               proof -
                 have "img (mkPoint ?\<Pi>D (\<pi> (D.coneToFun \<chi>))) = \<pi> (D.coneToFun \<chi>)"
-                  using \<chi> 0 1 5 D.coneToFun_mapsto img_mkPoint(2) by force
+                  using \<chi> 0 1 5 D.coneToFun_mapsto img_mkPoint(2) by blast
                 hence "inv_into (PiE I (set o D)) \<pi> (img (mkPoint ?\<Pi>D (\<pi> (D.coneToFun \<chi>))))
                          = D.coneToFun \<chi>"
-                  using \<chi> D.coneToFun_mapsto 4 5 by fastforce
+                  using \<chi> D.coneToFun_mapsto 4 5 by (metis PiE)
                 hence "D.funToCone (inv_into (PiE I (set o D)) \<pi>
                                              (img (mkPoint ?\<Pi>D (\<pi> (D.coneToFun \<chi>)))))
                          = \<chi>"
@@ -4394,16 +4409,18 @@ begin
           hence "\<exists>\<phi>. bij_betw \<phi> (hom unity ?\<Pi>D) (D.cones unity)" by blast
           hence "D.has_as_limit ?\<Pi>D"
             using `ide ?\<Pi>D` D.limits_are_sets_of_cones by simp
-          from this obtain \<chi> where \<chi>: "limit_cone J.comp S D ?\<Pi>D \<chi>" by blast
-          interpret \<chi>: limit_cone J.comp S D ?\<Pi>D \<chi> using \<chi> by auto
-          interpret P: product_cone J.comp S D ?\<Pi>D \<chi>
+          from this obtain \<chi> where \<chi>: "limit_cone J S D ?\<Pi>D \<chi>" by blast
+          interpret \<chi>: limit_cone J S D ?\<Pi>D \<chi> using \<chi> by auto
+          interpret P: product_cone J S D ?\<Pi>D \<chi>
             using \<chi> D.product_coneI by blast
-          have "product_cone J.comp S D ?\<Pi>D \<chi>" ..
-          thus "has_as_product J.comp D ?\<Pi>D"
+          have "product_cone J S D ?\<Pi>D \<chi>" ..
+          thus "has_as_product J D ?\<Pi>D"
             using has_as_product_def by auto
         qed
-        thus "I \<noteq> UNIV \<and> (\<forall>D. diagram J.comp S D \<longrightarrow> (\<exists>\<Pi>D. has_as_product J.comp D \<Pi>D))"
-          using ex_\<pi> by simp
+        thus "I \<noteq> UNIV \<and>
+              (\<forall>J D. discrete_diagram J S D \<and> Collect (partial_magma.arr J) = I
+                  \<longrightarrow> (\<exists>\<Pi>D. has_as_product J D \<Pi>D))"
+          using ex_\<pi> by blast
       qed
     qed
 

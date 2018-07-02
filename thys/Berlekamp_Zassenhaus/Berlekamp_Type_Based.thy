@@ -21,6 +21,7 @@ begin
 
 hide_const (open) up_ring.coeff up_ring.monom Modules.module
 
+
 subsection \<open>Auxiliary lemmas\<close>
 
 context
@@ -3138,4 +3139,5 @@ proof -
     insert mon deg d, auto)
 qed
 end
+
 end

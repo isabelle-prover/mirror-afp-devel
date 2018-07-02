@@ -221,81 +221,125 @@ begin
      shows "retraction f"
        using assms inverse_arrows_def by blast
 
-     lemma iso_iff_section_and_retraction:
-     shows "iso f \<longleftrightarrow> section f \<and> retraction f"
-     proof
-       show "iso f \<Longrightarrow> section f \<and> retraction f"
+    lemma iso_iff_mono_and_retraction:
+    shows "iso f \<longleftrightarrow> mono f \<and> retraction f"
+    proof
+      show "iso f \<Longrightarrow> mono f \<and> retraction f"
+        by (simp add: iso_is_retraction iso_is_section section_is_mono)
+      show "mono f \<and> retraction f \<Longrightarrow> iso f"
+      proof -
+        assume f: "mono f \<and> retraction f"
+        from f obtain g where g: "ide (f \<cdot> g)" by blast
+        have "inverse_arrows f g"
+        proof
+          show "ide (f \<cdot> g)" by fact
+          show "ide (g \<cdot> f)"
+          proof -
+            have "f \<cdot> g \<cdot> f = f \<cdot> dom f"
+              using f g comp_arr_dom comp_cod_arr
+              by (metis comp_assoc ide_compE mono_implies_arr)
+            hence "g \<cdot> f = dom f"
+              using f g monoE
+              by (metis (full_types) comp_arr_dom ide_compE seqE)
+            thus ?thesis using f by force
+          qed
+        qed
+        thus "iso f" by auto
+      qed
+    qed
+
+    lemma iso_iff_section_and_epi:
+    shows "iso f \<longleftrightarrow> section f \<and> epi f"
+    proof
+      show "iso f \<Longrightarrow> section f \<and> epi f"
+        by (simp add: iso_is_retraction iso_is_section retraction_is_epi)
+      show "section f \<and> epi f \<Longrightarrow> iso f"
+      proof -
+        assume f: "section f \<and> epi f"
+        from f obtain g where g: "ide (g \<cdot> f)" by blast
+        have "inverse_arrows f g"
+        proof
+          show "ide (g \<cdot> f)" by fact
+          show "ide (f \<cdot> g)"
+          proof -
+            have "f \<cdot> g \<cdot> f = cod f \<cdot> f"
+              using f g comp_arr_dom comp_cod_arr epi_implies_arr by auto
+            hence "f \<cdot> g = cod f"
+              using f g epiE
+              by (metis comp_assoc comp_cod_arr epi_implies_arr ide_compE)
+            thus ?thesis using f by force
+          qed
+        qed
+        thus "iso f" by auto
+      qed
+    qed
+
+    lemma iso_iff_section_and_retraction:
+    shows "iso f \<longleftrightarrow> section f \<and> retraction f"
+    proof
+      show "iso f \<Longrightarrow> section f \<and> retraction f"
          by (simp add: iso_is_retraction iso_is_section)
-       show "section f \<and> retraction f \<Longrightarrow> iso f"
-       proof -
-         assume f: "section f \<and> retraction f"
-         from f obtain g where g: "ide (g \<cdot> f)" by blast
-         from f obtain g' where g': "ide (f \<cdot> g')" by blast
-         have "g = g'"
-           using g g' ide_compE seqE comp_arr_dom comp_cod_arr comp_assoc by metis
-         hence "\<exists>g. inverse_arrows f g"
-           using g g' by auto
-         thus "iso f" by auto
-       qed
-     qed
+      show "section f \<and> retraction f \<Longrightarrow> iso f"
+        using iso_iff_mono_and_retraction section_is_mono by simp
+    qed
 
-     lemma isos_compose [intro]:
-     assumes "iso f" and "iso f'" and "seq f' f"
-     shows "iso (f' \<cdot> f)"
-     proof -
-       from assms(1) obtain g where g: "inverse_arrows f g" by blast
-       from assms(2) obtain g' where g': "inverse_arrows f' g'" by blast
-       have "inverse_arrows (f' \<cdot> f) (g \<cdot> g')"
-       proof
-         show "ide ((f' \<cdot> f) \<cdot> (g \<cdot> g'))"
-           using assms g g'
-           by (meson seqE ide_compE inverse_arrows_def section_retraction_compose)
-         show "ide ((g \<cdot> g') \<cdot> (f' \<cdot> f))"
-           using assms g g' inverse_arrows_def section_retraction_compose by simp
-       qed
-       thus ?thesis using iso_def by auto
-     qed
+    lemma isos_compose [intro]:
+    assumes "iso f" and "iso f'" and "seq f' f"
+    shows "iso (f' \<cdot> f)"
+    proof -
+      from assms(1) obtain g where g: "inverse_arrows f g" by blast
+      from assms(2) obtain g' where g': "inverse_arrows f' g'" by blast
+      have "inverse_arrows (f' \<cdot> f) (g \<cdot> g')"
+      proof
+        show "ide ((f' \<cdot> f) \<cdot> (g \<cdot> g'))"
+          using assms g g'
+          by (meson seqE ide_compE inverse_arrows_def section_retraction_compose)
+        show "ide ((g \<cdot> g') \<cdot> (f' \<cdot> f))"
+          using assms g g' inverse_arrows_def section_retraction_compose by simp
+      qed
+      thus ?thesis using iso_def by auto
+    qed
 
-     definition isomorphic
-     where "isomorphic a a' = (\<exists>f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> iso f)"
+    definition isomorphic
+    where "isomorphic a a' = (\<exists>f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> iso f)"
 
-     lemma isomorphicI [intro]:
-     assumes "iso f"
-     shows "isomorphic (dom f) (cod f)"
-       using assms isomorphic_def iso_is_arr by blast
+    lemma isomorphicI [intro]:
+    assumes "iso f"
+    shows "isomorphic (dom f) (cod f)"
+      using assms isomorphic_def iso_is_arr by blast
 
-     lemma isomorphicE [elim]:
-     assumes "isomorphic a a'"
-     obtains f where "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> iso f"
-       using assms isomorphic_def by meson
+    lemma isomorphicE [elim]:
+    assumes "isomorphic a a'"
+    obtains f where "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> iso f"
+      using assms isomorphic_def by meson
 
-     definition inv
-     where "inv f = (SOME g. inverse_arrows f g)"
+    definition inv
+    where "inv f = (SOME g. inverse_arrows f g)"
 
-     lemma inv_is_inverse:
-     assumes "iso f"
-     shows "inverse_arrows f (inv f)"
-       using assms inv_def someI [of "inverse_arrows f"] by auto
+    lemma inv_is_inverse:
+    assumes "iso f"
+    shows "inverse_arrows f (inv f)"
+      using assms inv_def someI [of "inverse_arrows f"] by auto
 
-     lemma iso_inv_iso:
-     assumes "iso f"
-     shows "iso (inv f)"
-       using assms inv_is_inverse inverse_arrows_sym by blast
+    lemma iso_inv_iso:
+    assumes "iso f"
+    shows "iso (inv f)"
+      using assms inv_is_inverse inverse_arrows_sym by blast
 
-     lemma inverse_unique:
-     assumes "inverse_arrows f g"
-     shows "inv f = g"
-       using assms inv_is_inverse inverse_arrow_unique isoI by auto
+    lemma inverse_unique:
+    assumes "inverse_arrows f g"
+    shows "inv f = g"
+      using assms inv_is_inverse inverse_arrow_unique isoI by auto
 
-     lemma inv_ide [simp]:
-     assumes "ide a"
-     shows "inv a = a"
-       using assms by (simp add: inverse_arrowsI inverse_unique)
+    lemma inv_ide [simp]:
+    assumes "ide a"
+    shows "inv a = a"
+      using assms by (simp add: inverse_arrowsI inverse_unique)
 
-     lemma inv_inv [simp]:
-     assumes "iso f"
-     shows "inv (inv f) = f"
-       using assms inverse_arrows_sym inverse_unique by blast
+    lemma inv_inv [simp]:
+    assumes "iso f"
+    shows "inv (inv f) = f"
+      using assms inverse_arrows_sym inverse_unique by blast
 
     lemma comp_arr_inv:
     assumes "inverse_arrows f g"

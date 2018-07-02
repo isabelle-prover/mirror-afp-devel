@@ -376,7 +376,7 @@ lemmas assoc = add.assoc
 
 type_synonym 'c mat = "nat \<Rightarrow> nat \<Rightarrow> 'c"
 
-definition upd :: "'c mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'c \<Rightarrow> 'c mat"
+definition (in -) upd :: "'c mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'c \<Rightarrow> 'c mat"
 where
   "upd m x y v = m (x := (m x) (y := v))"
 
@@ -1041,7 +1041,7 @@ next
   qed
 qed
 
-lemma concat_map_cons_rev:
+lemma (in -) concat_map_cons_rev:
   "rev (concat (map ((#) j) xss)) = concat (map (\<lambda> xs. xs @ [j]) (rev (map rev xss)))"
 by (induction xss) auto
 
@@ -1116,10 +1116,10 @@ section \<open>Definition of Shortest Paths\<close>
 definition D :: "'a mat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a" where
   "D m i j k \<equiv> Min {len m i j xs | xs. set xs \<subseteq> {0..k} \<and> i \<notin> set xs \<and> j \<notin> set xs \<and> distinct xs}"
 
-lemma distinct_length_le:"finite s \<Longrightarrow> set xs \<subseteq> s \<Longrightarrow> distinct xs \<Longrightarrow> length xs \<le> card s"
+lemma (in -) distinct_length_le:"finite s \<Longrightarrow> set xs \<subseteq> s \<Longrightarrow> distinct xs \<Longrightarrow> length xs \<le> card s"
 by (metis card_mono distinct_card) 
 
-lemma finite_distinct: "finite s \<Longrightarrow> finite {xs . set xs \<subseteq> s \<and> distinct xs}"
+lemma (in -) finite_distinct: "finite s \<Longrightarrow> finite {xs . set xs \<subseteq> s \<and> distinct xs}"
 proof -
   assume "finite s"
   hence "{xs . set xs \<subseteq> s \<and> distinct xs} \<subseteq> {xs. set xs \<subseteq> s \<and> length xs \<le> card s}"
@@ -1509,7 +1509,7 @@ lemma D_not_diag_le:
 lemma D_not_diag_le': "set xs \<subseteq> {0..k} \<Longrightarrow> i \<notin> set xs \<Longrightarrow> j \<notin> set xs \<Longrightarrow> distinct xs
   \<Longrightarrow> D m i j k \<le> len m i j xs" using Min_le[OF D_base_finite''] by (fastforce simp add: D_def)
 
-lemma nat_upto_subs_top_removal':
+lemma (in -) nat_upto_subs_top_removal':
   "S \<subseteq> {0..Suc n} \<Longrightarrow> Suc n \<notin> S \<Longrightarrow> S \<subseteq> {0..n}"
 apply (induction n)
  apply safe
@@ -1519,7 +1519,7 @@ apply (rename_tac n x)
 apply (case_tac "x = Suc (Suc n)"; fastforce)
 done
 
-lemma nat_upto_subs_top_removal:
+lemma (in -) nat_upto_subs_top_removal:
   "S \<subseteq> {0..n::nat} \<Longrightarrow> n \<notin> S \<Longrightarrow> S \<subseteq> {0..n - 1}"
 using nat_upto_subs_top_removal' by (cases n; simp)
 

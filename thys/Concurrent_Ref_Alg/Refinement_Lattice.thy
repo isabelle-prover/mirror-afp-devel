@@ -53,20 +53,20 @@ text {* Helper lemma for choice over indexed set. *}
 lemma INF_Inf: "(\<Sqinter>x\<in>X. f x) = (\<Sqinter>{f x |x. x \<in> X})"
   by (simp add: Setcompr_eq_image)
 
-lemma INF_absorb_args: "(\<Sqinter>i j. (f::nat \<Rightarrow> 'c::complete_lattice) (i + j)) = (\<Sqinter>k. f k)"
+lemma (in -) INF_absorb_args: "(\<Sqinter>i j. (f::nat \<Rightarrow> 'c::complete_lattice) (i + j)) = (\<Sqinter>k. f k)"
 proof (rule order_class.order.antisym)
-  show "(\<Sqinter>k. f k) \<sqsubseteq> (\<Sqinter>i j. f (i + j))"
+  show "(\<Sqinter>k. f k) \<le> (\<Sqinter>i j. f (i + j))"
     by (simp add: complete_lattice_class.INF_lower complete_lattice_class.le_INF_iff)
 next
-  have "\<And>k. \<exists>i j. f (i + j) \<sqsubseteq> f k"
+  have "\<And>k. \<exists>i j. f (i + j) \<le> f k"
     by (metis add.left_neutral order_class.eq_iff)
-  then have "\<And>k. \<exists>i. (\<Sqinter>j. f (i + j)) \<sqsubseteq> f k"
+  then have "\<And>k. \<exists>i. (\<Sqinter>j. f (i + j)) \<le> f k"
     by (meson UNIV_I complete_lattice_class.INF_lower2)
-  then show "(\<Sqinter>i j. f (i + j)) \<sqsubseteq> (\<Sqinter>k. f k)"
+  then show "(\<Sqinter>i j. f (i + j)) \<le> (\<Sqinter>k. f k)"
     by (simp add: complete_lattice_class.INF_mono)
 qed
 
-lemma nested_Collect: "{f y |y. y \<in> {g x |x. x \<in> X}} = {f (g x) |x. x \<in> X}"
+lemma (in -) nested_Collect: "{f y |y. y \<in> {g x |x. x \<in> X}} = {f (g x) |x. x \<in> X}"
   by blast
 
 text {* A transition lemma for INF distributivity properties, going from Inf to INF,

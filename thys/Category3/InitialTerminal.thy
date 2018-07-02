@@ -34,8 +34,7 @@ begin
     where "point f \<equiv> arr f \<and> terminal (dom f)"
 
     lemma initial_arr_unique:
-    assumes "initial_arr f" and "initial_arr f'" and "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>f' : a' \<rightarrow> b'\<guillemotright>"
-    and "a = a'" and "b = b'"
+    assumes "par f f'" and "initial_arr f" and "initial_arr f'"
     shows "f = f'"
       using assms in_homI initial_def ide_cod by blast
 
@@ -50,8 +49,7 @@ begin
       using assms initial_def initial_arr_unique by meson
       
     lemma terminal_arr_unique:
-    assumes "terminal_arr f" and "terminal_arr f'" and "\<guillemotleft>f : a \<rightarrow> b\<guillemotright>" and "\<guillemotleft>f' : a' \<rightarrow> b'\<guillemotright>"
-    and "a = a'" and "b = b'"
+    assumes "par f f'" and "terminal_arr f" and "terminal_arr f'"
     shows "f = f'"
       using assms in_homI terminal_def ide_dom by blast
 

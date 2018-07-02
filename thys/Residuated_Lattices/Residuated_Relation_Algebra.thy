@@ -114,5 +114,5 @@ proof
 qed
 
 end (* residuated_ra *)
-  
+
 end

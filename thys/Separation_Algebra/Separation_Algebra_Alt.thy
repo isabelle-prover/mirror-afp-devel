@@ -73,10 +73,10 @@ definition
   where
   "P \<longrightarrow>\<^sup>* Q \<equiv> \<lambda>h. \<forall>h' h''. h \<oplus> h' = Some h'' \<and> P h' \<longrightarrow> Q h''"
 
-definition
+definition (in -)
   "sep_true \<equiv> \<lambda>s. True"
 
-definition
+definition (in -)
   "sep_false \<equiv> \<lambda>s. False"
 
 
@@ -158,8 +158,8 @@ lemma sep_conj_assoc:
   apply (fastforce simp: add2_Some_Some Some_add2)
   done
 
-lemma sep_true[simp]: "sep_true s" by (simp add: sep_true_def)
-lemma sep_false[simp]: "\<not>sep_false x" by (simp add: sep_false_def)
+lemma (in -) sep_true[simp]: "sep_true s" by (simp add: sep_true_def)
+lemma (in -) sep_false[simp]: "\<not>sep_false x" by (simp add: sep_false_def)
 
 lemma sep_conj_sep_true:
   "P s \<Longrightarrow> (P ** sep_true) s"
