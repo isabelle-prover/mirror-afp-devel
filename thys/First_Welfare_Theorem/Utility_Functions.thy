@@ -193,6 +193,11 @@ proof -
     by auto
 qed
 
+lemma strict_prefernce_iff_strict_utility:
+  assumes "x \<in> carrier"
+  assumes "y \<in> carrier"
+  shows "x \<succ>[relation] y \<longleftrightarrow> u x > u y"
+  by (meson assms(1) assms(2) less_eq_real_def not_less util_def)
 
 end
 
