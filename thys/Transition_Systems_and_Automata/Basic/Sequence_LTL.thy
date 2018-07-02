@@ -84,4 +84,7 @@ begin
       using assms by (coinduction rule: infs_coinduct) (blast dest: cycle_decomp)
   qed
 
+  definition rabin :: "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> bool)) set \<Rightarrow> 'a stream \<Rightarrow> bool" where
+    "rabin S w \<equiv> \<exists> (E, F) \<in> S. \<not> infs E w \<and> infs F w"
+
 end
