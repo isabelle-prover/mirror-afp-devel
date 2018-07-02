@@ -416,7 +416,8 @@ definition ker:: "'c set"
 lemma f0_is_0[simp]: "f \<zero>\<^bsub>M\<^esub>=\<zero>\<^bsub>N\<^esub>"
 proof -
   have 1: "f \<zero>\<^bsub>M\<^esub> = f (\<zero>\<^bsub>R\<^esub> \<odot>\<^bsub>M\<^esub> \<zero>\<^bsub>M\<^esub>)" by simp
-  have 2: "f (\<zero>\<^bsub>R\<^esub> \<odot>\<^bsub>M\<^esub> \<zero>\<^bsub>M\<^esub>) = \<zero>\<^bsub>N\<^esub>" by (simp del: M.lmult_0 M.rmult_0 add:f_smult f_im)
+  have 2: "f (\<zero>\<^bsub>R\<^esub> \<odot>\<^bsub>M\<^esub> \<zero>\<^bsub>M\<^esub>) = \<zero>\<^bsub>N\<^esub>"
+    using M.M.zero_closed N.lmult_0 R.zero_closed f_im f_smult by presburger
   from 1 2 show ?thesis by auto
 qed
 
