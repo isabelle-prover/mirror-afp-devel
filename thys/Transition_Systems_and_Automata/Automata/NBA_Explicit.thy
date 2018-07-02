@@ -73,6 +73,22 @@ begin
     (transei: "('state \<times> 'label \<times> 'state) list")
     (acceptingei: "'state list")
 
+  definition nbaei_rel where
+    [to_relAPP]: "nbaei_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
+      (alphabetei A\<^sub>1, alphabetei A\<^sub>2) \<in> \<langle>L\<rangle> list_rel \<and>
+      (initialei A\<^sub>1, initialei A\<^sub>2) \<in> \<langle>S\<rangle> list_rel \<and>
+      (transei A\<^sub>1, transei A\<^sub>2) \<in> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel \<and>
+      (acceptingei A\<^sub>1, acceptingei A\<^sub>2) \<in> \<langle>S\<rangle> list_rel}"
+
+  lemma nbaei_param[param, autoref_rules]:
+    "(nbaei, nbaei) \<in> \<langle>L\<rangle> list_rel \<rightarrow> \<langle>S\<rangle> list_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel \<rightarrow>
+      \<langle>S\<rangle> list_rel \<rightarrow> \<langle>L, S\<rangle> nbaei_rel"
+    "(alphabetei, alphabetei) \<in> \<langle>L, S\<rangle> nbaei_rel \<rightarrow> \<langle>L\<rangle> list_rel"
+    "(initialei, initialei) \<in> \<langle>L, S\<rangle> nbaei_rel \<rightarrow> \<langle>S\<rangle> list_rel"
+    "(transei, transei) \<in> \<langle>L, S\<rangle> nbaei_rel \<rightarrow> \<langle>S \<times>\<^sub>r L \<times>\<^sub>r S\<rangle> list_rel"
+    "(acceptingei, acceptingei) \<in> \<langle>L, S\<rangle> nbaei_rel \<rightarrow> \<langle>S\<rangle> list_rel"
+    unfolding nbaei_rel_def by auto
+
   definition nbaei_nbae_rel where
     [to_relAPP]: "nbaei_nbae_rel L S \<equiv> {(A\<^sub>1, A\<^sub>2).
       (alphabetei A\<^sub>1, alphabete A\<^sub>2) \<in> \<langle>L\<rangle> list_set_rel \<and>
@@ -136,7 +152,11 @@ begin
 
   definition nbaei_nba_rel where
     [to_relAPP]: "nbaei_nba_rel L S \<equiv> {(Ae, A). (nbae_nba (nbaei_nbae Ae), A) \<in> \<langle>L, S\<rangle> nba_rel}"
-  lemma nbaei_ba_id[param]: "(nbae_nba \<circ> nbaei_nbae, id) \<in> \<langle>L, S\<rangle> nbaei_nba_rel \<rightarrow> \<langle>L, S\<rangle> nba_rel"
+  lemma nbaei_nba_id[param]: "(nbae_nba \<circ> nbaei_nbae, id) \<in> \<langle>L, S\<rangle> nbaei_nba_rel \<rightarrow> \<langle>L, S\<rangle> nba_rel"
     unfolding nbaei_nba_rel_def by auto
+
+  schematic_goal nbae_nba_impl: "(?f, nbae_nba) \<in> \<langle>Id, Id\<rangle> nbaei_nbae_rel \<rightarrow> \<langle>Id, Id\<rangle> nbai_nba_rel"
+    unfolding nbae_nba_def by autoref
+  concrete_definition nbae_nba_impl uses nbae_nba_impl
 
 end

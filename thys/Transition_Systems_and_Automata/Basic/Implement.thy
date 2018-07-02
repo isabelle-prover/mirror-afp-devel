@@ -217,6 +217,38 @@ begin
       finally show "(gen_UNION tol emp un T g, UNION S f) \<in> \<langle>B\<rangle> Rs3" by this
     qed
 
+    definition gen_Image where
+      "gen_Image tol1 mem2 emp3 ins3 X Y \<equiv> fold
+        (\<lambda> (a, b). if mem2 a Y then ins3 b else id) (tol1 X) emp3"
+
+    lemma gen_Image[autoref_rules]:
+      assumes PRIO_TAG_GEN_ALGO
+      assumes to_list: "SIDE_GEN_ALGO (is_set_to_list (A \<times>\<^sub>r B) Rs1 tol1)"
+      assumes member: "GEN_OP mem2 (\<in>) (A \<rightarrow> \<langle>A\<rangle> Rs2 \<rightarrow> bool_rel)"
+      assumes empty: "GEN_OP emp3 {} (\<langle>B\<rangle> Rs3)"
+      assumes insert: "GEN_OP ins3 Set.insert (B \<rightarrow> \<langle>B\<rangle> Rs3 \<rightarrow> \<langle>B\<rangle> Rs3)"
+      shows "(gen_Image tol1 mem2 emp3 ins3, Image) \<in> \<langle>A \<times>\<^sub>r B\<rangle> Rs1 \<rightarrow> \<langle>A\<rangle> Rs2 \<rightarrow> \<langle>B\<rangle> Rs3"
+    proof (intro fun_relI)
+      note [unfolded autoref_tag_defs, param] = member empty insert
+      fix T S X Y
+      assume 1[param]: "(T, S) \<in> \<langle>A \<times>\<^sub>r B\<rangle> Rs1" "(Y, X) \<in> \<langle>A\<rangle> Rs2"
+      obtain tsl' where
+        [param]: "(tol1 T, tsl') \<in> \<langle>A \<times>\<^sub>r B\<rangle> list_rel"
+        and IT': "RETURN tsl' \<le> it_to_sorted_list (\<lambda>_ _. True) S"
+        using to_list[unfolded autoref_tag_defs is_set_to_list_def] 1(1)
+        by (rule is_set_to_sorted_listE)
+      from IT' have 10: "S = set tsl'" "distinct tsl'" unfolding it_to_sorted_list_def by simp_all
+      have "gen_Image tol1 mem2 emp3 ins3 T Y =
+        fold (\<lambda> (a, b). if mem2 a Y then ins3 b else id) (tol1 T) emp3"
+        unfolding gen_Image_def by rule
+      also have "(\<dots>, fold (\<lambda> (a, b). if a \<in> X then Set.insert b else id) tsl' {}) \<in> \<langle>B\<rangle> Rs3"
+        by parametricity
+      also have "fold (\<lambda> (a, b). if a \<in> X then Set.insert b else id) tsl' M = S `` X \<union> M" for M
+        unfolding 10(1) by (induct tsl' arbitrary: M) (auto split: prod.splits)
+      also have "S `` X \<union> {} = S `` X" by simp
+      finally show "(gen_Image tol1 mem2 emp3 ins3 T Y, S `` X) \<in> \<langle>B\<rangle> Rs3" by this
+    qed
+
     lemma list_set_union_autoref[autoref_rules]:
       assumes "PRIO_TAG_OPTIMIZATION"
       assumes "SIDE_PRECOND_OPT (a' \<inter> b' = {})"
