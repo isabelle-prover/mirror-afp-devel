@@ -132,8 +132,8 @@ qed
 subsection \<open>Inference System\<close>
 
 text \<open>
-Lemma 3.9 and Corollary 3.10 are subsumed in the counterexample-reducing inference system framework,
-which is instantiated below.
+Theorem 3.9 and Corollary 3.10 are subsumed in the counterexample-reducing inference system
+framework, which is instantiated below.
 \<close>
 
 definition unord_\<Gamma> :: "'a inference set" where
