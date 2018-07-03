@@ -153,6 +153,7 @@ definition reduction where "reduction = (4+\<alpha>)/(4*\<alpha>)"
 definition d :: "int vec list \<Rightarrow> nat \<Rightarrow> int" where "d fs k = gs.Gramian_determinant fs k"
 definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < m. d fs i)" 
 
+definition "d\<mu> gs i j = int_of_rat (of_int (d gs (Suc j)) * \<mu> gs i j)" 
 
 definition logD :: "int vec list \<Rightarrow> nat"
   where "logD fs = (if \<alpha> = 4/3 then (D fs) else nat (floor (log (1 / of_rat reduction) (D fs))))" 
@@ -1375,6 +1376,16 @@ proof -
   also have "(\<Prod>i<m. d fs i) = D fs" unfolding D_def 
     by (subst nat_0_le, rule prod_nonneg, insert LLL_d_pos[OF Linv], auto simp: le_less)  
   finally show "D fs \<le> A ^ (m * m)" by linarith 
+qed
+
+lemma LLL_mu_d_Z: assumes inv: "LLL_invariant upw i fs" 
+  and j: "j \<le> ii" and ii: "ii < m" 
+shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
+proof -
+  interpret fs: fs_int' n m fs_init \<alpha> upw i fs
+    by standard (use inv in auto)
+  show ?thesis
+    using assms fs.fs_int_mu_d_Z LLL_invD[OF inv] unfolding d_def fs.d_def by auto
 qed
 
 

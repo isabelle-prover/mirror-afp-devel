@@ -26,16 +26,6 @@ begin
 context LLL
 begin
 
-lemma LLL_mu_d_Z: assumes inv: "LLL_invariant upw i fs" 
-  and j: "j \<le> ii" and ii: "ii < m" 
-shows "of_int (d fs (Suc j)) * \<mu> fs ii j \<in> \<int>"
-proof -
-  interpret fs: fs_int' n m fs_init \<alpha> upw i fs
-    by standard (use inv in auto)
-  show ?thesis
-    using assms fs.fs_int_mu_d_Z LLL_invD[OF inv] unfolding d_def fs.d_def by auto
-qed
-
 text \<open>maximum absolute value in initial basis\<close>
 definition "M = Max ({abs (fs_init ! i $ j) | i j. i < m \<and> j < n} \<union> {0})" 
 
@@ -47,8 +37,6 @@ definition f_bound :: "bool \<Rightarrow> nat \<Rightarrow> int vec list \<Right
 
 definition "\<mu>_bound_row fs bnd i = (\<forall> j \<le> i. (\<mu> fs i j)^2 \<le> bnd)" 
 abbreviation "\<mu>_bound_row_inner fs i j \<equiv> \<mu>_bound_row fs (4 ^ (m - 1 - j) * of_nat (A ^ (m - 1) * m)) i"  
-
-definition "d\<mu> gs i j = int_of_rat (of_int (d gs (Suc j)) * \<mu> gs i j)" 
 
 definition "LLL_bound_invariant outside upw i fs =
   (LLL_invariant upw i fs \<and> f_bound outside i fs \<and> g_bound fs)" 
