@@ -18,6 +18,62 @@ theory LLL_Integer_Equations
    LLL
 begin
 
+definition round_num_denom :: "int \<Rightarrow> int \<Rightarrow> int" where
+  "round_num_denom n d = ((2 * n + d) div (2 * d))" 
+
+lemma round_num_denom: "round_num_denom num denom = 
+  round (of_int num / rat_of_int denom)" 
+proof (cases "denom = 0")
+  case False
+  have "denom \<noteq> 0 \<Longrightarrow> ?thesis" 
+    unfolding round_def round_num_denom_def
+    unfolding floor_divide_of_int_eq[where ?'a = rat, symmetric]
+    by (rule arg_cong[of _ _ floor], simp add: add_divide_distrib)
+  with False show ?thesis by auto
+next
+  case True
+  show ?thesis unfolding True round_num_denom_def by auto
+qed
+
+context fs_int_indpt
+begin
+lemma round_num_denom_d\<mu>_d:
+  assumes j: "j \<le> i" and i: "i < m"  
+shows "round_num_denom (d\<mu> i j) (d fs (Suc j)) = round (gs.\<mu> i j)" 
+proof -
+  from j i have sj: "Suc j \<le> m" by auto
+  show ?thesis unfolding round_num_denom
+    by (rule arg_cong[of _ _ round], subst d\<mu>[OF j i], insert fs_int_d_pos[OF sj], auto)
+qed
+
+lemma d_sq_norm_comparison:
+  assumes quot: "quotient_of \<alpha> = (num,denom)" 
+  and i: "i < m" 
+  and i0: "i \<noteq> 0" 
+  shows "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
+   = (sq_norm (gs.gso (i - 1)) \<le> \<alpha> * sq_norm (gs.gso i))" 
+proof -
+  let ?r = "rat_of_int" 
+  let ?x = "sq_norm (gs.gso (i - 1))" 
+  let ?y = "\<alpha> * sq_norm (gs.gso i)" 
+  from i have le: "i - 1 \<le> m" " i \<le> m" "Suc i \<le> m" by auto
+  note pos = fs_int_d_pos[OF le(1)] fs_int_d_pos[OF le(2)] quotient_of_denom_pos[OF quot]
+  have "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
+    = (?r (d fs i * d fs i * denom) \<le> ?r (num * d fs (i - 1) * d fs (Suc i)))" (is "?cond = _") by presburger
+  also have "\<dots> = (?r (d fs i) * ?r (d fs i) * ?r denom \<le> ?r num * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" by simp
+  also have "\<dots> = (?r (d fs i) * ?r (d fs i) \<le> \<alpha> * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" 
+    using pos unfolding quotient_of_div[OF quot] by (auto simp: field_simps)
+  also have "\<dots> = (?r (d fs i) / ?r (d fs (i - 1)) \<le> \<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)))" 
+    using pos by (auto simp: field_simps)
+  also have "?r (d fs i) / ?r (d fs (i - 1)) = ?x" using fs_int_d_Suc[of "i - 1"] pos i i0
+    by (auto simp: field_simps)
+  also have "\<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)) = ?y" using fs_int_d_Suc[OF i] pos i i0
+    by (auto simp: field_simps)
+  finally show "?cond = (?x \<le> ?y)" .
+qed
+
+end
+
 
 context LLL
 begin

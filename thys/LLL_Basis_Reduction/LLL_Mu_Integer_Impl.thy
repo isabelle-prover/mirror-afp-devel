@@ -45,7 +45,7 @@ fun basis_reduction_add_rows_loop where
      let fi = fi_state state;
          dsj = d_state state sj;
          j = sj - 1;
-         c = floor_ceil_num_denom (dmu_ij_state state i j) dsj;
+         c = round_num_denom (dmu_ij_state state i j) dsj;
          state' = (if c = 0 then state else upd_fi_mu_state state i (vec n (\<lambda> i. fi $ i - c * fj $ i)) 
              (IArray.of_fun (\<lambda> jj. let mu = dmu_ij_state state i jj in 
                   if jj < j then mu - c * dmu_ij_state state j jj else 
@@ -61,7 +61,7 @@ lemma basis_reduction_add_rows_loop_code:
          j = sj - 1;
          dsj = ds !! sj;
          mui = mus !! i;
-         c = floor_ceil_num_denom (mui !! j) dsj
+         c = round_num_denom (mui !! j) dsj
       in (if c = 0 then 
           basis_reduction_add_rows_loop n state i j fjs
          else  
@@ -275,9 +275,9 @@ next
   let ?c = "round (\<mu> fs i j)" 
   interpret fs: fs_int' n m fs_init \<alpha> True i fs
     by standard (use Linv in auto)
-  have floor: "floor_ceil_num_denom (d\<mu> fs i j) (d fs (Suc j)) = round (fs.gs.\<mu> i j)"
+  have floor: "round_num_denom (d\<mu> fs i j) (d fs (Suc j)) = round (fs.gs.\<mu> i j)"
     using jj i inv unfolding d\<mu>_def d_def 
-    by (intro fs.floor_ceil_num_denom_d\<mu>_d[unfolded fs.d\<mu>_def fs.d_def]) auto
+    by (intro fs.round_num_denom_d\<mu>_d[unfolded fs.d\<mu>_def fs.d_def]) auto
   from LLL_d_pos[OF Linv] j i have dj: "d fs (Suc j) > 0" by auto
   note updates = d_d\<mu>_add_row[OF Linv i j refl refl Suc(4)]
   note d_state = d_state[OF impl Linv state]

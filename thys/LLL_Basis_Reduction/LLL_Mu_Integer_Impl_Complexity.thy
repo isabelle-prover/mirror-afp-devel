@@ -20,13 +20,13 @@ theory LLL_Mu_Integer_Impl_Complexity
     Cost
 begin
 
-definition floor_ceil_num_denom_cost :: "int \<Rightarrow> int \<Rightarrow> int cost" where
-  "floor_ceil_num_denom_cost n d = ((2 * n + d) div (2 * d), 4)" \<comment> \<open>4 arith. operations\<close>
+definition round_num_denom_cost :: "int \<Rightarrow> int \<Rightarrow> int cost" where
+  "round_num_denom_cost n d = ((2 * n + d) div (2 * d), 4)" \<comment> \<open>4 arith. operations\<close>
 
-lemma floor_ceil_num_denom_cost:  
-  shows "result (floor_ceil_num_denom_cost n d) = floor_ceil_num_denom n d"  
-   "cost (floor_ceil_num_denom_cost n d) \<le> 4" 
-  unfolding floor_ceil_num_denom_cost_def floor_ceil_num_denom_def by (auto simp: cost_simps) 
+lemma round_num_denom_cost:  
+  shows "result (round_num_denom_cost n d) = round_num_denom n d"  
+   "cost (round_num_denom_cost n d) \<le> 4" 
+  unfolding round_num_denom_cost_def round_num_denom_def by (auto simp: cost_simps) 
 
 context LLL_with_assms
 begin
@@ -42,7 +42,7 @@ fun basis_reduction_add_rows_loop_cost where
      let fi = fi_state state;
          dsj = d_state state sj;
          j = sj - 1;
-         (c,cost1) = floor_ceil_num_denom_cost (dmu_ij_state state i j) dsj;
+         (c,cost1) = round_num_denom_cost (dmu_ij_state state i j) dsj;
          state' = (if c = 0 then state else upd_fi_mu_state state i (vec n (\<lambda> i. fi $ i - c * fj $ i)) \<comment> \<open>2n arith. operations\<close>
              (IArray.of_fun (\<lambda> jj. let mu = dmu_ij_state state i jj in \<comment> \<open>3 sj arith. operations\<close>
                   if jj < j then mu - c * dmu_ij_state state j jj else 
@@ -60,9 +60,9 @@ proof (atomize(full), induct fs arbitrary: state j)
   case (Cons fj fs state j)
   let ?dm_ij = "dmu_ij_state state i (j - 1)" 
   let ?dj = "d_state state j" 
-  obtain c1 fc where flc: "floor_ceil_num_denom_cost ?dm_ij ?dj = (fc, c1)" by force
-  from result_costD[OF floor_ceil_num_denom_cost flc]
-  have fl: "floor_ceil_num_denom ?dm_ij ?dj = fc" and c1: "c1 \<le> 4" by auto
+  obtain c1 fc where flc: "round_num_denom_cost ?dm_ij ?dj = (fc, c1)" by force
+  from result_costD[OF round_num_denom_cost flc]
+  have fl: "round_num_denom ?dm_ij ?dj = fc" and c1: "c1 \<le> 4" by auto
   obtain st where st: "(if fc = 0 then state
              else upd_fi_mu_state state i (vec n (\<lambda> i. fi_state state $ i - fc * fj $ i))
                    (IArray.of_fun

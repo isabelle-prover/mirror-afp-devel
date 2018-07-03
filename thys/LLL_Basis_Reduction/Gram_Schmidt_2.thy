@@ -2875,16 +2875,6 @@ lemma exact_division: assumes "of_int x / (of_int y  :: 'a :: floor_ceiling) \<i
 
 lemma int_via_rat_eqI: "rat_of_int x = rat_of_int y \<Longrightarrow> x = y" by auto
 
-
-definition floor_ceil_num_denom :: "int \<Rightarrow> int \<Rightarrow> int" where
-  "floor_ceil_num_denom n d = ((2 * n + d) div (2 * d))" 
-
-lemma floor_ceil_num_denom: "denom > 0 \<Longrightarrow> floor_ceil_num_denom num denom = 
-  round (of_int num / rat_of_int denom)" 
-  unfolding round_def floor_ceil_num_denom_def
-  unfolding floor_divide_of_int_eq[where ?'a = rat, symmetric]
-  by (rule arg_cong[of _ _ floor], simp add: add_divide_distrib)
-
 section \<open>New locale with fs :: int vec list\<close>
 
 locale fs_int =
@@ -3016,43 +3006,6 @@ qed
 lemma d\<mu>: assumes "j \<le> ii" "ii < m" 
   shows "of_int (d\<mu> ii j) = of_int (d fs (Suc j)) * gs.\<mu> ii j" 
   unfolding d\<mu>_def using fs_int_mu_d_Z assms by auto
-
-lemma d_sq_norm_comparison:
-  assumes quot: "quotient_of \<alpha> = (num,denom)" 
-  and i: "i < m" 
-  and i0: "i \<noteq> 0" 
-  shows "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
-   = (sq_norm (gs.gso (i - 1)) \<le> \<alpha> * sq_norm (gs.gso i))" 
-proof -
-  let ?r = "rat_of_int" 
-  let ?x = "sq_norm (gs.gso (i - 1))" 
-  let ?y = "\<alpha> * sq_norm (gs.gso i)" 
-  from i have le: "i - 1 \<le> m" " i \<le> m" "Suc i \<le> m" by auto
-  note pos = fs_int_d_pos[OF le(1)] fs_int_d_pos[OF le(2)] quotient_of_denom_pos[OF quot]
-  have "(d fs i * d fs i * denom \<le> num * d fs (i - 1) * d fs (Suc i))
-    = (?r (d fs i * d fs i * denom) \<le> ?r (num * d fs (i - 1) * d fs (Suc i)))" (is "?cond = _") by presburger
-  also have "\<dots> = (?r (d fs i) * ?r (d fs i) * ?r denom \<le> ?r num * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" by simp
-  also have "\<dots> = (?r (d fs i) * ?r (d fs i) \<le> \<alpha> * ?r (d fs (i - 1)) * ?r (d fs (Suc i)))" 
-    using pos unfolding quotient_of_div[OF quot] by (auto simp: field_simps)
-  also have "\<dots> = (?r (d fs i) / ?r (d fs (i - 1)) \<le> \<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)))" 
-    using pos by (auto simp: field_simps)
-  also have "?r (d fs i) / ?r (d fs (i - 1)) = ?x" using fs_int_d_Suc[of "i - 1"] pos i i0
-    by (auto simp: field_simps)
-  also have "\<alpha> * (?r (d fs (Suc i)) / ?r (d fs i)) = ?y" using fs_int_d_Suc[OF i] pos i i0
-    by (auto simp: field_simps)
-  finally show "?cond = (?x \<le> ?y)" .
-qed
-
-lemma floor_ceil_num_denom_d\<mu>_d:
-  assumes j: "j \<le> i" and i: "i < m"  
-shows "floor_ceil_num_denom (d\<mu> i j) (d fs (Suc j)) = round (gs.\<mu> i j)" 
-proof -
-  from j i have sj: "Suc j \<le> m" by auto
-  note pos = fs_int_d_pos[OF sj]
-  show ?thesis unfolding floor_ceil_num_denom[OF pos]
-    by (rule arg_cong[of _ _ round], subst d\<mu>[OF j i], insert pos, auto)
-qed
-
 end
 
 
