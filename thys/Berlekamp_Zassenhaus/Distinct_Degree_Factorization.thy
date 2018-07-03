@@ -469,7 +469,7 @@ lemma order_irr: "Coset.order (mult_of R) = CARD('a)^degree f - 1"
 lemma element_power_order_eq_1:
     assumes x: "x \<in> carrier (mult_of R)" 
     shows "x [^]\<^bsub>(mult_of R)\<^esub> Coset.order (mult_of R) = \<one>\<^bsub>(mult_of R)\<^esub>"
-by (rule Multiplicative_Group.group.pow_order_eq_1[OF field_R.field_mult_group], auto simp add: x)
+  by (meson field_R.field_mult_group finite_carrier_mult_of group.pow_order_eq_1 x)
 
 corollary element_power_order_eq_1': 
 assumes x: "x \<in> carrier (mult_of R)"
@@ -744,7 +744,10 @@ proof (rule ccontr)
   have monom_in_carrier: "monom 1 1 \<in> carrier (mult_of R)" 
     using d_not1 unfolding carrier_mult_of R_def carrier_irr_def
     by (simp add: d degree_monom_eq)
-  obtain k::nat where "a [^]\<^bsub>R\<^esub> k = monom 1 1" using monom_in_carrier gen by auto
+  obtain k::nat where "a [^]\<^bsub>R\<^esub> k = monom 1 1" using monom_in_carrier gen
+    apply (simp add: )
+    apply safe
+    by (smt Diff_iff empty_iff insert_iff mem_Collect_eq)
   have a_m_1: "a [^]\<^bsub>R\<^esub> (CARD('a)^c - 1) = \<one>\<^bsub>R\<^esub>"
   proof (rule x_power_pm_minus_1[OF a_R])
     let ?x = "monom 1 1::'a mod_ring poly"
@@ -900,7 +903,9 @@ proof (induct v w d res rule: dist_degree_factorize_main.induct)
         by (auto simp: Let_def)
       from mon_v have mon_g: "monic ?g" by (metis deg_v degree_0 poly_gcd_monic)
       have ww: "?w = ?x ^ ?p ^ ?d mod v" unfolding w
-        by (metis Groups.mult_ac(2) power.simps(2) power_mod power_mult)
+        apply (auto simp: )
+        using Groups.mult_ac(2) power.simps(2) power_mod power_mult
+        by (metis (mono_tags, hide_lams) One_nat_def  card_prod class_semiring.nat_pow_Suc monom_Suc monom_eq_1 mult.right_neutral x_pow_n)
       have gv: "?g dvd v" by auto
       hence gv': "v div ?g dvd v"
         by (metis dvd_def dvd_div_mult_self)
