@@ -18,8 +18,8 @@ compcertSSA/.patched: $(COMPCERTSSA_FILE)
 
 compcertSSA/midend/SSA/BraunSSA.ml: $(wildcard *.thy) ROOT | compcertSSA/midend/SSA
 	rm -f $@
-	$(ISABELLE) build -c -d '$$AFP/Collections' -d '$$AFP/Refine_Monadic' -d '$$AFP/Automatic_Refinement' -d . Formal_SSA
-	ln -s ../../../BraunSSA.ml $@
+	sed -i -e 's!module_name BraunSSA$$!module_name BraunSSA file "$@"!' Generic_Extract.thy
+	$(ISABELLE) build -c -d '$$AFP/Collections' -d '$$AFP/Dijkstra_Shortest_Path' -d '$$AFP/Slicing' -d '$$AFP/CAVA_Automata' -d '$$AFP/Refine_Monadic' -d '$$AFP/Automatic_Refinement' -d '$$AFP/Jinja' -d '$$AFP/Deriving' -d '$$AFP/Binomial-Heaps' -d '$$AFP/Finger-Trees' -d '$$AFP/Native_Word' -d '$$AFP/Trie' -d '$$AFP/Containers' -d '$$AFP/Regular-Sets' -d '$$AFP/List-Index' -d . Formal_SSA
 
 compcertSSA/midend/SSA/ExternSSAgen.ml: compcertSSA/.patched
 
@@ -50,4 +50,5 @@ clean:
 	rm -f test/ifgen
 	rm -f if.o
 	rm -f $(COMPCERTSSA_FILE)
-	isabelle build -c -n -d '$$AFP/Collections' -d '$$AFP/Refine_Monadic' -d '$$AFP/Automatic_Refinement' -d . compcertSSA ||:
+	sed -i -e 's!module_name BraunSSA file.*$$!module_name BraunSSA!' Generic_Extract.thy
+	$(ISABELLE) build -c -n -d '$$AFP/Collections' -d '$$AFP/Dijkstra_Shortest_Path' -d '$$AFP/Slicing' -d '$$AFP/CAVA_Automata' -d '$$AFP/Refine_Monadic' -d '$$AFP/Automatic_Refinement' -d '$$AFP/Jinja' -d '$$AFP/Deriving' -d '$$AFP/Binomial-Heaps' -d '$$AFP/Finger-Trees' -d '$$AFP/Native_Word' -d '$$AFP/Trie' -d '$$AFP/Containers' -d '$$AFP/Regular-Sets' -d '$$AFP/List-Index' -d . Formal_SSA ||:
