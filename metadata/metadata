@@ -7090,3 +7090,25 @@ abstract =
   and we build the natural homomorphism of rings from R to its
   localization.
 
+[Neumann_Morgenstern_Utility]
+title = Von-Neumann-Morgenstern Utility Theorem
+author = Julian Parsert<mailto:julian.parsert@gmail.com>, Cezary Kaliszyk<http://cl-informatik.uibk.ac.at/users/cek/>
+topic = Mathematics/Economics
+license = LGPL
+date = 2018-07-04
+notify = julian.parsert@uibk.ac.at, cezary.kaliszyk@uibk.ac.at
+abstract = 
+  Utility functions form an essential part of game theory and economics.
+  In order to guarantee the existence of utility functions most of the
+  time sufficient properties are assumed in an axiomatic manner. One
+  famous and very common set of such assumptions is that of expected
+  utility theory. Here, the rationality, continuity, and independence of
+  preferences is assumed. The von-Neumann-Morgenstern Utility theorem
+  shows that these assumptions are necessary and sufficient for an
+  expected utility function to exists. This theorem was proven by
+  Neumann and Morgenstern in ``Theory of Games and Economic
+  Behavior'' which is regarded as one of the most influential
+  works in game theory. The formalization includes formal definitions of
+  the underlying concepts including continuity and independence of
+  preferences.
+

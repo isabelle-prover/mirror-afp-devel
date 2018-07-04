@@ -9,7 +9,28 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>23 Jun 2018 00:00:00 +0000</pubDate>
+    <pubDate>04 Jul 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Von-Neumann-Morgenstern Utility Theorem</title>
+              <link>https://www.isa-afp.org/entries/Neumann_Morgenstern_Utility.html</link>
+       <guid>https://www.isa-afp.org/entries/Neumann_Morgenstern_Utility.html</guid>
+       <dc:creator> Julian Parsert, Cezary Kaliszyk       </dc:creator>
+       <pubDate>04 Jul 2018 00:00:00 +0000</pubDate>
+       <description>
+Utility functions form an essential part of game theory and economics.
+In order to guarantee the existence of utility functions most of the
+time sufficient properties are assumed in an axiomatic manner. One
+famous and very common set of such assumptions is that of expected
+utility theory. Here, the rationality, continuity, and independence of
+preferences is assumed. The von-Neumann-Morgenstern Utility theorem
+shows that these assumptions are necessary and sufficient for an
+expected utility function to exists. This theorem was proven by
+Neumann and Morgenstern in ``Theory of Games and Economic
+Behavior&#39;&#39; which is regarded as one of the most influential
+works in game theory. The formalization includes formal definitions of
+the underlying concepts including continuity and independence of
+preferences.</description>
+    </item>
     <item>
        <title>Pell's Equation</title>
               <link>https://www.isa-afp.org/entries/Pell.html</link>
@@ -540,25 +561,6 @@ interval arithmetic. Our implementation automatically computes Taylor
 models for the class of elementary functions, expressed by composition
 of arithmetic operations and basic functions like exp, sin, or square
 root.</description>
-    </item>
-    <item>
-       <title>The Falling Factorial of a Sum</title>
-              <link>https://www.isa-afp.org/entries/Falling_Factorial_Sum.html</link>
-       <guid>https://www.isa-afp.org/entries/Falling_Factorial_Sum.html</guid>
-       <dc:creator> Lukas Bulwahn       </dc:creator>
-       <pubDate>22 Dec 2017 00:00:00 +0000</pubDate>
-       <description>
-This entry shows that the falling factorial of a sum can be computed
-with an expression using binomial coefficients and the falling
-factorial of its summands. The entry provides three different proofs:
-a combinatorial proof, an induction proof and an algebraic proof using
-the Vandermonde identity.  The three formalizations try to follow
-their informal presentations from a Mathematics Stack Exchange page as
-close as possible. The induction and algebraic formalization end up to
-be very close to their informal presentation, whereas the
-combinatorial proof first requires the introduction of list
-interleavings, and significant more detail than its informal
-presentation.</description>
     </item>
   </channel>
 </rss>
