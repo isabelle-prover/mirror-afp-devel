@@ -3667,6 +3667,11 @@ lemma ucast_mono_le:
   apply (simp add: word_le_nat_alt)
   done
 
+lemma ucast_mono_le':
+  "\<lbrakk> unat y < 2 ^ LENGTH('b); LENGTH('b::len) < LENGTH('a::len); x \<le> y \<rbrakk>
+   \<Longrightarrow> UCAST('a \<rightarrow> 'b) x \<le> UCAST('a \<rightarrow> 'b) y"
+  by (auto simp: word_less_nat_alt intro: ucast_mono_le)
+
 lemma zero_sle_ucast_up:
   "\<not> is_down (ucast :: 'a word \<Rightarrow> 'b signed word) \<Longrightarrow>
           (0 <=s ((ucast (b::('a::len) word)) :: ('b::len) signed word))"
@@ -3677,6 +3682,11 @@ lemma zero_sle_ucast_up:
   apply clarsimp
   apply arith
   done
+
+lemma word_le_ucast_sless:
+  "\<lbrakk> x \<le> y; y \<noteq> -1; LENGTH('a) < LENGTH('b) \<rbrakk> \<Longrightarrow>
+    UCAST (('a :: len) \<rightarrow> ('b :: len) signed) x <s ucast (y + 1)"
+  by (clarsimp simp: word_le_make_less word_sless_alt sint_ucast_eq_uint is_down word_less_def)
 
 lemma msb_ucast_eq:
     "len_of TYPE('a) = len_of TYPE('b) \<Longrightarrow>
@@ -3784,6 +3794,10 @@ lemma from_bool_all_helper:
   "(\<forall>bool. from_bool bool = val \<longrightarrow> P bool)
       = ((\<exists>bool. from_bool bool = val) \<longrightarrow> P (val \<noteq> 0))"
   by (auto simp: from_bool_0)
+
+lemma from_bool_to_bool_iff:
+  "w = from_bool b \<longleftrightarrow> to_bool w = b \<and> (w = 0 \<or> w = 1)"
+  by (cases b) (auto simp: from_bool_def to_bool_def)
 
 lemma word_rsplit_upt:
   "\<lbrakk> size x = len_of TYPE('a :: len) * n; n \<noteq> 0 \<rbrakk>
@@ -5301,6 +5315,22 @@ lemma ucast_le_ucast:
   apply simp
   done
 
+lemma ucast_le_ucast_eq:
+  fixes x y :: "'a::len word"
+  assumes x: "x < 2 ^ n"
+  assumes y: "y < 2 ^ n"
+  assumes n: "n = LENGTH('b::len)"
+  shows "(UCAST('a \<rightarrow> 'b) x \<le> UCAST('a \<rightarrow> 'b) y) = (x \<le> y)"
+  apply (rule iffI)
+   apply (cases "LENGTH('b) < LENGTH('a)")
+    apply (subst less_mask_eq[OF x, symmetric])
+    apply (subst less_mask_eq[OF y, symmetric])
+    apply (unfold n)
+    apply (subst ucast_ucast_mask[symmetric])+
+    apply (simp add: ucast_le_ucast)+
+  apply (erule ucast_mono_le[OF _ y[unfolded n]])
+  done
+
 (* High bits w.r.t. mask operations. *)
 
 lemma and_neg_mask_eq_iff_not_mask_le:
@@ -5405,6 +5435,18 @@ lemma max_word_not_0[simp]:
   "max_word \<noteq> 0"
   by (simp add: max_word_minus)
 
+lemma ucast_zero_is_aligned:
+  "UCAST('a::len \<rightarrow> 'b::len) w = 0 \<Longrightarrow> n \<le> LENGTH('b) \<Longrightarrow> is_aligned w n"
+  by (clarsimp simp: is_aligned_mask word_eq_iff word_size nth_ucast)
+
+lemma unat_ucast_eq_unat_and_mask:
+  "unat (UCAST('b::len \<rightarrow> 'a::len) w) = unat (w && mask LENGTH('a))"
+  proof -
+    have "unat (UCAST('b \<rightarrow> 'a) w) = unat (UCAST('a \<rightarrow> 'b) (UCAST('b \<rightarrow> 'a) w))"
+      by (cases "LENGTH('a) < LENGTH('b)"; simp add: is_down ucast_ucast_a unat_ucast_up_simp)
+    thus ?thesis using ucast_ucast_mask by simp
+  qed
+
 lemma unat_max_word_pos[simp]: "0 < unat max_word"
   by (auto simp: unat_gt_0)
 
@@ -5492,6 +5534,38 @@ lemma sign_extend_eq:
   "w && mask (Suc n) = v && mask (Suc n) \<Longrightarrow> sign_extend n w = sign_extend n v"
   by (rule word_eqI, fastforce dest: word_eqD simp: sign_extend_bitwise_if' word_size)
 
+
+lemma sign_extended_add:
+  assumes p: "is_aligned p n"
+  assumes f: "f < 2 ^ n"
+  assumes e: "n \<le> e"
+  assumes "sign_extended e p"
+  shows "sign_extended e (p + f)"
+proof (cases "e < size p")
+  case True
+  note and_or = is_aligned_add_or[OF p f]
+  have "\<not> f !! e"
+    using True e less_2p_is_upper_bits_unset[THEN iffD1, OF f]
+    by (fastforce simp: word_size)
+  hence i: "(p + f) !! e = p !! e"
+    by (simp add: and_or)
+  have fm: "f && mask e = f"
+    by (fastforce intro: subst[where P="\<lambda>f. f && mask e = f", OF less_mask_eq[OF f]]
+                  simp: mask_twice e)
+  show ?thesis
+    using assms
+     apply (simp add: sign_extended_iff_sign_extend sign_extend_def i)
+     apply (simp add: and_or word_bw_comms[of p f])
+     apply (clarsimp simp: word_ao_dist fm word_bw_assocs split: if_splits)
+    done
+next
+  case False thus ?thesis
+    by (simp add: sign_extended_def word_size)
+qed
+
+lemma sign_extended_neq_mask:
+  "\<lbrakk>sign_extended n ptr; m \<le> n\<rbrakk> \<Longrightarrow> sign_extended n (ptr && ~~ mask m)"
+  by (fastforce simp: sign_extended_def word_size neg_mask_bang)
 
 (* Uints *)
 
