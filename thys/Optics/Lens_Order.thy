@@ -78,7 +78,7 @@ text \<open>Well-behavedness of lens quotient has sublens as a proviso. This is 
 lemma lens_quotient_mwb:
   "\<lbrakk> mwb_lens Y; X \<subseteq>\<^sub>L Y \<rbrakk> \<Longrightarrow> mwb_lens (X /\<^sub>L Y)"
   by (unfold_locales, auto simp add: lens_quotient_def lens_create_def sublens_def lens_comp_def comp_def)
-    
+
 subsection \<open>Lens Equivalence\<close>
     
 text \<open>Using our preorder, we can also derive an equivalence on lenses as follows. It should be
@@ -317,6 +317,34 @@ proof (rule lens_equivI)
   done
 qed
 
+lemma lens_get_put_quasi_commute:
+  "\<lbrakk> vwb_lens Y; X \<subseteq>\<^sub>L Y \<rbrakk> \<Longrightarrow> get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> s v) = put\<^bsub>X /\<^sub>L Y\<^esub> (get\<^bsub>Y\<^esub> s) v"
+proof -
+  assume a1: "vwb_lens Y"
+  assume a2: "X \<subseteq>\<^sub>L Y"
+  have "\<And>l la. put\<^bsub>l ;\<^sub>L la\<^esub> = (\<lambda>b c. put\<^bsub>la\<^esub> (b::'b) (put\<^bsub>l\<^esub> (get\<^bsub>la\<^esub> b::'a) (c::'c)))"
+    by (simp add: lens_comp_def)
+  then have "\<And>l la b c. get\<^bsub>l\<^esub> (put\<^bsub>la ;\<^sub>L l\<^esub> (b::'b) (c::'c)) = put\<^bsub>la\<^esub> (get\<^bsub>l\<^esub> b::'a) c \<or> \<not> weak_lens l"
+    by force
+  then show ?thesis
+    using a2 a1 by (metis lens_quotient_comp vwb_lens_wb wb_lens_def)
+qed
+  
+lemma lens_put_of_quotient:
+  "\<lbrakk> vwb_lens Y; X \<subseteq>\<^sub>L Y \<rbrakk> \<Longrightarrow> put\<^bsub>Y\<^esub> s (put\<^bsub>X /\<^sub>L Y\<^esub> v\<^sub>2 v\<^sub>1) = put\<^bsub>X\<^esub> (put\<^bsub>Y\<^esub> s v\<^sub>2) v\<^sub>1"
+proof -
+  assume a1: "vwb_lens Y"
+  assume a2: "X \<subseteq>\<^sub>L Y"
+  have f3: "\<And>l b. put\<^bsub>l\<^esub> (b::'b) (get\<^bsub>l\<^esub> b::'a) = b \<or> \<not> vwb_lens l"
+    by force
+  have f4: "\<And>b c. put\<^bsub>X /\<^sub>L Y\<^esub> (get\<^bsub>Y\<^esub> b) c = get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> b c)"
+    using a2 a1 by (simp add: lens_get_put_quasi_commute)
+  have "\<And>b c a. put\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> b c) a = put\<^bsub>Y\<^esub> b a"
+    using a2 a1 by (simp add: sublens_put_put)
+  then show ?thesis
+    using f4 f3 a1 by (metis mwb_lens.put_put mwb_lens_def vwb_lens_mwb weak_lens.put_get)
+qed
+
 subsection \<open>Bijective Lens Equivalences\<close>
   
 text \<open>A bijective lens, like a bijective function, is its own inverse. Thus, if we compose its inverse
@@ -324,7 +352,7 @@ text \<open>A bijective lens, like a bijective function, is its own inverse. Thu
   
 lemma bij_lens_inv_left:
   "bij_lens X \<Longrightarrow> inv\<^sub>L X ;\<^sub>L X = 1\<^sub>L"
-  by (auto simp add: lens_inv_def lens_comp_def comp_def id_lens_def, rule ext, auto)
+  by (auto simp add: lens_inv_def lens_comp_def lens_create_def comp_def id_lens_def, rule ext, auto)
 
 lemma bij_lens_inv_right:
   "bij_lens X \<Longrightarrow> X ;\<^sub>L inv\<^sub>L X = 1\<^sub>L"
@@ -441,7 +469,114 @@ lemma lens_override_overshadow:
   shows "(S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on X) \<oplus>\<^sub>L S\<^sub>3 on Y = S\<^sub>1 \<oplus>\<^sub>L S\<^sub>3 on Y"
   using assms by (simp add: lens_override_def sublens_put_put)
 
+lemma lens_override_overshadow_left:
+  assumes "mwb_lens X"
+  shows "(S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on X) \<oplus>\<^sub>L S\<^sub>3 on X = S\<^sub>1 \<oplus>\<^sub>L S\<^sub>3 on X"
+  by (simp add: assms lens_override_def)
+
+lemma lens_override_overshadow_right:
+  assumes "mwb_lens X"
+  shows "S\<^sub>1 \<oplus>\<^sub>L (S\<^sub>2  \<oplus>\<^sub>L S\<^sub>3 on X) on X = S\<^sub>1 \<oplus>\<^sub>L S\<^sub>3 on X"
+  by (simp add: assms lens_override_def)
+
 lemma lens_override_plus:
   "X \<bowtie> Y \<Longrightarrow> S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on (X +\<^sub>L Y) = (S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on X) \<oplus>\<^sub>L S\<^sub>2 on Y"
   by (simp add: lens_indep_comm lens_override_def lens_plus_def)
+
+lemma lens_override_idem [simp]:
+  "vwb_lens X \<Longrightarrow> S \<oplus>\<^sub>L S on X = S"
+  by (simp add: lens_override_def)
+
+lemma lens_override_mwb_idem [simp]:
+  "\<lbrakk> mwb_lens X; S \<in> \<S>\<^bsub>X\<^esub> \<rbrakk> \<Longrightarrow> S \<oplus>\<^sub>L S on X = S"
+  by (simp add: lens_override_def)
+
+lemma lens_override_put_right_in:
+  "\<lbrakk> vwb_lens A; X \<subseteq>\<^sub>L A \<rbrakk> \<Longrightarrow> S\<^sub>1 \<oplus>\<^sub>L (put\<^bsub>X\<^esub> S\<^sub>2 v) on A = put\<^bsub>X\<^esub> (S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on A) v"
+  by (simp add: lens_override_def lens_get_put_quasi_commute lens_put_of_quotient)
+
+lemma lens_override_put_right_out:
+  "\<lbrakk> vwb_lens A; X \<bowtie> A \<rbrakk> \<Longrightarrow> S\<^sub>1 \<oplus>\<^sub>L (put\<^bsub>X\<^esub> S\<^sub>2 v) on A = (S\<^sub>1 \<oplus>\<^sub>L S\<^sub>2 on A)"
+  by (simp add: lens_override_def  lens_indep.lens_put_irr2)
+
+lemma lens_indep_overrideI:
+  assumes "vwb_lens X" "vwb_lens Y" "(\<And> s\<^sub>1 s\<^sub>2 s\<^sub>3. s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on X \<oplus>\<^sub>L s\<^sub>3 on Y = s\<^sub>1 \<oplus>\<^sub>L s\<^sub>3 on Y \<oplus>\<^sub>L s\<^sub>2 on X)"
+  shows "X \<bowtie> Y"
+  using assms
+  apply (unfold_locales)
+  apply (simp_all add: lens_override_def)
+  apply (metis mwb_lens_def vwb_lens_mwb weak_lens.put_get)
+  apply (metis lens_override_def lens_override_idem mwb_lens_def vwb_lens_mwb weak_lens.put_get)
+  apply (metis mwb_lens_weak vwb_lens_mwb vwb_lens_wb wb_lens.get_put weak_lens.put_get)
+  done  
+
+lemma lens_indep_override_def:
+  assumes "vwb_lens X" "vwb_lens Y"
+  shows "X \<bowtie> Y \<longleftrightarrow> (\<forall> s\<^sub>1 s\<^sub>2 s\<^sub>3. s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on X \<oplus>\<^sub>L s\<^sub>3 on Y = s\<^sub>1 \<oplus>\<^sub>L s\<^sub>3 on Y \<oplus>\<^sub>L s\<^sub>2 on X)"
+  by (metis assms(1) assms(2) lens_indep_comm lens_indep_overrideI lens_override_def)
+
+text \<open> Alternative characterisation of very-well behaved lenses: override is idempotent. \<close>
+
+lemma override_idem_implies_vwb:
+  "\<lbrakk> mwb_lens X; \<And> s. s \<oplus>\<^sub>L s on X = s \<rbrakk> \<Longrightarrow> vwb_lens X"
+  by (unfold_locales, simp_all add: lens_defs)
+
+subsection \<open> Alternative Sublens Characterisation \<close>
+
+text \<open> The following definition is equivalent to the above when the two lenses are very well behaved. \<close>
+
+definition sublens' :: "('a \<Longrightarrow> 'c) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> bool" (infix "\<subseteq>\<^sub>L''" 55) where
+[lens_defs]: "sublens' X Y = (\<forall> s\<^sub>1 s\<^sub>2 s\<^sub>3. s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 on Y \<oplus>\<^sub>L s\<^sub>3 on X = s\<^sub>1 \<oplus>\<^sub>L s\<^sub>2 \<oplus>\<^sub>L s\<^sub>3 on X on Y)"
+
+text \<open> We next prove some characteristic properties of our alternative definition of sublens. \<close>
+
+lemma sublens'_prop1:
+  assumes "vwb_lens X" "X \<subseteq>\<^sub>L' Y"
+  shows "put\<^bsub>X\<^esub> (put\<^bsub>Y\<^esub> s\<^sub>1 (get\<^bsub>Y\<^esub> s\<^sub>2)) s\<^sub>3 = put\<^bsub>Y\<^esub> s\<^sub>1 (get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> s\<^sub>2 s\<^sub>3))"
+  using assms
+  by (simp add: sublens'_def, metis lens_override_def mwb_lens_def vwb_lens_mwb weak_lens.put_get)
+
+lemma sublens'_prop2:
+  assumes "vwb_lens X" "X \<subseteq>\<^sub>L' Y"
+  shows "get\<^bsub>X\<^esub> (put\<^bsub>Y\<^esub> s\<^sub>1 (get\<^bsub>Y\<^esub> s\<^sub>2)) = get\<^bsub>X\<^esub> s\<^sub>2"
+  using assms unfolding sublens'_def
+  by (metis lens_override_def vwb_lens_wb wb_lens_axioms_def wb_lens_def weak_lens.put_get)
+
+lemma sublens'_prop3:
+  assumes "vwb_lens X" "vwb_lens Y" "X \<subseteq>\<^sub>L' Y"
+  shows "put\<^bsub>Y\<^esub> \<sigma> (get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> (put\<^bsub>Y\<^esub> \<rho> (get\<^bsub>Y\<^esub> \<sigma>)) v)) = put\<^bsub>X\<^esub> \<sigma> v"
+  by (metis assms(1) assms(2) assms(3) mwb_lens_def sublens'_prop1 vwb_lens.put_eq vwb_lens_mwb weak_lens.put_get)
+
+text \<open> Finally we show our two definitions of sublens are equivalent, assuming very well behaved lenses. \<close>
+
+lemma sublens'_implies_sublens:
+  assumes "vwb_lens X" "vwb_lens Y" "X \<subseteq>\<^sub>L' Y"
+  shows "X \<subseteq>\<^sub>L Y"
+proof -
+  have "vwb_lens (X /\<^sub>L Y)"
+    by (unfold_locales
+       ,auto simp add: assms lens_quotient_def lens_comp_def lens_create_def sublens'_prop1 sublens'_prop2)
+  moreover have "X = X /\<^sub>L Y ;\<^sub>L Y"
+  proof -
+    have "get\<^bsub>X\<^esub> = (\<lambda>\<sigma>. get\<^bsub>X\<^esub> (create\<^bsub>Y\<^esub> \<sigma>)) \<circ> get\<^bsub>Y\<^esub>"
+      by (rule ext, simp add: assms(1) assms(3) lens_create_def sublens'_prop2)
+    moreover have "put\<^bsub>X\<^esub> = (\<lambda>\<sigma> v. put\<^bsub>Y\<^esub> \<sigma> (get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> (create\<^bsub>Y\<^esub> (get\<^bsub>Y\<^esub> \<sigma>)) v)))"
+      by (rule ext, rule ext, simp add: assms(1) assms(2) assms(3) lens_create_def sublens'_prop3)
+    ultimately show ?thesis
+      by (simp add: lens_quotient_def lens_comp_def)
+  qed
+  ultimately show ?thesis
+    using sublens_def by blast
+qed
+
+lemma sublens_implies_sublens':
+  assumes "vwb_lens Y" "X \<subseteq>\<^sub>L Y"
+  shows "X \<subseteq>\<^sub>L' Y"
+  by (metis assms lens_override_def lens_override_put_right_in sublens'_def)
+
+lemma sublens_iff_sublens':
+  assumes "vwb_lens X" "vwb_lens Y"
+  shows "X \<subseteq>\<^sub>L Y \<longleftrightarrow> X \<subseteq>\<^sub>L' Y"
+  using assms sublens'_implies_sublens sublens_implies_sublens' by blast
+
 end

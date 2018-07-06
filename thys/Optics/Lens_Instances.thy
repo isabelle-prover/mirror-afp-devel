@@ -1,7 +1,7 @@
 section \<open>Lens Instances\<close>
 
 theory Lens_Instances
-  imports Lens_Order
+  imports Lens_Order "HOL-Eisbach.Eisbach"
   keywords "alphabet" :: "thy_decl_block"
 begin
 
@@ -60,6 +60,9 @@ definition map_lens :: "'a \<Rightarrow> ('b \<Longrightarrow> ('a \<rightharpoo
 lemma map_mwb_lens: "mwb_lens (map_lens x)"
   by (unfold_locales, simp_all add: map_lens_def)
 
+lemma source_map_lens: "\<S>\<^bsub>map_lens x\<^esub> = {f. x \<in> dom(f)}"
+  by (force simp add: map_lens_def lens_source_def)
+
 subsection \<open>List Lens\<close>
 
 text \<open>The list lens allows us to view a particular element of a list. In order to show it is mainly
@@ -111,6 +114,14 @@ lemma list_augment_twice:
   apply (metis Suc_le_mono add.commute diff_diff_add diff_le_mono le_add_diff_inverse2)
 done
 
+lemma list_augment_last [simp]:
+  "list_augment (xs @ [y]) (length xs) z = xs @ [z]"
+  by (induct xs, simp_all)
+
+lemma list_augment_idem [simp]:
+  "i < length xs \<Longrightarrow> list_augment xs i (xs ! i) = xs"
+  by (simp add: list_augment_def list_pad_out_def)
+
 text \<open>We can now prove that @{term list_augment} is commutative for different (arbitrary) indices.\<close>
   
 lemma list_augment_commute:
@@ -125,6 +136,14 @@ lemma nth_list_augment: "list_augment xs k v ! k = v"
     
 lemma nth'_list_augment: "nth' (list_augment xs k v) k = v"
   by (auto simp add: nth'_def nth_list_augment list_augment_def list_pad_out_def)
+
+text \<open> The length is expanded if not already long enough, or otherwise left as it is. \<close>
+
+lemma length_list_augment_1: "k \<ge> length xs \<Longrightarrow> length (list_augment xs k v) = Suc k"
+  by (simp add: list_augment_def list_pad_out_def)
+
+lemma length_list_augment_2: "k < length xs \<Longrightarrow> length (list_augment xs k v) = length xs"
+  by (simp add: list_augment_def list_pad_out_def)
 
 text \<open>We also have it that @{term list_augment} cancels itself.\<close>
     
@@ -151,10 +170,22 @@ definition tl_lens :: "'a list \<Longrightarrow> 'a list" where
 lemma list_mwb_lens: "mwb_lens (list_lens x)"
   by (unfold_locales, simp_all add: list_lens_def nth'_list_augment list_augment_same_twice)
 
+text \<open> The set of constructible sources is precisely those where the length is greater than the
+  given index. \<close>
+
+lemma source_list_lens: "\<S>\<^bsub>list_lens i\<^esub> = {xs. length xs > i}"
+  apply (auto simp add: lens_source_def list_lens_def)
+   apply (metis length_list_augment_1 length_list_augment_2 lessI not_less)
+  apply (metis list_augment_idem)
+  done
+
 lemma tail_lens_mwb:
   "mwb_lens tl_lens"
   by (unfold_locales, simp_all add: tl_lens_def)
 
+lemma source_tail_lens: "\<S>\<^bsub>tl_lens\<^esub> = {xs. xs \<noteq> []}"
+  using list.exhaust_sel by (auto simp add: tl_lens_def lens_source_def)
+  
 text \<open>Independence of list lenses follows when the two indices are different.\<close>
     
 lemma list_lens_indep:
@@ -195,6 +226,53 @@ text \<open>The following theorem attribute stores splitting theorems for alphab
 
 named_theorems alpha_splits
 
+subsection \<open>Mapper Lenses\<close>
+
+definition lmap_lens :: 
+  "(('\<alpha> \<Rightarrow> '\<beta>) \<Rightarrow> ('\<gamma> \<Rightarrow> '\<delta>)) \<Rightarrow> 
+   (('\<beta> \<Rightarrow> '\<alpha>) \<Rightarrow> '\<delta> \<Rightarrow> '\<gamma>) \<Rightarrow> 
+   ('\<gamma> \<Rightarrow> '\<alpha>) \<Rightarrow> 
+   ('\<beta> \<Longrightarrow> '\<alpha>) \<Rightarrow> 
+   ('\<delta> \<Longrightarrow> '\<gamma>)" where
+  [lens_defs]:
+  "lmap_lens f g h l = \<lparr>
+  lens_get = f (get\<^bsub>l\<^esub>),
+  lens_put = g o (put\<^bsub>l\<^esub>) o h \<rparr>"
+  
+text \<open>
+  The parse translation below yields a heterogeneous mapping lens for any
+  record type. This achieved through the utility function above that
+  constructs a functorial lens. This takes as input a heterogeneous mapping
+  function that lifts a function on a record's extension type to an update
+  on the entire record, and also the record's ``more'' function. The first input
+  is given twice as it has different polymorphic types, being effectively
+  a type functor construction which are not explicitly supported by HOL. We note 
+  that the \<open>more_update\<close> function does something similar to the extension lifting, 
+  but is not precisely suitable here since it only considers homogeneous functions, 
+  namely of type \<open>'a \<Rightarrow> 'a\<close> rather than \<open>'a \<Rightarrow> 'b\<close>.
+\<close>
+  
+syntax 
+  "_lmap" :: "id \<Rightarrow> logic" ("lmap[_]")
+
+ML \<open>
+  fun lmap_tr [Free (name, _)] =
+    let
+      val extend = Free (name ^ ".extend", dummyT);
+      val truncate = Free (name ^ ".truncate", dummyT);
+      val more = Free (name ^ ".more", dummyT);
+      val map_ext = Abs ("f", dummyT,
+                    Abs ("r", dummyT,
+                      extend $ (truncate $ Bound 0) $ (Bound 1 $ (more $ (Bound 0)))))
+
+    in
+      Const (@{const_syntax "lmap_lens"}, dummyT) $ map_ext $ map_ext $ more
+    end
+  | lmap_tr _ = raise Match;
+\<close>
+
+parse_translation \<open>[(@{syntax_const "_lmap"}, K lmap_tr)]\<close>  
+
 subsection \<open>Lens Interpretation\<close>
 
 named_theorems lens_interp_laws
@@ -204,5 +282,15 @@ begin
 declare meta_interp_law [lens_interp_laws]
 declare all_interp_law [lens_interp_laws]
 declare exists_interp_law [lens_interp_laws]
+
 end
+
+subsection \<open> Tactic \<close>
+
+text \<open> A simple tactic for simplifying lens expressions \<close>
+
+declare split_paired_all [alpha_splits]
+
+method lens_simp = (simp add: alpha_splits lens_defs prod.case_eq_if)
+
 end

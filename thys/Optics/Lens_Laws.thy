@@ -37,8 +37,17 @@ text \<open>
 
 named_theorems lens_defs
 
+text \<open> @{text lens_source} gives the set of constructible sources; that is those that can be built
+  by putting a value into an arbitrary source. \<close>
+
+definition lens_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b set" ("\<S>\<index>") where
+"lens_source X = {s. \<exists> v s'. s = put\<^bsub>X\<^esub> s' v}"
+
+abbreviation some_source :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'b" ("src\<index>") where
+"some_source X \<equiv> (SOME s. s \<in> \<S>\<^bsub>X\<^esub>)"
+
 definition lens_create :: "('a \<Longrightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" ("create\<index>") where
-[lens_defs]: "create\<^bsub>X\<^esub> v = put\<^bsub>X\<^esub> undefined v"
+[lens_defs]: "create\<^bsub>X\<^esub> v = put\<^bsub>X\<^esub> (src\<^bsub>X\<^esub>) v"
 
 text \<open> Function $\lcreate_X~v$ creates an instance of the source type of $X$ by injecting $v$
   as the view, and leaving the remaining context arbitrary. \<close>
@@ -53,6 +62,17 @@ locale weak_lens =
   fixes x :: "'a \<Longrightarrow> 'b" (structure)
   assumes put_get: "get (put \<sigma> v) = v"
 begin
+  lemma source_nonempty: "\<exists> s. s \<in> \<S>"
+    by (auto simp add: lens_source_def)
+
+  lemma put_closure: "put \<sigma> v \<in> \<S>"
+    by (auto simp add: lens_source_def)
+
+  lemma create_closure: "create v \<in> \<S>"
+    by (simp add: lens_create_def put_closure)
+
+  lemma src_source [simp]: "src \<in> \<S>"
+    using some_in_eq source_nonempty by auto
 
   lemma create_get: "get (create v) = v"
     by (simp add: lens_create_def put_get)
@@ -69,9 +89,11 @@ begin
   lemma get_update: "get (update f \<sigma>) = f (get \<sigma>)"
     by (simp add: put_get update_def)
 
-  lemma view_determination: "put \<sigma> u = put \<rho> v \<Longrightarrow> u = v"
-    by (metis put_get)
-
+  lemma view_determination: 
+    assumes "put \<sigma> u = put \<rho> v"
+    shows "u = v"
+    by (metis assms put_get)
+    
   lemma put_inj: "inj (put \<sigma>)"
     by (simp add: injI view_determination)
 end
@@ -97,12 +119,15 @@ begin
   lemma source_stability: "\<exists> v. put \<sigma> v = \<sigma>"
     using get_put by auto
 
+  lemma source_UNIV [simp]: "\<S> = UNIV"
+    by (metis UNIV_eq_I put_closure wb_lens.source_stability wb_lens_axioms)
+
 end
 
 declare wb_lens.get_put [simp]
 
 lemma wb_lens_weak [simp]: "wb_lens x \<Longrightarrow> weak_lens x"
-  by (simp_all add: wb_lens_def)
+  by (simp add: wb_lens_def)
 
 subsection \<open> Mainly Well-behaved Lenses \<close>
 
@@ -116,35 +141,65 @@ begin
   lemma update_comp: "update f (update g \<sigma>) = update (f \<circ> g) \<sigma>"
     by (simp add: put_get put_put update_def)
 
+  text \<open> Mainly well-behaved lenses give rise to a weakened version of the $get-put$ law, 
+    where the source must be within the set of constructible sources. \<close>
+
+  lemma weak_get_put: "\<sigma> \<in> \<S> \<Longrightarrow> put \<sigma> (get \<sigma>) = \<sigma>"
+    by (auto simp add: lens_source_def put_get put_put)
+
+  lemma weak_source_determination:
+    assumes "\<sigma> \<in> \<S>" "\<rho> \<in> \<S>" "get \<sigma> = get \<rho>" "put \<sigma> v = put \<rho> v"
+    shows "\<sigma> = \<rho>"
+    by (metis assms put_put weak_get_put)
+
+   lemma weak_put_eq:
+     assumes "\<sigma> \<in> \<S>" "get \<sigma> = k" "put \<sigma> u = put \<rho> v"
+     shows "put \<rho> k = \<sigma>"
+     by (metis assms put_put weak_get_put)
+
+  text \<open> Provides $s$ is constructible, then @{term get} can be uniquely determined from @{term put} \<close>
+
+  lemma weak_get_via_put: "s \<in> \<S> \<Longrightarrow> get s = (THE v. put s v = s)"
+    by (rule sym, auto intro!: the_equality weak_get_put, metis put_get)
+
 end
 
 declare mwb_lens.put_put [simp]
+declare mwb_lens.weak_get_put [simp]
 
 lemma mwb_lens_weak [simp]:
   "mwb_lens x \<Longrightarrow> weak_lens x"
-  by (simp add: mwb_lens_def)
+  by (simp add: mwb_lens.axioms(1))
 
-subsection \<open>Very Well-behaved Lnses\<close>
+subsection \<open>Very Well-behaved Lenses\<close>
 
 text \<open>Very well-behaved lenses combine all three laws, as in the literature~\cite{Foster09,Fischer2015}.\<close>
 
 locale vwb_lens = wb_lens + mwb_lens
 begin
 
-  lemma source_determination:"get \<sigma> = get \<rho> \<Longrightarrow> put \<sigma> v = put \<rho> v \<Longrightarrow> \<sigma> = \<rho>"
-    by (metis get_put put_put)
-
+  lemma source_determination:
+    assumes "get \<sigma> = get \<rho>" "put \<sigma> v = put \<rho> v"
+    shows "\<sigma> = \<rho>"
+    by (metis assms get_put put_put)
+    
  lemma put_eq:
-   "\<lbrakk> get \<sigma> = k; put \<sigma> u = put \<rho> v \<rbrakk> \<Longrightarrow> put \<rho> k = \<sigma>"
-   by (metis get_put put_put)
+   assumes "get \<sigma> = k" "put \<sigma> u = put \<rho> v"
+   shows "put \<rho> k = \<sigma>"
+   using assms weak_put_eq[of \<sigma> k u \<rho> v] by (simp)
+
+  text \<open> @{term get} can be uniquely determined from @{term put} \<close>
+
+  lemma get_via_put: "get s = (THE v. put s v = s)"
+    by (simp add: weak_get_via_put)
 
 end
 
 lemma vwb_lens_wb [simp]: "vwb_lens x \<Longrightarrow> wb_lens x"
-  by (simp_all add: vwb_lens_def)
+  by (simp add: vwb_lens_def)
 
 lemma vwb_lens_mwb [simp]: "vwb_lens x \<Longrightarrow> mwb_lens x"
-  by (simp_all add: vwb_lens_def)
+  using vwb_lens_def by auto
 
 subsection \<open> Ineffectual Lenses \<close>
 
@@ -165,8 +220,8 @@ proof
 qed
 
 lemma ineffectual_const_get:
-  "\<exists> v.  \<forall> \<sigma>. get \<sigma> = v"
-  by (metis create_get lens_create_def put_inef)
+  "\<exists> v.  \<forall> \<sigma>\<in>\<S>. get \<sigma> = v"
+  using put_get put_inef by auto
 
 end
 
@@ -190,21 +245,18 @@ proof
   show "put \<sigma> (get \<sigma>) = \<sigma>"
     by (simp add: strong_get_put)
   show "put (put \<sigma> v) u = put \<sigma> u"
-    by (metis put_get strong_get_put)
+    by (metis bij_lens.strong_get_put bij_lens_axioms put_get)
 qed
+    
+  lemma put_bij: "bij_betw (put \<sigma>) UNIV UNIV"
+    by (metis bijI put_inj strong_get_put surj_def)
 
-  lemma put_surj: "surj (put \<sigma>)"
-    by (metis strong_get_put surj_def)
-
-  lemma put_bij: "bij (put \<sigma>)"
-    by (simp add: bijI put_inj put_surj)
-
-  lemma put_is_create: "put \<sigma> v = create v"
+  lemma put_is_create: "\<sigma> \<in> \<S> \<Longrightarrow> put \<sigma> v = create v"
     by (metis create_get strong_get_put)
 
-  lemma get_create: "create (get \<sigma>) = \<sigma>"
-    by (metis put_get put_is_create source_stability)
-
+  lemma get_create: "\<sigma> \<in> \<S> \<Longrightarrow> create (get \<sigma>) = \<sigma>"
+    by (simp add: lens_create_def strong_get_put)
+    
 end
 
 declare bij_lens.strong_get_put [simp]
@@ -215,7 +267,7 @@ lemma bij_lens_weak [simp]:
   by (simp_all add: bij_lens_def)
 
 lemma bij_lens_vwb [simp]: "bij_lens x \<Longrightarrow> vwb_lens x"
-  by (unfold_locales, simp_all add: bij_lens.put_is_create)
+  by (metis bij_lens.strong_get_put bij_lens_weak mwb_lens.intro mwb_lens_axioms.intro vwb_lens_def wb_lens.intro wb_lens_axioms.intro weak_lens.put_get)
 
 subsection \<open>Lens Independence\<close>
 
@@ -236,9 +288,9 @@ text \<open>
 
 locale lens_indep =
   fixes X :: "'a \<Longrightarrow> 'c" and Y :: "'b \<Longrightarrow> 'c"
-  assumes lens_put_comm: "lens_put X (lens_put Y \<sigma> v) u = lens_put Y (lens_put X \<sigma> u) v"
-  and lens_put_irr1: "lens_get X (lens_put Y \<sigma> v) = lens_get X \<sigma>"
-  and lens_put_irr2: "lens_get Y (lens_put X \<sigma> u) = lens_get Y \<sigma>"
+  assumes lens_put_comm: "put\<^bsub>X\<^esub> (put\<^bsub>Y\<^esub> \<sigma> v) u = put\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> \<sigma> u) v"
+  and lens_put_irr1: "get\<^bsub>X\<^esub> (put\<^bsub>Y\<^esub> \<sigma> v) = get\<^bsub>X\<^esub> \<sigma>"
+  and lens_put_irr2: "get\<^bsub>Y\<^esub> (put\<^bsub>X\<^esub> \<sigma> u) = get\<^bsub>Y\<^esub> \<sigma>"
 
 notation lens_indep (infix "\<bowtie>" 50)
 
@@ -261,4 +313,5 @@ lemma lens_indep_get [simp]:
   assumes "x \<bowtie> y"
   shows "lens_get x (lens_put y \<sigma> v) = lens_get x \<sigma>"
   using assms lens_indep_def by fastforce
+
 end

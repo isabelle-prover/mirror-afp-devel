@@ -20,7 +20,7 @@ text \<open>
   of one lens with the view of another.\<close>
 
 definition lens_comp :: "('a \<Longrightarrow> 'b) \<Rightarrow> ('b \<Longrightarrow> 'c) \<Rightarrow> ('a \<Longrightarrow> 'c)" (infixr ";\<^sub>L" 80) where
-[lens_defs]: "lens_comp Y X = \<lparr> lens_get = lens_get Y \<circ> lens_get X
+[lens_defs]: "lens_comp Y X = \<lparr> lens_get = get\<^bsub>Y\<^esub> \<circ> lens_get X
                               , lens_put = (\<lambda> \<sigma> v. lens_put X \<sigma> (lens_put Y (lens_get X \<sigma>) v)) \<rparr>"
 
 text \<open>
@@ -102,14 +102,26 @@ text \<open>We show that the core lenses combinators defined above are closed un
 lemma id_wb_lens: "wb_lens 1\<^sub>L"
   by (unfold_locales, simp_all add: id_lens_def)
 
+lemma source_id_lens: "\<S>\<^bsub>1\<^sub>L\<^esub> = UNIV"
+  by (simp add: id_lens_def lens_source_def)
+
 lemma unit_wb_lens: "wb_lens 0\<^sub>L"
   by (unfold_locales, simp_all add: zero_lens_def)
 
-lemma comp_wb_lens: "\<lbrakk> wb_lens x; wb_lens y \<rbrakk> \<Longrightarrow> wb_lens (x ;\<^sub>L y)"
+lemma source_zero_lens: "\<S>\<^bsub>0\<^sub>L\<^esub> = UNIV"
+  by (simp_all add: zero_lens_def lens_source_def)
+
+lemma comp_weak_lens: "\<lbrakk> weak_lens x; weak_lens y \<rbrakk> \<Longrightarrow> weak_lens (x ;\<^sub>L y)"
   by (unfold_locales, simp_all add: lens_comp_def)
 
+lemma comp_wb_lens: "\<lbrakk> wb_lens x; wb_lens y \<rbrakk> \<Longrightarrow> wb_lens (x ;\<^sub>L y)"
+  by (unfold_locales, auto simp add: lens_comp_def wb_lens_def weak_lens.put_closure)
+   
 lemma comp_mwb_lens: "\<lbrakk> mwb_lens x; mwb_lens y \<rbrakk> \<Longrightarrow> mwb_lens (x ;\<^sub>L y)"
-  by (unfold_locales, simp_all add: lens_comp_def)
+  by (unfold_locales, auto simp add: lens_comp_def mwb_lens_def weak_lens.put_closure)
+
+lemma source_lens_comp: "\<lbrakk> mwb_lens x; mwb_lens y \<rbrakk> \<Longrightarrow> \<S>\<^bsub>x ;\<^sub>L y\<^esub> = {s \<in> \<S>\<^bsub>y\<^esub>. get\<^bsub>y\<^esub> s \<in> \<S>\<^bsub>x\<^esub>}"
+  by (auto simp add: lens_comp_def lens_source_def, blast, metis mwb_lens.put_put mwb_lens_def weak_lens.put_get)
 
 lemma id_vwb_lens [simp]: "vwb_lens 1\<^sub>L"
   by (unfold_locales, simp_all add: id_lens_def)
@@ -118,7 +130,7 @@ lemma unit_vwb_lens [simp]: "vwb_lens 0\<^sub>L"
   by (unfold_locales, simp_all add: zero_lens_def)
 
 lemma comp_vwb_lens: "\<lbrakk> vwb_lens x; vwb_lens y \<rbrakk> \<Longrightarrow> vwb_lens (x ;\<^sub>L y)"
-  by (unfold_locales, simp_all add: lens_comp_def)
+  by (unfold_locales, simp_all add: lens_comp_def weak_lens.put_closure)
 
 lemma unit_ief_lens: "ief_lens 0\<^sub>L"
   by (unfold_locales, simp_all add: zero_lens_def)
@@ -149,6 +161,14 @@ lemma plus_vwb_lens:
   apply (unfold_locales, simp_all add: lens_plus_def)
    apply (simp add: lens_indep_sym prod.case_eq_if)
   apply (simp add: lens_indep_comm prod.case_eq_if)
+done
+
+lemma source_plus_lens:
+  assumes "mwb_lens x" "mwb_lens y" "x \<bowtie> y"
+  shows "\<S>\<^bsub>x +\<^sub>L y\<^esub> = \<S>\<^bsub>x\<^esub> \<inter> \<S>\<^bsub>y\<^esub>"
+  apply (auto simp add: lens_source_def lens_plus_def)
+  apply (meson assms(3) lens_indep_comm)
+  apply (metis assms(1) mwb_lens.weak_get_put mwb_lens_weak weak_lens.put_closure)
 done
 
 lemma prod_mwb_lens:
