@@ -482,7 +482,7 @@ proof -
     using dims_output_deep_model[OF _ no_zeros y_valid assms] using less_imp_le_nat Suc_le_lessD deep numeral_3_eq_3
     by auto
   then show ?thesis using N_half_def by (metis One_nat_def Suc_1 Suc_eq_plus1 Suc_le_lessD deep
-    diff_diff_left less_numeral_extra(3) numeral_3_eq_3 realpow_num_eq_if zero_less_diff)
+    diff_diff_left less_numeral_extra(3) numeral_3_eq_3 power_eq_if zero_less_diff)
 qed
 
 lemma order_tensor_deep_model:

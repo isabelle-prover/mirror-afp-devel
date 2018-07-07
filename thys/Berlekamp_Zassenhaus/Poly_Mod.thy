@@ -773,7 +773,7 @@ end
 
 lemma Mp_Mp_pow_is_Mp: "n \<noteq> 0 \<Longrightarrow> p > 1 \<Longrightarrow> poly_mod.Mp p (poly_mod.Mp (p^n) f) 
   = poly_mod.Mp p f"
-  using  poly_mod_2.Mp_product_modulus poly_mod_2_def by(subst realpow_num_eq_if, auto)
+  using  poly_mod_2.Mp_product_modulus poly_mod_2_def by(subst power_eq_if, auto)
 
 lemma M_M_pow_is_M: "n \<noteq> 0 \<Longrightarrow> p > 1 \<Longrightarrow> poly_mod.M p (poly_mod.M (p^n) f) 
   = poly_mod.M p f" using Mp_Mp_pow_is_Mp[of n p "[:f:]"]

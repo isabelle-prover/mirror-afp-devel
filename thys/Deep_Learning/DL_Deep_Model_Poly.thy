@@ -305,7 +305,7 @@ qed
 
 lemma input_sizes_deep_model: "input_sizes (deep_model_l rs) = replicate (2 * N_half) (last rs)"
   unfolding N_half_def using input_sizes_deep_model deep
-  by (metis (no_types, lifting) Nitpick.size_list_simp(2) One_nat_def Suc_1 Suc_le_lessD diff_Suc_Suc length_tl less_imp_le_nat list.size(3) not_less_eq numeral_3_eq_3 realpow_num_eq_if)
+  by (metis (no_types, lifting) Nitpick.size_list_simp(2) One_nat_def Suc_1 Suc_le_lessD diff_Suc_Suc length_tl less_imp_le_nat list.size(3) not_less_eq numeral_3_eq_3 power_eq_if)
 
 lemma polyfun_matrix_deep_model:
 assumes "i<(last rs) ^ N_half"

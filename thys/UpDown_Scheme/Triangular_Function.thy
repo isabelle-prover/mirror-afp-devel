@@ -174,7 +174,7 @@ proof (subst l2_\<phi>I_DERIV)
     hence \<phi>_eq: "?\<phi> x = ?ip - ?l * x" using \<phi>_right_support' by auto
     show "DERIV (\<lambda>x. x^3 / 3 * ?l^2 + x * ?ip^2 - x^2/2 * 2 * ?l * ?ip) x :> ?\<phi>2 x"
       by (auto intro!: derivative_eq_intros simp add: power2_eq_square field_simps \<phi>_eq) }
-qed (simp_all add: field_simps realpow_num_eq_if[of _ 2] realpow_num_eq_if[of _ 3])
+qed (simp_all add: field_simps power_eq_if[of _ 2] power_eq_if[of _ 3])
 
 lemma l2_when_left_child:
   assumes "l < l'"
@@ -221,7 +221,7 @@ proof (subst l2_\<phi>I_DERIV)
     from x have x': "x \<in> {?in' / ?l' .. ?ip' / ?l'}" by (simp add: field_simps)
     show "DERIV \<Phi>_p x :> ?\<phi>2 x" unfolding \<phi>_eq[OF x'] \<phi>'_eq \<Phi>_p_def
       by (auto intro!: derivative_eq_intros simp add: power2_eq_square algebra_simps) }
-qed (simp_all add: field_simps realpow_num_eq_if[of _ 2] realpow_num_eq_if[of _ 3] power_diff[of "2::real", OF _ `l < l'`[THEN less_imp_le]] )
+qed (simp_all add: field_simps power_eq_if[of _ 2] power_eq_if[of _ 3] power_diff[of "2::real", OF _ `l < l'`[THEN less_imp_le]] )
 
 lemma l2_when_right_child:
   assumes "l < l'"
@@ -269,7 +269,7 @@ proof (subst l2_\<phi>I_DERIV)
     from x have x': "x \<in> {?in' / ?l' .. ?ip' / ?l'}" by (auto simp: field_simps)
     show "DERIV \<Phi>_p x :> ?\<phi>2 x" unfolding \<phi>_eq[OF x'] \<phi>'_eq \<Phi>_p_def
       by (auto intro!: derivative_eq_intros simp add: power2_eq_square algebra_simps) }
-qed (simp_all add: field_simps realpow_num_eq_if[of _ 2] realpow_num_eq_if[of _ 3] power_diff[of "2::real", OF _ `l < l'`[THEN less_imp_le]] )
+qed (simp_all add: field_simps power_eq_if[of _ 2] power_eq_if[of _ 3] power_diff[of "2::real", OF _ `l < l'`[THEN less_imp_le]] )
 
 lemma level_shift: "lc > l \<Longrightarrow> (x :: real) / 2 ^ (lc - Suc l) = x * 2 / 2 ^ (lc - l)"
   by (auto simp add: power_diff)

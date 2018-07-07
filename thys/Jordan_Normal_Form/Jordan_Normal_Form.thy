@@ -472,7 +472,7 @@ proof -
             proof (cases "k=0")
               case False then show ?thesis
                 by (subst max.mono[OF _ power_increasing[OF nN]], auto)
-            qed (simp add: realpow_num_eq_if)
+            qed (simp add: power_eq_if)
           also have "... \<le> max c1 (of_nat k ^ (N-1))" using \<open>c1\<ge>1\<close> by auto
           also have "... \<le> c1 + (of_nat k ^ (N-1))" using \<open>c1\<ge>1\<close> by auto
           finally show ?thesis by simp
