@@ -37,7 +37,7 @@ next
 qed
 
 lemma dgrad_p_set_le_trdsp:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d {trdsp bs (p, q)} (insert (fst p) (insert (fst q) (set bs)))"
 proof -
   let ?h = "trdsp bs (p, q)"
@@ -116,7 +116,7 @@ proof
 qed
 
 lemma gb_red_aux_dgrad_p_set_le:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d (set (gb_red_aux bs ps)) (args_to_set ([], bs, ps))"
 proof (rule dgrad_p_set_leI)
   fix h
@@ -235,7 +235,7 @@ next
   ultimately show "\<not> lt (fst b) adds\<^sub>t lt (fst h)" by (rule gb_red_aux_irredudible)
 next
   fix gs bs::"('t, 'b, 'c) pdata list" and ps sps and d::"'a \<Rightarrow> nat" and data::"nat \<times> 'd"
-  assume "dickson_grading (+) d"
+  assume "dickson_grading d"
   hence "dgrad_p_set_le d (set (gb_red_aux (gs @ bs) sps)) (args_to_set ([], gs @ bs, sps))"
     by (rule gb_red_aux_dgrad_p_set_le)
   also have "... = args_to_set (gs, bs, sps)" by (simp add: args_to_set_alt image_Un)

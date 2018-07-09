@@ -403,45 +403,44 @@ end
 
 subsection \<open>Dickson Classes\<close>
 
-definition dickson_grading :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> nat) \<Rightarrow> bool"
-  where "dickson_grading p d \<longleftrightarrow>
-          ((\<forall>s t. d (p s t) = max (d s) (d t)) \<and>
-           (\<forall>seq::nat \<Rightarrow> 'a. (\<forall>i. d (seq i) \<le> d (seq 0)) \<longrightarrow> (\<exists>i j. i < j \<and> (\<exists>k. (seq j) = p (seq i) k))))"
+definition (in plus) dickson_grading :: "('a \<Rightarrow> nat) \<Rightarrow> bool"
+  where "dickson_grading d \<longleftrightarrow>
+          ((\<forall>s t. d (s + t) = max (d s) (d t)) \<and>
+           (\<forall>seq::nat \<Rightarrow> 'a. (\<forall>i. d (seq i) \<le> d (seq 0)) \<longrightarrow> (\<exists>i j. i < j \<and> seq i adds seq j)))"
 
 lemma dickson_gradingI:
   assumes "\<And>s t. d (s + t) = max (d s) (d (t::'a::plus))"
   assumes "\<And>seq::nat \<Rightarrow> 'a. (\<And>i. d (seq i) \<le> d (seq 0)) \<Longrightarrow> (\<exists>i j. i < j \<and> seq i adds seq j)"
-  shows "dickson_grading (+) d"
+  shows "dickson_grading d"
   unfolding dickson_grading_def
 proof (intro conjI allI, fact assms(1), rule)
   fix seq :: "nat \<Rightarrow> 'a"
   assume "\<forall>i. d (seq i) \<le> d (seq 0)"
   hence "\<And>i. d (seq i) \<le> d (seq 0)" ..
-  hence "\<exists>i j. i < j \<and> seq i adds seq j" by (rule assms(2))
-  thus "\<exists>i j. i < j \<and> (\<exists>k. seq j = seq i + k)" by (simp only: adds_def)
+  thus "\<exists>i j. i < j \<and> seq i adds seq j" by (rule assms(2))
 qed
 
 lemma dickson_gradingD1:
-  assumes "dickson_grading p d"
-  shows "d (p s t) = max (d s) (d t)"
+  assumes "dickson_grading d"
+  shows "d (s + t) = max (d s) (d t)"
   using assms by (auto simp add: dickson_grading_def)
 
 lemma dickson_gradingE1:
-  assumes "dickson_grading (+) d" and "\<And>i. d (seq i) \<le> d ((seq::nat \<Rightarrow> 'a::plus) 0)"
+  assumes "dickson_grading d" and "\<And>i. d (seq i) \<le> d ((seq::nat \<Rightarrow> 'a::plus) 0)"
   obtains i j where "i < j" and "seq i adds seq j"
 proof -
   from assms(1) have "\<forall>seq::nat \<Rightarrow> 'a. (\<forall>i. d (seq i) \<le> d (seq 0)) \<longrightarrow>
-                                            (\<exists>i j. i < j \<and> (\<exists>k. (seq j) = (seq i) + k))"
+                                            (\<exists>i j. i < j \<and> seq i adds seq j)"
     unfolding dickson_grading_def ..
-  hence rl: "(\<And>i. d (seq i) \<le> d (seq 0)) \<Longrightarrow> (\<exists>i j. i < j \<and> (\<exists>k. (seq j) = (seq i) + k))"
+  hence rl: "(\<And>i. d (seq i) \<le> d (seq 0)) \<Longrightarrow> (\<exists>i j. i < j \<and> seq i adds seq j)"
     by auto
-  from assms(2) have "\<exists>i j. i < j \<and> (\<exists>k. (seq j) = (seq i) + k)" by (rule rl)
+  from assms(2) have "\<exists>i j. i < j \<and> seq i adds seq j" by (rule rl)
   then obtain i j where "i < j" and "seq i adds seq j" unfolding adds_def by auto
   thus ?thesis ..
 qed
 
 lemma dickson_gradingE2:
-  assumes "dickson_grading (+) d" and "\<And>i::nat. d ((seq::nat \<Rightarrow> 'a::plus) i) \<le> k"
+  assumes "dickson_grading d" and "\<And>i::nat. d ((seq::nat \<Rightarrow> 'a::plus) i) \<le> k"
   obtains i j where "i < j" and "seq i adds seq j"
 proof -
   let ?R = "range (d \<circ> seq)"
@@ -473,7 +472,7 @@ proof -
 qed
 
 lemma dickson_grading_adds_imp_le:
-  assumes "dickson_grading (+) d" and "s adds t"
+  assumes "dickson_grading d" and "s adds t"
   shows "d s \<le> d t"
 proof -
   from assms(2) obtain u where "t = s + u" ..
@@ -482,7 +481,7 @@ proof -
 qed
 
 lemma dickson_grading_minus:
-  assumes "dickson_grading (+) d" and "s adds (t::'a::cancel_ab_semigroup_add)"
+  assumes "dickson_grading d" and "s adds (t::'a::cancel_ab_semigroup_add)"
   shows "d (t - s) \<le> d t"
 proof -
   from assms(2) obtain u where "t = s + u" ..
@@ -492,7 +491,7 @@ proof -
 qed
 
 lemma dickson_grading_lcs:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "d (lcs s t) \<le> max (d s) (d t)"
 proof -
   from assms have "d (lcs s t) \<le> d (s + t)" by (rule dickson_grading_adds_imp_le, intro lcs_adds_plus)
@@ -500,7 +499,7 @@ proof -
 qed
 
 lemma dickson_grading_lcs_minus:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "d (lcs s t - s) \<le> max (d s) (d t)"
 proof -
   from assms have "d (lcs s t - s) \<le> d (lcs s t)" by (rule dickson_grading_minus, intro adds_lcs)
@@ -509,12 +508,12 @@ proof -
 qed
 
 class graded_dickson_powerprod = ulcs_powerprod +
-  assumes ex_dgrad: "\<exists>d::'a \<Rightarrow> nat. dickson_grading (+) d"
+  assumes ex_dgrad: "\<exists>d::'a \<Rightarrow> nat. dickson_grading d"
 begin
 
-definition dgrad_dummy where "dgrad_dummy = (SOME d. dickson_grading (+) d)"
+definition dgrad_dummy where "dgrad_dummy = (SOME d. dickson_grading d)"
 
-lemma dickson_grading_dgrad_dummy: "dickson_grading (+) dgrad_dummy"
+lemma dickson_grading_dgrad_dummy: "dickson_grading dgrad_dummy"
   unfolding dgrad_dummy_def using ex_dgrad by (rule someI_ex)
 
 end (* graded_dickson_powerprod *)
@@ -523,7 +522,7 @@ class dickson_powerprod = ulcs_powerprod +
   assumes dickson: "\<And>seq::nat \<Rightarrow> 'a. (\<exists>i j::nat. i < j \<and> seq i adds seq j)"
 begin
 
-lemma dickson_grading_zero: "dickson_grading (plus::'a \<Rightarrow> 'a \<Rightarrow> 'a) (\<lambda>_. 0)"
+lemma dickson_grading_zero: "dickson_grading (\<lambda>_::'a. 0)"
   by (simp add: dickson_grading_def adds_def[symmetric], rule, fact dickson)
 
 subclass graded_dickson_powerprod by (standard, rule, fact dickson_grading_zero)
@@ -868,7 +867,7 @@ lemma dgrad_set_subset:
   using assms by (auto simp: dgrad_set_def)
 
 lemma dgrad_set_closed_plus:
-  assumes "dickson_grading (+) d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
+  assumes "dickson_grading d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
   shows "s + t \<in> dgrad_set d m"
 proof -
   from assms(1) have "d (s + t) = ord_class.max (d s) (d t)" by (rule dickson_gradingD1)
@@ -877,7 +876,7 @@ proof -
 qed
 
 lemma dgrad_set_closed_minus:
-  assumes "dickson_grading (+) d" and "s \<in> dgrad_set d m" and "t adds s"
+  assumes "dickson_grading d" and "s \<in> dgrad_set d m" and "t adds s"
   shows "s - t \<in> dgrad_set d m"
 proof -
   from assms(1, 3) have "d (s - t) \<le> d s" by (rule dickson_grading_minus)
@@ -886,7 +885,7 @@ proof -
 qed
 
 lemma dgrad_set_closed_lcs:
-  assumes "dickson_grading (+) d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
+  assumes "dickson_grading d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
   shows "lcs s t \<in> dgrad_set d m"
 proof -
   from assms(1) have "d (lcs s t) \<le> ord_class.max (d s) (d t)" by (rule dickson_grading_lcs)
@@ -895,7 +894,7 @@ proof -
 qed
 
 lemma ex_finite_adds:
-  assumes "dickson_grading (+) d" and "S \<subseteq> dgrad_set d m"
+  assumes "dickson_grading d" and "S \<subseteq> dgrad_set d m"
   obtains T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds s)"
 proof -
   define Q where "Q = (\<lambda>A. A \<subseteq> dgrad_set d m)"
@@ -984,7 +983,7 @@ lemma transp_dickson_less: "transp (dickson_less d m)"
   by (rule transpI, fact dickson_less_trans)
 
 lemma wf_dickson_less:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "wfP (dickson_less d m)"
 proof (rule wfP_chain)
   show "\<not> (\<exists>seq. \<forall>i. dickson_less d m (seq (Suc i)) (seq i))"
@@ -2322,7 +2321,7 @@ lemma varnum_plus:
   by (simp add: varnum_def keys_plus_ninv_comm_monoid_add image_Un, intro impI, rule Max_Un, auto)
 
 lemma dickson_grading_varnum:
-  "dickson_grading (+) (varnum::('a::countable \<Rightarrow>\<^sub>0 'b::add_wellorder) \<Rightarrow> nat)"
+  "dickson_grading (varnum::('a::countable \<Rightarrow>\<^sub>0 'b::add_wellorder) \<Rightarrow> nat)"
 proof (rule dickson_gradingI, fact varnum_plus)
   fix seq :: "nat \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b"
   assume *: "\<And>i. varnum (seq i) \<le> varnum (seq 0)"

@@ -28,7 +28,7 @@ definition sym_preproc_aux_term
   where "sym_preproc_aux_term d = sym_preproc_aux_term1 d \<inter> sym_preproc_aux_term2 d"
 
 lemma wfP_on_ord_term_strict:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "wfP_on (pp_of_term -` dgrad_set d m) (\<prec>\<^sub>t)"
 proof (rule wfP_onI_min)
   fix x Q
@@ -47,7 +47,7 @@ proof (rule wfP_onI_min)
 qed
 
 lemma sym_preproc_aux_term1_wf_on:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "wfP_on {x. set (fst (snd (snd x))) \<subseteq> pp_of_term -` dgrad_set d m} (\<lambda>x y. (x, y) \<in> sym_preproc_aux_term1 d)"
 proof (rule wfP_onI_min)
   let ?B = "pp_of_term -` dgrad_set d m"
@@ -110,7 +110,7 @@ proof (rule wfP_onI_min)
 qed
 
 lemma sym_preproc_aux_term_wf:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "wf (sym_preproc_aux_term d)"
 proof (rule wfI_min)
   fix x::"(('t \<Rightarrow>\<^sub>0 'b) list \<times> 't list \<times> 't list \<times> ('t \<Rightarrow>\<^sub>0 'b) list)" and Q
@@ -205,7 +205,7 @@ next
 qed
 
 lemma fst_sym_preproc_addnew_dgrad_set_le:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_set_le d (pp_of_term ` set (fst (sym_preproc_addnew gs vs fs v))) (pp_of_term ` (Keys (set gs) \<union> insert v (set vs)))"
 proof (induct gs arbitrary: fs vs)
   case Nil
@@ -536,7 +536,7 @@ function sym_preproc_aux :: "('t \<Rightarrow>\<^sub>0 'b::semiring_1) list \<Ri
     )"
   by pat_completeness auto
 termination proof -
-  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading (+) d" ..
+  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading d" ..
   let ?R = "(sym_preproc_aux_term d)::((('t \<Rightarrow>\<^sub>0 'b) list \<times> 't list \<times> 't list \<times> ('t \<Rightarrow>\<^sub>0 'b) list) \<times>
                                         ('t \<Rightarrow>\<^sub>0 'b) list \<times> 't list \<times> 't list \<times> ('t \<Rightarrow>\<^sub>0 'b) list) set"
   show ?thesis
@@ -619,7 +619,7 @@ lemma sym_preproc_aux_induct [consumes 0, case_names base rec]:
                 P ks vs fs (sym_preproc_aux gs (ks @ [v]) (sym_preproc_addnew gs vs' fs v))"
   shows "P ks vs fs (sym_preproc_aux gs ks (vs, fs))"
 proof -
-  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading (+) d" ..
+  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading d" ..
   let ?R = "(sym_preproc_aux_term d)::((('t \<Rightarrow>\<^sub>0 'b) list \<times> 't list \<times> 't list \<times> ('t \<Rightarrow>\<^sub>0 'b) list) \<times>
                                         ('t \<Rightarrow>\<^sub>0 'b) list \<times> 't list \<times> 't list \<times> ('t \<Rightarrow>\<^sub>0 'b) list) set"
   define args where "args = (gs, ks, vs, fs)"
@@ -796,7 +796,7 @@ next
 qed
 
 lemma snd_sym_preproc_aux_dgrad_set_le:
-  assumes "dickson_grading (+) d" and "set vs \<subseteq> Keys (set (fs::('t \<Rightarrow>\<^sub>0 'b::semiring_1_no_zero_divisors) list))"
+  assumes "dickson_grading d" and "set vs \<subseteq> Keys (set (fs::('t \<Rightarrow>\<^sub>0 'b::semiring_1_no_zero_divisors) list))"
   shows "dgrad_set_le d (pp_of_term ` Keys (set (snd (sym_preproc_aux gs ks (vs, fs))))) (pp_of_term ` Keys (set gs \<union> set fs))"
   using assms(2)
 proof (induct fs rule: sym_preproc_aux_induct)
@@ -1013,7 +1013,7 @@ lemma snd_sym_preproc_pmdl: "pmdl (set gs \<union> set (snd (sym_preproc gs fs))
   unfolding sym_preproc_def snd_conv by (fact snd_sym_preproc_aux_pmdl)
 
 lemma snd_sym_preproc_dgrad_set_le:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_set_le d (pp_of_term ` Keys (set (snd (sym_preproc gs fs))))
                         (pp_of_term ` Keys (set gs \<union> set (fs::('t \<Rightarrow>\<^sub>0 'b::semiring_1_no_zero_divisors) list)))"
   unfolding sym_preproc_def snd_conv using assms
@@ -1022,7 +1022,7 @@ proof (rule snd_sym_preproc_aux_dgrad_set_le)
 qed
 
 corollary snd_sym_preproc_dgrad_p_set_le:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d (set (snd (sym_preproc gs fs))) (set gs \<union> set (fs::('t \<Rightarrow>\<^sub>0 'b::semiring_1_no_zero_divisors) list))"
   unfolding dgrad_p_set_le_def
 proof -
@@ -1220,7 +1220,7 @@ proof -
   from assms(2) finite_set have "finite F" by (rule finite_subset)
   from this finite_set have fin_A: "finite A" unfolding A_def by (rule finite_UnI)
 
-  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading (+) d" ..
+  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading d" ..
   from fin_A have "finite (insert f A)" ..
   then obtain m where "insert f A \<subseteq> dgrad_p_set d m" by (rule dgrad_p_set_exhaust)
   hence A_sub: "A \<subseteq> dgrad_p_set d m" and "f \<in> dgrad_p_set d m" by simp_all
@@ -1390,7 +1390,7 @@ proof
 qed
 
 lemma f4_red_aux_dgrad_p_set_le:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d (set (f4_red_aux bs ps)) (args_to_set ([], bs, ps))"
   unfolding dgrad_p_set_le_def dgrad_set_le_def
 proof
@@ -1662,7 +1662,7 @@ next
   ultimately show "\<not> lt (fst b) adds\<^sub>t lt (fst h)" by (rule f4_red_aux_irredudible)
 next
   fix gs bs::"('t, 'b, 'c) pdata list" and ps sps and d::"'a \<Rightarrow> nat" and data::"nat \<times> 'd"
-  assume "dickson_grading (+) d"
+  assume "dickson_grading d"
   hence "dgrad_p_set_le d (set (f4_red_aux (gs @ bs) sps)) (args_to_set ([], gs @ bs, sps))"
     by (fact f4_red_aux_dgrad_p_set_le)
   also have "... = args_to_set (gs, bs, sps)" by (simp add: args_to_set_alt image_Un)

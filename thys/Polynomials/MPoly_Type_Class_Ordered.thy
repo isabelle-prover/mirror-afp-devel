@@ -2883,7 +2883,7 @@ lemma dgrad_p_set_le_minus: "dgrad_p_set_le d {p - q} {p, q}"
   by (simp add: dgrad_p_set_le_def Keys_insert, rule dgrad_set_le_subset, rule image_mono, fact keys_minus)
 
 lemma dgrad_set_le_monom_mult:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_set_le d (pp_of_term ` keys (monom_mult c t p)) (insert t (pp_of_term ` keys p))"
 proof (rule dgrad_set_leI)
   fix s
@@ -2942,7 +2942,7 @@ proof -
 qed
 
 lemma dgrad_p_set_closed_monom_mult:
-  assumes "dickson_grading (+) d" and "d t \<le> m" and "p \<in> dgrad_p_set d m"
+  assumes "dickson_grading d" and "d t \<le> m" and "p \<in> dgrad_p_set d m"
   shows "monom_mult c t p \<in> dgrad_p_set d m"
 proof (rule dgrad_p_setI)
   fix v
@@ -3006,7 +3006,7 @@ proof -
 qed
 
 lemma dickson_term_aux:
-  assumes "dickson_grading (+) d" and "finite K" and "component_of_term ` range (f::nat \<Rightarrow> 't) \<subseteq> K"
+  assumes "dickson_grading d" and "finite K" and "component_of_term ` range (f::nat \<Rightarrow> 't) \<subseteq> K"
     and "pp_of_term ` range f \<subseteq> dgrad_set d m"
   obtains i j where "i < j" and "f i adds\<^sub>t f j"
   using assms(2, 3, 4)
@@ -3066,13 +3066,13 @@ next
 qed
 
 corollary dickson_term:
-  assumes "dickson_grading (+) d"and "finite (component_of_term ` range (f::nat \<Rightarrow> 't))"
+  assumes "dickson_grading d"and "finite (component_of_term ` range (f::nat \<Rightarrow> 't))"
     and "pp_of_term ` range f \<subseteq> dgrad_set d m"
   obtains i j where "i < j" and "f i adds\<^sub>t f j"
   by (rule dickson_term_aux, rule assms(1), rule assms(2), rule subset_refl, rule assms(3))
 
 lemma ex_finite_adds_term:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` S)" and "pp_of_term ` S \<subseteq> dgrad_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` S)" and "pp_of_term ` S \<subseteq> dgrad_set d m"
   obtains T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds\<^sub>t s)"
 proof -
   define Q where "Q = (\<lambda>A. finite (component_of_term ` A) \<and> pp_of_term ` A \<subseteq> dgrad_set d m)"
@@ -3141,7 +3141,7 @@ lemma dickson_less_v_trans:
   using assms by (auto simp add: dickson_less_v_def)
 
 lemma wf_dickson_less_v_aux1:
-  assumes "dickson_grading (+) d" and "\<And>i::nat. dickson_less_v d m (seq (Suc i)) (seq i)"
+  assumes "dickson_grading d" and "\<And>i::nat. dickson_less_v d m (seq (Suc i)) (seq i)"
   obtains i where "\<And>j. j > i \<Longrightarrow> component_of_term (seq j) < component_of_term (seq i)"
 proof -
   let ?Q = "pp_of_term ` range seq"
@@ -3175,7 +3175,7 @@ proof -
 qed
 
 lemma wf_dickson_less_v_aux2:
-  assumes "dickson_grading (+) d" and "\<And>i::nat. dickson_less_v d m (seq (Suc i)) (seq i)"
+  assumes "dickson_grading d" and "\<And>i::nat. dickson_less_v d m (seq (Suc i)) (seq i)"
     and "\<And>i::nat. component_of_term (seq i) < k"
   shows thesis
   using assms(2, 3)
@@ -3195,7 +3195,7 @@ proof (induct k arbitrary: seq thesis rule: less_induct)
 qed
 
 lemma wf_dickson_less_v:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "wfP (dickson_less_v d m)"
 proof (rule wfP_chain, rule, elim exE)
   fix seq::"nat \<Rightarrow> 't"
@@ -3260,7 +3260,7 @@ lemma dickson_less_p_zero: "dickson_less_p (\<lambda>_. 0) m = (\<prec>\<^sub>p)
   by (rule, rule, simp add: dickson_less_p_def)
 
 lemma wf_dickson_less_p_aux:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   assumes "x \<in> Q" and "\<forall>y\<in>Q. y \<noteq> 0 \<longrightarrow> (y \<in> dgrad_p_set d m \<and> dickson_less_v d m (lt y) u)"
   shows "\<exists>p\<in>Q. (\<forall>q\<in>Q. \<not> dickson_less_p d m q p)"
   using assms(2) assms(3)
@@ -3374,7 +3374,7 @@ proof (induct u arbitrary: x Q rule: wfP_induct[OF wf_dickson_less_v, OF assms(1
 qed
 
 theorem wf_dickson_less_p:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "wfP (dickson_less_p d m)"
 proof (rule wfI_min[to_pred])
   fix Q::"('t \<Rightarrow>\<^sub>0 'b) set" and x
@@ -3476,7 +3476,7 @@ proof (rule wfI_min[to_pred])
 qed
 
 corollary ord_p_minimum_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "x \<in> Q" and "Q \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "x \<in> Q" and "Q \<subseteq> dgrad_p_set d m"
   obtains q where "q \<in> Q" and "\<And>y. y \<prec>\<^sub>p q \<Longrightarrow> y \<notin> Q"
 proof -
   from assms(1) have "wfP (dickson_less_p d m)" by (rule wf_dickson_less_p)

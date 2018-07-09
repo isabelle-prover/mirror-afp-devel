@@ -307,7 +307,7 @@ begin
 definition ap_spec :: "('t, 'b::field, 'c, 'd) apT \<Rightarrow> bool"
   where "ap_spec ap \<longleftrightarrow> (\<forall>gs bs ps hs data.
       set (ap gs bs ps hs data) \<subseteq> set ps \<union> (set hs \<times> (set gs \<union> set bs \<union> set hs)) \<and>
-      (\<forall>B d m. \<forall>h\<in>set hs. \<forall>g\<in>set gs \<union> set bs \<union> set hs. dickson_grading (+) d \<longrightarrow>
+      (\<forall>B d m. \<forall>h\<in>set hs. \<forall>g\<in>set gs \<union> set bs \<union> set hs. dickson_grading d \<longrightarrow>
         set gs \<union> set bs \<union> set hs \<subseteq> B \<longrightarrow> fst ` B \<subseteq> dgrad_p_set d m \<longrightarrow>
         set ps \<subseteq> set bs \<times> (set gs \<union> set bs) \<longrightarrow> unique_idx (gs @ bs @ hs) data \<longrightarrow>
         is_Groebner_basis (fst ` set gs) \<longrightarrow> h \<noteq> g \<longrightarrow> fst h \<noteq> 0 \<longrightarrow> fst g \<noteq> 0 \<longrightarrow>
@@ -316,7 +316,7 @@ definition ap_spec :: "('t, 'b::field, 'c, 'd) apT \<Rightarrow> bool"
         (\<forall>a b. a \<in> set gs \<union> set bs \<longrightarrow> b \<in> set gs \<union> set bs \<longrightarrow> fst a \<noteq> 0 \<longrightarrow> fst b \<noteq> 0 \<longrightarrow>
                crit_pair_cbelow_on d m (fst ` B) (fst a) (fst b)) \<longrightarrow>
         crit_pair_cbelow_on d m (fst ` B) (fst h) (fst g)) \<and>
-      (\<forall>B d m. \<forall>h g. dickson_grading (+) d \<longrightarrow>
+      (\<forall>B d m. \<forall>h g. dickson_grading d \<longrightarrow>
         set gs \<union> set bs \<union> set hs \<subseteq> B \<longrightarrow> fst ` B \<subseteq> dgrad_p_set d m \<longrightarrow>
         set ps \<subseteq> set bs \<times> (set gs \<union> set bs) \<longrightarrow> (set gs \<union> set bs) \<inter> set hs = {} \<longrightarrow>
         unique_idx (gs @ bs @ hs) data \<longrightarrow> is_Groebner_basis (fst ` set gs) \<longrightarrow>
@@ -334,7 +334,7 @@ text \<open>Informally, \<open>ap_spec ap\<close> means that, for suitable argum
 
 lemma ap_specI:
   assumes "\<And>gs bs ps hs data. set (ap gs bs ps hs data) \<subseteq> set ps \<union> (set hs \<times> (set gs \<union> set bs \<union> set hs))"
-  assumes "\<And>gs bs ps hs data B d m h g. dickson_grading (+) d \<Longrightarrow>
+  assumes "\<And>gs bs ps hs data B d m h g. dickson_grading d \<Longrightarrow>
               set gs \<union> set bs \<union> set hs \<subseteq> B \<Longrightarrow> fst ` B \<subseteq> dgrad_p_set d m \<Longrightarrow>
               h \<in> set hs \<Longrightarrow> g \<in> set gs \<union> set bs \<union> set hs \<Longrightarrow>
               set ps \<subseteq> set bs \<times> (set gs \<union> set bs) \<Longrightarrow> unique_idx (gs @ bs @ hs) data \<Longrightarrow>
@@ -344,7 +344,7 @@ lemma ap_specI:
               (\<And>a b. a \<in> set gs \<union> set bs \<Longrightarrow> b \<in> set gs \<union> set bs \<Longrightarrow> fst a \<noteq> 0 \<Longrightarrow> fst b \<noteq> 0 \<Longrightarrow>
                      crit_pair_cbelow_on d m (fst ` B) (fst a) (fst b)) \<Longrightarrow>
               crit_pair_cbelow_on d m (fst ` B) (fst h) (fst g)"
-  assumes "\<And>gs bs ps hs data B d m h g. dickson_grading (+) d \<Longrightarrow>
+  assumes "\<And>gs bs ps hs data B d m h g. dickson_grading d \<Longrightarrow>
               set gs \<union> set bs \<union> set hs \<subseteq> B \<Longrightarrow> fst ` B \<subseteq> dgrad_p_set d m \<Longrightarrow>
               set ps \<subseteq> set bs \<times> (set gs \<union> set bs) \<Longrightarrow> (set gs \<union> set bs) \<inter> set hs = {} \<Longrightarrow>
               unique_idx (gs @ bs @ hs) data \<Longrightarrow> is_Groebner_basis (fst ` set gs) \<Longrightarrow> h \<noteq> g \<Longrightarrow>
@@ -366,7 +366,7 @@ lemma ap_specD1:
   using assms unfolding ap_spec_def by (elim allE conjE) (assumption)
 
 lemma ap_specD2:
-  assumes "ap_spec ap" and "dickson_grading (+) d" and "set gs \<union> set bs \<union> set hs \<subseteq> B"
+  assumes "ap_spec ap" and "dickson_grading d" and "set gs \<union> set bs \<union> set hs \<subseteq> B"
     and "fst ` B \<subseteq> dgrad_p_set d m" and "(h, g) \<in>\<^sub>p set hs \<times> (set gs \<union> set bs \<union> set hs)"
     and "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)" and "unique_idx (gs @ bs @ hs) data"
     and "is_Groebner_basis (fst ` set gs)" and "h \<noteq> g" and "fst h \<noteq> 0" and "fst g \<noteq> 0"
@@ -396,7 +396,7 @@ proof -
 qed
 
 lemma ap_specD3:
-  assumes "ap_spec ap" and "dickson_grading (+) d" and "set gs \<union> set bs \<union> set hs \<subseteq> B"
+  assumes "ap_spec ap" and "dickson_grading d" and "set gs \<union> set bs \<union> set hs \<subseteq> B"
     and "fst ` B \<subseteq> dgrad_p_set d m" and "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)"
     and "(set gs \<union> set bs) \<inter> set hs = {}" and "unique_idx (gs @ bs @ hs) data"
     and "is_Groebner_basis (fst ` set gs)" and "h \<noteq> g" and "fst h \<noteq> 0" and "fst g \<noteq> 0"
@@ -669,7 +669,7 @@ subsubsection \<open>Specification of the @{emph \<open>completion\<close>} para
 definition compl_struct :: "('t, 'b::field, 'c, 'd) complT \<Rightarrow> bool"
   where "compl_struct compl \<longleftrightarrow>
           (\<forall>gs bs ps sps data. sps \<noteq> [] \<longrightarrow> set sps \<subseteq> set ps \<longrightarrow>
-              (\<forall>d. dickson_grading (+) d \<longrightarrow>
+              (\<forall>d. dickson_grading d \<longrightarrow>
                   dgrad_p_set_le d (fst ` (set (fst (compl gs bs (ps -- sps) sps data)))) (args_to_set (gs, bs, ps))) \<and>
               component_of_term ` Keys (fst ` (set (fst (compl gs bs (ps -- sps) sps data)))) \<subseteq>
                 component_of_term ` Keys (args_to_set (gs, bs, ps)) \<and>
@@ -677,7 +677,7 @@ definition compl_struct :: "('t, 'b::field, 'c, 'd) complT \<Rightarrow> bool"
               (\<forall>h\<in>set (fst (compl gs bs (ps -- sps) sps data)). \<forall>b\<in>set gs \<union> set bs. fst b \<noteq> 0 \<longrightarrow> \<not> lt (fst b) adds\<^sub>t lt (fst h)))"
 
 lemma compl_structI:
-  assumes "\<And>d gs bs ps sps data. dickson_grading (+) d \<Longrightarrow> sps \<noteq> [] \<Longrightarrow> set sps \<subseteq> set ps \<Longrightarrow>
+  assumes "\<And>d gs bs ps sps data. dickson_grading d \<Longrightarrow> sps \<noteq> [] \<Longrightarrow> set sps \<subseteq> set ps \<Longrightarrow>
               dgrad_p_set_le d (fst ` (set (fst (compl gs bs (ps -- sps) sps data)))) (args_to_set (gs, bs, ps))"
   assumes "\<And>gs bs ps sps data. sps \<noteq> [] \<Longrightarrow> set sps \<subseteq> set ps \<Longrightarrow>
               component_of_term ` Keys (fst ` (set (fst (compl gs bs (ps -- sps) sps data)))) \<subseteq>
@@ -689,7 +689,7 @@ lemma compl_structI:
   unfolding compl_struct_def using assms by auto
 
 lemma compl_structD1:
-  assumes "compl_struct compl" and "dickson_grading (+) d" and "sps \<noteq> []" and "set sps \<subseteq> set ps"
+  assumes "compl_struct compl" and "dickson_grading d" and "sps \<noteq> []" and "set sps \<subseteq> set ps"
   shows "dgrad_p_set_le d (fst ` (set (fst (compl gs bs (ps -- sps) sps data)))) (args_to_set (gs, bs, ps))"
   using assms unfolding compl_struct_def by blast
 
@@ -762,7 +762,7 @@ lemma compl_pmdlD:
 
 definition compl_conn :: "('t, 'b::field, 'c, 'd) complT \<Rightarrow> bool"
   where "compl_conn compl \<longleftrightarrow>
-            (\<forall>d m gs bs ps sps p q data. dickson_grading (+) d \<longrightarrow> fst ` set gs \<subseteq> dgrad_p_set d m \<longrightarrow>
+            (\<forall>d m gs bs ps sps p q data. dickson_grading d \<longrightarrow> fst ` set gs \<subseteq> dgrad_p_set d m \<longrightarrow>
               is_Groebner_basis (fst ` set gs) \<longrightarrow> fst ` set bs \<subseteq> dgrad_p_set d m \<longrightarrow>
               set ps \<subseteq> set bs \<times> (set gs \<union> set bs) \<longrightarrow> sps \<noteq> [] \<longrightarrow> set sps \<subseteq> set ps \<longrightarrow>
               unique_idx (gs @ bs) data \<longrightarrow> (p, q) \<in> set sps \<longrightarrow> fst p \<noteq> 0 \<longrightarrow> fst q \<noteq> 0 \<longrightarrow>
@@ -773,7 +773,7 @@ text \<open>Informally, \<open>compl_conn compl\<close> means that, for suitable
   \<open>sps\<close> can be connected modulo \<open>set gs \<union> set bs \<union> set hs\<close>.\<close>
 
 lemma compl_connI:
-  assumes "\<And>d m gs bs ps sps p q data. dickson_grading (+) d \<Longrightarrow> fst ` set gs \<subseteq> dgrad_p_set d m \<Longrightarrow>
+  assumes "\<And>d m gs bs ps sps p q data. dickson_grading d \<Longrightarrow> fst ` set gs \<subseteq> dgrad_p_set d m \<Longrightarrow>
             is_Groebner_basis (fst ` set gs) \<Longrightarrow> fst ` set bs \<subseteq> dgrad_p_set d m \<Longrightarrow>
             set ps \<subseteq> set bs \<times> (set gs \<union> set bs) \<Longrightarrow> sps \<noteq> [] \<Longrightarrow> set sps \<subseteq> set ps \<Longrightarrow>
             unique_idx (gs @ bs) data \<Longrightarrow> (p, q) \<in> set sps \<Longrightarrow> fst p \<noteq> 0 \<Longrightarrow> fst q \<noteq> 0 \<Longrightarrow>
@@ -782,7 +782,7 @@ lemma compl_connI:
   unfolding compl_conn_def using assms by presburger
 
 lemma compl_connD:
-  assumes "compl_conn compl" and "dickson_grading (+) d" and "fst ` set gs \<subseteq> dgrad_p_set d m"
+  assumes "compl_conn compl" and "dickson_grading d" and "fst ` set gs \<subseteq> dgrad_p_set d m"
     and "is_Groebner_basis (fst ` set gs)" and "fst ` set bs \<subseteq> dgrad_p_set d m"
     and "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)" and "sps \<noteq> []" and "set sps \<subseteq> set ps"
     and "unique_idx (gs @ bs) data" and "(p, q) \<in> set sps" and "fst p \<noteq> 0" and "fst q \<noteq> 0"
@@ -834,7 +834,7 @@ definition gb_schema_aux_term where "gb_schema_aux_term d gs = gb_schema_aux_ter
 text \<open>@{const gb_schema_aux_term} is needed for proving termination of function \<open>gb_schema_aux\<close>.\<close>
 
 lemma gb_schema_aux_term1_wf_on:
-  assumes "dickson_grading (+) d" and "finite K"
+  assumes "dickson_grading d" and "finite K"
   shows "wfP_on {x::(('t, 'b, 'c) pdata list) \<times> ((('t, 'b::field, 'c) pdata_pair list)).
                     args_to_set (gs, x) \<subseteq> dgrad_p_set d m \<and> component_of_term ` Keys (args_to_set (gs, x)) \<subseteq> K}
                 (\<lambda>x y. (x, y) \<in> gb_schema_aux_term1)"
@@ -900,7 +900,7 @@ proof (rule wfP_onI_min)
 qed
 
 lemma gb_schema_aux_term_wf:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "wf (gb_schema_aux_term d gs)"
 proof (rule wfI_min)
   fix x::"(('t, 'b, 'c) pdata list) \<times> (('t, 'b, 'c) pdata_pair list)" and Q
@@ -943,7 +943,7 @@ proof (rule wfI_min)
 qed
 
 lemma dgrad_p_set_le_args_to_set_ab:
-  assumes "dickson_grading (+) d" and "ap_spec ap" and "ab_spec ab" and "compl_struct compl"
+  assumes "dickson_grading d" and "ap_spec ap" and "ab_spec ab" and "compl_struct compl"
   assumes "sps \<noteq> []" and "set sps \<subseteq> set ps" and "hs = fst (add_indices (compl gs bs (ps -- sps) sps data) data)"
   shows "dgrad_p_set_le d (args_to_set (gs, ab gs bs hs data', ap gs bs (ps -- sps) hs data')) (args_to_set (gs, bs, ps))"
     (is "dgrad_p_set_le _ ?l ?r")
@@ -972,7 +972,7 @@ proof -
 qed
 
 corollary dgrad_p_set_le_args_to_set_struct:
-  assumes "dickson_grading (+) d" and "struct_spec sel ap ab compl" and "ps \<noteq> []"
+  assumes "dickson_grading d" and "struct_spec sel ap ab compl" and "ps \<noteq> []"
   assumes "sps = sel gs bs ps data" and "hs = fst (add_indices (compl gs bs (ps -- sps) sps data) data)"
   shows "dgrad_p_set_le d (args_to_set (gs, ab gs bs hs data', ap gs bs (ps -- sps) hs data')) (args_to_set (gs, bs, ps))"
 proof -
@@ -1355,7 +1355,7 @@ lemma gb_schema_dummy_domI2:
   shows "gb_schema_dummy_dom (data, D, args)"
 proof -
   from assms have sel: "sel_spec sel" and ap: "ap_spec ap" and ab: "ab_spec ab" by (rule struct_specD)+
-  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading (+) d" ..
+  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading d" ..
   let ?R = "(gb_schema_aux_term d gs)"
   from dg have "wf ?R" by (rule gb_schema_aux_term_wf)
   thus ?thesis
@@ -1502,7 +1502,7 @@ proof -
 qed
 
 lemma fst_gb_schema_dummy_dgrad_p_set_le:
-  assumes "dickson_grading (+) d" and "struct_spec sel ap ab compl"
+  assumes "dickson_grading d" and "struct_spec sel ap ab compl"
   shows "dgrad_p_set_le d (fst ` set (fst (gb_schema_dummy data D bs ps))) (args_to_set (gs, bs, ps))"
   using assms(2)
 proof (induct rule: gb_schema_dummy_induct)
@@ -1702,7 +1702,7 @@ next
 qed
 
 lemma gb_schema_dummy_connectible1:
-  assumes "struct_spec sel ap ab compl" and "compl_conn compl" and "dickson_grading (+) d"
+  assumes "struct_spec sel ap ab compl" and "compl_conn compl" and "dickson_grading d"
     and "fst ` set gs \<subseteq> dgrad_p_set d m" and "is_Groebner_basis (fst ` set gs)"
     and "fst ` set bs \<subseteq> dgrad_p_set d m"
     and "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)"
@@ -1838,7 +1838,7 @@ next
 qed
 
 lemma gb_schema_dummy_connectible2:
-  assumes "struct_spec sel ap ab compl" and "compl_conn compl" and "dickson_grading (+) d"
+  assumes "struct_spec sel ap ab compl" and "compl_conn compl" and "dickson_grading d"
     and "fst ` set gs \<subseteq> dgrad_p_set d m" and "is_Groebner_basis (fst ` set gs)"
     and "fst ` set bs \<subseteq> dgrad_p_set d m"
     and "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)" and "D \<subseteq> (set gs \<union> set bs) \<times> (set gs \<union> set bs)"
@@ -2097,7 +2097,7 @@ next
 qed
 
 corollary gb_schema_dummy_connectible:
-  assumes "struct_spec sel ap ab compl" and "compl_conn compl" and "dickson_grading (+) d"
+  assumes "struct_spec sel ap ab compl" and "compl_conn compl" and "dickson_grading d"
     and "fst ` set gs \<subseteq> dgrad_p_set d m" and "is_Groebner_basis (fst ` set gs)"
     and "fst ` set bs \<subseteq> dgrad_p_set d m"
     and "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)" and "D \<subseteq> (set gs \<union> set bs) \<times> (set gs \<union> set bs)"
@@ -2155,7 +2155,7 @@ next
 qed
 
 lemma fst_gb_schema_dummy_dgrad_p_set_le_init:
-  assumes "dickson_grading (+) d" and "struct_spec sel ap ab compl"
+  assumes "dickson_grading d" and "struct_spec sel ap ab compl"
   shows "dgrad_p_set_le d (fst ` set (fst (gb_schema_dummy data D (ab gs [] bs (snd data)) (ap gs [] [] bs (snd data)))))
                           (fst ` (set gs \<union> set bs))"
 proof -
@@ -2173,7 +2173,7 @@ proof -
 qed
 
 corollary fst_gb_schema_dummy_dgrad_p_set_init:
-  assumes "dickson_grading (+) d" and "struct_spec sel ap ab compl"
+  assumes "dickson_grading d" and "struct_spec sel ap ab compl"
     and "fst ` (set gs \<union> set bs) \<subseteq> dgrad_p_set d m"
   shows "fst ` set (fst (gb_schema_dummy (rc, data) D (ab gs [] bs data) (ap gs [] [] bs data))) \<subseteq> dgrad_p_set d m"
 proof (rule dgrad_p_set_le_dgrad_p_set)
@@ -2242,7 +2242,7 @@ proof -
   have set_bs0: "set bs0 = set bs" by (simp add: bs0_def ab_specD1[OF ab])
   from ap_specD1[OF ap, of gs "[]" "[]" bs] have ps0_sub: "set ps0 \<subseteq> set bs0 \<times> (set gs \<union> set bs0)"
     by (simp add: ps0_def set_bs0)
-  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading (+) d" ..
+  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading d" ..
   have "finite (fst ` (set gs \<union> set bs))" by (rule, rule finite_UnI, fact finite_set, fact finite_set)
   then obtain m where gs_bs_sub: "fst ` (set gs \<union> set bs) \<subseteq> dgrad_p_set d m" by (rule dgrad_p_set_exhaust)
   with dg assms(4) have "fst ` set (fst ?res) \<subseteq> dgrad_p_set d m" unfolding bs0_def ps0_def
@@ -2417,7 +2417,7 @@ lemma gb_schema_aux_domI2:
   shows "gb_schema_aux_dom (data, args)"
 proof -
   from assms have sel: "sel_spec sel" and ap: "ap_spec ap" and ab: "ab_spec ab" by (rule struct_specD)+
-  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading (+) d" ..
+  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading d" ..
   let ?R = "gb_schema_aux_term d gs"
   from dg have "wf ?R" by (rule gb_schema_aux_term_wf)
   thus ?thesis
@@ -2559,7 +2559,7 @@ next
 qed
 
 corollary gb_schema_aux_dgrad_p_set_le:
-  assumes "dickson_grading (+) d" and "struct_spec sel ap ab compl"
+  assumes "dickson_grading d" and "struct_spec sel ap ab compl"
   shows "dgrad_p_set_le d (fst ` set (gb_schema_aux data bs ps)) (args_to_set (gs, bs, ps))"
   using fst_gb_schema_dummy_dgrad_p_set_le[OF assms] unfolding gb_schema_dummy_eq_gb_schema_aux[OF assms(2)] .
 
@@ -2577,13 +2577,13 @@ lemma gb_schema_aux_pmdl:
   using fst_gb_schema_dummy_pmdl[OF assms] unfolding gb_schema_dummy_eq_gb_schema_aux[OF assms(1)] .
 
 corollary gb_schema_aux_dgrad_p_set_le_init:
-  assumes "dickson_grading (+) d" and "struct_spec sel ap ab compl"
+  assumes "dickson_grading d" and "struct_spec sel ap ab compl"
   shows "dgrad_p_set_le d (fst ` set (gb_schema_aux data (ab gs [] bs (snd data)) (ap gs [] [] bs (snd data))))
                           (fst ` (set gs \<union> set bs))"
   using fst_gb_schema_dummy_dgrad_p_set_le_init[OF assms] unfolding gb_schema_dummy_eq_gb_schema_aux[OF assms(2)] .
 
 corollary gb_schema_aux_dgrad_p_set_init:
-  assumes "dickson_grading (+) d" and "struct_spec sel ap ab compl"
+  assumes "dickson_grading d" and "struct_spec sel ap ab compl"
     and "fst ` (set gs \<union> set bs) \<subseteq> dgrad_p_set d m"
   shows "fst ` set (gb_schema_aux (rc, data) (ab gs [] bs data) (ap gs [] [] bs data)) \<subseteq> dgrad_p_set d m"
   using fst_gb_schema_dummy_dgrad_p_set_init[OF assms] unfolding gb_schema_dummy_eq_gb_schema_aux[OF assms(2)] .
@@ -2648,7 +2648,7 @@ lemma fst_gb_schema_direct:
   by (simp add: gb_schema_direct_def Let_def fst_set_drop_indices)
 
 lemma gb_schema_direct_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "struct_spec sel ap ab compl" and "fst ` set bs \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "struct_spec sel ap ab compl" and "fst ` set bs \<subseteq> dgrad_p_set d m"
   shows "fst ` set (gb_schema_direct sel ap ab compl bs data) \<subseteq> dgrad_p_set d m"
   unfolding fst_gb_schema_direct Let_def using assms(1, 2)
 proof (rule gb_schema_aux_dgrad_p_set_init)
@@ -2706,7 +2706,7 @@ lemma fst_gb_schema_incr:
         prod.case_distrib[of "image fst"] set_map fst_set_drop_indices)
 
 lemma gb_schema_incr_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "struct_spec sel ap ab compl"
+  assumes "dickson_grading d" and "struct_spec sel ap ab compl"
     and "fst ` set bs \<subseteq> dgrad_p_set d m"
   shows "fst ` set (gb_schema_incr sel ap ab compl upd bs data) \<subseteq> dgrad_p_set d m"
   using assms(3)
@@ -2843,7 +2843,7 @@ type_synonym (in -) ('t, 'b, 'c, 'd) ocritT = "nat \<times> 'd \<Rightarrow> ('t
 
 definition icrit_spec :: "('t, 'b::field, 'c, 'd) icritT \<Rightarrow> bool"
   where "icrit_spec crit \<longleftrightarrow>
-            (\<forall>d m data gs bs hs p q. dickson_grading (+) d \<longrightarrow>
+            (\<forall>d m data gs bs hs p q. dickson_grading d \<longrightarrow>
               fst ` (set gs \<union> set bs \<union> set hs) \<subseteq> dgrad_p_set d m \<longrightarrow> unique_idx (gs @ bs @ hs) data \<longrightarrow>
               is_Groebner_basis (fst ` set gs) \<longrightarrow> p \<in> set hs \<longrightarrow> q \<in> set gs \<union> set bs \<union> set hs \<longrightarrow>
               fst p \<noteq> 0 \<longrightarrow> fst q \<noteq> 0 \<longrightarrow> crit data gs bs hs p q \<longrightarrow>
@@ -2857,7 +2857,7 @@ text \<open>Criteria satisfying @{const icrit_spec} can be used for discarding p
 
 definition ncrit_spec :: "('t, 'b::field, 'c, 'd) ncritT \<Rightarrow> bool"
   where "ncrit_spec crit \<longleftrightarrow>
-            (\<forall>d m data gs bs hs ps B q_in_bs p q. dickson_grading (+) d \<longrightarrow> set gs \<union> set bs \<union> set hs \<subseteq> B \<longrightarrow>
+            (\<forall>d m data gs bs hs ps B q_in_bs p q. dickson_grading d \<longrightarrow> set gs \<union> set bs \<union> set hs \<subseteq> B \<longrightarrow>
               fst ` B \<subseteq> dgrad_p_set d m \<longrightarrow> snd ` set ps \<subseteq> set hs \<times> (set gs \<union> set bs \<union> set hs) \<longrightarrow>
               unique_idx (gs @ bs @ hs) data \<longrightarrow> is_Groebner_basis (fst ` set gs) \<longrightarrow>
               (q_in_bs \<longrightarrow> (q \<in> set gs \<union> set bs)) \<longrightarrow>
@@ -2871,7 +2871,7 @@ definition ncrit_spec :: "('t, 'b::field, 'c, 'd) ncritT \<Rightarrow> bool"
 
 definition ocrit_spec :: "('t, 'b::field, 'c, 'd) ocritT \<Rightarrow> bool"
   where "ocrit_spec crit \<longleftrightarrow>
-            (\<forall>d m data hs ps B p q. dickson_grading (+) d \<longrightarrow> set hs \<subseteq> B \<longrightarrow> fst ` B \<subseteq> dgrad_p_set d m \<longrightarrow>
+            (\<forall>d m data hs ps B p q. dickson_grading d \<longrightarrow> set hs \<subseteq> B \<longrightarrow> fst ` B \<subseteq> dgrad_p_set d m \<longrightarrow>
               unique_idx (p # q # hs @ (map (fst \<circ> snd) ps) @ (map (snd \<circ> snd) ps)) data \<longrightarrow>
               (\<forall>p' q'. (p', q') \<in>\<^sub>p snd ` set ps \<longrightarrow> fst p' \<noteq> 0 \<longrightarrow> fst q' \<noteq> 0 \<longrightarrow>
                   crit_pair_cbelow_on d m (fst ` B) (fst p') (fst q')) \<longrightarrow>
@@ -2885,7 +2885,7 @@ text \<open>Criteria satisfying @{const ncrit_spec} can be used for discarding n
 
 lemma icrit_specI:
   assumes "\<And>d m data gs bs hs p q.
-              dickson_grading (+) d \<Longrightarrow> fst ` (set gs \<union> set bs \<union> set hs) \<subseteq> dgrad_p_set d m \<Longrightarrow>
+              dickson_grading d \<Longrightarrow> fst ` (set gs \<union> set bs \<union> set hs) \<subseteq> dgrad_p_set d m \<Longrightarrow>
               unique_idx (gs @ bs @ hs) data \<Longrightarrow> is_Groebner_basis (fst ` set gs) \<Longrightarrow>
               p \<in> set hs \<Longrightarrow> q \<in> set gs \<union> set bs \<union> set hs \<Longrightarrow> fst p \<noteq> 0 \<Longrightarrow> fst q \<noteq> 0 \<Longrightarrow>
               crit data gs bs hs p q \<Longrightarrow>
@@ -2894,7 +2894,7 @@ lemma icrit_specI:
   unfolding icrit_spec_def using assms by auto
 
 lemma icrit_specD:
-  assumes "icrit_spec crit" and "dickson_grading (+) d"
+  assumes "icrit_spec crit" and "dickson_grading d"
     and "fst ` (set gs \<union> set bs \<union> set hs) \<subseteq> dgrad_p_set d m" and "unique_idx (gs @ bs @ hs) data"
     and "is_Groebner_basis (fst ` set gs)" and "p \<in> set hs" and "q \<in> set gs \<union> set bs \<union> set hs"
     and "fst p \<noteq> 0" and "fst q \<noteq> 0" and "crit data gs bs hs p q"
@@ -2903,7 +2903,7 @@ lemma icrit_specD:
 
 lemma ncrit_specI:
   assumes "\<And>d m data gs bs hs ps B q_in_bs p q.
-              dickson_grading (+) d \<Longrightarrow> set gs \<union> set bs \<union> set hs \<subseteq> B \<Longrightarrow>
+              dickson_grading d \<Longrightarrow> set gs \<union> set bs \<union> set hs \<subseteq> B \<Longrightarrow>
               fst ` B \<subseteq> dgrad_p_set d m \<Longrightarrow> snd ` set ps \<subseteq> set hs \<times> (set gs \<union> set bs \<union> set hs) \<Longrightarrow>
               unique_idx (gs @ bs @ hs) data \<Longrightarrow> is_Groebner_basis (fst ` set gs) \<Longrightarrow>
               (q_in_bs \<longrightarrow> q \<in> set gs \<union> set bs) \<Longrightarrow>
@@ -2918,7 +2918,7 @@ lemma ncrit_specI:
   unfolding ncrit_spec_def by (intro allI impI, rule assms, assumption+, meson, meson, assumption+)
 
 lemma ncrit_specD:
-  assumes "ncrit_spec crit" and "dickson_grading (+) d" and "set gs \<union> set bs \<union> set hs \<subseteq> B"
+  assumes "ncrit_spec crit" and "dickson_grading d" and "set gs \<union> set bs \<union> set hs \<subseteq> B"
     and "fst ` B \<subseteq> dgrad_p_set d m" and "snd ` set ps \<subseteq> set hs \<times> (set gs \<union> set bs \<union> set hs)"
     and "unique_idx (gs @ bs @ hs) data" and "is_Groebner_basis (fst ` set gs)"
     and "q_in_bs \<Longrightarrow> q \<in> set gs \<union> set bs"
@@ -2933,7 +2933,7 @@ lemma ncrit_specD:
 
 lemma ocrit_specI:
   assumes "\<And>d m data hs ps B p q.
-              dickson_grading (+) d \<Longrightarrow> set hs \<subseteq> B \<Longrightarrow> fst ` B \<subseteq> dgrad_p_set d m \<Longrightarrow>
+              dickson_grading d \<Longrightarrow> set hs \<subseteq> B \<Longrightarrow> fst ` B \<subseteq> dgrad_p_set d m \<Longrightarrow>
               unique_idx (p # q # hs @ (map (fst \<circ> snd) ps) @ (map (snd \<circ> snd) ps)) data \<Longrightarrow>
               (\<And>p' q'. (p', q') \<in>\<^sub>p snd ` set ps \<Longrightarrow> fst p' \<noteq> 0 \<Longrightarrow> fst q' \<noteq> 0 \<Longrightarrow>
                   crit_pair_cbelow_on d m (fst ` B) (fst p') (fst q')) \<Longrightarrow>
@@ -2943,7 +2943,7 @@ lemma ocrit_specI:
   unfolding ocrit_spec_def by (intro allI impI, rule assms, assumption+, meson, assumption+)
 
 lemma ocrit_specD:
-  assumes "ocrit_spec crit" and "dickson_grading (+) d" and "set hs \<subseteq> B" and "fst ` B \<subseteq> dgrad_p_set d m"
+  assumes "ocrit_spec crit" and "dickson_grading d" and "set hs \<subseteq> B" and "fst ` B \<subseteq> dgrad_p_set d m"
     and "unique_idx (p # q # hs @ (map (fst \<circ> snd) ps) @ (map (snd \<circ> snd) ps)) data"
     and "\<And>p' q'. (p', q') \<in>\<^sub>p snd ` set ps \<Longrightarrow> fst p' \<noteq> 0 \<Longrightarrow> fst q' \<noteq> 0 \<Longrightarrow>
                   crit_pair_cbelow_on d m (fst ` B) (fst p') (fst q')"
@@ -2978,7 +2978,7 @@ proof (rule punit.icrit_specI)
   assume "product_crit data gs bs hs p q"
   hence *: "gcs (punit.lt (fst p)) (punit.lt (fst q)) = 0" by (simp only: product_crit_def)
   assume "p \<in> set hs" and q_in: "q \<in> set gs \<union> set bs \<union> set hs" (is "_ \<in> ?B")
-  assume "dickson_grading (+) d" and sub: "fst ` (set gs \<union> set bs \<union> set hs) \<subseteq> punit.dgrad_p_set d m"
+  assume "dickson_grading d" and sub: "fst ` (set gs \<union> set bs \<union> set hs) \<subseteq> punit.dgrad_p_set d m"
   moreover from \<open>p \<in> set hs\<close> have "fst p \<in> fst ` ?B" by simp
   moreover from q_in have "fst q \<in> fst ` ?B" by simp
   moreover assume "fst p \<noteq> 0" and "fst q \<noteq> 0"
@@ -3210,7 +3210,7 @@ lemma ncrit_spec_chain_ncrit: "ncrit_spec (chain_ncrit::('t, 'b::field, 'c, 'd) 
 proof (rule ncrit_specI)
   fix d m and data::"nat \<times> 'd" and gs bs hs and ps::"(bool \<times> ('t, 'b, 'c) pdata_pair) list"
     and B q_in_bs and p q::"('t, 'b, 'c) pdata"
-  assume dg: "dickson_grading (+) d" and B_sup: "set gs \<union> set bs \<union> set hs \<subseteq> B"
+  assume dg: "dickson_grading d" and B_sup: "set gs \<union> set bs \<union> set hs \<subseteq> B"
     and B_sub: "fst ` B \<subseteq> dgrad_p_set d m" and q_in_bs: "q_in_bs \<longrightarrow> q \<in> set gs \<union> set bs"
     and 1: "\<And>p' q'. (p', q') \<in>\<^sub>p snd ` set ps \<Longrightarrow> fst p' \<noteq> 0 \<Longrightarrow> fst q' \<noteq> 0 \<Longrightarrow>
               crit_pair_cbelow_on d m (fst ` B) (fst p') (fst q')"
@@ -3255,7 +3255,7 @@ lemma ocrit_spec_chain_ocrit: "ocrit_spec (chain_ocrit::('t, 'b::field, 'c, 'd) 
 proof (rule ocrit_specI)
   fix d m and data::"nat \<times> 'd" and hs::"('t, 'b, 'c) pdata list" and ps::"(bool \<times> ('t, 'b, 'c) pdata_pair) list"
     and B and p q::"('t, 'b, 'c) pdata"
-  assume dg: "dickson_grading (+) d" and B_sup: "set hs \<subseteq> B"
+  assume dg: "dickson_grading d" and B_sup: "set hs \<subseteq> B"
     and B_sub: "fst ` B \<subseteq> dgrad_p_set d m"
     and 1: "\<And>p' q'. (p', q') \<in>\<^sub>p snd ` set ps \<Longrightarrow> fst p' \<noteq> 0 \<Longrightarrow> fst q' \<noteq> 0 \<Longrightarrow>
               crit_pair_cbelow_on d m (fst ` B) (fst p') (fst q')"
@@ -3626,7 +3626,7 @@ definition apply_icrit :: "('t, 'b, 'c, 'd) icritT \<Rightarrow> (nat \<times> '
   where "apply_icrit crit data gs bs hs ps = (let c = crit data gs bs hs in map (\<lambda>(q_in_bs, p, q). (c p q, q_in_bs, p, q)) ps)"
 
 lemma fst_apply_icrit:
-  assumes "icrit_spec crit" and "dickson_grading (+) d"
+  assumes "icrit_spec crit" and "dickson_grading d"
     and "fst ` (set gs \<union> set bs \<union> set hs) \<subseteq> dgrad_p_set d m" and "unique_idx (gs @ bs @ hs) data"
     and "is_Groebner_basis (fst ` set gs)" and "p \<in> set hs" and "q \<in> set gs \<union> set bs \<union> set hs"
     and "fst p \<noteq> 0" and "fst q \<noteq> 0" and "(True, q_in_bs, p, q) \<in> set (apply_icrit crit data gs bs hs ps)"
@@ -3784,7 +3784,7 @@ next
 qed
 
 lemma apply_ncrit_connectible:
-  assumes "ncrit_spec crit" and "dickson_grading (+) d"
+  assumes "ncrit_spec crit" and "dickson_grading d"
     and "set gs \<union> set bs \<union> set hs \<subseteq> B" and "fst ` B \<subseteq> dgrad_p_set d m"
     and "snd ` snd ` set ps \<subseteq> set hs \<times> (set gs \<union> set bs \<union> set hs)" and "unique_idx (gs @ bs @ hs) data"
     and "is_Groebner_basis (fst ` set gs)"
@@ -3854,7 +3854,7 @@ corollary set_apply_ocrit_iff:
   by (auto simp: apply_ocrit_def)
 
 lemma apply_ocrit_connectible:
-  assumes "ocrit_spec crit" and "dickson_grading (+) d" and "set hs \<subseteq> B" and "fst ` B \<subseteq> dgrad_p_set d m"
+  assumes "ocrit_spec crit" and "dickson_grading d" and "set hs \<subseteq> B" and "fst ` B \<subseteq> dgrad_p_set d m"
   and "unique_idx (p # q # hs @ (map (fst \<circ> snd) ps') @ (map (snd \<circ> snd) ps')) data"
   and "\<And>p' q'. (p', q') \<in> snd ` set ps' \<Longrightarrow> fst p' \<noteq> 0 \<Longrightarrow> fst q' \<noteq> 0 \<Longrightarrow>
                 crit_pair_cbelow_on d m (fst ` B) (fst p') (fst q')"
@@ -3951,7 +3951,7 @@ proof (rule ap_specI)
   qed
 next
   fix gs bs :: "('t, 'b, 'c) pdata list" and ps hs and data::"nat \<times> 'd" and B and d::"'a \<Rightarrow> nat" and m h g
-  assume dg: "dickson_grading (+) d" and B_sup: "set gs \<union> set bs \<union> set hs \<subseteq> B"
+  assume dg: "dickson_grading d" and B_sup: "set gs \<union> set bs \<union> set hs \<subseteq> B"
     and B_sub: "fst ` B \<subseteq> dgrad_p_set d m" and h_in: "h \<in> set hs" and g_in: "g \<in> set gs \<union> set bs \<union> set hs"
     and ps_sub: "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)"
     and uid: "unique_idx (gs @ bs @ hs) data" and gb: "is_Groebner_basis (fst ` set gs)" and "h \<noteq> g"
@@ -4046,7 +4046,7 @@ next
   assume "(h, g) \<in> set ps -\<^sub>p set (add_pairs gs bs ps hs data)"
   hence "(h, g) \<in> set ps" and "(h, g) \<notin>\<^sub>p set (add_pairs gs bs ps hs data)" by simp_all
   from this(2) have "(h, g) \<notin> set (add_pairs gs bs ps hs data)" by (simp add: in_pair_iff)
-  assume dg: "dickson_grading (+) d" and B_sup: "set gs \<union> set bs \<union> set hs \<subseteq> B" and B_sub: "fst ` B \<subseteq> dgrad_p_set d m"
+  assume dg: "dickson_grading d" and B_sup: "set gs \<union> set bs \<union> set hs \<subseteq> B" and B_sub: "fst ` B \<subseteq> dgrad_p_set d m"
     and ps_sub: "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)"
     and "(set gs \<union> set bs) \<inter> set hs = {}" \<comment> \<open>unused\<close>
     and uid: "unique_idx (gs @ bs @ hs) data" and gb: "is_Groebner_basis (fst ` set gs)"
@@ -4135,7 +4135,7 @@ definition rcp_spec :: "('t, 'b::field, 'c, 'd) complT \<Rightarrow> bool"
               0 \<notin> fst ` set (fst (rcp gs bs ps sps data)) \<and>
               (\<forall>h b. h \<in> set (fst (rcp gs bs ps sps data)) \<longrightarrow> b \<in> set gs \<union> set bs \<longrightarrow> fst b \<noteq> 0 \<longrightarrow>
                      \<not> lt (fst b) adds\<^sub>t lt (fst h)) \<and>
-              (\<forall>d. dickson_grading (+) d \<longrightarrow>
+              (\<forall>d. dickson_grading d \<longrightarrow>
                      dgrad_p_set_le d (fst ` set (fst (rcp gs bs ps sps data))) (args_to_set (gs, bs, sps))) \<and>
               component_of_term ` Keys (fst ` (set (fst (rcp gs bs ps sps data)))) \<subseteq>
                 component_of_term ` Keys (args_to_set (gs, bs, sps)) \<and>
@@ -4158,7 +4158,7 @@ lemma rcp_specI:
   assumes "\<And>gs bs ps sps data. 0 \<notin> fst ` set (fst (rcp gs bs ps sps data))"
   assumes "\<And>gs bs ps sps h b data. h \<in> set (fst (rcp gs bs ps sps data)) \<Longrightarrow> b \<in> set gs \<union> set bs \<Longrightarrow> fst b \<noteq> 0 \<Longrightarrow>
                           \<not> lt (fst b) adds\<^sub>t lt (fst h)"
-  assumes "\<And>gs bs ps sps d data. dickson_grading (+) d \<Longrightarrow>
+  assumes "\<And>gs bs ps sps d data. dickson_grading d \<Longrightarrow>
                          dgrad_p_set_le d (fst ` set (fst (rcp gs bs ps sps data))) (args_to_set (gs, bs, sps))"
   assumes "\<And>gs bs ps sps data. component_of_term ` Keys (fst ` (set (fst (rcp gs bs ps sps data)))) \<subseteq>
                             component_of_term ` Keys (args_to_set (gs, bs, sps))"
@@ -4181,7 +4181,7 @@ lemma rcp_specD2:
   using assms unfolding rcp_spec_def by (elim allE conjE, blast)
 
 lemma rcp_specD3:
-  assumes "rcp_spec rcp" and "dickson_grading (+) d"
+  assumes "rcp_spec rcp" and "dickson_grading d"
   shows "dgrad_p_set_le d (fst ` set (fst (rcp gs bs ps sps data))) (args_to_set (gs, bs, sps))"
   using assms unfolding rcp_spec_def by (elim allE conjE, blast)
 
@@ -4208,7 +4208,7 @@ lemma compl_struct_rcp:
   shows "compl_struct rcp"
 proof (rule compl_structI)
   fix d::"'a \<Rightarrow> nat" and gs bs ps and sps::"('t, 'b, 'c) pdata_pair list" and data::"nat \<times> 'd"
-  assume "dickson_grading (+) d" and "set sps \<subseteq> set ps"
+  assume "dickson_grading d" and "set sps \<subseteq> set ps"
   from assms this(1) have "dgrad_p_set_le d (fst ` set (fst (rcp gs bs (ps -- sps) sps data)))
                                     (args_to_set (gs, bs, sps))"
     by (rule rcp_specD3)
@@ -4258,7 +4258,7 @@ lemma compl_conn_rcp:
   shows "compl_conn rcp"
 proof (rule compl_connI)
   fix d::"'a \<Rightarrow> nat" and m gs bs ps sps p and q::"('t, 'b, 'c) pdata" and data::"nat \<times> 'd"
-  assume dg: "dickson_grading (+) d" and gs_sub: "fst ` set gs \<subseteq> dgrad_p_set d m"
+  assume dg: "dickson_grading d" and gs_sub: "fst ` set gs \<subseteq> dgrad_p_set d m"
     and gb: "is_Groebner_basis (fst ` set gs)" and bs_sub: "fst ` set bs \<subseteq> dgrad_p_set d m"
     and ps_sub: "set ps \<subseteq> set bs \<times> (set gs \<union> set bs)" and "set sps \<subseteq> set ps"
     and uid: "unique_idx (gs @ bs) data"

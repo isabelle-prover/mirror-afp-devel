@@ -1554,7 +1554,7 @@ context gd_term
 begin
 
 lemma dgrad_set_le_red_single:
-  assumes "dickson_grading (+) d" and "red_single p q f t"
+  assumes "dickson_grading d" and "red_single p q f t"
   shows "dgrad_set_le d {t} (pp_of_term ` keys p)"
 proof (rule dgrad_set_leI, simp)
   have "t adds t + lp f" by simp
@@ -1565,7 +1565,7 @@ proof (rule dgrad_set_leI, simp)
 qed
 
 lemma dgrad_p_set_le_red_single:
-  assumes "dickson_grading (+) d" and "red_single p q f t"
+  assumes "dickson_grading d" and "red_single p q f t"
   shows "dgrad_p_set_le d {q} {f, p}"
 proof -
   let ?f = "monom_mult ((lookup p (t \<oplus> lt f)) / lc f) t f"
@@ -1606,7 +1606,7 @@ proof -
 qed
 
 lemma dgrad_p_set_le_red:
-  assumes "dickson_grading (+) d" and "red F p q"
+  assumes "dickson_grading d" and "red F p q"
   shows "dgrad_p_set_le d {q} (insert p F)"
 proof -
   from assms(2) obtain f t where "f \<in> F" and "red_single p q f t" by (rule red_setE)
@@ -1616,7 +1616,7 @@ proof -
 qed
 
 corollary dgrad_p_set_le_red_rtrancl:
-  assumes "dickson_grading (+) d" and "(red F)\<^sup>*\<^sup>* p q"
+  assumes "dickson_grading d" and "(red F)\<^sup>*\<^sup>* p q"
   shows "dgrad_p_set_le d {q} (insert p F)"
   using assms(2)
 proof (induct)
@@ -1633,7 +1633,7 @@ next
 qed
 
 lemma dgrad_p_set_red_single_pp:
-  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m" and "red_single p q f t"
+  assumes "dickson_grading d" and "p \<in> dgrad_p_set d m" and "red_single p q f t"
   shows "d t \<le> m"
 proof -
   from assms(1) assms(3) have "dgrad_set_le d {t} (pp_of_term ` keys p)" by (rule dgrad_set_le_red_single)
@@ -1645,7 +1645,7 @@ proof -
 qed
 
 lemma dgrad_p_set_closed_red_single:
-  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m" and "f \<in> dgrad_p_set d m"
+  assumes "dickson_grading d" and "p \<in> dgrad_p_set d m" and "f \<in> dgrad_p_set d m"
     and "red_single p q f t"
   shows "q \<in> dgrad_p_set d m"
 proof -
@@ -1657,7 +1657,7 @@ proof -
 qed
 
 lemma dgrad_p_set_closed_red:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m" and "red F p q"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m" and "red F p q"
   shows "q \<in> dgrad_p_set d m"
 proof -
   from assms(4) obtain f t where "f \<in> F" and *: "red_single p q f t" by (rule red_setE)
@@ -1666,7 +1666,7 @@ proof -
 qed
 
 lemma dgrad_p_set_closed_red_rtrancl:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m" and "(red F)\<^sup>*\<^sup>* p q"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m" and "(red F)\<^sup>*\<^sup>* p q"
   shows "q \<in> dgrad_p_set d m"
   using assms(4)
 proof (induct)
@@ -1678,7 +1678,7 @@ next
 qed
 
 lemma is_relation_order_red:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "Confluence.relation_order (red F) (\<prec>\<^sub>p) (dgrad_p_set d m)"
 proof
   show "wfP_on (dgrad_p_set d m) (\<prec>\<^sub>p)"
@@ -1697,7 +1697,7 @@ next
 qed (fact ord_strict_p_transitive)
 
 lemma red_wf_dgrad_p_set_aux:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m"
   shows "wfP_on (dgrad_p_set d m) (red F)\<inverse>\<inverse>"
 proof (rule wfP_onI_min)
   fix x::"'t \<Rightarrow>\<^sub>0 'b" and Q
@@ -1717,7 +1717,7 @@ proof (rule wfP_onI_min)
 qed
 
 lemma red_wf_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m"
   shows "wfP (red F)\<inverse>\<inverse>"
 proof (rule wfI_min[to_pred])
   fix x::"'t \<Rightarrow>\<^sub>0 'b" and Q
@@ -1749,7 +1749,7 @@ qed
 lemmas red_wf_finite = red_wf_dgrad_p_set[OF dickson_grading_dgrad_dummy dgrad_p_set_exhaust_expl]
 
 lemma cbelow_on_monom_mult:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "d t \<le> m" and "c \<noteq> 0"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m" and "d t \<le> m" and "c \<noteq> 0"
     and "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) z (\<lambda>a b. red F a b \<or> red F b a) p q"
   shows "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) (monom_mult c t z) (\<lambda>a b. red F a b \<or> red F b a)
           (monom_mult c t p) (monom_mult c t q)"
@@ -1809,7 +1809,7 @@ proof -
 qed
 
 lemma cbelow_on_plus:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "r \<in> dgrad_p_set d m"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m" and "r \<in> dgrad_p_set d m"
     and "keys r \<inter> keys z = {}"
     and "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) z (\<lambda>a b. red F a b \<or> red F b a) p q"
   shows "cbelow_on (dgrad_p_set d m) (\<prec>\<^sub>p) (z + r) (\<lambda>a b. red F a b \<or> red F b a) (p + r) (q + r)"
@@ -1859,7 +1859,7 @@ next
 qed
 
 lemma is_full_pmdlI_lt_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "B \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "B \<subseteq> dgrad_p_set d m"
   assumes "\<And>k. k \<in> component_of_term ` Keys (B::('t \<Rightarrow>\<^sub>0 'b::field) set) \<Longrightarrow>
             (\<exists>b\<in>B. b \<noteq> 0 \<and> component_of_term (lt b) = k \<and> lp b = 0)"
   shows "is_full_pmdl B"
@@ -2020,7 +2020,7 @@ definition trd_term :: "('a \<Rightarrow> nat) \<Rightarrow> ((('t \<Rightarrow>
   where "trd_term d = {(x, y). dgrad_p_set_le d (set (fst (snd x) # fst x)) (set (fst (snd y) # fst y)) \<and> fst (snd x) \<prec>\<^sub>p fst (snd y)}"
 
 lemma trd_term_wf:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "wf (trd_term d)"
 proof (rule wfI_min)
   fix x :: "('t \<Rightarrow>\<^sub>0 'b::field) list \<times> ('t \<Rightarrow>\<^sub>0 'b) \<times> ('t \<Rightarrow>\<^sub>0 'b)" and Q
@@ -2066,7 +2066,7 @@ function trd_aux :: "('t \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('t \<Righ
     )"
   by auto
 termination proof -
-  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading (+) d" ..
+  from ex_dgrad obtain d::"'a \<Rightarrow> nat" where dg: "dickson_grading d" ..
   let ?R = "trd_term d"
   show ?thesis
   proof (rule, rule trd_term_wf, fact)

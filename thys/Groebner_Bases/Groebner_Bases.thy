@@ -60,7 +60,7 @@ proof (simp add: crit_pair_def lt_def[of 0] lcs_comm lcs_zero dgrad_p_set_le_def
 qed simp
 
 lemma dgrad_p_set_le_fst_crit_pair:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d {fst (crit_pair p q)} {p, q}"
 proof (cases "q = 0")
   case True
@@ -122,12 +122,12 @@ next
 qed
 
 lemma dgrad_p_set_le_snd_crit_pair:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d {snd (crit_pair p q)} {p, q}"
   by (simp add: crit_pair_swap[of p] insert_commute[of p q], rule dgrad_p_set_le_fst_crit_pair, fact)
 
 lemma dgrad_p_set_closed_fst_crit_pair:
-  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
+  assumes "dickson_grading d" and "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
   shows "fst (crit_pair p q) \<in> dgrad_p_set d m"
 proof -
   from dgrad_p_set_le_fst_crit_pair[OF assms(1)] have "{fst (crit_pair p q)} \<subseteq> dgrad_p_set d m"
@@ -138,7 +138,7 @@ proof -
 qed
 
 lemma dgrad_p_set_closed_snd_crit_pair:
-  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
+  assumes "dickson_grading d" and "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
   shows "snd (crit_pair p q) \<in> dgrad_p_set d m"
   by (simp add: crit_pair_swap[of p q], rule dgrad_p_set_closed_fst_crit_pair, fact+)
 
@@ -176,7 +176,7 @@ next
 qed
 
 lemma crit_pair_cbelow_same:
-  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m"
+  assumes "dickson_grading d" and "p \<in> dgrad_p_set d m"
   shows "crit_pair_cbelow_on d m F p p"
 proof (simp add: crit_pair_cbelow_on_def crit_pair_same cbelow_on_def term_simps, intro disjI1 conjI)
   from assms(1) assms(2) assms(2) show "snd (crit_pair p p) \<in> dgrad_p_set d m"
@@ -208,7 +208,7 @@ next
 qed
 
 lemma crit_pair_cs_imp_crit_pair_cbelow_on:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m"
     and "q \<in> dgrad_p_set d m"
     and "relation.cs (red F) (fst (crit_pair p q)) (snd (crit_pair p q))"
   shows "crit_pair_cbelow_on d m F p q"
@@ -271,7 +271,7 @@ corollary lcs_red_single_snd_crit_pair:
         rule lcs_red_single_fst_crit_pair, simp_all add: assms(1, 2))
 
 lemma GB_imp_crit_pair_cbelow_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "is_Groebner_basis F"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m" and "is_Groebner_basis F"
   assumes "p \<in> F" and "q \<in> F" and "p \<noteq> 0" and "q \<noteq> 0"
   shows "crit_pair_cbelow_on d m F p q"
 proof (cases "component_of_term (lt p) = component_of_term (lt q)")
@@ -386,7 +386,7 @@ lemma spoly_swap: "spoly p q = - spoly q p"
   by (simp add: spoly_def lcs_comm Let_def)
 
 lemma spoly_red_zero_imp_crit_pair_cbelow_on:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m"
     and "q \<in> dgrad_p_set d m" and "p \<noteq> 0" and "q \<noteq> 0" and "(red F)\<^sup>*\<^sup>* (spoly p q) 0"
   shows "crit_pair_cbelow_on d m F p q"
 proof -
@@ -409,7 +409,7 @@ proof (simp add: term_simps spoly_def lt_def[of 0] lcs_comm lcs_zero dgrad_p_set
 qed simp
 
 lemma dgrad_p_set_le_spoly:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d {spoly p q} {p, q}"
 proof (cases "p = 0")
   case True
@@ -443,7 +443,7 @@ next
 qed
 
 lemma dgrad_p_set_closed_spoly:
-  assumes "dickson_grading (+) d" and "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
+  assumes "dickson_grading d" and "p \<in> dgrad_p_set d m" and "q \<in> dgrad_p_set d m"
   shows "spoly p q \<in> dgrad_p_set d m"
 proof -
   from dgrad_p_set_le_spoly[OF assms(1)] have "{spoly p q} \<subseteq> dgrad_p_set d m"
@@ -508,7 +508,7 @@ text \<open>Before proving the main theorem of Gr\"obner bases theory for S-poly
   Buchberger's second criterion for avoiding useless pairs.\<close>
 
 lemma crit_pair_cbelow_imp_confluent_dgrad_p_set:
-  assumes dg: "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  assumes dg: "dickson_grading d" and "F \<subseteq> dgrad_p_set d m"
   assumes main: "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> p \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> crit_pair_cbelow_on d m F p q"
   shows "relation.is_confluent_on (red F) (dgrad_p_set d m)"
 proof -
@@ -671,7 +671,7 @@ proof -
 qed
 
 corollary crit_pair_cbelow_imp_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m"
   assumes "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> p \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> crit_pair_cbelow_on d m F p q"
   shows "is_Groebner_basis F"
   unfolding is_Groebner_basis_def
@@ -696,7 +696,7 @@ proof (rule relation.confluence_implies_ChurchRosser,
 qed
 
 corollary Buchberger_criterion_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m"
   assumes "\<And>p q. p \<in> F \<Longrightarrow> q \<in> F \<Longrightarrow> p \<noteq> 0 \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> p \<noteq> q \<Longrightarrow>
                       component_of_term (lt p) = component_of_term (lt q) \<Longrightarrow> (red F)\<^sup>*\<^sup>* (spoly p q) 0"
   shows "is_Groebner_basis F"
@@ -753,7 +753,7 @@ subsection \<open>Buchberger's Criteria for Avoiding Useless Pairs\<close>
 
 text \<open>Unfortunately, the product criterion is only applicable to scalar polynomials.\<close>
 lemma (in gd_powerprod) product_criterion:
-  assumes "dickson_grading (+) d" and "F \<subseteq> punit.dgrad_p_set d m" and "p \<in> F" and "q \<in> F"
+  assumes "dickson_grading d" and "F \<subseteq> punit.dgrad_p_set d m" and "p \<in> F" and "q \<in> F"
     and "p \<noteq> 0" and "q \<noteq> 0" and "gcs (punit.lt p) (punit.lt q) = 0"
   shows "punit.crit_pair_cbelow_on d m F p q"
 proof -
@@ -792,7 +792,7 @@ proof -
 qed
 
 lemma chain_criterion:
-  assumes "dickson_grading (+) d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> F" and "q \<in> F"
+  assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m" and "p \<in> F" and "q \<in> F"
     and "p \<noteq> 0" and "q \<noteq> 0" and "lp r adds lcs (lp p) (lp q)"
     and "component_of_term (lt r) = component_of_term (lt p)"
     and pr: "crit_pair_cbelow_on d m F p r" and rq: "crit_pair_cbelow_on d m F r q"
@@ -865,7 +865,7 @@ qed
 subsection \<open>Weak and Strong Gr\"obner Bases\<close>
 
 lemma ord_p_wf_on:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "wfP_on (dgrad_p_set d m) (\<prec>\<^sub>p)"
 proof (rule wfP_onI_min)
   fix x::"'t \<Rightarrow>\<^sub>0 'b" and Q
@@ -880,7 +880,7 @@ qed
 
 (* TODO: Collect all "_dgrad_p_set"-facts in a locale? *)
 lemma is_red_implies_0_red_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "B \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "B \<subseteq> dgrad_p_set d m"
   assumes "pmdl B \<subseteq> pmdl A" and "\<And>q. q \<in> pmdl A \<Longrightarrow> q \<in> dgrad_p_set d m \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> is_red B q"
     and "p \<in> pmdl A" and "p \<in> dgrad_p_set d m"
   shows "(red B)\<^sup>*\<^sup>* p 0"
@@ -906,7 +906,7 @@ proof -
 qed
 
 lemma is_red_implies_0_red_dgrad_p_set':
-  assumes "dickson_grading (+) d" and "B \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "B \<subseteq> dgrad_p_set d m"
   assumes "pmdl B \<subseteq> pmdl A" and "\<And>q. q \<in> pmdl A \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> is_red B q"
     and "p \<in> pmdl A"
   shows "(red B)\<^sup>*\<^sup>* p 0"
@@ -935,7 +935,7 @@ qed
 
 lemma pmdl_eqI_adds_lt_dgrad_p_set:
   fixes G::"('t \<Rightarrow>\<^sub>0 'b::field) set"
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m" and "B \<subseteq> dgrad_p_set d m" and "pmdl G \<subseteq> pmdl B"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m" and "B \<subseteq> dgrad_p_set d m" and "pmdl G \<subseteq> pmdl B"
   assumes "\<And>f. f \<in> pmdl B \<Longrightarrow> f \<in> dgrad_p_set d m \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> (\<exists>g \<in> G. g \<noteq> 0 \<and> lt g adds\<^sub>t lt f)"
   shows "pmdl G = pmdl B"
 proof
@@ -959,7 +959,7 @@ qed fact
 
 lemma pmdl_eqI_adds_lt_dgrad_p_set':
   fixes G::"('t \<Rightarrow>\<^sub>0 'b::field) set"
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m" and "pmdl G \<subseteq> pmdl B"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m" and "pmdl G \<subseteq> pmdl B"
   assumes "\<And>f. f \<in> pmdl B \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> (\<exists>g \<in> G. g \<noteq> 0 \<and> lt g adds\<^sub>t lt f)"
   shows "pmdl G = pmdl B"
 proof
@@ -980,7 +980,7 @@ proof
 qed fact
 
 lemma GB_implies_unique_nf_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes isGB: "is_Groebner_basis G"
   shows "\<exists>! h. (red G)\<^sup>*\<^sup>* f h \<and> \<not> is_red G h"
 proof -
@@ -1030,7 +1030,7 @@ proof -
 qed
 
 lemma weak_GB_is_strong_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes "\<And>f. f \<in> pmdl G \<Longrightarrow> f \<in> dgrad_p_set d m \<Longrightarrow> (red G)\<^sup>*\<^sup>* f 0"
   shows "is_Groebner_basis G"
   using assms(1, 2)
@@ -1064,7 +1064,7 @@ proof (rule relation.confluence_implies_ChurchRosser,
 qed
 
 corollary GB_alt_1_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   shows "is_Groebner_basis G \<longleftrightarrow> (\<forall>f \<in> pmdl G. f \<in> dgrad_p_set d m \<longrightarrow> (red G)\<^sup>*\<^sup>* f 0)"
   using weak_GB_is_strong_GB_dgrad_p_set[OF assms] GB_imp_zero_reducibility by blast
 
@@ -1072,7 +1072,7 @@ corollary GB_alt_1: "is_Groebner_basis G \<longleftrightarrow> (\<forall>f \<in>
   using weak_GB_is_strong_GB GB_imp_zero_reducibility by blast
 
 lemma isGB_I_is_red:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes "\<And>f. f \<in> pmdl G \<Longrightarrow> f \<in> dgrad_p_set d m \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> is_red G f"
   shows "is_Groebner_basis G"
   unfolding GB_alt_1_dgrad_p_set[OF assms(1, 2)]
@@ -1084,7 +1084,7 @@ proof (intro ballI impI)
 qed
 
 lemma GB_alt_2_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   shows "is_Groebner_basis G \<longleftrightarrow> (\<forall>f \<in> pmdl G. f \<noteq> 0 \<longrightarrow> is_red G f)"
 proof
   assume "is_Groebner_basis G"
@@ -1118,7 +1118,7 @@ proof -
 qed
 
 lemma isGB_I_adds_lt:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes "\<And>f. f \<in> pmdl G \<Longrightarrow> f \<in> dgrad_p_set d m \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> (\<exists>g \<in> G. g \<noteq> 0 \<and> lt g adds\<^sub>t lt f)"
   shows "is_Groebner_basis G"
   using assms(1, 2)
@@ -1131,7 +1131,7 @@ proof (rule isGB_I_is_red)
 qed
 
 lemma GB_alt_3_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   shows "is_Groebner_basis G \<longleftrightarrow> (\<forall>f \<in> pmdl G. f \<noteq> 0 \<longrightarrow> (\<exists>g \<in> G. g \<noteq> 0 \<and> lt g adds\<^sub>t lt f))"
     (is "?L \<longleftrightarrow> ?R")
 proof
@@ -1191,7 +1191,7 @@ proof -
 qed
 
 lemma GB_replace_lt_adds_stable_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes isGB: "is_Groebner_basis G" and "q \<noteq> 0" and q: "q \<in> (pmdl G)" and "lt q adds\<^sub>t lt p"
   shows "is_Groebner_basis (insert q (G - {p}))" (is "is_Groebner_basis ?G'")
 proof -
@@ -1229,7 +1229,7 @@ proof -
 qed
   
 lemma GB_replace_lt_adds_stable_pmdl_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes isGB: "is_Groebner_basis G" and "q \<noteq> 0" and "q \<in> pmdl G" and "lt q adds\<^sub>t lt p"
   shows "pmdl (insert q (G - {p})) = pmdl G" (is "pmdl ?G' = pmdl G")
 proof (rule, rule pmdl.replace_module, fact, rule)
@@ -1256,7 +1256,7 @@ proof (rule, rule pmdl.replace_module, fact, rule)
 qed
   
 lemma GB_replace_red_stable_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes isGB: "is_Groebner_basis G" and "p \<in> G" and q: "red (G - {p}) p q"
   shows "is_Groebner_basis (insert q (G - {p}))" (is "is_Groebner_basis ?G'")
 proof -
@@ -1280,7 +1280,7 @@ proof -
 qed
 
 lemma GB_replace_red_stable_pmdl_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes isGB: "is_Groebner_basis G" and "p \<in> G" and ptoq: "red (G - {p}) p q"
   shows "pmdl (insert q (G - {p})) = pmdl G" (is "pmdl ?G' = _")
 proof -
@@ -1313,7 +1313,7 @@ proof -
 qed
   
 lemma GB_replace_red_rtranclp_stable_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes isGB: "is_Groebner_basis G" and "p \<in> G" and ptoq: "(red (G - {p}))\<^sup>*\<^sup>* p q"
   shows "is_Groebner_basis (insert q (G - {p}))"
   using ptoq
@@ -1355,7 +1355,7 @@ next
 qed
 
 lemma GB_replace_red_rtranclp_stable_pmdl_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "G \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes isGB: "is_Groebner_basis G" and "p \<in> G" and ptoq: "(red (G - {p}))\<^sup>*\<^sup>* p q"
   shows "pmdl (insert q (G - {p})) = pmdl G"
   using ptoq
@@ -1415,7 +1415,7 @@ lemmas GB_replace_red_rtranclp_stable_pmdl_finite =
 subsection \<open>An Inconstructive Proof of the Existence of Finite Gr\"obner Bases\<close>
 
 lemma ex_finite_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   obtains G where "G \<subseteq> dgrad_p_set d m" and "finite G" and "is_Groebner_basis G" and "pmdl G = pmdl F"
 proof -
   define S where "S = {lt f | f. f \<in> pmdl F \<and> f \<in> dgrad_p_set d m \<and> f \<noteq> 0}"
@@ -1542,7 +1542,7 @@ definition some_GB :: "('t \<Rightarrow>\<^sub>0 'b) set \<Rightarrow> ('t \<Rig
   where "some_GB F = (SOME G. finite G \<and> is_Groebner_basis G \<and> pmdl G = pmdl F)"
 
 lemma some_GB_props_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "finite (some_GB F) \<and> is_Groebner_basis (some_GB F) \<and> pmdl (some_GB F) = pmdl F"
 proof -
   from assms obtain G where "finite G" and "is_Groebner_basis G" and "pmdl G = pmdl F"
@@ -1553,17 +1553,17 @@ proof -
 qed
 
 lemma finite_some_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "finite (some_GB F)"
   using some_GB_props_dgrad_p_set[OF assms] ..
 
 lemma some_GB_isGB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "is_Groebner_basis (some_GB F)"
   using some_GB_props_dgrad_p_set[OF assms] by (elim conjE)
 
 lemma some_GB_pmdl_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "pmdl (some_GB F) = pmdl F"
   using some_GB_props_dgrad_p_set[OF assms] by (elim conjE)
 
@@ -1659,7 +1659,7 @@ proof -
 qed
 
 lemma red_supset_wf_on:
-  assumes "dickson_grading (+) d" and "finite K"
+  assumes "dickson_grading d" and "finite K"
   shows "wfP_on (Pow (dgrad_p_set d m) \<inter> {F. component_of_term ` Keys F \<subseteq> K}) (\<sqsupset>p)"
 proof (rule wfP_on_chain, rule, erule exE)
   let ?A = "dgrad_p_set d m"

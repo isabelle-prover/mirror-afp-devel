@@ -1112,7 +1112,7 @@ next
 qed
 
 lemma comp_red_basis_aux_dgrad_p_set_le:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d (set (comp_red_basis_aux xs ys)) (set xs \<union> set ys)"
 proof (induct xs arbitrary: ys)
   case Nil
@@ -1242,7 +1242,7 @@ proof (intro ballI)
 qed
 
 lemma comp_red_basis_dgrad_p_set_le:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d (set (comp_red_basis xs)) (set xs)"
 proof -
   have "dgrad_p_set_le d (set (comp_red_basis xs)) (set (comp_min_basis xs) \<union> set [])"
@@ -1281,7 +1281,7 @@ lemma comp_red_monic_basis_is_auto_reduced: "is_auto_reduced (set (comp_red_moni
   unfolding set_comp_red_monic_basis by (rule monic_set_is_auto_reduced, rule comp_red_basis_is_auto_reduced)
 
 lemma comp_red_monic_basis_dgrad_p_set_le:
-  assumes "dickson_grading (+) d"
+  assumes "dickson_grading d"
   shows "dgrad_p_set_le d (set (comp_red_monic_basis xs)) (set xs)"
 proof -
   have "dgrad_p_set_le d (monic_set (set (comp_red_basis xs))) (set (comp_red_basis xs))"

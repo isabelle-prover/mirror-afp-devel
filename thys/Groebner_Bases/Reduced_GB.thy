@@ -433,7 +433,7 @@ proof (intro conjI, rule comp_red_monic_basis_GB, fact assms,
 qed
 
 lemma ex_finite_reduced_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   obtains G where "G \<subseteq> dgrad_p_set d m" and "finite G" and "is_reduced_GB G" and "pmdl G = pmdl F"
 proof -
   from assms obtain G0 where G0_sub: "G0 \<subseteq> dgrad_p_set d m" and fin: "finite G0"
@@ -457,7 +457,7 @@ proof -
 qed
 
 theorem ex_unique_reduced_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "\<exists>!G. G \<subseteq> dgrad_p_set d m \<and> finite G \<and> is_reduced_GB G \<and> pmdl G = pmdl F"
 proof -
   from assms obtain G where "G \<subseteq> dgrad_p_set d m" and "finite G"
@@ -475,7 +475,7 @@ proof -
 qed
 
 corollary ex_unique_reduced_GB_dgrad_p_set':
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "\<exists>!G. finite G \<and> is_reduced_GB G \<and> pmdl G = pmdl F"
 proof -
   from assms obtain G where "G \<subseteq> dgrad_p_set d m" and "finite G"
@@ -500,19 +500,19 @@ text \<open>@{const reduced_GB} returns the unique reduced Gr\"obner basis of th
   Gr\"obner bases, e.\,g. \<open>gb\<close> from theory "Buchberger", makes @{const reduced_GB} computable.\<close>
 
 lemma finite_reduced_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "finite (reduced_GB F)"
   unfolding reduced_GB_def
   by (rule the1I2, rule ex_unique_reduced_GB_dgrad_p_set', fact, fact, fact, elim conjE)
 
 lemma reduced_GB_is_reduced_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "is_reduced_GB (reduced_GB F)"
   unfolding reduced_GB_def
   by (rule the1I2, rule ex_unique_reduced_GB_dgrad_p_set', fact, fact, fact, elim conjE)
 
 lemma reduced_GB_is_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "is_Groebner_basis (reduced_GB F)"
 proof -
   from assms have "is_reduced_GB (reduced_GB F)" by (rule reduced_GB_is_reduced_GB_dgrad_p_set)
@@ -520,7 +520,7 @@ proof -
 qed
 
 lemma reduced_GB_is_auto_reduced_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "is_auto_reduced (reduced_GB F)"
 proof -
   from assms have "is_reduced_GB (reduced_GB F)" by (rule reduced_GB_is_reduced_GB_dgrad_p_set)
@@ -528,7 +528,7 @@ proof -
 qed
     
 lemma reduced_GB_is_monic_set_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "is_monic_set (reduced_GB F)"
 proof -
   from assms have "is_reduced_GB (reduced_GB F)" by (rule reduced_GB_is_reduced_GB_dgrad_p_set)
@@ -536,7 +536,7 @@ proof -
 qed
   
 lemma reduced_GB_nonzero_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "0 \<notin> reduced_GB F"
 proof -
   from assms have "is_reduced_GB (reduced_GB F)" by (rule reduced_GB_is_reduced_GB_dgrad_p_set)
@@ -544,20 +544,20 @@ proof -
 qed
 
 lemma reduced_GB_pmdl_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "pmdl (reduced_GB F) = pmdl F"
   unfolding reduced_GB_def
   by (rule the1I2, rule ex_unique_reduced_GB_dgrad_p_set', fact, fact, fact, elim conjE)
 
 lemma reduced_GB_unique_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
     and "is_reduced_GB G" and "pmdl G = pmdl F"
   shows "reduced_GB F = G"
   by (rule is_reduced_GB_unique, rule reduced_GB_is_reduced_GB_dgrad_p_set, fact+,
       simp only: reduced_GB_pmdl_dgrad_p_set[OF assms(1, 2, 3)] assms(5))
 
 lemma reduced_GB_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
+  assumes "dickson_grading d" and "finite (component_of_term ` Keys F)" and "F \<subseteq> dgrad_p_set d m"
   shows "reduced_GB F \<subseteq> dgrad_p_set d m"
 proof -
   from assms obtain G where G: "G \<subseteq> dgrad_p_set d m" and "is_reduced_GB G" and "pmdl G = pmdl F"
@@ -610,7 +610,7 @@ context gd_powerprod
 begin
 
 lemma ideal_eq_UNIV_iff_reduced_GB_eq_one_dgrad_p_set:
-  assumes "dickson_grading (+) d" and "F \<subseteq> punit.dgrad_p_set d m"
+  assumes "dickson_grading d" and "F \<subseteq> punit.dgrad_p_set d m"
   shows "ideal F = UNIV \<longleftrightarrow> punit.reduced_GB F = {1}"
 proof -
   have fin: "finite (local.punit.component_of_term ` Keys F)" by simp
