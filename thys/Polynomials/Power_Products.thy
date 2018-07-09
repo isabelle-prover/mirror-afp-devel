@@ -8,6 +8,7 @@ theory Power_Products
   "HOL-Library.Countable"
   "More_MPoly_Type"
   "Utils"
+  Well_Quasi_Orders.Well_Quasi_Orders
 begin
 
 text \<open>This theory formalizes the concept of "power-products". A power-product can be thought of as
@@ -405,70 +406,39 @@ subsection \<open>Dickson Classes\<close>
 
 definition (in plus) dickson_grading :: "('a \<Rightarrow> nat) \<Rightarrow> bool"
   where "dickson_grading d \<longleftrightarrow>
-          ((\<forall>s t. d (s + t) = max (d s) (d t)) \<and>
-           (\<forall>seq::nat \<Rightarrow> 'a. (\<forall>i. d (seq i) \<le> d (seq 0)) \<longrightarrow> (\<exists>i j. i < j \<and> seq i adds seq j)))"
+          ((\<forall>s t. d (s + t) = max (d s) (d t)) \<and> (\<forall>n::nat. almost_full_on (adds) {x. d x \<le> n}))"
 
 lemma dickson_gradingI:
-  assumes "\<And>s t. d (s + t) = max (d s) (d (t::'a::plus))"
-  assumes "\<And>seq::nat \<Rightarrow> 'a. (\<And>i. d (seq i) \<le> d (seq 0)) \<Longrightarrow> (\<exists>i j. i < j \<and> seq i adds seq j)"
+  assumes "\<And>s t. d (s + t) = max (d s) (d t)"
+  assumes "\<And>n::nat. almost_full_on (adds) {x. d x \<le> n}"
   shows "dickson_grading d"
-  unfolding dickson_grading_def
-proof (intro conjI allI, fact assms(1), rule)
-  fix seq :: "nat \<Rightarrow> 'a"
-  assume "\<forall>i. d (seq i) \<le> d (seq 0)"
-  hence "\<And>i. d (seq i) \<le> d (seq 0)" ..
-  thus "\<exists>i j. i < j \<and> seq i adds seq j" by (rule assms(2))
+  unfolding dickson_grading_def using assms by blast
+
+lemma dickson_gradingD1: "dickson_grading d \<Longrightarrow> d (s + t) = max (d s) (d t)"
+  by (auto simp add: dickson_grading_def)
+
+lemma dickson_gradingD2: "dickson_grading d \<Longrightarrow> almost_full_on (adds) {x. d x \<le> n}"
+  by (auto simp add: dickson_grading_def)
+
+lemma dickson_gradingD2':
+  assumes "dickson_grading (d::'a::comm_monoid_add \<Rightarrow> nat)"
+  shows "wqo_on (adds) {x. d x \<le> n}"
+proof (intro wqo_onI transp_onI)
+  fix x y z :: 'a
+  assume "x adds y" and "y adds z"
+  thus "x adds z" by (rule adds_trans)
+next
+  from assms show "almost_full_on (adds) {x. d x \<le> n}" by (rule dickson_gradingD2)
 qed
 
-lemma dickson_gradingD1:
-  assumes "dickson_grading d"
-  shows "d (s + t) = max (d s) (d t)"
-  using assms by (auto simp add: dickson_grading_def)
-
-lemma dickson_gradingE1:
-  assumes "dickson_grading d" and "\<And>i. d (seq i) \<le> d ((seq::nat \<Rightarrow> 'a::plus) 0)"
+lemma dickson_gradingE:
+  assumes "dickson_grading d" and "\<And>i::nat. d ((seq::nat \<Rightarrow> 'a::plus) i) \<le> n"
   obtains i j where "i < j" and "seq i adds seq j"
 proof -
-  from assms(1) have "\<forall>seq::nat \<Rightarrow> 'a. (\<forall>i. d (seq i) \<le> d (seq 0)) \<longrightarrow>
-                                            (\<exists>i j. i < j \<and> seq i adds seq j)"
-    unfolding dickson_grading_def ..
-  hence rl: "(\<And>i. d (seq i) \<le> d (seq 0)) \<Longrightarrow> (\<exists>i j. i < j \<and> seq i adds seq j)"
-    by auto
-  from assms(2) have "\<exists>i j. i < j \<and> seq i adds seq j" by (rule rl)
-  then obtain i j where "i < j" and "seq i adds seq j" unfolding adds_def by auto
+  from assms(1) have "almost_full_on (adds) {x. d x \<le> n}" by (rule dickson_gradingD2)
+  moreover from assms(2) have "\<And>i. seq i \<in> {x. d x \<le> n}" by simp
+  ultimately obtain i j where "i < j" and "seq i adds seq j" by (rule almost_full_onD)
   thus ?thesis ..
-qed
-
-lemma dickson_gradingE2:
-  assumes "dickson_grading d" and "\<And>i::nat. d ((seq::nat \<Rightarrow> 'a::plus) i) \<le> k"
-  obtains i j where "i < j" and "seq i adds seq j"
-proof -
-  let ?R = "range (d \<circ> seq)"
-  let ?m = "Max ?R"
-  have "?R \<subseteq> {0..<(Suc k)}"
-  proof
-    fix x
-    assume "x \<in> ?R"
-    then obtain i where "x = (d \<circ> seq) i" ..
-    with assms(2)[of i] show "x \<in> {0..<(Suc k)}" by simp
-  qed
-  hence "finite ?R" by (rule subset_eq_atLeast0_lessThan_finite)
-  moreover have "?R \<noteq> {}" by simp
-  ultimately have "?m \<in> ?R" by (rule Max_in)
-  then obtain i0 where "?m = (d \<circ> seq) i0" ..
-  hence "?m = d (seq i0)" by simp
-
-  let ?s = "\<lambda>i. seq (i + i0)"
-  from assms(1) obtain i j where "i < j" and "?s i adds ?s j"
-  proof (rule dickson_gradingE1)
-    fix i
-    show "d (?s i) \<le> d (?s 0)"
-      by (simp add: \<open>?m = d (seq i0)\<close>[symmetric] \<open>finite (range (d \<circ> seq))\<close>)
-  qed
-  show ?thesis
-  proof
-    from \<open>i < j\<close> show "i + i0 < j + i0" by simp
-  qed fact
 qed
 
 lemma dickson_grading_adds_imp_le:
@@ -519,11 +489,11 @@ lemma dickson_grading_dgrad_dummy: "dickson_grading dgrad_dummy"
 end (* graded_dickson_powerprod *)
 
 class dickson_powerprod = ulcs_powerprod +
-  assumes dickson: "\<And>seq::nat \<Rightarrow> 'a. (\<exists>i j::nat. i < j \<and> seq i adds seq j)"
+  assumes dickson: "almost_full_on (adds) UNIV"
 begin
 
 lemma dickson_grading_zero: "dickson_grading (\<lambda>_::'a. 0)"
-  by (simp add: dickson_grading_def adds_def[symmetric], rule, fact dickson)
+  by (simp add: dickson_grading_def dickson)
 
 subclass graded_dickson_powerprod by (standard, rule, fact dickson_grading_zero)
 
@@ -893,37 +863,21 @@ proof -
   finally show ?thesis by (simp add: dgrad_set_def)
 qed
 
+lemma dickson_gradingD_dgrad_set: "dickson_grading d \<Longrightarrow> almost_full_on (adds) (dgrad_set d m)"
+  by (auto dest: dickson_gradingD2 simp: dgrad_set_def)
+
 lemma ex_finite_adds:
   assumes "dickson_grading d" and "S \<subseteq> dgrad_set d m"
   obtains T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds s)"
 proof -
-  define Q where "Q = (\<lambda>A. A \<subseteq> dgrad_set d m)"
-  show ?thesis
-  proof (rule ex_finite_subset)
-    show "reflp ((adds)::'a \<Rightarrow> _)" by (simp add: reflp_def)
-  next
-    fix T
-    assume "T \<subseteq> S"
-    show "Q T" unfolding Q_def
-    proof
-      fix t
-      assume "t \<in> T"
-      also have "... \<subseteq> S" by fact
-      also have "... \<subseteq> dgrad_set d m" by fact
-      finally show "t \<in> dgrad_set d m" .
-    qed
-  next
-    fix seq::"nat \<Rightarrow> 'a"
-    assume "Q (range seq)"
-    hence "range seq \<subseteq> dgrad_set d m" by (simp add: Q_def)
-    with assms(1) obtain i j where "i < j" and "seq i adds seq j"
-      by (metis UNIV_I dgrad_setD dickson_gradingE2 image_subset_iff)
-    thus "\<exists>i j. i < j \<and> seq i adds seq j" by blast
-  next
-    fix T
-    assume "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> \<exists>t\<in>T. t adds s"
-    thus thesis ..
+  have "reflp ((adds)::'a \<Rightarrow> _)" by (simp add: reflp_def)
+  moreover from assms(2) have "almost_full_on (adds) S"
+  proof (rule almost_full_on_subset)
+    from assms(1) show "almost_full_on (adds) (dgrad_set d m)" by (rule dickson_gradingD_dgrad_set)
   qed
+  ultimately obtain T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds s)"
+    by (rule almost_full_on_finite_subsetE, blast)
+  thus ?thesis ..
 qed
 
 lemma dickson_leI:
@@ -982,6 +936,26 @@ lemma dickson_less_trans:
 lemma transp_dickson_less: "transp (dickson_less d m)"
   by (rule transpI, fact dickson_less_trans)
 
+lemma wfp_on_ord_strict:
+  assumes "dickson_grading d"
+  shows "wfp_on (\<prec>) {x. d x \<le> n}"
+proof -
+  let ?A = "{x. d x \<le> n}"
+  have "strict (\<preceq>) = (\<prec>)" by (intro ext, simp only: ordered_powerprod_lin.less_le_not_le)
+  have "qo_on (adds) ?A" by (auto simp: qo_on_def reflp_on_def transp_on_def dest: adds_trans)
+  moreover from assms have "wqo_on (adds) ?A" by (rule dickson_gradingD2')
+  ultimately have "(\<forall>Q. (\<forall>x\<in>?A. \<forall>y\<in>?A. x adds y \<longrightarrow> Q x y) \<and> qo_on Q ?A \<longrightarrow> wfp_on (strict Q) ?A)"
+    by (simp only: wqo_extensions_wf_conv)
+  hence "(\<forall>x\<in>?A. \<forall>y\<in>?A. x adds y \<longrightarrow> x \<preceq> y) \<and> qo_on (\<preceq>) ?A \<longrightarrow> wfp_on (strict (\<preceq>)) ?A" ..
+  thus ?thesis unfolding \<open>strict (\<preceq>) = (\<prec>)\<close>
+  proof
+    show "(\<forall>x\<in>?A. \<forall>y\<in>?A. x adds y \<longrightarrow> x \<preceq> y) \<and> qo_on (\<preceq>) ?A"
+    proof (intro conjI ballI impI ord_adds)
+      show "qo_on (\<preceq>) ?A" by (auto simp: qo_on_def reflp_on_def transp_on_def)
+    qed
+  qed
+qed
+
 lemma wf_dickson_less:
   assumes "dickson_grading d"
   shows "wfP (dickson_less d m)"
@@ -995,7 +969,7 @@ proof (rule wfP_chain)
       by (rule transp_sequence)
 
     from assms obtain i j where "i < j" and i_adds_j: "seq i adds seq j"
-    proof (rule dickson_gradingE2)
+    proof (rule dickson_gradingE)
       fix i
       from * show "d (seq i) \<le> m" by (rule dickson_lessD2)
     qed
@@ -1018,8 +992,7 @@ begin
 
 sublocale gd_powerprod by standard
 
-lemma wf_ord_strict:
-  shows "wfP (\<prec>)"
+lemma wf_ord_strict: "wfP (\<prec>)"
 proof (rule wfP_chain)
   show "\<not> (\<exists>seq. \<forall>i. seq (Suc i) \<prec> seq i)"
   proof
@@ -1029,8 +1002,8 @@ proof (rule wfP_chain)
     with ordered_powerprod_lin.transp_less have seq_decr: "\<And>i j. i < j \<Longrightarrow> (seq j) \<prec> (seq i)"
       by (rule transp_sequence)
 
-    from dickson[of seq] obtain i j::nat where "i < j \<and> seq i adds seq j" by auto
-    hence "i < j" and i_adds_j: "seq i adds seq j" by auto
+    from dickson obtain i j::nat where "i < j" and i_adds_j: "seq i adds seq j"
+      by (auto elim!: almost_full_onD)
     from seq_decr[OF \<open>i < j\<close>] have "seq j \<preceq> seq i \<and> seq j \<noteq> seq i" by auto
     hence "seq j \<preceq> seq i" and "seq j \<noteq> seq i" by simp_all
     from \<open>seq j \<noteq> seq i\<close> \<open>seq j \<preceq> seq i\<close> ord_adds[OF i_adds_j]
@@ -1234,6 +1207,9 @@ lemma sub_supp_empty: "sub_supp {} s = (s = 0)"
 lemma sub_supp_supp: "sub_supp (supp_fun s) s"
   by (simp add: sub_supp_def)
 
+lemma truncate_fun_idI: "sub_supp V f \<Longrightarrow> truncate_fun V f = f"
+  by (auto simp: sub_supp_def truncate_fun_def supp_fun_def intro!: ext)
+
 lemma sub_supp_truncate: "sub_supp V (truncate_fun V s)"
   unfolding sub_supp_def truncate_fun_def supp_fun_def by auto
 
@@ -1250,6 +1226,11 @@ proof -
   thus ?thesis by (simp only: sub_supp_def)
 qed
 
+lemma truncate_fun_singleton_adds:
+  fixes s t::"'a \<Rightarrow> 'b::add_linorder"
+  shows "(truncate_fun {v} s adds truncate_fun {v} t) \<longleftrightarrow> (s v adds t v)"
+  unfolding truncate_fun_def adds_fun_iff by auto
+
 lemma adds_insert_supp:
   fixes s t::"'a \<Rightarrow> 'b::add_linorder"
   assumes "sub_supp (insert v V) s" and "sub_supp (insert v V) t"
@@ -1259,121 +1240,61 @@ lemma adds_insert_supp:
 
 subsubsection \<open>Dickson's lemma for power-products in finitely many indeterminates\<close>
 
-text \<open>The following lemma was kindly provided by Manuel Eberl.\<close>
-lemma nat_incr_subsequence:
-  fixes f :: "nat \<Rightarrow> 'a::wellorder"
-  obtains g where "strict_mono g" "incseq (f \<circ> g)"
-proof -
-  from seq_monosub[of f] obtain g
-    where subseq: "strict_mono g" and mono: "monoseq (f \<circ> g)" by (auto simp: o_def)
-  from mono show ?thesis unfolding monoseq_iff
-  proof
-    assume decseq: "decseq (f \<circ> g)"
-    define M where "M \<equiv> LEAST n. n \<in> range (f \<circ> g)"
-    have "M \<in> range (f \<circ> g)" unfolding M_def by (rule LeastI_ex) blast
-    then obtain n where n: "f (g n) = M" unfolding o_def by blast
-
-    have "strict_mono (g \<circ> (\<lambda>x. x + n))" 
-      by (intro strict_mono_o subseq) (auto simp: strict_mono_def)
-    moreover {
-      fix m assume "m \<ge> n"
-      from \<open>m \<ge> n\<close> and decseq
-        have "f (g m) \<le> f (g n)" unfolding decseq_def by simp
-      with n have "f (g m) \<le> M" by simp
-      moreover have "M \<le> f (g m)" unfolding M_def by (rule Least_le) simp
-      ultimately have "f (g m) = M" by simp
-    }
-    hence "incseq (f \<circ> (g \<circ> (\<lambda>x. x + n)))" by (auto simp: incseq_def)
-    ultimately show ?thesis by (rule that)
-  qed (rule that[OF subseq])
-qed
-
-lemma fun_incr_subsequence:
-  fixes V::"'a set" and f::"nat \<Rightarrow> 'a \<Rightarrow> 'b::add_wellorder"
-  assumes "finite V" and sub_supp: "\<And>k. sub_supp V (f k)"
-  shows "\<exists>m::nat \<Rightarrow> nat. (strict_mono m) \<and> (\<forall>i j. i < j \<longrightarrow> (f o m) i adds (f o m) j)"
-  using assms
-proof (induct V arbitrary: f)
-  case empty
-  hence all_zero: "\<And>k. f k = 0" by (simp only: sub_supp_empty)
-  show ?case
-  proof (intro exI conjI)
-    show "strict_mono id" by (simp add: strict_mono_def)
-  next
-    from all_zero show "\<forall>i j. i < j \<longrightarrow> (f \<circ> id) i adds (f \<circ> id) j" by simp
-  qed
-next
-  case ind: (insert v V)
-
-  (*Construction of first mapping*)
-  have IH_prem: "(\<And>k. sub_supp V ((truncate_fun V o f) k))" by (simp add: sub_supp_truncate)
-  hence "\<exists>m. strict_mono m \<and> (\<forall>i j::nat. i < j \<longrightarrow> (truncate_fun V \<circ> f \<circ> m) i adds (truncate_fun V \<circ> f \<circ> m) j)"
-    by (rule ind.hyps(3))
-  then obtain m1 where m1_strict_mono: "strict_mono m1" and
-    m1_div: "\<forall>i j::nat. i < j \<longrightarrow> (truncate_fun V \<circ> f \<circ> m1) i adds (truncate_fun V \<circ> f \<circ> m1) j" by auto
-
-  (*Construction of second mapping*)
-  show ?case
-  proof (rule nat_incr_subsequence)
-    fix m2::"nat \<Rightarrow> nat"
-    let ?m = "(m1 o m2)"
-    assume m2_strict_mono: "strict_mono m2" and "incseq ((\<lambda>x. x v) o f \<circ> m1 \<circ> m2)"
-    hence "\<forall>i j. i < j \<longrightarrow> ((\<lambda>x. x v) o f \<circ> ?m) i \<le> ((\<lambda>x. x v) o f \<circ> ?m) j"
-      by (simp add: incseq_def)
-    hence m2_adds: "\<forall>i j. i < j \<longrightarrow> ((\<lambda>x. x v) o f \<circ> ?m) i adds ((\<lambda>x. x v) o f \<circ> ?m) j"
-      using addsI le_imp_inv by fastforce
-        
-    show "\<exists>m. strict_mono m \<and> (\<forall>i j::nat. i < j \<longrightarrow> (f o m) i adds (f o m) j)"
-    proof (intro exI conjI allI impI)
-      show "strict_mono ?m" using m1_strict_mono m2_strict_mono by (intro strict_mono_o)
-    next
-      fix i j::nat
-      assume "i < j"
-        
-      (*i-th and j-th element are in (insert v V)*)
-      from ind(4) have sub_supp_i: "sub_supp (insert v V) ((f o ?m) i)"
-        and sub_supp_j: "sub_supp (insert v V) ((f o ?m) j)" by simp_all
-          
-      (*v-component of i-th element is leq v-component of j-th element*)
-      from m2_adds have m2_adds_i_j: "i < j \<longrightarrow> ((\<lambda>x. x v) \<circ> f \<circ> ?m) i adds ((\<lambda>x. x v) \<circ> f \<circ> ?m) j"
-        by simp
-      hence v_adds: "((f o ?m) i) v adds ((f o ?m) j) v" using \<open>i < j\<close> by simp
-          
-      (*F-components of i-th element divide F-components of j-th element*)
-      from m1_div have m1_div_i_j: "m2 i < m2 j \<longrightarrow> ((truncate_fun V) o f o ?m) i adds ((truncate_fun V) o f o ?m) j"
-        by simp
-      hence V_adds: "truncate_fun V ((f o ?m) i) adds truncate_fun V ((f o ?m) j)"
-        using \<open>i < j\<close> m2_strict_mono by (simp add: strict_mono_def)
-      
-      show "(f \<circ> ?m) i adds (f \<circ> ?m) j"
-        by (simp only: adds_insert_supp[OF sub_supp_i sub_supp_j], rule, fact V_adds, fact v_adds)
-    qed
-  qed
-qed
-
-text \<open>Another version of Dickson's lemma is proved in @{cite Sternagel2012}.\<close>
-
 lemma Dickson_fun:
-  fixes seq::"nat \<Rightarrow> 'a \<Rightarrow> 'b::add_wellorder"
-  assumes "finite V" and "\<And>k. sub_supp V (seq k)"
-  shows "\<exists>i j::nat. i < j \<and> seq i adds seq j"
-proof -
-  from fun_incr_subsequence[OF assms] obtain m::"nat \<Rightarrow> nat" where
-    "strict_mono m \<and> (\<forall>i j. i < j \<longrightarrow> (seq o m) i adds (seq o m) j)" ..
-  then have m_subseq: "strict_mono m" and m_div: "\<forall>i j. i < j \<longrightarrow> (seq o m) i adds (seq o m) j" by simp_all
-  let ?i = "m 0" and ?j = "m 1"
-  show "\<exists>i j::nat. i < j \<and> seq i adds seq j"
-  proof (rule, rule)
-    show "?i < ?j \<and> seq ?i adds seq ?j" using m_subseq m_div by (simp add: strict_mono_def)
+  assumes "finite V"
+  shows "almost_full_on (adds) {x::'a \<Rightarrow> 'b::add_wellorder. sub_supp V x}"
+  using assms
+proof (induct V)
+  case empty
+  have "finite {0}" by simp
+  moreover have "reflp_on (adds) {0::'a \<Rightarrow> 'b}" by (simp add: reflp_on_def)
+  ultimately have "almost_full_on (adds) {0::'a \<Rightarrow> 'b}" by (rule finite_almost_full_on)
+  thus ?case by (simp add: sub_supp_empty)
+next
+  case (insert v V)
+  show ?case
+  proof (rule almost_full_onI)
+    fix seq::"nat \<Rightarrow> 'a \<Rightarrow> 'b"
+    assume "\<forall>i. seq i \<in> {x. sub_supp (insert v V) x}"
+    hence a: "sub_supp (insert v V) (seq i)" for i by simp
+    define seq' where "seq' = (\<lambda>i. (truncate_fun V (seq i), truncate_fun {v} (seq i)))"
+    have "almost_full_on (adds) {x::'a \<Rightarrow> 'b. sub_supp {v} x}"
+    proof (rule almost_full_onI)
+      fix f::"nat \<Rightarrow> 'a \<Rightarrow> 'b"
+      assume "\<forall>i. f i \<in> {x. sub_supp {v} x}"
+      hence b: "sub_supp {v} (f i)" for i by simp
+      let ?f = "\<lambda>i. f i v"
+      have "wfP ((<)::'b \<Rightarrow> _)" by (simp add: wf wfP_def)
+      hence "\<forall>f::nat \<Rightarrow> 'b. \<exists>i. f i \<le> f (Suc i)"
+        by (simp add: wf_iff_no_infinite_down_chain[to_pred] not_less)
+      hence "\<exists>i. ?f i \<le> ?f (Suc i)" ..
+      then obtain i where "?f i \<le> ?f (Suc i)" ..
+      have "i < Suc i" by simp
+      moreover have "f i adds f (Suc i)"
+      proof -
+        from \<open>?f i \<le> ?f (Suc i)\<close> have "?f i adds ?f (Suc i)" by (simp add: adds_def le_iff_add)
+        hence "truncate_fun {v} (f i) adds truncate_fun {v} (f (Suc i))"
+          by (simp add: truncate_fun_singleton_adds)
+        with b show ?thesis by (simp add: truncate_fun_idI)
+      qed
+      ultimately show "good (adds) f" by (meson goodI)
+    qed
+    with insert(3) have
+      "almost_full_on (prod_le (adds) (adds)) ({x::'a \<Rightarrow> 'b. sub_supp V x} \<times> {x::'a \<Rightarrow> 'b. sub_supp {v} x})"
+      (is "almost_full_on ?P ?A") by (rule almost_full_on_Sigma)
+    moreover have "\<And>i. seq' i \<in> ?A" by (simp add: seq'_def sub_supp_truncate)
+    ultimately obtain i j where "i < j" and "?P (seq' i) (seq' j)" by (rule almost_full_onD)
+    from this(2) have "seq i adds seq j"
+      by (simp add: prod_le_def seq'_def adds_insert_supp[OF a[of i] a[of j]] truncate_fun_singleton_adds)
+    with \<open>i < j\<close> show "good (adds) seq" by (meson goodI)
   qed
 qed
 
 instance "fun" :: (finite, add_wellorder) dickson_powerprod
 proof
-  fix seq::"nat \<Rightarrow> 'a \<Rightarrow> 'b"
   have "finite (UNIV::'a set)" by simp
-  moreover have "\<And>k. sub_supp UNIV (seq k)" by (rule sub_supp_univ)
-  ultimately show "\<exists>i j. i < j \<and> seq i adds seq j" by (rule Dickson_fun)
+  hence "almost_full_on (adds) {x::'a \<Rightarrow> 'b. sub_supp UNIV x}" by (rule Dickson_fun)
+  thus "almost_full_on (adds) (UNIV::('a \<Rightarrow> 'b) set)" by (simp add: sub_supp_univ)
 qed
 
 subsubsection \<open>Lexicographic Term Order\<close>
@@ -2137,7 +2058,6 @@ next
   qed
   show "\<exists>k. t = s + k"
   proof
-    thm Abs_poly_mapping_inverse[OF **]
     show "t = s + Abs_poly_mapping k"
       by (rule poly_mapping_eqI, simp add: * lookup_add Abs_poly_mapping_inverse[OF **])
   qed
@@ -2268,30 +2188,19 @@ qed
 
 end (* countable *)
 
-lemma poly_mapping_incr_subsequence:
-  fixes V::"'a set"
-    and f::"nat \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b::add_wellorder"
-  assumes "finite V" and "\<And>k. sub_keys V (f k)"
-  shows "\<exists>m::nat \<Rightarrow> nat. (strict_mono m) \<and> (\<forall>i j. i < j \<longrightarrow> (f o m) i adds (f o m) j)"
-proof -
-  have *: "\<And>m i. lookup ((f \<circ> m) i) = ((lookup \<circ> f) \<circ> m) i" by simp
-  from assms(2) have "\<And>k. sub_supp V ((lookup \<circ> f) k)" by (simp add: sub_keys_iff)
-  with assms(1) show ?thesis by (simp only: poly_mapping_adds_iff *, rule fun_incr_subsequence)
-qed
-
 lemma Dickson_poly_mapping:
-  fixes seq::"nat \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b::add_wellorder"
-  assumes "finite V" and "\<And>k. sub_keys V (seq k)"
-  shows "\<exists>i j::nat. i < j \<and> seq i adds seq j"
-proof -
-  from poly_mapping_incr_subsequence[OF assms] obtain m::"nat \<Rightarrow> nat" where
-    "strict_mono m \<and> (\<forall>i j. i < j \<longrightarrow> (seq o m) i adds (seq o m) j)" ..
-  then have m_subseq: "strict_mono m" and m_div: "\<forall>i j. i < j \<longrightarrow> (seq o m) i adds (seq o m) j" by simp_all
-  let ?i = "m 0" and ?j = "m 1"
-  show "\<exists>i j::nat. i < j \<and> seq i adds seq j"
-  proof (rule, rule)
-    show "?i < ?j \<and> seq ?i adds seq ?j" using m_subseq m_div by (simp add: strict_mono_def)
-  qed
+  assumes "finite V"
+  shows "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b::add_wellorder. sub_keys V x}"
+proof (rule almost_full_onI)
+  fix seq::"nat \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b"
+  assume a: "\<forall>i. seq i \<in> {x::'a \<Rightarrow>\<^sub>0 'b. sub_keys V x}"
+  define seq' where "seq' = (\<lambda>i. lookup (seq i))"
+  from assms have "almost_full_on (adds) {x::'a \<Rightarrow> 'b. sub_supp V x}" by (rule Dickson_fun)
+  moreover from a have "\<And>i. seq' i \<in> {x::'a \<Rightarrow> 'b. sub_supp V x}"
+    unfolding seq'_def sub_keys_def sub_supp_def keys_eq_supp by auto
+  ultimately obtain i j where "i < j" and "seq' i adds seq' j" by (rule almost_full_onD)
+  from this(2) have "seq i adds seq j" by (simp add: seq'_def poly_mapping_adds_iff)
+  with \<open>i < j\<close> show "good (adds) seq" by (rule goodI)
 qed
 
 definition varnum :: "('a::countable \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> nat"
@@ -2323,19 +2232,21 @@ lemma varnum_plus:
 lemma dickson_grading_varnum:
   "dickson_grading (varnum::('a::countable \<Rightarrow>\<^sub>0 'b::add_wellorder) \<Rightarrow> nat)"
 proof (rule dickson_gradingI, fact varnum_plus)
-  fix seq :: "nat \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b"
-  assume *: "\<And>i. varnum (seq i) \<le> varnum (seq 0)"
-  let ?V = "{x. elem_index x < varnum (seq 0)}"
-  have "finite ?V" by (fact finite_nat_seg)
-  moreover have "\<And>k. sub_keys ?V (seq k)"
-  proof (simp only: sub_keys_def, rule, simp)
-    fix i x
-    assume "x \<in> keys (seq i)"
-    hence "elem_index x < varnum (seq i)" by (rule elem_index_less_varnum)
-    also have "... \<le> varnum (seq 0)" by (fact *)
-    finally show "elem_index x < varnum (seq 0)" .
+  fix m::nat
+  let ?V = "{x. elem_index x < m}"
+  have "{x::'a \<Rightarrow>\<^sub>0 'b. varnum x \<le> m} \<subseteq> {x. sub_keys ?V x}"
+  proof (rule, simp add: sub_keys_def, intro subsetI, simp)
+    fix t::"'a \<Rightarrow>\<^sub>0 'b" and x
+    assume "x \<in> keys t"
+    hence "elem_index x < varnum t" by (rule elem_index_less_varnum)
+    also assume "... \<le> m"
+    finally show "elem_index x < m" .
   qed
-  ultimately show "\<exists>i j. i < j \<and> seq i adds seq j" by (rule Dickson_poly_mapping)
+  thus "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. varnum x \<le> m}"
+  proof (rule almost_full_on_subset)
+    have "finite ?V" by (fact finite_nat_seg)
+    thus "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. sub_keys ?V x}" by (rule Dickson_poly_mapping)
+  qed
 qed
 
 instance poly_mapping :: (countable, add_wellorder) graded_dickson_powerprod
@@ -2343,10 +2254,9 @@ instance poly_mapping :: (countable, add_wellorder) graded_dickson_powerprod
 
 instance poly_mapping :: (finite, add_wellorder) dickson_powerprod
 proof
-  fix seq::"nat \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b"
   have "finite (UNIV::'a set)" by simp
-  moreover have "\<And>k. sub_keys UNIV (seq k)" by (rule sub_keys_univ)
-  ultimately show "\<exists>i j. i < j \<and> seq i adds seq j" by (rule Dickson_poly_mapping)
+  hence "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. sub_keys UNIV x}" by (rule Dickson_poly_mapping)
+  thus "almost_full_on (adds) (UNIV::('a \<Rightarrow>\<^sub>0 'b) set)" by (simp add: sub_keys_univ)
 qed
 
 subsubsection \<open>Lexicographic Term Order\<close>

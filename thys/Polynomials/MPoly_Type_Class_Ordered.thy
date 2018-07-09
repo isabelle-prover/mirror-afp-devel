@@ -2975,133 +2975,58 @@ lemma dgrad_p_set_closed_tail:
 
 subsection \<open>Dickson's Lemma for Sequences of Terms\<close>
 
-lemma (in -) infinite_strict_mono_subsequence:
-  assumes "infinite S"
-  obtains f::"nat \<Rightarrow> 'a::{the_min,wellorder}" where "Orderings.strict_mono f" and "range f \<subseteq> S"
+lemma Dickson_term:
+  assumes "dickson_grading d" and "finite K"
+  shows "almost_full_on (adds\<^sub>t) {t. pp_of_term t \<in> dgrad_set d m \<and> component_of_term t \<in> K}"
+    (is "almost_full_on _ ?A")
+proof (rule almost_full_onI)
+  fix seq :: "nat \<Rightarrow> 't"
+  assume *: "\<forall>i. seq i \<in> ?A"
+  define seq' where "seq' = (\<lambda>i. (pp_of_term (seq i), component_of_term (seq i)))"
+  have "pp_of_term ` ?A \<subseteq> {x. d x \<le> m}" by (auto dest: dgrad_setD)
+  moreover from assms(1) have "almost_full_on (adds) {x. d x \<le> m}" by (rule dickson_gradingD2)
+  ultimately have "almost_full_on (adds) (pp_of_term ` ?A)" by (rule almost_full_on_subset)
+  moreover have "almost_full_on (=) (component_of_term ` ?A)"
+  proof (rule eq_almost_full_on_finite_set)
+    have "component_of_term ` ?A \<subseteq> K" by blast
+    thus "finite (component_of_term ` ?A)" using assms(2) by (rule finite_subset)
+  qed
+  ultimately have "almost_full_on (prod_le (adds) (=)) (pp_of_term ` ?A \<times> component_of_term ` ?A)"
+    by (rule almost_full_on_Sigma)
+  moreover from * have "\<And>i. seq' i \<in> pp_of_term ` ?A \<times> component_of_term ` ?A" by (simp add: seq'_def)
+  ultimately obtain i j where "i < j" and "prod_le (adds) (=) (seq' i) (seq' j)"
+    by (rule almost_full_onD)
+  from this(2) have "seq i adds\<^sub>t seq j" by (simp add: seq'_def prod_le_def adds_term_def)
+  with \<open>i < j\<close> show "good (adds\<^sub>t) seq" by (rule goodI)
+qed
+
+corollary Dickson_termE:
+  assumes "dickson_grading d" and "finite (component_of_term ` range (f::nat \<Rightarrow> 't))"
+    and "pp_of_term ` range f \<subseteq> dgrad_set d m"
+  obtains i j where "i < j" and "f i adds\<^sub>t f j"
 proof -
-  define Sseq where "Sseq = rec_nat S (\<lambda>_ T. T - {LEAST e. e \<in> T})"
-  define pick where "pick n = (LEAST e. e \<in> Sseq n)" for n
-  have "Sseq (Suc k) = Sseq k - {LEAST e. e \<in> Sseq k}" for k by (simp add: Sseq_def)
-  have *: "Sseq n \<subseteq> S" "infinite (Sseq n)" for n
-    by (induct n) (auto simp: Sseq_def assms)
-  hence **: "pick n \<in> Sseq n" for n
-    unfolding pick_def by (metis (full_types) Collect_mem_eq LeastI not_finite_existsD)
-  with * have "range pick \<subseteq> S" by auto
-  have Sseq_Suc: "Sseq (Suc n) = Sseq n - {pick n}" for n by (simp add: Sseq_def pick_def)
-  with ** have ***: "Sseq (Suc n) \<subset> Sseq n" for n by auto
-  moreover have "pick n < pick (Suc n)" for n
-  proof -
-    from ** *** have "pick (Suc n) \<in> Sseq n" by blast
-    hence "pick n \<le> pick (Suc n)" unfolding pick_def[of n] by (rule Least_le)
-    moreover have "pick n \<noteq> pick (Suc n)"
-    proof
-      assume "pick n = pick (Suc n)"
-      hence "pick n \<in> Sseq (Suc n)" by (simp add: **)
-      thus False by (simp add: Sseq_Suc)
-    qed
-    ultimately show "pick n < pick (Suc n)" by simp
-  qed
-  hence "Orderings.strict_mono pick" by (simp add: strict_mono_Suc_iff)
-  from this \<open>range pick \<subseteq> S\<close> show ?thesis ..
+  let ?A = "{t. pp_of_term t \<in> dgrad_set d m \<and> component_of_term t \<in> component_of_term ` range f}"
+  from assms(1, 2) have "almost_full_on (adds\<^sub>t) ?A" by (rule Dickson_term)
+  moreover from assms(3) have "\<And>i. f i \<in> ?A" by blast
+  ultimately obtain i j where "i < j" and "f i adds\<^sub>t f j" by (rule almost_full_onD)
+  thus ?thesis ..
 qed
-
-lemma dickson_term_aux:
-  assumes "dickson_grading d" and "finite K" and "component_of_term ` range (f::nat \<Rightarrow> 't) \<subseteq> K"
-    and "pp_of_term ` range f \<subseteq> dgrad_set d m"
-  obtains i j where "i < j" and "f i adds\<^sub>t f j"
-  using assms(2, 3, 4)
-proof (induct K arbitrary: f thesis)
-  case empty
-  from empty(2) show ?case by simp
-next
-  case ind: (insert k K)
-  show ?case
-  proof (cases "finite {i. component_of_term (f i) = k}")
-    case True
-    have "infinite {i. component_of_term (f i) \<in> K}"
-    proof
-      assume "finite {i. component_of_term (f i) \<in> K}"
-      with True have "finite ({i. component_of_term (f i) = k} \<union> {i. component_of_term (f i) \<in> K})"
-        by (rule finite_UnI)
-      also have "... = {i. component_of_term (f i) \<in> insert k K}" by blast
-      also have "... = UNIV"
-      proof
-        show "UNIV \<subseteq> {i. component_of_term (f i) \<in> insert k K}"
-        proof
-          fix i
-          from ind(5) have "component_of_term (f i) \<in> insert k K" by blast
-          thus "i \<in> {i. component_of_term (f i) \<in> insert k K}" by simp
-        qed
-      qed simp
-      finally show False by simp
-    qed
-    then obtain g::"nat \<Rightarrow> nat" where mono: "Orderings.strict_mono g"
-      and "range g \<subseteq> {i. component_of_term (f i) \<in> K}" by (rule infinite_strict_mono_subsequence)
-    from this(2) have "X \<Longrightarrow> X" and "component_of_term ` range (f \<circ> g) \<subseteq> K" for X by fastforce+
-    moreover from ind(6) have "pp_of_term ` range (f \<circ> g) \<subseteq> dgrad_set d m" by fastforce
-    ultimately obtain i j where "i < j" and *: "(f \<circ> g) i adds\<^sub>t (f \<circ> g) j" by (rule ind(3))
-    show ?thesis
-    proof (rule ind(4))
-      from mono \<open>i < j\<close> show "g i < g j" by (rule Orderings.strict_monoD)
-    next
-      from * show "f (g i) adds\<^sub>t f (g j)" by simp
-    qed
-  next
-    case False
-    then obtain g::"nat \<Rightarrow> nat" where mono: "Orderings.strict_mono g"
-      and "range g \<subseteq> {i. component_of_term (f i) = k}" by (rule infinite_strict_mono_subsequence)
-    from this(2) have eq: "component_of_term (f (g i)) = k" for i by fastforce
-    from assms(4) have "d ((pp_of_term \<circ> f \<circ> g) i) \<le> m" for i
-      by (metis comp_apply dgrad_setD image_comp ind.prems(3) rangeI subset_eq)
-    with assms(1) obtain i j where "i < j" and "(pp_of_term \<circ> f \<circ> g) i adds (pp_of_term \<circ> f \<circ> g) j"
-      by (rule dickson_gradingE2)
-    from this(2) have "pp_of_term (f (g i)) adds pp_of_term (f (g j))" by simp
-    show ?thesis
-    proof (rule ind(4))
-      from mono \<open>i < j\<close> show "g i < g j" by (rule Orderings.strict_monoD)
-    next
-      show "f (g i) adds\<^sub>t f (g j)" by (simp add: adds_term_def eq, fact)
-    qed
-  qed
-qed
-
-corollary dickson_term:
-  assumes "dickson_grading d"and "finite (component_of_term ` range (f::nat \<Rightarrow> 't))"
-    and "pp_of_term ` range f \<subseteq> dgrad_set d m"
-  obtains i j where "i < j" and "f i adds\<^sub>t f j"
-  by (rule dickson_term_aux, rule assms(1), rule assms(2), rule subset_refl, rule assms(3))
 
 lemma ex_finite_adds_term:
   assumes "dickson_grading d" and "finite (component_of_term ` S)" and "pp_of_term ` S \<subseteq> dgrad_set d m"
   obtains T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds\<^sub>t s)"
 proof -
-  define Q where "Q = (\<lambda>A. finite (component_of_term ` A) \<and> pp_of_term ` A \<subseteq> dgrad_set d m)"
-  show ?thesis
-  proof (rule ex_finite_subset)
-    from adds_term_refl show "reflp (adds\<^sub>t)" by (rule reflpI)
+  let ?A = "{t. pp_of_term t \<in> dgrad_set d m \<and> component_of_term t \<in> component_of_term ` S}"
+  have "reflp ((adds\<^sub>t)::'t \<Rightarrow> _)" by (simp add: reflp_def adds_term_refl)
+  moreover have "almost_full_on (adds\<^sub>t) S"
+  proof (rule almost_full_on_subset)
+    from assms(3) show "S \<subseteq> ?A" by blast
   next
-    fix T
-    assume "T \<subseteq> S"
-    show "Q T" unfolding Q_def
-    proof
-      from \<open>T \<subseteq> S\<close> have "component_of_term ` T \<subseteq> component_of_term ` S" by (rule image_mono)
-      thus "finite (component_of_term ` T)" using assms(2) by (rule finite_subset)
-    next
-      from \<open>T \<subseteq> S\<close> have "pp_of_term ` T \<subseteq> pp_of_term ` S" by (rule image_mono)
-      thus "pp_of_term ` T \<subseteq> dgrad_set d m" using assms(3) by (rule subset_trans)
-    qed
-  next
-    fix seq::"nat \<Rightarrow> 't"
-    assume "Q (range seq)"
-    hence "finite (component_of_term ` (range seq))" and "pp_of_term ` (range seq) \<subseteq> dgrad_set d m"
-      by (simp_all add: Q_def)
-    with assms(1) obtain i j where "i < j" and "seq i adds\<^sub>t seq j" by (rule dickson_term)
-    thus "\<exists>i j. i < j \<and> seq i adds\<^sub>t seq j" by blast
-  next
-    fix T
-    assume "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> \<exists>t\<in>T. t adds\<^sub>t s"
-    thus thesis ..
+    from assms(1, 2) show "almost_full_on (adds\<^sub>t) ?A" by (rule Dickson_term)
   qed
+  ultimately obtain T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds\<^sub>t s)"
+    by (rule almost_full_on_finite_subsetE, blast)
+  thus ?thesis ..
 qed
 
 subsection \<open>Well-foundedness\<close>

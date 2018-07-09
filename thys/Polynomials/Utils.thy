@@ -3,7 +3,7 @@
 section \<open>Utilities\<close>
 
 theory Utils
-  imports Main
+  imports Main Well_Quasi_Orders.Almost_Full_Relations
 begin
 
 lemma wfP_chain:
@@ -39,9 +39,8 @@ proof -
   thus "r (seq j) (seq i)" using \<open>i < j\<close> by simp
 qed
 
-lemma ex_finite_subset:
-  assumes "reflp P" and "\<And>T. T \<subseteq> S \<Longrightarrow> Q T"
-    and "\<And>seq::nat \<Rightarrow> 'a. Q (range seq) \<Longrightarrow> (\<exists>i j. i < j \<and> P (seq i) (seq j))"
+lemma almost_full_on_finite_subsetE:
+  assumes "reflp P" and "almost_full_on P S"
   obtains T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. P t s)"
 proof -
   define crit where "crit = (\<lambda>U s. s \<in> S \<and> (\<forall>u\<in>U. \<not> P u s))"
@@ -92,16 +91,11 @@ proof -
     proof (rule someI_ex)
       from \<open>seq n \<subset> seq (Suc n)\<close> show "\<exists>x. x \<in> seq (Suc n) \<and> x \<notin> seq n" by blast
     qed
-    have "\<exists>a b. a < b \<and> P (seq1 a) (seq1 b)"
-    proof (rule assms(3), rule assms(2), rule)
-      fix x
-      assume "x \<in> range seq1"
-      then obtain i where "x = seq1 i" ..
-      also from seq1 have "seq1 i \<in> seq (Suc i)" ..
-      also have "... \<subseteq> S" by (rule sub)
-      finally show "x \<in> S" .
-    qed
-    then obtain a b where "a < b" and "P (seq1 a) (seq1 b)" by blast
+    have "seq1 i \<in> S" for i
+    proof
+      from seq1[of i] show "seq1 i \<in> seq (Suc i)" ..
+    qed (fact sub)
+    with assms(2) obtain a b where "a < b" and "P (seq1 a) (seq1 b)" by (rule almost_full_onD)
     from \<open>a < b\<close> have "Suc a \<le> b" by simp
     from seq1 have "seq1 a \<in> seq (Suc a)" ..
     also from \<open>Suc a \<le> b\<close> have "... \<subseteq> seq b" by (rule seq_incr)

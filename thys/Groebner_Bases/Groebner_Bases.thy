@@ -1776,7 +1776,7 @@ proof (rule wfP_on_chain, rule, erule exE)
     thus "lp (g i) \<in> dgrad_set d m" by (rule dgrad_setI)
   qed
 
-  from assms(1) a5 a6 obtain i j where "i < j" and "(lt \<circ> g) i adds\<^sub>t (lt \<circ> g) j" by (rule dickson_term)
+  from assms(1) a5 a6 obtain i j where "i < j" and "(lt \<circ> g) i adds\<^sub>t (lt \<circ> g) j" by (rule Dickson_termE)
   from this a4[OF \<open>i < j\<close>] show False by simp
 qed
 
