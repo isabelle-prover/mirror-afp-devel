@@ -12,6 +12,7 @@ session Polynomials (AFP) = "Abstract-Rewriting" +
     "HOL-Library.AList"
   theories
     MPoly_Type_Class_FMap
+    MPoly_Type_Class_OAlist
     MPoly_Type_Univariate
     Show_Polynomials
     NZM

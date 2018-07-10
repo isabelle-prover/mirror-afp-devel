@@ -5,9 +5,11 @@ session Groebner_Bases (AFP) = "HOL-Algebra" +
   sessions
     Polynomials
     Jordan_Normal_Form
+    Deriving
   theories [document = false]
     "Abstract-Rewriting.Abstract_Rewriting"
     Polynomials.MPoly_Type_Class_FMap
+    Polynomials.MPoly_Type_Class_OAlist
   theories
     Buchberger_Examples
     Reduced_GB_Examples
