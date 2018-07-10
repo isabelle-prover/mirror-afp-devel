@@ -8,7 +8,7 @@ theory Poly_Mapping
 imports
   "HOL-Library.Groups_Big_Fun"
   "HOL-Library.Fun_Lexorder"
-  More_List2
+  "HOL-Library.More_List"
 begin
 
 subsection \<open>Preliminary: auxiliary operations for \qt{almost everywhere zero}\<close>
