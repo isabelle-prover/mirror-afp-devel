@@ -23,7 +23,7 @@ with IsaFoR/CeTA. If not, see <http://www.gnu.org/licenses/>.
 *)
 section {* A unique representation of real numbers via triples *}
 theory Real_Unique_Impl
-imports 
+imports
   Prime_Product
   Real_Impl
   Show.Show_Instances
@@ -37,7 +37,7 @@ text {* We implement the real numbers again using triples, but now we require an
  different basis in comparisons. Ultimately, injectivity allows us to define a show-function for
  real numbers, which pretty prints real numbers into strings. *}
 
-typedef mini_alg_unique = 
+typedef mini_alg_unique =
   "{ r :: mini_alg . ma_coeff r = 0 \<and> ma_base r = 0 \<or> ma_coeff r \<noteq> 0 \<and> prime_product (ma_base r)}"
   by (transfer, auto)
 
@@ -52,11 +52,11 @@ lift_definition mau_coeff :: "mini_alg_unique \<Rightarrow> rat" is ma_coeff .
 lift_definition mau_uminus :: "mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_uminus by (transfer, auto)
 lift_definition mau_compatible :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> bool" is ma_compatible .
 lift_definition mau_ge_0 :: "mini_alg_unique \<Rightarrow> bool" is ma_ge_0 .
-lift_definition mau_inverse :: "mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_inverse 
+lift_definition mau_inverse :: "mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_inverse
   by (transfer, auto simp: ma_normalize_def Let_def split: if_splits)
 lift_definition mau_plus :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_plus
   by (transfer, auto simp: ma_normalize_def split: if_splits)
-lift_definition mau_times :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_times 
+lift_definition mau_times :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> mini_alg_unique" is ma_times
   by (transfer, auto simp: ma_normalize_def split: if_splits)
 lift_definition ma_identity :: "mini_alg \<Rightarrow> mini_alg \<Rightarrow> bool" is "(=)" .
 lift_definition mau_equal :: "mini_alg_unique \<Rightarrow> mini_alg_unique \<Rightarrow> bool" is ma_identity .
@@ -66,21 +66,21 @@ lemma [code]:
   "Ratreal = real_of_u \<circ> mau_of_rat"
   by (simp add: fun_eq_iff) (transfer, transfer, simp)
 
-lemma mau_floor: "floor (real_of_u r) = mau_floor r" 
+lemma mau_floor: "floor (real_of_u r) = mau_floor r"
   using ma_floor by (transfer, auto)
-lemma mau_inverse: "inverse (real_of_u r) = real_of_u (mau_inverse r)" 
+lemma mau_inverse: "inverse (real_of_u r) = real_of_u (mau_inverse r)"
   using ma_inverse by (transfer, auto)
-lemma mau_uminus: "- (real_of_u r) = real_of_u (mau_uminus r)" 
+lemma mau_uminus: "- (real_of_u r) = real_of_u (mau_uminus r)"
   using ma_uminus by (transfer, auto)
 lemma mau_times:
   "(real_of_u r1 * real_of_u r2) = (if mau_compatible r1 r2
-    then real_of_u (mau_times r1 r2) else     
-    Code.abort (STR ''different base'') (\<lambda> _. real_of_u r1 * real_of_u r2))" 
+    then real_of_u (mau_times r1 r2) else
+    Code.abort (STR ''different base'') (\<lambda> _. real_of_u r1 * real_of_u r2))"
   using ma_times by (transfer, auto)
 lemma mau_plus:
   "(real_of_u r1 + real_of_u r2) = (if mau_compatible r1 r2
-    then real_of_u (mau_plus r1 r2) else     
-    Code.abort (STR ''different base'') (\<lambda> _. real_of_u r1 + real_of_u r2))" 
+    then real_of_u (mau_plus r1 r2) else
+    Code.abort (STR ''different base'') (\<lambda> _. real_of_u r1 + real_of_u r2))"
   using ma_plus by (transfer, auto)
 
 lemma real_of_u_inj[simp]: "real_of_u x = real_of_u y \<longleftrightarrow> x = y"
@@ -96,12 +96,12 @@ proof
     thus "x = y"
     proof (transfer, clarsimp)
       fix p1 q1 p2 q2 :: rat and b1 b2
-      let ?p1 = "real_of_rat p1"      
-      let ?p2 = "real_of_rat p2"      
-      let ?q1 = "real_of_rat q1"      
-      let ?q2 = "real_of_rat q2"      
-      let ?b1 = "real_of_nat b1"      
-      let ?b2 = "real_of_nat b2"      
+      let ?p1 = "real_of_rat p1"
+      let ?p2 = "real_of_rat p2"
+      let ?q1 = "real_of_rat q1"
+      let ?q2 = "real_of_rat q2"
+      let ?b1 = "real_of_nat b1"
+      let ?b2 = "real_of_nat b2"
       assume q1: "q1 = 0 \<and> b1 = 0 \<or> q1 \<noteq> 0 \<and> prime_product b1"
       and q2: "q2 = 0 \<and> b2 = 0 \<or> q2 \<noteq> 0 \<and> prime_product b2"
       and i1: "q1 = 0 \<or> b1 \<in> sqrt_irrat"
@@ -109,7 +109,7 @@ proof
       and eq: "?p1 + ?q1 * sqrt ?b1 = ?p2 + ?q2 * sqrt ?b2"
       show "p1 = p2 \<and> q1 = q2 \<and> b1 = b2"
       proof (cases "q1 = 0")
-        case True 
+        case True
         have "q2 = 0"
           by (rule sqrt_irrat[OF i2, of "p2 - p1"], insert eq True q1, auto)
         with True q1 q2 eq show ?thesis by auto
@@ -139,8 +139,8 @@ proof
         finally have eq: "?e = 0" by simp
         from sqrt_irrat[OF _ this] 2 i2 have q3: "q3 = 0" by auto
         hence p: "p1 = p2" unfolding q3_def by simp
-        let ?b1 = "rat_of_nat b1"      
-        let ?b2 = "rat_of_nat b2"      
+        let ?b1 = "rat_of_nat b1"
+        let ?b2 = "rat_of_nat b2"
         from eq[unfolded q3] have eq: "?sq q2 * ?b2 = ?sq q1 * ?b1" by auto
         obtain z1 n1 where d1: "quotient_of q1 = (z1,n1)" by force
         obtain z2 n2 where d2: "quotient_of q2 = (z2,n2)" by force
@@ -157,12 +157,12 @@ proof
         have "?sq (?n1 * ?z2) * ?b2 = ?sq (?n2 * ?z1) * ?b1"
           using pos by auto
         moreover have "?n1 * ?z2 \<noteq> 0" "?n2 * ?z1 \<noteq> 0" using z1 z2 pos by auto
-        ultimately obtain i1 i2 where 0: "rat_of_int i1 \<noteq> 0" "rat_of_int i2 \<noteq> 0" 
+        ultimately obtain i1 i2 where 0: "rat_of_int i1 \<noteq> 0" "rat_of_int i2 \<noteq> 0"
           and eq: "?sq (rat_of_int i2) * ?b2 = ?sq (rat_of_int i1) * ?b1"
           unfolding of_int_mult[symmetric] by blast+
         let ?b1 = "int b1"
         let ?b2 = "int b2"
-        from eq have eq: "?sq i1 * ?b1 = ?sq i2 * ?b2" 
+        from eq have eq: "?sq i1 * ?b1 = ?sq i2 * ?b2"
           by (metis (hide_lams, no_types) of_int_eq_iff of_int_mult of_int_of_nat_eq)
         from 0 have 0: "i1 \<noteq> 0" "i2 \<noteq> 0" by auto
         from arg_cong[OF eq, of nat] have "?sq (nat (abs i1)) * b1 = ?sq (nat (abs i2)) * b2"
@@ -181,8 +181,8 @@ proof
             using b2 p by (auto simp: prime_elem_multiplicity_mult_distrib)
           also have "\<dots> mod 2 = multiplicity p b2 mod 2" by presburger
           finally have id2: "multiplicity p (?sq n2 * b2) mod 2 = multiplicity p b2 mod 2" .
-          from id1 id2 eq have eq: "multiplicity p b1 mod 2 = multiplicity p b2 mod 2" by simp            
-          from 1(2) 2(2) p have "multiplicity p b1 \<le> 1" "multiplicity p b2 \<le> 1" 
+          from id1 id2 eq have eq: "multiplicity p b1 mod 2 = multiplicity p b2 mod 2" by simp
+          from 1(2) 2(2) p have "multiplicity p b1 \<le> 1" "multiplicity p b2 \<le> 1"
             unfolding prime_product_def by auto
           with eq have "multiplicity p b1 = multiplicity p b2" by simp
         }
@@ -213,7 +213,7 @@ proof -
   let ?inv = "\<lambda> ma. ma_coeff ma = 0 \<and> ma_base ma = 0 \<or> ma_coeff ma \<noteq> 0 \<and> prime_product (ma_base ma)"
   have ma': "?inv ma'" unfolding ma'_def
     by (transfer, auto)
-  have id: "\<And> i. int i * 1 = i" "\<And> i :: rat. i / 1 = i" "rat_of_int 1 = 1" "inverse (1 :: rat) = 1" 
+  have id: "\<And> i. int i * 1 = i" "\<And> i :: rat. i / 1 = i" "rat_of_int 1 = 1" "inverse (1 :: rat) = 1"
     "\<And> n. nat \<bar>int n\<bar> = n" by auto
   from prime_product_factor[OF ppf] have "prime_product fact" by auto
   hence sqrt: "?inv sqrt" unfolding sqrt_def
@@ -235,21 +235,21 @@ proof (transfer)
   from quotient_of_denom_pos[OF q] have b: "b > 0" by auto
   obtain sq fact where ppf: "prime_product_factor (nat (\<bar>a\<bar> * b)) = (sq, fact)" by force
   from prime_product_factor[OF ppf] have ab: "nat (\<bar>a\<bar> * b) = sq * sq * fact" ..
-  have "sqrt (real_of r) = sqrt(of_int a / of_int b)" unfolding rr r 
+  have "sqrt (real_of r) = sqrt(of_int a / of_int b)" unfolding rr r
     by (metis of_rat_divide of_rat_of_int_eq)
   also have "real_of_int a / of_int b = of_int a * of_int b / (of_int b * of_int b)" using b by auto
-  also have "sqrt (\<dots>) = sqrt (of_int a * of_int b) / of_int b" using sqrt_sqrt[of "real_of_int b"] b 
-    by (metis less_eq_real_def of_int_0_less_iff real_sqrt_divide real_sqrt_mult_distrib2)
+  also have "sqrt (\<dots>) = sqrt (of_int a * of_int b) / of_int b" using sqrt_sqrt[of "real_of_int b"] b
+    by (metis less_eq_real_def of_int_0_less_iff real_sqrt_divide real_sqrt_mult)
   also have "real_of_int a * of_int b = real_of_int (a * b)" by auto
   also have "a * b = sgn a * (abs a * b)" by (simp, metis mult_sgn_abs)
   also have "real_of_int (\<dots>) = of_int (sgn a) * real_of_int (\<bar>a\<bar> * b)"
     unfolding of_int_mult[of "sgn a"] ..
-  also have "real_of_int (\<bar>a\<bar> * b) = of_nat (nat (abs a * b))" using b 
+  also have "real_of_int (\<bar>a\<bar> * b) = of_nat (nat (abs a * b))" using b
     by (metis abs_sgn mult_pos_pos mult_zero_left nat_int of_int_of_nat_eq of_nat_0 zero_less_abs_iff zero_less_imp_eq_int)
   also have "\<dots> = of_nat fact * (of_nat sq * of_nat sq)" unfolding ab of_nat_mult by simp
-  also have "sqrt (of_int (sgn a) * (of_nat fact * (of_nat sq * of_nat sq))) = 
+  also have "sqrt (of_int (sgn a) * (of_nat fact * (of_nat sq * of_nat sq))) =
     of_int (sgn a) * sqrt (of_nat fact) * of_nat sq"
-    unfolding real_sqrt_mult_distrib by simp
+    unfolding real_sqrt_mult by simp
   finally have r: "sqrt (real_of r) = real_of_int (sgn a) * real_of_nat sq / real_of_int b * sqrt (real_of_nat fact)" by simp
   let ?asqb = "ma_of_rat (rat_of_int (sgn a) * rat_of_nat sq / rat_of_int b)"
   let ?f = "ma_of_rat (rat_of_nat fact)"
@@ -262,7 +262,7 @@ proof (transfer)
           (let (a, b) = quotient_of (ma_rat r); (sq, fact) = prime_product_factor (nat (\<bar>a\<bar> * b));
                ma' = ma_of_rat (rat_of_int (sgn a) * rat_of_nat sq / rat_of_int b)
            in ma_times ma' (ma_sqrt (ma_of_rat (rat_of_nat fact))))"
-    unfolding q ppf Let_def split    
+    unfolding q ppf Let_def split
     unfolding r
     unfolding ma_times[symmetric, of ?asqb, unfolded compat if_True]
     unfolding ma_sqrt_main[OF sq, symmetric]
@@ -270,8 +270,8 @@ proof (transfer)
     by (simp add: of_rat_divide of_rat_mult)
 qed
 
-lemma mau_sqrt: "sqrt (real_of_u r) = (if mau_coeff r = 0 then 
-  real_of_u (mau_sqrt r) 
+lemma mau_sqrt: "sqrt (real_of_u r) = (if mau_coeff r = 0 then
+  real_of_u (mau_sqrt r)
   else Code.abort (STR ''cannot represent sqrt of irrational number'') (\<lambda> _. sqrt (real_of_u r)))"
   using mau_sqrt_main[of r] by (cases "mau_coeff r = 0", auto)
 
@@ -291,17 +291,17 @@ definition real_lt :: "real \<Rightarrow> real \<Rightarrow> bool" where "real_l
 
 text{* The following code equation terminates if it is started on two
   different inputs. *}
-lemma real_lt [code equation]: "real_lt x y = (let fx = floor x; fy = floor y in 
+lemma real_lt [code equation]: "real_lt x y = (let fx = floor x; fy = floor y in
   (if fx < fy then True else if fx > fy then False else real_lt (x * 1024) (y * 1024)))"
 proof (cases "floor x < floor y")
   case True
   thus ?thesis by (auto simp: real_lt_def floor_less_cancel)
 next
   case False note nless = this
-  show ?thesis 
+  show ?thesis
   proof (cases "floor x > floor y")
     case True
-    from floor_less_cancel[OF this] True nless show ?thesis 
+    from floor_less_cancel[OF this] True nless show ?thesis
       by (simp add: real_lt_def)
   next
     case False
@@ -311,14 +311,14 @@ qed
 
 text {* For comparisons we first check for equality. Then, if the bases are
   compatible we can just compare the differences with 0. Otherwise, we start
-  the recursive algorithm @{const real_lt} which works on arbitrary bases. 
+  the recursive algorithm @{const real_lt} which works on arbitrary bases.
   In this way, we have an implementation of comparisons which can compare
   all representable numbers.
 
   Note that in @{theory Real_Impl.Real_Impl} we did not use @{const real_lt} as there
   the code-equations for equality already require identical bases.
  *}
-lemma comparison_impl: 
+lemma comparison_impl:
   "real_of_u x \<le> real_of_u y \<longleftrightarrow> real_of_u x = real_of_u y \<or>
     (if mau_compatible x y then ge_0 (real_of_u y - real_of_u x) else real_lt (real_of_u x) (real_of_u y))"
   "real_of_u x < real_of_u y \<longleftrightarrow> real_of_u x \<noteq> real_of_u y \<and>
@@ -329,11 +329,11 @@ lemma mau_is_rat: "is_rat (real_of_u x) = mau_is_rat x" using ma_is_rat
   by (transfer, auto)
 
 lift_definition ma_show_real :: "mini_alg \<Rightarrow> string" is
-  "\<lambda> (p,q,b). let sb = shows ''sqrt('' \<circ> shows b \<circ> shows '')''; 
-      qb = (if q = 1 then sb else if q = -1 then shows ''-'' \<circ> sb else shows q \<circ> shows ''*'' \<circ> sb) in 
-      if q = 0 then shows p [] else 
+  "\<lambda> (p,q,b). let sb = shows ''sqrt('' \<circ> shows b \<circ> shows '')'';
+      qb = (if q = 1 then sb else if q = -1 then shows ''-'' \<circ> sb else shows q \<circ> shows ''*'' \<circ> sb) in
+      if q = 0 then shows p [] else
       if p = 0 then qb [] else
-      if q < 0 then ((shows p \<circ> qb) []) 
+      if q < 0 then ((shows p \<circ> qb) [])
       else ((shows p \<circ> shows ''+'' \<circ> qb) [])" .
 
 lift_definition mau_show_real :: "mini_alg_unique \<Rightarrow> string" is ma_show_real .

@@ -495,7 +495,7 @@ proof -
       using minus_sin_cos_eq[symmetric, where ?x = "arccos (1 - x * 2)"]
       by (auto simp add: add.commute)
     have "2 * sqrt (x - x * x) = sqrt (4*x - 4*x * x)"
-      by (metis mult.assoc real_sqrt_four real_sqrt_mult_distrib2 right_diff_distrib)
+      by (metis mult.assoc real_sqrt_four real_sqrt_mult right_diff_distrib)
     also have "... = sqrt (1  - (2 * x - 1) * (2 * x - 1))"
       by (simp add: algebra_simps)
     finally have iii: "2 * sqrt (x - x * x) = cos (arcsin (2 * x - 1)) \<and> 2 * sqrt (x - x * x) =  sin (arccos (1 - 2 * x))"
