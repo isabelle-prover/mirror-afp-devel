@@ -5,6 +5,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
   import isabelle._
 
   val afp_dir = Path.explode("$AFP").expand
+  val excludes = List("ROOTS", "LICENSE", "LICENSE.LGPL")
 
   def print_good(string: String): Unit =
     println(Console.BOLD + Console.GREEN + string + Console.RESET)
@@ -89,6 +90,21 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
     failure_format = { case (session, groups) => s"""$session ${groups.mkString("{", ", ", "}")}""" }
   )
 
+  val check_presence = new Check[String](
+    run = { (tree, selected) =>
+      val fs_entries = File.read_dir(afp_dir).filterNot(excludes.contains)
+
+      fs_entries.flatMap { name =>
+        if (!selected.contains(name) || tree(name).dir.base.implode != name)
+          Some(name)
+        else
+          None
+      }
+    },
+    failure_msg = "The following entries (according to the file system) are not registered in ROOTS, or registered in the wrong ROOT:",
+    failure_format = identity
+  )
+
   def apply(args: List[String]): Unit =
   {
     val full_tree = Sessions.load_structure(Options.init(), Nil, List(afp_dir))
@@ -98,7 +114,8 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
       check_timeout,
       check_paths,
       check_chapter,
-      check_groups)
+      check_groups,
+      check_presence)
 
     val bad = checks.exists(check => !check(full_tree, selected))
 
