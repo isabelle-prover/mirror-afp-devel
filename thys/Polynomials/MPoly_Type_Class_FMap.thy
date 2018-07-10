@@ -11,7 +11,7 @@ begin
 text \<open>In this theory, (type class) multivariate polynomials of type
   @{typ "('a, 'b) poly_mapping"} are represented as association lists.\<close>
 
-text \<open>It is important to note that theory "MPoly_Type_Class_OAlist", which represents polynomials as
+text \<open>It is important to note that theory \<open>MPoly_Type_Class_OAlist\<close>, which represents polynomials as
   @{emph \<open>ordered\<close>} associative lists, is much better suited for doing actual computations. This
   theory is only included for being able to compare the two representations in terms of efficiency.\<close>
 

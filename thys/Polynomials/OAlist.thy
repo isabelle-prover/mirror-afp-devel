@@ -526,7 +526,7 @@ where
            | Gt \<Rightarrow> (f ky 0 vy \<and> prod_ord_pair f ((kx, vx) # xs) ys))"
 
 text \<open>@{const prod_ord_pair} is actually just a special case of @{const lex_ord_pair}, as proved below
-  in lemma ``prod_ord_pair_eq_lex_ord_pair''.\<close>
+  in lemma \<open>prod_ord_pair_eq_lex_ord_pair\<close>.\<close>
 
 subsubsection \<open>@{const lookup_pair}\<close>
 
@@ -3923,7 +3923,7 @@ lemma list_of_oalist_tc_of_list_id:
 
 text \<open>It is better to define the following operations directly instead of interpreting
   @{locale oalist_abstract}, because @{locale oalist_abstract} defines the operations via their
-  ``_raw'' analogues, whereas in this case we can define them directly via their ``_pair'' analogues.\<close>
+  \<open>_raw\<close> analogues, whereas in this case we can define them directly via their \<open>_pair\<close> analogues.\<close>
 
 definition OAlist_tc_lookup :: "('a::linorder, 'b::zero) oalist_tc \<Rightarrow> 'a \<Rightarrow> 'b"
   where "OAlist_tc_lookup xs = lookup_pair_tc (list_of_oalist_tc xs)"
