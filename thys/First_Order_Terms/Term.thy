@@ -33,6 +33,12 @@ setup \<open>
 simproc_setup reorient_Var ("Var x = t") = Reorient_Proc.proc
 simproc_setup reorient_Fun ("Fun f ss = t") = Reorient_Proc.proc
 
+text \<open>The \emph{root symbol} of a term is defined by:\<close>
+fun root :: "('f, 'v) term \<Rightarrow> ('f \<times> nat) option"
+where
+  "root (Var x) = None" |
+  "root (Fun f ts) = Some (f, length ts)"
+
 lemma finite_vars_term [simp]:
   "finite (vars_term t)"
   by (induct t) simp_all
