@@ -78,7 +78,7 @@ val get_info = Context.Proof #> Data.get #> Symtab.lookup
 fun the_info ctxt tyco =
   (case get_info ctxt tyco of
     SOME info => info
-  | NONE => error ("no show-function available for type " ^ quote tyco))
+  | NONE => error ("no show function available for type " ^ quote tyco))
 
 fun declare_info tyco p pshow show show_def m m_comp used_pos law_thm =
   Local_Theory.declaration {syntax = false, pervasive = false} (fn phi =>
@@ -111,7 +111,7 @@ fun simp_only_tac ctxt ths =
 fun generate_showsp tyco lthy =
   let
     val (tycos, Ts) = mutual_recursive_types tyco lthy
-    val _ = map (fn tyco => "generating show-function for type " ^ quote tyco) tycos
+    val _ = map (fn tyco => "generating show function for type " ^ quote tyco) tycos
       |> cat_lines |> writeln
 
     val maps = Bnf_Access.map_terms lthy tycos
@@ -260,7 +260,7 @@ fun generate_showsp tyco lthy =
     val (phi, lthy) = restore_with_morphism lthy
     val show_simps = map (Morphism.fact phi) show_simps
 
-    (* show-law theorems *)
+    (* show law theorems *)
 
     val induct_thms = Bnf_Access.induct_thms lthy tycos
     val set_simps = Bnf_Access.set_simps lthy tycos
@@ -339,7 +339,6 @@ fun generate_showsp tyco lthy =
                 val IHs = instantiate_IHs IHs assms |> split_IHs Ts
               in
                 unfold_tac ctxt (nth show_simps i)
-                THEN print_tac ctxt ("after unfold_tac")
                 THEN o_append_intro_tac ctxt (fn i => fn ctxt' =>
                   resolve_tac ctxt' @{thms show_lawD} 1
                   THEN recursor_tac assms (nth Ts i) (nth IHs i) ctxt')
