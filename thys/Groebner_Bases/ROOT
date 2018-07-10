@@ -14,6 +14,7 @@ session Groebner_Bases (AFP) = "HOL-Algebra" +
     Buchberger_Examples
     Reduced_GB_Examples
     F4_Examples
+    Syzygy_Examples
   document_files
     "root.tex"
     "root.bib"

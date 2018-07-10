@@ -1,7 +1,7 @@
 section \<open>General Utilities\<close>
 
 theory General
-  imports Main
+  imports Polynomials.Utils
 begin
 
 text \<open>A couple of general-purpose functions and lemmas, mainly related to lists.\<close>
@@ -137,6 +137,72 @@ lemma set_zip_map2: "set (zip xs (map f xs)) = (\<lambda>x. (x, f x)) ` (set xs)
 proof -
   have "set (zip (map id xs) (map f xs)) = (\<lambda>x. (id x, f x)) ` (set xs)" by (rule set_zip_map)
   thus ?thesis by simp
+qed
+
+lemma UN_upt: "(\<Union>i\<in>{0..<length xs}. f (xs ! i)) = (\<Union>x\<in>set xs. f x)"
+  by (metis image_image map_nth set_map set_upt)
+
+lemma sum_list_zeroI':
+  assumes "\<And>i. i < length xs \<Longrightarrow> xs ! i = 0"
+  shows "sum_list xs = 0"
+proof (rule sum_list_zeroI, rule, simp)
+  fix x
+  assume "x \<in> set xs"
+  then obtain i where "i < length xs" and "x = xs ! i" by (metis in_set_conv_nth)
+  from this(1) show "x = 0" unfolding \<open>x = xs ! i\<close> by (rule assms)
+qed
+
+lemma sum_list_map2_plus:
+  assumes "length xs = length ys"
+  shows "sum_list (map2 (+) xs ys) = sum_list xs + sum_list (ys::'a::comm_monoid_add list)"
+  using assms
+proof (induct rule: list_induct2)
+  case Nil
+  show ?case by simp
+next
+  case (Cons x xs y ys)
+  show ?case by (simp add: Cons(2) ac_simps)
+qed
+
+lemma sum_list_eq_nthI:
+  assumes "i < length xs" and "\<And>j. j < length xs \<Longrightarrow> j \<noteq> i \<Longrightarrow> xs ! j = 0"
+  shows "sum_list xs = xs ! i"
+  using assms
+proof (induct xs arbitrary: i)
+  case Nil
+  from Nil(1) show ?case by simp
+next
+  case (Cons x xs)
+  have *: "xs ! j = 0" if "j < length xs" and "Suc j \<noteq> i" for j
+  proof -
+    have "xs ! j = (x # xs) ! (Suc j)" by simp
+    also have "... = 0" by (rule Cons(3), simp add: \<open>j < length xs\<close>, fact)
+    finally show ?thesis .
+  qed
+  show ?case
+  proof (cases i)
+    case 0
+    have "sum_list xs = 0" by (rule sum_list_zeroI', erule *, simp add: 0)
+    with 0 show ?thesis by simp
+  next
+    case (Suc k)
+    with Cons(2) have "k < length xs" by simp
+    hence "sum_list xs = xs ! k"
+    proof (rule Cons(1))
+      fix j
+      assume "j < length xs"
+      assume "j \<noteq> k"
+      hence "Suc j \<noteq> i" by (simp add: Suc)
+      with \<open>j < length xs\<close> show "xs ! j = 0" by (rule *)
+    qed
+    moreover have "x = 0"
+    proof -
+      have "x = (x # xs) ! 0" by simp
+      also have "... = 0" by (rule Cons(3), simp_all add: Suc)
+      finally show ?thesis .
+    qed
+    ultimately show ?thesis by (simp add: Suc)
+  qed
 qed
 
 subsubsection \<open>\<open>max_list\<close>\<close>
