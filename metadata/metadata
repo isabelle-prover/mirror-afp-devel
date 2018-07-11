@@ -3591,13 +3591,13 @@ notify = christian.sternagel@uibk.ac.at, rene.thiemann@uibk.ac.at
 
 [First_Order_Terms]
 title = First-Order Terms
-author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
 topic = Logic/Rewriting, Computer Science/Algorithms
 license = LGPL
 date = 2018-02-06
 notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
 abstract =
-  We formalize basic results on first-order terms, including a
+  We formalize basic results on first-order terms, including matching and a
   first-order unification algorithm, as well as well-foundedness of the
   subsumption order. This entry is part of the <i>Isabelle
   Formalization of Rewriting</i> <a

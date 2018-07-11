@@ -12,6 +12,7 @@ session First_Order_Terms (AFP) = "Abstract-Rewriting" +
     Fun_More
     Option_Monad
   theories
+    Matching
     Unification
     Subsumption
   document_files
