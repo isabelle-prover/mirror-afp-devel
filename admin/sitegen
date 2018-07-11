@@ -115,6 +115,6 @@ echo "Installing dependencies ..."
 
 echo "Running sitegen ..."
 "$PYTHON" admin/sitegen-lib/sitegen.py --dest=web \
-                                       --templates=admin/sitegen-lib/templates \
+                                       --templates=metadata/templates \
                                        --deps="$DEPENDENCIES_FILE" \
                                        metadata thys "$@"
