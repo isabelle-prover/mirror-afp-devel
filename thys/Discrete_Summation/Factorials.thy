@@ -99,7 +99,8 @@ lemma prod_ffact:
   fixes m :: "'a :: {ord, ring_1, comm_monoid_mult, comm_semiring_1_cancel}"
   shows "(\<Prod>i = 0..<n. m - of_nat i) = ffact n m"
 proof -
-  have "inj_on (\<lambda>j. j - 1) {1..n}" by (simp add: inj_on_diff_nat)
+  have "inj_on (\<lambda>j. j - 1) {1..n}"
+    by (force intro: inj_on_diff_nat)
   moreover have "{0..<n} = (\<lambda>j. j - 1) ` {1..n}"
   proof -
     have "i \<in> (\<lambda>j. j - 1) ` {1..n}" if "i \<in> {0..<n}" for i
@@ -119,7 +120,7 @@ lemma prod_ffact_nat:
   shows "(\<Prod>i = 0..<n. m - i) = ffact n m"
 proof cases
   assume "n \<le> m"
-  have "inj_on (\<lambda>j. j - 1) {1..n}" by (simp add: inj_on_diff_nat)
+  have "inj_on (\<lambda>j. j - 1) {1..n}" by (force intro: inj_on_diff_nat)
   moreover have "{0..<n} = (\<lambda>j. j - 1) ` {1..n}"
   proof -
     have "i \<in> (\<lambda>j. j - 1) ` {1..n}" if "i \<in> {0..<n}" for i
