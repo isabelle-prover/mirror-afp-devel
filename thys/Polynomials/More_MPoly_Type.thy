@@ -617,4 +617,75 @@ shows "vars (replace_coeff f p) \<subseteq> vars p"
   unfolding vars_def apply (rule subsetI) unfolding mem_simps(8) coeff_keys
   using assms coeff_replace_coeff by (metis coeff_keys)
 
+(* Polynomial functions *)
+
+definition polyfun :: "nat set \<Rightarrow> ((nat \<Rightarrow> 'a::comm_semiring_1) \<Rightarrow> 'a) \<Rightarrow> bool"
+  where "polyfun N f = (\<exists>p. vars p \<subseteq> N \<and> (\<forall>x. insertion x p = f x))"
+
+lemma polyfunI: "(\<And>P. (\<And>p. vars p \<subseteq> N \<Longrightarrow> (\<And>x. insertion x p = f x) \<Longrightarrow> P) \<Longrightarrow> P) \<Longrightarrow> polyfun N f"
+  unfolding polyfun_def by metis
+
+lemma polyfun_subset: "N\<subseteq>N' \<Longrightarrow> polyfun N f \<Longrightarrow> polyfun N' f"
+  unfolding polyfun_def by blast
+
+lemma polyfun_const: "polyfun N (\<lambda>_. c)"
+proof -
+  have "\<And>x. insertion x (monom 0 c) = c" using insertion_single by (metis insertion_one monom_one mult.commute mult.right_neutral single_zero)
+  then show ?thesis unfolding polyfun_def by (metis (full_types) empty_iff keys_single single_zero subsetI subset_antisym vars_monom_subset)
+qed
+
+lemma polyfun_add:
+assumes "polyfun N f" "polyfun N g"
+shows "polyfun N (\<lambda>x. f x + g x)"
+proof -
+  obtain p1 p2 where "vars p1 \<subseteq> N" "\<forall>x. insertion x p1 = f x"
+                     "vars p2 \<subseteq> N" "\<forall>x. insertion x p2 = g x"
+    using polyfun_def assms by metis
+  then have "vars (p1 + p2) \<subseteq> N" "\<forall>x. insertion x (p1 + p2) = f x + g x"
+    using vars_add using Un_iff subsetCE subsetI apply blast
+    by (simp add: \<open>\<forall>x. insertion x p1 = f x\<close> \<open>\<forall>x. insertion x p2 = g x\<close> insertion_add)
+  then show ?thesis using polyfun_def by blast
+qed
+
+lemma polyfun_mult:
+assumes "polyfun N f" "polyfun N g"
+shows "polyfun N (\<lambda>x. f x * g x)"
+proof -
+  obtain p1 p2 where "vars p1 \<subseteq> N" "\<forall>x. insertion x p1 = f x"
+                     "vars p2 \<subseteq> N" "\<forall>x. insertion x p2 = g x"
+    using polyfun_def assms by metis
+  then have "vars (p1 * p2) \<subseteq> N" "\<forall>x. insertion x (p1 * p2) = f x * g x"
+    using vars_mult using Un_iff subsetCE subsetI apply blast
+    by (simp add: \<open>\<forall>x. insertion x p1 = f x\<close> \<open>\<forall>x. insertion x p2 = g x\<close> insertion_mult)
+  then show ?thesis using polyfun_def by blast
+qed
+
+lemma polyfun_Sum:
+assumes "finite I"
+assumes "\<And>i. i\<in>I \<Longrightarrow> polyfun N (f i)"
+shows "polyfun N (\<lambda>x. \<Sum>i\<in>I. f i x)"
+  using assms
+  apply (induction I rule:finite_induct)
+  apply (simp add: polyfun_const)
+  using comm_monoid_add_class.sum.insert polyfun_add by fastforce
+
+lemma polyfun_Prod:
+assumes "finite I"
+assumes "\<And>i. i\<in>I \<Longrightarrow> polyfun N (f i)"
+shows "polyfun N (\<lambda>x. \<Prod>i\<in>I. f i x)"
+  using assms
+  apply (induction I rule:finite_induct)
+  apply (simp add: polyfun_const)
+  using comm_monoid_add_class.sum.insert polyfun_mult by fastforce
+
+lemma polyfun_single:
+assumes "i\<in>N"
+shows "polyfun N (\<lambda>x. x i)"
+proof -
+  have "\<forall>f. insertion f (monom (Poly_Mapping.single i 1) 1) = f i" using insertion_single by simp
+  then show ?thesis unfolding polyfun_def
+    using vars_monom_single[of i 1 1] One_nat_def assms singletonD subset_eq
+    by blast
+qed
+
 end
