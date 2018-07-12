@@ -89,6 +89,21 @@ evaluate_net (insert_weights shared_weights (deep_model_l rs) wd) inputs
   apply (rule subsetI) unfolding mem_Collect_eq
   using if_polynomial_0_evaluate_notex by metis
 
+abbreviation lebesgue_f where "lebesgue_f n \<equiv> completion (lborel_f n)"
+
+lemma space_lebesgue_f: "space (lebesgue_f n) = Pi\<^sub>E {..<n} (\<lambda>_. UNIV)"
+  by (simp add: space_lborel_f)
+
+theorem fundamental_theorem_network_capacity_v3:
+  assumes
+    "S = {wd \<in> space (lebesgue_f weight_space_dim).
+      \<exists>ws Z. Z < r ^ N_half \<and>  (\<forall>inputs. input_sizes (deep_model_l rs) = map dim_vec inputs \<longrightarrow>
+        evaluate_net (insert_weights shared_weights (deep_model_l rs) wd) inputs
+      = evaluate_net (insert_weights shared_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half-1)) ws) inputs)}"
+  shows "S \<in> null_sets (completion (lborel_f weight_space_dim))"
+  unfolding assms
+  using fundamental_theorem_network_capacity_v2[unfolded completion.AE_iff_null_sets[unfolded AE_completion_iff], unfolded not_not]
+  by blast
 
 end
 end
