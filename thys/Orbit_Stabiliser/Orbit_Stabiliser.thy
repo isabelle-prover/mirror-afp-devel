@@ -6,10 +6,7 @@ In this Theory we will prove the orbit-stabiliser theorem, a basic result in the
 
 theory Orbit_Stabiliser
   imports
-    Main
-    "HOL-Algebra.Group"
     Left_Coset
-    HOL.Fun
 
 begin
 
