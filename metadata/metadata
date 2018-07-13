@@ -14,7 +14,7 @@ abstract =
 
 [CakeML]
 title = CakeML
-author = Lars Hupel <https://www21.in.tum.de/~hupel/>
+author = Lars Hupel <https://www21.in.tum.de/~hupel/>, Yu Zhang
 topic = Computer Science/Programming Languages/Language Definitions
 date = 2018-03-12
 notify = hupel@in.tum.de
@@ -7097,7 +7097,7 @@ topic = Mathematics/Economics
 license = LGPL
 date = 2018-07-04
 notify = julian.parsert@uibk.ac.at, cezary.kaliszyk@uibk.ac.at
-abstract = 
+abstract =
   Utility functions form an essential part of game theory and economics.
   In order to guarantee the existence of utility functions most of the
   time sufficient properties are assumed in an axiomatic manner. One
