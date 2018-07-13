@@ -7,8 +7,6 @@
 
 theory Extra
 imports
-  Main
-  HOL.Equiv_Relations
   "HOL-Library.Option_ord"
   "HOL-Library.Product_Lexorder"
 begin
