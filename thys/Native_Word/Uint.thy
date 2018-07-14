@@ -249,12 +249,19 @@ code_printing code_module "Uint" \<rightharpoonup> (OCaml)
   val shiftr : t -> Big_int.big_int -> t
   val shiftr_signed : t -> Big_int.big_int -> t
   val test_bit : t -> Big_int.big_int -> bool
+  val int_mask : int
+  val int32_mask : int32
+  val int64_mask : int64
 end = struct
 
 type t = int
 
-let dflt_size = Big_int.big_int_of_int (
-  let rec f n = if n=0 then 0 else f (n / 2) + 1 in f min_int);;
+(* Can be replaced with Sys.int_size in OCaml 4.03.0 *)
+let dflt_size_int = 
+  let rec f n = if n=0 then 0 else f (n / 2) + 1 
+  in f min_int;;
+
+let dflt_size = Big_int.big_int_of_int dflt_size_int;;
 
 (* negative numbers have their highest bit set, 
    so they are greater than positive ones *)
@@ -280,6 +287,17 @@ let shiftr x n = x lsr (Big_int.int_of_big_int n);;
 let shiftr_signed x n = x asr (Big_int.int_of_big_int n);;
 
 let test_bit x n = x land (1 lsl (Big_int.int_of_big_int n)) <> 0;;
+
+let int_mask =
+  if dflt_size_int < 32 then lnot 0 else 0xFFFFFFFF;;
+
+let int32_mask = 
+  if dflt_size_int < 32 then Int32.pred (Int32.shift_left Int32.one dflt_size_int) 
+  else Int32.of_string "0xFFFFFFFF";;
+
+let int64_mask = 
+  if dflt_size_int < 64 then Int64.pred (Int64.shift_left Int64.one dflt_size_int) 
+  else Int64.of_string "0xFFFFFFFFFFFFFFFF";;
 
 end;; (*struct Uint*)*}
 code_reserved OCaml Uint
@@ -384,6 +402,12 @@ definition Rep_uint' where [simp]: "Rep_uint' = Rep_uint"
 
 lemma Rep_uint'_code [code]: "Rep_uint' x = (BITS n. x !! n)"
 unfolding Rep_uint'_def by transfer simp
+
+lift_definition Abs_uint' :: "dflt_size word \<Rightarrow> uint" is "\<lambda>x :: dflt_size word. x" .
+
+lemma Abs_uint'_code [code]:
+  "Abs_uint' x = Uint (integer_of_int (uint x))"
+including integer.lifting by transfer simp
 
 declare [[code drop: "term_of_class.term_of :: uint \<Rightarrow> _"]]
 
