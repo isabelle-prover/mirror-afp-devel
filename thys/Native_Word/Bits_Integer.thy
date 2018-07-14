@@ -752,7 +752,7 @@ lemma log2_le_plus1: "0 \<le> i \<Longrightarrow> log2 i \<le> log2 (i + 1)"
 proof(induct i rule: log2.induct)
   case (1 i) 
   moreover have "i mod 2 = 0 \<or> i mod 2 = 1" by arith
-  ultimately show ?case by(subst (1 2) log2.simps)(auto, simp_all add: zdiv_zadd1_eq)
+  ultimately show ?case by(subst (1 2) log2.simps)(auto, simp_all add: div_add1_eq)
 qed
 
 lemma log2_mono: 
