@@ -14,6 +14,7 @@ session "Native_Word" (AFP) = "HOL-Word" +
     Uint8
     Uint
     Native_Cast
+    Native_Cast_Uint
     Native_Word_Imperative_HOL
     Native_Word_Test_Emu
     Native_Word_Test_PolyML
