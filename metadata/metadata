@@ -4459,6 +4459,8 @@ extra-history =
 	(revision 5d7a1c9ae047)<br>
         [2017-09-02]:
         added 64-bit words (revision c89f86244e3c)<br>
+        [2018-07-15]:
+        added cast operators for default-size words (revision fc1f1fb8dd30)<br>
 notify = mail@andreas-lochbihler.de
 
 [XML]
