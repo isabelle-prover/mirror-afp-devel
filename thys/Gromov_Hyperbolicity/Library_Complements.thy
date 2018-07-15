@@ -110,7 +110,7 @@ proof -
   have *: "DERIV f x :> 2 - 2 * ln x / x" if "x > 0" for x::real
     unfolding f_def using that by (auto intro!: derivative_eq_intros)
   have "f 1 \<le> f x" if "x \<ge> 1" for x
-  proof (rule DERIV_nonneg_imp_nondecreasing[OF that], safe)
+  proof (rule DERIV_nonneg_imp_nondecreasing[OF that])
     fix t::real assume "t \<ge> 1"
     show "\<exists>y. (f has_real_derivative y) (at t) \<and> 0 \<le> y"
       apply (rule exI[of _ "2 - 2 * ln t / t"])
