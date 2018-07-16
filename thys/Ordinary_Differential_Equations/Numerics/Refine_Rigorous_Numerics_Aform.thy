@@ -1028,6 +1028,7 @@ lemma
 
 lemmas solves_poincare_map = solves_poincare_map_ncc[OF ncc_precond ncc_precond]
 lemmas solves_poincare_map' = solves_poincare_map'_ncc[OF ncc_precond ncc_precond]
+lemmas solves_poincare_map_onto = solves_poincare_map_onto_ncc[OF ncc_precond ncc_precond]
 
 end
 
@@ -1780,10 +1781,13 @@ end
 global_interpretation aform: aform_approximate_sets0
   defines solves_poincare_map_aform = aform.solves_poincare_map
     and solves_poincare_map_aform' = aform.solves_poincare_map'
+    and solves_poincare_map_onto_aform = aform.solves_poincare_map_onto
     and solves_one_step_until_time_aform = aform.one_step_until_time_ivl_in_ivl_check
     and solve_poincare_map_aform = aform.solve_poincare_map
     and one_step_until_time_ivl_in_ivl_impl_aform = aform.one_step_until_time_ivl_in_ivl_impl
     and poincare_onto_from_in_ivl_impl_aform = aform.poincare_onto_from_in_ivl_impl
+    and poincare_onto_in_ivl_impl_aform = aform.poincare_onto_in_ivl_impl
+    and solve_poincare_onto_aform = aform.solve_poincare_onto
     and solve_one_step_until_time_aform = aform.solve_one_step_until_time
     and one_step_until_time_impl_aform = aform.one_step_until_time_impl
     and poincare_onto_from_impl_aform = aform.poincare_onto_from_impl
