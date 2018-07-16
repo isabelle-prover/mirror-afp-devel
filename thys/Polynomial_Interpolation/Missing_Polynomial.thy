@@ -12,7 +12,6 @@ text \<open>The theory contains some basic results on polynomials which have not
 theory Missing_Polynomial
 imports 
   "HOL-Computational_Algebra.Polynomial_Factorial"
-  HOL.Set_Interval
   Missing_Unsorted
 begin
 

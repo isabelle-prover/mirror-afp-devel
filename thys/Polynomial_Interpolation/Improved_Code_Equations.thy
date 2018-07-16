@@ -10,7 +10,6 @@ text \<open>This theory contains improved code equations for certain algorithms.
 theory Improved_Code_Equations
 imports 
   "HOL-Computational_Algebra.Polynomial"
-  HOL.Code_Numeral 
 begin
 
 subsection \<open>@{const divmod_integer}.\<close>
