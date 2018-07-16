@@ -14,7 +14,7 @@ abstract =
 
 [CakeML]
 title = CakeML
-author = Lars Hupel <https://www21.in.tum.de/~hupel/>, Yu Zhang
+author = Lars Hupel <https://www21.in.tum.de/~hupel/>, Yu Zhang <>
 topic = Computer Science/Programming Languages/Language Definitions
 date = 2018-03-12
 notify = hupel@in.tum.de
