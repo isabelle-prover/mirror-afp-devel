@@ -215,7 +215,7 @@ def add_status(entries, status):
             entries[e]['status'] = "skipped"
 
 def main():
-    usage = "sitegen.py [-h] [--templates TEMPLATES_DIR --dest DEST_DIR] [--status STATUS_FILE] [--deps DEPS_FILE] [--no-warn] [--debug] METADATA_DIR THYS_DIR"
+    usage = "sitegen.py [-h] [--templates TEMPLATES_DIR --dest DEST_DIR] [--status STATUS_FILE] [--deps DEPS_FILE] METADATA_DIR THYS_DIR"
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument("metadata_dir", metavar="METADATA_DIR", action="store",
                         help="metadata location")
@@ -229,10 +229,6 @@ def main():
                         help="status file location (devel)")
     parser.add_argument("--deps", action="store", dest="deps_file",
                         help="dependencies file location")
-    parser.add_argument("--no-warn", action="store_false", dest="enable_warnings",
-                        help="disable output of warnings")
-    parser.add_argument("--debug", action="store_true", dest="enable_debug",
-                        help="display debug output")
 
     parser.parse_args(namespace=options)
     options.is_devel = options.status_file is not None
