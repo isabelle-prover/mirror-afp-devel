@@ -12,7 +12,7 @@ DIR="$(dirname "$0")"
 AFP_ROOT="$(cd "${DIR}/.."; pwd)"
 THYS="$AFP_ROOT/thys"
 
-source "$AFP_ROOT/admin/version"
+source "$AFP_ROOT/etc/version"
 
 ##
 
