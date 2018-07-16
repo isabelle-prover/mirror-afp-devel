@@ -26,10 +26,6 @@ def warn(message):
     if options.enable_warnings:
         print(colored(u"Warning: {0}".format(message), 'yellow', attrs=['bold']), file=stderr)
 
-def notice(message):
-    if options.enable_warnings:
-        print(u"Notice: {0}".format(message), file=stderr)
-
 def error(message, exception=None, abort=False):
     print(colored(u"Error: {0}".format(message), 'red', attrs=['bold']), file=stderr)
     if exception:
