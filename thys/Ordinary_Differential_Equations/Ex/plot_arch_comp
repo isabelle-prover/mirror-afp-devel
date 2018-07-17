@@ -17,4 +17,4 @@ gnuplot -c plot_arch_comp.plg out_space x -1000 250 y -500 0
 
 echo "$(cat plot_arch_comp.plg),\\" > plot_arch_comp_circle.plg
 echo 'sqrt(9.9-x*x) title "v_x^2 + v_y^2 = 3.3^2"' >> plot_arch_comp_circle.plg
-gnuplot -c plot_arch_comp_circle.plg out_space_vel "v_x" 2 4 "v_y" 0.25 2.25
+gnuplot -c plot_arch_comp_circle.plg out_space_p2_vel "v_x" 2 4 "v_y" 0.25 2.25
