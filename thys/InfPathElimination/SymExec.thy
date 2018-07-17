@@ -1,5 +1,5 @@
 theory SymExec
-imports Conf HOL.Finite_Set Labels
+imports Conf Labels
 begin
 
 subsection {* Symbolic Execution *}

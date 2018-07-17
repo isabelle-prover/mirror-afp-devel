@@ -5,8 +5,6 @@
 
 theory GroupIsoClasses
 imports
-  HOL.Groups
-  HOL.List
   "HOL-Algebra.Coset"
 begin
 
