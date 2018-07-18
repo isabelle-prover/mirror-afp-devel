@@ -433,7 +433,7 @@ begin
                           using sb.globEA[of n\<^sub>r "sKs p" t t''
                           "\<not>\<^sup>s (\<exists>\<^sub>sP'. sb.pred (p' \<in> P') \<and>\<^sup>s sb.ba (\<lambda>ks. unsub P' = ksrp ks))" n]
                           `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` by auto
-                        ultimately show False using sb.notE by auto
+                        ultimately show False using sb.negE by auto
                       qed
                       moreover from `\<exists>i\<ge>n\<^sub>r. ksactive (sKs p) (t i)` have
                         "ksactive (sKs p) (t (sb.nxtAct (sKs p) t n\<^sub>r))" using sb.nxtActI by blast

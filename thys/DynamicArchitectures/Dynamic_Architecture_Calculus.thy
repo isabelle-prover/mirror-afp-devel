@@ -38,9 +38,10 @@ subsection "Dynamic Evaluation of Temporal Operators"
 text {*
   In the following we introduce a function to evaluate a behavior trace assertion over a given configuration trace.
 *}
+type_synonym 'c bta = "(nat \<Rightarrow> 'c) \<Rightarrow> nat \<Rightarrow> bool"
 
 definition eval:: "'id \<Rightarrow> (nat \<Rightarrow> cnf) \<Rightarrow> (nat \<Rightarrow> 'cmp) \<Rightarrow> nat
-  \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> bool"
+  \<Rightarrow> 'cmp bta \<Rightarrow> bool"
   where "eval cid t t' n \<gamma> \<equiv>
     (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>) \<and> \<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (the_enat(\<langle>cid #\<^bsub>n\<^esub> inf_llist t\<rangle>)) \<or>
     (\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>) \<and> (\<nexists>i'. i'\<ge>n \<and> \<parallel>cid\<parallel>\<^bsub>t i'\<^esub>) \<and> \<gamma> (lnth ((\<pi>\<^bsub>cid\<^esub>(inf_llist t)) @\<^sub>l (inf_llist t'))) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>(n)) \<or>
@@ -170,7 +171,7 @@ proof -
   ultimately show ?thesis using validCI_act by blast
 qed
   
-subsection "Basic Operators"
+subsection "Specification Operators"
 text {*
   In the following we introduce some basic operators for behavior trace assertions.
 *}
@@ -223,16 +224,15 @@ qed
 
 subsubsection "True and False"
 
-definition true :: "(nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool"
+abbreviation true :: "'cmp bta"
   where "true \<equiv> \<lambda>t n. HOL.True"
     
-definition false :: "(nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool"
+abbreviation false :: "'cmp bta"
   where "false \<equiv> \<lambda>t n. HOL.False"
 
 subsubsection "Implication"  
   
-definition imp :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<longrightarrow>\<^sup>b" 10)
+definition imp :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<longrightarrow>\<^sup>b" 10)
   where "\<gamma> \<longrightarrow>\<^sup>b \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"
 
 lemma impI[intro!]:
@@ -304,8 +304,7 @@ qed
 
 subsubsection "Disjunction"  
     
-definition disj :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<or>\<^sup>b" 15)
+definition disj :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<or>\<^sup>b" 15)
   where "\<gamma> \<or>\<^sup>b \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<or> \<gamma>' t n"
 
 lemma disjI[intro!]:
@@ -351,8 +350,7 @@ qed
 
 subsubsection "Conjunction"
   
-definition conj :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<and>\<^sup>b" 20)
+definition conj :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<and>\<^sup>b" 20)
   where "\<gamma> \<and>\<^sup>b \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"
 
 lemma conjI[intro!]:
@@ -422,10 +420,10 @@ qed
 
 subsubsection "Negation"
   
-definition not :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" ("\<not>\<^sup>b _" [19] 19)
+definition neg :: "('cmp bta) \<Rightarrow> ('cmp bta)" ("\<not>\<^sup>b _" [19] 19)
   where "\<not>\<^sup>b \<gamma> \<equiv> \<lambda> t n. \<not> \<gamma> t n"
     
-lemma notI[intro!]:
+lemma negI[intro!]:
   assumes "\<not> eval cid t t' n \<gamma>"
   shows "eval cid t t' n (\<not>\<^sup>b \<gamma>)"
 proof cases
@@ -438,24 +436,24 @@ proof cases
       using eval_def by blast
     with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)"
       using validCI_act[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
-    thus ?thesis using not_def by simp
+    thus ?thesis using neg_def by simp
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
     with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<not> eval cid t t' n \<gamma>`
       have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)" using eval_def by blast
     with `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)"
       using validCI_cont[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
-    thus ?thesis using not_def by simp
+    thus ?thesis using neg_def by simp
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
   with `\<not> eval cid t t' n \<gamma>` have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n" using eval_def by blast
   with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)"
     using validCI_not_act[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
-  thus ?thesis using not_def by simp    
+  thus ?thesis using neg_def by simp    
 qed   
 
-lemma notE[elim!]:
+lemma negE[elim!]:
   assumes "eval cid t t' n (\<not>\<^sup>b \<gamma>)"
   shows "\<not> eval cid t t' n \<gamma>"
 proof cases
@@ -463,20 +461,20 @@ proof cases
   show ?thesis
   proof cases
     assume "\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>"
-    moreover from `eval cid t t' n (\<not>\<^sup>b \<gamma>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using not_def by simp
+    moreover from `eval cid t t' n (\<not>\<^sup>b \<gamma>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using neg_def by simp
     ultimately have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (the_enat \<langle>cid #\<^bsub>enat n\<^esub>inf_llist t\<rangle>)"
       using validCE_act[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
     with `\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
   next
     assume "\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-    moreover from `eval cid t t' n (\<not>\<^sup>b \<gamma>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using not_def by simp
+    moreover from `eval cid t t' n (\<not>\<^sup>b \<gamma>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using neg_def by simp
     ultimately have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) (\<^bsub>cid\<^esub>\<down>\<^bsub>t\<^esub>n)"
       using validCE_cont[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` by blast
     with `\<not> (\<exists>i\<ge>n. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` `\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>` show ?thesis using eval_def by blast
   qed
 next
   assume "\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)"
-  moreover from `eval cid t t' n (\<not>\<^sup>b \<gamma>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using not_def by simp
+  moreover from `eval cid t t' n (\<not>\<^sup>b \<gamma>)` have "eval cid t t' n (\<lambda>t n. \<not> \<gamma> t n)" using neg_def by simp
   ultimately have "\<not> \<gamma> (lnth (\<pi>\<^bsub>cid\<^esub>inf_llist t @\<^sub>l inf_llist t')) n"
     using validCE_not_act[where \<gamma>="\<lambda> t n. \<not> \<gamma> t n"] by blast
   with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using eval_def by blast
@@ -484,8 +482,8 @@ qed
 
 subsubsection "Quantifiers"
 
-definition all :: "('a \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool))
-  \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" (binder "\<forall>\<^sub>b" 10)
+definition all :: "('a \<Rightarrow> ('cmp bta))
+  \<Rightarrow> ('cmp bta)" (binder "\<forall>\<^sub>b" 10)
   where "all P \<equiv> \<lambda>t n. (\<forall>y. (P y t n))"
 
 lemma allI[intro!]:
@@ -550,8 +548,8 @@ next
   with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using eval_def by blast
 qed
   
-definition ex :: "('a \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool))
-  \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" (binder "\<exists>\<^sub>b" 10)
+definition ex :: "('a \<Rightarrow> ('cmp bta))
+  \<Rightarrow> ('cmp bta)" (binder "\<exists>\<^sub>b" 10)
   where "ex P \<equiv> \<lambda>t n. (\<exists>y. (P y t n))"
     
 lemma exI[intro!]:
@@ -615,17 +613,12 @@ next
   with `\<not>(\<exists>i. \<parallel>cid\<parallel>\<^bsub>t i\<^esub>)` show ?thesis using eval_def by blast
 qed    
     
-subsection "Temporal Operators"
-text {*
-  We are now able to formalize all the rules of the calculus presented in~\cite{Marmsoler2017c}.
-*}
-  
 subsubsection "Behavior Assertions"
 text {*
   First we provide rules for basic behavior assertions.
 *}
 
-definition ba :: "('cmp \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)"
+definition ba :: "('cmp \<Rightarrow> bool) \<Rightarrow> ('cmp bta)"
   where "ba \<phi> \<equiv> \<lambda> t n. \<phi> (t n)"
   
 lemma baIA[intro]:
@@ -826,7 +819,7 @@ qed
     
 subsubsection "Next Operator"
 
-definition nxt :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" ("\<circle>\<^sub>b(_)" 24)
+definition nxt :: "('cmp bta) \<Rightarrow> ('cmp bta)" ("\<circle>\<^sub>b(_)" 24)
   where "\<circle>\<^sub>b(\<gamma>) \<equiv> \<lambda> t n. \<gamma> t (Suc n)"
 
 lemma nxtIA[intro]:
@@ -987,7 +980,7 @@ qed
 
 subsubsection "Eventually Operator"  
 
-definition evt :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" ("\<diamond>\<^sub>b(_)" 23)
+definition evt :: "('cmp bta) \<Rightarrow> ('cmp bta)" ("\<diamond>\<^sub>b(_)" 23)
   where "\<diamond>\<^sub>b(\<gamma>) \<equiv> \<lambda> t n. \<exists>n'\<ge>n. \<gamma> t n'"
 
 lemma evtIA[intro]:
@@ -1228,7 +1221,7 @@ qed
 
 subsubsection "Globally Operator"
 
-definition glob :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" ("\<box>\<^sub>b(_)" 22)
+definition glob :: "('cmp bta) \<Rightarrow> ('cmp bta)" ("\<box>\<^sub>b(_)" 22)
   where "\<box>\<^sub>b(\<gamma>) \<equiv> \<lambda> t n. \<forall>n'\<ge>n. \<gamma> t n'"
     
 lemma globIA[intro]:
@@ -1452,8 +1445,7 @@ qed
 
 subsubsection "Until Operator"
 
-definition until :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<UU>\<^sub>b" 21)
+definition until :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<UU>\<^sub>b" 21)
   where "\<gamma>' \<UU>\<^sub>b \<gamma> \<equiv> \<lambda> t n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"
     
 lemma untilIA[intro]:
@@ -1951,8 +1943,7 @@ qed
   
 subsubsection "Weak Until"
 
-definition wuntil :: "((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<WW>\<^sub>b" 20)
+definition wuntil :: "('cmp bta) \<Rightarrow> ('cmp bta) \<Rightarrow> ('cmp bta)" (infixl "\<WW>\<^sub>b" 20)
   where "\<gamma>' \<WW>\<^sub>b \<gamma> \<equiv> \<gamma>' \<UU>\<^sub>b \<gamma> \<or>\<^sup>b \<box>\<^sub>b(\<gamma>')"
 
 end

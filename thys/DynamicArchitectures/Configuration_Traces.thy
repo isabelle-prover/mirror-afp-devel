@@ -156,7 +156,7 @@ proof -
   qed
 qed
 
-subsection "A Model of Dynamic Architectures"
+subsection "Specifying Dynamic Architectures"
 text {*
   In the following we formalize dynamic architectures in terms of configuration traces, i.e., sequences of architecture configurations.
   Moreover, we introduce definitions for operations to support the specification of configuration traces.
@@ -165,10 +165,11 @@ typedecl cnf
 type_synonym trace = "nat \<Rightarrow> cnf"
 consts arch:: "trace set"
 
+type_synonym cta = "trace \<Rightarrow> nat \<Rightarrow> bool"
+
 subsubsection "Implication"
-  
-definition imp :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<longrightarrow>\<^sup>c" 10)
+
+definition imp :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<longrightarrow>\<^sup>c" 10)
   where "\<gamma> \<longrightarrow>\<^sup>c \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<longrightarrow> \<gamma>' t n"
 
 declare imp_def[simp]
@@ -185,8 +186,7 @@ lemma impE[elim!]:
 
 subsubsection "Disjunction"  
     
-definition disj :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<or>\<^sup>c" 15)
+definition disj :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<or>\<^sup>c" 15)
   where "\<gamma> \<or>\<^sup>c \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<or> \<gamma>' t n"
 
 declare disj_def[simp]
@@ -207,8 +207,7 @@ lemma disjE[elim!]:
 
 subsubsection "Conjunction"
   
-definition conj :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<and>\<^sup>c" 20)
+definition conj :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<and>\<^sup>c" 20)
   where "\<gamma> \<and>\<^sup>c \<gamma>' \<equiv> \<lambda> t n. \<gamma> t n \<and> \<gamma>' t n"
 
 declare conj_def[simp]
@@ -225,24 +224,24 @@ lemma conjE[elim!]:
 
 subsubsection "Negation"
   
-definition not :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" ("\<not>\<^sup>c _" [19] 19)
+definition neg :: "cta \<Rightarrow> cta" ("\<not>\<^sup>c _" [19] 19)
   where "\<not>\<^sup>c \<gamma> \<equiv> \<lambda> t n. \<not> \<gamma> t n"
 
-declare not_def[simp]
+declare neg_def[simp]
 
-lemma notI[intro!]:
+lemma negI[intro!]:
   assumes "\<gamma> t n \<Longrightarrow> False"
   shows "(\<not>\<^sup>c \<gamma>) t n" using assms by auto
 
-lemma notE[elim!]:
+lemma negE[elim!]:
   assumes "(\<not>\<^sup>c \<gamma>) t n"
     and "\<gamma> t n"
   shows "\<gamma>' t n" using assms by simp
 
 subsubsection "Quantifiers"
 
-definition all :: "('a \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool))
-  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (binder "\<forall>\<^sub>c" 10)
+definition all :: "('a \<Rightarrow> cta)
+  \<Rightarrow> cta" (binder "\<forall>\<^sub>c" 10)
   where "all P \<equiv> \<lambda>t n. (\<forall>y. (P y t n))"
 
 declare all_def[simp]
@@ -256,8 +255,8 @@ lemma allE[elim!]:
   assumes "(\<forall>\<^sub>cx. \<gamma> x) t n" and "\<gamma> x t n \<Longrightarrow> \<gamma>' t n"
   shows "\<gamma>' t n" using assms by simp
 
-definition ex :: "('a \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool))
-  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (binder "\<exists>\<^sub>c" 10)
+definition ex :: "('a \<Rightarrow> cta)
+  \<Rightarrow> cta" (binder "\<exists>\<^sub>c" 10)
   where "ex P \<equiv> \<lambda>t n. (\<exists>y. (P y t n))"
 
 declare ex_def[simp]
@@ -275,7 +274,7 @@ text {*
   First we provide rules for basic behavior assertions.
 *}
 
-definition ca :: "(cnf \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)"
+definition ca :: "(cnf \<Rightarrow> bool) \<Rightarrow> cta"
   where "ca \<phi> \<equiv> \<lambda> t n. \<phi> (t n)"
 
 lemma caI[intro]:
@@ -290,17 +289,17 @@ lemma caE[elim]:
 
 subsubsection "Next Operator"
 
-definition nxt :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" ("\<circle>\<^sub>c(_)" 24)
+definition nxt :: "cta \<Rightarrow> cta" ("\<circle>\<^sub>c(_)" 24)
   where "\<circle>\<^sub>c(\<gamma>) \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<gamma> t (Suc n)"
 
 subsubsection "Eventually Operator"  
 
-definition evt :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" ("\<diamond>\<^sub>c(_)" 23)
+definition evt :: "cta \<Rightarrow> cta" ("\<diamond>\<^sub>c(_)" 23)
   where "\<diamond>\<^sub>c(\<gamma>) \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<exists>n'\<ge>n. \<gamma> t n'"
 
 subsubsection "Globally Operator"
 
-definition glob :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" ("\<box>\<^sub>c(_)" 22)
+definition glob :: "cta \<Rightarrow> cta" ("\<box>\<^sub>c(_)" 22)
   where "\<box>\<^sub>c(\<gamma>) \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<forall>n'\<ge>n. \<gamma> t n'"
 
 lemma globI[intro!]:
@@ -315,8 +314,7 @@ lemma globE[elim!]:
 
 subsubsection "Until Operator"
 
-definition until :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<UU>\<^sub>c" 21)
+definition until :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<UU>\<^sub>c" 21)
   where "\<gamma>' \<UU>\<^sub>c \<gamma> \<equiv> \<lambda>(t::(nat \<Rightarrow> cnf)) n. \<exists>n''\<ge>n. \<gamma> t n'' \<and> (\<forall>n'\<ge>n. n' < n'' \<longrightarrow> \<gamma>' t n')"
 
 lemma untilI[intro]:
@@ -331,8 +329,7 @@ lemma untilE[elim]:
 
 subsubsection "Weak Until"
 
-definition wuntil :: "((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool) \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)
-  \<Rightarrow> ((nat \<Rightarrow> cnf) \<Rightarrow> nat \<Rightarrow> bool)" (infixl "\<WW>\<^sub>c" 20)
+definition wuntil :: "cta \<Rightarrow> cta \<Rightarrow> cta" (infixl "\<WW>\<^sub>c" 20)
   where "\<gamma>' \<WW>\<^sub>c \<gamma> \<equiv> \<gamma>' \<UU>\<^sub>c \<gamma> \<or>\<^sup>c \<box>\<^sub>c(\<gamma>')"
 
 lemma wUntilI[intro]:
