@@ -20,7 +20,7 @@ text_raw {* \label{s:exp_induct} *}
 text {* Defining recursive (or iterative) programs requires us to reason about
 fixed points on the semantic objects, in this case expectations.  The
 complication here, compared to the standard Knaster-Tarski theorem (for example,
-as shown in ~~/src/HOL/Inductive.thy), is that we do not have a complete lattice.
+as shown in @{theory HOL.Inductive}), is that we do not have a complete lattice.
 
 Finding a lower bound is easy (it's @{term "\<lambda>_. 0"}), but as we do not insist
 on any global bound on expectations (and work directly in HOL's real type, rather
@@ -47,7 +47,7 @@ lemma Inf_exp_lower:
   "\<lbrakk> P \<in> S; \<forall>P\<in>S. nneg P \<rbrakk> \<Longrightarrow> Inf_exp S \<le> P"
   unfolding Inf_exp_def
   by(intro le_funI cInf_lower bdd_belowI[where m=0], auto)
-  
+
 lemma Inf_exp_greatest:
   "\<lbrakk> S \<noteq> {}; \<forall>P\<in>S. Q \<le> P \<rbrakk> \<Longrightarrow> Q \<le> Inf_exp S"
   unfolding Inf_exp_def by(auto intro!:le_funI[OF cInf_greatest])
@@ -87,7 +87,7 @@ qed
 
 definition lfp_exp :: "'s trans \<Rightarrow> 's expect"
 where "lfp_exp t = Inf_exp {P. sound P \<and> t P \<le> P}"
-  
+
 lemma lfp_exp_lowerbound:
   "\<lbrakk> t P \<le> P; sound P \<rbrakk> \<Longrightarrow> lfp_exp t \<le> P"
   unfolding lfp_exp_def by(auto intro:Inf_exp_lower)
@@ -242,7 +242,7 @@ lemma Inf_trans_lower:
 lemma Inf_trans_greatest:
   "\<lbrakk> S \<noteq> {}; \<forall>t\<in>S. \<forall>P. le_trans u t \<rbrakk> \<Longrightarrow> le_trans u (Inf_trans S)"
   unfolding Inf_trans_def by(auto intro!:le_transI[OF Inf_exp_greatest])
-  
+
 definition Sup_trans :: "'s trans set \<Rightarrow> 's trans"
 where "Sup_trans S = (\<lambda>P. Sup_exp {t P |t. t \<in> S})"
 
@@ -266,7 +266,7 @@ lemma Sup_trans_least2:
      \<forall>u\<in>S. \<forall>P. (nneg P \<and> bounded_by b P) \<longrightarrow> (nneg (u P) \<and> bounded_by b (u P));
      nneg P; bounded_by b P; \<And>P. \<lbrakk> nneg P; bounded_by b P \<rbrakk> \<Longrightarrow> nneg (u P) \<rbrakk> \<Longrightarrow> Sup_trans S P \<tturnstile> u P"
    unfolding Sup_trans_def by(blast intro!:Sup_exp_least)
-  
+
 lemma feasible_Sup_trans:
   fixes S::"'s trans set"
   assumes fS: "\<forall>t\<in>S. feasible t"
@@ -275,7 +275,7 @@ proof(cases "S={}", simp add:Sup_trans_def Sup_exp_def, blast, intro feasibleI)
   fix b::real and P::"'s expect"
   assume bP: "bounded_by b P" and nP: "nneg P"
      and neS: "S \<noteq> {}"
-  
+
   from neS obtain t where tin: "t \<in> S" by(auto)
   with fS have ft: "feasible t" by(auto)
   with bP nP have "\<lambda>s. 0 \<tturnstile> t P" by(auto)
@@ -468,7 +468,7 @@ lemma gfp_trans_lemma2:
 proof(rule gfp_trans_least, simp_all add:hT gfp_trans_unitary)
   fix t
   assume fp: "le_utrans t (T t)" and ht: "\<And>P. unitary P \<Longrightarrow> unitary (t P)"
-  
+
   note fp
   also {
     from fp ht have "le_utrans t (gfp_trans T)"by(rule gfp_trans_upperbound)
@@ -580,7 +580,7 @@ proof(rule antisym)
     assume "sound P"
     with fvP svP show "sound (lfp_exp (t P))"
       by(blast intro:lfp_exp_sound)
-  qed                              
+  qed
 qed
 
 definition Inf_utrans :: "'s trans set \<Rightarrow> 's trans"
