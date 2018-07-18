@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>04 Jul 2018 00:00:00 +0000</pubDate>
+    <pubDate>16 Jul 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Pricing in discrete financial models</title>
+              <link>https://www.isa-afp.org/entries/DiscretePricing.html</link>
+       <guid>https://www.isa-afp.org/entries/DiscretePricing.html</guid>
+       <dc:creator> Mnacho Echenim       </dc:creator>
+       <pubDate>16 Jul 2018 00:00:00 +0000</pubDate>
+       <description>
+We have formalized the computation of fair prices for derivative
+products in discrete financial models. As an application, we derive a
+way to compute fair prices of derivative products in the
+Cox-Ross-Rubinstein model of a financial market, thus completing the
+work that was presented in this &lt;a
+href=&#34;https://hal.archives-ouvertes.fr/hal-01562944&#34;&gt;paper&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>Von-Neumann-Morgenstern Utility Theorem</title>
               <link>https://www.isa-afp.org/entries/Neumann_Morgenstern_Utility.html</link>
@@ -341,7 +355,7 @@ valid parameters.</description>
        <title>CakeML</title>
               <link>https://www.isa-afp.org/entries/CakeML.html</link>
        <guid>https://www.isa-afp.org/entries/CakeML.html</guid>
-       <dc:creator> Lars Hupel       </dc:creator>
+       <dc:creator> Lars Hupel, Yu Zhang       </dc:creator>
        <pubDate>12 Mar 2018 00:00:00 +0000</pubDate>
        <description>
 CakeML is a functional programming language with a proven-correct
@@ -444,7 +458,7 @@ textbook.</description>
        <dc:creator> Christian Sternagel, René Thiemann       </dc:creator>
        <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
        <description>
-We formalize basic results on first-order terms, including a
+We formalize basic results on first-order terms, including matching and a
 first-order unification algorithm, as well as well-foundedness of the
 subsumption order. This entry is part of the &lt;i&gt;Isabelle
 Formalization of Rewriting&lt;/i&gt; &lt;a
@@ -544,23 +558,6 @@ eliminates the need to formalise orientations and region boundaries
 explicitly with respect to the outwards-pointing normal vector.
 Instead we appeal to a homological argument about equivalences between
 paths.</description>
-    </item>
-    <item>
-       <title>Taylor Models</title>
-              <link>https://www.isa-afp.org/entries/Taylor_Models.html</link>
-       <guid>https://www.isa-afp.org/entries/Taylor_Models.html</guid>
-       <dc:creator> Christoph Traut, Fabian Immler       </dc:creator>
-       <pubDate>08 Jan 2018 00:00:00 +0000</pubDate>
-       <description>
-We present a formally verified implementation of multivariate Taylor
-models. Taylor models are a form of rigorous polynomial approximation,
-consisting of an approximation polynomial based on Taylor expansions,
-combined with a rigorous bound on the approximation error. Taylor
-models were introduced as a tool to mitigate the dependency problem of
-interval arithmetic. Our implementation automatically computes Taylor
-models for the class of elementary functions, expressed by composition
-of arithmetic operations and basic functions like exp, sin, or square
-root.</description>
     </item>
   </channel>
 </rss>

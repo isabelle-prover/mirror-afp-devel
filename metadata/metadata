@@ -26,6 +26,20 @@ abstract =
   theory files that adapt the exported code to Isabelle and port proofs
   from the HOL4 formalization, e.g. termination and equivalence proofs.
 
+[DiscretePricing]
+title = Pricing in discrete financial models
+author = Mnacho Echenim <http://lig-membres.imag.fr/mechenim/>
+topic = Mathematics/Probability Theory, Mathematics/Economics
+date = 2018-07-16
+notify = mnacho.echenim@univ-grenoble-alpes.fr
+abstract =
+  We have formalized the computation of fair prices for derivative
+  products in discrete financial models. As an application, we derive a
+  way to compute fair prices of derivative products in the
+  Cox-Ross-Rubinstein model of a financial market, thus completing the
+  work that was presented in this <a
+  href="https://hal.archives-ouvertes.fr/hal-01562944">paper</a>.
+
 [Pell]
 title = Pell's Equation
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
