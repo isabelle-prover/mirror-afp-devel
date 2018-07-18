@@ -181,7 +181,7 @@ text {*
   Every predicate can be transformed to a behavior trace assertion.
 *}
 
-definition pred :: "bool \<Rightarrow> ((nat \<Rightarrow> 'cmp) \<Rightarrow> nat \<Rightarrow> bool)"
+definition pred :: "bool \<Rightarrow> ('cmp bta)"
   where "pred P \<equiv> \<lambda> t n. P"
 
 lemma predI[intro]:
