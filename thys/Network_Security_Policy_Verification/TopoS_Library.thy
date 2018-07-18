@@ -1,5 +1,5 @@
 theory TopoS_Library
-imports HOL.String 
+imports
   "Lib/FiniteListGraph_Impl"
   "Security_Invariants/SINVAR_BLPbasic_impl"
   "Security_Invariants/SINVAR_Subnets_impl"

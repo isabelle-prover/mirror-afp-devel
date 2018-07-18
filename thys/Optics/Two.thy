@@ -1,7 +1,7 @@
 section {* Types of Cardinality 2 or Greater *}
 
 theory Two
-imports HOL.Real
+imports Complex_Main
 begin
 
 text {* The two class states that a type's carrier is either infinite, or else it has a finite 
