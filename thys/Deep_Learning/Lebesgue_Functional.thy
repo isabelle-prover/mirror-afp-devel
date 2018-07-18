@@ -3,7 +3,7 @@
 section \<open>Alternative Lebesgue Measure Definition\<close>
 
 theory Lebesgue_Functional
-imports "HOL-Analysis.Lebesgue_Measure" HOL.Topological_Spaces
+imports "HOL-Analysis.Lebesgue_Measure"
 begin
 
 text \<open>Lebesgue\_Measure.lborel is defined on the typeclass euclidean\_space, which does not allow the
