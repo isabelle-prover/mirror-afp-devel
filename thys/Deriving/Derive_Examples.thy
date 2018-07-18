@@ -10,7 +10,6 @@ imports
   Derive
   "Comparator_Generator/Compare_Order_Instances"
   "Equality_Generator/Equality_Instances"
-  HOL.Rat
 begin
 
 subsection "Rational Numbers"
