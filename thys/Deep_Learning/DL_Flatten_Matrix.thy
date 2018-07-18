@@ -3,7 +3,7 @@
 section \<open>Matrix to Vector Conversion\<close>
 
 theory DL_Flatten_Matrix
-imports HOL.Real Jordan_Normal_Form.Matrix
+imports Jordan_Normal_Form.Matrix
 begin
 
 definition extract_matrix :: "(nat \<Rightarrow> 'a) \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat" where

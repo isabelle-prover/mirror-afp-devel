@@ -2,7 +2,6 @@ section{* Miscellaneous and contributed lemmas *}
 
 theory Ugraph_Misc
 imports
-  HOL.Limits
   "HOL-Probability.Probability"
   Girth_Chromatic.Girth_Chromatic_Misc
 begin

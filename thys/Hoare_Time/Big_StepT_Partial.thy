@@ -2,7 +2,7 @@ subsection "Big step Semantics on partial states"
 
 theory Big_StepT_Partial
 imports Partial_Evaluation Big_StepT "SepLogAdd/Sep_Algebra_Add"  
-    "~~/src/HOL/Eisbach/Eisbach"
+    "HOL-Eisbach.Eisbach"
 begin
 
 

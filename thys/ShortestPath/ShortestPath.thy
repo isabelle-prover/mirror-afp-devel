@@ -1,6 +1,6 @@
 theory ShortestPath
 imports
-  HOL.Complex   
+  Complex_Main
   Graph_Theory.Graph_Theory
   "HOL-Library.Extended_Nat"
 begin
