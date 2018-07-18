@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>23 Jun 2018 00:00:00 +0000</pubDate>
+    <pubDate>16 Jul 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Pricing in discrete financial models</title>
+              <link>https://www.isa-afp.org/entries/DiscretePricing.html</link>
+       <guid>https://www.isa-afp.org/entries/DiscretePricing.html</guid>
+       <dc:creator> Mnacho Echenim       </dc:creator>
+       <pubDate>16 Jul 2018 00:00:00 +0000</pubDate>
+       <description>
+We have formalized the computation of fair prices for derivative
+products in discrete financial models. As an application, we derive a
+way to compute fair prices of derivative products in the
+Cox-Ross-Rubinstein model of a financial market, thus completing the
+work that was presented in this &lt;a
+href=&#34;https://hal.archives-ouvertes.fr/hal-01562944&#34;&gt;paper&lt;/a&gt;.</description>
+    </item>
     <item>
        <title>Pell's Equation</title>
               <link>https://www.isa-afp.org/entries/Pell.html</link>
@@ -549,22 +563,6 @@ except for trivial cases,
 n&amp;nbsp;&amp;le;&amp;nbsp;2 for coprime polynomials
 &lt;em&gt;A&lt;/em&gt;, &lt;em&gt;B&lt;/em&gt;, &lt;em&gt;C&lt;/em&gt;
 over a field.&lt;/em&gt;&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>The string search algorithm by Knuth, Morris and Pratt</title>
-              <link>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</link>
-       <guid>https://www.isa-afp.org/entries/Knuth_Morris_Pratt.html</guid>
-       <dc:creator> Fabian Hellauer, Peter Lammich       </dc:creator>
-       <pubDate>18 Dec 2017 00:00:00 +0000</pubDate>
-       <description>
-The Knuth-Morris-Pratt algorithm is often used to show that the
-problem of finding a string &lt;i&gt;s&lt;/i&gt; in a text
-&lt;i&gt;t&lt;/i&gt; can be solved deterministically in
-&lt;i&gt;O(|s| + |t|)&lt;/i&gt; time. We use the Isabelle
-Refinement Framework to formulate and verify the algorithm. Via
-refinement, we apply some optimisations and finally use the
-&lt;em&gt;Sepref&lt;/em&gt; tool to obtain executable code in
-&lt;em&gt;Imperative/HOL&lt;/em&gt;.</description>
     </item>
   </channel>
 </rss>
