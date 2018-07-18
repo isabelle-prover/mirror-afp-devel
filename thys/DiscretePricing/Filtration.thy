@@ -7,7 +7,7 @@ section {* Filtrations *}
 text {* This theory introduces basic notions about filtrations, which permit to define adaptable processes
 and predictable processes in the case where the filtration is indexed by natural numbers. *}
 
-theory Filtration imports Probability
+theory Filtration imports "HOL-Probability.Probability"
 begin
 subsection {* Basic definitions *}
 class linorder_bot = linorder + bot

@@ -3037,8 +3037,7 @@ proof -
           qed
           also have "... = (1+r) * X n w + (1 - q) * V (Suc n) (pseudo_proj_True n w) -
             (1 - q) * V (Suc n) (pseudo_proj_False n w)"
-            using Fields.linordered_field_class.sign_simps(19)[of "1 - q" "V (Suc n) (pseudo_proj_True n w)" "V (Suc n) (pseudo_proj_False n w)"]
-              mult.commute[of "1 - q"] by simp
+            by (simp add: mult.commute right_diff_distrib)
           also have "... = (1+r) * V n w + (1 - q) * V (Suc n) (pseudo_proj_True n w) -
             (1 - q) * V (Suc n) (pseudo_proj_False n w)" using `X n w = V n w` by simp
           also have "... = q * V (Suc n) (pseudo_proj_True n w) + (1 - q) * V (Suc n) (pseudo_proj_False n w) +

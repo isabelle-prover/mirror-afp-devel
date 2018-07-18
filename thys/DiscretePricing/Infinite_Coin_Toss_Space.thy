@@ -7,7 +7,7 @@ section {* Infinite coin toss space *}
 text {* This section contains the formalization of the infinite coin toss space, i.e., the probability
 space constructed on infinite sequences of independent coin tosses. *}
 
-theory Infinite_Coin_Toss_Space imports Filtration Generated_Subalgebra Bochner_Integration Disc_Cond_Expect
+theory Infinite_Coin_Toss_Space imports Filtration Generated_Subalgebra Disc_Cond_Expect
 
 begin
 
@@ -330,7 +330,7 @@ proof
   qed
   finally have inteq: "(to_stream -` ?S \<inter> (space ?wPM)) = prod_emb UNIV ?PM {n} (Pi\<^sub>E {n} (\<lambda>x::nat. {True}))" .
   have "emeasure N ?S = emeasure ?wPM (to_stream -` ?S \<inter> (space ?wPM))"
-    using assms emeasure_distr[of "to_stream" ?wPM "(vimage_algebra (streams (space (measure_pmf (bernoulli_pmf p)))) op !!
+    using assms emeasure_distr[of "to_stream" ?wPM "(vimage_algebra (streams (space (measure_pmf (bernoulli_pmf p)))) (!!)
            (Pi\<^sub>M UNIV (\<lambda>i. measure_pmf (bernoulli_pmf p))))" ?S] measurable_to_stream[of "(measure_pmf (bernoulli_pmf p))"] s
     unfolding bernoulli_stream_def stream_space_def  by auto
   also have "... = emeasure ?wPM (prod_emb UNIV ?PM {n} (Pi\<^sub>E {n} (\<lambda>x::nat. {True})))" using inteq by simp
@@ -3031,6 +3031,14 @@ fixes f::"bool stream\<Rightarrow>real"
   shows "expectation f =
     (\<Sum> w\<in> range (pseudo_proj_True n). (prod (prob_component p w) {0..<n}) * (f w))"
   using assms F_n_integral_prob_comp has_bochner_integral_iff by blast
+
+lemma sum_union_disjoint':
+  assumes "finite A"
+    and "finite B"
+    and "A \<inter> B = {}"
+    and "A \<union> B = C"
+  shows "sum g C = sum g A + sum g B"
+  using sum.union_disjoint[OF assms(1-3)] and assms(4) by auto
 
 lemma (in infinite_cts_filtration) borel_Suc_expectation:
   fixes f::"bool stream\<Rightarrow> real"

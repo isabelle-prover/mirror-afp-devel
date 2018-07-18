@@ -4,7 +4,7 @@
 
 section {* Discrete Conditional Expectation *}
 
-theory Disc_Cond_Expect imports  Probability Generated_Subalgebra
+theory Disc_Cond_Expect imports "HOL-Probability.Probability" Generated_Subalgebra
 
 begin
 
@@ -1296,9 +1296,9 @@ proof (rule sigma_finite_subalgebra.real_cond_exp_charact)
   show "integrable M (expl_cond_expect M Y X)"
     using assms expl_cond_exp_integrable  by blast
   have "\<forall>A\<in> sets M. integral\<^sup>L M (\<lambda>w. (X w) * (indicator A w)) = set_lebesgue_integral M A X"
-    by (metis (no_types, lifting) Bochner_Integration.integral_cong mult.commute real_scaleR_def)
+    by (metis (no_types, lifting) Bochner_Integration.integral_cong mult_commute_abs real_scaleR_def set_lebesgue_integral_def)
    have "\<forall>A\<in> sets M. integral\<^sup>L M (\<lambda>w. ((expl_cond_expect M Y X) w) * (indicator A w)) = set_lebesgue_integral M A (expl_cond_expect M Y X)"
-    by (metis (no_types, lifting) Bochner_Integration.integral_cong mult.commute real_scaleR_def)
+    by (metis (no_types, lifting) Bochner_Integration.integral_cong mult_commute_abs real_scaleR_def set_lebesgue_integral_def)
   have "\<forall>A\<in> sets (fct_gen_subalgebra M N Y). integral\<^sup>L M (\<lambda>w. (X w) * (indicator A w)) =
   integral\<^sup>L M (\<lambda>w. ((expl_cond_expect M Y X) w) * (indicator A w))"
   proof
@@ -1312,7 +1312,7 @@ proof (rule sigma_finite_subalgebra.real_cond_exp_charact)
       using Bochner_Integration.integral_cong \<open>point_measurable M (space N) Y\<close> assms(1) assms(2) by blast
   qed
   thus "\<And>A. A \<in> sets (fct_gen_subalgebra M N Y) \<Longrightarrow> set_lebesgue_integral M A X = set_lebesgue_integral M A (expl_cond_expect M Y X)"
-    by (smt Bochner_Integration.integral_cong Groups.mult_ac(2) real_scaleR_def)
+    by (smt Bochner_Integration.integral_cong Groups.mult_ac(2) real_scaleR_def set_lebesgue_integral_def)
 qed
 
 

@@ -9,7 +9,7 @@ arbitrages, fair prices, etc. It also defines risk-neutral probability spaces, a
 price of a derivative in a risk-neutral probability space, namely that this fair price is equal to the expectation of
 the discounted value of the derivative's payoff. *}
 
-theory Fair_Price imports Probability Filtration Conditional_Expectation Martingale Geometric_Random_Walk
+theory Fair_Price imports Filtration Martingale Geometric_Random_Walk
 begin
 
 subsection {* Preliminary results  *}
@@ -114,13 +114,15 @@ proof (intro sigma_finite_subalgebra.real_cond_exp_charact)
     show "set_lebesgue_integral M A f = \<integral>x\<in>A. expectation f\<partial>M"
     proof (cases "A = {}")
       case True
-      thus ?thesis by simp
+      thus ?thesis by (simp add: set_lebesgue_integral_def)
     next
       case False
       hence "A = space M" using assms \<open>A\<in> sets N\<close> by auto
       have "set_lebesgue_integral M A f = expectation f" using \<open>A = space M\<close>
-        by (metis (mono_tags, lifting) Bochner_Integration.integral_cong indicator_simps(1) scaleR_one)
-      also have "... =\<integral>x\<in>A. expectation f\<partial>M" using \<open>A = space M\<close> by (auto simp add:prob_space)
+        by (metis (mono_tags, lifting) Bochner_Integration.integral_cong indicator_simps(1)
+                  scaleR_one set_lebesgue_integral_def)
+      also have "... =\<integral>x\<in>A. expectation f\<partial>M" using \<open>A = space M\<close>
+        by (auto simp add:prob_space set_lebesgue_integral_def)
       finally show ?thesis .
     qed
   qed
@@ -195,7 +197,7 @@ proof (rule real_cond_exp_charact)
       real_cond_exp_intg(2)[symmetric,of "indicator A" ]
     using "*" \<open>A \<in> sets F\<close> assms borel_measurable_indicator by blast
   have "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x. (\<Sum>i\<in>I. indicator A x * f i x)\<partial>M)"
-    by (simp add: sum_distrib_left)
+    by (simp add: sum_distrib_left set_lebesgue_integral_def)
   also have "... = (\<Sum>i\<in>I. (\<integral>x. indicator A x * f i x \<partial>M))" using Bochner_Integration.integral_sum[of I M "\<lambda>i x. indicator A x * f i x"] *
     by simp
   also have "... = (\<Sum>i\<in>I. (\<integral>x. indicator A x * real_cond_exp M F (f i) x \<partial>M))"
@@ -203,7 +205,7 @@ proof (rule real_cond_exp_charact)
   also have "... = (\<integral>x. (\<Sum>i\<in>I. indicator A x * real_cond_exp M F (f i) x)\<partial>M)"
     by (rule Bochner_Integration.integral_sum[symmetric], simp add: **)
   also have "... = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)"
-    by (simp add: sum_distrib_left)
+    by (simp add: sum_distrib_left set_lebesgue_integral_def)
   finally show "(\<integral>x\<in>A. (\<Sum>i\<in>I. f i x)\<partial>M) = (\<integral>x\<in>A. (\<Sum>i\<in>I. real_cond_exp M F (f i) x)\<partial>M)" by auto
 qed (auto simp add: assms real_cond_exp_int(1)[OF assms(1)])
 
@@ -3243,7 +3245,7 @@ proof (rule disc_martingale_charact)
                   discount_factor r (Suc n) w * (\<Sum>x\<in>support_set pf. prices Mkt x (Suc n) w * pf x (Suc n) w)"
           unfolding discounted_value_def closing_value_process_def using assms unfolding trading_strategy_def by simp
         also have "... = (\<Sum>x\<in>support_set pf. discount_factor r (Suc n) w * prices Mkt x (Suc n) w * pf x (Suc n) w)"
-          by (metis (no_types, lifting) Cartesian_Euclidean_Space.sum_cong_aux mult.assoc sum_distrib_left)
+          by (metis (no_types, lifting) mult.assoc sum.cong sum_distrib_left)
         finally have "discounted_value r (closing_value_process Mkt pf) (Suc n) w =
                   (\<Sum>x\<in>support_set pf. discount_factor r (Suc n) w * prices Mkt x (Suc n) w * pf x (Suc n) w)" .
       }

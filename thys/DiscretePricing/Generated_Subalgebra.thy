@@ -6,7 +6,7 @@ section {* Generated subalgebras *}
 
 text {* This section contains definitions and properties related to generated subalgebras. *}
 
-theory Generated_Subalgebra imports Probability
+theory Generated_Subalgebra imports "HOL-Probability.Probability"
 
 begin
 
