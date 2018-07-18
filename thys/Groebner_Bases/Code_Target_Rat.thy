@@ -1,7 +1,7 @@
 (* Author: Fabian Immler, Alexander Maletzky *)
 
 theory Code_Target_Rat
-  imports "HOL-Library.Code_Target_Numeral" HOL.Rat
+  imports Complex_Main "HOL-Library.Code_Target_Numeral"
 begin
 
 text \<open>Mapping type @{typ rat} to type "Rat.rat" in Isabelle/ML. Serialization for other target
