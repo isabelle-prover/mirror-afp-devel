@@ -27,7 +27,7 @@ section Examples
 theory Derive_Examples
 imports 
   Derive
-  HOL.Rat
+  Complex_Main
 begin
 
 subsection "Register standard existing types"
