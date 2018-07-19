@@ -10,7 +10,7 @@ section \<open>Instances of the Show Class for Standard Types\<close>
 theory Show_Instances
 imports
   Show
-  HOL.Rat
+  Complex_Main
 begin
 
 definition showsp_unit :: "unit showsp"

@@ -1,5 +1,5 @@
 theory Conf
-imports Store HOL.Finite_Set
+imports Store
 begin
 
 section {* Configurations, Subsumption and Symbolic Execution *}

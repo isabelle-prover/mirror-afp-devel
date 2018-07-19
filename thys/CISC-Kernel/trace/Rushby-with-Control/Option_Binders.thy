@@ -1,7 +1,7 @@
 subsection {* Binders for the option type \label{sect:binders} *}
 
 theory Option_Binders
-  imports HOL.Option 
+  imports Main
 begin
 
 text {*

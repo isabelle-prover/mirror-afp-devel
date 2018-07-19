@@ -350,23 +350,19 @@ next
     have mon: "real n' * (ln (real n') - ln (real n' - 1)) \<le> 
                  real n * (ln (real n) - ln (real n - 1))" 
       if "n \<ge> 3" "n' \<ge> n" for n n'::nat
-    proof (rule DERIV_nonpos_imp_nonincreasing[where f = "\<lambda>x. x * (ln x - ln (x - 1))"], goal_cases)
-      case 2
-      show ?case
-      proof clarify
-        fix t assume t: "real n \<le> t" "t \<le> real n'"
-        with that have "1 / (t - 1) \<ge> ln (1 + 1/(t - 1))"
-          by (intro ln_add_one_self_le_self) simp_all
-        also from t that have "ln (1 + 1/(t - 1)) = ln t- ln (t - 1)"
-          by (simp add: ln_div [symmetric] field_simps)
-        finally have "ln t - ln (t - 1) \<le> 1 / (t - 1)" .
-        with that t
-          show "\<exists>y. ((\<lambda>x. x * (ln x - ln (x - 1))) has_field_derivative y) (at t) \<and> y \<le> 0"
-          by (intro exI[of _ "1 / (1 - t) + ln t - ln (t - 1)"])
-             (force intro!: derivative_eq_intros simp: field_simps)+
-      qed
-    qed (insert that, simp_all)
-    
+    proof (rule DERIV_nonpos_imp_nonincreasing[where f = "\<lambda>x. x * (ln x - ln (x - 1))"])
+      fix t assume t: "real n \<le> t" "t \<le> real n'"
+      with that have "1 / (t - 1) \<ge> ln (1 + 1/(t - 1))"
+        by (intro ln_add_one_self_le_self) simp_all
+      also from t that have "ln (1 + 1/(t - 1)) = ln t- ln (t - 1)"
+        by (simp add: ln_div [symmetric] field_simps)
+      finally have "ln t - ln (t - 1) \<le> 1 / (t - 1)" .
+      with that t
+      show "\<exists>y. ((\<lambda>x. x * (ln x - ln (x - 1))) has_field_derivative y) (at t) \<and> y \<le> 0"
+        by (intro exI[of _ "1 / (1 - t) + ln t - ln (t - 1)"])
+          (force intro!: derivative_eq_intros simp: field_simps)+
+    qed (use that in simp_all)
+
     from \<open>n > 1\<close> have "ln 2 = ln (real n) - ln (real n / 2)"
       by (simp add: ln_div)
     also from \<open>n > 1\<close> have "\<dots> \<le> ln (real n) - ln (real (n div 2))" 
@@ -827,7 +823,7 @@ private lemma psi_ubound_aux:
   assumes "x \<ge> 2" "x \<le> y"
   shows   "f x \<ge> f y"
 using assms(3)
-proof (rule DERIV_nonpos_imp_nonincreasing, clarify, goal_cases)
+proof (rule DERIV_nonpos_imp_nonincreasing, goal_cases)
   case (1 t)
   define f' where "f' = (\<lambda>x. (1 - 4 * ln x) / x^2 / ln 2 :: real)"
   from 1 assms(2) have "(f has_real_derivative f' t) (at t)" unfolding f_def f'_def

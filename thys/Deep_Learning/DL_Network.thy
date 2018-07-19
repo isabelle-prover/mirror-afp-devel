@@ -3,7 +3,7 @@
 section \<open>Deep Learning Networks\<close>
 
 theory DL_Network
-imports Tensor_Product HOL.Real
+imports Tensor_Product
   Jordan_Normal_Form.Matrix Tensor_Unit_Vec DL_Flatten_Matrix 
   Jordan_Normal_Form.DL_Missing_List
 begin

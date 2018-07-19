@@ -21,8 +21,6 @@ licenses = {
 
 class Options(object):
     def __init__(self):
-        self.enable_debug = False
-        self.enable_warnings = True
         self.dest_dir = None
         self.do_check = False
         self.metadata_dir = None

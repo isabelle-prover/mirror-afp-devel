@@ -2,7 +2,6 @@ section {* Relations *}
 
 theory Relation_Extensions
 imports
-  HOL.Wellfounded
   Basic_Extensions
 begin
 

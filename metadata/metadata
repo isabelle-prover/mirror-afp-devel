@@ -14,7 +14,7 @@ abstract =
 
 [CakeML]
 title = CakeML
-author = Lars Hupel <https://www21.in.tum.de/~hupel/>
+author = Lars Hupel <https://www21.in.tum.de/~hupel/>, Yu Zhang <>
 topic = Computer Science/Programming Languages/Language Definitions
 date = 2018-03-12
 notify = hupel@in.tum.de
@@ -25,6 +25,20 @@ abstract =
   specifications to Isabelle. Additionally, there are some hand-written
   theory files that adapt the exported code to Isabelle and port proofs
   from the HOL4 formalization, e.g. termination and equivalence proofs.
+
+[DiscretePricing]
+title = Pricing in discrete financial models
+author = Mnacho Echenim <http://lig-membres.imag.fr/mechenim/>
+topic = Mathematics/Probability Theory, Mathematics/Economics
+date = 2018-07-16
+notify = mnacho.echenim@univ-grenoble-alpes.fr
+abstract =
+  We have formalized the computation of fair prices for derivative
+  products in discrete financial models. As an application, we derive a
+  way to compute fair prices of derivative products in the
+  Cox-Ross-Rubinstein model of a financial market, thus completing the
+  work that was presented in this <a
+  href="https://hal.archives-ouvertes.fr/hal-01562944">paper</a>.
 
 [Pell]
 title = Pell's Equation
@@ -3591,13 +3605,13 @@ notify = christian.sternagel@uibk.ac.at, rene.thiemann@uibk.ac.at
 
 [First_Order_Terms]
 title = First-Order Terms
-author = Christian Sternagel <mailto:c.sternagel@gmail.com>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/users/thiemann/>
 topic = Logic/Rewriting, Computer Science/Algorithms
 license = LGPL
 date = 2018-02-06
 notify = c.sternagel@gmail.com, rene.thiemann@uibk.ac.at
 abstract =
-  We formalize basic results on first-order terms, including a
+  We formalize basic results on first-order terms, including matching and a
   first-order unification algorithm, as well as well-foundedness of the
   subsumption order. This entry is part of the <i>Isabelle
   Formalization of Rewriting</i> <a
@@ -4459,6 +4473,8 @@ extra-history =
 	(revision 5d7a1c9ae047)<br>
         [2017-09-02]:
         added 64-bit words (revision c89f86244e3c)<br>
+        [2018-07-15]:
+        added cast operators for default-size words (revision fc1f1fb8dd30)<br>
 notify = mail@andreas-lochbihler.de
 
 [XML]
@@ -7097,7 +7113,7 @@ topic = Mathematics/Economics
 license = LGPL
 date = 2018-07-04
 notify = julian.parsert@uibk.ac.at, cezary.kaliszyk@uibk.ac.at
-abstract = 
+abstract =
   Utility functions form an essential part of game theory and economics.
   In order to guarantee the existence of utility functions most of the
   time sufficient properties are assumed in an axiomatic manner. One

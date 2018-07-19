@@ -10,7 +10,6 @@ imports
   "HOL-Computational_Algebra.Euclidean_Algorithm"
   Ring_Hom
   Missing_Polynomial
-  HOL.Rat
 begin
 
 text{* @{term poly} as a homomorphism. Note that types differ. *}

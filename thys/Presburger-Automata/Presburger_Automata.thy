@@ -3517,7 +3517,7 @@ next
 qed
 
 lemma add_div_trivial: "0 \<le> c \<Longrightarrow> c < b \<Longrightarrow> ((a::int) * b + c) div b = a"
-  by (simp add: zdiv_zadd1_eq div_pos_pos_trivial)
+  by (simp add: div_add1_eq div_pos_pos_trivial)
 
 lemma dioph_rhs_bound:
   "\<bar>(l - eval_dioph ks (map (\<lambda>x. x mod 2) xs)) div 2\<bar> \<le> max \<bar>l\<bar> (\<Sum>k\<leftarrow>ks. \<bar>k\<bar>)"

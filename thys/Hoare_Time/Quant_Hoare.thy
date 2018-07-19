@@ -1,6 +1,6 @@
 section "Quantitative Hoare Logic (due to Carbonneaux)"
 theory Quant_Hoare
-imports Big_StepT Complex_Main "~~/src/HOL/Library/Extended_Nat"
+imports Big_StepT Complex_Main "HOL-Library.Extended_Nat"
 begin
 
   

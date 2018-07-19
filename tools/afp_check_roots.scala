@@ -5,6 +5,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
   import isabelle._
 
   val afp_dir = Path.explode("$AFP").expand
+  val excludes = List("ROOTS", "LICENSE", "LICENSE.LGPL")
 
   def print_good(string: String): Unit =
     println(Console.BOLD + Console.GREEN + string + Console.RESET)
@@ -12,85 +13,97 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
   def print_bad(string: String): Unit =
     println(Console.BOLD + Console.RED + string + Console.RESET)
 
-  def check_timeout(tree: Sessions.Structure, selected: List[String]): Boolean =
-    selected.flatMap { name =>
-      val info = tree(name)
-      val entry = info.dir.base.implode
-      val timeout = info.options.real("timeout")
-      if (timeout == 0 || timeout % 300 != 0)
-        Some((entry, name))
-      else
-        None
-    } match {
-      case Nil =>
-        print_good("All sessions specify a correct timeout.")
-        true
-      case offenders =>
-        print_bad("The following entries contain sessions without timeouts or with timeouts not divisible by 300:")
-        offenders.groupBy(_._1).mapValues(_.map(_._2)).foreach { case (entry, sessions) =>
-          println(s"""  $entry ${sessions.mkString("(", ", ", ")")}""")
-        }
-        false
-    }
+  class Check[T](
+    run: (Sessions.Structure, List[String]) => List[T],
+    failure_msg: String,
+    failure_format: T => String)
+  {
+    def apply(tree: Sessions.Structure, selected: List[String]): Boolean =
+      run(tree, selected) match {
+        case Nil =>
+          true
+        case offenders =>
+          print_bad(failure_msg)
+          offenders.foreach(offender => println("  " + failure_format(offender)))
+          false
+      }
+  }
 
-  def check_paths(tree: Sessions.Structure, selected: List[String]): Boolean =
-    selected.flatMap { name =>
-      val info = tree(name)
-      val dir = info.dir
-      if (dir.dir.expand.file != afp_dir.file)
-        Some((name, dir))
-      else
-        None
-    } match {
-      case Nil =>
-        print_good("All sessions are in the correct directory.")
-        true
-      case offenders =>
-        print_bad("The following sessions are in the wrong directory:")
-        offenders.foreach { case (session, dir) =>
-          println(s"  $session ($dir)")
-        }
-        false
-    }
+  val check_timeout = new Check[(String, List[String])](
+    run = { (tree, selected) =>
+      selected.flatMap { name =>
+        val info = tree(name)
+        val entry = info.dir.base.implode
+        val timeout = info.options.real("timeout")
+        if (timeout == 0 || timeout % 300 != 0)
+          Some((entry, name))
+        else
+          None
+      }.groupBy(_._1).mapValues(_.map(_._2)).toList
+    },
+    failure_msg = "The following entries contain sessions without timeouts or with timeouts not divisible by 300:",
+    failure_format = { case (entry, sessions) => s"""$entry ${sessions.mkString("(", ", ", ")")}""" }
+  )
 
-  def check_chapter(tree: Sessions.Structure, selected: List[String]): Boolean =
-    selected.flatMap { name =>
-      val info = tree(name)
-      val entry = info.dir.base.implode
-      if (info.chapter != "AFP")
-        Some(entry)
-      else
-        None
-    }.distinct match {
-      case Nil =>
-        print_good("All entries are in the 'AFP' chapter.")
-        true
-      case offenders =>
-        print_bad("The following entries are not in the AFP chapter:")
-        offenders.foreach { entry => println(s"""  $entry""") }
-        false
-    }
+  val check_paths = new Check[(String, Path)](
+    run = { (tree, selected) =>
+      selected.flatMap { name =>
+        val info = tree(name)
+        val dir = info.dir
+        if (dir.dir.expand.file != afp_dir.file)
+          Some((name, dir))
+        else
+          None
+      }
+    },
+    failure_msg = "The following sessions are in the wrong directory:",
+    failure_format = { case (session, dir) => s"""$session ($dir)""" }
+  )
 
-  def check_groups(tree: Sessions.Structure, selected: List[String]): Boolean =
-    selected.flatMap { name =>
-      val info = tree(name)
-      if (!info.groups.toSet.subsetOf(Set("AFP", "slow", "very_slow")) ||
-          !info.groups.contains("AFP"))
-        Some((name, info.groups))
-      else
-        None
-    } match {
-      case Nil =>
-        print_good("All sessions have correct groups.")
-        true
-      case offenders =>
-        print_bad("The following sessions have wrong groups:")
-        offenders.foreach { case (session, groups) =>
-          println(s"""  $session ${groups.mkString("{", ", ", "}")}""")
-        }
-        false
-    }
+  val check_chapter = new Check[String](
+    run = { (tree, selected) =>
+      selected.flatMap { name =>
+        val info = tree(name)
+        val entry = info.dir.base.implode
+        if (info.chapter != "AFP")
+          Some(entry)
+        else
+          None
+      }.distinct
+    },
+    failure_msg = "The following entries are not in the AFP chapter:",
+    failure_format = identity
+  )
 
+  val check_groups = new Check[(String, List[String])](
+    run = { (tree, selected) =>
+      selected.flatMap { name =>
+        val info = tree(name)
+        if (!info.groups.toSet.subsetOf(Set("AFP", "slow", "very_slow")) ||
+            !info.groups.contains("AFP"))
+          Some((name, info.groups))
+        else
+          None
+      }
+    },
+    failure_msg = "The following sessions have wrong groups:",
+    failure_format = { case (session, groups) => s"""$session ${groups.mkString("{", ", ", "}")}""" }
+  )
+
+  val check_presence = new Check[String](
+    run = { (tree, selected) =>
+      val fs_entries = File.read_dir(afp_dir).filterNot(excludes.contains)
+
+      fs_entries.flatMap { name =>
+        if (!selected.contains(name) || tree(name).dir.base.implode != name)
+          Some(name)
+        else
+          None
+      }
+    },
+    failure_msg = "The following entries (according to the file system) are not registered in ROOTS, or registered in the wrong ROOT:",
+    failure_format = identity
+  )
 
   def apply(args: List[String]): Unit =
   {
@@ -98,17 +111,23 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
     val selected = full_tree.build_selection(Sessions.Selection.empty)
 
     val checks = List(
-      check_timeout(full_tree, selected),
-      check_paths(full_tree, selected),
-      check_chapter(full_tree, selected),
-      check_groups(full_tree, selected))
+      check_timeout,
+      check_paths,
+      check_chapter,
+      check_groups,
+      check_presence)
 
-    print_good(s"${selected.length} sessions have been checked")
+    val bad = checks.exists(check => !check(full_tree, selected))
 
-    if (checks.exists(!_))
+    if (bad)
     {
       print_bad("Errors found.")
       System.exit(1)
+    }
+    else
+    {
+      print_good(s"${selected.length} sessions have been checked")
+      print_good(s"${checks.length} checks have found no errors")
     }
   }
 

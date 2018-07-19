@@ -1,7 +1,7 @@
 section {* A generic model for separation kernels \label{sect:generic} *}
 
 theory K
-  imports Main HOL.List HOL.Set HOL.Transitive_Closure List_Theorems Option_Binders
+  imports List_Theorems Option_Binders
 begin
 
 text {*

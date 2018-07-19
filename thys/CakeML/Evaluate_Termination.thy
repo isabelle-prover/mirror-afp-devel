@@ -8,9 +8,7 @@ begin
 
 case_of_simps fix_clock_alt_def: fix_clock.simps
 
-context begin
-
-private primrec size_exp' :: "exp \<Rightarrow> nat" where
+primrec size_exp' :: "exp \<Rightarrow> nat" where
 "size_exp' (Raise e) = Suc (size_exp' e)" |
 [simp del]: "size_exp' (Handle e pes) = Suc (size_exp' e + size_list (\<lambda>(p, es). Suc (size p + es)) (map (map_prod id size_exp') pes))" |
 "size_exp' (Con _ es) = Suc (size_list id (map size_exp' es))" |
@@ -26,26 +24,28 @@ private primrec size_exp' :: "exp \<Rightarrow> nat" where
 "size_exp' (Lit _) = 0" |
 "size_exp' (Var _) = 0"
 
-private lemma [simp]:
+lemma [simp]:
   "size_exp' (Mat e pes) = Suc (size_exp' e + size_list (size_prod size size_exp') pes)"
 apply (simp add: size_exp'.simps size_list_conv_sum_list)
 apply (rule arg_cong[where f = sum_list])
 apply auto
 done
 
-private lemma [simp]:
+lemma [simp]:
   "size_exp' (Handle e pes) = Suc (size_exp' e + size_list (size_prod size size_exp') pes)"
 apply (simp add: size_exp'.simps size_list_conv_sum_list)
 apply (rule arg_cong[where f = sum_list])
 apply auto
 done
 
-private lemma [simp]:
+lemma [simp]:
   "size_exp' (Letrec defs e) = Suc (size_exp' e + size_list (size_prod (\<lambda>_. 0) (size_prod (\<lambda>_. 0) size_exp')) defs)"
 apply (simp add: size_exp'.simps size_list_conv_sum_list)
 apply (rule arg_cong[where f = sum_list])
 apply auto
 done
+
+context begin
 
 private definition fun_evaluate_relation where
 "fun_evaluate_relation = inv_image (less_than <*lex*> less_than) (\<lambda>x.

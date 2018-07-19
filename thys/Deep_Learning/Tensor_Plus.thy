@@ -3,7 +3,7 @@
 section \<open>Tensor Addition\<close>
 
 theory Tensor_Plus
-imports Tensor HOL.Option Tensor_Subtensor
+imports Tensor_Subtensor
 begin
 
 (* Problem: typeclass plus only has one zero element. If this is the empty tensor, other zero tensors cannot be of rank 0.*)

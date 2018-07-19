@@ -4,6 +4,6 @@
 #
 # DESCRIPTION: pie chart with Mercurial churn statistics
 
-ALIAS="$AFP_BASE/admin/user-aliases"
+ALIAS="$AFP_BASE/etc/user-aliases"
 
 isabelle churn_pie "$ALIAS" "$@"

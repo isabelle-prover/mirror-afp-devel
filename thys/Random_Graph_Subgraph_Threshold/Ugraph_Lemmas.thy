@@ -4,7 +4,6 @@ theory Ugraph_Lemmas
 imports
   Prob_Lemmas
   Girth_Chromatic.Girth_Chromatic
-  HOL.Lattices_Big
 begin
 
 text{* The complete graph is a graph where all possible edges are present. It is wellformed by

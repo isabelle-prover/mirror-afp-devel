@@ -7,7 +7,7 @@ subsection \<open>Compare Instance for Real Numbers\<close>
 theory Compare_Real
 imports
   Compare_Generator
-  HOL.Real
+  Complex_Main
 begin
   
 derive (linorder) compare_order real

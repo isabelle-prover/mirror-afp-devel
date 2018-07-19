@@ -215,14 +215,12 @@ def add_status(entries, status):
             entries[e]['status'] = "skipped"
 
 def main():
-    usage = "sitegen.py [-h] [--check] [--templates TEMPLATES_DIR --dest DEST_DIR] [--status STATUS_FILE] [--deps DEPS_FILE] [--no-warn] [--debug] METADATA_DIR THYS_DIR"
+    usage = "sitegen.py [-h] [--templates TEMPLATES_DIR --dest DEST_DIR] [--status STATUS_FILE] [--deps DEPS_FILE] METADATA_DIR THYS_DIR"
     parser = argparse.ArgumentParser(usage=usage)
     parser.add_argument("metadata_dir", metavar="METADATA_DIR", action="store",
                         help="metadata location")
     parser.add_argument("thys_dir", metavar="THYS_DIR", action="store",
                         help="directory with afp entries")
-    parser.add_argument("--check", action="store_true", dest="do_check",
-                        help="compare the contents of the metadata file with actual file system contents")
     parser.add_argument("--templates", action="store", dest="templates_dir",
                         help="directory with Jinja2 templates")
     parser.add_argument("--dest", action="store", dest="dest_dir",
@@ -231,10 +229,6 @@ def main():
                         help="status file location (devel)")
     parser.add_argument("--deps", action="store", dest="deps_file",
                         help="dependencies file location")
-    parser.add_argument("--no-warn", action="store_false", dest="enable_warnings",
-                        help="disable output of warnings")
-    parser.add_argument("--debug", action="store_true", dest="enable_debug",
-                        help="display debug output")
 
     parser.parse_args(namespace=options)
     options.is_devel = options.status_file is not None
@@ -266,11 +260,10 @@ def main():
         entries[e]['used-by'] = list(map(str, afp_dict[e].used))
 
     # perform check
-    if options.do_check:
-        count = check_fs(entries, options.thys_dir)
-        output = "Checked directory {0}. Found {1} warnings.".format(options.thys_dir, count)
-        color = 'yellow' if count > 0 else 'green'
-        print(colored(output, color, attrs=['bold']))
+    count = check_fs(entries, options.thys_dir)
+    output = "Checked directory {0}. Found {1} warnings.".format(options.thys_dir, count)
+    color = 'yellow' if count > 0 else 'green'
+    print(colored(output, color, attrs=['bold']))
 
     # perform generation
     if options.dest_dir:

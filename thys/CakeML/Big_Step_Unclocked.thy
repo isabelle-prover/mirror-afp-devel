@@ -439,9 +439,9 @@ done
 end
 
 lemma unclocked_eq:
-  "evaluate_list v s es bv \<longleftrightarrow> BigStep.evaluate_list False v s es bv"
-  "evaluate v s e bv' \<longleftrightarrow> BigStep.evaluate False v s e bv'"
-by (auto intro: unclocked_sound unclocked_complete)
+  "evaluate_list = BigStep.evaluate_list False"
+  "evaluate = BigStep.evaluate False"
+by (auto intro: unclocked_sound unclocked_complete intro!: ext)
 
 lemma unclocked_determ:
   "evaluate_list env s es r2a \<Longrightarrow> evaluate_list env s es r2b \<Longrightarrow> r2a = r2b"

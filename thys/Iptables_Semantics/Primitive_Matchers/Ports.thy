@@ -1,5 +1,5 @@
 theory Ports
-imports HOL.String 
+imports
   "HOL-Word.Word"
   "../Common/WordInterval_Lists"
   L4_Protocol_Flags

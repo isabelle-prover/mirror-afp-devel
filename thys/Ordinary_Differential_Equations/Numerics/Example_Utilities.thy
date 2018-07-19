@@ -1298,6 +1298,37 @@ theorem solves_poincare_map_aform':
         flow1_of_vec1_times)
   done
 
+theorem solves_poincare_map_onto_aform:
+  "solves_poincare_map_onto_aform optns ode_fas safe_form guards ivl sctn roi XS RET dRET\<Longrightarrow>
+    (\<And>X. X \<in> set XS \<Longrightarrow> aform.c1_info_invare DIM('a) X) \<Longrightarrow>
+    length ode_fas = DIM('a) \<Longrightarrow>
+    length (normal sctn) = DIM('a) \<Longrightarrow>
+    length (fst ivl) = DIM('a) \<Longrightarrow>
+    length (snd ivl) = DIM('a) \<Longrightarrow>
+    (\<And>a xs b ba ro.
+        (xs, ro) \<in> set guards \<Longrightarrow>
+        ((a, b), ba) \<in> set xs \<Longrightarrow>
+        length a = DIM('a) \<and>
+        length b = DIM('a) \<and> length (normal ba) = DIM('a)) \<Longrightarrow>
+    length (fst RET) = CARD('n) \<Longrightarrow> length (snd RET) = CARD('n) \<Longrightarrow>
+    aform.lvivl'_invar (CARD('n) * CARD('n)) dRET \<Longrightarrow>
+    poincare_mapsto
+     ((set_of_lvivl ivl::('a set)) \<inter> plane_of (map_sctn eucl_of_list sctn))
+     (aform.c1_info_of_apprse XS)
+     UNIV
+     (aform.Csafe ode_fas safe_form -
+      set_of_lvivl ivl \<inter> plane_of (map_sctn eucl_of_list sctn))
+     (set_of_lvivl RET \<times> blinfuns_of_lvivl' dRET)"
+  apply (transfer fixing: optns ode_fas safe_form guards ivl sctn roi XS RET dRET)
+  subgoal
+    using aform.solves_poincare_map_onto[of optns ode_fas safe_form guards ivl sctn roi XS "fst RET" "snd RET" dRET, where 'n='n,
+          unfolded aform.poincare_maps_onto_def]
+    using vflow_eq vex_ivl_eq vflowsto_eq
+    apply (subst vpoincare_mapsto_eq[symmetric])
+    by (auto intro!: closed_Int simp: set_of_lvivl_def set_of_ivl_def blinfun_of_vmatrix_image
+        flow1_of_vec1_times)
+  done
+
 end
 
 end
@@ -1771,6 +1802,9 @@ definition "solves_one_step_until_time_aform_fo soptns a b c d e f g =
 definition "solves_poincare_map_aform'_fo soptns a b c d e f g h i j =
   file_output (String.implode (fst soptns)) (\<lambda>pf. solves_poincare_map_aform' (snd soptns pf) a b c d e f g h i j)"
 
+definition "solves_poincare_map_onto_aform_fo soptns a b c d e f g h i =
+  file_output (String.implode (fst soptns)) (\<lambda>pf. solves_poincare_map_onto_aform (snd soptns pf) a b c d e f g h i)"
+
 lemma solves_one_step_until_time_aform_foI:
   "solves_one_step_until_time_aform (snd optns (\<lambda>_. ())) a b c d e f g"
   if "solves_one_step_until_time_aform_fo optns a b c d e f g"
@@ -1784,6 +1818,14 @@ lemma solves_poincare_map_aform'_foI:
   if "solves_poincare_map_aform'_fo optns a b c d e f g h i j"
   using that
   by (auto simp: solves_poincare_map_aform'_fo_def file_output_def Print.file_output_def
+      print_def[abs_def]
+      split: if_splits)
+
+lemma solves_poincare_map_onto_aform_foI:
+  "solves_poincare_map_onto_aform (snd optns (\<lambda>_. ())) a b c d e f g h i"
+  if "solves_poincare_map_onto_aform_fo optns a b c d e f g h i"
+  using that
+  by (auto simp: solves_poincare_map_onto_aform_fo_def file_output_def Print.file_output_def
       print_def[abs_def]
       split: if_splits)
 
@@ -2324,6 +2366,82 @@ proof -
     by (auto simp: poincare_mapsto_def)
 qed
 
+definition "poincare_map_from_outside = poincare_map"
+
+theorem poincare_maps_onto_aformI:
+  assumes "TAG_optns optns"
+  assumes "TAG_reach_optns roi"
+  assumes "TAG_sctn mirrored"
+  assumes D: "D = DIM('a)"
+  assumes guards: "guards_invar DIM('a) guards"
+  and P: "P = {eucl_of_list lP .. eucl_of_list uP}"
+  and plane: "uP ! n = lP ! n"
+  and ode_fas: "length ode_fas = DIM('a)"
+  and X0: "X0 \<subseteq> {eucl_of_list lX0 .. eucl_of_list uX0}"
+  and nD: "n < DIM('a)"
+  and R: "{eucl_of_list lR .. eucl_of_list uR} \<subseteq> R"
+  and lens:
+    "length (lP) = DIM('a)" "length (uP) = DIM('a)"
+    "length (lX0) = DIM('a)" "length (uX0) = DIM('a)"
+    "length (lR) = DIM('a)" "length (uR) = DIM('a)"
+  and solves:
+    "solves_poincare_map_onto_aform_fo optns ode_fas safe_form
+      guards
+      (lP, uP)
+      (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))
+      roi
+      [((1,1), aforms_of_ivls lX0 uX0, None)]
+      (lR, uR)
+      None"
+shows "\<forall>x\<in>X0. returns_to P x \<and> poincare_map_from_outside P x \<in> R"
+proof -
+  note solves = solves[unfolded solves_poincare_map_onto_aform_fo_def file_output_iff]
+  have 1: "\<And>X. X \<in> set [((1::ereal, 1::ereal), aforms_of_ivls lX0 uX0, None)] \<Longrightarrow>
+      aform.c1_info_invare DIM('a) X"
+    for X
+    by (auto simp: aform.c1_info_invare_def aform.c1_info_invar_def lens)
+  have 2: "length (normal ((mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n))))) = DIM('a)"
+    by (auto simp: D mirrored_sctn_def)
+  have 3: "length (fst (lP, uP)) = DIM('a)" "length (snd (lP, uP)) = DIM('a)"
+    by (auto simp: lens)
+  from guards have guards: "(xs, ro) \<in> set guards \<Longrightarrow>
+       ((a, b), ba) \<in> set xs \<Longrightarrow>
+       length a = DIM('a) \<and>
+       length b = DIM('a) \<and> length (normal ba) = DIM('a)" for xs ro a b ba
+    by (auto simp: guards_invar_def)
+  have 5: "length (fst (lR, uR)) = CARD('n)" "length (snd (lR, uR)) = CARD('n)"
+    "aform.lvivl'_invar (CARD('n) * CARD('n)) None"
+    by (auto simp: lens)
+  have "poincare_mapsto
+    (set_of_lvivl (lP, uP) \<inter>
+      plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
+    (aform.c1_info_of_apprse [((1, 1), aforms_of_ivls lX0 uX0, None)])
+    UNIV
+    (aform.Csafe ode_fas safe_form -
+      set_of_lvivl (lP, uP) \<inter>
+      plane_of (map_sctn eucl_of_list (mirrored_sctn mirrored (Sctn (unit_list D n) (lP ! n)))))
+     (set_of_lvivl (lR, uR) \<times> blinfuns_of_lvivl' None)"
+    by (rule solves_poincare_map_onto_aform[OF solves, OF 1 ode_fas 2 3 guards 5])
+  then have "poincare_mapsto P (X0 \<times> UNIV::('a \<times> ('a \<Rightarrow>\<^sub>L 'a)) set) UNIV UNIV (R \<times> UNIV)"
+    apply (rule poincare_mapsto_subset)
+    subgoal using X0
+      apply (auto simp: aform.c1_info_of_apprse_def aform.c1_info_of_appre_def
+          aform.c1_info_of_appr_def)
+      apply (rule image_eqI) apply (rule eucl_of_list_list_of_eucl[symmetric])
+      apply (rule aforms_of_ivls)
+      by (auto simp add: lens subset_iff le_eucl_of_list_iff eucl_of_list_le_iff)
+    subgoal by simp
+    subgoal using R by (auto simp: set_of_lvivl_def set_of_ivl_def)
+    subgoal by simp
+    subgoal
+      using assms
+      by (fastforce simp add: P set_of_lvivl_def set_of_ivl_def plane_of_def
+          le_eucl_of_list_iff eucl_of_list_le_iff mirrored_sctn_def mirror_sctn_def)  
+    done
+  then show "\<forall>x\<in>X0. returns_to P x \<and> poincare_map_from_outside P x \<in> R"
+    by (auto simp: poincare_mapsto_def poincare_map_from_outside_def)
+qed
+
 end
 
 lemmas [simp] = length_approxs
@@ -2336,6 +2454,7 @@ ML \<open>val ode_numerics_conv = @{computation_check
 
     solves_one_step_until_time_aform_fo
     solves_poincare_map_aform'_fo
+    solves_poincare_map_onto_aform_fo
 
     num_options
     num_options_c1
@@ -2667,6 +2786,7 @@ lemmas [solves_one_step_ivl_thms] =
     of optns _ _ _ _ _ _ _ _ _ _ _ _ _ _ optns for optns]
 
 lemmas [solves_one_step_ivl_thms] = solves_poincare_map_aform'I
+  poincare_maps_onto_aformI
 
 end
 
@@ -2687,7 +2807,11 @@ named_theorems poincare_tac_theorems
 
 lemmas [DIM_simps] = one_less_numeral_iff rel_simps
 
+ML \<open>Config.put\<close>
+
 ML \<open>
+val cfg_trace = Attrib.setup_config_bool @{binding ode_numerics_trace} (K false)
+
 fun mk_proj (m, n, s) = HOLogic.mk_tuple [mk_nat m, mk_nat n, HOLogic.mk_string s]
 fun mk_projs projs = HOLogic.mk_list @{typ "nat \<times> nat \<times> string"} (map mk_proj projs)
 
@@ -2713,11 +2837,16 @@ fun TAG_optns_c1_thm p m N atol projs ds filename ctxt =
               mk_string_list ds)
           |> Thm.cterm_of ctxt)]) @{thm TAG_optnsI}
 
+fun get_tracing_tac ctxt = if Config.get ctxt cfg_trace then print_tac ctxt else K all_tac
+fun get_tracing_tac' ctxt = fn s => K (get_tracing_tac ctxt s)
+
 fun ode_bnds_tac ode_def p m N atol projs filename ctxt =
   let
     val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
-  in
-         resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+    val tracing_tac' = get_tracing_tac' ctxt
+  in tracing_tac' "solves_one_step_ivl_thms"
+    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+    THEN' tracing_tac' "resolved solves_one_step_ivl_thms"
     THEN' resolve_tac ctxt [TAG_optns_thm p m N atol projs filename ctxt]
     THEN' SOLVED' (real_subset_approx_tac ctxt p)
     THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
@@ -2727,15 +2856,19 @@ fun ode_bnds_tac ode_def p m N atol projs filename ctxt =
     THEN' SOLVED' (DIM_tac ctxt)
     THEN' SOLVED' (DIM_tac ctxt)
     THEN' SOLVED' (DIM_tac ctxt)
+    THEN' tracing_tac' "rewrite ode_def"
     THEN' CONVERSION (Simplifier.rewrite (empty_simpset ctxt addsimps [ode_def]))
+    THEN' tracing_tac' "ode_numerics_tac"
     THEN' ode_numerics_tac ctxt
   end
 
 fun ode'_bnds_tac ode_def p m N atol projs ds filename ctxt =
   let
     val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
-  in
-         resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+    val tracing_tac' = get_tracing_tac' ctxt
+  in tracing_tac' "solves_one_step_ivl_thms"
+    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+    THEN' tracing_tac' "resolved solves_one_step_ivl_thms"
     THEN' resolve_tac ctxt [TAG_optns_c1_thm p m N atol projs ds filename ctxt]
     THEN' SOLVED' (real_subset_approx_tac ctxt p)
     THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
@@ -2749,21 +2882,29 @@ fun ode'_bnds_tac ode_def p m N atol projs ds filename ctxt =
     THEN' SOLVED' (DIM_tac ctxt)
     THEN' SOLVED' (DIM_tac ctxt)
     THEN' SOLVED' (DIM_tac ctxt)
+    THEN' tracing_tac' "rewrite ode_def"
     THEN' CONVERSION (Simplifier.rewrite (empty_simpset ctxt addsimps [ode_def]))
+    THEN' tracing_tac' "ode_numerics_tac"
     THEN' ode_numerics_tac ctxt
   end
 
 fun poincare_bnds_tac ode_def p m N atol projs filename ctxt =
   let
     val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
-  in
-         resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+    val tracing_tac' = get_tracing_tac' ctxt
+  in  tracing_tac' "solves_one_step_ivl_thms"
+    THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
+    THEN' tracing_tac' "resolved solves_one_step_ivl_thms"
     THEN' resolve_tac ctxt [TAG_optns_thm p m N atol projs filename ctxt]
+    THEN' tracing_tac' "poincare_tac_theorems"
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
     THEN' SOLVED' (DIM_tac ctxt)
+    THEN' tracing_tac' "poincare_tac_theorems"
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
+    THEN' tracing_tac' "poincare_tac_theorems"
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
+    THEN' tracing_tac' "nth_list_eq_theorems"
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems nth_list_eq_theorems})
     THEN' SOLVED' (DIM_tac ctxt)
     THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
@@ -2775,7 +2916,9 @@ fun poincare_bnds_tac ode_def p m N atol projs filename ctxt =
     THEN' SOLVED' (DIM_tac ctxt)
     THEN' SOLVED' (DIM_tac ctxt)
     THEN' SOLVED' (DIM_tac ctxt)
+    THEN' tracing_tac' "rewrite ode_def"
     THEN' CONVERSION (Simplifier.rewrite (empty_simpset ctxt addsimps [ode_def]))
+    THEN' tracing_tac' "ode_numerics_tac"
     THEN' ode_numerics_tac ctxt
   end
 

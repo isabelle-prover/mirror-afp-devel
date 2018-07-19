@@ -14,7 +14,6 @@ text \<open>We define a class which provides tests whether a number is rational,
 
 theory Is_Rat_To_Rat
 imports 
-  HOL.Complex
   Sqrt_Babylonian.Sqrt_Babylonian_Auxiliary
 begin
 

@@ -5,7 +5,7 @@
 chapter {* Test cases *}
 
 theory Native_Word_Test imports
-  Uint64 Uint32 Uint16 Uint8 Uint Native_Cast
+  Uint64 Uint32 Uint16 Uint8 Uint Native_Cast_Uint
   "HOL-Library.Code_Test"
 begin
 
@@ -440,7 +440,6 @@ where "test_casts'' \<longleftrightarrow>
   map uint32_of_uint64 [10, 0, 0xFFFFFFFE, 0xFFFFFFFFFFFFFFFF] = [10, 0, 0xFFFFFFFE, 0xFFFFFFFF] \<and>
   map uint64_of_uint32 [10, 0, 0xFFFFFFFF] = [10, 0, 0xFFFFFFFF]"
 
-
 export_code test_casts test_casts'' checking SML Haskell? Scala
 export_code test_casts'' checking OCaml?
 export_code test_casts' checking Haskell? Scala
@@ -459,5 +458,30 @@ ML {*
   val true = @{code test_casts}
   val true = @{code test_casts''}
 *}
+
+definition test_casts_uint :: bool where
+  "test_casts_uint \<longleftrightarrow>
+  map uint_of_uint32 ([0, 10] @ (if dflt_size < 32 then [1 << (dflt_size - 1), 0xFFFFFFFF] else [0xFFFFFFFF])) = 
+  [0, 10] @ (if dflt_size < 32 then [1 << (dflt_size - 1), (1 << dflt_size) - 1] else [0xFFFFFFFF]) \<and>
+  map uint32_of_uint [0, 10, if dflt_size < 32 then 1 << (dflt_size - 1) else 0xFFFFFFFF] =
+  [0, 10, if dflt_size < 32 then 1 << (dflt_size - 1) else 0xFFFFFFFF] \<and>
+  map uint_of_uint64 [0, 10, 1 << (dflt_size - 1), 0xFFFFFFFFFFFFFFFF] =
+  [0, 10, 1 << (dflt_size - 1), (1 << dflt_size) - 1] \<and>
+  map uint64_of_uint [0, 10, 1 << (dflt_size - 1)] =
+  [0, 10, 1 << (dflt_size - 1)]"
+
+definition test_casts_uint' :: bool where
+  "test_casts_uint' \<longleftrightarrow>
+  map uint_of_uint16 [0, 10, 0xFFFF] = [0, 10, 0xFFFF] \<and>
+  map uint16_of_uint [0, 10, 0xFFFF] = [0, 10, 0xFFFF]"
+
+definition test_casts_uint'' :: bool where
+  "test_casts_uint'' \<longleftrightarrow>
+  map uint_of_uint8 [0, 10, 0xFF] = [0, 10, 0xFF] \<and>
+  map uint8_of_uint [0, 10, 0xFF] = [0, 10, 0xFF]"
+
+test_code "test_casts_uint''" in PolyML MLton SMLNJ GHC Scala
+
+test_code "test_casts_uint'" in GHC Scala
 
 end

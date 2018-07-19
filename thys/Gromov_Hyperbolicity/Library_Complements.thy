@@ -92,7 +92,7 @@ proof -
   have "v > 0" using assms
     by (metis (full_types) dual_order.strict_implies_order le_less_linear mult_nonneg_nonpos not_one_le_zero)
   then have *: "sqrt u * sqrt v = 1"
-    using assms by (metis real_sqrt_mult_distrib2 real_sqrt_one)
+    using assms by (metis real_sqrt_mult real_sqrt_one)
   have "(sqrt u * x - sqrt v * y)^2 \<ge> 0" by auto
   then have "u * x^2 + v * y^2 - 2 * 1 * x * y \<ge> 0"
     unfolding power2_eq_square *[symmetric] using \<open>u>0\<close> \<open>v > 0\<close> by (auto simp add: algebra_simps)
@@ -110,7 +110,7 @@ proof -
   have *: "DERIV f x :> 2 - 2 * ln x / x" if "x > 0" for x::real
     unfolding f_def using that by (auto intro!: derivative_eq_intros)
   have "f 1 \<le> f x" if "x \<ge> 1" for x
-  proof (rule DERIV_nonneg_imp_nondecreasing[OF that], safe)
+  proof (rule DERIV_nonneg_imp_nondecreasing[OF that])
     fix t::real assume "t \<ge> 1"
     show "\<exists>y. (f has_real_derivative y) (at t) \<and> 0 \<le> y"
       apply (rule exI[of _ "2 - 2 * ln t / t"])

@@ -1,6 +1,5 @@
 theory Nominal2_Abs
 imports Nominal2_Base
-        HOL.Quotient
         "HOL-Library.Quotient_List"
         "HOL-Library.Quotient_Product"
 begin

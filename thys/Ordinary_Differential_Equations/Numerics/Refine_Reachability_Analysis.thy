@@ -2283,9 +2283,14 @@ locale approximate_sets_ode_slp' = approximate_sets_ode_slp\<comment> \<open>TOD
     and optns = "optns::'b numeric_options"
     for ode_e safe_form optns
     +
-  fixes ode_slp' euler_incr_slp' euler_slp' rk2_slp'::slp and
+  fixes c1_slps::"(slp * slp * slp * slp) option" and
     solve_poincare_slp::"slp list"
 begin
+
+definition "ode_slp' = (fst) (the c1_slps)"
+definition "euler_incr_slp' = (fst o snd) (the c1_slps)"
+definition "euler_slp' =      (fst o snd o snd) (the c1_slps)"
+definition "rk2_slp' =        (snd o snd o snd) (the c1_slps)"
 
 sublocale var: approximate_sets_ode_slp
   where ode_e = ode_e'
@@ -2722,10 +2727,13 @@ definition "vwd_step TYPE('n::enum) \<longleftrightarrow>
    \<and> euler_slp_eq euler_slp D
    \<and> euler_incr_slp_eq euler_incr_slp D
    \<and> sps_eq
-   \<and> var.ode_slp_eq ode_slp'
-   \<and> var.rk2_slp_eq rk2_slp' (D + D * D)
-   \<and> var.euler_slp_eq euler_slp' (D + D * D)
-   \<and> var.euler_incr_slp_eq euler_incr_slp' (D + D * D)"
+   \<and> (case c1_slps of Some (a, b, c, d) \<Rightarrow>
+       var.ode_slp_eq a \<and>
+       var.euler_incr_slp_eq b (D + D * D) \<and>
+       var.euler_slp_eq c (D + D * D) \<and>
+       var.rk2_slp_eq d (D + D * D)
+      | None \<Rightarrow> True
+      )"
 
 lemma
   vwd_stepD:
@@ -2738,21 +2746,29 @@ lemma
     "rk2_slp_eq rk2_slp D"
     "euler_slp_eq euler_slp D"
     "euler_incr_slp_eq euler_incr_slp D"
-    "var.ode_slp_eq ode_slp'"
+  using assms by (auto simp: vwd_step_def)
+
+definition "has_c1_slps \<longleftrightarrow> c1_slps \<noteq> None"
+
+lemma vwd_stepD2:
+  assumes "vwd_step TYPE('n::enum)" "has_c1_slps"
+  shows "var.ode_slp_eq ode_slp'"
     "var.rk2_slp_eq rk2_slp' (D + D * D)"
     "var.euler_slp_eq euler_slp' (D + D * D)"
     "var.euler_incr_slp_eq euler_incr_slp' (D + D * D)"
-  using assms by (auto simp: vwd_step_def)
+  using assms by (auto simp: vwd_step_def ode_slp'_def rk2_slp'_def euler_slp'_def
+      euler_incr_slp'_def has_c1_slps_def split: option.splits)
 
 lemma vwd_step[refine_vcg, intro]:
-  assumes "vwd_step TYPE('n::enum)"
+  assumes "vwd_step TYPE('n::enum)" has_c1_slps
   shows "var.wd_step TYPE('n::enum vec1)"
   using assms
-  by (auto simp: var.wd_step_def vwd_step_def)
+  unfolding var.wd_step_def 
+  by (auto simp: vwd_step_def ode_slp'_def has_c1_slps_def rk2_slp'_def euler_slp'_def euler_incr_slp'_def split: option.splits)
 
 lemma choose_step'_flowpipe:
-  assumes wd[refine_vcg]: "vwd_step TYPE('n::enum)"
-  notes wd' = vwd_stepD[OF wd]
+  assumes wd[refine_vcg]: "vwd_step TYPE('n::enum)" and nn[refine_vcg]: "has_c1_slps"
+  notes wd' = vwd_stepD[OF wd] vwd_stepD2[OF wd nn]
   assumes safe: "fst ` X0 \<subseteq> Csafe"
   shows "var.choose_step (X0::'n vec1 set) h \<le> SPEC (\<lambda>(h', _, RES_ivl, RES::'n vec1 set).
       0 < h' \<and> h' \<le> h \<and> flowpipe (flow1_of_vec1 ` X0) h' h' (flow1_of_vec1 ` RES_ivl) (flow1_of_vec1 ` RES))"
@@ -3273,6 +3289,7 @@ definition "choose_step1 (X::'n::enum eucl1 set) h = do {
       }
     | Some vX \<Rightarrow>
       do {
+        CHECKs (''choose_step1 without c1 slp'') (has_c1_slps);
         sX \<leftarrow> var.mk_safe vX;
         (h, err, CX', X') \<leftarrow> var.choose_step sX h;
         let CX' = flow1_of_vec1 ` (set_of_sappr (CX':::var.sappr_rel):::appr_rel);
@@ -3283,6 +3300,11 @@ definition "choose_step1 (X::'n::enum eucl1 set) h = do {
       }
   }"
 sublocale autoref_op_pat_def choose_step1 .
+
+lemma autoref_has_c1_slps[autoref_rules]: "(c1_slps \<noteq> None, has_c1_slps) \<in> bool_rel"
+  by (auto simp: has_c1_slps_def)
+
+lemma has_c1_slps_pat[autoref_op_pat_def]: "has_c1_slps \<equiv> OP has_c1_slps" by simp
 
 schematic_goal choose_step1_impl:
   assumes [autoref_rules_raw]: "DIM_precond TYPE((real, 'n::enum) vec) D"
@@ -3309,7 +3331,7 @@ lemma choose_step1_flowpipe[le, refine_vcg]:
       0 < h' \<and> h' \<le> h \<and> flowpipe X0 h' h' RES_ivl RES)"
   using assms
   unfolding choose_step1_def
-  apply (refine_vcg choose_step'_flowpipe[le] vwd_stepD)
+  apply (refine_vcg choose_step'_flowpipe[le] vwd_stepD[OF vwd] vwd_stepD2[OF vwd])
      apply (auto simp: image_image)
     apply (auto simp: wd_step_def vwd_stepD flowpipe0_imp_flowpipe env_len_def)
   by (auto simp: safe_eq vwd_step_def vec1_of_flow1_def)
@@ -9490,11 +9512,9 @@ sublocale approximate_sets_ode_slp'
     and euler_slp = euler_slp
     and rk2_slp = rk2_slp
 
-    and ode_slp' = ode_slp'
-    and euler_incr_slp' = euler_incr_slp'
-    and euler_slp' = euler_slp'
-    and rk2_slp' = rk2_slp'
     and solve_poincare_slp = solve_poincare_slp
+
+    and c1_slps = c1_slps
 
     for D::nat
     and ode_slp::slp
@@ -9502,11 +9522,9 @@ sublocale approximate_sets_ode_slp'
     and euler_slp::slp
     and rk2_slp::slp
 
-    and ode_slp'
-    and euler_incr_slp'
-    and euler_slp'
-    and rk2_slp'
     and solve_poincare_slp
+
+    and c1_slps
   by standard
 
 definition trace_str::"string\<Rightarrow>unit" where "trace_str _ = ()"
@@ -9516,42 +9534,52 @@ lemma trace_str_impl[autoref_rules]:
   shows "(\<lambda>s. tracing_fun optns s None, trace_str) \<in> string_rel \<rightarrow> Id"
   by auto
 
-definition "init_ode_solver (x::unit) = do {
+definition "init_ode_solver (c1::bool) = do {
   let D = length (ode_e);
   CHECK (\<lambda>_. trace_str ''init_ode_solver failed: rk2_param'')
     (0 < rk2_param optns \<and> rk2_param optns \<le> 1);
   CHECK (\<lambda>_. trace_str ''init_ode_solver failed: max_Var_floatariths'') (max_Var_floatariths ode_e \<le> D);
   CHECK (\<lambda>_. trace_str ''init_ode_solver failed: max_Var_form'') (max_Var_form safe_form \<le> D);
   CHECK (\<lambda>_. trace_str ''init_ode_solver failed: open_form safe_form'') (open_form safe_form);
+  let _ = trace_str ''# ode_slp ...'';
   let ode_slp = slp_of_fas ode_e;
+  let _ = trace_str ''# solve_poincare_slp ...'';
   let solve_poincare_slp = map (\<lambda>i. slp_of_fas (map fold_const_fa (solve_poincare_fas D i))) [0..<D];
 
+  let _ = trace_str ''# euler_incr_slp ...'';
   let euler_incr_slp = slp_of_fas (map fold_const_fa (euler_incr_fas (map floatarith.Var [0..<D]) (floatarith.Var (D))
       (map floatarith.Var [Suc D..<Suc (2*D)])));
+  let _ = trace_str ''# euler_slp ...'';
   let euler_slp = slp_of_fas (map fold_const_fa (euler_fas (map floatarith.Var [0..<D])
     (floatarith.Var (2*D)) (map floatarith.Var [D..<2*D])));
+  let _ = trace_str ''# rk2_slp ...'';
   let rk2_slp = slp_of_fas (map fold_const_fa (rk2_fas
     (floatarith.Var (2*D))
     (map floatarith.Var [0..<D])
     (floatarith.Var (2*D+1))
     (map floatarith.Var [D..<2*D])
     (floatarith.Var (2*D+2))));
-
-  let ode_slp' = slp_of_fas (ode_e' D);
-  let D2 = D + D * D;
-  let rk2_slp' = slp_of_fas
-    (map fold_const_fa (var.rk2_fas D (Var (2 * D2)) (map Var [0..<D2]) (Var (2 * D2 + 1))
-      (map Var [D2..<2 * D2]) (Var(2 * D2 + 2))));
-  let euler_slp' = slp_of_fas
-      (map fold_const_fa (var.euler_fas D (map floatarith.Var [0..<D2]) (Var (2 * D2))
-        (map Var [D2..<2 * D2])));
-  let euler_incr_slp' =
-   slp_of_fas
-    (map fold_const_fa (var.euler_incr_fas D (map floatarith.Var [0..<D2]) (Var (D2))
-      (map Var [Suc D2..<Suc (2 * D2)])));
-  RETURN (D, ode_slp,  euler_incr_slp,  euler_slp,  rk2_slp,
-             ode_slp', euler_incr_slp', euler_slp', rk2_slp',
-          solve_poincare_slp)
+  c1_slps \<leftarrow>
+    (if c1 then do {
+      let _ = trace_str ''# ode_slp' ...'';
+      let ode_slp' = slp_of_fas (ode_e' D);
+      let D2 = D + D * D;
+      let _ = trace_str ''# rk2_slp' ...'';
+      let rk2_slp' = slp_of_fas
+        (map fold_const_fa (var.rk2_fas D (Var (2 * D2)) (map Var [0..<D2]) (Var (2 * D2 + 1))
+          (map Var [D2..<2 * D2]) (Var(2 * D2 + 2))));
+      let _ = trace_str ''# euler_slp' ...'';
+      let euler_slp' = slp_of_fas
+          (map fold_const_fa (var.euler_fas D (map floatarith.Var [0..<D2]) (Var (2 * D2))
+            (map Var [D2..<2 * D2])));
+      let _ = trace_str ''# euler_incr_slp' ...'';
+      let euler_incr_slp' =
+       slp_of_fas
+        (map fold_const_fa (var.euler_incr_fas D (map floatarith.Var [0..<D2]) (Var (D2))
+          (map Var [Suc D2..<Suc (2 * D2)])))
+      in  RETURN (Some (ode_slp', euler_incr_slp', euler_slp', rk2_slp'))
+    } else RETURN None);
+  RETURN (D, ode_slp,  euler_incr_slp,  euler_slp,  rk2_slp, solve_poincare_slp, c1_slps)
 }"\<comment> \<open>TODO: use definitions for slps\<close>
 sublocale autoref_op_pat_def init_ode_solver .
 
@@ -9575,12 +9603,13 @@ lemma ode_autoref:
 
 schematic_goal init_ode_solver_autoref:
   assumes [autoref_rules]:
-    "(ui, u) \<in> unit_rel"
+    "(ui, u) \<in> bool_rel"
   notes [autoref_rules] = ode_autoref
   shows "(nres_of (?f), init_ode_solver $ u) \<in>
     \<langle>nat_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r
-                \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r
-     \<langle>\<langle>Id\<rangle>list_rel\<rangle>list_rel\<rangle>nres_rel"
+    \<langle>\<langle>Id\<rangle>list_rel\<rangle>list_rel \<times>\<^sub>r
+                \<langle>\<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel\<rangle>option_rel
+     \<rangle>nres_rel"
   unfolding autoref_tag_defs
   unfolding init_ode_solver_def
   including art
@@ -9590,11 +9619,10 @@ lemmas [autoref_rules] = init_ode_solveri.refine
 
 lemma init_ode_solver[le, refine_vcg]:
   assumes [simp]: "length ode_e = CARD('n::enum)"
-  shows "init_ode_solver u \<le> SPEC (\<lambda>(D, ode_slp, euler_incr_slp, euler_slp, rk2_slp,
-    ode_slp', euler_incr_slp', euler_slp', rk2_slp', solve_poincare_slp).
+  shows "init_ode_solver u \<le> SPEC (\<lambda>(D, ode_slp, euler_incr_slp, euler_slp, rk2_slp, solve_poincare_slp,
+    c1_slps).
       CARD('n) = D \<and>
-      vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp ode_slp' euler_incr_slp' euler_slp'
-        rk2_slp' solve_poincare_slp TYPE('n))"
+      vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps solve_poincare_slp TYPE('n))"
   unfolding init_ode_solver_def wd_step_def vwd_step_def
   apply (refine_vcg)
         apply (auto simp: var.rk2_slp_eq_def var.euler_slp_eq_def wd_def
@@ -9603,14 +9631,40 @@ lemma init_ode_solver[le, refine_vcg]:
   by (auto simp: var.euler_incr_slp_eq_def rk2_fas'_def euler_fas'_def euler_incr_fas'_def
       var.rk2_fas'_def var.euler_fas'_def var.euler_incr_fas'_def)
 
+definition [refine_vcg_def]: "has_c1_info X = SPEC (\<lambda>_. True)"
+
+lemma has_c1_info_pat[autoref_op_pat_def]: "has_c1_info \<equiv> OP has_c1_info" by simp
+
+lemma has_c1_info_autoref[autoref_rules]:
+  "(\<lambda>xs. if list_all (\<lambda>(_, _, c1). c1 \<noteq> None) xs then RETURN True else RETURN False, has_c1_info) \<in> clw_rel appr1e_rel \<rightarrow> \<langle>bool_rel\<rangle>nres_rel"
+  by (auto simp: has_c1_info_def nres_rel_def)
+
+lemma empty_symstart_dres_nres_rel:
+  "((\<lambda>x. dRETURN ([], [x])), empty_symstart::'n::enum eucl1 set\<Rightarrow>_) \<in>
+    (appr1e_rel) \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>dres_nres_rel"
+  using mk_coll[OF PREFER_I[of single_valued, OF sv_appr1e_rel[OF sv_appr1_rel]], param_fo, of x y for x and y::"'n eucl1 set"]
+  by (auto simp: mk_coll_def[abs_def] dres_nres_rel_def)
+
+lemma empty_symstart_nres_rel[autoref_rules]:
+  "((\<lambda>x. RETURN ([], [x])), empty_symstart::'n::enum eucl1 set\<Rightarrow>_) \<in>
+    appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>nres_rel"
+  using mk_coll[OF PREFER_I[of single_valued, OF sv_appr1e_rel[OF sv_appr1_rel]], param_fo, of x y for x and y::"'n eucl1 set"]
+  by (auto simp: mk_coll_def[abs_def] nres_rel_def)
+
+lemma empty_symstart_flowsto:
+  "X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow>
+    RETURN ({}, X0) \<le> SPEC (\<lambda>(CX, X). flowsto (X0 - {} \<times> UNIV) {0..} (CX \<times> UNIV) X)"
+  by (auto intro!: flowsto_self)
+
+subsection \<open>Poincare map returning to\<close>
 
 definition "poincare_onto_froma interrupt trap S guards ivl sctn ro (XS0::'n::enum eucl1 set) =
   do {
-    (D, ode_slp, euler_incr_slp, euler_slp, rk2_slp,
-       ode_slp', euler_incr_slp', euler_slp', rk2_slp', solve_poincare_slp) \<leftarrow> init_ode_solver ();
-    ASSERT (vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp ode_slp' euler_incr_slp' euler_slp'
-      rk2_slp' solve_poincare_slp TYPE('n));
-    OP poincare_onto_from $ D $ ode_slp $ euler_incr_slp $ euler_slp $ rk2_slp $ euler_incr_slp' $ euler_slp' $ rk2_slp' $
+    has_c1 \<leftarrow> has_c1_info XS0;
+    (D, ode_slp, euler_incr_slp, euler_slp, rk2_slp, solve_poincare_slp, c1_slps) \<leftarrow> init_ode_solver has_c1;
+    ASSERT (vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps
+      solve_poincare_slp TYPE('n));
+    OP poincare_onto_from $ D $ ode_slp $ euler_incr_slp $ euler_slp $ rk2_slp $ c1_slps $
        solve_poincare_slp $ interrupt $ trap $ S $ guards $ ivl $ sctn $ ro $ XS0
   }"
 sublocale autoref_op_pat_def poincare_onto_froma .
@@ -9637,12 +9691,10 @@ lemma poincare_onto_from_ivla_refinep[autoref_rules]:
   assumes "var.ncc_precond TYPE('n rvec)"
   assumes "var.ncc_precond TYPE('n vec1)"
   assumes "(Di, D) \<in> nat_rel"
-  shows "(\<lambda>ode_slp euler_incr_slp euler_slp rk2_slp euler_incr_slp' euler_slp'
-    rk2_slp' solve_poincare_slp symstartd trapi Si guardsi ivli sctni roi XSi.
-    nres_of (poincare_onto_from_impl Di ode_slp euler_incr_slp euler_slp rk2_slp euler_incr_slp'
-     euler_slp' rk2_slp' solve_poincare_slp symstartd Si guardsi ivli sctni roi XSi),
+  shows "(\<lambda>ode_slp euler_incr_slp euler_slp rk2_slp c1_slps solve_poincare_slp symstartd trapi Si guardsi ivli sctni roi XSi.
+    nres_of (poincare_onto_from_impl Di ode_slp euler_incr_slp euler_slp rk2_slp c1_slps solve_poincare_slp symstartd Si guardsi ivli sctni roi XSi),
           poincare_onto_from $ D)
-         \<in> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>\<langle>Id\<rangle>list_rel\<rangle>list_rel \<rightarrow>
+         \<in> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>\<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel\<rangle>option_rel \<rightarrow> \<langle>\<langle>Id\<rangle>list_rel\<rangle>list_rel \<rightarrow>
            (appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>dres_nres_rel) \<rightarrow>
            ghost_rel \<rightarrow>
            \<langle>lv_rel\<rangle>halfspaces_rel \<rightarrow>
@@ -9656,7 +9708,7 @@ lemma poincare_onto_from_ivla_refinep[autoref_rules]:
   by (force dest!: dres_nres_rel_nres_relD)
 sublocale autoref_op_pat_def poincare_onto_from .
 
-lemma wd_step_DIM_precond: "vwd_step D a b c d e f g h i TYPE('n::enum)\<Longrightarrow> DIM_precond TYPE('n rvec) D"
+lemma wd_step_DIM_precond: "vwd_step D a b c d e f TYPE('n::enum)\<Longrightarrow> DIM_precond TYPE('n rvec) D"
   by (auto simp: vwd_step_def wd_def)
 
 schematic_goal solve_poincare_map:
@@ -9680,12 +9732,80 @@ concrete_definition solve_poincare_map for symstartd Si guardsi ivli sctni roi X
 lemmas [autoref_rules] = solve_poincare_map.refine
 sublocale autoref_op_pat_def poincare_onto_froma .
 
+
+subsection \<open>Poincare map onto (from outside of target)\<close>
+
+definition "poincare_ontoa guards ivl sctn ro (XS0::'n::enum eucl1 set) =
+  do {
+    has_c1 \<leftarrow> has_c1_info XS0;
+    (D, ode_slp, euler_incr_slp, euler_slp, rk2_slp, solve_poincare_slp, c1_slps) \<leftarrow> init_ode_solver has_c1;
+    ASSERT (vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps
+      solve_poincare_slp TYPE('n));
+    OP poincare_onto_series $ D $ ode_slp $ euler_incr_slp $ euler_slp $ rk2_slp $ c1_slps $
+       solve_poincare_slp $ empty_symstart $ empty_trap $ guards $ XS0 $ ivl $ sctn $ ro
+  }"
+sublocale autoref_op_pat_def poincare_ontoa .
+
+lemma poincare_ontoa[le, refine_vcg]:
+  assumes [simp]: "length ode_e = CARD('n::enum)"
+  shows "poincare_ontoa guards ivl sctn ro (XS0::'n eucl1 set) \<le> SPEC
+     (\<lambda>P.
+        wd (length ode_e) TYPE((real, 'n) vec) \<and>
+        poincare_mapsto (ivl \<inter> plane_of sctn) XS0 UNIV (Csafe - ivl \<inter> plane_of sctn) P)"
+  unfolding poincare_ontoa_def autoref_tag_defs
+  by (refine_vcg) (auto dest!: vwd_stepD(1) simp: do_intersection_spec_def Int_def stable_on_def intro!: flowsto_self)
+
+lemma poincare_onto_series_refinep[autoref_rules]:
+  assumes "DIM_precond TYPE('n::enum rvec) D"
+  assumes "var.ncc_precond TYPE('n rvec)"
+  assumes "var.ncc_precond TYPE('n vec1)"
+  assumes "(Di, D) \<in> nat_rel"
+  shows "(\<lambda>ode_slp euler_incr_slp euler_slp rk2_slp c1_slps solve_poincare_slp symstart trap guards X0 ivl sctn ro.
+    nres_of (poincare_onto_series_impl Di ode_slp euler_incr_slp euler_slp rk2_slp c1_slps solve_poincare_slp symstart guards X0 ivl sctn ro),
+          poincare_onto_series $ D)
+         \<in> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>\<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel\<rangle>option_rel \<rightarrow> \<langle>\<langle>Id\<rangle>list_rel\<rangle>list_rel \<rightarrow>
+           (appr1e_rel \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>dres_nres_rel) \<rightarrow>
+            ghost_rel \<rightarrow>
+           \<langle>clw_rel (iplane_rel lvivl_rel) \<times>\<^sub>r reach_optns_rel\<rangle>list_rel \<rightarrow>
+           clw_rel (appr1e_rel::(_\<times>('n rvec \<times> _) set)set) \<rightarrow>
+           \<langle>lv_rel\<rangle>ivl_rel \<rightarrow>
+           \<langle>lv_rel\<rangle>sctn_rel \<rightarrow>
+           reach_optns_rel \<rightarrow>
+            \<langle>clw_rel appr1e_rel\<rangle>nres_rel"
+  using poincare_onto_series_impl.refine[OF assms(1,2,3) _ _ _ _ _ _ TRANSFER_I[OF order_refl]] assms(4)
+  by (auto dest!: dres_nres_rel_nres_relD)
+
+sublocale autoref_op_pat_def poincare_onto_from .
+
+schematic_goal solve_poincare_onto:
+  assumes [autoref_rules_raw]: "var.ncc_precond TYPE('n::enum rvec)"
+  assumes [autoref_rules_raw]: "var.ncc_precond TYPE('n::enum vec1)"
+  assumes [autoref_rules]: "(XSi, XS::'n eucl1 set) \<in> clw_rel appr1e_rel"
+    "(sctni, sctn) \<in> \<langle>lv_rel\<rangle>sctn_rel" "(ivli, ivl) \<in> lvivl_rel"
+    "(guardsi, guards) \<in> \<langle>clw_rel (iplane_rel lvivl_rel) \<times>\<^sub>r reach_optns_rel\<rangle>list_rel"
+    and [autoref_rules]: "(roi, ro) \<in> reach_optns_rel"
+  notes [autoref_rules_raw] = wd_step_DIM_precond
+  notes [autoref_rules] = empty_symstart_dres_nres_rel
+  shows "(nres_of (?f), poincare_ontoa $ guards $ ivl $ sctn $ ro $ (XS::'n::enum eucl1 set)) \<in>
+    \<langle>clw_rel appr1e_rel\<rangle>nres_rel"
+  unfolding autoref_tag_defs
+  unfolding poincare_ontoa_def
+  including art
+  by autoref_monadic
+concrete_definition solve_poincare_onto for guardsi ivli sctni roi XSi uses solve_poincare_onto
+lemmas [autoref_rules] = solve_poincare_onto.refine
+sublocale autoref_op_pat_def poincare_onto_froma .
+
+
+subsection \<open>One step method (reachability in time)\<close>
+
 definition "solve_one_step_until_timea (X0::'n::enum eucl1 set) CX t1 t2 =
   do {
-    (D, ode_slp, euler_incr_slp, euler_slp, rk2_slp,
-       ode_slp', euler_incr_slp', euler_slp', rk2_slp', solve_poincare_slp) \<leftarrow> init_ode_solver ();
-    ASSERT (vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp ode_slp' euler_incr_slp' euler_slp' rk2_slp' solve_poincare_slp TYPE('n));
-    OP one_step_until_time_ivl $ D $ euler_incr_slp $ euler_slp $ rk2_slp $ euler_incr_slp' $ euler_slp' $ rk2_slp' $ X0 $ CX $ t1 $ t2
+    has_c1 \<leftarrow> has_c1_info (mk_coll X0);
+    (D, ode_slp, euler_incr_slp, euler_slp, rk2_slp, solve_poincare_slp,
+       c1_slps) \<leftarrow> init_ode_solver has_c1;
+    ASSERT (vwd_step D ode_slp euler_incr_slp euler_slp rk2_slp c1_slps solve_poincare_slp TYPE('n));
+    OP one_step_until_time_ivl $ D $ euler_incr_slp $ euler_slp $ rk2_slp $ c1_slps $ X0 $ CX $ t1 $ t2
   }"
 sublocale autoref_op_pat_def solve_one_step_until_timea .
 
@@ -9694,10 +9814,10 @@ lemma one_step_until_time_ivl_impl_refinep[autoref_rules]:
   assumes "var.ncc_precond TYPE('n rvec)"
   assumes "var.ncc_precond TYPE('n vec1)"
   assumes "(Di, D) \<in> nat_rel"
-  shows "(\<lambda>euler_incr_slp euler_slp rk2_slp euler_incr_slp' euler_slp' rk2_slp' X0i histi t1i t2i.
-      nres_of (one_step_until_time_ivl_impl Di euler_incr_slp euler_slp rk2_slp euler_incr_slp' euler_slp' rk2_slp' X0i histi t1i t2i),
+  shows "(\<lambda>euler_incr_slp euler_slp rk2_slp c1_slps X0i histi t1i t2i.
+      nres_of (one_step_until_time_ivl_impl Di euler_incr_slp euler_slp rk2_slp c1_slps X0i histi t1i t2i),
    one_step_until_time_ivl $ D)
-         \<in> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow>
+         \<in> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>Id\<rangle>list_rel \<rightarrow> \<langle>\<langle>Id\<rangle>list_rel \<times>\<^sub>r \<langle>Id\<rangle>list_rel \<times>\<^sub>r\<langle>Id\<rangle>list_rel \<times>\<^sub>r\<langle>Id\<rangle>list_rel\<rangle>option_rel \<rightarrow>
         appr1e_rel \<rightarrow> bool_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel \<rightarrow>
   \<langle>appr1e_rel \<times>\<^sub>r \<langle>clw_rel (appr_rel::(_\<times>('n rvec) set)set)\<rangle>phantom_rel\<rangle>nres_rel"
   using one_step_until_time_ivl_impl.refine assms by force
@@ -9982,17 +10102,6 @@ proof -
     by (auto simp: solves_poincare_map_def nres_rel_def P_def X1_def)
 qed
 
-lemma empty_symstart_dres_nres_rel:
-  "((\<lambda>x. dRETURN ([], [x])), empty_symstart::'n::enum eucl1 set\<Rightarrow>_) \<in>
-    (appr1e_rel) \<rightarrow> \<langle>clw_rel appr_rel \<times>\<^sub>r clw_rel appr1e_rel\<rangle>dres_nres_rel"
-  using mk_coll[OF PREFER_I[of single_valued, OF sv_appr1e_rel[OF sv_appr1_rel]], param_fo, of x y for x and y::"'n eucl1 set"]
-  by (auto simp: mk_coll_def[abs_def] dres_nres_rel_def)
-
-lemma empty_symstart_flowsto:
-  "X0 \<subseteq> Csafe \<times> UNIV \<Longrightarrow>
-    RETURN ({}, X0) \<le> SPEC (\<lambda>(CX, X). flowsto (X0 - {} \<times> UNIV) {0..} (CX \<times> UNIV) X)"
-  by (auto intro!: flowsto_self)
-
 definition "solves_poincare_map' S = solves_poincare_map (\<lambda>x. dRETURN ([], [x])) [S]"
 
 lemma stable_on_empty[simp]: "stable_on A {}"
@@ -10027,7 +10136,6 @@ lemma solves_poincare_map'_ncc:
     folded solves_poincare_map'_def, simplified])
     auto
 
-
 definition "one_step_until_time_ivl_in_ivl X0 (t1::real) (t2::real) R dR =
   do {
     (X, CX) \<leftarrow> solve_one_step_until_timea X0 True t1 t2;
@@ -10037,7 +10145,9 @@ definition "one_step_until_time_ivl_in_ivl X0 (t1::real) (t2::real) R dR =
     CHECKs ''one_step_until_time_ivl_in_ivl: strange interval'' (l \<le> u);
     _ \<leftarrow> mk_safe (length ode_e) {l .. u};
     let _ = trace_set1 (ST ''final step to:'') (Some X);
+    let _ = trace_set (ST ''contained in?'') (Some {l .. u});
     let _ = print_set1 False X;
+    let _ = print_set False {l .. u};
     subset_spec1 X R dR
 }"
 sublocale autoref_op_pat_def one_step_until_time_ivl .
@@ -10105,6 +10215,117 @@ proof -
   finally show ?thesis
     using t R dR
     by (auto dest!: bspec[OF _ x0] bspec[where x=t] simp: vec1_of_flow1_def)
+qed
+
+subsection \<open>Poincare onto (from the outside)\<close>
+
+definition "poincare_onto_in_ivl
+                          (guards)                    \<comment> \<open>avoiding guards\<close>
+                          (ivl::'n rvec set)          \<comment> \<open>onto \<open>ivl\<close>\<close>
+                          sctn                        \<comment> \<open>which is part of \<open>sctn\<close>\<close>
+                          ro
+                          (XS0::'n::enum eucl1 set)
+                          P dP =
+  do {
+    RS \<leftarrow> poincare_ontoa guards ivl sctn ro XS0;
+    ASSERT (DIM_precond TYPE((real, 'n) vec) (length ode_e));
+    ((l, u), R) \<leftarrow> scaleR2_rep_coll RS;
+    CHECKs ''poincare_onto_in_ivl: there should not be scaleR2'' (l = 1 \<and> u = 1);
+    (l, u) \<leftarrow> ivl_rep P;
+    CHECKs ''poincare_onto_in_ivl: strange interval'' (l \<le> u);
+    (lR, uR) \<leftarrow> ivl_rep_of_set_coll (op_image_fst_coll R);
+    CHECKs ''poincare_onto_in_ivl: strange interval2'' (lR \<le> uR);
+    let _ = trace_set (ST ''final step to:'') (Some {lR .. uR});
+    let _ = trace_set (ST ''contained in?'') (Some {l .. u});
+    _ \<leftarrow> mk_safe (length ode_e) {l .. u};
+    subset_spec1_coll R P dP
+  }"
+sublocale autoref_op_pat_def poincare_onto_in_ivl .
+
+schematic_goal poincare_onto_in_ivl_impl:
+  assumes [autoref_rules_raw]: "ncc_precond TYPE('n::enum rvec)"
+  assumes [autoref_rules_raw]: "ncc_precond TYPE('n vec1)"
+  assumes [autoref_rules]: "(XSi, XS) \<in> clw_rel appr1e_rel"
+    and osctns[autoref_rules]: "(guardsi, guards) \<in> \<langle>clw_rel (iplane_rel lvivl_rel)\<times>\<^sub>rreach_optns_rel\<rangle>list_rel"
+    and civl[autoref_rules]: "(ivli, ivl::'n rvec set) \<in> lvivl_rel"
+    and csctns[autoref_rules]: "(sctni, sctn::'n rvec sctn) \<in> \<langle>lv_rel\<rangle>sctn_rel"
+    and [autoref_rules]: "(roi, ro) \<in> reach_optns_rel"
+      "(Pimpl, P::'n rvec set) \<in> lvivl_rel"
+      "(dPi, dP:: ((real, 'n) vec, 'n) vec set) \<in> \<langle>lvivl_rel\<rangle>(default_rel UNIV)"
+  notes [intro, simp] = list_set_rel_finiteD closed_ivl_rel[OF civl] closed_ivl_prod3_list_rel
+  shows "(nres_of ?r,
+    poincare_onto_in_ivl $ guards $ ivl $ sctn $ ro $ XS $ P $ dP) \<in>
+    \<langle>bool_rel\<rangle>nres_rel"
+  unfolding autoref_tag_defs
+  unfolding poincare_onto_in_ivl_def
+  including art
+  by autoref_monadic
+
+concrete_definition poincare_onto_in_ivl_impl for guardsi ivli sctni roi XSi Pimpl dPi
+  uses poincare_onto_in_ivl_impl
+lemmas [autoref_rules] = poincare_onto_in_ivl_impl.refine
+
+lemma poincare_onto_in_ivl[le, refine_vcg]:
+  assumes [simp]: "length ode_e = CARD('n::enum)"
+  shows "poincare_onto_in_ivl guards ivl sctn ro (XS0::'n::enum eucl1 set) P dP \<le>
+    SPEC (\<lambda>b. b \<longrightarrow> poincare_mapsto (ivl \<inter> plane_of sctn) (XS0) UNIV (Csafe - ivl \<inter> plane_of sctn) (flow1_of_vec1 ` (P \<times> dP)))"
+  unfolding poincare_onto_in_ivl_def
+  apply (refine_vcg, clarsimp_all)
+  apply (rule poincare_mapsto_subset)
+      apply assumption
+  by (auto simp: )
+
+definition "solves_poincare_map_onto guards ivli sctni roi XS P dP \<longleftrightarrow>
+  poincare_onto_in_ivl_impl guards ivli sctni roi XS P dP = dRETURN True"
+
+definition "poincare_maps_onto \<Sigma> X0 X1 \<longleftrightarrow> poincare_mapsto \<Sigma> X0 UNIV (Csafe - \<Sigma>) X1"
+
+theorem solves_poincare_map_onto_ncc:
+  fixes sctni pos ivli ssc XS ph rl ru dRi CXS X0
+  defines "P \<equiv> set_of_lvivl ivli \<inter> plane_of (map_sctn eucl_of_list sctni)"
+  defines "X0 \<equiv> c1_info_of_apprse XS"
+  defines "X1 \<equiv> flow1_of_vec1 ` ({eucl_of_list rl .. eucl_of_list ru} \<times> set_of_lvivl' dRi)"
+  assumes ncc: "var.ncc_precond TYPE('n::enum rvec)" "var.ncc_precond TYPE('n vec1)"
+  assumes ret: "solves_poincare_map_onto guards ivli sctni roi XS (rl, ru) dRi"
+  assumes invar: "\<And>X. X \<in> set XS \<Longrightarrow> c1_info_invare CARD('n) X"
+  assumes lens: "length ode_e = CARD('n)" "length (normal sctni) = CARD('n)" "length (fst ivli) = CARD('n)" "length (snd ivli) = CARD('n)"
+    "length rl = CARD('n)" "length ru = CARD('n)"
+     "lvivl'_invar (CARD('n)*CARD('n)) dRi"
+    "\<And>a xs b ba ro. (xs, ro) \<in> set guards \<Longrightarrow> ((a, b), ba) \<in> set xs \<Longrightarrow> length a = CARD('n) \<and> length b = CARD('n) \<and> length (normal ba) = CARD('n)"
+  shows "poincare_maps_onto P (X0::('n rvec \<times> _)set) X1"
+proof -
+  define guardsa::"('n rvec set \<times> 'a reach_options) list"  where "guardsa \<equiv> map (\<lambda>(x, y). (\<Union>x\<in>set x. case x of (x, y) \<Rightarrow> (case x of (x, y) \<Rightarrow> set_of_ivl (eucl_of_list x, eucl_of_list y)) \<inter> plane_of (map_sctn eucl_of_list y), y)) guards"
+  have spm:
+    "(XS, X0) \<in> clw_rel (appr1e_rel)"
+    "(guards, guardsa) \<in> \<langle>clw_rel (iplane_rel lvivl_rel) \<times>\<^sub>r reach_optns_rel\<rangle>list_rel"
+    "(ivli, set_of_lvivl ivli::'n rvec set) \<in> lvivl_rel"
+    "(sctni, map_sctn eucl_of_list sctni::'n rvec sctn) \<in> \<langle>lv_rel\<rangle>sctn_rel"
+    "(roi, roi) \<in> reach_optns_rel"
+    using lens
+    by (auto simp: X0_def X1_def P_def appr_rel_br set_rel_br
+        br_chain o_def clw_rel_br  lv_rel_def sctn_rel_br ivl_rel_br set_of_lvivl_def
+        halfspaces_rel_def list_set_rel_brp below_halfspaces_def ghost_relI
+        br_rel_prod br_list_rel guardsa_def Id_br inter_rel_br plane_rel_br
+        split: sctn.splits
+        intro!: brI list_allI clw_rel_appr1e_relI assms)
+
+  have ivls: "((rl, ru), {eucl_of_list rl .. eucl_of_list ru::'n rvec}) \<in> lvivl_rel"
+    "(dRi, set_of_lvivl' dRi::(('n rvec), 'n) vec set) \<in> \<langle>lvivl_rel\<rangle>default_rel UNIV"
+    by (auto intro!: lvivl_relI lvivl_default_relI lens simp: lens set_of_lvivl_def set_of_ivl_def
+        split: option.splits)
+
+  have pmspec: "poincare_onto_in_ivl $ guards $ ivl $ sctn $ ro $ XS0 $ IVL $ dIVL
+  \<le> SPEC (\<lambda>b. b \<longrightarrow> poincare_mapsto (ivl \<inter> plane_of sctn) (XS0) UNIV (Csafe - ivl \<inter> plane_of sctn)
+                      (flow1_of_vec1 ` (IVL \<times> dIVL)))"
+    for ivl::"'n rvec set" and sctn XS0 guards ro IVL dIVL
+    using poincare_onto_in_ivl[OF lens(1) order_refl, of guards ivl sctn ro XS0 IVL dIVL]
+    by auto
+  from nres_rel_trans2[OF
+      pmspec
+      poincare_onto_in_ivl_impl.refine[OF ncc spm(1-5) ivls]
+      ] ret
+  show ?thesis
+    by (auto simp: poincare_maps_onto_def solves_poincare_map_onto_def nres_rel_def P_def X1_def)
 qed
 
 end

@@ -10,7 +10,6 @@ URL="https://pypi.python.org/packages/d4/0c/9840c08189e030873387a73b90ada9818850
 set -e
 
 source "$(dirname "$0")/common"
-cd "$AFP_ROOT"
 
 USE_PYTHON_3=false
 
@@ -114,8 +113,8 @@ echo "Installing dependencies ..."
 "$PIP" install -q -r "$AFP_ROOT/admin/sitegen-req.txt"
 
 echo "Running sitegen ..."
-"$PYTHON" admin/sitegen-lib/sitegen.py --dest=web \
-                                       --templates=admin/sitegen-lib/templates \
-                                       --check \
-                                       --deps="$DEPENDENCIES_FILE" \
-                                       metadata thys "$@"
+"$PYTHON" "$AFP_ROOT/admin/sitegen-lib/sitegen.py" \
+  --dest="$AFP_ROOT/web" \
+  --templates="$AFP_ROOT/metadata/templates" \
+  --deps="$DEPENDENCIES_FILE" \
+  "$AFP_ROOT/metadata" "$AFP_ROOT/thys" "$@"

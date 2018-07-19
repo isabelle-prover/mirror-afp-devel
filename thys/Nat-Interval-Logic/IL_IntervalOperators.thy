@@ -555,10 +555,11 @@ corollary iT_Plus_neg_singleton2: "a < k \<Longrightarrow> {a} \<oplus>- k= {}"
 by (simp add: iT_Plus_neg_singleton)
 
 lemma iT_Plus_neg_finite_iff: "finite (I \<oplus>- k) = finite I"
-apply (simp add: iT_Plus_neg_image_conv)
-apply (simp add: inj_on_finite_image_iff inj_on_diff_nat cut_ge_mem_iff)
-apply (simp add: nat_cut_ge_finite_iff)
-done
+  apply (simp add: iT_Plus_neg_image_conv)
+  apply (subst inj_on_finite_image_iff)
+  apply (metis cut_geE inj_on_diff_nat)
+  apply (simp add: nat_cut_ge_finite_iff)
+  done
 
 lemma iT_Plus_neg_Min: "
   I \<oplus>- k \<noteq> {} \<Longrightarrow> iMin (I \<oplus>- k) = iMin (I \<down>\<ge> k) - k"

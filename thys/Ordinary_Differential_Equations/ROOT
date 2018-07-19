@@ -34,6 +34,11 @@ session "HOL-ODE-Examples" (AFP) = "HOL-ODE-Numerics" +
   theories
     ODE_Examples
 
+session "HOL-ODE-ARCH-COMP" (AFP) = "HOL-ODE-Numerics" +
+  options [timeout = 7200]
+  theories
+    "Ex/Examples_ARCH_COMP"
+
 session "Lorenz_C0" (AFP slow) = "Lorenz_Approximation" +
   options [timeout = 14400]
   theories

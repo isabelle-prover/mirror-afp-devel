@@ -91,7 +91,7 @@ proof -
     using assms
     by simp
   also have "... = sqrt (x*u^2) / u"
-    by (metis real_sqrt_mult_distrib2)
+    by (metis real_sqrt_mult)
   also have "... \<le> sqrtu (x*u^2) n / u"
     using assms
     by (simp add: divide_simps) (metis gen_sqrt_upper zero_le_mult_iff zero_le_power2)
@@ -193,7 +193,7 @@ proof -
     using assms
     by (simp add: divide_simps) (metis gen_sqrt_lower zero_le_mult_iff zero_le_power2)
   also have "... = sqrt x * sqrt (u^2) / u"
-    by (metis real_sqrt_mult_distrib2)
+    by (metis real_sqrt_mult)
   also have "... = sqrt x"
     using assms
     by simp

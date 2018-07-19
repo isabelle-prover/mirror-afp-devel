@@ -14,7 +14,6 @@ text \<open>Essentially, the idea is to use the JNF results to estimate the grow
 theory Ring_Hom_Matrix
 imports 
   Matrix
-  HOL.Real
   Polynomial_Interpolation.Ring_Hom
 begin
 

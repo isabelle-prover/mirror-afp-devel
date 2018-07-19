@@ -62,7 +62,7 @@ class Num_faithful =
   (* TODO: Should we add sensible relations on our own? (jb) *)
 
   (* The zero and one type class are "artificial", so we ensure they do what expected. *)
-  (* Unfortunately, this is not working. Is isabelle trying to give all occurences of 0
+  (* Unfortunately, this is not working. Is isabelle trying to give all occurrences of 0
       the same type?
   assumes "0 = fromInteger\<cdot>0"
   assumes "1 = fromInteger\<cdot>1"

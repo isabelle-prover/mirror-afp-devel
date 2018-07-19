@@ -182,7 +182,7 @@ lemma projection_rev_commute:
   by (induct l, simp add: projection_def, simp add: projection_def)
 
 (* Same as the previous lemma except that we split around the FIRST
-    occurence.
+    occurrence.
 
     Note that we do not express non-emptiness via the length function
     simply because there is no need for it in the theories relying on

@@ -22,7 +22,7 @@ def parse_name_url(name, entry, key):
             url = url.replace("@", " /at/ ").replace(".", " /dot/ ")
         return name[:url_start].strip(), url
     else:
-        terminal.notice(u"In entry {0}: no URL specified for {1} {2} ".format(entry, key, name))
+        terminal.warn(u"In entry {0}: no URL specified for {1} {2} ".format(entry, key, name))
         return name, ""
 
 def parse_author(author, entry, key):

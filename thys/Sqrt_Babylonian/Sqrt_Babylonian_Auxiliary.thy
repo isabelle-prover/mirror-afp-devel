@@ -25,7 +25,7 @@ section {* Auxiliary lemmas which might be moved into the Isabelle distribution.
 
 theory Sqrt_Babylonian_Auxiliary
 imports 
-  HOL.Transcendental
+  Complex_Main
 begin
 
 lemma mod_div_equality_int: "(n :: int) div x * x = n - n mod x"
