@@ -5,7 +5,7 @@ section {* The Stern-Brocot Tree *}
 
 theory Stern_Brocot_Tree
 imports
-  Complex_Main
+  HOL.Rat
   "HOL-Library.Sublist"
   Cotree_Algebra
   Applicative_Lifting.Stream_Algebra

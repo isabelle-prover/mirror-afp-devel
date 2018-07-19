@@ -7,9 +7,9 @@ section \<open>XML Transformers for Extracting Data from XML Nodes\<close>
 
 theory Xmlt
 imports
-  Complex_Main
   Xml
   Certification_Monads.Strict_Sum
+  HOL.Rat
 begin
 
 type_synonym
