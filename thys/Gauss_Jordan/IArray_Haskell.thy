@@ -109,8 +109,8 @@ text{*The following functions were generated for our examples in SML, in the fil
   @{text IArray_Addenda.thy}, and are also introduced here for Haskell:*}
 
 code_printing
-   constant IArray_Addenda.exists \<rightharpoonup> (Haskell) "IArray.existsIArray"
-  | constant IArray_Addenda.all \<rightharpoonup> (Haskell) "IArray.allIArray"
+   constant IArray.exists \<rightharpoonup> (Haskell) "IArray.existsIArray"
+  | constant IArray.all \<rightharpoonup> (Haskell) "IArray.allIArray"
 
 code_printing
   class_instance iarray :: "HOL.equal" \<rightharpoonup> (Haskell) -

@@ -18,8 +18,8 @@ definition greatest_not_zero :: "'a::{zero} iarray => nat"
   where "greatest_not_zero A = the (List.find (\<lambda>n. A !! n \<noteq> 0) (rev [0..<IArray.length A]))"
 
 lemma vec_to_iarray_exists:
-shows "(\<exists>b. A $ b \<noteq> 0) = IArray_Addenda.exists (\<lambda>b. (vec_to_iarray A) !! b \<noteq> 0) (IArray[0..<IArray.length (vec_to_iarray A)])"
-proof (unfold IArray_Addenda.exists.simps length_vec_to_iarray, auto simp del: IArray.sub_def)
+shows "(\<exists>b. A $ b \<noteq> 0) = IArray.exists (\<lambda>b. (vec_to_iarray A) !! b \<noteq> 0) (IArray[0..<IArray.length (vec_to_iarray A)])"
+proof (unfold IArray.exists.simps length_vec_to_iarray, auto simp del: IArray.sub_def)
   fix b assume Ab: "A $ b \<noteq> 0"
   show "\<exists>b\<in>{0..<CARD('a)}. vec_to_iarray A !! b \<noteq> 0"
     by (rule bexI[of _ "to_nat b"], unfold vec_to_iarray_nth', auto simp add: Ab to_nat_less_card[of b])
@@ -29,7 +29,7 @@ next
 qed
 
 corollary vec_to_iarray_exists':
-shows "(\<exists>b. A $ b \<noteq> 0) = IArray_Addenda.exists (\<lambda>b. (vec_to_iarray A) !! b \<noteq> 0) (IArray (rev [0..<IArray.length (vec_to_iarray A)]))"
+shows "(\<exists>b. A $ b \<noteq> 0) = IArray.exists (\<lambda>b. (vec_to_iarray A) !! b \<noteq> 0) (IArray (rev [0..<IArray.length (vec_to_iarray A)]))"
 by (simp add: vec_to_iarray_exists Option.is_none_def find_None_iff)
 
 lemma not_is_zero_iarray_eq_iff: "(\<exists>b. A $ b \<noteq> 0) = (\<not> is_zero_iarray (vec_to_iarray A))"
@@ -124,7 +124,7 @@ unfolding matrix_to_iarray_consistent ..
 
 
 definition "solve_consistent_rref_iarrays A b 
-  = IArray.of_fun (\<lambda>j. if (IArray_Addenda.exists (\<lambda>i. A !! i !! j = 1 \<and> j=least_non_zero_position_of_vector (row_iarray i A)) (IArray[0..<nrows_iarray A]))
+  = IArray.of_fun (\<lambda>j. if (IArray.exists (\<lambda>i. A !! i !! j = 1 \<and> j=least_non_zero_position_of_vector (row_iarray i A)) (IArray[0..<nrows_iarray A]))
   then b !! (least_non_zero_position_of_vector (column_iarray j A)) else 0) (ncols_iarray A)"
 
 
@@ -132,14 +132,14 @@ lemma exists_solve_consistent_rref:
 fixes A::"'a::{field}^'cols::{mod_type}^'rows::{mod_type}"
 assumes rref: "reduced_row_echelon_form A"
 shows "(\<exists>i. A $ i $ j = 1 \<and> j = (LEAST n. A $ i $ n \<noteq> 0)) 
-  = (IArray_Addenda.exists (\<lambda>i. (matrix_to_iarray A) !! i !! (to_nat j) = 1 
+  = (IArray.exists (\<lambda>i. (matrix_to_iarray A) !! i !! (to_nat j) = 1
   \<and> (to_nat j)=least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A))) (IArray[0..<nrows_iarray (matrix_to_iarray A)]))"
 proof (rule)
 assume "\<exists>i. A $ i $ j = 1 \<and> j = (LEAST n. A $ i $ n \<noteq> 0)"
 from this obtain i where Aij: "A $ i $ j = 1" and j_eq: "j = (LEAST n. A $ i $ n \<noteq> 0)" by blast    
-show "IArray_Addenda.exists (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1 \<and> to_nat j = least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A)))
+show "IArray.exists (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1 \<and> to_nat j = least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A)))
      (IArray [0..<nrows_iarray (matrix_to_iarray A)])"
-     unfolding IArray_Addenda.exists.simps find_Some_iff
+     unfolding IArray.exists.simps find_Some_iff
      apply (rule bexI[of _ "to_nat i"])+
      proof (auto, unfold IArray.sub_def[symmetric])
       show "to_nat i < nrows_iarray (matrix_to_iarray A)" unfolding matrix_to_iarray_nrows[symmetric] nrows_def using to_nat_less_card by fast
@@ -156,14 +156,14 @@ show "IArray_Addenda.exists (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1
          show "matrix_to_iarray A !! mod_type_class.to_nat i !! mod_type_class.to_nat j = 1" unfolding matrix_to_iarray_nth using Aij .
          qed
 next
-assume ex_eq: "IArray_Addenda.exists (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1 \<and> to_nat j = least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A)))
+assume ex_eq: "IArray.exists (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1 \<and> to_nat j = least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A)))
      (IArray [0..<nrows_iarray (matrix_to_iarray A)])"
 have "\<exists>y. List.find (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1 \<and> to_nat j = least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A)))
          [0..<nrows_iarray (matrix_to_iarray A)] = Some y"
          proof (rule ccontr, simp del: IArray.length_def IArray.sub_def, unfold find_None_iff)
          assume" \<not> (\<exists>x. x \<in> set [0..<nrows_iarray (matrix_to_iarray A)] \<and>
             matrix_to_iarray A !! x !! mod_type_class.to_nat j = 1 \<and> mod_type_class.to_nat j = least_non_zero_position_of_vector (row_iarray x (matrix_to_iarray A)))"
-            thus False using ex_eq unfolding IArray_Addenda.exists.simps by auto
+            thus False using ex_eq unfolding IArray.exists.simps by auto
          qed
 from this obtain y where y: "List.find (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1 \<and> to_nat j = least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A)))
          [0..<nrows_iarray (matrix_to_iarray A)] = Some y" by blast

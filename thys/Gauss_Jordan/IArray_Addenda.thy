@@ -30,23 +30,6 @@ end
 
 subsection{*Some previous definitions and properties for IArrays*}
 
-subsubsection{*Lemmas*}
-
-lemma of_fun_nth:
-  assumes i: "i<n"
-  shows "(IArray.of_fun f n) !! i = f i"
-  unfolding IArray.of_fun_def using map_nth i by auto
-
-subsubsection{*Definitions*}
-
-fun all :: "('a \<Rightarrow> bool) \<Rightarrow> 'a iarray \<Rightarrow> bool"
-where "all p (IArray as) = (\<forall>a \<in> set as. p a)"
- hide_const (open) all
-
-fun exists :: "('a \<Rightarrow> bool) \<Rightarrow> 'a iarray \<Rightarrow> bool"
-where "exists p (IArray as) = (\<exists>a \<in> set as. p a)"
-hide_const (open) exists
-
 (*
 fun find :: "('a => bool) => 'a iarray => 'a option"
   where "find f (IArray as) = List.find f as"
@@ -72,10 +55,6 @@ hide_const (open) filter
 *)
 
 subsection{*Code generation*}
-
-code_printing
- constant "IArray_Addenda.exists" \<rightharpoonup> (SML) "Vector.exists"
-| constant "IArray_Addenda.all" \<rightharpoonup> (SML) "Vector.all"
 
 (*
 code_printing

@@ -177,7 +177,7 @@ definition mat_iarray :: "'a::{zero} => nat => 'a iarray iarray"
   where "mat_iarray k n = tabulate2 n n (\<lambda> i j. if i = j then k else 0)"
 
 definition is_zero_iarray :: "'a::{zero} iarray \<Rightarrow> bool"
-  where "is_zero_iarray A = IArray_Addenda.all (\<lambda>i. A !! i = 0) (IArray[0..<IArray.length A])"
+  where "is_zero_iarray A = IArray.all (\<lambda>i. A !! i = 0) (IArray[0..<IArray.length A])"
 
 subsubsection{*Properties of previous definitions*}
 lemma is_zero_iarray_eq_iff:
