@@ -609,6 +609,10 @@ class trivial_conjugatable_ordered_field =
 
 class trivial_conjugatable_linordered_field = 
   trivial_conjugatable_ordered_field + linordered_field
+begin
+subclass conjugatable_ring_1_abs_real_line
+  by (standard) (auto simp add: semiring_normalization_rules)
+end
 
 instance rat :: trivial_conjugatable_linordered_field 
   by (standard, auto)
