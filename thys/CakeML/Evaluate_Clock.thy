@@ -9,13 +9,10 @@ hide_const (open) sem_env.v
 lemma fix_clock:
   "fix_clock s1 (s2, x) = (s, x) \<Longrightarrow> clock s \<le> clock s1"
   "fix_clock s1 (s2, x) = (s, x) \<Longrightarrow> clock s \<le> clock s2"
-unfolding fix_clock_alt_def
-by (auto simp: datatype_record_update split: state.splits)
+unfolding fix_clock_alt_def by auto
 
-lemma dec_clock[simp]:
-  "clock (dec_clock st) = clock st - 1"
-unfolding dec_clock_def
-by (auto simp: datatype_record_update split: state.splits)
+lemma dec_clock[simp]: "clock (dec_clock st) = clock st - 1"
+unfolding dec_clock_def by auto
 
 context begin
 
@@ -68,10 +65,9 @@ next
     subgoal
       by (metis "*" fix_clock(1) fix_clock.simps prod.collapse prod.sel(2))
     subgoal
-      apply (auto simp: datatype_record_update split: state.splits)
-      by (metis "*" fix_clock(1) fix_clock.simps fst_conv prod.exhaust_sel state.sel(1))
+      by (smt "*" "9.IH"(2) One_nat_def Suc_pred dec_clock dual_order.trans fix_clock(1) fix_clock.simps fst_conv le_imp_less_Suc nat_less_le prod.collapse)
     subgoal
-      by (auto simp: datatype_record_update split: state.splits)
+      by (metis "*" fix_clock(1) fix_clock.simps fst_conv prod.collapse)
     subgoal
       using 9(2)[OF *[symmetric], simplified]
       by (smt "*" Suc_pred dual_order.trans fix_clock(1) fix_clock.simps le_imp_less_Suc less_irrefl_nat nat_le_linear prod.collapse prod.sel(2))
@@ -80,11 +76,6 @@ next
     subgoal
       using 9(2)[OF *[symmetric], simplified]
       by (smt "*" Suc_pred dual_order.trans fix_clock(1) fix_clock.simps le_imp_less_Suc less_irrefl_nat nat_le_linear prod.collapse prod.sel(2))
-    subgoal
-      apply (auto simp: datatype_record_update split: state.splits)
-      by (metis "*" fix_clock(1) fix_clock.simps fst_conv prod.exhaust_sel state.sel(1))
-    subgoal
-      by (metis "*" fix_clock(1) fix_clock.simps prod.collapse prod.sel(2))
     done
 next
   case (10 st env lop e1 e2)
@@ -160,8 +151,7 @@ end
 lemma fix_clock_evaluate[simp]:
   "fix_clock s1 (fun_evaluate s1 env e) = fun_evaluate s1 env e"
 unfolding fix_clock_alt_def
-apply (auto simp: datatype_record_update split: state.splits prod.splits)
-using fun_evaluate_clock by fastforce
+using fun_evaluate_clock by (fastforce split: prod.splits)
 
 declare fun_evaluate.simps[simp del]
 declare fun_evaluate_match.simps[simp del]

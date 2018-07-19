@@ -38,6 +38,7 @@ session CakeML (AFP) = LEM +
     Semantic_Extras
     Evaluate_Termination
     Evaluate_Clock
+    Evaluate_Single
     Big_Step_Determ
     Big_Step_Fun_Equiv
     Big_Step_Total
