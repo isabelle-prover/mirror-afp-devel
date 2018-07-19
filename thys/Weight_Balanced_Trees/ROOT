@@ -2,9 +2,9 @@ chapter AFP
 
 session Weight_Balanced_Trees (AFP) = HOL +
   options [timeout = 600]
-  theories [document = false]
-    "~~/src/HOL/Library/Tree"
-    "~~/src/HOL/Data_Structures/Isin2"
+  sessions
+    "HOL-Library"
+    "HOL-Data_Structures"
   theories
     Weight_Balanced_Trees_log
     Weight_Balanced_Trees

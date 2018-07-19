@@ -10,7 +10,7 @@ of the size of the node.\<close>
 theory Weight_Balanced_Trees_log
 imports
   Complex_Main
-  "~~/src/HOL/Library/Tree"
+  "HOL-Library.Tree"
 begin
 
 (* FIXME mod field_simps *)

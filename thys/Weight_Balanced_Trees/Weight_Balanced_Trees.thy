@@ -9,7 +9,7 @@ for these parameters.\<close>
 
 theory Weight_Balanced_Trees
 imports
-  "~~/src/HOL/Data_Structures/Isin2"
+  "HOL-Data_Structures.Isin2"
 begin
 
 lemma neq_Leaf2_iff: "t \<noteq> Leaf \<longleftrightarrow> (\<exists>n l a r. t = Node n l a r)"
@@ -116,24 +116,24 @@ lemma size_wbt_eq_size[simp]: "wbt t \<Longrightarrow> size_wbt t = size t"
 by(induction t) auto
 
 fun single :: "'a wbt \<Rightarrow> 'a wbt \<Rightarrow> bool" where
-"single t1 t2 = (\<Gamma>1 * (size_wbt t2 + 1) > \<Gamma>2 * (size_wbt t1 + 1))"   
-   
-subsubsection "Code"  
+"single t1 t2 = (\<Gamma>1 * (size_wbt t2 + 1) > \<Gamma>2 * (size_wbt t1 + 1))"
+
+subsubsection "Code"
 
 fun rotateL :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "rotateL A a (Node B b _ C) =
    (if single B C then rot1L A a B b C else rot2 A a B b C)"
-   
+
 fun balanceL :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "balanceL l a r = (if balanced1 l r then N l a r else rotateL l a r)"
-   
+
 fun rotateR :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "rotateR (Node A a _ B) b C =
   (if single B A then rot1R A a B b C else rot2 A a B b C)"
-   
+
 fun balanceR :: "'a wbt \<Rightarrow> 'a \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "balanceR l a r = (if balanced1 r l then N l a r else rotateR l a r)"
-   
+
 fun insert :: "'a::linorder \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "insert x Leaf = Node Leaf x 1 Leaf" |
 "insert x (Node l a n r) =
@@ -145,11 +145,11 @@ fun insert :: "'a::linorder \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 fun split_min :: "'a wbt \<Rightarrow> 'a * 'a wbt" where
 "split_min (Node l a _ r) =
    (if l = Leaf then (a,r) else let (x,l') = split_min l in (x, balanceL l' a r))"
-   
+
 fun del_max :: "'a wbt \<Rightarrow> 'a * 'a wbt" where
 "del_max (Node l a _ r) =
-   (if r = Leaf then (a,l) else let (x,r') = del_max r in (x, balanceR l a r'))"   
-      
+   (if r = Leaf then (a,l) else let (x,r') = del_max r in (x, balanceR l a r'))"
+
 fun combine :: "'a wbt \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt"  where
 "combine Leaf Leaf = Leaf"|
 "combine Leaf r = r"|
@@ -162,7 +162,7 @@ fun combine :: "'a wbt \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt"  where
 
 fun delete :: "'a::linorder \<Rightarrow> 'a wbt \<Rightarrow> 'a wbt" where
 "delete _ Leaf = Leaf" |
-"delete x (Node l a _ r) = 
+"delete x (Node l a _ r) =
   (case cmp x a of
      LT \<Rightarrow> balanceL (delete x l) a r |
      GT \<Rightarrow> balanceR l a (delete x r) |
@@ -173,20 +173,20 @@ subsection "Functional Correctness Proofs"
 
 text \<open>A WB tree must be of a certain structure if balanced1 and single are False.\<close>
 
-lemma not_Leaf_if_not_balanced1: 
+lemma not_Leaf_if_not_balanced1:
   assumes "\<not> balanced1 l r"
   shows "r \<noteq> Leaf"
 proof
   assume "r = Leaf" with assms Delta_gr1 show False by simp
 qed
 
-lemma not_Leaf_if_not_single: 
+lemma not_Leaf_if_not_single:
   assumes "\<not> single l r"
   shows "l \<noteq> Leaf"
 proof
   assume "l = Leaf" with assms Gamma_gr1 show False by simp
 qed
-  
+
 subsubsection "Inorder Properties"
 
 lemma inorder_rot2:
@@ -210,13 +210,13 @@ lemma split_minD:
   "split_min t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> x # inorder t' = inorder t"
 by (induction t arbitrary: t' rule: split_min.induct)
    (auto simp: sorted_lems inorder_rotateL not_Leaf_if_not_balanced1
-     split: prod.splits if_splits) 
+     split: prod.splits if_splits)
 
 lemma del_maxD:
   "del_max t = (x,t') \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> inorder t' @ [x] = inorder t"
 by (induction t arbitrary: t' rule: del_max.induct)
    (auto simp: sorted_lems inorder_rotateR not_Leaf_if_not_balanced1
-     split: prod.splits if_splits) 
+     split: prod.splits if_splits)
 
 lemma inorder_combine:
   "inorder(combine l r) = inorder l @ inorder r"
@@ -285,20 +285,20 @@ subsection "Auxiliary Definitions"
 fun balanced1_arith :: "nat \<Rightarrow> nat \<Rightarrow> bool" where
 "balanced1_arith a b = (\<Delta>1 * (a + 1) \<ge> \<Delta>2 * (b + 1))"
 
-fun balanced2_arith :: "nat \<Rightarrow> nat \<Rightarrow> bool" where 
+fun balanced2_arith :: "nat \<Rightarrow> nat \<Rightarrow> bool" where
 "balanced2_arith a b = (balanced1_arith a b \<and> balanced1_arith b a)"
-  
-fun singly_balanced_arith :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where 
+
+fun singly_balanced_arith :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
 "singly_balanced_arith x y w = (balanced2_arith x y \<and> balanced2_arith (x+y+1) w)"
 
-fun doubly_balanced_arith :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where 
+fun doubly_balanced_arith :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
 "doubly_balanced_arith x y z w =
   (balanced2_arith x y \<and> balanced2_arith z w \<and> balanced2_arith (x+y+1) (z+w+1))"
 
 end
 
 
-subsection "Preservation of WB tree Invariant for Concrete Parameters"  
+subsection "Preservation of WB tree Invariant for Concrete Parameters"
 
 text \<open>A number of sample interpretations with valid parameters:\<close>
 
@@ -319,7 +319,7 @@ interpretation WBT where
 (* \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 4*)
 (* \<Delta>1 = 4 and \<Delta>2 = "Suc 0" and \<Gamma>1 = 5 and \<Gamma>2 = 3*)
 (* \<Delta>1 = 17 and \<Delta>2 = 4 and \<Gamma>1 = 5 and \<Gamma>2 = 3 *)
-by (auto simp add: WBT_def)  
+by (auto simp add: WBT_def)
 
 lemma wbt_insert:
   "wbt t \<Longrightarrow> wbt (insert x t)"
@@ -385,8 +385,8 @@ text {*
   Show that invariant is preserved by deletion in the left/right subtree:
 *}
 
-lemma wbt_balanceL: 
-  assumes "wbt (Node l a n r)" "wbt l'" "size l = size l' + 1" 
+lemma wbt_balanceL:
+  assumes "wbt (Node l a n r)" "wbt l'" "size l = size l' + 1"
   shows "wbt (balanceL l' a' r)"
 proof -
   have rl'Balanced: "balanced1 r l'" using assms by auto
@@ -413,13 +413,13 @@ proof -
       have "doubly_balanced_arith (size l') (size llr) (size rlr) (size rr)"
         using assms(1) notBalanced rl'Balanced rBalanced isDouble assms(2,3)
         apply (auto) apply((thin_tac "_ = _")+, smt)? done
-      thus ?thesis using notBalanced isDouble assms(2) rBalanced by simp    
+      thus ?thesis using notBalanced isDouble assms(2) rBalanced by simp
     qed
   qed
 qed
 
-lemma wbt_balanceR: 
-  assumes "wbt (Node l a n r)" "wbt r'" "size r = size r' + 1" 
+lemma wbt_balanceR:
+  assumes "wbt (Node l a n r)" "wbt r'" "size r = size r' + 1"
   shows "wbt (balanceR l a' r')"
 proof -
   have lr'Balanced: "balanced1 l r'" using assms by auto
@@ -429,7 +429,7 @@ proof -
     case True thus ?thesis using assms(2) lBalanced lr'Balanced by simp
   next
     case notBalanced: False
-    hence "l \<noteq> Leaf" using not_Leaf_if_not_balanced1 by auto     
+    hence "l \<noteq> Leaf" using not_Leaf_if_not_balanced1 by auto
     then obtain k ll al rl where [simp]: "l = (Node ll al k rl)" by(meson neq_Leaf2_iff)
     show ?thesis
     proof (cases "single rl ll")
@@ -452,7 +452,7 @@ proof -
 qed
 
 lemma wbt_split_min: "t \<noteq> Leaf \<Longrightarrow> wbt t \<Longrightarrow> wbt (snd (split_min t))"
-proof (induction t rule: split_min.induct) 
+proof (induction t rule: split_min.induct)
   case (1 l a m r)
   show ?case
   proof (cases l)
@@ -472,7 +472,7 @@ proof (induction t rule: split_min.induct)
 qed (blast)
 
 lemma wbt_del_max: "t \<noteq> Leaf \<Longrightarrow> wbt t \<Longrightarrow> wbt (snd (del_max t))"
-proof (induction t rule: del_max.induct) 
+proof (induction t rule: del_max.induct)
   case (1 l a m r)
   show ?case
   proof (cases r)
@@ -482,7 +482,7 @@ proof (induction t rule: del_max.induct)
     then obtain r' where delMaxR: "r' = snd (del_max (Node lr ar n rr))"
       by simp
     hence delBalanceR: "snd (del_max (Node l a m r)) = balanceR l a r'"
-      using Node by(auto split: prod.splits)    
+      using Node by(auto split: prod.splits)
     have "wbt r'" using "1"(1) "1.prems"(2) Node delMaxR by auto
     moreover have "size r = size r' + 1" using size_del_max Node delMaxR
       by (metis Suc_eq_plus1 tree.simps(3))
@@ -561,7 +561,7 @@ next
           case False
           obtain rMin r' where letMin: "split_min r = (rMin, r')"
             by (metis prod.exhaust)
-          hence balanceRight: "combine l r = balanceR l rMin r'" 
+          hence balanceRight: "combine l r = balanceR l rMin r'"
             using \<open>\<not> size l > size r\<close> by (simp)
           have "wbt r'"
             using Node.prems wbt_split_min[OF lrNotLeaf(2)] letMin
@@ -573,10 +573,10 @@ next
           thus ?thesis using balanceRight by simp
         qed
       }
-      ultimately show ?thesis by blast            
+      ultimately show ?thesis by blast
     qed
   qed
-qed    
+qed
 
 subsection \<open>The final correctness proof\<close>
 
