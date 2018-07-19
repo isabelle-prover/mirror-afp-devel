@@ -30,7 +30,7 @@ the left endpoint of \(t\).
  *}
 
 theory RealInt
-  imports Complex_Main
+  imports HOL.Real
 begin
   
 typedef real_int = "{r::(real*real) . fst r \<le> snd r}"

@@ -5,9 +5,7 @@ theory ShortestPathNeg
   several lemmas that were proven in the 
   shortest path theory
 *)
-imports 
-  Graph_Theory.Graph_Theory
-  ShortestPath
+imports ShortestPath
 
 begin
 section {*Shortest Path (with general edge costs)*}

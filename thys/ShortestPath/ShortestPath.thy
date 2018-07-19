@@ -1,8 +1,6 @@
 theory ShortestPath
 imports
-  Complex_Main
   Graph_Theory.Graph_Theory
-  "HOL-Library.Extended_Nat"
 begin
 
 section {*Shortest Path (with non-negative edge costs)*}
