@@ -4,7 +4,7 @@
     License:     BSD
 *)
 theory Conjugate
-  imports Complex_Main
+  imports HOL.Complex
 begin
 
 class conjugate =

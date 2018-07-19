@@ -10,7 +10,7 @@ text \<open>We define some code equations for complex numbers, provide a compara
 
 theory Compare_Complex
 imports 
-  Complex_Main
+  HOL.Complex
   Polynomial_Interpolation.Missing_Unsorted
   Deriving.Compare_Real
   Containers.Set_Impl

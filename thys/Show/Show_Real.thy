@@ -10,7 +10,7 @@ text \<open>We just demand that there is some function from reals to string and 
 
 theory Show_Real
 imports 
-  Complex_Main
+  HOL.Real
   Show
 begin
 

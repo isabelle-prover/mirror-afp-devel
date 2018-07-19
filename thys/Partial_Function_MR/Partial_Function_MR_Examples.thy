@@ -5,7 +5,7 @@ theory Partial_Function_MR_Examples
 imports 
   Partial_Function_MR
   "HOL-Library.Monad_Syntax"
-  Complex_Main
+  HOL.Rat
 begin
 
 subsection {* Collatz function *}

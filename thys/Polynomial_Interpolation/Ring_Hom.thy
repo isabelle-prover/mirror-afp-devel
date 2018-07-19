@@ -7,7 +7,8 @@ section \<open>Several Locales for Homomorphisms Between Types.\<close>
 
 theory Ring_Hom
 imports 
-  Complex_Main
+  HOL.Complex
+  Main
   "HOL-Library.Multiset"
   "HOL-Computational_Algebra.Factorial_Ring"
 begin

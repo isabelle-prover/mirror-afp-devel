@@ -28,7 +28,7 @@ section \<open>Carriers of Strongly Normalizing Orders\<close>
 theory SN_Order_Carrier
 imports
   SN_Orders
-  Complex_Main
+  HOL.Rat
 begin
 
 text \<open>

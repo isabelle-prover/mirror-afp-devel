@@ -9,7 +9,7 @@ text \<open>We print complex numbers as real and imaginary parts. Note that by t
   one of the theories \textit{Show-Real-Impl} or \textit{../Algebraic-Numbers/Show-Real-...}.\<close>
 theory Show_Complex
 imports 
-  Complex_Main
+  HOL.Complex
   Show_Real
 begin
 

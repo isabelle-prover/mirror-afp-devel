@@ -11,7 +11,7 @@ text \<open>This theory contains several lemmas which might be of interest to th
 
 theory Missing_Unsorted
 imports
-  Complex_Main "HOL-Computational_Algebra.Factorial_Ring"
+  HOL.Complex "HOL-Computational_Algebra.Factorial_Ring"
 begin
 
 lemma bernoulli_inequality: assumes x: "-1 \<le> (x :: 'a :: linordered_field)"

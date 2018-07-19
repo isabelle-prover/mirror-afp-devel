@@ -13,7 +13,7 @@ imports
   "Abstract-Rewriting.SN_Order_Carrier"
   Ring_Hom_Matrix
   Derivation_Bound
-  Complex_Main
+  HOL.Real
 begin
 
 class large_real_ordered_semiring_1 = large_ordered_semiring_1 + real_embedding
