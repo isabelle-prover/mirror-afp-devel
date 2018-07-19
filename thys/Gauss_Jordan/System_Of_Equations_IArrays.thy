@@ -19,7 +19,7 @@ definition greatest_not_zero :: "'a::{zero} iarray => nat"
 
 lemma vec_to_iarray_exists:
 shows "(\<exists>b. A $ b \<noteq> 0) = IArray.exists (\<lambda>b. (vec_to_iarray A) !! b \<noteq> 0) (IArray[0..<IArray.length (vec_to_iarray A)])"
-proof (unfold IArray.exists.simps length_vec_to_iarray, auto simp del: IArray.sub_def)
+proof (unfold IArray.exists_def length_vec_to_iarray, auto simp del: IArray.sub_def)
   fix b assume Ab: "A $ b \<noteq> 0"
   show "\<exists>b\<in>{0..<CARD('a)}. vec_to_iarray A !! b \<noteq> 0"
     by (rule bexI[of _ "to_nat b"], unfold vec_to_iarray_nth', auto simp add: Ab to_nat_less_card[of b])
@@ -139,7 +139,7 @@ assume "\<exists>i. A $ i $ j = 1 \<and> j = (LEAST n. A $ i $ n \<noteq> 0)"
 from this obtain i where Aij: "A $ i $ j = 1" and j_eq: "j = (LEAST n. A $ i $ n \<noteq> 0)" by blast    
 show "IArray.exists (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1 \<and> to_nat j = least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A)))
      (IArray [0..<nrows_iarray (matrix_to_iarray A)])"
-     unfolding IArray.exists.simps find_Some_iff
+     unfolding IArray.exists_def find_Some_iff
      apply (rule bexI[of _ "to_nat i"])+
      proof (auto, unfold IArray.sub_def[symmetric])
       show "to_nat i < nrows_iarray (matrix_to_iarray A)" unfolding matrix_to_iarray_nrows[symmetric] nrows_def using to_nat_less_card by fast
@@ -163,7 +163,7 @@ have "\<exists>y. List.find (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1
          proof (rule ccontr, simp del: IArray.length_def IArray.sub_def, unfold find_None_iff)
          assume" \<not> (\<exists>x. x \<in> set [0..<nrows_iarray (matrix_to_iarray A)] \<and>
             matrix_to_iarray A !! x !! mod_type_class.to_nat j = 1 \<and> mod_type_class.to_nat j = least_non_zero_position_of_vector (row_iarray x (matrix_to_iarray A)))"
-            thus False using ex_eq unfolding IArray.exists.simps by auto
+            thus False using ex_eq unfolding IArray.exists_def by auto
          qed
 from this obtain y where y: "List.find (\<lambda>i. matrix_to_iarray A !! i !! to_nat j = 1 \<and> to_nat j = least_non_zero_position_of_vector (row_iarray i (matrix_to_iarray A)))
          [0..<nrows_iarray (matrix_to_iarray A)] = Some y" by blast

@@ -25,10 +25,7 @@ lift_definition mat_swaprows_impl :: "nat \<Rightarrow> nat \<Rightarrow> 'a mat
       A' = IArray.IArray (Arows [i := Aj, j := Ai])  
    in (nr,nc,A')
      else (nr,nc,A)" 
-proof (auto split: if_splits, goal_cases)
-  case (1 i j A nc row)
-  thus ?case by (cases A, auto)
-qed
+  by (auto split: if_splits)
 
 lemma [code]: "mat_swaprows k l (mat_impl A) = (let nr = dim_row_impl A in
   if l < nr \<and> k < nr then 

@@ -15,7 +15,6 @@ imports
   
   Code_Real_Approx_By_Float_Haskell
   Code_Generation_IArrays
-  IArray_Haskell
     
   (*These theories are necessary for the serialisation:*)
   HOL.Rat
