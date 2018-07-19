@@ -480,8 +480,4 @@ definition test_casts_uint'' :: bool where
   map uint_of_uint8 [0, 10, 0xFF] = [0, 10, 0xFF] \<and>
   map uint8_of_uint [0, 10, 0xFF] = [0, 10, 0xFF]"
 
-test_code "test_casts_uint''" in PolyML MLton SMLNJ GHC Scala
-
-test_code "test_casts_uint'" in GHC Scala
-
 end

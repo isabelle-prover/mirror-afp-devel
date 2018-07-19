@@ -19,7 +19,7 @@ text \<open>In this theory we implement matrices as arrays of arrays.
 theory Matrix_IArray_Impl
 imports
   Matrix
-  Gauss_Jordan.IArray_Haskell
+  "HOL-Library.IArray"
   Containers.Set_Impl
 begin
 

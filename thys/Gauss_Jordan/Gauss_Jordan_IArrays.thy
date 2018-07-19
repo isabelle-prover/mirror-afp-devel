@@ -18,7 +18,7 @@ definition "least_non_zero_position_of_vector_from_index A i = the (List.find (\
 definition "least_non_zero_position_of_vector A = least_non_zero_position_of_vector_from_index A 0"
 
 definition vector_all_zero_from_index :: "(nat \<times> 'a::{zero} iarray) => bool"
-  where "vector_all_zero_from_index A' = (let i=fst A'; A=(snd A') in IArray_Addenda.all (\<lambda>x. A!!x = 0) (IArray [i..<(IArray.length A)]))"
+  where "vector_all_zero_from_index A' = (let i=fst A'; A=(snd A') in IArray.all (\<lambda>x. A!!x = 0) (IArray [i..<(IArray.length A)]))"
 
 definition Gauss_Jordan_in_ij_iarrays :: "'a::{field} iarray iarray => nat => nat => 'a iarray iarray "
   where "Gauss_Jordan_in_ij_iarrays A i j = (let n = least_non_zero_position_of_vector_from_index (column_iarray j A) i;

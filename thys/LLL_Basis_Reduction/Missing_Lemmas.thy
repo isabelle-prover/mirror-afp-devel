@@ -423,37 +423,23 @@ lemma power_gt1: "1 < a \<Longrightarrow> 1 < a ^ Suc n"
 lemma one_less_power [simp]: "1 < a \<Longrightarrow> 0 < n \<Longrightarrow> 1 < a ^ n"
   by (cases n) (simp_all add: power_gt1_lemma)
 
-text \<open>Proof resembles that of \<open>power_strict_decreasing\<close>.\<close>
 lemma power_decreasing: "n \<le> N \<Longrightarrow> 0 \<le> a \<Longrightarrow> a \<le> 1 \<Longrightarrow> a ^ N \<le> a ^ n"
-proof (induct N)
-  case 0
-  then show ?case by simp
-next
+proof (induction N)
   case (Suc N)
+  then have "a * a^N \<le> 1 * a^n" if "n \<le> N"
+    using that by (intro mult_mono) auto
   then show ?case
-    apply (auto simp add: le_Suc_eq)
-    apply (subgoal_tac "a * a^N \<le> 1 * a^n")
-     apply simp
-    apply (rule mult_mono)
-       apply auto
-    done
-qed
+    using Suc by (auto simp add: le_Suc_eq)
+qed (auto)
 
-text \<open>Proof again resembles that of \<open>power_strict_decreasing\<close>.\<close>
 lemma power_increasing: "n \<le> N \<Longrightarrow> 1 \<le> a \<Longrightarrow> a ^ n \<le> a ^ N"
-proof (induct N)
-  case 0
-  then show ?case by simp
-next
+proof (induction N)
   case (Suc N)
+  then have "1 * a^n \<le> a * a^N" if "n \<le> N"
+    using that by (intro mult_mono) (auto simp add: order_trans[OF zero_le_one])
   then show ?case
-    apply (auto simp add: le_Suc_eq)
-    apply (subgoal_tac "1 * a^n \<le> a * a^N")
-     apply simp
-    apply (rule mult_mono)
-       apply (auto simp add: order_trans [OF zero_le_one])
-    done
-qed
+    using Suc by (auto simp add: le_Suc_eq)
+qed (auto)
 
 lemma power_Suc_le_self: "0 \<le> a \<Longrightarrow> a \<le> 1 \<Longrightarrow> a ^ Suc n \<le> a"
   using power_decreasing [of 1 "Suc n" a] by simp

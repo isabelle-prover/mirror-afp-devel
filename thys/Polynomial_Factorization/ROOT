@@ -46,7 +46,6 @@ session "JNF-AFP-Lib" (AFP) = "JNF-HOL-Lib" +
     VectorSpace
   theories
     Containers.Set_Impl
-    Gauss_Jordan.IArray_Haskell
     Matrix.Utility
     Matrix.Ordered_Semiring
     "Abstract-Rewriting.SN_Order_Carrier"
