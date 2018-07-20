@@ -8,27 +8,27 @@ begin
 
 text \<open>The following definition allows non-square-matrices, mat\_one (mat\_one n) only allows square matrices.\<close>
 
-definition eye_matrix::"nat \<Rightarrow> nat \<Rightarrow> real mat"
-where "eye_matrix nr nc = mat nr nc (\<lambda>(r, c). if r=c then 1 else 0)"
+definition id_matrix::"nat \<Rightarrow> nat \<Rightarrow> real mat"
+where "id_matrix nr nc = mat nr nc (\<lambda>(r, c). if r=c then 1 else 0)"
 
-lemma eye_matrix_dim: "dim_row (eye_matrix nr nc) = nr" "dim_col (eye_matrix nr nc) = nc" by (simp_all add: eye_matrix_def)
+lemma id_matrix_dim: "dim_row (id_matrix nr nc) = nr" "dim_col (id_matrix nr nc) = nc" by (simp_all add: id_matrix_def)
 
-lemma row_eye_matrix:
+lemma row_id_matrix:
 assumes "i < nr"
-shows "row (eye_matrix nr nc) i = unit_vec nc i"
-  by (rule eq_vecI, simp add: assms eye_matrix_def unit_vec_def, simp add: eye_matrix_dim(2))
+shows "row (id_matrix nr nc) i = unit_vec nc i"
+  by (rule eq_vecI, simp add: assms id_matrix_def unit_vec_def, simp add: id_matrix_dim(2))
 
 lemma unit_eq_0[simp]:
   assumes i: "i \<ge> n"
   shows "unit_vec n i = 0\<^sub>v n"
   by (rule eq_vecI, insert i, auto simp: unit_vec_def)
 
-lemma mult_eye_matrix:
+lemma mult_id_matrix:
 assumes "i < nr"
-shows "(eye_matrix nr (dim_vec v) *\<^sub>v v) $ i = (if i<dim_vec v then v $ i else 0)" (is "?a $ i = ?b")
+shows "(id_matrix nr (dim_vec v) *\<^sub>v v) $ i = (if i<dim_vec v then v $ i else 0)" (is "?a $ i = ?b")
 proof -
-  have "?a $ i = row (eye_matrix nr (dim_vec v)) i \<bullet> v" using index_mult_mat_vec assms eye_matrix_dim by auto
-  also have "... = unit_vec (dim_vec v) i \<bullet> v" using row_eye_matrix assms by auto
+  have "?a $ i = row (id_matrix nr (dim_vec v)) i \<bullet> v" using index_mult_mat_vec assms id_matrix_dim by auto
+  also have "... = unit_vec (dim_vec v) i \<bullet> v" using row_id_matrix assms by auto
   also have "... = ?b" using scalar_prod_left_unit carrier_vecI unit_eq_0 scalar_prod_left_zero by fastforce
   finally show ?thesis by auto
 qed

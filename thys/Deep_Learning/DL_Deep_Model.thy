@@ -81,37 +81,37 @@ lemma evaluate_net_Conv_id:
 assumes "valid_net' m"
 and "input_sizes m = map dim_vec input"
 and "j<nr"
-shows "evaluate_net (Conv (eye_matrix nr (output_size' m)) m) input $ j
+shows "evaluate_net (Conv (id_matrix nr (output_size' m)) m) input $ j
  = (if j<output_size' m then evaluate_net m input $ j else 0)"
   unfolding evaluate_net.simps output_size_correct[OF assms(1) assms(2)[symmetric]]
-  using mult_eye_matrix[OF `j<nr`, of "evaluate_net m input", unfolded dim_vec_of_list]
+  using mult_id_matrix[OF `j<nr`, of "evaluate_net m input", unfolded dim_vec_of_list]
   by metis
 
 lemma tensors_from_net_Conv_id:
 assumes "valid_net' m"
 and "i<nr"
-shows "tensors_from_net (Conv (eye_matrix nr (output_size' m)) m) $ i
+shows "tensors_from_net (Conv (id_matrix nr (output_size' m)) m) $ i
  = (if i<output_size' m then tensors_from_net m $ i else tensor0 (input_sizes m))"
   (is "?a $ i = ?b")
 proof (rule tensor_lookup_eqI)
   have "Tensor.dims (?a $ i) = input_sizes m" by (metis assms(1) assms(2) dims_tensors_from_net
-    eye_matrix_dim(1) eye_matrix_dim(2) input_sizes.simps(2) output_size.simps(2)
+    id_matrix_dim(1) id_matrix_dim(2) input_sizes.simps(2) output_size.simps(2)
     output_size_correct_tensors remove_weights.simps(2) valid_net.intros(2) vec_setI)
   moreover have "Tensor.dims (?b) = input_sizes m" using dims_tensors_from_net
     output_size_correct_tensors[OF assms(1)] dims_tensor0 by (simp add: vec_setI)
   ultimately show "Tensor.dims (?a $ i) = Tensor.dims (?b)" by auto
 
-  define Convm where "Convm = Conv (eye_matrix nr (output_size' m)) m"
+  define Convm where "Convm = Conv (id_matrix nr (output_size' m)) m"
   fix "is"
   assume "is \<lhd> Tensor.dims (?a$i)"
   then have "is \<lhd> input_sizes m" using `Tensor.dims (?a$i) = input_sizes m` by auto
-  have "valid_net' Convm" by (simp add: assms eye_matrix_dim valid_net.intros(2) Convm_def)
+  have "valid_net' Convm" by (simp add: assms id_matrix_dim valid_net.intros(2) Convm_def)
   have "base_input m is = base_input Convm is" by (simp add: Convm_def base_input_def)
   have "i < output_size' Convm" unfolding Convm_def remove_weights.simps output_size.simps
-    eye_matrix_dim using assms by metis
-  have "is \<lhd> input_sizes (Conv (eye_matrix nr (output_size' m)) m)"
+    id_matrix_dim using assms by metis
+  have "is \<lhd> input_sizes (Conv (id_matrix nr (output_size' m)) m)"
     by (metis \<open>is \<lhd> input_sizes m\<close> input_sizes.simps(2))
-  then have f1: "lookup (tensors_from_net (Conv (eye_matrix nr (output_size' m)) m) $ i) is = evaluate_net (Conv (eye_matrix nr (output_size' m)) m) (base_input (Conv (eye_matrix nr (output_size' m)) m) is) $ i"
+  then have f1: "lookup (tensors_from_net (Conv (id_matrix nr (output_size' m)) m) $ i) is = evaluate_net (Conv (id_matrix nr (output_size' m)) m) (base_input (Conv (id_matrix nr (output_size' m)) m) is) $ i"
     using Convm_def \<open>i < output_size' Convm\<close> \<open>valid_net' Convm\<close> lookup_tensors_from_net by blast
   have "lookup (tensor0 (input_sizes m)) is = (0::real)"
     by (meson \<open>is \<lhd> input_sizes m\<close> lookup_tensor0)
@@ -218,7 +218,7 @@ qed
 fun witness and witness' where
 "witness' Y [] = Input Y" |
 "witness' Y (r # rs) = Pool (witness Y r rs) (witness Y r rs)" |
-"witness Y r rs = Conv ((if length rs = 0 then eye_matrix else (if length rs = 1 then all1_matrix else copy_first_matrix)) Y r) (witness' r rs)"
+"witness Y r rs = Conv ((if length rs = 0 then id_matrix else (if length rs = 1 then all1_matrix else copy_first_matrix)) Y r) (witness' r rs)"
 
 abbreviation "witness_l rs == witness (rs!0) (rs!1) (tl (tl rs))"
 abbreviation "witness'_l rs == witness' (rs!0) (tl rs)"
@@ -227,11 +227,11 @@ lemma witness_is_deep_model: "remove_weights (witness Y r rs) = deep_model Y r r
 proof (induction rs arbitrary: Y r)
   case Nil
   then show ?case unfolding witness.simps witness'.simps deep_model.simps deep_model'.simps
-    by (simp add: eye_matrix_dim)
+    by (simp add: id_matrix_dim)
 next
   case (Cons r' rs Y r)
-  have "dim_row ((if length (r' # rs) = 0 then eye_matrix else (if length (r' # rs) = 1 then all1_matrix else copy_first_matrix)) Y r) = Y"
-       "dim_col ((if length (r' # rs) = 0 then eye_matrix else (if length (r' # rs) = 1 then all1_matrix else copy_first_matrix)) Y r) = r"
+  have "dim_row ((if length (r' # rs) = 0 then id_matrix else (if length (r' # rs) = 1 then all1_matrix else copy_first_matrix)) Y r) = Y"
+       "dim_col ((if length (r' # rs) = 0 then id_matrix else (if length (r' # rs) = 1 then all1_matrix else copy_first_matrix)) Y r) = r"
     by (simp_all add: all1_matrix_dim copy_first_matrix_dim)
   then show ?case unfolding witness.simps unfolding witness'.simps unfolding remove_weights.simps
     using Cons by simp
@@ -241,12 +241,12 @@ lemma witness'_is_deep_model: "remove_weights (witness' Y rs) = deep_model' Y rs
 proof (induction rs arbitrary: Y)
   case Nil
   then show ?case unfolding witness.simps witness'.simps deep_model.simps deep_model'.simps
-    by (simp add: eye_matrix_dim)
+    by (simp add: id_matrix_dim)
 next
   case (Cons r rs Y)
-  have "dim_row ((if length rs = 0 then eye_matrix else (if length rs = 1 then all1_matrix else copy_first_matrix)) Y r) = Y"
-       "dim_col ((if length rs = 0 then eye_matrix else (if length rs = 1 then all1_matrix else copy_first_matrix)) Y r) = r"
-    by (simp_all add: all1_matrix_dim copy_first_matrix_dim eye_matrix_dim)
+  have "dim_row ((if length rs = 0 then id_matrix else (if length rs = 1 then all1_matrix else copy_first_matrix)) Y r) = Y"
+       "dim_col ((if length rs = 0 then id_matrix else (if length rs = 1 then all1_matrix else copy_first_matrix)) Y r) = r"
+    by (simp_all add: all1_matrix_dim copy_first_matrix_dim id_matrix_dim)
   then show ?case unfolding witness'.simps unfolding witness.simps unfolding remove_weights.simps
     using Cons by simp
 qed
@@ -269,8 +269,8 @@ qed
 
 lemma witness_l0': "witness' Y [M] =
     (Pool
-      (Conv (eye_matrix Y M) (Input M))
-      (Conv (eye_matrix Y M) (Input M))
+      (Conv (id_matrix Y M) (Input M))
+      (Conv (id_matrix Y M) (Input M))
     )"
 unfolding witness'.simps witness.simps by simp
 
@@ -280,7 +280,7 @@ unfolding witness'.simps by simp
 
 lemma tensors_ht_l0:
 assumes "j<r0"
-shows "tensors_from_net (Conv (eye_matrix r0 M) (Input M)) $ j
+shows "tensors_from_net (Conv (id_matrix r0 M) (Input M)) $ j
  = (if j<M then unit_vec M j else tensor0 [M])"
   by (metis assms input_sizes.simps(1) output_size.simps(1) remove_weights.simps(1) tensors_from_net.simps(1)
   tensors_from_net_Conv_id valid_net.intros(1) index_vec)
@@ -308,11 +308,11 @@ assumes "j<r0"
 shows "tensors_from_net (witness' r0 [M]) $ j
  = (if j<M then unit_vec M j \<otimes> unit_vec M j else tensor0 [M,M])" (is "_ = ?b")
 proof -
-  have "valid_net' (Conv (eye_matrix r0 M) (Input M))"
+  have "valid_net' (Conv (id_matrix r0 M) (Input M))"
     by (metis convnet.inject(3) list.discI witness'.elims witness_l0' witness_valid)
-  have j_le:"j < dim_vec (tensors_from_net (Conv (eye_matrix r0 M) (Input M)))"
-    using output_size_correct_tensors[OF `valid_net' (Conv (eye_matrix r0 M) (Input M))`,
-    unfolded remove_weights.simps output_size.simps eye_matrix_dim]
+  have j_le:"j < dim_vec (tensors_from_net (Conv (id_matrix r0 M) (Input M)))"
+    using output_size_correct_tensors[OF `valid_net' (Conv (id_matrix r0 M) (Input M))`,
+    unfolded remove_weights.simps output_size.simps id_matrix_dim]
     assms by simp
   show ?thesis
     unfolding tensors_from_net.simps(3) witness_l0' index_component_mult[OF j_le j_le]  tensors_ht_l0[OF assms]
@@ -343,10 +343,10 @@ shows "Tensor.lookup (tensors_from_net (witness r1 r0 [M]) $ j) is
    = (if is!0 = is!1 \<and> is!0<r0 then 1 else 0)"
 proof -
   have witness_l0'_valid: "valid_net' (witness' r0 [M])" unfolding witness_l0'
-    by (simp add: eye_matrix_dim valid_net.intros)
+    by (simp add: id_matrix_dim valid_net.intros)
   have "input_sizes (witness' r0 [M]) = [M,M]" unfolding witness_l0' by simp
   have "output_size' (witness' r0 [M]) = r0" unfolding witness_l0' using witness_l0'_valid
-    by (simp add: eye_matrix_dim)
+    by (simp add: id_matrix_dim)
   have "dim_vec (tensors_from_net (witness' r0 [M])) = r0"
     using \<open>output_size' (witness' r0 [M]) = r0\<close> witness_l0'_valid output_size_correct_tensors by fastforce
   have all0_but1:"\<And>i. i\<noteq>is!0 \<Longrightarrow> i<r0 \<Longrightarrow> Tensor.lookup (tensors_from_net (witness' r0 [M]) $ i) is = 0"
@@ -698,7 +698,7 @@ next
     have "valid_net' (witness' (rs ! 1) (tl (tl rs)))" by (simp add: witness'_valid)
     have "output_size' (witness' (rs ! 1) (tl (tl rs))) = rs ! 1"
       by (metis "2" Nitpick.size_list_simp(2) diff_diff_left diff_is_0_eq hd_Cons_tl deep_model'.simps(2) deep_model.elims length_tl not_less_eq_eq numeral_2_eq_2 numeral_3_eq_3 one_add_one output_size.simps(2) output_size.simps(3) tl_Nil witness'_is_deep_model)
-    have if_resolve:"(if length (tl (tl rs)) = 0 then eye_matrix else if length (tl (tl rs)) = 1 then all1_matrix else copy_first_matrix) = copy_first_matrix"
+    have if_resolve:"(if length (tl (tl rs)) = 0 then id_matrix else if length (tl (tl rs)) = 1 then all1_matrix else copy_first_matrix) = copy_first_matrix"
       by (metis "2" Cons.prems(2) Nitpick.size_list_simp(2) One_nat_def Suc_n_not_le_n not_numeral_le_zero numeral_3_eq_3)
     have "tensors_from_net (Conv (copy_first_matrix (rs ! 0) (rs ! 1)) (witness' (rs ! 1) (tl (tl rs)))) $ j =
       tensors_from_net (witness' (rs ! 1) (tl (tl rs))) $ 0"
