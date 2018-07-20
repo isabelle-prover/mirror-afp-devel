@@ -9,6 +9,7 @@ theory Applicative_Functor imports
   Applicative_List
   Applicative_DNEList
   Applicative_Monoid
+  Applicative_Filter
   Applicative_State
   Applicative_Stream
   Applicative_Open_State
