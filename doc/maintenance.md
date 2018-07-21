@@ -64,7 +64,7 @@ an automatic email notification each time your entry breaks (see below).
     about 24h delay in the web development snapshot of the AFP.
 -   If you make a change that is more than maintenance and that you
     think may be interesting to users of your entry, please add a manual
-    change log in the file `afp-devel/metadata/metada` by adding an
+    change log in the file `afp-devel/metadata/metadata` by adding an
     `[extra-history]` section to your entry. If possible and sensible,
     this log should link to the relevant hg change set(s). See existing
     change logs like the one for JinjaThreads for examples.
