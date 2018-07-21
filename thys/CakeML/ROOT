@@ -30,6 +30,7 @@ session CakeML (AFP) = LEM +
     "generated/CakeML/SemanticPrimitives"
     "generated/CakeML/SemanticPrimitivesAuxiliary"
     "generated/CakeML/SimpleIO"
+    "generated/CakeML/Tokens"
     "generated/CakeML/TypeSystem"
     "generated/CakeML/TypeSystemAuxiliary"
   theories

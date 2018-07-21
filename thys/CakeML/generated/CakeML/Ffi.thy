@@ -5,8 +5,8 @@ theory "Ffi"
 imports
   Main
   "LEM.Lem_pervasives"
-  "Lib"
   "LEM.Lem_pervasives_extra"
+  "Lib"
 
 begin 
 

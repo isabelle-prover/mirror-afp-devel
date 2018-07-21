@@ -4,9 +4,9 @@ theory "TypeSystem"
 
 imports
   Main
+  "LEM.Lem_pervasives_extra"
   "Lib"
   "Namespace"
-  "LEM.Lem_pervasives_extra"
   "Ast"
   "SemanticPrimitives"
 

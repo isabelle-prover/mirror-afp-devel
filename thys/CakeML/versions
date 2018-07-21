@@ -18,17 +18,20 @@ CAKEML_COMMIT="120c3f18b89f91ef6697c1f29d2025cbe2369b9a" # v2.0 tag
 
 CAKEML_LEM_FILES=(
   "misc/lem_lib_stub/lib.lem"
+  "semantics/alt_semantics/bigStep.lem"
+  # https://github.com/CakeML/cakeml/pull/501
+  #"semantics/alt_semantics/proofs/bigSmallInvariants.lem"
+  "semantics/alt_semantics/smallStep.lem"
   "semantics/ast.lem"
   "semantics/evaluate.lem"
+  "semantics/ffi/ffi.lem"
+  "semantics/ffi/simpleIO.lem"
   "semantics/fpSem.lem"
   "semantics/namespace.lem"
   "semantics/primTypes.lem"
   "semantics/semanticPrimitives.lem"
+  "semantics/tokens.lem"
   "semantics/typeSystem.lem"
-  "semantics/alt_semantics/bigStep.lem"
-  "semantics/alt_semantics/smallStep.lem"
-  "semantics/ffi/ffi.lem"
-  "semantics/ffi/simpleIO.lem"
 )
 
 # Theories to ignore (e.g. because of failing default termination proofs)
