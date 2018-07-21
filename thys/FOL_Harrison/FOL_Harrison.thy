@@ -1352,7 +1352,7 @@ fun papply f (ast,rest) = (f ast,rest);
 fun nextin inp tok = inp <> [] andalso List.hd inp = tok;
 
 fun parse_bracketed subparser cbra inp =
-  let  val(ast,rest) = subparser inp in
+  let val(ast,rest) = subparser inp in
   if nextin rest cbra then (ast,List.tl rest)
   else raise Fail "Closing bracket expected"
   end;
@@ -1432,7 +1432,7 @@ fun print_formula_aux pfn =
         | And (p, q) =>
             bracket (pr > 8) 0 (print_infix 8 "/\\") p q
         | Or (p, q) =>
-            bracket (pr > 6) 0 (print_infix  6 "\\/") p q
+            bracket (pr > 6) 0 (print_infix 6 "\\/") p q
         | Imp (p, q) =>
             bracket (pr > 4) 0 (print_infix 4 "==>") p q
         | Iff (p, q) =>
@@ -1493,7 +1493,7 @@ fun dest_iff fm =
   case fm of Iff(p,q) => (p,q) | _ => raise Fail "dest_iff";
 
 fun dest_and fm =
-  case fm of And(p,q) => (p,q) | _ => raise Fail ("dest_and");
+  case fm of And(p,q) => (p,q) | _ => raise Fail "dest_and";
 
 fun conjuncts fm =
   case fm of And(p,q) => conjuncts p @ conjuncts q | _ => [fm];
@@ -1586,7 +1586,7 @@ fun t_ord t1 t2 =
          0 => tl_ord tl1 tl2
         |n => n
 and tl_ord tl1 tl2 =
-    case  (tl1,tl2) of
+    case (tl1,tl2) of
       ([],[]) => 0
     | ([],_) => 1
     | (_,[]) => ~1
@@ -1745,7 +1745,7 @@ and print_infix_term_aux isleft oldprec newprec sym p q = (
 
 fun print_term prec fm = (print_term_aux prec fm; print_flush ())
 and print_fargs f args = (print_fargs_aux f args; print_flush ())
-and print_infix_term il old_prec new_prec sym p q = (print_infix_term_aux il old_prec new_prec sym p q; print_flush ());
+and print_infix_term isleft oldprec newprec sym p q = (print_infix_term_aux isleft oldprec newprec sym p q; print_flush ());
 
 fun printert_aux tm = (
   open_box 0; print_string "<!|";
@@ -1963,7 +1963,7 @@ fun term_match env eqs =
     | (Fn (f, fa), Fn(g, ga)) :: oth =>
         if (f = g andalso List.length fa = List.length ga) then
         term_match env (zip fa ga @ oth)
-        else raise Fail  "term_match"
+        else raise Fail "term_match"
     | (Var x, t) :: oth =>
         if not (defined_str env x) then
             term_match ((x |--> t) env) oth
@@ -2909,7 +2909,7 @@ fun skolemfuns fm =
 fun form_match (fp as (f1,f2)) env =
   case fp of
     (Falsity,Falsity) => env
-  | (Truth,Truth)   => env
+  | (Truth,Truth)     => env
   | (Atom(Rl(p,pa)),Atom(Rl(q,qa))) => term_match env [(Fn(p,pa),Fn(q,qa))]
   | (Not(p1),Not(p2)) => form_match (p1,p2) env
   | (And(p1,q1),And(p2,q2)) => form_match (p1,p2) (form_match (q1,q2) env)
@@ -2984,7 +2984,7 @@ fun deskolcont thp (env,sks,k) =
       val ssk = sort (decreasing (termsize o snd)) isk
       val vs  = List.map (fn i => Var("Y_"^Int.toString i)) (1--List.length ssk)
       val vfn = replacet(itlist2 (fn (p,t) => fn v => t |---> v) ssk vs undefined)
-      val th = thp(vfn o ifn,onformula vfn (itlist mk_skol ssk Falsity)) in
+      val th  = thp(vfn o ifn,onformula vfn (itlist mk_skol ssk Falsity)) in
   repeat (elim_skolemvar o imp_swap) th
   end;
 
@@ -3230,7 +3230,7 @@ fun auto_tac byfn hyps (g as Goals((asl,w)::gls,jfn)) =
 (* ------------------------------------------------------------------------- *)
 
 fun lemma_tac s p byfn hyps (g as Goals((asl,w)::gls,jfn)) =
-  let val tr  = imp_trans(justify byfn hyps p g)
+  let val tr = imp_trans(justify byfn hyps p g)
       val mfn = if asl = [] then tr else imp_unduplicate o tr o shunt in
   Goals(((s,p)::asl,w)::gls,jmodify jfn mfn)
   end;
@@ -3290,7 +3290,7 @@ fun multishunt i th =
 fun assume lps (Goals((asl,Imp(p,q))::gls,jfn)) =
   if end_itlist mk_and (map snd lps) <> p then raise Fail "assume" else
   let fun jfn' th =
-    if asl = [] then add_assum Truth th  else multishunt (length lps) th in
+    if asl = [] then add_assum Truth th else multishunt (length lps) th in
   Goals((lps@asl,q)::gls,jmodify jfn jfn')
   end;
 
@@ -3615,6 +3615,23 @@ ML_val {* (* Pelletier p46 (Harrison does not have it) *)
 
 section \<open>Other Examples\<close>
 
+(* For Pelletier's Problem 34 aka Andrews's Challenge *)
+
+ML {*
+
+fun by_mp (ab, a) p (Goals((asl,_)::_,_)) =
+  let
+    val ths = assumps asl
+    val th = right_mp (assoc ab ths) (assoc a ths)
+    handle Fail _ => raise Fail "by_mp: unapplicable assumptions"
+  in
+  if consequent (concl th) = p then [th] else raise Fail "by_mp: wrong conclusion"
+  end
+  | by_mp _ _ _ = raise Fail "Match by_mp"
+;
+
+*}
+
 (* Function auto as a basic declarative proof *)
 
 ML {* fun auto s = prove (<!s!>) [our thesis at once, qed] *}
@@ -3855,6 +3872,159 @@ ML_val {* (* Pelletier p33 *)
 
 auto ("(forall x. P(a) /\\ (P(x) ==> P(b)) ==> P(c)) " ^
       "<=> (forall x. P(a) ==> P(x) \\/ P(c)) /\\ (P(a) ==> P(b) ==> P(c))")
+
+*}
+
+ML_val {* (* Pelletier p34 *)
+
+prove
+(<!("((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y)))) <=>"
+^   "((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y))))")!>)
+[
+
+  note ("directions",
+  <!("(((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y)))) ==>"
+^    "((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y))))) /\\"
+^    "(((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y)))) ==>"
+^    "((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y)))))")!>)
+  proof
+  [
+    conclude
+    (<!("((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y)))) ==>"
+^       "((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y))))")!>)
+    proof
+    [
+      assume [("A",
+      <!"(exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y)))"!>)],
+
+      note ("ant",
+      <!("((exists x. forall y. Q(x) <=> Q(y)) ==> ((exists x. P(x)) <=> (forall y. P(y)))) /\\"
+^        "(((exists x. P(x)) <=> (forall y. P(y))) ==> ((exists x. forall y. Q(x) <=> Q(y))))")!>)
+      proof
+      [
+
+        conclude
+        (<!"(exists x. forall y. Q(x) <=> Q(y)) ==> ((exists x. P(x)) <=> (forall y. P(y)))"!>)
+        proof
+        [
+          assume [("", <!"exists x. forall y. Q(x) <=> Q(y)"!>)],
+          so have (<!"(exists x. Q(x)) <=> (forall y. Q(y))"!>) at once,
+          so have (<!"exists x. forall y. P(x) <=> P(y)"!>) by ["A"],
+          so our thesis at once,
+          qed
+        ],
+
+        conclude
+        (<!"((exists x. P(x)) <=> (forall y. P(y))) ==> (exists x. forall y. Q(x) <=> Q(y))"!>)
+        proof
+        [
+          note ("imp",
+          <!("((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y)))) ==>"
+^            "((exists x. forall y. P(x) <=> P(y)) ==> ((exists x. Q(x)) <=> (forall y. Q(y))))")!>)
+          using [axiom_iffimp1
+            (<!"exists x. forall y. P(x) <=> P(y)"!>)
+            (<!"(exists x. Q(x)) <=> (forall y. Q(y))"!>)],
+          note ("A1",
+           <!"(exists x. forall y. P(x) <=> P(y)) ==> ((exists x. Q(x)) <=> (forall y. Q(y)))"!>)
+          by_mp ("imp", "A"),
+
+          assume [("", <!"((exists x. P(x)) <=> (forall y. P(y)))"!>)],
+          so have (<!"(exists x. forall y. P(x) <=> P(y))"!>) at once,
+          so have (<!"((exists x. Q(x)) <=> (forall y. Q(y)))"!>) by ["A1"],
+          so our thesis at once,
+          qed
+        ],
+        qed
+      ],
+
+      note ("imp",
+      <!("((exists x. forall y. Q(x) <=> Q(y)) ==> ((exists x. P(x)) <=> (forall y. P(y)))) /\\"
+^        "(((exists x. P(x)) <=> (forall y. P(y))) ==> ((exists x. forall y. Q(x) <=> Q(y)))) ==>"
+^        "((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y))))")!>)
+      using [unshunt (axiom_impiff
+        (<!"exists x. forall y. Q(x) <=> Q(y)"!>)
+        (<!"(exists x. P(x)) <=> (forall y. P(y))"!>))],
+
+      our thesis by_mp ("imp", "ant"),
+      qed
+    ],
+
+    conclude
+    (<!("((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y)))) ==>"
+^       "((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y))))")!>)
+    proof
+    [
+      assume [("A",
+       <!"(exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y)))"!>)],
+
+      note ("ant",
+      <!("((exists x. forall y. P(x) <=> P(y)) ==> ((exists x. Q(x)) <=> (forall y. Q(y)))) /\\"
+^        "(((exists x. Q(x)) <=> (forall y. Q(y))) ==> (exists x. forall y. P(x) <=> P(y)))")!>)
+      proof
+      [
+
+        conclude
+        (<!"(exists x. forall y. P(x) <=> P(y)) ==> ((exists x. Q(x)) <=> (forall y. Q(y)))"!>)
+        proof
+        [
+          assume [("", <!"exists x. forall y. P(x) <=> P(y)"!>)],
+          so have (<!"(exists x. P(x)) <=> (forall y. P(y))"!>) at once,
+          so have (<!"exists x. forall y. Q(x) <=> Q(y)"!>) by ["A"],
+          so our thesis at once,
+          qed
+        ],
+
+        conclude
+        (<!"((exists x. Q(x)) <=> (forall y. Q(y))) ==> (exists x. forall y. P(x) <=> P(y))"!>)
+        proof
+        [
+          note ("imp",
+          <!("((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y)))) ==>"
+^            "((exists x. forall y. Q(x) <=> Q(y)) ==> ((exists x. P(x)) <=> (forall y. P(y))))")!>)
+          using [axiom_iffimp1
+            (<!"exists x. forall y. Q(x) <=> Q(y)"!>)
+            (<!"(exists x. P(x)) <=> (forall y. P(y))"!>)],
+          note ("A1",
+          <!"(exists x. forall y. Q(x) <=> Q(y)) ==> ((exists x. P(x)) <=> (forall y. P(y)))"!>)
+          by_mp ("imp", "A"),
+
+          assume [("", <!"(exists x. Q(x)) <=> (forall y. Q(y))"!>)],
+          so have (<!"(exists x. forall y. Q(x) <=> Q(y))"!>) at once,
+          so have (<!"((exists x. P(x)) <=> (forall y. P(y)))"!>) by ["A1"],
+          so our thesis at once,
+          qed
+        ],
+        qed
+      ],
+
+      note ("imp",
+      <!("((exists x. forall y. P(x) <=> P(y)) ==> ((exists x. Q(x)) <=> (forall y. Q(y)))) /\\"
+^        "(((exists x. Q(x)) <=> (forall y. Q(y))) ==> (exists x. forall y. P(x) <=> P(y))) ==>"
+^        "((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y))))")!>)
+      using [unshunt (axiom_impiff
+        (<!"exists x. forall y. P(x) <=> P(y)"!>)
+        (<!"(exists x. Q(x)) <=> (forall y. Q(y))"!>))],
+
+      our thesis by_mp ("imp", "ant"),
+      qed
+    ],
+    qed
+  ],
+
+  note ("impiff",
+  <!(("(((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y)))) ==>"
+^     "((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y))))) /\\"
+^     "(((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y)))) ==>"
+^     "((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y))))) ==>"
+^     "(((exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y)))) <=>"
+^     "((exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y)))))"))!>)
+  using [unshunt (axiom_impiff
+    (<!("(exists x. forall y. P(x) <=> P(y)) <=> ((exists x. Q(x)) <=> (forall y. Q(y)))")!>)
+    (<!("(exists x. forall y. Q(x) <=> Q(y)) <=> ((exists x. P(x)) <=> (forall y. P(y)))")!>))],
+
+  our thesis by_mp ("impiff", "directions"),
+  qed
+]
 
 *}
 
