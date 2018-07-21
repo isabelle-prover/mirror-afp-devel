@@ -55,7 +55,8 @@ proof -
     by (simp add: remove_insert_weights valid_shallow_model)
   have input_sizes: "input_sizes (insert_weights shared_weights (deep_model_l rs) wd)
     = input_sizes (insert_weights shared_weights (shallow_model (rs ! 0) Z (last rs) (2 * N_half - 1)) ws)"
-    by (metis N_half_def Suc_mult_two_diff_one input_sizes_remove_weights input_sizes_shallow_model local.input_sizes_deep_model power_eq_0_iff remove_insert_weights zero_neq_numeral)
+    using input_sizes_remove_weights input_sizes_deep_model remove_insert_weights 
+    by (simp add: N_half_def input_sizes_shallow_model)
   have 0:"tensors_from_net (insert_weights shared_weights (deep_model_l rs) wd)
         = tensors_from_net (insert_weights shared_weights (shallow_model (rs ! 0) Z (last rs) (2*N_half -1)) ws)"
     using tensors_from_net_eqI[OF valid1 valid2 input_sizes, unfolded input_sizes_remove_weights remove_insert_weights]
