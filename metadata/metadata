@@ -3487,9 +3487,13 @@ notify = uuomul@yahoo.com, nipkow@in.tum.de
 [FOL-Fitting]
 title = First-Order Logic According to Fitting
 author = Stefan Berghofer <http://www.in.tum.de/~berghofe>
+contributors = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
 date = 2007-08-02
 topic = Logic
 abstract = We present a formalization of parts of Melvin Fitting's book ``First-Order Logic and Automated Theorem Proving''. The formalization covers the syntax of first-order logic, its semantics, the model existence theorem, a natural deduction proof calculus together with a proof of correctness and completeness, as well as the Löwenheim-Skolem theorem.
+extra-history =
+Change history:
+[2018-07-21]: Proved completeness theorem for open formulas. Proofs are now written in the declarative style. Enumeration of pairs and datatypes is automated using the Countable theory.
 notify = berghofe@in.tum.de
 
 [SequentInvertibility]
