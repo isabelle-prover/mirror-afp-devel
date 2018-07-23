@@ -16,25 +16,25 @@ source "$AFP_ROOT/etc/version"
 
 ##
 
-function fail()
+fail()
 {
   echo "### $1" >&2
   exit 2
 }
 
-function timestamp()
+timestamp()
 {
    echo "[timestamp: $(date "+%Y-%m-%d %H:%M:%S")]"
 }
 
-function check_isabelle()
+check_isabelle()
 {
   [ -x "$ISABELLE_TOOL" ] || fail "No isabelle tool wrapper found at [$ISABELLE_TOOL]."
   ISABELLE_HOME="$("$ISABELLE_TOOL" getenv -b ISABELLE_HOME)" || fail "could not find Isabelle home"
 }
 
 
-function default_isabelle_tool()
+default_isabelle_tool()
 {
   if [ ! -x "$ISABELLE_TOOL" ]; then
     if [[ "$VERSION" == devel ]]; then
@@ -50,7 +50,7 @@ function default_isabelle_tool()
   fi
 }
 
-function set_isabelle_tool()
+set_isabelle_tool()
 {
   default_isabelle_tool
   check_isabelle

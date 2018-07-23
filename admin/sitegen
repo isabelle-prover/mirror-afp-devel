@@ -3,8 +3,8 @@
 # standard invocation of sitegen.py
 
 ### <CONFIGURATION> ###
-VENV_VERSION="15.1.0"
-URL="https://pypi.python.org/packages/d4/0c/9840c08189e030873387a73b90ada981885010dd9aea134d6de30cd24cb8/virtualenv-$VENV_VERSION.tar.gz"
+VENV_VERSION="16.0.0"
+URL="https://files.pythonhosted.org/packages/33/bc/fa0b5347139cd9564f0d44ebd2b147ac97c36b2403943dbee8a25fd74012/virtualenv-$VENV_VERSION.tar.gz"
 ### </CONFIGURATION> ###
 
 set -e
@@ -77,7 +77,7 @@ if [ ! -d "$BOOTSTRAP_DIR" ]; then
   mkdir -p "$BOOTSTRAP_DIR/lib/python"
   (
     cd "$BOOTSTRAP_DIR"
-    curl -sS "$URL" | tar xzf -
+    curl -sLS "$URL" | tar xzf -
     cd "virtualenv-$VENV_VERSION"
     "$PYTHON" setup.py install --home "$BOOTSTRAP_DIR"
   )

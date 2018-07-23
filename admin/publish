@@ -55,20 +55,6 @@ function usage()
   exit 1
 }
 
-function fail()
-{
-  echo "$1" >&2
-  exit 2
-}
-
-function check_isabelle_tool()
-{
-  [ -x $ISABELLE_TOOL ] || fail "No isabelle found at [$ISABELLE_TOOL]."
-  ML_IDENTIFIER=`$ISABELLE_TOOL getenv -b ML_IDENTIFIER` || fail "could not identify ML system"
-  ISABELLE_HOME=`$ISABELLE_TOOL getenv -b ISABELLE_HOME` || fail "could not find Isabelle home"
-  export ISABELLE_IMAGE_PATH="$ISABELLE_HOME/heaps/$ML_IDENTIFIER/"
-}
-
 ## argument checking
 
 [ "$#" -lt "1" -o "$1" = "-?" ] && usage

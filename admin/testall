@@ -3,7 +3,6 @@
 # Author: Gerwin Klein, NICTA
 #
 # Tests all entries in Archive of Formal Proofs
-# 
 
 source "$(dirname "$0")/common"
 
@@ -15,12 +14,12 @@ function usage()
   echo "Usage: $PRG OPTIONS [entries]"
   echo
   echo "  Runs isabelle build on specified entries in the Archive of Formal Proofs"
-  echo 
+  echo
   echo "Options:"
-  echo "-t <path/to/isabelle>  use isabelle tool wrapper at specified path"     
+  echo "-t <path/to/isabelle>  use isabelle tool wrapper at specified path"
   echo "-c                     include target clean (rebuild session)"
   echo "-r                     use env variable ISABELLE_RELEASES to find isabelle"
-  echo 
+  echo
   echo "Examples:"
   echo
   echo "$PRG"
@@ -36,11 +35,6 @@ function usage()
   echo   "uses the distribution $ISABELLE_RELEASES/Isabelle2009 to test Example-Submission"
   exit 1
 }
-
-
-INCLUDE_INFREQUENT="yes"
-INCLUDE_FREQUENT="yes"
-
 
 while getopts "t:cr:" OPT
 do
