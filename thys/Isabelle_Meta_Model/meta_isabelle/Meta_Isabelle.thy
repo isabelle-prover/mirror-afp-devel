@@ -145,7 +145,7 @@ datatype semi__command_final = Command_done
 
 datatype semi__command_state = Command_apply_end "semi__method list" \<comment> \<open>\<^theory_text>\<open>apply_end (\<dots>, \<dots>)\<close>\<close>
 
-datatype semi__command_proof = Command_apply "semi__method list" \<comment> \<open>\<^theory_text>\<open>apply_end (\<dots>, \<dots>)\<close>\<close>
+datatype semi__command_proof = Command_apply "semi__method list" \<comment> \<open>\<^theory_text>\<open>apply (\<dots>, \<dots>)\<close>\<close>
                              | Command_using semi__thm_l \<comment> \<open>\<^theory_text>\<open>using \<dots>\<close>\<close>
                              | Command_unfolding semi__thm_l \<comment> \<open>\<^theory_text>\<open>unfolding \<dots>\<close>\<close>
                              | Command_let semi__term \<comment> \<open>name\<close> semi__term
