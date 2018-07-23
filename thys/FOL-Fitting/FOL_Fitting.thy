@@ -4,7 +4,7 @@
 *)
 
 theory FOL_Fitting
-imports "HOL-Library.Countable"
+  imports "HOL-Library.Countable"
 begin
 
 section \<open>Miscellaneous Utilities\<close>
@@ -436,17 +436,17 @@ proof -
   have \<open>[Neg ?or] \<turnstile> Neg ?or\<close>
     by (simp add: Assum)
   moreover { have \<open>[Pred p [], Neg ?or] \<turnstile> Neg ?or\<close>
-    by (simp add: Assum)
-  moreover have \<open>[Pred p [], Neg ?or] \<turnstile> Pred p []\<close>
-    by (simp add: Assum)
-  then have \<open>[Pred p [], Neg ?or] \<turnstile> ?or\<close>
-    by (rule OrI1)
-  ultimately have \<open>[Pred p [], Neg ?or] \<turnstile> FF\<close>
-    by (rule NegE)
-  then have \<open>[Neg ?or] \<turnstile> Neg (Pred p [])\<close>
-    by (rule NegI)
-  then have \<open>[Neg ?or] \<turnstile> ?or\<close>
-    by (rule OrI2) }
+      by (simp add: Assum)
+    moreover have \<open>[Pred p [], Neg ?or] \<turnstile> Pred p []\<close>
+      by (simp add: Assum)
+    then have \<open>[Pred p [], Neg ?or] \<turnstile> ?or\<close>
+      by (rule OrI1)
+    ultimately have \<open>[Pred p [], Neg ?or] \<turnstile> FF\<close>
+      by (rule NegE)
+    then have \<open>[Neg ?or] \<turnstile> Neg (Pred p [])\<close>
+      by (rule NegI)
+    then have \<open>[Neg ?or] \<turnstile> ?or\<close>
+      by (rule OrI2) }
   ultimately have \<open>[Neg ?or] \<turnstile> FF\<close>
     by (rule NegE)
   then show ?thesis
@@ -462,12 +462,12 @@ proof -
   have \<open>[Exists ?forall] \<turnstile> Exists ?forall\<close>
     by (simp add: Assum)
   moreover { have \<open>[?forall[App 1 []/0], Exists ?forall] \<turnstile> Forall (Pred p [App 1 [], Var 0])\<close>
-    by (simp add: Assum)
-  moreover have \<open>[Pred p [App 1 [], Var 0][App 0 []/0], ?forall[App 1 []/0],
-     Exists ?forall] \<turnstile> Pred p [Var 0, App 0 []][App 1 []/0]\<close>
-    by (simp add: Assum)
-  ultimately have \<open>[?forall[App 1 []/0], Exists ?forall] \<turnstile> (Pred p [Var 0, App 0 []])[App 1 []/0]\<close>
-    by (rule ForallE') }
+      by (simp add: Assum)
+    moreover have \<open>[Pred p [App 1 [], Var 0][App 0 []/0], ?forall[App 1 []/0],
+      Exists ?forall] \<turnstile> Pred p [Var 0, App 0 []][App 1 []/0]\<close>
+      by (simp add: Assum)
+    ultimately have \<open>[?forall[App 1 []/0], Exists ?forall] \<turnstile> (Pred p [Var 0, App 0 []])[App 1 []/0]\<close>
+      by (rule ForallE') }
   then have \<open>[?forall[App 1 []/0], Exists ?forall] \<turnstile> Exists (Pred p [Var 0, App 0 []])\<close>
     by (rule ExistsI)
   moreover have \<open>list_all (\<lambda>p. 1 \<notin> params p) [Exists ?forall]\<close>
@@ -537,13 +537,13 @@ proof -
   have \<open>[?PQP, Neg ?PQPP] \<turnstile> ?PQP\<close>
     by (simp add: Assum)
   moreover { have \<open>[Pred P [], ?PQP, Neg ?PQPP] \<turnstile> Neg ?PQPP\<close>
-    by (simp add: Assum)
-  moreover have \<open>[?PQP, Pred P [], ?PQP, Neg ?PQPP] \<turnstile> Pred P []\<close>
-    by (simp add: Assum)
-  then have \<open>[Pred P [], ?PQP, Neg ?PQPP] \<turnstile> ?PQPP\<close>
-    by (rule ImplI)
-  ultimately have \<open>[Pred P [], ?PQP, Neg ?PQPP] \<turnstile> FF\<close>
-    by (rule NegE) }
+      by (simp add: Assum)
+    moreover have \<open>[?PQP, Pred P [], ?PQP, Neg ?PQPP] \<turnstile> Pred P []\<close>
+      by (simp add: Assum)
+    then have \<open>[Pred P [], ?PQP, Neg ?PQPP] \<turnstile> ?PQPP\<close>
+      by (rule ImplI)
+    ultimately have \<open>[Pred P [], ?PQP, Neg ?PQPP] \<turnstile> FF\<close>
+      by (rule NegE) }
   then have \<open>[Pred P [], ?PQP, Neg ?PQPP] \<turnstile> Pred Q []\<close>
     by (rule FFE)
   then have \<open>[?PQP, Neg ?PQPP] \<turnstile> Impl (Pred P []) (Pred Q [])\<close>
@@ -1385,13 +1385,11 @@ for datatypes, the types @{type term} and @{type form} can automatically be show
 be a member of the @{class countable} type class:
 \<close>
 
-instantiation \<open>term\<close> :: (countable) countable begin
-instance by countable_datatype
-end
+instance \<open>term\<close> :: (countable) countable
+  by countable_datatype
 
-instantiation form :: (countable, countable) countable begin
-instance by countable_datatype
-end
+instance form :: (countable, countable) countable
+  by countable_datatype
 
 subsection \<open>Extension to maximal consistent sets\<close>
 
