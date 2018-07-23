@@ -45,7 +45,7 @@ subsection\<open>Introduction\<close>
 theory
   Design_deep
 imports
-  "../embedding/Generator_dynamic"
+  "../embedding/Generator_dynamic_sequential"
 begin
 ML_file "~~/src/Doc/antiquote_setup.ML"
 
@@ -72,7 +72,7 @@ generation_syntax [ (*deep
                       (generation_semantics [ design (*, oid_start 10*) ])
                       (THEORY Design_generated)
                       (IMPORTS ["../Toy_Library", "../Toy_Library_Static"]
-                               "../embedding/Generator_dynamic")
+                               "../embedding/Generator_dynamic_sequential")
                       SECTION
                       (*SORRY*) (*no_dirty*)
                       [ (* in Haskell *)
@@ -89,7 +89,7 @@ generation_syntax
       (generation_semantics [ design ])
       (THEORY Design_generated)
       (IMPORTS ["../Toy_Library", "../Toy_Library_Static"]
-               "../embedding/Generator_dynamic")
+               "../embedding/Generator_dynamic_sequential")
       SECTION
       (*SORRY*) (*no_dirty*)
       [ (* in Haskell *)
@@ -132,7 +132,7 @@ End
 text\<open>The ``blue'' color of @{command End} indicates that
 @{command End} is not a ``green'' keyword. 
 @{command End} and @{command Class} are in fact similar, they belong to the group of meta-commands
-(all meta-commands are defined in @{theory Isabelle_Meta_Model.Generator_dynamic}).
+(all meta-commands are defined in @{theory Isabelle_Meta_Model.Generator_dynamic_sequential}).
 At run-time and in @{keyword "deep"} mode, the semantics of all meta-commands are 
 approximately similar: all meta-commands displays some quantity of Isabelle code
 in the output window (as long as meta-commands are syntactically correctly formed).
@@ -301,9 +301,9 @@ Meta-commands are obviously not restricted to manipulate expressions in the Oute
 It is possible to build meta-commands so that Inner Syntax expressions are directly parsed.
 However the dependencies of this theory have been minimized so that experimentations
 and debugging can easily occur in @{keyword "deep"} mode 
-(this file only depends on @{theory Isabelle_Meta_Model.Generator_dynamic}). 
+(this file only depends on @{theory Isabelle_Meta_Model.Generator_dynamic_sequential}). 
 Since the Inner Syntax expressions would perhaps manipulate expressions coming from other theories
-than @{theory Isabelle_Meta_Model.Generator_dynamic}, 
+than @{theory Isabelle_Meta_Model.Generator_dynamic_sequential}, 
 it can be desirable to consider the Inner Syntax container as a string and leave the parsing 
 for subsequent semantic floors.
 
@@ -358,7 +358,7 @@ we retrieve the first generated file in the mentioned directory:
 Because this file still contains meta-commands, we are here executing again
 a new generating step inside this file, the new result becomes saved in
 @{file "../document_generated/Design_generated_generated.thy"}.
-As remark, in this last file, the dependency to @{theory Isabelle_Meta_Model.Generator_dynamic} was 
+As remark, in this last file, the dependency to @{theory Isabelle_Meta_Model.Generator_dynamic_sequential} was 
 automatically removed because the meta-compiler has detected the absence of meta-commands
 in the generated content.
 
