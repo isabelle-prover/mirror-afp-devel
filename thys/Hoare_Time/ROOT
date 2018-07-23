@@ -4,48 +4,10 @@ session Hoare_Time (AFP) = "HOL" +
   options [timeout = 600]
   sessions 
     "Separation_Algebra"
-  theories [document=false]
-    "~~/src/HOL/Library/Discrete"
-    "~~/src/HOL/Eisbach/Eisbach"
-    "~~/src/HOL/Library/Extended_Nat"
+    "HOL-Library"
+    "HOL-Eisbach" 
   theories
-  AExp
-  BExp
-  Com
-  Vars
-  Big_Step
-  Big_StepT
-
-  (* Nielson System *)
-  Nielson_Hoare         (* formalizes the Hoare logic *)
-  Nielson_VCG           (* the VCG for Nielson system *)
-  Nielson_VCGi          (* the improved VCG for Nielson system *)
-  Nielson_VCGi_complete (* completeness of improved VCG*)
-  Nielson_Sqrt          (* Example proving logarithmic time bound for 
-                            an Algorithm for Discrete Square Root by Binary Search *)
-
-  (* simple quantitative Hoare logic *)
-  Quant_Hoare           (* formalizes the simple quantitative Hoare logic *)
-  Quant_VCG             (* the VCG for that system *)
-  Quant_Examples        (* some examples *)
-
-  (* "bigO-style" quantitative Hoare logic *)
-  QuantK_Hoare          (* formalizes the "big-O style" quantitative Hoare logic *) 
-  QuantK_VCG            (* the VCG for that system *)
-  QuantK_Examples       (* some examples *)
-  QuantK_Sqrt
-
-  (* Separation Logic with Time Credits *)
-  "SepLogAdd/Sep_Algebra_Add"  
-  SepLog_Hoare          (* formalizes the Hoare logic based on Separation Logic and
-                            Time Credits *)
-  SepLog_Examples        (* some examples *)
-  SepLogK_Hoare         (* big-O style Hoare logic using Separation Logic ... *)
-  SepLogK_VCG           (* ... and its VCGen *)
-
-  (* Discussion *)
-  Discussion           (* Discussion and Reduction Proofs for exact style *)
-  DiscussionO            (* Discussion and Reduction Proofs for big-O style *)
+  Hoare_Time 
   
   document_files
     "root.bib"

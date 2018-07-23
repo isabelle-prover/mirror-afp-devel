@@ -1,5 +1,5 @@
 theory QuantK_Sqrt 
-imports QuantK_VCG "~~/src/HOL/Library/Discrete"
+imports QuantK_VCG "HOL-Library.Discrete"
 begin 
      
 subsection \<open>Example: discrete square root in the quantitative Hoare logic\<close>  

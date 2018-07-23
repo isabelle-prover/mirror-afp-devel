@@ -1,5 +1,5 @@
 theory Nielson_Sqrt
-imports Nielson_VCGi "~~/src/HOL/Library/Discrete"
+imports Nielson_VCGi "HOL-Library.Discrete"
 begin
      
 subsection \<open>Example: discrete square root in Nielson's logic\<close>  
