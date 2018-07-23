@@ -21,6 +21,10 @@ lemma is_VarE [elim]:
   "is_Var t \<Longrightarrow> (\<And>x. t = Var x \<Longrightarrow> P) \<Longrightarrow> P"
   by (cases t) auto
 
+lemma is_FunE [elim]:
+  "is_Fun t \<Longrightarrow> (\<And>f ts. t = Fun f ts \<Longrightarrow> P) \<Longrightarrow> P"
+  by (cases t) auto
+
 text \<open>Reorient equations of the form @{term "Var x = t"} and @{term "Fun f ss = t"} to facilitate
   simplification.\<close>
 setup \<open>
