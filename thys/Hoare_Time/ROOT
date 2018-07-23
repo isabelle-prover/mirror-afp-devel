@@ -4,8 +4,10 @@ session Hoare_Time (AFP) = "HOL" +
   options [timeout = 600]
   sessions 
     "Separation_Algebra"
-    "HOL-Library"
-    "HOL-Eisbach"
+  theories [document=false]
+    "~~/src/HOL/Library/Discrete"
+    "~~/src/HOL/Eisbach/Eisbach"
+    "~~/src/HOL/Library/Extended_Nat"
   theories
   AExp
   BExp

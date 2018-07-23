@@ -1,7 +1,7 @@
 section \<open>Quantitative Hoare Logic (big-O style)\<close>
 
 theory QuantK_Hoare
-imports Big_StepT Complex_Main "HOL-Library.Extended_Nat"
+imports Big_StepT Complex_Main "~~/src/HOL/Library/Extended_Nat"
 begin
 
 
