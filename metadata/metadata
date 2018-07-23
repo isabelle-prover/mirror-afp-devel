@@ -6285,7 +6285,7 @@ abstract =
   Isabelle as a very simple interactive proof assistant. As examples we
   consider Pelletier's problems 1-46.</p>
   <p>Reference: Programming and Verifying a Declarative First-Order
-  Prover in Isabelle/HOL.   Alexander Birch Jensen, John Bruntse Larsen,
+  Prover in Isabelle/HOL. Alexander Birch Jensen, John Bruntse Larsen,
   Anders Schlichtkrull & Jørgen Villadsen. AI Communications 31:281-299
   2018. <a href="https://content.iospress.com/articles/ai-communications/aic764">
   https://content.iospress.com/articles/ai-communications/aic764</a></p>
@@ -6294,7 +6294,7 @@ abstract =
   https://github.com/logic-tools/spa</a></p>
 extra-history =
   Change history:
-  [2018-07-21]: Proof of Pelletier's Problem 34 (Andrews's Challenge) thanks to Andreas Halkjær From.<br>
+  [2018-07-21]: Proof of Pelletier's problem 34 (Andrews's Challenge) thanks to Andreas Halkjær From.
 
 [Bernoulli]
 title = Bernoulli Numbers
