@@ -45,26 +45,22 @@ ML {*
     Author:     Makarius
 *)
   local
-    fun mk_char f_char (s, _) accu =
+    fun mk_char (f_char, f_cons, _) (s, _) accu =
         fold
           (fn c => fn (accu, l) =>
-            (f_char c accu,
-               Syntax.const @{const_syntax Cons}
-             $ list_comb (Syntax.const @{const_syntax Char}, String_Syntax.mk_bits_syntax 8 c)
-             $ l))
+            (f_char c accu, f_cons c l))
           (rev (map Char.ord (String.explode s)))
           accu;
 
-    fun mk_string _ accu [] = (accu, Const (@{const_syntax Nil}, @{typ "char list"}))
-      | mk_string f_char accu (s :: ss) = mk_char f_char s (mk_string f_char accu ss);
-
+    fun mk_string (_, _, f_nil) accu [] = (accu, f_nil)
+      | mk_string f accu (s :: ss) = mk_char f s (mk_string f accu ss);
   in
-    fun string_tr f f_char accu content args =
+    fun string_tr f f_mk accu content args =
       let fun err () = raise TERM ("string_tr", args) in
         (case args of
           [(c as Const (@{syntax_const "_constrain"}, _)) $ Free (s, _) $ p] =>
             (case Term_Position.decode_position p of
-              SOME (pos, _) => c $ f (mk_string f_char accu (content (s, pos))) $ p
+              SOME (pos, _) => c $ f (mk_string f_mk accu (content (s, pos))) $ p
             | NONE => err ())
         | _ => err ())
       end;

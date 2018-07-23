@@ -131,7 +131,7 @@ definition "of_all_meta_lists env l_thy =
    | Some (name, fic_import, fic_import_boot) \<Rightarrow>
        ( [ \<open>theory %s imports %s begin\<close>
              (To_string name)
-             (of_semi__term (term_binop \<langle>'' ''\<rangle>
+             (of_semi__term (term_binop \<langle>STR '' ''\<rangle>
                                         (L.map Term_string
                                                (fic_import @@@@ (if D_output_header_force env
                                                                   | D_output_auto_bootstrap env then
@@ -145,7 +145,7 @@ definition "of_all_meta_lists env l_thy =
             let (l_thy, lg) = L.mapM (\<lambda>l n. (of_all_meta env l, Succ n)) l 0 in
             (( \<open>\<close>
              # \<open>%s(* %d ************************************ %d + %d *)\<close>
-                 (To_string (if compiler_env_config.more env then \<langle>''''\<rangle> else \<degree>char_escape\<degree>)) (To_nat (Succ i)) (To_nat cpt) (To_nat lg)
+                 (To_string (if compiler_env_config.more env then \<langle>STR ''''\<rangle> else \<degree>integer_escape\<degree>)) (To_nat (Succ i)) (To_nat cpt) (To_nat lg)
              # l_thy), Succ i, cpt + lg)) l_thy (D_output_position env)))
         , th_end ])"
 end

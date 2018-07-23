@@ -234,7 +234,7 @@ fun of_semi__method where "of_semi__method expr = (\<lambda>
   | Method_elim s \<Rightarrow> \<open>elim %s\<close> (of_semi__thm_attribute s)
   | Method_subst asm l s =>
       let s_asm = if asm then \<open>(asm) \<close> else \<open>\<close> in
-      if L.map String.to_list l = [''0''] then
+      if L.map String.meta_of_logic l = [STR ''0''] then
         \<open>subst %s%s\<close> s_asm (of_semi__thm_attribute s)
       else
         \<open>subst %s(%s) %s\<close> s_asm (String_concat \<open> \<close> (L.map To_string l)) (of_semi__thm_attribute s)

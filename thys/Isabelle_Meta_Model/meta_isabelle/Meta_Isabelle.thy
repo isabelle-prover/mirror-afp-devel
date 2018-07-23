@@ -277,7 +277,7 @@ definition "Lemmas_simp = Lemmas_simp_thm True"
 definition "Lemmas_nosimp = Lemmas_simp_thm False"
 definition "Consts_value = \<open>(_)\<close>"
 definition "Consts_raw0 s l e o_arg =
-       Consts s l (String.replace_chars (\<lambda>c. if c = CHR 0x5F then \<open>'_\<close> else \<degree>c\<degree>) e @@ (case o_arg of
+       Consts s l (String.replace_integers (\<lambda>n. if n = 0x5F then \<open>'_\<close> else \<degree>n\<degree>) e @@ (case o_arg of
          None \<Rightarrow> \<open>\<close>
        | Some arg \<Rightarrow>
            let ap = \<lambda>s. \<open>'(\<close> @@ s @@ \<open>')\<close> in

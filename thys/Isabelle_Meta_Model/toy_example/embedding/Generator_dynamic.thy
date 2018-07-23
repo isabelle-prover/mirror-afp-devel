@@ -120,14 +120,10 @@ code_reflect' open META
              (* printing the TOY AST to (deep Isabelle) string *)
              isabelle_apply isabelle_of_compiler_env_config
 
-             (* Interface Between the Reflected and the Native *)
-             String.implode
-
-
 subsection\<open>Interface Between the Reflected and the Native\<close>
 
 ML\<open>
- val To_string0 = META.implode o META.to_list
+ val To_string0 = META.meta_of_logic
 \<close>
 
 ML\<open>

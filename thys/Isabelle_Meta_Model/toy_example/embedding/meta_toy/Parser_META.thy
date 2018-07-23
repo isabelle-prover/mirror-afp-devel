@@ -194,7 +194,7 @@ definition of_bool where "of_bool b = case_bool
 definition "of_string_gen s_flatten s_st0 s_st a b s = 
   b (let s = textstr_of_str (\<lambda>c. \<open>(\<close> @@ s_flatten @@ \<open> \<close> @@ c @@ \<open>)\<close>)
                             (\<lambda>c \<Rightarrow>
-                                 s_st0 (S.flatten [\<open> (\<close>, \<open>CHR 0x\<close>, String.char_to_digit16 c, \<open>)\<close>]))
+                                 s_st0 (S.flatten [\<open> (\<close>, \<open>CHR 0x\<close>, String.integer_to_digit16 c, \<open>)\<close>]))
                             (\<lambda>c. s_st (S.flatten [\<open> (\<close>, c, \<open>)\<close>]))
                             s in
      S.flatten [ \<open>(\<close>, s, \<open>)\<close> ])"
@@ -292,11 +292,11 @@ definition of_bool where "of_bool b = case_bool
   (b \<open>false\<close>)"
 
 definition \<open>sml_escape =
-  String.replace_chars (\<lambda>x. if x = CHR 0x0A then \<open>\n\<close>
-                            else if x = CHR 0x05 then \<open>\005\<close>
-                            else if x = CHR 0x06 then \<open>\006\<close>
-                            else if x = CHR 0x7F then \<open>\127\<close>
-                            else \<degree>x\<degree>)\<close>
+  String.replace_integers (\<lambda>x. if x = 0x0A then \<open>\n\<close>
+                               else if x = 0x05 then \<open>\005\<close>
+                               else if x = 0x06 then \<open>\006\<close>
+                               else if x = 0x7F then \<open>\127\<close>
+                               else \<degree>x\<degree>)\<close>
 
 definition \<open>of_string a b =
  (\<lambda>x. b (S.flatten [ \<open>(META.SS_base (META.ST "\<close>

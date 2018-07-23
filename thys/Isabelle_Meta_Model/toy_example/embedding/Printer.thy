@@ -76,7 +76,7 @@ definition "write_file env = (
          of_all_meta_lists (compiler_env_config_more_map (\<lambda>_. is_file) env) (rev l))))"
 end
 
-definition "write_file = Print.write_file (String.implode o String.to_list) (ToNat integer_of_natural)"
+definition "write_file = Print.write_file String.meta_of_logic (ToNat integer_of_natural)"
 
 lemmas [code] =
   \<comment> \<open>def\<close>
