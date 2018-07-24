@@ -87,16 +87,16 @@ by (simp add: nxtAct_active)
 lemma baI[intro]:
   fixes t n a
   assumes "\<phi> (\<sigma>\<^bsub>the_singleton\<^esub>(t n))"
-  shows "eval the_singleton t t' n (ba \<phi>)" using assms by (simp add: baIANow)
+  shows "eval the_singleton t t' n [\<phi>]\<^sub>b" using assms by (simp add: baIANow)
   
 lemma baE[elim]:
   fixes t n a
-  assumes "eval the_singleton t t' n (ba \<phi>)"                      
+  assumes "eval the_singleton t t' n [\<phi>]\<^sub>b"                      
   shows "\<phi> (\<sigma>\<^bsub>the_singleton\<^esub>(t n))" using assms by (simp add: baEANow)
 
 lemma evtE[elim]:
   fixes t id n a
-  assumes "eval the_singleton t t' n (evt \<gamma>)"
+  assumes "eval the_singleton t t' n (\<diamond>\<^sub>b \<gamma>)"
   shows "\<exists>n'\<ge>n. eval the_singleton t t' n' \<gamma>"
 proof -
   have "\<parallel>the_singleton\<parallel>\<^bsub>t n\<^esub>" by simp
@@ -113,7 +113,7 @@ qed
   
 lemma globE[elim]:
   fixes t id n a
-  assumes "eval the_singleton t t' n (glob \<gamma>)"
+  assumes "eval the_singleton t t' n (\<box>\<^sub>b \<gamma>)"
   shows "\<forall>n'\<ge>n. eval the_singleton t t' n' \<gamma>"
 proof
   fix n' show "n \<le> n' \<longrightarrow> eval the_singleton t t' n' \<gamma>"
@@ -122,7 +122,7 @@ proof
     hence "\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> n'" by simp
     moreover have "\<parallel>the_singleton\<parallel>\<^bsub>t n\<^esub>" by simp
     ultimately show "eval the_singleton t t' n' \<gamma>"
-      using `eval the_singleton t t' n (glob \<gamma>)` globEA by blast
+      using `eval the_singleton t t' n (\<box>\<^sub>b \<gamma>)` globEA by blast
   qed
 qed
 
@@ -156,11 +156,11 @@ qed
 
 lemma untilE[elim]:
   fixes t id n \<gamma>' \<gamma>
-  assumes "eval the_singleton t t' n (until \<gamma>' \<gamma>)"
+  assumes "eval the_singleton t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)"
   shows "\<exists>n'\<ge>n. eval the_singleton t t' n' \<gamma> \<and> (\<forall>n''\<ge>n. n'' < n' \<longrightarrow> eval the_singleton t t' n'' \<gamma>')"
 proof -
   have "\<parallel>the_singleton\<parallel>\<^bsub>t n\<^esub>" by simp
-  with `eval the_singleton t t' n (until \<gamma>' \<gamma>)` obtain n' where "n'\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" and
+  with `eval the_singleton t t' n (\<gamma>' \<UU>\<^sub>b \<gamma>)` obtain n' where "n'\<ge>\<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" and
    "(\<exists>i\<ge>n'. \<parallel>the_singleton\<parallel>\<^bsub>t i\<^esub>) \<and>
    (\<forall>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub>. n'' \<le> \<langle>the_singleton \<rightarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>) \<and>
    (\<forall>n''\<ge>\<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n\<^esub>. n'' < \<langle>the_singleton \<Leftarrow> t\<rangle>\<^bsub>n'\<^esub> \<longrightarrow> eval the_singleton t t' n'' \<gamma>') \<or>

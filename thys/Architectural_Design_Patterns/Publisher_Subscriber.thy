@@ -20,41 +20,23 @@ subsection "Publisher-Subscriber Architectures"
 locale publisher_subscriber =
   pb: singleton pbactive pbcmp +
   sb: dynamic_component sbcmp sbactive
-    for pbactive :: "'pid \<Rightarrow> cnf \<Rightarrow> bool"
-    and pbcmp :: "'pid \<Rightarrow> cnf \<Rightarrow> 'PB"
-    and sbactive :: "'sid \<Rightarrow> cnf \<Rightarrow> bool"
-    and sbcmp :: "'sid \<Rightarrow> cnf \<Rightarrow> 'SB" +
+    for pbactive :: "'pid \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
+    and pbcmp :: "'pid \<Rightarrow> cnf \<Rightarrow> 'PB" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60)
+    and sbactive :: "'sid \<Rightarrow> cnf \<Rightarrow> bool" ("\<parallel>_\<parallel>\<^bsub>_\<^esub>" [0,110]60)
+    and sbcmp :: "'sid \<Rightarrow> cnf \<Rightarrow> 'SB" ("\<sigma>\<^bsub>_\<^esub>(_)" [0,110]60) +
   fixes pbsb :: "'PB \<Rightarrow> ('evt set) subscription set"
     and pbnt :: "'PB \<Rightarrow> ('evt \<times> 'msg)"             
     and sbnt :: "'SB \<Rightarrow> ('evt \<times> 'msg) set"
     and sbsb :: "'SB \<Rightarrow> ('evt set) subscription"
-  assumes conn1: "\<And>k pid. pbactive pid k
-      \<Longrightarrow> pbsb (pbcmp pid k) = (\<Union>sid\<in>{sid. sbactive sid k}. {sbsb (sbcmp sid k)})"
+  assumes conn1: "\<And>k pid. \<parallel>pid\<parallel>\<^bsub>k\<^esub>
+      \<Longrightarrow> pbsb (\<sigma>\<^bsub>pid\<^esub>(k)) = (\<Union>sid\<in>{sid. \<parallel>sid\<parallel>\<^bsub>k\<^esub>}. {sbsb (\<sigma>\<^bsub>sid\<^esub>(k))})"
     and conn2: "\<And>t n n'' sid pid E e m.
-      \<lbrakk>t \<in> arch; pbactive pid (t n); sbactive sid (t n); sub E = sbsb (sbcmp sid (t n)); n''\<ge> n; e \<in> E;
-      \<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> sbactive sid (t n') \<and>
-        unsub E' = sbsb (sbcmp sid (t n')) \<and> e \<in> E';
-      (e, m) = pbnt (pbcmp pid (t n'')); sbactive sid (t n'')\<rbrakk>
-      \<Longrightarrow> pbnt (pbcmp pid (t n'')) \<in> sbnt (sbcmp sid (t n''))"
+      \<lbrakk>t \<in> arch; \<parallel>pid\<parallel>\<^bsub>t n\<^esub>; \<parallel>sid\<parallel>\<^bsub>t n\<^esub>; sub E = sbsb (\<sigma>\<^bsub>sid\<^esub>(t n)); n''\<ge> n; e \<in> E;
+      \<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> \<parallel>sid\<parallel>\<^bsub>t n'\<^esub> \<and>
+        unsub E' = sbsb (\<sigma>\<^bsub>sid\<^esub>(t n')) \<and> e \<in> E';
+      (e, m) = pbnt (\<sigma>\<^bsub>pid\<^esub>(t n'')); \<parallel>sid\<parallel>\<^bsub>t n''\<^esub>\<rbrakk>
+      \<Longrightarrow> pbnt (\<sigma>\<^bsub>pid\<^esub>(t n'')) \<in> sbnt (\<sigma>\<^bsub>sid\<^esub>(t n''))"
 begin
-
-notation pb.imp (infixl "\<longrightarrow>\<^sup>p" 10)
-notation pb.disj (infixl "\<or>\<^sup>p" 15)
-notation pb.conj (infixl "\<and>\<^sup>p" 20)
-notation pb.neg ("\<not>\<^sup>p _" [19]19)
-no_notation pb.all (binder "\<forall>\<^sub>b" 10)
-no_notation pb.ex (binder "\<exists>\<^sub>b" 10)
-notation pb.all (binder "\<forall>\<^sub>p" 10)
-notation pb.ex (binder "\<exists>\<^sub>p" 10)
-
-notation sb.imp (infixl "\<longrightarrow>\<^sup>s" 10)
-notation sb.disj (infixl "\<or>\<^sup>s" 15)  
-notation sb.conj (infixl "\<and>\<^sup>s" 20)
-notation sb.neg ("\<not>\<^sup>s _" [19]19)
-no_notation sb.all (binder "\<forall>\<^sub>b" 10)
-no_notation sb.ex (binder "\<exists>\<^sub>b" 10)
-notation sb.all (binder "\<forall>\<^sub>s" 10)
-notation sb.ex (binder "\<exists>\<^sub>s" 10)
 
 subsubsection "Calculus Interpretation"
 text {*
@@ -83,17 +65,17 @@ text {*
   The following theorem ensures that a subscriber indeed receives all messages associated with an event for which he is subscribed.
 *}
 theorem msgDelivery:
-  fixes t n n'' sid E e m
+  fixes t n n'' and sid::'sid and E e m
   assumes "t \<in> arch"
-    and "sbactive sid (t n)"
-    and "sub E = sbsb (sbcmp sid (t n))"
+    and "\<parallel>sid\<parallel>\<^bsub>t n\<^esub>"
+    and "sub E = sbsb (\<sigma>\<^bsub>sid\<^esub>(t n))"
     and "n'' \<ge> n"
-    and "\<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> sbactive sid (t n') \<and> unsub E' = sbsb(sbcmp sid (t n'))
+    and "\<nexists>n' E'. n' \<ge> n \<and> n' \<le> n'' \<and> \<parallel>sid\<parallel>\<^bsub>t n'\<^esub> \<and> unsub E' = sbsb(\<sigma>\<^bsub>sid\<^esub>(t n'))
           \<and> e \<in> E'"
     and "e \<in> E"
-    and "(e,m) = pbnt (pbcmp the_pb (t n''))"
-    and "sbactive sid (t n'')"
-  shows "(e,m) \<in> sbnt (sbcmp sid (t n''))"
+    and "(e,m) = pbnt (\<sigma>\<^bsub>the_pb\<^esub>(t n''))"
+    and "\<parallel>sid\<parallel>\<^bsub>t n''\<^esub>"
+  shows "(e,m) \<in> sbnt (\<sigma>\<^bsub>sid\<^esub>(t n''))"
   using assms conn2 pb.ts_prop(2) by simp
 
 text {*
@@ -101,7 +83,7 @@ text {*
 *}
 lemma conn1A:
   fixes k
-  shows "pbsb (pbcmp the_pb k) = (\<Union>sid\<in>{sid. sbactive sid k}. {sbsb (sbcmp sid k)})"
+  shows "pbsb (\<sigma>\<^bsub>the_pb\<^esub>(k)) = (\<Union>sid\<in>{sid. \<parallel>sid\<parallel>\<^bsub>k\<^esub>}. {sbsb (\<sigma>\<^bsub>sid\<^esub>(k))})"
   using conn1[OF pb.ts_prop(2)] .
 end
   

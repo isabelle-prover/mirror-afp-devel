@@ -618,7 +618,7 @@ text {*
   First we provide rules for basic behavior assertions.
 *}
 
-definition ba :: "('cmp \<Rightarrow> bool) \<Rightarrow> ('cmp bta)"
+definition ba :: "('cmp \<Rightarrow> bool) \<Rightarrow> ('cmp bta)" ("[_]\<^sub>b")
   where "ba \<phi> \<equiv> \<lambda> t n. \<phi> (t n)"
   
 lemma baIA[intro]:

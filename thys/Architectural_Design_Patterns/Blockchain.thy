@@ -104,15 +104,15 @@ locale Blockchain = dynamic_component cmp active
     and "tmining t \<equiv> (\<lambda>n. \<exists>nid\<in>actTr (t n). mining (\<sigma>\<^bsub>nid\<^esub>(t n)))"
     and "umining t \<equiv> (\<lambda>n. \<exists>nid\<in>actUt (t n). mining (\<sigma>\<^bsub>nid\<^esub>(t n)))"
   assumes consensus: "\<And>nid t t' bc'::('nid BC). \<lbrakk>trusted nid\<rbrakk> \<Longrightarrow> eval nid t t' 0
-    (\<box>\<^sub>b(ba (\<lambda>nd. bc' = (if (\<exists>b\<in>pin nd. length b > length (bc nd)) then (MAX (pin nd)) else (bc nd)))
-      \<longrightarrow>\<^sup>b \<circle>\<^sub>b(ba (\<lambda>nd.(\<not> mining nd \<and> bc nd = bc' \<or> mining nd \<and> (\<exists>b. bc nd = bc' @ [b]))))))"
+    (\<box>\<^sub>b ([\<lambda>nd. bc' = (if (\<exists>b\<in>pin nd. length b > length (bc nd)) then (MAX (pin nd)) else (bc nd))]\<^sub>b
+      \<longrightarrow>\<^sup>b \<circle>\<^sub>b [\<lambda>nd.(\<not> mining nd \<and> bc nd = bc' \<or> mining nd \<and> (\<exists>b. bc nd = bc' @ [b]))]\<^sub>b))"
     and attacker: "\<And>nid t t' bc'. \<lbrakk>\<not> trusted nid\<rbrakk> \<Longrightarrow> eval nid t t' 0
-    (\<box>\<^sub>b(ba (\<lambda>nd. bc' = (SOME b. b \<in> (pin nd \<union> {bc nd}))) \<longrightarrow>\<^sup>b
-      \<circle>\<^sub>b (ba (\<lambda>nd.(\<not> mining nd \<and> prefix (bc nd) bc' \<or> mining nd \<and> (\<exists>b. bc nd = bc' @ [b]))))))"
-    and forward: "\<And>nid t t'. eval nid t t' 0 (\<box>\<^sub>b(ba (\<lambda>nd. pout nd = bc nd)))"
+    (\<box>\<^sub>b ([\<lambda>nd. bc' = (SOME b. b \<in> (pin nd \<union> {bc nd}))]\<^sub>b \<longrightarrow>\<^sup>b
+      \<circle>\<^sub>b [\<lambda>nd.(\<not> mining nd \<and> prefix (bc nd) bc' \<or> mining nd \<and> (\<exists>b. bc nd = bc' @ [b]))]\<^sub>b))"
+    and forward: "\<And>nid t t'. eval nid t t' 0 (\<box>\<^sub>b [\<lambda>nd. pout nd = bc nd]\<^sub>b)"
     \<comment> \<open>At each time point a node will forward its blockchain to the network\<close>
-    and init: "\<And>nid t t'. eval nid t t' 0 (ba (\<lambda>nd. bc nd=[]))"
-    and conn: "\<And>k nid. \<lbrakk>active nid k; trusted nid\<rbrakk>
+    and init: "\<And>nid t t'. eval nid t t' 0 [\<lambda>nd. bc nd=[]]\<^sub>b"
+    and conn: "\<And>k nid. \<lbrakk>\<parallel>nid\<parallel>\<^bsub>k\<^esub>; trusted nid\<rbrakk>
       \<Longrightarrow> pin (cmp nid k) = (\<Union>nid'\<in>actTr k. {pout (cmp nid' k)})"
     and act: "\<And>t n::nat. finite {nid::'nid. \<parallel>nid\<parallel>\<^bsub>t n\<^esub>}"
     and actTr: "\<And>t n::nat. \<exists>nid. trusted nid \<and> \<parallel>nid\<parallel>\<^bsub>t n\<^esub> \<and> \<parallel>nid\<parallel>\<^bsub>t (Suc n)\<^esub>"
@@ -196,19 +196,19 @@ proof -
     (if (\<exists>b\<in>pin nd. length b > length (bc nd)) then (MAX (pin nd)) else (bc nd))"
   let ?check = "\<lambda>nd. \<not> mining nd \<and> bc nd = MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) \<or> mining nd \<and>
     (\<exists>b. bc nd = MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)) @ [b])"
-  from \<open>trusted tid\<close> have "eval tid t t' 0 ((\<box>\<^sub>b((ba ?cond) \<longrightarrow>\<^sup>b \<circle>\<^sub>b (ba ?check))))"
+  from \<open>trusted tid\<close> have "eval tid t t' 0 (\<box>\<^sub>b([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b))"
     using consensus[of tid _ _ "MAX (pin (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>))"] by simp
   moreover from assms have "\<exists>i\<ge>0. \<parallel>tid\<parallel>\<^bsub>t i\<^esub>" by auto
   moreover have "\<langle>tid \<Leftarrow> t\<rangle>\<^bsub>0\<^esub> \<le> \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" by simp
-  ultimately have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (ba (?cond) \<longrightarrow>\<^sup>b \<circle>\<^sub>b (ba ?check))"
-    using globEA[of 0 tid t t' "((ba ?cond) \<longrightarrow>\<^sup>b \<circle>\<^sub>b (ba ?check))" "\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] by fastforce
-  moreover have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (ba (?cond))"
+  ultimately have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> ([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b)"
+    using globEA[of 0 tid t t' "([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b)" "\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] by fastforce
+  moreover have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> [?cond]\<^sub>b"
   proof (rule baIA)
     from \<open>\<exists>n'<n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>\<close> show "\<exists>i\<ge>\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>tid\<parallel>\<^bsub>t i\<^esub>" using latestAct_prop(1) by blast
     from assms(3) assms(4) show "?cond (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>)" using latestActNxt by simp
   qed
-  ultimately have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (\<circle>\<^sub>b (ba ?check))"
-    using impE[of tid t t' _ "ba (?cond)" "\<circle>\<^sub>b (ba ?check)"] by simp
+  ultimately have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (\<circle>\<^sub>b [?check]\<^sub>b)"
+    using impE[of tid t t' _ "[?cond]\<^sub>b" "\<circle>\<^sub>b [?check]\<^sub>b"] by simp
   moreover have "\<exists>i>\<langle>tid \<rightarrow> t\<rangle>\<^bsub>\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>. \<parallel>tid\<parallel>\<^bsub>t i\<^esub>"
   proof -
     from assms have "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>>\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" using latestActNxtAct by simp
@@ -220,8 +220,8 @@ proof -
     using latestActNxtAct by (simp add: order.strict_implies_order)
   moreover from assms have "\<exists>!i. \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> i \<and> i < \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>tid\<parallel>\<^bsub>t i\<^esub>"
     using onlyone by simp
-  ultimately have "eval tid t t' \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> (ba ?check)"
-    using nxtEA1[of tid t "\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" t' "ba ?check" "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by simp
+  ultimately have "eval tid t t' \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> [?check]\<^sub>b"
+    using nxtEA1[of tid t "\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" t' "[?check]\<^sub>b" "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by simp
   moreover from \<open>\<exists>n'\<ge>n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>\<close> have "\<parallel>tid\<parallel>\<^bsub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by simp
   ultimately show ?thesis using baEANow[of tid t t' "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" ?check] by simp
 qed
@@ -237,19 +237,19 @@ lemma bhv_tr_in:
 proof -
   let ?cond = "\<lambda>nd. bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) = (if (\<exists>b\<in>pin nd. length b > length (bc nd)) then (MAX (pin nd)) else (bc nd))"
   let ?check = "\<lambda>nd. \<not> mining nd \<and> bc nd = bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<or> mining nd \<and> (\<exists>b. bc nd = bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) @ [b])"
-  from \<open>trusted tid\<close> have "eval tid t t' 0 ((\<box>\<^sub>b((ba ?cond) \<longrightarrow>\<^sup>b \<circle>\<^sub>b (ba ?check))))"
+  from \<open>trusted tid\<close> have "eval tid t t' 0 ((\<box>\<^sub>b([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b)))"
     using consensus[of tid _ _ "bc (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)"] by simp
   moreover from assms have "\<exists>i\<ge>0. \<parallel>tid\<parallel>\<^bsub>t i\<^esub>" by auto
   moreover have "\<langle>tid \<Leftarrow> t\<rangle>\<^bsub>0\<^esub> \<le> \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" by simp
-  ultimately have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (ba (?cond) \<longrightarrow>\<^sup>b \<circle>\<^sub>b (ba ?check))"
-    using globEA[of 0 tid t t' "(ba ?cond) \<longrightarrow>\<^sup>b \<circle>\<^sub>b (ba ?check)" "\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] by fastforce
-  moreover have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (ba (?cond))"
+  ultimately have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> ([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b)"
+    using globEA[of 0 tid t t' "[?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b" "\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] by fastforce
+  moreover have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> [?cond]\<^sub>b"
   proof (rule baIA)
     from \<open>\<exists>n'<n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>\<close> show "\<exists>i\<ge>\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>tid\<parallel>\<^bsub>t i\<^esub>" using latestAct_prop(1) by blast
     from assms(3) assms(4) show "?cond (\<sigma>\<^bsub>tid\<^esub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>)" using latestActNxt by simp
   qed
-  ultimately have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (\<circle>\<^sub>b (ba ?check))"
-    using impE[of tid t t' _ "ba (?cond)" "\<circle>\<^sub>b (ba ?check)"] by simp
+  ultimately have "eval tid t t' \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (\<circle>\<^sub>b [?check]\<^sub>b)"
+    using impE[of tid t t' _ "[?cond]\<^sub>b" "\<circle>\<^sub>b [?check]\<^sub>b"] by simp
   moreover have "\<exists>i>\<langle>tid \<rightarrow> t\<rangle>\<^bsub>\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>. \<parallel>tid\<parallel>\<^bsub>t i\<^esub>"
   proof -
     from assms have "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>>\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" using latestActNxtAct by simp
@@ -261,8 +261,8 @@ proof -
     using latestActNxtAct by (simp add: order.strict_implies_order)
   moreover from assms have "\<exists>!i. \<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> i \<and> i < \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>tid\<parallel>\<^bsub>t i\<^esub>"
     using onlyone by simp
-  ultimately have "eval tid t t' \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> (ba ?check)"
-    using nxtEA1[of tid t "\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" t' "ba ?check" "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by simp
+  ultimately have "eval tid t t' \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> [?check]\<^sub>b"
+    using nxtEA1[of tid t "\<langle>tid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" t' "[?check]\<^sub>b" "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by simp
   moreover from \<open>\<exists>n'\<ge>n. \<parallel>tid\<parallel>\<^bsub>t n'\<^esub>\<close> have "\<parallel>tid\<parallel>\<^bsub>t \<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by simp
   ultimately show ?thesis using baEANow[of tid t t' "\<langle>tid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" ?check] by simp
 qed
@@ -323,20 +323,20 @@ proof -
   let ?cond = "\<lambda>nd. (SOME b. b \<in> (pin (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<union> {bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)})) = (SOME b. b \<in> pin nd \<union> {bc nd})"
   let ?check = "\<lambda>nd. \<not> mining nd \<and> prefix (bc nd) (SOME b. b \<in> pin (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<union> {bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)})
     \<or> mining nd \<and> (\<exists>b. bc nd = (SOME b. b \<in> pin (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<union> {bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)}) @ [b])"
-  from \<open>\<not> trusted uid\<close> have "eval uid t t' 0 ((\<box>\<^sub>b((ba ?cond) \<longrightarrow>\<^sup>b \<circle>\<^sub>b (ba ?check))))"
+  from \<open>\<not> trusted uid\<close> have "eval uid t t' 0 ((\<box>\<^sub>b([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b [?check]\<^sub>b)))"
     using attacker[of uid _ _ "(SOME b. b \<in> pin (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>) \<union> {bc (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>)})"]
     by simp
   moreover from assms have "\<exists>i\<ge>0. \<parallel>uid\<parallel>\<^bsub>t i\<^esub>" by auto
   moreover have "\<langle>uid \<Leftarrow> t\<rangle>\<^bsub>0\<^esub> \<le> \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" by simp
-  ultimately have "eval uid t t' \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (ba (?cond) \<longrightarrow>\<^sup>b \<circle>\<^sub>b(ba ?check))"
-    using globEA[of 0 uid t t' "((ba ?cond) \<longrightarrow>\<^sup>b \<circle>\<^sub>b(ba ?check))" "\<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] by fastforce
-  moreover have "eval uid t t' \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (ba (?cond))"
+  ultimately have "eval uid t t' \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> ([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b[?check]\<^sub>b)"
+    using globEA[of 0 uid t t' "([?cond]\<^sub>b \<longrightarrow>\<^sup>b \<circle>\<^sub>b[?check]\<^sub>b)" "\<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>"] by fastforce
+  moreover have "eval uid t t' \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> [?cond]\<^sub>b"
   proof (rule baIA)
     from \<open>\<exists>n'<n. \<parallel>uid\<parallel>\<^bsub>t n'\<^esub>\<close> show "\<exists>i\<ge>\<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>. \<parallel>uid\<parallel>\<^bsub>t i\<^esub>" using latestAct_prop(1) by blast
     with assms(3) show "?cond (\<sigma>\<^bsub>uid\<^esub>t \<langle>uid \<rightarrow> t\<rangle>\<^bsub>\<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>)" using latestActNxt by simp
   qed
-  ultimately have "eval uid t t' \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (\<circle>\<^sub>b (ba ?check))"
-    using impE[of uid t t' _ "ba (?cond)" "\<circle>\<^sub>b (ba ?check)"] by simp
+  ultimately have "eval uid t t' \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> (\<circle>\<^sub>b [?check]\<^sub>b)"
+    using impE[of uid t t' _ "[?cond]\<^sub>b" "\<circle>\<^sub>b [?check]\<^sub>b"] by simp
   moreover have "\<exists>i>\<langle>uid \<rightarrow> t\<rangle>\<^bsub>\<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>. \<parallel>uid\<parallel>\<^bsub>t i\<^esub>"
   proof -
     from assms have "\<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>>\<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" using latestActNxtAct by simp
@@ -348,8 +348,8 @@ proof -
     using latestActNxtAct by (simp add: order.strict_implies_order)
   moreover from assms have "\<exists>!i. \<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub> \<le> i \<and> i < \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> \<and> \<parallel>uid\<parallel>\<^bsub>t i\<^esub>"
     using onlyone by simp
-  ultimately have "eval uid t t' \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> (ba ?check)"
-    using nxtEA1[of uid t "\<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" t' "ba ?check" "\<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by simp
+  ultimately have "eval uid t t' \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub> [?check]\<^sub>b"
+    using nxtEA1[of uid t "\<langle>uid \<leftarrow> t\<rangle>\<^bsub>n\<^esub>" t' "[?check]\<^sub>b" "\<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>"] by simp
   moreover from \<open>\<exists>n'\<ge>n. \<parallel>uid\<parallel>\<^bsub>t n'\<^esub>\<close> have "\<parallel>uid\<parallel>\<^bsub>t \<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>\<^esub>" using nxtActI by simp
   ultimately show ?thesis using baEANow[of uid t t' "\<langle>uid \<rightarrow> t\<rangle>\<^bsub>n\<^esub>" ?check] by simp
 qed
