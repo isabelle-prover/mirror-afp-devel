@@ -15,7 +15,7 @@ session Isabelle_Meta_Model (AFP) = "HOL-Library" +
     "toy_example/embedding/Printer"
   theories
     "toy_example/embedding/Generator_static"
-    "toy_example/embedding/Generator_dynamic"
+    "toy_example/embedding/Generator_dynamic_sequential"
     "toy_example/generator/Design_deep"
     "toy_example/generator/Design_shallow"
     "document/Rail"

@@ -81,7 +81,7 @@ definition "main =
         \<lparr> D_output_disable_thy := False
         , D_output_header_thy := Some (\<open>Design_generated\<close>
                                       ,[\<open>../Toy_Library\<close>]
-                                      ,\<open>../embedding/Generator_dynamic\<close>) \<rparr>)
+                                      ,\<open>../embedding/Generator_dynamic_sequential\<close>) \<rparr>)
      ( L.map (META_class_raw Floor1) Design
        @@@@ [ META_association (toy_association.make
                                   ToyAssTy_association

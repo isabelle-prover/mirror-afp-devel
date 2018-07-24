@@ -41,7 +41,7 @@
 
 section\<open>Dynamic Meta Embedding with Reflection\<close>
 
-theory Generator_dynamic
+theory Generator_dynamic_sequential
 imports Printer
         "../../isabelle_home/src/HOL/Isabelle_Main2"
 (*<*)

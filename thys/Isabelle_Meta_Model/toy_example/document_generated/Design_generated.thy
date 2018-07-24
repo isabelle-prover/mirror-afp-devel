@@ -1,4 +1,4 @@
-theory Design_generated imports "../Toy_Library"   "../Toy_Library_Static"   "../embedding/Generator_dynamic" begin
+theory Design_generated imports "../Toy_Library"   "../Toy_Library_Static"   "../embedding/Generator_dynamic_sequential" begin
 
 (* 1 ************************************ 0 + 1 *)
 text \<open>

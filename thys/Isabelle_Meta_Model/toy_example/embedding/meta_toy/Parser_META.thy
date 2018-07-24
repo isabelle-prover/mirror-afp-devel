@@ -193,8 +193,7 @@ definition of_bool where "of_bool b = case_bool
 
 definition "of_string_gen s_flatten s_st0 s_st a b s = 
   b (let s = textstr_of_str (\<lambda>c. \<open>(\<close> @@ s_flatten @@ \<open> \<close> @@ c @@ \<open>)\<close>)
-                            (\<lambda>c \<Rightarrow>
-                                 s_st0 (S.flatten [\<open> (\<close>, \<open>CHR 0x\<close>, String.integer_to_digit16 c, \<open>)\<close>]))
+                            (\<lambda>c \<Rightarrow> s_st0 (S.flatten [\<open> 0x\<close>, String.integer_to_digit16 c]))
                             (\<lambda>c. s_st (S.flatten [\<open> (\<close>, c, \<open>)\<close>]))
                             s in
      S.flatten [ \<open>(\<close>, s, \<open>)\<close> ])"

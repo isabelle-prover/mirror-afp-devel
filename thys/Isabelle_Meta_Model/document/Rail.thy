@@ -41,7 +41,7 @@
 
 (*<*)
 theory Rail
-imports "../toy_example/embedding/Generator_dynamic"
+imports "../toy_example/embedding/Generator_dynamic_sequential"
 begin
 ML_file "~~/src/Doc/antiquote_setup.ML"
 (*>*)
