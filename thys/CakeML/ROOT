@@ -11,7 +11,7 @@ session LEM (AFP) = "Word_Lib" +
     "generated/Lem_string_extra"
 
 session CakeML (AFP) = LEM +
-  options [timeout = 900]
+  options [timeout = 1200]
   sessions
     Coinductive
     IEEE_Floating_Point
