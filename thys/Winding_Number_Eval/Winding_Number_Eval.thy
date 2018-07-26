@@ -1907,11 +1907,22 @@ proof -
   ultimately show ?thesis by fast
 qed
 
-lemma cindex_pathE_half_circlepath:
-  assumes "cmod (z0-z) < r"
-  shows "cindex_pathE (part_circlepath z r 0 pi) z0 = -1"
-    "cindex_pathE (part_circlepath z r pi (2*pi)) z0 = -1"
+lemma 
+  fixes z0 z::complex and r::real
+  defines "upper \<equiv> cindex_pathE (part_circlepath z r 0 pi) z0"
+      and "lower \<equiv> cindex_pathE (part_circlepath z r pi (2*pi)) z0"
+  shows cindex_pathE_circlepath_upper:
+      "\<lbrakk>cmod (z0-z) < r\<rbrakk>  \<Longrightarrow> upper = -1" 
+      "\<lbrakk>Im (z0-z) > r; \<bar>Re (z0 - z)\<bar> < r\<rbrakk> \<Longrightarrow> upper = 1"
+      "\<lbrakk>Im (z0-z) < -r; \<bar>Re (z0 - z)\<bar> < r\<rbrakk> \<Longrightarrow> upper = -1" 
+      "\<lbrakk>\<bar>Re (z0 - z)\<bar> > r; r>0\<rbrakk> \<Longrightarrow> upper = 0"
+  and cindex_pathE_circlepath_lower: 
+      "\<lbrakk>cmod (z0-z) < r\<rbrakk> \<Longrightarrow> lower = -1" 
+      "\<lbrakk>Im (z0-z) > r; \<bar>Re (z0 - z)\<bar> < r\<rbrakk> \<Longrightarrow> lower = -1"
+      "\<lbrakk>Im (z0-z) < -r; \<bar>Re (z0 - z)\<bar> < r\<rbrakk> \<Longrightarrow> lower = 1"
+      "\<lbrakk>\<bar>Re (z0 - z)\<bar> > r; r>0\<rbrakk> \<Longrightarrow> lower = 0"
 proof -
+  assume assms:"cmod (z0-z) < r"
   have zz_facts:"-r<Re z - Re z0" "Re z - Re z0<r" "r>0"
     subgoal using assms complex_Re_le_cmod le_less_trans by fastforce
     subgoal by (metis assms complex_Re_le_cmod le_less_trans minus_complex.simps(1) norm_minus_commute)
@@ -1940,7 +1951,7 @@ proof -
       subgoal using \<open>r>0\<close> by (auto simp add:field_simps divide_simps real_sqrt_divide)
       done
   qed
-  show "cindex_pathE (part_circlepath z r 0 pi) z0 = - 1"
+  show "upper = - 1"
   proof -
     have "jumpF_pathstart (part_circlepath z r 0 pi) z0 = 0"
       apply (subst jumpF_pathstart_part_circlepath)
@@ -1948,11 +1959,11 @@ proof -
     moreover have "jumpF_pathfinish (part_circlepath z r 0 pi) z0 = 0"
       apply (subst jumpF_pathfinish_part_circlepath)
       using zz_facts assms by (auto simp add: norm_minus_commute)
-    ultimately show ?thesis using assms zz_facts \<theta>_bound Im_sin
+    ultimately show ?thesis using assms zz_facts \<theta>_bound Im_sin unfolding upper_def
       apply (subst cindex_pathE_part_circlepath)
       by (fold \<theta>_def,auto simp add: norm_minus_commute)
   qed
-  show "cindex_pathE (part_circlepath z r pi (2*pi)) z0 = - 1"
+  show "lower = - 1"
   proof -    
     have "jumpF_pathstart (part_circlepath z r pi (2*pi)) z0 = 0"
       apply (subst jumpF_pathstart_part_circlepath)
@@ -1960,10 +1971,95 @@ proof -
     moreover have "jumpF_pathfinish (part_circlepath z r pi (2*pi)) z0 = 0"
       apply (subst jumpF_pathfinish_part_circlepath)
       using zz_facts assms by (auto simp add: norm_minus_commute)
-    ultimately show ?thesis using assms zz_facts \<theta>_bound Im_sin
+    ultimately show ?thesis using assms zz_facts \<theta>_bound Im_sin unfolding lower_def
       apply (subst cindex_pathE_part_circlepath)
       by (fold \<theta>_def,auto simp add: norm_minus_commute)
   qed 
+next
+  assume assms:"\<bar>Re (z0 - z)\<bar> > r" "r>0"
+  show "upper = 0" using assms unfolding upper_def 
+    apply (subst cindex_pathE_part_circlepath)
+    apply auto
+    by (metis abs_Re_le_cmod abs_minus_commute eucl_less_le_not_le minus_complex.simps(1))
+  show "lower = 0"
+    using assms unfolding lower_def 
+    apply (subst cindex_pathE_part_circlepath)
+    apply auto
+    by (metis abs_Re_le_cmod abs_minus_commute eucl_less_le_not_le minus_complex.simps(1))
+next
+  assume assms:"\<bar>Re (z0 - z)\<bar> < r"
+  then have "r>0" by auto
+
+  define \<theta> where "\<theta> = arccos ((Re z0 - Re z) / r)"   
+  have \<theta>_bound:"0 < \<theta> \<and> \<theta> < pi" 
+    unfolding \<theta>_def
+    apply (rule arccos_lt_bounded)
+    using assms by (auto simp add:field_simps)
+  note norm_minus_commute[simp]
+  have jumpFs:
+      "jumpF_pathstart (part_circlepath z r 0 pi) z0 = 0"
+      "jumpF_pathfinish (part_circlepath z r 0 pi) z0 = 0"
+      "jumpF_pathstart (part_circlepath z r pi (2*pi)) z0 = 0"
+      "jumpF_pathfinish (part_circlepath z r pi (2*pi)) z0 = 0"
+      when "cmod (z0 - z) \<noteq> r"
+    subgoal by (subst jumpF_pathstart_part_circlepath,use assms that in auto)
+    subgoal by (subst jumpF_pathfinish_part_circlepath,use assms that in auto)
+    subgoal by (subst jumpF_pathstart_part_circlepath,use assms that in auto)
+    subgoal by (subst jumpF_pathfinish_part_circlepath,use assms that in auto)
+    done
+  show "upper = 1" "lower = -1" when "Im (z0-z) > r"
+  proof -
+    have "cmod (z0 - z) \<noteq> r" 
+      using that assms abs_Im_le_cmod abs_le_D1 not_le by blast
+    moreover have "Im z0 - Im z > r * sin \<theta>" 
+    proof -
+      have "r * sin \<theta> \<le> r" 
+        using \<open>r>0\<close> by auto
+      also have "... < Im z0 - Im z" using that by auto
+      finally show ?thesis .
+    qed
+    ultimately show "upper = 1"  using assms jumpFs \<theta>_bound that unfolding upper_def
+      apply (subst cindex_pathE_part_circlepath)
+      by (fold \<theta>_def,auto)
+    have "Im z - Im z0 < r * sin \<theta>" 
+    proof -
+      have "Im z - Im z0  <0" using that \<open>r>0\<close> by auto
+      moreover have "r * sin \<theta>>0" using \<open>r>0\<close> \<theta>_bound by (simp add: sin_gt_zero)
+      ultimately show ?thesis by auto
+    qed
+    then show "lower = -1" using \<open>cmod (z0 - z) \<noteq> r\<close> \<open>Im z0 - Im z > r * sin \<theta>\<close> 
+        assms jumpFs \<theta>_bound that unfolding lower_def
+      apply (subst cindex_pathE_part_circlepath)
+      by (fold \<theta>_def,auto)
+  qed
+  show "upper = - 1" "lower = 1" when "Im (z0-z) < -r"
+  proof -
+    have "cmod (z0 - z) \<noteq> r" 
+      using that assms 
+      by (metis abs_Im_le_cmod abs_le_D1 minus_complex.simps(2) minus_diff_eq neg_less_iff_less 
+          norm_minus_cancel not_le)
+    moreover have "Im z - Im z0 > r * sin \<theta>" 
+    proof -
+      have "r * sin \<theta> \<le> r" 
+        using \<open>r>0\<close> by auto
+      also have "... < Im z - Im z0" using that by auto
+      finally show ?thesis .
+    qed
+    moreover have "Im z0 - Im z < r * sin \<theta>"
+    proof -
+      have "Im z0 - Im z<0" using that \<open>r>0\<close> by auto
+      moreover have "r * sin \<theta>>0" using \<open>r>0\<close> \<theta>_bound by (simp add: sin_gt_zero)
+      ultimately show ?thesis by auto
+    qed
+    ultimately show "upper = - 1" using assms jumpFs \<theta>_bound that unfolding upper_def
+      apply (subst cindex_pathE_part_circlepath)
+      by (fold \<theta>_def,auto)
+    show "lower = 1"
+      using \<open>Im z0 - Im z < r * sin \<theta>\<close> \<open>Im z - Im z0 > r * sin \<theta>\<close> \<open>cmod (z0 - z) \<noteq> r\<close>
+        assms jumpFs \<theta>_bound that unfolding lower_def
+      apply (subst cindex_pathE_part_circlepath)
+      by (fold \<theta>_def,auto)
+  qed
 qed
   
 lemma jumpF_pathstart_linepath:

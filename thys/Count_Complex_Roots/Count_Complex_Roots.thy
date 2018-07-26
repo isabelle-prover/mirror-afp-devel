@@ -2105,7 +2105,7 @@ next
           by (auto simp add: mult_pos_neg)
         moreover have "cindex_pathE rr x=-1"
           unfolding rr_def using r_ball that
-          by (auto intro!: cindex_pathE_half_circlepath)
+          by (auto intro!: cindex_pathE_circlepath_upper)
         ultimately show "-cindex_pathE (linepath (- of_real r) (of_real r)) x =
             cindex_pathE (part_circlepath 0 r 0 pi) x"
           unfolding ll_def rr_def by auto
@@ -2135,7 +2135,7 @@ next
           by (auto simp add: mult_less_0_iff)
         moreover have "cindex_pathE rr x=-1"
           unfolding rr_def using r_ball x_asm
-          by (auto intro!: cindex_pathE_half_circlepath)
+          by (auto intro!: cindex_pathE_circlepath_upper)
         ultimately show "- of_real (cindex_pathE (linepath (- of_real r) (of_real r)) x) -
             of_real (cindex_pathE (part_circlepath 0 r 0 pi) x) = 2"  
           unfolding ll_def rr_def by auto 
