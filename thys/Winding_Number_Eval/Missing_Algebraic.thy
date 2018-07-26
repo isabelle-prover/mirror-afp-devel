@@ -43,19 +43,19 @@ lemma poly_holomorphic_on[simp]:
   apply (unfold field_differentiable_def)
   apply (rule_tac x="poly (pderiv p) x" in exI)
   by (simp add:has_field_derivative_at_within)
-    
+
 lemma order_zorder:
   fixes p::"complex poly" and z::complex
-  assumes "poly p z=0" and "p\<noteq>0"
+  assumes "p\<noteq>0"
   shows "order z p = nat (zorder (poly p) z)"
 proof -
   define n where "n=nat (zorder (poly p) z)" 
   define h where "h=zor_poly (poly p) z"
-  have "\<exists>w. poly p w \<noteq> 0" using assms(2) poly_all_0_iff_0 by auto
-  then obtain r where "0 < n" "0 < r" "cball z r \<subseteq> UNIV" and 
+  have "\<exists>w. poly p w \<noteq> 0" using assms poly_all_0_iff_0 by auto
+  then obtain r where "0 < r" "cball z r \<subseteq> UNIV" and 
       h_holo: "h holomorphic_on cball z r" and
       poly_prod:"(\<forall>w\<in>cball z r. poly p w = h w * (w - z) ^ n \<and> h w \<noteq> 0)"
-    using zorder_exist_zero[of "poly p" UNIV z,folded h_def] `poly p z=0` poly_holomorphic_on
+    using zorder_exist_zero[of "poly p" UNIV z,folded h_def] poly_holomorphic_on
     unfolding n_def by auto
   then have "h holomorphic_on ball z r"
     and "(\<forall>w\<in>ball z r. poly p w = h w * (w - z) ^ n)" 
@@ -113,7 +113,7 @@ proof -
   qed
   then show ?thesis unfolding n_def .
 qed  
- 
+
 lemma pcompose_pCons_0:"pcompose p [:a:] = [:poly p a:]"
   apply (induct p)
   by (auto simp add:pcompose_pCons algebra_simps)      
@@ -438,7 +438,7 @@ proof -
   also have "... =  2 * of_real pi * \<i> * (\<Sum>x\<in>proots p. winding_number g x * of_nat (order x p))"
   proof -
     have "nat (zorder (poly p) x) = order x p" when "x\<in>proots p" for x 
-      using order_zorder[OF _ \<open>p\<noteq>0\<close>] that unfolding proots_def by auto
+      using order_zorder[OF \<open>p\<noteq>0\<close>] that unfolding proots_def by auto
     then show ?thesis unfolding proots_def 
       apply (auto intro!:comm_monoid_add_class.sum.cong)
       by (metis assms(1) nat_eq_iff2 of_nat_nat order_root)

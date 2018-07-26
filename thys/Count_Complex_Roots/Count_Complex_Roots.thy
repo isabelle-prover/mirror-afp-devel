@@ -536,7 +536,7 @@ proof -
       qed
       also have " ... = 2 * of_real pi * \<i> * (\<Sum>x\<in>proots p. winding_number rec x * (order x p))" 
         unfolding proots_within_def 
-        apply (auto intro!:sum.cong simp add:order_zorder[OF _ \<open>p\<noteq>0\<close>] )
+        apply (auto intro!:sum.cong simp add:order_zorder[OF \<open>p\<noteq>0\<close>] )
         by (metis nat_eq_iff2 of_nat_nat order_root order_zorder that(3))
       finally show ?thesis by auto
     qed  
