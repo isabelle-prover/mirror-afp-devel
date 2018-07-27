@@ -179,6 +179,8 @@ fun match_result :: "(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow> v \<Right
    else
       Rerr (Rabort Rtype_error))"
 
+case_of_simps match_result_alt_def: match_result.simps
+
 lemma match_result_sound:
   "case match_result env s v0 pes err_v of
     Rerr err \<Rightarrow> evaluate_match ck env s v0 pes err_v (s, Rerr err)

@@ -135,9 +135,9 @@ Lannot:
 "evaluate env s (Lannot e l) = evaluate env s e"
   by pat_completeness auto
 
-case_of_simps match_result_alt_def: match_result.simps
-
-declare do_app.simps[simp del]
+context
+  notes do_app.simps[simp del]
+begin
 
 lemma match_result_elem:
   assumes "match_result env s v0 pes err_v = Rval (e, env')"
@@ -156,8 +156,6 @@ next
     apply (cases "pmatch (c env) (refs s) p v0 []")
     using Cons(1) by auto+
 qed
-
-context begin
 
 private lemma evaluate_list_clock_monotone: "clock (fst (evaluate_list eval s es)) \<le> clock s"
   apply (induction es arbitrary: s)
@@ -229,9 +227,10 @@ lemma fun_evaluate_equiv:
       Rerr err \<Rightarrow> (s, Rerr err)
     | Rval (e, env') \<Rightarrow> evaluate_list (evaluate (env \<lparr> sem_env.v := (nsAppend (alist_to_ns env') (sem_env.v env)) \<rparr>)) s [e])"
   "fun_evaluate s env es = evaluate_list (evaluate env) s es"
-  by (induction rule:fun_evaluate_induct)
-     (auto split:prod.splits result.splits match_result.splits option.splits exp_or_val.splits if_splits match_result.splits error_result.splits
-          simp add:all_distinct_alt_def)
+  by (induction rule: fun_evaluate_induct)
+     (auto split: prod.splits result.splits match_result.splits option.splits exp_or_val.splits
+                  if_splits match_result.splits error_result.splits
+           simp: all_distinct_alt_def)
 
 corollary fun_evaluate_equiv':
   "evaluate env s e = map_prod id (map_result hd id) (fun_evaluate s env [e])"
