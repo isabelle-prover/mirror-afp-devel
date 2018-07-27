@@ -45,5 +45,9 @@ session CakeML (AFP) = LEM +
     Big_Step_Total
     Big_Step_Unclocked
     Big_Step_Unclocked_Single
+  theories
+    "doc/Doc_Ported"
+  theories
+    Semantics
   document_files
     "root.tex"
