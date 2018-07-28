@@ -1063,14 +1063,10 @@ apply (erule ex1E,
 apply (subgoal_tac "f \<in> (M \<times>\<^sub>c N) \<rightarrow> (carrier MN)")
  prefer 2 apply (simp add:universal_property_def bilinear_map_def)
 apply (frule_tac f = h in Ring.mHom_func[of R _ MN MN1], assumption,
-        frule_tac  g = h and h = k in compose_assoc [of "f" "M \<times>\<^sub>c N" 
-         "carrier MN" _ "carrier MN1" _ "carrier MN"], assumption+,
-        simp)
+        frule_tac  g = h and h = k in compose_assoc [of "f" "M \<times>\<^sub>c N" "carrier MN"], simp)
 apply (subgoal_tac "g \<in> (M \<times>\<^sub>c N) \<rightarrow> (carrier MN1)")
  prefer 2 apply (simp add:universal_property_def bilinear_map_def)
-apply (frule_tac g = k and h = h in compose_assoc [of "g" "M \<times>\<^sub>c N"
-        "carrier MN1" _ "carrier MN" _ "carrier MN1"], assumption+,
-        simp)
+apply (frule_tac g = k and h = h in compose_assoc [of "g" "M \<times>\<^sub>c N" "carrier MN1"], simp)
 apply (subgoal_tac "compose (M \<times>\<^sub>c N) (mId\<^bsub>MN\<^esub>) f = f")
  prefer 2 
  apply (frule Module.mId_mHom [of MN R],
@@ -4992,16 +4988,11 @@ apply (subst Module.mHom_add[of P R Z], assumption+,
      apply (erule ex1E, erule conjE,
             thin_tac "\<forall>y. y \<in> mHom R (P /\<^sub>m (TR\<^bsub>R\<^esub> M N P)) Z \<and>
             compos P y (mpj P (TR\<^bsub>R\<^esub> M N P)) = g \<longrightarrow> y = ga")
-     apply (simp add:tensor_product_def)
- apply (cut_tac h = ga in compose_assoc[of "tau R M N P" "M \<times>\<^sub>c N" 
-        "carrier P" "mpj P (TR\<^bsub>R\<^esub> M N P)" "carrier (P /\<^sub>m (TR\<^bsub>R\<^esub> M N P))" _  
-        "carrier Z"], simp add:tau_func,
-        simp add:Module.mpj_mem,
-        rule Pi_I,
-        rule_tac f = ga and m = x in
-                 Module.mHom_mem[of "P /\<^sub>m (TR\<^bsub>R\<^esub> M N P)" R Z], assumption+,
-        simp add:compos_def, blast) 
-
+   apply (simp add:tensor_product_def)
+   apply (cut_tac g = "mpj P (TR\<^bsub>R\<^esub> M N P)" and h = ga 
+          in compose_assoc[of "tau R M N P" "M \<times>\<^sub>c N" "carrier P"],
+         simp add:tau_func,
+        simp add:compos_def, blast)         
  apply (simp add:tensor_product_def,
         thin_tac "\<exists>!ga. ga \<in> mHom R (P /\<^sub>m (TR\<^bsub>R\<^esub> M N P)) Z \<and>
               compos P ga (mpj P (TR\<^bsub>R\<^esub> M N P)) = g")

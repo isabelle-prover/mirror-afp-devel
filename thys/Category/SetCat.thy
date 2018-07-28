@@ -268,14 +268,8 @@ proof (simp add: set_cat_def set_comp_def)
   show "compose (set_dom h) (set_func f) (compose (set_dom h) (set_func g) (set_func h)) =
     compose (set_dom h) (compose (set_dom g) (set_func f) (set_func g)) (set_func h)"
   proof (rule compose_assoc)
-    have 1: "set_cod h = set_dom g" using hg by simp
-    have 2: "set_cod g = set_dom f" using gf by simp
     show "set_func h \<in> set_dom h \<rightarrow> set_dom g" 
-      using h by (simp add: set_cat_def set_arrow_def 1)
-    show "set_func g \<in> set_dom g \<rightarrow> set_dom f"
-      using g by (simp add: set_cat_def set_arrow_def 2)
-    show "set_func f \<in> set_dom f \<rightarrow> set_cod f"
-      using f by (simp add: set_cat_def set_arrow_def)
+      using h hg by (simp add: set_cat_def set_arrow_def)
   qed
 qed
 
