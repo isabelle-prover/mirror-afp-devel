@@ -160,7 +160,7 @@ qed
 private lemma evaluate_list_clock_monotone: "clock (fst (evaluate_list eval s es)) \<le> clock s"
   apply (induction es arbitrary: s)
   apply (auto split:prod.splits result.splits simp add:fix_clock_alt_def dest!:fstI intro:le_trans)
-  apply (metis state_simps)+
+  apply (metis state.record_simps(1))+
   done
 
 private lemma evaluate_clock_monotone:

@@ -232,19 +232,4 @@ proof (induction pes)
     qed auto
 qed (auto elim: evaluate_match.cases)
 
-(* FIXME fix the simpset produced by datatype_record *)
-lemma state_simps[simp]:
-  "s \<lparr> clock := clock s \<rparr> = s"
-  "clock (update_clock a s) = a (clock s)"
-  "clock (update_defined_types f s) = clock s"
-  "clock (update_ffi g s) = clock s"
-  "clock (update_refs h s) = clock s"
-  "clock (update_defined_mods i s) = clock s"
-  "defined_types (update_clock a s) = defined_types s"
-  "refs (update_clock a s) = refs s"
-  "ffi (update_clock a s) = ffi s"
-  "defined_mods (update_clock a s) = defined_mods s"
-  "update_clock (\<lambda>_. m) (update_clock a s) = update_clock (\<lambda>_. m) s"
-by (auto simp: datatype_record_update split: state.splits)
-
 end
