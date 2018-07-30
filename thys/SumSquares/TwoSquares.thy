@@ -194,7 +194,8 @@ proof -
     by (rule euler_criterion)
   hence "[?L = (-1)^(2 * nat k)] (mod ?p)" by auto
   hence "[?L = 1] (mod ?p)" unfolding power_mult by simp
-  hence "?p dvd 1-?L" using cong_iff_dvd_diff dvd_minus_iff[of ?p "?L-1"] by simp
+  hence "?p dvd 1-?L" 
+    using cong_iff_dvd_diff dvd_minus_iff[of ?p "?L-1"] by auto
   moreover have "?L=1 \<or> ?L=0 \<or> ?L=-1" by (simp add: Legendre_def)
   ultimately have "?L = 1 \<or> ?p dvd 1 \<or> ?p dvd (2::int)" by auto
   moreover
