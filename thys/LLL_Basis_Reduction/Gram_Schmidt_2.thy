@@ -2891,7 +2891,7 @@ abbreviation (input) m where "m \<equiv> length fs_init"
 sublocale gs: gram_schmidt_fs n "TYPE(rat)" "RAT fs_init" .
 
 definition d :: "int vec list \<Rightarrow> nat \<Rightarrow> int" where "d fs k = gs.Gramian_determinant fs k"
-definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < m. d fs i)" 
+definition D :: "int vec list \<Rightarrow> nat" where "D fs = nat (\<Prod> i < length fs. d fs i)" 
 
 lemma of_int_Gramian_determinant:
   assumes "k \<le> length F" "\<And>i. i < length F \<Longrightarrow> dim_vec (F ! i) = n"
