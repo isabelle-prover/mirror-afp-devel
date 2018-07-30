@@ -194,7 +194,7 @@ proof -
     by (rule euler_criterion)
   hence "[?L = (-1)^(2 * nat k)] (mod ?p)" by auto
   hence "[?L = 1] (mod ?p)" unfolding power_mult by simp
-  hence "?p dvd 1-?L" using cong_altdef_int dvd_minus_iff[of ?p "?L-1"] by simp
+  hence "?p dvd 1-?L" using cong_iff_dvd_diff dvd_minus_iff[of ?p "?L-1"] by simp
   moreover have "?L=1 \<or> ?L=0 \<or> ?L=-1" by (simp add: Legendre_def)
   ultimately have "?L = 1 \<or> ?p dvd 1 \<or> ?p dvd (2::int)" by auto
   moreover
@@ -213,7 +213,7 @@ proof -
     hence "Legendre (-1) ?p \<noteq> 1" by (unfold Legendre_def, auto) }
   ultimately have "QuadRes ?p (-1)" by auto
   then obtain s1 where s1: "[s1^2 = -1] (mod ?p)" by (auto simp add: QuadRes_def)
-  hence s1': "[s1^2 + 1 = 0] (mod ?p)" by (simp add: cong_altdef_int)
+  hence s1': "[s1^2 + 1 = 0] (mod ?p)" by (simp add: cong_iff_dvd_diff)
   define s2 where "s2 = nat \<bar>s1\<bar>"
   hence "int (s2^2 + 1) = s1^2 + 1" by auto
   with s1' have "[int (s2^2 + 1) = 0] (mod ?p)" by presburger

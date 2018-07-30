@@ -18,7 +18,7 @@ lemma mod_1_coprime_nat:
   "coprime a b" if "0 < n" "[a ^ n = 1] (mod b)" for a b :: nat
 proof -
   from that coprime_1_left have "coprime (a ^ n) b"
-    using cong_imp_coprime_nat cong_sym by blast
+    using cong_imp_coprime cong_sym by blast
   with \<open>0 < n\<close> show ?thesis
     by simp
 qed
@@ -74,7 +74,7 @@ qed
 lemma One_leq_div:
   "1 < b div a" if "a dvd b" "a < b" for a b :: nat
   using that by (metis dvd_div_mult_self mult.left_neutral mult_less_cancel2)
-  
+
 theorem lehmers_theorem:
   assumes "2 \<le> p"
   assumes pf_notcong1: "\<And>x. x \<in> prime_factors (p - 1) \<Longrightarrow> [a ^ ((p - 1) div x) \<noteq> 1] (mod p)"
@@ -207,7 +207,7 @@ theorem converse_lehmer:
                     \<and> a > 0 \<and> a < p"
     using converse_lehmer_weak[OF prime_p] by blast
   { fix q assume q:"q \<in> prime_factors (p - 1)"
-    hence "0 < q \<and> q \<le> p - 1" using `p\<ge>2` 
+    hence "0 < q \<and> q \<le> p - 1" using `p\<ge>2`
       by (auto simp add: dvd_nat_bounds prime_factors_gt_0_nat)
     hence "(p - 1) div q \<ge> 1" using div_le_mono[of "q" "p - 1" q] div_self[of q] by simp
     have "q \<ge> 2" using q by (auto intro: prime_ge_2_nat)
