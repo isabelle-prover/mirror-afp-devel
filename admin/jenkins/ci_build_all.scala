@@ -54,6 +54,7 @@ object profile extends isabelle.CI_Profile
       val session = Session.getDefaultInstance(System.getProperties(), authenticator)
       val message = new MimeMessage(session)
       message.setFrom(new InternetAddress("ci@isabelle.systems", "Isabelle/Jenkins"))
+      message.setSender(new InternetAddress("ge73ruk@mytum.de"))
       message.setSubject(subject)
       message.setText(text, "UTF-8")
       message.setSentDate(new java.util.Date())
