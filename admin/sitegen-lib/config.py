@@ -22,7 +22,6 @@ licenses = {
 class Options(object):
     def __init__(self):
         self.dest_dir = None
-        self.do_check = False
         self.metadata_dir = None
         self.thys_dir = None
         self.templates_dir = None

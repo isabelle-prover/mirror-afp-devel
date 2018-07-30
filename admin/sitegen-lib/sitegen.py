@@ -35,28 +35,6 @@ from terminal import warn, error
 import templates
 import afpstats
 
-
-class Stats(object):
-    def __init__(self):
-        self.tpls = 0
-        self.failed_tpls = 0
-        self.gens = 0
-        self.failed_gens = 0
-
-    def __str__(self):
-        failed_tpl_str = "({0!s} failed)".format(self.failed_tpls) if self.failed_tpls > 0 else ""
-        failed_gen_str = "({0!s} failed)".format(self.failed_gens) if self.failed_gens > 0 else ""
-
-        success_tpl_str = "Successfully read {0!s} template(s)".format(self.tpls - self.failed_tpls)
-        success_gen_str = "Successfully written {0!s} file(s)".format(self.gens - self.failed_gens)
-
-        return "{0} {1}\n{2} {3}".format(
-            colored(success_tpl_str, 'green', attrs=['bold']),
-            colored(failed_tpl_str, 'red', attrs=['bold']),
-            colored(success_gen_str, 'green', attrs=['bold']),
-            colored(failed_gen_str, 'red', attrs=['bold'])
-        )
-
 # performs a 'diff' between metadata and the actual filesystem contents
 def check_fs(meta_entries, directory):
     def is_fs_entry(e):
@@ -206,13 +184,6 @@ def parse_status(filename):
             status[entry['entry']] = entry['status']
 
         return build_data, status
-
-def add_status(entries, status):
-    for e in entries:
-        if e in status:
-            entries[e]['status'] = status[e]
-        else:
-            entries[e]['status'] = "skipped"
 
 def main():
     usage = "sitegen.py [-h] [--templates TEMPLATES_DIR --dest DEST_DIR] [--status STATUS_FILE] [--deps DEPS_FILE] METADATA_DIR THYS_DIR"

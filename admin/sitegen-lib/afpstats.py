@@ -13,16 +13,6 @@ def normpath(path, *paths):
     except UnicodeDecodeError:
         return None
 
-def format_lib_src(libstr):
-    if libstr.startswith("HOL/Library"):
-        return libstr[4:]
-    elif libstr.startswith("HOL/"):
-        return libstr.split("/")[1]
-    elif libstr.startswith("Tools/"):
-        return '/'.join(libstr.split("/")[0:2])
-    else:
-        return libstr
-
 class afp_author(object):
     """An AFP author has a name and a web or mail address"""
     def __init__(self, name, address):
