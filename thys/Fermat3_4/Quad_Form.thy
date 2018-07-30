@@ -1495,12 +1495,12 @@ proof -
     qed
     moreover have "Legendre ?p 3 = 1"
     proof -
-      have "[1^2 = ?p] (mod 3)" by (unfold cong_altdef_int dvd_def, auto)
+      have "[1^2 = ?p] (mod 3)" by (unfold cong_iff_dvd_diff dvd_def, auto)
       hence "QuadRes 3 ?p" by (unfold QuadRes_def, blast)
       moreover have "\<not> [?p = 0] (mod 3)"
       proof (rule ccontr, simp)
         assume "[?p = 0] (mod 3)"
-        hence "3 dvd ?p" by (simp add: cong_altdef_int)
+        hence "3 dvd ?p" by (simp add: cong_iff_dvd_diff)
         moreover have "3 dvd 6*m" by (auto simp add: dvd_def)
         ultimately have "3 dvd ?p- 6*m" by (simp only: dvd_diff)
         hence "(3::int) dvd 1" by simp
@@ -1517,7 +1517,7 @@ proof -
   ultimately have "[?L = (-1)^(2*(nat m))] (mod ?p)" by simp
   hence "[?L = ((-1)^2)^(nat m)] (mod ?p)" by (simp only: power_mult)
   hence "[1 = ?L] (mod ?p)" by (auto simp add: cong_sym)
-  hence "?p dvd 1 - ?L" by (simp only: cong_altdef_int)
+  hence "?p dvd 1 - ?L" by (simp only: cong_iff_dvd_diff)
   moreover have "?L = -1 \<or> ?L = 0 \<or> ?L = 1" by (simp add: Legendre_def)
   ultimately have "?p dvd 2 \<or> ?p dvd 1 \<or> ?L = 1" by auto
   moreover
@@ -1538,7 +1538,7 @@ proof -
     hence "Legendre (-3) ?p \<noteq> 1" by (unfold Legendre_def, auto) }
   ultimately have "QuadRes ?p (-3)" by auto
   then obtain s where s: "[s^2 = -3] (mod ?p)" by (auto simp add: QuadRes_def)
-  hence "?p dvd s^2 - (-3::int)" by (unfold cong_altdef_int, simp)
+  hence "?p dvd s^2 - (-3::int)" by (unfold cong_iff_dvd_diff, simp)
   moreover have "s^2 -(-3::int) = s^2 + 3" by arith
   ultimately have "?p dvd s^2 + 3*1^2" by auto
   moreover have "coprime s 1" by auto
