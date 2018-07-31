@@ -209,12 +209,12 @@ fun evaluate_list' :: "v sem_env \<Rightarrow> 'ffi state \<Rightarrow> exp list
       | res \<Rightarrow> res)
   |  (s', Rerr err) \<Rightarrow> (s', Rerr err))"
 
-lemma [simp]: "fix_clock s (evaluate eval s e) = evaluate eval s e"
+lemma fix_clock_evaluate[simp]: "fix_clock s (evaluate eval s e) = evaluate eval s e"
   unfolding fix_clock_alt_def
   apply (auto simp: datatype_record_update split: state.splits prod.splits)
   using evaluate_clock_monotone' by fastforce
 
-lemma [simp]: "evaluate_list (evaluate env) = evaluate_list' env"
+lemma evaluate_list_eq[simp]: "evaluate_list (evaluate env) = evaluate_list' env"
   apply (rule ext)+
   subgoal for s es
     by (induction rule:evaluate_list'.induct) (auto split:prod.splits result.splits)
