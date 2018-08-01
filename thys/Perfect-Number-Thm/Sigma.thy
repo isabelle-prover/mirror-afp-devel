@@ -156,15 +156,17 @@ qed
 lemma prodsums_eq_sumprods:
   fixes p :: nat and m :: nat
   assumes "coprime p m"
-  shows " \<Sum>{p ^ f |f. f \<le> n} * \<Sum>{b. b dvd m} = \<Sum>{p ^ f * b |f b. f \<le> n \<and> b dvd m}"
+  shows "\<Sum>{p ^ f |f. f \<le> n} * \<Sum>{b. b dvd m} = \<Sum>{p ^ f * b |f b. f \<le> n \<and> b dvd m}" (is "?lhs = ?rhs")
 proof -
   have "coprime p x" if "x dvd m" for x
     using assms by (rule coprime_imp_coprime) (auto intro: dvd_trans that)
   then have "coprime (p ^ f) x" if "x dvd m" for x f
     using that by simp
-  then show ?thesis
-    by (auto simp: imp_ex sum_mult_sum_if_inj [OF mult_inj_if_coprime_nat]
-             intro!: arg_cong [where f = "sum (\<lambda>x. x)"])
+  then have "?lhs = \<Sum>{a * b |a b. (\<exists>f. a = p ^ f \<and> f \<le> n) \<and> b dvd m}"
+    by (subst sum_mult_sum_if_inj [OF mult_inj_if_coprime_nat]) auto
+  also have "... = ?rhs"
+    by (blast intro: sum.cong)
+  finally show ?thesis .
 qed
 
 declare [[simproc add: finite_Collect]]
