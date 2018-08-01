@@ -275,6 +275,24 @@ lemma poly_linepath_comp:
   shows "poly p o (linepath a b) = poly (p \<circ>\<^sub>p [:a, b-a:]) o of_real"
   apply rule
   by (auto simp add:poly_pcompose linepath_def scaleR_conv_of_real algebra_simps)
+
+lemma poly_eventually_not_zero:
+  fixes p::"real poly"
+  assumes "p\<noteq>0"
+  shows "eventually (\<lambda>x. poly p x\<noteq>0) at_infinity"
+proof (rule eventually_at_infinityI[of "Max (norm ` {x. poly p x=0}) + 1"])
+  fix x::real assume asm:"Max (norm ` {x. poly p x=0}) + 1 \<le> norm x" 
+  have False when "poly p x=0"
+  proof - 
+    define S where "S=norm `{x. poly p x = 0}"
+    have "norm x\<in>S" using that unfolding S_def by auto
+    moreover have "finite S" using \<open>p\<noteq>0\<close> poly_roots_finite unfolding S_def by blast
+    ultimately have "norm x\<le>Max S" by simp
+    moreover have "Max S + 1 \<le> norm x" using asm unfolding S_def by simp
+    ultimately show False by argo
+  qed
+  then show "poly p x \<noteq> 0" by auto
+qed
     
 subsection \<open>More about @{term degree}\<close>
    
@@ -412,6 +430,7 @@ lemma finite_proots[simp]:
 lemma proots_within_pCons_1_iff:
   fixes a::"'a::idom"
   shows "proots_within [:-a,1:] s = (if a\<in>s then {a} else {})"
+        "proots_within [:a,-1:] s = (if a\<in>s then {a} else {})"
   by (cases "a\<in>s",auto)
     
 lemma proots_within_uminus[simp]:

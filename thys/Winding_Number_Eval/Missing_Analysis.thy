@@ -51,6 +51,22 @@ proof (rule ccontr)
   then show False using assms by auto
 qed    
 
+lemma circlepath_inj_on: 
+  assumes "r>0"
+  shows "inj_on (circlepath z r) {0..<1}"
+proof (rule inj_onI)
+  fix x y assume asm: "x \<in> {0..<1}" "y \<in> {0..<1}" "circlepath z r x = circlepath z r y"
+  define c where "c=2 * pi * \<i>"
+  have "c\<noteq>0" unfolding c_def by auto 
+  from asm(3) have "exp (c * x) =exp (c * y)"
+    unfolding circlepath c_def using \<open>r>0\<close> by auto
+  then obtain n where "c * x =c * (y + of_int n)"
+    by (auto simp add:exp_eq c_def algebra_simps)
+  then have "x=y+n" using \<open>c\<noteq>0\<close>
+    by (meson mult_cancel_left of_real_eq_iff)
+  then show "x=y" using asm(1,2) by auto
+qed
+
 subsection \<open>More lemmas related to @{term winding_number}\<close>  
   
 lemma winding_number_comp:

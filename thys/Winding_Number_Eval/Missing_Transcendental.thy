@@ -348,6 +348,251 @@ proof -
     by auto
 qed
 
+lemma get_norm_value:
+  fixes a::"'a::{floor_ceiling}"
+  assumes "pp>0"
+  obtains k::int and a1 where "a=(of_int k)*pp+a1" "a0\<le>a1" "a1<a0+pp"
+proof -
+  define k where "k=floor ((a-a0)/pp)"
+  define a1 where "a1=a-(of_int k)*pp"
+  have "of_int \<lfloor>(a - a0) / pp\<rfloor> * pp \<le> a- a0" 
+    using assms by (meson le_divide_eq of_int_floor_le)
+  moreover have "a-a0 < of_int (\<lfloor>(a - a0) / pp\<rfloor>+1) * pp" 
+    using assms by (meson divide_less_eq floor_correct)
+  ultimately show ?thesis 
+    apply (intro that[of k a1])
+    unfolding k_def a1_def using assms by (auto simp add:algebra_simps)
+qed
+
+(*Is it possible to generalise or simplify this messy proof?*)
+lemma filtermap_tan_at_right:
+  fixes a::real
+  assumes "cos a\<noteq>0"
+  shows "filtermap tan (at_right a) = at_right (tan a)"
+proof -
+  obtain k::int and a1 where aa1:"a=k*pi+a1" and "-pi/2\<le>a1" "a1<pi/2"
+    using get_norm_value[of pi a "-pi/2"] by auto
+  have "-pi/2 < a1" 
+  proof (rule ccontr)
+    assume "\<not> - pi / 2 < a1"
+    then have "a1=- pi / 2" using \<open>-pi/2\<le>a1\<close> by auto
+    then have "cos a = 0" unfolding aa1
+      by (metis (no_types, hide_lams) add.commute add_0_left cos_pi_half 
+              diff_eq_eq mult.left_neutral mult_minus_right mult_zero_left 
+              sin_add sin_pi_half sin_zero_iff_int2 times_divide_eq_left uminus_add_conv_diff)
+    then show False using assms by auto
+  qed
+  have "eventually P (at_right (tan a))" 
+    when "eventually P (filtermap tan (at_right a))" for P
+  proof -
+    obtain b1 where "b1>a" and b1_imp:" \<forall>y>a. y < b1 \<longrightarrow> P (tan y)"
+      using \<open>eventually P (filtermap tan (at_right a))\<close>
+      unfolding eventually_filtermap eventually_at_right 
+      by (metis eventually_at_right_field)
+    define b2 where "b2=min b1 (k*pi+pi/4+a1/2)"  
+    define b3 where "b3=b2 - k*pi"
+    have "-pi/2 < b3" "b3<pi/2" 
+    proof -
+      have "a1<b3"
+        using \<open>b1>a\<close> aa1 \<open>a1<pi/2\<close> unfolding b2_def b3_def by (auto simp add:field_simps)
+      then show "-pi/2 < b3" using \<open>-pi/2\<le>a1\<close> by auto
+      show "b3 < pi/2"
+        unfolding b2_def b3_def
+        apply (subst min_diff_distrib_left)
+        apply (rule min.strict_coboundedI2)
+        using \<open>b1>a\<close> aa1 \<open>a1<pi/2\<close> \<open>-pi/2<a1\<close> by auto
+    qed
+    have "tan b2 > tan a" 
+    proof -
+      have "tan a = tan a1"
+        using aa1 by (simp add: add.commute)
+      also have "... < tan b3"
+      proof -
+        have "a1<b3"
+          using \<open>b1>a\<close> aa1 \<open>a1<pi/2\<close> unfolding b2_def b3_def by (auto simp add:field_simps)
+        then show ?thesis
+          using tan_monotone \<open>-pi/2 < a1\<close> \<open>b3 < pi/2\<close> by simp
+      qed
+      also have "... = tan b2" unfolding b3_def
+        by (metis Groups.mult_ac(2) add_uminus_conv_diff mult_minus_right of_int_minus 
+          tan_periodic_int)
+      finally show ?thesis .
+    qed
+    moreover have "P y" when "y>tan a" "y < tan b2" for y
+    proof -
+      define y1 where "y1=arctan y+ k * pi"
+      have "a<y1" 
+      proof -
+        have "arctan (tan a) < arctan y" using \<open>y>tan a\<close> arctan_monotone by auto
+        then have "a1<arctan y"
+          using arctan_tan \<open>-pi/2 < a1\<close> \<open>a1<pi/2\<close> unfolding aa1 by (simp add: add.commute)
+        then show ?thesis unfolding y1_def aa1 by auto
+      qed
+      moreover have "y1<b2"
+      proof - 
+        have "arctan y < arctan (tan b2)"
+          using \<open>y < tan b2\<close> arctan_monotone by auto
+        moreover have "arctan (tan b2) = b3"
+          using arctan_tan[of b3] \<open>-pi/2 < b3\<close> \<open>b3<pi/2\<close> unfolding b3_def 
+          by (metis add.inverse_inverse diff_minus_eq_add divide_minus_left mult.commute 
+            mult_minus_right of_int_minus tan_periodic_int)
+        ultimately have "arctan y < b3" by auto
+        then show ?thesis unfolding y1_def b3_def by auto
+      qed
+      moreover have "\<forall>y>a. y < b2 \<longrightarrow> P (tan y)"
+        using b1_imp unfolding b2_def by auto
+      moreover have "tan y1=y" unfolding y1_def by (auto simp add:tan_arctan)
+      ultimately show ?thesis by auto
+    qed
+    ultimately show "eventually P (at_right (tan a))" 
+      unfolding eventually_at_right by (metis eventually_at_right_field)
+  qed
+  moreover have "eventually P (filtermap tan (at_right a))" 
+    when "eventually P (at_right (tan a))" for P
+  proof -
+    obtain b1 where "b1>tan a" and b1_imp:"\<forall>y>tan a. y < b1 \<longrightarrow> P y" 
+      using \<open>eventually P (at_right (tan a))\<close> unfolding eventually_at_right 
+      by (metis eventually_at_right_field)
+    define b2 where "b2=arctan b1 + k*pi" 
+    have "a1 < arctan b1" 
+      by (metis \<open>- pi / 2 < a1\<close> \<open>a1 < pi / 2\<close> \<open>tan a < b1\<close> aa1 add.commute arctan_less_iff 
+            arctan_tan divide_minus_left tan_periodic_int)
+    then have "b2>a" unfolding aa1 b2_def by auto
+    moreover have "P (tan y)" when "y>a" "y < b2" for y
+    proof -
+      define y1 where "y1 = y - k*pi"
+      have "a1 < y1" "y1 < arctan b1" unfolding y1_def
+        subgoal using \<open>y>a\<close> unfolding aa1 by auto
+        subgoal using b2_def that(2) by linarith
+        done
+      then have "tan a1 < tan y1" "tan y1< b1"
+        subgoal using \<open>a1>-pi/2\<close>
+          apply (intro tan_monotone,simp,simp)
+          using arctan_ubound less_trans by blast
+        subgoal 
+          by (metis \<open>- pi / 2 < a1\<close> \<open>a1 < y1\<close> \<open>y1 < arctan b1\<close> arctan_less_iff arctan_tan 
+              arctan_ubound divide_minus_left less_trans)
+        done
+      have "tan y>tan a" 
+        by (metis \<open>tan a1 < tan y1\<close> aa1 add.commute add_uminus_conv_diff mult.commute 
+            mult_minus_right of_int_minus tan_periodic_int y1_def)
+      moreover have "tan y<b1" 
+        by (metis \<open>tan y1 < b1\<close> add_uminus_conv_diff mult.commute mult_minus_right 
+            of_int_minus tan_periodic_int y1_def)
+      ultimately show ?thesis using b1_imp by auto
+    qed
+    ultimately show ?thesis unfolding eventually_filtermap eventually_at_right 
+      by (metis eventually_at_right_field)
+  qed
+  ultimately show ?thesis unfolding filter_eq_iff by blast
+qed
+
+lemma filtermap_tan_at_left:
+  fixes a::real
+  assumes "cos a\<noteq>0"
+  shows "filtermap tan (at_left a) = at_left (tan a)"
+proof -
+  have "filtermap tan (at_right (- a)) = at_right (tan (- a))" 
+    using filtermap_tan_at_right[of "-a"] assms by auto
+  then have "filtermap (uminus o tan) (at_left a) = filtermap uminus (at_left (tan a))"
+    unfolding at_right_minus filtermap_filtermap comp_def by auto
+  then have "filtermap uminus (filtermap (uminus o tan) (at_left a)) 
+      = filtermap uminus (filtermap uminus (at_left (tan a)))"
+    by auto
+  then show ?thesis 
+    unfolding filtermap_filtermap comp_def by auto
+qed
+
+lemma cos_zero_iff_int2:
+  fixes x::real
+  shows "cos x = 0 \<longleftrightarrow> (\<exists>n::int. x = n * pi +  pi/2)"
+  using sin_zero_iff_int2[of "x-pi/2"] unfolding sin_cos_eq 
+  by (auto simp add:algebra_simps)
+
+lemma filtermap_tan_at_right_inf:
+  fixes a::real
+  assumes "cos a=0"
+  shows "filtermap tan (at_right a) = at_bot"
+proof -
+  obtain k::int where ak:"a=k*pi + pi/2"
+    using cos_zero_iff_int2 assms by auto
+  have "eventually P at_bot" when "eventually P (filtermap tan (at_right a))" for P 
+  proof -
+    obtain b1 where "b1>a" and b1_imp:"\<forall>y>a. y < b1 \<longrightarrow> P (tan y)" 
+      using \<open>eventually P (filtermap tan (at_right a))\<close> 
+      unfolding eventually_filtermap eventually_at_right 
+      by (metis eventually_at_right_field)
+    define b2 where "b2=min (k*pi+pi) b1"
+    have "P y" when "y<tan b2" for y
+    proof -
+      define y1 where "y1=(k+1)*pi+arctan y"
+      have "a < y1" 
+        unfolding ak y1_def using arctan_lbound[of y]
+        by (auto simp add:field_simps)
+      moreover have "y1 < b2" 
+      proof -
+        define b3 where "b3=b2-(k+1) * pi"
+        have "-pi/2 < b3" "b3<pi/2"
+          using \<open>b1>a\<close> unfolding b3_def b2_def ak 
+          by (auto simp add:field_simps min_mult_distrib_left intro!:min.strict_coboundedI1)
+        then have "arctan (tan b3) = b3"
+          by (simp add: arctan_tan)
+        then have "arctan (tan b2) = b3" 
+          unfolding b3_def by (metis diff_eq_eq tan_periodic_int)
+        then have "arctan y < b3"
+          using arctan_monotone[OF \<open>y<tan b2\<close>] by simp
+        then show ?thesis
+          unfolding y1_def b3_def by auto
+      qed
+      then have "y1<b1" unfolding b2_def by auto
+      ultimately have " P (tan y1)" using b1_imp[rule_format,of y1,simplified] by auto
+      then show ?thesis unfolding y1_def by (metis add.commute arctan tan_periodic_int)
+    qed
+    then show ?thesis unfolding eventually_at_bot_dense by auto
+  qed
+  moreover have "eventually P (filtermap tan (at_right a))" when "eventually P at_bot" for P 
+  proof -
+    obtain b1 where b1_imp:"\<forall>n<b1. P n"
+      using \<open>eventually P at_bot\<close> unfolding eventually_at_bot_dense by auto
+    define b2 where "b2=arctan b1 + (k+1)*pi"
+    have "b2>a" unfolding ak b2_def using arctan_lbound[of b1]
+      by (auto simp add:algebra_simps)
+    moreover have "P (tan y)" when "a < y" " y < b2 " for y
+    proof -
+      define y1 where "y1=y-(k+1)*pi"
+      have "tan y1 < tan (arctan b1)"
+        apply (rule tan_monotone)
+        subgoal using \<open>a<y\<close> unfolding y1_def ak by (auto simp add:algebra_simps)
+        subgoal using \<open>y < b2\<close> unfolding y1_def b2_def by (auto simp add:algebra_simps)
+        subgoal using arctan_ubound by auto
+        done
+      then have "tan y1<b1" by (simp add: arctan)
+      then have "tan y < b1" unfolding y1_def 
+        by (metis diff_eq_eq tan_periodic_int)
+      then show ?thesis using b1_imp by auto
+    qed
+    ultimately show "eventually P (filtermap tan (at_right a))"
+      unfolding eventually_filtermap eventually_at_right 
+      by (metis eventually_at_right_field)
+  qed
+  ultimately show ?thesis unfolding filter_eq_iff by auto
+qed
+
+lemma filtermap_tan_at_left_inf:
+  fixes a::real
+  assumes "cos a=0"
+  shows "filtermap tan (at_left a) = at_top"
+proof -
+  have "filtermap tan (at_right (- a)) = at_bot"
+    using filtermap_tan_at_right_inf[of "-a"] assms by auto
+  then have "filtermap (uminus o tan) (at_left a) = at_bot"
+    unfolding at_right_minus filtermap_filtermap comp_def by auto
+  then have "filtermap uminus (filtermap (uminus o tan) (at_left a)) = filtermap uminus at_bot"
+    by auto
+  then show ?thesis 
+    unfolding filtermap_filtermap comp_def using at_top_mirror[where 'a=real] by auto
+qed
+
 subsection \<open>Periodic set\<close>
 
 (*Devised to characterize roots of Trigonometric equations, which are usually uniformly discrete.*)

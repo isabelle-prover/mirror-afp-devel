@@ -56,6 +56,233 @@ lemma sgn_power:
   shows "sgn (x^n) = (if n=0 then 1 else if even n then \<bar>sgn x\<bar> else sgn x)"
   apply (induct n)
   by (auto simp add:sgn_mult)
+
+lemma poly_divide_filterlim_at_top: 
+  fixes p q::"real poly"
+  defines "ll\<equiv>( if degree q<degree p then 
+                    at 0 
+                else if degree q=degree p then 
+                    nhds (lead_coeff q / lead_coeff p)
+                else if sgn_pos_inf q * sgn_pos_inf p > 0 then 
+                    at_top
+                else 
+                    at_bot)"
+  assumes "p\<noteq>0" "q\<noteq>0"
+  shows "filterlim (\<lambda>x. poly q x / poly p x) ll at_top"
+proof -
+  define pp where "pp=(\<lambda>x. poly p x / x^(degree p))"    
+  define qq where "qq=(\<lambda>x. poly q x / x^(degree q))"
+  define dd where "dd=(\<lambda>x::real. if degree p>degree q then 1/x^(degree p - degree q) else 
+                                x^(degree q - degree p))"
+  have divide_cong:"\<forall>\<^sub>Fx in at_top. poly q x / poly p x = qq x / pp x * dd x"
+  proof (rule eventually_at_top_linorderI[of 1])
+    fix x assume "(x::real)\<ge>1"
+    then have "x\<noteq>0" by auto
+    then show "poly q x / poly p x = qq x / pp x * dd x"
+      unfolding qq_def pp_def dd_def using assms 
+      by (auto simp add:field_simps power_diff) 
+  qed
+  have qqpp_tendsto:"((\<lambda>x. qq x / pp x) \<longlongrightarrow> lead_coeff q / lead_coeff p) at_top"
+  proof -
+    have "(qq \<longlongrightarrow> lead_coeff q) at_top"
+      unfolding qq_def using poly_divide_tendsto_aux[of q]  
+      by (auto elim!:filterlim_mono simp:at_top_le_at_infinity)
+    moreover have "(pp \<longlongrightarrow> lead_coeff p) at_top"
+      unfolding pp_def using poly_divide_tendsto_aux[of p]  
+      by (auto elim!:filterlim_mono simp:at_top_le_at_infinity)
+    ultimately show ?thesis using \<open>p\<noteq>0\<close> by (auto intro!:tendsto_eq_intros)
+  qed
+  
+  have ?thesis when "degree q<degree p"
+  proof -
+    have "filterlim (\<lambda>x. poly q x / poly p x) (at 0) at_top"
+    proof (rule filterlim_atI)
+      show "((\<lambda>x. poly q x / poly p x) \<longlongrightarrow> 0) at_top"
+        using poly_divide_tendsto_0_at_infinity[OF that]
+        by (auto elim:filterlim_mono simp:at_top_le_at_infinity)
+      have "\<forall>\<^sub>F x in at_top. poly q x \<noteq>0" "\<forall>\<^sub>F x in at_top. poly p x \<noteq>0"
+        using poly_eventually_not_zero[OF \<open>q\<noteq>0\<close>] poly_eventually_not_zero[OF \<open>p\<noteq>0\<close>]
+              filter_leD[OF at_top_le_at_infinity]
+        by auto
+      then show "\<forall>\<^sub>F x in at_top. poly q x / poly p x \<noteq> 0"
+        apply eventually_elim
+        by auto
+    qed
+    then show ?thesis unfolding ll_def using that by auto
+  qed
+  moreover have ?thesis when "degree q=degree p"
+  proof -
+    have "((\<lambda>x. poly q x / poly p x) \<longlongrightarrow> lead_coeff q / lead_coeff p) at_top"
+      using divide_cong qqpp_tendsto that unfolding dd_def
+      by (auto dest:tendsto_cong)
+    then show ?thesis unfolding ll_def using that by auto
+  qed
+  moreover have ?thesis when "degree q>degree p" "sgn_pos_inf q * sgn_pos_inf p > 0"
+  proof -
+    have "filterlim (\<lambda>x. (qq x / pp x) * dd x) at_top at_top"
+    proof (subst filterlim_tendsto_pos_mult_at_top_iff[OF qqpp_tendsto])
+      show "0 < lead_coeff q / lead_coeff p" using that(2) unfolding sgn_pos_inf_def
+        by (simp add: zero_less_divide_iff zero_less_mult_iff)
+      show "filterlim dd at_top at_top"
+        unfolding dd_def using that(1) 
+        by (auto intro!:filterlim_pow_at_top simp:filterlim_ident)
+    qed
+    then have "LIM x at_top. poly q x / poly p x :> at_top" 
+      using filterlim_cong[OF _ _ divide_cong] by blast
+    then show ?thesis unfolding ll_def using that by auto
+  qed
+  moreover have ?thesis  when "degree q>degree p" "\<not> sgn_pos_inf q * sgn_pos_inf p > 0"
+  proof -
+    have "filterlim (\<lambda>x. (qq x / pp x) * dd x) at_bot at_top"
+    proof (subst filterlim_tendsto_neg_mult_at_bot_iff[OF qqpp_tendsto])
+      show "lead_coeff q / lead_coeff p < 0" 
+        using that(2) \<open>p\<noteq>0\<close> \<open>q\<noteq>0\<close> unfolding sgn_pos_inf_def
+        by (metis divide_eq_0_iff divide_sgn leading_coeff_0_iff 
+            linorder_neqE_linordered_idom sgn_divide sgn_greater)
+      show "filterlim dd at_top at_top"
+        unfolding dd_def using that(1) 
+        by (auto intro!:filterlim_pow_at_top simp:filterlim_ident)
+    qed
+    then have "LIM x at_top. poly q x / poly p x :> at_bot" 
+      using filterlim_cong[OF _ _ divide_cong] by blast
+    then show ?thesis unfolding ll_def using that by auto
+  qed
+  ultimately show ?thesis by linarith
+qed
+
+lemma poly_divide_filterlim_at_bot: 
+  fixes p q::"real poly"
+  defines "ll\<equiv>( if degree q<degree p then 
+                    at 0 
+                else if degree q=degree p then 
+                    nhds (lead_coeff q / lead_coeff p)
+                else if sgn_neg_inf q * sgn_neg_inf p > 0 then 
+                    at_top
+                else 
+                    at_bot)"
+  assumes "p\<noteq>0" "q\<noteq>0"
+  shows "filterlim (\<lambda>x. poly q x / poly p x) ll at_bot"
+proof -
+  define pp where "pp=(\<lambda>x. poly p x / x^(degree p))"    
+  define qq where "qq=(\<lambda>x. poly q x / x^(degree q))"
+  define dd where "dd=(\<lambda>x::real. if degree p>degree q then 1/x^(degree p - degree q) else 
+                                x^(degree q - degree p))"
+  have divide_cong:"\<forall>\<^sub>Fx in at_bot. poly q x / poly p x = qq x / pp x * dd x"
+  proof (rule eventually_at_bot_linorderI[of "-1"])
+    fix x assume "(x::real)\<le>-1"
+    then have "x\<noteq>0" by auto
+    then show "poly q x / poly p x = qq x / pp x * dd x"
+      unfolding qq_def pp_def dd_def using assms 
+      by (auto simp add:field_simps power_diff) 
+  qed
+  have qqpp_tendsto:"((\<lambda>x. qq x / pp x) \<longlongrightarrow> lead_coeff q / lead_coeff p) at_bot"
+  proof -
+    have "(qq \<longlongrightarrow> lead_coeff q) at_bot"
+      unfolding qq_def using poly_divide_tendsto_aux[of q]  
+      by (auto elim!:filterlim_mono simp:at_bot_le_at_infinity)
+    moreover have "(pp \<longlongrightarrow> lead_coeff p) at_bot"
+      unfolding pp_def using poly_divide_tendsto_aux[of p]  
+      by (auto elim!:filterlim_mono simp:at_bot_le_at_infinity)
+    ultimately show ?thesis using \<open>p\<noteq>0\<close> by (auto intro!:tendsto_eq_intros)
+  qed
+  
+  have ?thesis when "degree q<degree p"
+  proof -
+    have "filterlim (\<lambda>x. poly q x / poly p x) (at 0) at_bot"
+    proof (rule filterlim_atI)
+      show "((\<lambda>x. poly q x / poly p x) \<longlongrightarrow> 0) at_bot"
+        using poly_divide_tendsto_0_at_infinity[OF that]
+        by (auto elim:filterlim_mono simp:at_bot_le_at_infinity)
+      have "\<forall>\<^sub>F x in at_bot. poly q x \<noteq>0" "\<forall>\<^sub>F x in at_bot. poly p x \<noteq>0"
+        using poly_eventually_not_zero[OF \<open>q\<noteq>0\<close>] poly_eventually_not_zero[OF \<open>p\<noteq>0\<close>]
+              filter_leD[OF at_bot_le_at_infinity]
+        by auto
+      then show "\<forall>\<^sub>F x in at_bot. poly q x / poly p x \<noteq> 0"
+        by eventually_elim auto
+    qed
+    then show ?thesis unfolding ll_def using that by auto
+  qed
+  moreover have ?thesis when "degree q=degree p"
+  proof -
+    have "((\<lambda>x. poly q x / poly p x) \<longlongrightarrow> lead_coeff q / lead_coeff p) at_bot"
+      using divide_cong qqpp_tendsto that unfolding dd_def
+      by (auto dest:tendsto_cong)
+    then show ?thesis unfolding ll_def using that by auto
+  qed
+  moreover have ?thesis when "degree q>degree p" "sgn_neg_inf q * sgn_neg_inf p > 0"
+  proof -
+    define cc where "cc=lead_coeff q / lead_coeff p"
+    have "(cc > 0 \<and> even (degree q - degree p)) \<or> (cc<0 \<and> odd (degree q - degree p))"
+    proof -
+      have "even (degree q - degree p) \<longleftrightarrow> 
+            (even (degree q) \<and> even (degree p)) \<or> (odd (degree q) \<and> odd (degree p))"
+        using \<open>degree q>degree p\<close> by auto
+      then show ?thesis
+        using that \<open>p\<noteq>0\<close> \<open>q\<noteq>0\<close> unfolding sgn_neg_inf_def cc_def zero_less_mult_iff 
+          divide_less_0_iff zero_less_divide_iff 
+        apply (simp add:if_split[of "(<) 0"] if_split[of "(>) 0"])
+        by argo
+    qed
+    moreover have "filterlim (\<lambda>x. (qq x / pp x) * dd x) at_top at_bot"
+      when "cc>0" "even (degree q - degree p)"
+    proof (subst filterlim_tendsto_pos_mult_at_top_iff[OF qqpp_tendsto])
+      show "0 < lead_coeff q / lead_coeff p" using \<open>cc>0\<close> unfolding cc_def by auto
+      show "filterlim dd at_top at_bot"
+        unfolding dd_def using \<open>degree q>degree p\<close> that(2)
+        by (auto intro!:filterlim_pow_at_bot_even simp:filterlim_ident)
+    qed
+    moreover have "filterlim (\<lambda>x. (qq x / pp x) * dd x) at_top at_bot"
+      when "cc<0" "odd (degree q - degree p)"
+    proof (subst filterlim_tendsto_neg_mult_at_top_iff[OF qqpp_tendsto])
+      show "0 > lead_coeff q / lead_coeff p" using \<open>cc<0\<close> unfolding cc_def by auto
+      show "filterlim dd at_bot at_bot"
+        unfolding dd_def using \<open>degree q>degree p\<close> that(2)
+        by (auto intro!:filterlim_pow_at_bot_odd simp:filterlim_ident)
+    qed
+    ultimately have "filterlim (\<lambda>x. (qq x / pp x) * dd x) at_top at_bot"
+      by blast
+    then have "LIM x at_bot. poly q x / poly p x :> at_top"
+      using filterlim_cong[OF _ _ divide_cong] by blast
+    then show ?thesis unfolding ll_def using that by auto
+  qed
+  moreover have ?thesis  when "degree q>degree p" "\<not> sgn_neg_inf q * sgn_neg_inf p > 0"
+  proof -
+    define cc where "cc=lead_coeff q / lead_coeff p"
+    have "(cc < 0 \<and> even (degree q - degree p)) \<or> (cc > 0 \<and> odd (degree q - degree p))"
+    proof -
+      have "even (degree q - degree p) \<longleftrightarrow> 
+            (even (degree q) \<and> even (degree p)) \<or> (odd (degree q) \<and> odd (degree p))"
+        using \<open>degree q>degree p\<close> by auto
+      then show ?thesis
+        using that \<open>p\<noteq>0\<close> \<open>q\<noteq>0\<close> unfolding sgn_neg_inf_def cc_def zero_less_mult_iff 
+          divide_less_0_iff zero_less_divide_iff
+        apply (simp add:if_split[of "(<) 0"] if_split[of "(>) 0"])
+        by (metis leading_coeff_0_iff linorder_neqE_linordered_idom)
+    qed
+    moreover have "filterlim (\<lambda>x. (qq x / pp x) * dd x) at_bot at_bot"
+      when "cc<0" "even (degree q - degree p)"
+    proof (subst filterlim_tendsto_neg_mult_at_bot_iff[OF qqpp_tendsto])
+      show "0 > lead_coeff q / lead_coeff p" using \<open>cc<0\<close> unfolding cc_def by auto
+      show "filterlim dd at_top at_bot"
+        unfolding dd_def using \<open>degree q>degree p\<close> that(2)
+        by (auto intro!:filterlim_pow_at_bot_even simp:filterlim_ident)
+    qed
+    moreover have "filterlim (\<lambda>x. (qq x / pp x) * dd x) at_bot at_bot"
+      when "cc>0" "odd (degree q - degree p)"
+    proof (subst filterlim_tendsto_pos_mult_at_bot_iff[OF qqpp_tendsto])
+      show "0 < lead_coeff q / lead_coeff p" using \<open>cc>0\<close> unfolding cc_def by auto
+      show "filterlim dd at_bot at_bot"
+        unfolding dd_def using \<open>degree q>degree p\<close> that(2)
+        by (auto intro!:filterlim_pow_at_bot_odd simp:filterlim_ident)
+    qed
+    ultimately have "filterlim (\<lambda>x. (qq x / pp x) * dd x) at_bot at_bot"
+      by blast
+    then have "LIM x at_bot. poly q x / poly p x :> at_bot"
+      using filterlim_cong[OF _ _ divide_cong] by blast
+    then show ?thesis unfolding ll_def using that by auto
+  qed
+  ultimately show ?thesis by linarith
+qed
         
 subsection \<open>Alternative definition of cross\<close>
  
@@ -167,6 +394,12 @@ definition jumpF_polyR:: "real poly \<Rightarrow> real poly \<Rightarrow> real \
   
 definition jumpF_polyL:: "real poly \<Rightarrow> real poly \<Rightarrow> real \<Rightarrow> real" where
   "jumpF_polyL q p a = jumpF (\<lambda>x. poly q x / poly p x) (at_left a)"
+
+definition jumpF_poly_top:: "real poly \<Rightarrow> real poly \<Rightarrow> real" where
+  "jumpF_poly_top q p = jumpF (\<lambda>x. poly q x / poly p x) at_top"
+
+definition jumpF_poly_bot:: "real poly \<Rightarrow> real poly \<Rightarrow> real" where
+  "jumpF_poly_bot q p = jumpF (\<lambda>x. poly q x / poly p x) at_bot"
 
   
 lemma jumpF_polyR_0[simp]: "jumpF_polyR 0 p a = 0" "jumpF_polyR q 0 a = 0" 
@@ -515,7 +748,112 @@ proof -
     subgoal by auto
     subgoal using jumpF_eq unfolding g_def jumpF_polyL_def by auto
     done  
-qed  
+qed 
+
+
+lemma jumpF_poly_top_0[simp]: "jumpF_poly_top 0 p = 0" "jumpF_poly_top q 0 = 0"
+  unfolding jumpF_poly_top_def by auto
+
+lemma jumpF_poly_bot_0[simp]: "jumpF_poly_bot 0 p = 0" "jumpF_poly_bot q 0 = 0"
+  unfolding jumpF_poly_bot_def by auto
+
+lemma jumpF_poly_top_code:
+  "jumpF_poly_top q p = (if p\<noteq>0 \<and> q\<noteq>0 \<and> degree q>degree p then 
+          if sgn_pos_inf q * sgn_pos_inf p > 0 then 1/2 else -1/2 else 0)"
+proof (cases "p\<noteq>0 \<and> q\<noteq>0 \<and> degree q>degree p")
+  case True
+  have ?thesis when "sgn_pos_inf q * sgn_pos_inf p > 0"
+  proof -
+    have "LIM x at_top. poly q x / poly p x :> at_top"
+      using poly_divide_filterlim_at_top[of p q] True that by auto
+    then have "jumpF (\<lambda>x. poly q x / poly p x) at_top = 1/2"
+      unfolding jumpF_def by auto
+    then show ?thesis unfolding jumpF_poly_top_def using that True by auto
+  qed
+  moreover have ?thesis when "\<not> sgn_pos_inf q * sgn_pos_inf p > 0"
+  proof -
+    have "LIM x at_top. poly q x / poly p x :> at_bot"
+      using poly_divide_filterlim_at_top[of p q] True that by auto
+    then have "jumpF (\<lambda>x. poly q x / poly p x) at_top = - 1/2"
+      unfolding jumpF_def by auto
+    then show ?thesis unfolding jumpF_poly_top_def using that True by auto
+  qed
+  ultimately show ?thesis by auto
+next
+  case False
+  define P where "P= (\<not> (LIM x at_top. poly q x / poly p x :> at_bot) 
+                      \<and> \<not> (LIM x at_top. poly q x / poly p x :> at_top))"
+  have P when "p=0 \<or> q=0"
+    unfolding P_def using that 
+    by (auto elim!:filterlim_at_bot_nhds filterlim_at_top_nhds)
+  moreover have P when "p\<noteq>0" "q\<noteq>0" "degree p> degree q"
+  proof -
+    have "LIM x at_top. poly q x / poly p x :> at 0"
+      using poly_divide_filterlim_at_top[OF that(1,2)] that(3) by auto
+    then show ?thesis unfolding P_def 
+      by (auto elim!:filterlim_at_bot_nhds filterlim_at_top_nhds simp:filterlim_at)
+  qed 
+  moreover have P when "p\<noteq>0" "q\<noteq>0" "degree p = degree q"
+  proof -
+    have "((\<lambda>x. poly q x / poly p x) \<longlongrightarrow> lead_coeff q / lead_coeff p) at_top"
+      using poly_divide_filterlim_at_top[OF that(1,2)] using that by auto
+    then show ?thesis unfolding P_def 
+      by (auto elim!:filterlim_at_bot_nhds filterlim_at_top_nhds)
+  qed
+  ultimately have P using False by fastforce
+  then have "jumpF (\<lambda>x. poly q x / poly p x) at_top = 0"
+    unfolding jumpF_def P_def by auto
+  then show ?thesis unfolding jumpF_poly_top_def using False by presburger
+qed
+
+lemma jumpF_poly_bot_code:
+  "jumpF_poly_bot q p = (if p\<noteq>0 \<and> q\<noteq>0 \<and> degree q>degree p then 
+          if sgn_neg_inf q * sgn_neg_inf p > 0 then 1/2 else -1/2 else 0)"
+proof (cases "p\<noteq>0 \<and> q\<noteq>0 \<and> degree q>degree p")
+  case True
+  have ?thesis when "sgn_neg_inf q * sgn_neg_inf p > 0"
+  proof -
+    have "LIM x at_bot. poly q x / poly p x :> at_top"
+      using poly_divide_filterlim_at_bot[of p q] True that by auto
+    then have "jumpF (\<lambda>x. poly q x / poly p x) at_bot = 1/2"
+      unfolding jumpF_def by auto
+    then show ?thesis unfolding jumpF_poly_bot_def using that True by auto
+  qed
+  moreover have ?thesis when "\<not> sgn_neg_inf q * sgn_neg_inf p > 0"
+  proof -
+    have "LIM x at_bot. poly q x / poly p x :> at_bot"
+      using poly_divide_filterlim_at_bot[of p q] True that by auto
+    then have "jumpF (\<lambda>x. poly q x / poly p x) at_bot = - 1/2"
+      unfolding jumpF_def by auto
+    then show ?thesis unfolding jumpF_poly_bot_def using that True by auto
+  qed
+  ultimately show ?thesis by auto
+next
+  case False
+  define P where "P= (\<not> (LIM x at_bot. poly q x / poly p x :> at_bot) 
+                      \<and> \<not> (LIM x at_bot. poly q x / poly p x :> at_top))"
+  have P when "p=0 \<or> q=0"
+    unfolding P_def using that 
+    by (auto elim!:filterlim_at_bot_nhds filterlim_at_top_nhds)
+  moreover have P when "p\<noteq>0" "q\<noteq>0" "degree p> degree q"
+  proof -
+    have "LIM x at_bot. poly q x / poly p x :> at 0"
+      using poly_divide_filterlim_at_bot[OF that(1,2)] that(3) by auto
+    then show ?thesis unfolding P_def 
+      by (auto elim!:filterlim_at_bot_nhds filterlim_at_top_nhds simp:filterlim_at)
+  qed 
+  moreover have P when "p\<noteq>0" "q\<noteq>0" "degree p = degree q"
+  proof -
+    have "((\<lambda>x. poly q x / poly p x) \<longlongrightarrow> lead_coeff q / lead_coeff p) at_bot"
+      using poly_divide_filterlim_at_bot[OF that(1,2)] using that by auto
+    then show ?thesis unfolding P_def 
+      by (auto elim!:filterlim_at_bot_nhds filterlim_at_top_nhds)
+  qed
+  ultimately have P using False by fastforce
+  then have "jumpF (\<lambda>x. poly q x / poly p x) at_bot = 0"
+    unfolding jumpF_def P_def by auto
+  then show ?thesis unfolding jumpF_poly_bot_def using False by presburger
+qed
   
 subsection \<open>The extended Cauchy index on polynomials\<close>
 
@@ -1191,5 +1529,71 @@ next
     using the_equality[of P "changes_R_smods p q"] by blast
   then show ?thesis unfolding cindex_poly_ubd_def P_def f_def by auto
 qed  
+
+
+lemma cindexE_ubd_poly: "cindexE_ubd (\<lambda>x. poly q x/poly p x) = cindex_poly_ubd q p"
+proof (cases "p=0")
+  case True
+  then show ?thesis using cindex_poly_ubd_0 unfolding cindexE_ubd_def 
+    by auto
+next
+  case False
+  define mx mn where "mx = Max {x. poly p x = 0}" and "mn = Min {x. poly p x=0}"
+  define rr where "rr= 1+ (max \<bar>mx\<bar> \<bar>mn\<bar>)"
+  have rr:"-rr < x \<and> x< rr" when "poly p x = 0 " for x
+  proof -
+    have "finite {x. poly p x = 0}" using \<open>p\<noteq>0\<close> poly_roots_finite by blast
+    then have "mn \<le> x" "x\<le>mx"
+      using Max_ge Min_le that unfolding mn_def mx_def by simp_all
+    then show ?thesis unfolding rr_def by auto
+  qed
+  define f where "f=(\<lambda>x. poly q x / poly p x)"
+  have "\<forall>\<^sub>F r in at_top. cindexE (- r) r f = cindexE_ubd f"
+  proof (rule eventually_at_top_linorderI[of rr])
+    fix r assume "r\<ge>rr"
+    define R1 R2 where "R1={x. jumpF f (at_right x) \<noteq> 0 \<and> - r \<le> x \<and> x < r}"
+                       and "R2 = {x. jumpF f (at_right x) \<noteq> 0}"
+    define L1 L2 where "L1={x. jumpF f (at_left x) \<noteq> 0 \<and> - r < x \<and> x \<le> r}"
+                       and "L2={x. jumpF f (at_left x) \<noteq> 0}"
+    have "R1=R2"
+    proof -
+      have "jumpF f (at_right x) = 0" when "\<not> (- r \<le> x \<and> x < r)" for x 
+      proof -
+        have "jumpF f (at_right x) = jumpF_polyR q p x"
+          unfolding f_def jumpF_polyR_def by simp
+        also have "... = 0"
+          apply (rule jumpF_poly_noroot)
+          using  that \<open>r\<ge>rr\<close> by (auto dest:rr)
+        finally show ?thesis .
+      qed
+      then show ?thesis unfolding R1_def R2_def by blast
+    qed
+    moreover have "L1=L2"
+    proof -
+      have "jumpF f (at_left x) = 0" when "\<not> (- r < x \<and> x \<le> r)" for x 
+      proof -
+        have "jumpF f (at_left x) = jumpF_polyL q p x"
+          unfolding f_def jumpF_polyL_def by simp
+        also have "... = 0"
+          apply (rule jumpF_poly_noroot)
+          using that \<open>r\<ge>rr\<close> by (auto dest:rr)
+        finally show ?thesis .
+      qed
+      then show ?thesis unfolding L1_def L2_def by blast
+    qed
+    ultimately show "cindexE (- r) r f = cindexE_ubd f" 
+      unfolding cindexE_def cindexE_ubd_def
+      apply (fold R1_def R2_def L1_def L2_def)
+      by auto
+  qed
+  moreover have "\<forall>\<^sub>F r in at_top. cindexE (- r) r f = cindex_poly_ubd q p"
+    using cindex_poly_ubd_eventually unfolding f_def by auto
+  ultimately have "\<forall>\<^sub>F r in at_top. cindexE (- r) r f = cindexE_ubd f 
+                          \<and> cindexE (- r) r f = cindex_poly_ubd q p"
+    using eventually_conj by auto
+  then have "\<forall>\<^sub>F (r::real) in at_top. cindexE_ubd f = cindex_poly_ubd q p"
+    by (elim eventually_mono) auto
+  then show ?thesis unfolding f_def by auto
+qed
   
 end

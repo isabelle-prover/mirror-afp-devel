@@ -319,7 +319,7 @@ proof -
   then show False using \<open>F\<noteq>bot\<close> by auto
 qed  
 
-lemma filterlim_at_top_nhds:      
+lemma filterlim_at_top_nhds[elim]:      
   fixes f::"'a \<Rightarrow> 'b::{unbounded_dense_linorder,order_topology}" and F::"'a filter"
   assumes top:"filterlim f at_top F" and tendsto: "(f \<longlongrightarrow> c) F" and "F\<noteq>bot"
   shows False
@@ -335,7 +335,7 @@ proof -
   then show False using \<open>F\<noteq>bot\<close> by auto
 qed
 
-lemma filterlim_at_bot_nhds:      
+lemma filterlim_at_bot_nhds[elim]:      
   fixes f::"'a \<Rightarrow> 'b::{unbounded_dense_linorder,order_topology}" and F::"'a filter"
   assumes top:"filterlim f at_bot F" and tendsto: "(f \<longlongrightarrow> c) F" and "F\<noteq>bot"
   shows False
@@ -474,7 +474,51 @@ lemma filterlim_tendsto_neg_mult_at_bot_iff:
   assumes "(f \<longlongrightarrow> c) F" "0 > c" 
   shows "(LIM x F. f x * g x :> at_bot) \<longleftrightarrow> filterlim g at_top F"
   using filterlim_tendsto_neg_mult_at_top_iff[OF assms(1,2), of "\<lambda>x. - g x"] 
-  unfolding filterlim_uminus_at_top by simp     
+  unfolding filterlim_uminus_at_top by simp    
+
+lemma Lim_add:
+  fixes f g::"_ \<Rightarrow> 'a::{t2_space,topological_monoid_add}"
+  assumes "\<exists>y. (f \<longlongrightarrow> y) F" and "\<exists>y. (g \<longlongrightarrow> y) F" and "F\<noteq>bot"
+  shows "Lim F f + Lim F g = Lim F (\<lambda>x. f x+g x)"
+  apply (rule tendsto_Lim[OF \<open>F\<noteq>bot\<close>, symmetric])
+  apply (auto intro!:tendsto_eq_intros)
+  using assms tendsto_Lim by blast+
+
+(*
+lemma filterlim_at_top_tendsto[elim]:
+  fixes f::"'a \<Rightarrow> 'b::{unbounded_dense_linorder,order_topology}" and F::"'a filter"
+  assumes top:"filterlim f at_top F" and tendsto: "(f \<longlongrightarrow> c) F" 
+          and "F\<noteq>bot"
+  shows False
+proof -
+  obtain cc where "cc>c" using gt_ex by blast
+  have "\<forall>\<^sub>F x in F. cc < f x" 
+    using top unfolding filterlim_at_top_dense by auto
+  moreover have "\<forall>\<^sub>F x in F. f x < cc" 
+    using tendsto order_tendstoD(2)[OF _ \<open>cc>c\<close>] by auto
+  ultimately have "\<forall>\<^sub>F x in F. cc < f x \<and> f x < cc" 
+    using eventually_conj by auto
+  then have "\<forall>\<^sub>F x in F. False" by (auto elim:eventually_mono)
+  then show False using \<open>F\<noteq>bot\<close> by auto
+qed
+
+lemma filterlim_at_bot_tendsto[elim]:
+  fixes f::"'a \<Rightarrow> 'b::{unbounded_dense_linorder,order_topology}" and F::"'a filter"
+  assumes top:"filterlim f at_bot F" and tendsto: "(f \<longlongrightarrow> c) F" 
+          and "F\<noteq>bot"
+  shows False
+proof -
+  obtain cc where "cc<c" using lt_ex by blast
+  have "\<forall>\<^sub>F x in F. cc > f x" 
+    using top unfolding filterlim_at_bot_dense by auto
+  moreover have "\<forall>\<^sub>F x in F. f x > cc" 
+    using tendsto order_tendstoD(1)[OF _ \<open>cc<c\<close>] by auto
+  ultimately have "\<forall>\<^sub>F x in F. cc < f x \<and> f x < cc" 
+    using eventually_conj by auto
+  then have "\<forall>\<^sub>F x in F. False" by (auto elim:eventually_mono)
+  then show False using \<open>F\<noteq>bot\<close> by auto
+qed
+*)
   
 subsection \<open>Isolate and discrete\<close>  
   

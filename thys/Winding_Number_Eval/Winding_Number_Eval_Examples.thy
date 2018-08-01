@@ -2,7 +2,7 @@
     Author:     Wenda Li <wl302@cam.ac.uk / liwenda1990@hotmail.com>
 *)
 
-section \<open>Some examples of apply the method winding\_eval\<close>
+section \<open>Some examples of applying the method winding\_eval\<close>
 
 theory Winding_Number_Eval_Examples imports Winding_Number_Eval
 begin

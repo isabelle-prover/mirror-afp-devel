@@ -2889,6 +2889,31 @@ proof -
   finally show ?thesis .
 qed
 
+lemma jumpF_tan_comp:
+  "jumpF (f o tan) (at_right x) = (if cos x = 0 
+      then jumpF f at_bot else jumpF f (at_right (tan x)))"
+  "jumpF (f o tan) (at_left x) = (if cos x =0 
+      then jumpF f at_top else jumpF f (at_left (tan x)))"
+proof -
+  have "filtermap (f \<circ> tan) (at_right x) = 
+      (if cos x = 0 then filtermap f at_bot else filtermap f (at_right (tan x)))"
+    unfolding comp_def
+    apply (subst filtermap_filtermap[of f tan,symmetric])
+    using filtermap_tan_at_right_inf filtermap_tan_at_right by auto
+  then show "jumpF (f o tan) (at_right x) = (if cos x = 0 
+          then jumpF f at_bot else jumpF f (at_right (tan x)))"
+    unfolding jumpF_def filterlim_def by auto
+next
+  have "filtermap (f \<circ> tan) (at_left x) = 
+      (if cos x = 0 then filtermap f at_top else filtermap f (at_left (tan x)))"
+    unfolding comp_def
+    apply (subst filtermap_filtermap[of f tan,symmetric])
+    using filtermap_tan_at_left_inf filtermap_tan_at_left by auto
+  then show "jumpF (f o tan) (at_left x) = (if cos x = 0 
+          then jumpF f at_top else jumpF f (at_left (tan x)))"
+    unfolding jumpF_def filterlim_def by auto
+qed
+
 subsection \<open>Finite jumpFs over an interval\<close>
 
 definition finite_jumpFs::"(real \<Rightarrow> real) \<Rightarrow> real \<Rightarrow> real \<Rightarrow>  bool" where
@@ -3115,22 +3140,24 @@ proof -
 qed  
   
 subsection \<open>Cauchy index\<close>  
-  
+
+\<comment>\<open>Deprecated, use "cindexE" if possible\<close>
 definition cindex::"real \<Rightarrow> real \<Rightarrow> (real \<Rightarrow> real) \<Rightarrow> int" where
   "cindex a b f = (\<Sum>x\<in>{x. jump f x\<noteq>0 \<and> a<x \<and> x<b}. jump f x )"
 
-definition cindex_path::"(real \<Rightarrow> complex) \<Rightarrow> complex \<Rightarrow> int" where
-  "cindex_path g z = cindex 0 1 (\<lambda>t. Im (g t - z) / Re (g t - z))" 
-  
 definition cindexE::"real \<Rightarrow> real \<Rightarrow> (real \<Rightarrow> real) \<Rightarrow> real" where
   "cindexE a b f = (\<Sum>x\<in>{x. jumpF f (at_right x) \<noteq>0 \<and> a\<le>x \<and> x<b}. jumpF f (at_right x)) 
                     - (\<Sum>x\<in>{x. jumpF f (at_left x) \<noteq>0 \<and> a<x \<and> x\<le>b}. jumpF f (at_left x))"     
- 
+
+(*
 definition cindexE_ubd::"(real \<Rightarrow> real) \<Rightarrow> real" where
   "cindexE_ubd f = (THE l. (\<forall>\<^sub>F r in at_top. cindexE (-r) r f = l))"
-        
-definition cindex_pathE::"(real \<Rightarrow> complex) \<Rightarrow> complex \<Rightarrow> real" where
-  "cindex_pathE g z = cindexE 0 1 (\<lambda>t. Im (g t - z) / Re (g t - z))"
+*)
+
+definition cindexE_ubd::"(real \<Rightarrow> real) \<Rightarrow> real" where
+  "cindexE_ubd f = (\<Sum>x\<in>{x. jumpF f (at_right x) \<noteq>0 }. jumpF f (at_right x)) 
+                      - (\<Sum>x\<in>{x. jumpF f (at_left x) \<noteq>0}. jumpF f (at_left x))"
+
   
 lemma cindexE_empty:
   "cindexE a a f = 0"
@@ -3326,21 +3353,7 @@ proof -
   ultimately show ?thesis using \<open>c\<noteq>0\<close> by auto
 qed
 
-lemma cindex_path_reversepath:
-  "cindex_path (reversepath g) z = - cindex_path g z"
-proof -
-  define f where "f=(\<lambda>t. Im (g t - z) / Re (g t - z))"
-  define f' where "f'=(\<lambda>t. Im (reversepath g t - z) / Re (reversepath g t - z))"
-  have "f o (\<lambda>t. 1 - t) = f'"
-    unfolding f_def f'_def comp_def reversepath_def by auto
-  then have "cindex 0 1 f' = - cindex 0 1 f"   
-    using cindex_linear_comp[of "-1" 0 1 f 1,simplified] by simp
-  then show ?thesis 
-    unfolding cindex_path_def 
-    apply (fold f_def f'_def)
-    by simp
-qed 
- 
+(*
 lemma cindexE_cong:
   assumes "\<And>x. \<lbrakk>a<x;x<b\<rbrakk> \<Longrightarrow> f x = g x"
   shows "cindexE a b f = cindexE a b g"
@@ -3373,53 +3386,85 @@ proof -
   qed
   ultimately show ?thesis unfolding cindexE_def left_def right_def by auto
 qed
-  
-lemma cindex_pathE_joinpaths:
-  assumes g1:"finite_ReZ_segments g1 z" and g2: "finite_ReZ_segments g2 z" and
-    "path g1" "path g2" "pathfinish g1 = pathstart g2"
-  shows "cindex_pathE (g1+++g2) z = cindex_pathE g1 z + cindex_pathE g2 z"
+*)
+
+lemma cindexE_cong:
+  assumes "finite s" and fg_eq:"\<And>x. \<lbrakk>a<x;x<b;x\<notin>s\<rbrakk> \<Longrightarrow> f x = g x"
+  shows "cindexE a b f = cindexE a b g"
 proof -
-  define f where "f = (\<lambda>g (t::real). Im (g t - z) / Re (g t - z))"
-  have "cindex_pathE (g1 +++ g2) z =  cindexE 0 1 (f (g1+++g2))"
-    unfolding cindex_pathE_def f_def by auto
-  also have "... = cindexE 0 (1/2) (f (g1+++g2)) + cindexE (1/2) 1 (f (g1+++g2))"
-  proof (rule cindexE_combine)
-    show "finite_jumpFs (f (g1 +++ g2)) 0 1" 
-      unfolding f_def
-      apply (rule finite_ReZ_segments_imp_jumpFs)
-      subgoal using finite_ReZ_segments_joinpaths[OF g1 g2] assms(3-5) .
-      subgoal using path_join_imp[OF \<open>path g1\<close> \<open>path g2\<close> \<open>pathfinish g1=pathstart g2\<close>] .
-      done
-  qed auto
-  also have "... = cindex_pathE g1 z + cindex_pathE g2 z"
+  define left where 
+      "left=(\<lambda>f. (\<Sum>x | jumpF f (at_left x) \<noteq> 0 \<and> a < x \<and> x \<le> b. jumpF f (at_left x)))"
+  define right where 
+      "right=(\<lambda>f. (\<Sum>x | jumpF f (at_right x) \<noteq> 0 \<and> a \<le> x \<and> x < b. jumpF f (at_right x)))"
+  have "left f = left g"
   proof -
-    have "cindexE 0 (1/2) (f (g1+++g2)) = cindex_pathE g1 z"
-    proof -
-      have "cindexE 0 (1/2) (f (g1+++g2)) = cindexE 0 (1/2) (f g1 o (( * ) 2))"
-        apply (rule cindexE_cong)
-        unfolding comp_def joinpaths_def f_def by auto
-      also have "... = cindexE 0 1 (f g1)"
-        using cindexE_linear_comp[of 2 0 "1/2" _ 0,simplified] by simp
-      also have "... = cindex_pathE g1 z"
-        unfolding cindex_pathE_def f_def by auto
-      finally show ?thesis .
-    qed
-    moreover have "cindexE (1/2) 1 (f (g1+++g2)) = cindex_pathE g2 z"
-    proof -
-      have "cindexE (1/2) 1 (f (g1+++g2)) = cindexE (1/2) 1 (f g2 o (\<lambda>x. 2*x  - 1))"
-        apply (rule cindexE_cong)
-        unfolding comp_def joinpaths_def f_def by auto
-      also have "... = cindexE 0 1 (f g2)"
-        using cindexE_linear_comp[of 2 "1/2" 1 _ "-1",simplified] by simp
-      also have "... = cindex_pathE g2 z"
-        unfolding cindex_pathE_def f_def by auto
-      finally show ?thesis .
-    qed  
-    ultimately show ?thesis by simp
+    have "jumpF f (at_left x) = jumpF g (at_left x)" when "a<x" "x\<le>b" for x 
+    proof (rule jumpF_cong)
+      define cs where "cs \<equiv> {y\<in>s. a<y \<and> y<x}"
+      define c where "c\<equiv> (if cs = {} then (x+a)/2 else Max cs)"
+      have "finite cs" unfolding cs_def using assms(1) by auto
+      have "c<x \<and> (\<forall>y. c<y \<and> y<x \<longrightarrow> f y=g y)" 
+      proof (cases "cs={}")
+        case True
+        then have "\<forall>y. c<y \<and> y<x \<longrightarrow> y \<notin> s" unfolding cs_def c_def by force
+        moreover have "c=(x+a)/2" using True unfolding c_def by auto
+        ultimately show ?thesis using fg_eq using that by auto
+      next
+        case False
+        then have "c\<in>cs" unfolding c_def using False \<open>finite cs\<close> by auto
+        moreover have "\<forall>y. c<y \<and> y<x \<longrightarrow> y \<notin> s" 
+        proof (rule ccontr)
+          assume "\<not> (\<forall>y. c < y \<and> y < x \<longrightarrow> y \<notin> s) "
+          then obtain y' where "c<y'" "y'<x" "y'\<in>s" by auto
+          then have "y'\<in>cs" using \<open>c\<in>cs\<close> unfolding cs_def by auto
+          then have "y'\<le>c" unfolding c_def using False \<open>finite cs\<close> by auto
+          then show False using \<open>c<y'\<close> by auto
+        qed
+        ultimately show ?thesis unfolding cs_def using that by (auto intro!:fg_eq)
+      qed  
+      then show "\<forall>\<^sub>F x in at_left x. f x = g x"
+        unfolding eventually_at_left by auto
+    qed simp
+    then show ?thesis
+      unfolding left_def
+      by (auto intro: sum.cong)
   qed
-  finally show ?thesis .
+  moreover have "right f = right g"
+  proof -
+    have "jumpF f (at_right x) = jumpF g (at_right x)" when "a\<le>x" "x<b" for x 
+    proof (rule jumpF_cong)
+      define cs where "cs \<equiv> {y\<in>s. x<y \<and> y<b}"
+      define c where "c\<equiv> (if cs = {} then (x+b)/2 else Min cs)"
+      have "finite cs" unfolding cs_def using assms(1) by auto
+      have "x<c \<and> (\<forall>y. x<y \<and> y<c \<longrightarrow> f y=g y)" 
+      proof (cases "cs={}")
+        case True
+        then have "\<forall>y. x<y \<and> y<c \<longrightarrow> y \<notin> s" unfolding cs_def c_def by force
+        moreover have "c=(x+b)/2" using True unfolding c_def by auto
+        ultimately show ?thesis using fg_eq using that by auto
+      next
+        case False
+        then have "c\<in>cs" unfolding c_def using False \<open>finite cs\<close> by auto
+        moreover have "\<forall>y. x<y \<and> y<c \<longrightarrow> y \<notin> s" 
+        proof (rule ccontr)
+          assume "\<not> (\<forall>y. x < y \<and> y < c \<longrightarrow> y \<notin> s) "
+          then obtain y' where "x<y'" "y'<c" "y'\<in>s" by auto
+          then have "y'\<in>cs" using \<open>c\<in>cs\<close> unfolding cs_def by auto
+          then have "y'\<ge>c" unfolding c_def using False \<open>finite cs\<close> by auto
+          then show False using \<open>c>y'\<close> by auto
+        qed
+        ultimately show ?thesis unfolding cs_def using that by (auto intro!:fg_eq)
+      qed  
+      then show "\<forall>\<^sub>F x in at_right x. f x = g x"
+        unfolding eventually_at_right by auto
+    qed simp
+    then show ?thesis
+      unfolding right_def
+      by (auto intro: sum.cong)
+  qed
+  ultimately show ?thesis unfolding cindexE_def left_def right_def by presburger
 qed
-    
+      
 lemma cindexE_constI:
   assumes "\<And>t. \<lbrakk>a<t;t<b\<rbrakk> \<Longrightarrow> f t=c"
   shows "cindexE a b f = 0"
@@ -3445,123 +3490,6 @@ proof -
   ultimately show ?thesis unfolding cindexE_def left_def right_def by auto
 qed
 
-lemma cindex_pathE_constI:
-  assumes "\<And>t. \<lbrakk>0<t;t<1\<rbrakk> \<Longrightarrow> g t=c"
-  shows "cindex_pathE g z = 0"
-  unfolding cindex_pathE_def
-  apply (rule cindexE_constI)
-  using assms by auto
-  
-lemma cindex_pathE_subpath_combine:
-  assumes g:"finite_ReZ_segments g z"and "path g" and
-     "0\<le>a" "a\<le>b" "b\<le>c" "c\<le>1"
-  shows "cindex_pathE (subpath a b g) z + cindex_pathE (subpath b c g) z 
-          = cindex_pathE (subpath a c g) z"
-proof -
-  define f where "f = (\<lambda>t. Im (g t - z) / Re (g t - z))"
-  have ?thesis when "a=b"
-  proof -
-    have "cindex_pathE (subpath a b g) z = 0"
-      apply (rule cindex_pathE_constI)
-      using that unfolding subpath_def by auto
-    then show ?thesis using that by auto
-  qed
-  moreover have ?thesis when "b=c" 
-  proof -
-    have "cindex_pathE (subpath b c g) z = 0"
-      apply (rule cindex_pathE_constI)
-      using that unfolding subpath_def by auto
-    then show ?thesis using that by auto
-  qed
-  moreover have ?thesis when "a\<noteq>b" "b\<noteq>c"
-  proof -
-    have  [simp]:"a<b" "b<c" "a<c" 
-      using that \<open>a\<le>b\<close> \<open>b\<le>c\<close> by auto
-    have "cindex_pathE (subpath a b g) z = cindexE a b f"
-    proof -
-      have "cindex_pathE (subpath a b g) z = cindexE 0 1 (f \<circ> (\<lambda>x. (b - a) * x + a))"
-        unfolding cindex_pathE_def f_def comp_def subpath_def by auto
-      also have "... =  cindexE a b f"
-        using cindexE_linear_comp[of "b-a" 0 1 f a,simplified] that(1) by auto
-      finally show ?thesis .
-    qed
-    moreover have "cindex_pathE (subpath b c g) z = cindexE b c f"
-    proof -
-      have "cindex_pathE (subpath b c g) z = cindexE 0 1 (f \<circ> (\<lambda>x. (c - b) * x + b))"
-        unfolding cindex_pathE_def f_def comp_def subpath_def by auto
-      also have "... =  cindexE b c f"
-        using cindexE_linear_comp[of "c-b" 0 1 f b,simplified] that(2) by auto
-      finally show ?thesis .
-    qed
-    moreover have "cindex_pathE (subpath a c g) z = cindexE a c f" 
-    proof -
-      have "cindex_pathE (subpath a c g) z = cindexE 0 1 (f \<circ> (\<lambda>x. (c - a) * x + a))"
-        unfolding cindex_pathE_def f_def comp_def subpath_def by auto
-      also have "... =  cindexE a c f"
-        using cindexE_linear_comp[of "c-a" 0 1 f a,simplified] \<open>a<c\<close> by auto
-      finally show ?thesis .
-    qed
-    moreover have "cindexE a b f + cindexE b c f = cindexE a c f "
-    proof -
-      have "finite_jumpFs f a c" 
-        using finite_ReZ_segments_imp_jumpFs[OF g \<open>path g\<close>] \<open>0\<le>a\<close> \<open>c\<le>1\<close> unfolding f_def
-        by (elim finite_jumpFs_subE,auto)
-      then show ?thesis using cindexE_linear_comp cindexE_combine[OF _ \<open>a\<le>b\<close> \<open>b\<le>c\<close>] by auto
-    qed
-    ultimately show ?thesis by auto  
-  qed
-  ultimately show ?thesis by blast 
-qed
-  
-lemma cindex_pathE_shiftpath:
-  assumes "finite_ReZ_segments g z" "s\<in>{0..1}" "path g" and loop:"pathfinish g = pathstart g"
-  shows "cindex_pathE (shiftpath s g) z = cindex_pathE g z" 
-proof -
-  define f where "f=(\<lambda>g t. Im (g (t::real) - z) / Re (g t - z))"
-  have "cindex_pathE (shiftpath s g) z = cindexE 0 1 (f (shiftpath s g))"
-    unfolding cindex_pathE_def f_def by simp
-  also have "... = cindexE 0 (1-s) (f (shiftpath s g)) + cindexE (1-s) 1 (f (shiftpath s g))"
-  proof (rule cindexE_combine)
-    have "finite_ReZ_segments (shiftpath s g) z"
-      using finite_ReZ_segments_shiftpah[OF assms] .
-    from finite_ReZ_segments_imp_jumpFs[OF this] path_shiftpath[OF \<open>path g\<close> loop \<open>s\<in>{0..1}\<close>]    
-    show "finite_jumpFs (f (shiftpath s g)) 0 1" unfolding f_def by simp
-    show "0 \<le> 1 - s" "1 - s \<le> 1" using \<open>s\<in>{0..1}\<close> by auto
-  qed 
-  also have "... = cindexE 0 s (f g) + cindexE s 1 (f g)"
-  proof -
-    have "cindexE 0 (1-s) (f (shiftpath s g)) = cindexE s 1 (f g)"
-    proof -
-      have "cindexE 0 (1-s) (f (shiftpath s g)) = cindexE 0 (1-s) ((f g) o (\<lambda>t. t+s))"
-        apply (rule cindexE_cong)
-        unfolding shiftpath_def f_def using \<open>s\<in>{0..1}\<close> by (auto simp add:algebra_simps)
-      also have "...= cindexE s 1 (f g)"
-        using cindexE_linear_comp[of 1 0 "1-s" "f g" s,simplified] .
-      finally show ?thesis .
-    qed
-    moreover have "cindexE (1 - s) 1 (f (shiftpath s g)) = cindexE 0 s (f g)"  
-    proof -
-      have "cindexE (1 - s) 1 (f (shiftpath s g)) = cindexE (1-s) 1 ((f g) o (\<lambda>t. t+s-1))"
-        apply (rule cindexE_cong)
-        unfolding shiftpath_def f_def using \<open>s\<in>{0..1}\<close> by (auto simp add:algebra_simps)
-      also have "... = cindexE 0 s (f g)"
-        using cindexE_linear_comp[of 1 "1-s" 1 "f g" "s-1",simplified] 
-        by (simp add:algebra_simps)
-      finally show ?thesis .
-    qed
-    ultimately show ?thesis by auto
-  qed
-  also have "... = cindexE 0 1 (f g)"
-  proof (rule cindexE_combine[symmetric])
-    show "finite_jumpFs (f g) 0 1"  
-      using finite_ReZ_segments_imp_jumpFs[OF assms(1,3)] unfolding f_def by simp
-    show "0 \<le> s" "s\<le>1" using \<open>s\<in>{0..1}\<close> by auto
-  qed
-  also have "... = cindex_pathE g z"
-    unfolding cindex_pathE_def f_def by simp
-  finally show ?thesis .
-qed 
-    
 lemma cindex_eq_cindexE_divide:
   fixes f g::"real \<Rightarrow> real"
   defines "h \<equiv> (\<lambda>x. f x/g x)"
@@ -3703,7 +3631,197 @@ proof -
   qed
   finally show ?thesis .
 qed  
+
+subsection \<open>Cauchy index along a path\<close>
+
+\<comment>\<open>Deprecated, use "cindex_pathE" if possible\<close>
+definition cindex_path::"(real \<Rightarrow> complex) \<Rightarrow> complex \<Rightarrow> int" where
+  "cindex_path g z = cindex 0 1 (\<lambda>t. Im (g t - z) / Re (g t - z))" 
+   
+definition cindex_pathE::"(real \<Rightarrow> complex) \<Rightarrow> complex \<Rightarrow> real" where
+  "cindex_pathE g z = cindexE 0 1 (\<lambda>t. Im (g t - z) / Re (g t - z))"
+
+lemma cindex_pathE_point: "cindex_pathE (linepath a a) b = 0"
+  unfolding cindex_pathE_def by (simp add:cindexE_constI)
+
+lemma cindex_path_reversepath:
+  "cindex_path (reversepath g) z = - cindex_path g z"
+proof -
+  define f where "f=(\<lambda>t. Im (g t - z) / Re (g t - z))"
+  define f' where "f'=(\<lambda>t. Im (reversepath g t - z) / Re (reversepath g t - z))"
+  have "f o (\<lambda>t. 1 - t) = f'"
+    unfolding f_def f'_def comp_def reversepath_def by auto
+  then have "cindex 0 1 f' = - cindex 0 1 f"   
+    using cindex_linear_comp[of "-1" 0 1 f 1,simplified] by simp
+  then show ?thesis 
+    unfolding cindex_path_def 
+    apply (fold f_def f'_def)
+    by simp
+qed 
+
+lemma cindex_pathE_joinpaths:
+  assumes g1:"finite_ReZ_segments g1 z" and g2: "finite_ReZ_segments g2 z" and
+    "path g1" "path g2" "pathfinish g1 = pathstart g2"
+  shows "cindex_pathE (g1+++g2) z = cindex_pathE g1 z + cindex_pathE g2 z"
+proof -
+  define f where "f = (\<lambda>g (t::real). Im (g t - z) / Re (g t - z))"
+  have "cindex_pathE (g1 +++ g2) z =  cindexE 0 1 (f (g1+++g2))"
+    unfolding cindex_pathE_def f_def by auto
+  also have "... = cindexE 0 (1/2) (f (g1+++g2)) + cindexE (1/2) 1 (f (g1+++g2))"
+  proof (rule cindexE_combine)
+    show "finite_jumpFs (f (g1 +++ g2)) 0 1" 
+      unfolding f_def
+      apply (rule finite_ReZ_segments_imp_jumpFs)
+      subgoal using finite_ReZ_segments_joinpaths[OF g1 g2] assms(3-5) .
+      subgoal using path_join_imp[OF \<open>path g1\<close> \<open>path g2\<close> \<open>pathfinish g1=pathstart g2\<close>] .
+      done
+  qed auto
+  also have "... = cindex_pathE g1 z + cindex_pathE g2 z"
+  proof -
+    have "cindexE 0 (1/2) (f (g1+++g2)) = cindex_pathE g1 z"
+    proof -
+      have "cindexE 0 (1/2) (f (g1+++g2)) = cindexE 0 (1/2) (f g1 o (( * ) 2))"
+        apply (rule cindexE_cong)
+        unfolding comp_def joinpaths_def f_def by auto
+      also have "... = cindexE 0 1 (f g1)"
+        using cindexE_linear_comp[of 2 0 "1/2" _ 0,simplified] by simp
+      also have "... = cindex_pathE g1 z"
+        unfolding cindex_pathE_def f_def by auto
+      finally show ?thesis .
+    qed
+    moreover have "cindexE (1/2) 1 (f (g1+++g2)) = cindex_pathE g2 z"
+    proof -
+      have "cindexE (1/2) 1 (f (g1+++g2)) = cindexE (1/2) 1 (f g2 o (\<lambda>x. 2*x  - 1))"
+        apply (rule cindexE_cong)
+        unfolding comp_def joinpaths_def f_def by auto
+      also have "... = cindexE 0 1 (f g2)"
+        using cindexE_linear_comp[of 2 "1/2" 1 _ "-1",simplified] by simp
+      also have "... = cindex_pathE g2 z"
+        unfolding cindex_pathE_def f_def by auto
+      finally show ?thesis .
+    qed  
+    ultimately show ?thesis by simp
+  qed
+  finally show ?thesis .
+qed
+
+lemma cindex_pathE_constI:
+  assumes "\<And>t. \<lbrakk>0<t;t<1\<rbrakk> \<Longrightarrow> g t=c"
+  shows "cindex_pathE g z = 0"
+  unfolding cindex_pathE_def
+  apply (rule cindexE_constI)
+  using assms by auto
   
+lemma cindex_pathE_subpath_combine:
+  assumes g:"finite_ReZ_segments g z"and "path g" and
+     "0\<le>a" "a\<le>b" "b\<le>c" "c\<le>1"
+  shows "cindex_pathE (subpath a b g) z + cindex_pathE (subpath b c g) z 
+          = cindex_pathE (subpath a c g) z"
+proof -
+  define f where "f = (\<lambda>t. Im (g t - z) / Re (g t - z))"
+  have ?thesis when "a=b"
+  proof -
+    have "cindex_pathE (subpath a b g) z = 0"
+      apply (rule cindex_pathE_constI)
+      using that unfolding subpath_def by auto
+    then show ?thesis using that by auto
+  qed
+  moreover have ?thesis when "b=c" 
+  proof -
+    have "cindex_pathE (subpath b c g) z = 0"
+      apply (rule cindex_pathE_constI)
+      using that unfolding subpath_def by auto
+    then show ?thesis using that by auto
+  qed
+  moreover have ?thesis when "a\<noteq>b" "b\<noteq>c"
+  proof -
+    have  [simp]:"a<b" "b<c" "a<c" 
+      using that \<open>a\<le>b\<close> \<open>b\<le>c\<close> by auto
+    have "cindex_pathE (subpath a b g) z = cindexE a b f"
+    proof -
+      have "cindex_pathE (subpath a b g) z = cindexE 0 1 (f \<circ> (\<lambda>x. (b - a) * x + a))"
+        unfolding cindex_pathE_def f_def comp_def subpath_def by auto
+      also have "... =  cindexE a b f"
+        using cindexE_linear_comp[of "b-a" 0 1 f a,simplified] that(1) by auto
+      finally show ?thesis .
+    qed
+    moreover have "cindex_pathE (subpath b c g) z = cindexE b c f"
+    proof -
+      have "cindex_pathE (subpath b c g) z = cindexE 0 1 (f \<circ> (\<lambda>x. (c - b) * x + b))"
+        unfolding cindex_pathE_def f_def comp_def subpath_def by auto
+      also have "... =  cindexE b c f"
+        using cindexE_linear_comp[of "c-b" 0 1 f b,simplified] that(2) by auto
+      finally show ?thesis .
+    qed
+    moreover have "cindex_pathE (subpath a c g) z = cindexE a c f" 
+    proof -
+      have "cindex_pathE (subpath a c g) z = cindexE 0 1 (f \<circ> (\<lambda>x. (c - a) * x + a))"
+        unfolding cindex_pathE_def f_def comp_def subpath_def by auto
+      also have "... =  cindexE a c f"
+        using cindexE_linear_comp[of "c-a" 0 1 f a,simplified] \<open>a<c\<close> by auto
+      finally show ?thesis .
+    qed
+    moreover have "cindexE a b f + cindexE b c f = cindexE a c f "
+    proof -
+      have "finite_jumpFs f a c" 
+        using finite_ReZ_segments_imp_jumpFs[OF g \<open>path g\<close>] \<open>0\<le>a\<close> \<open>c\<le>1\<close> unfolding f_def
+        by (elim finite_jumpFs_subE,auto)
+      then show ?thesis using cindexE_linear_comp cindexE_combine[OF _ \<open>a\<le>b\<close> \<open>b\<le>c\<close>] by auto
+    qed
+    ultimately show ?thesis by auto  
+  qed
+  ultimately show ?thesis by blast 
+qed
+  
+lemma cindex_pathE_shiftpath:
+  assumes "finite_ReZ_segments g z" "s\<in>{0..1}" "path g" and loop:"pathfinish g = pathstart g"
+  shows "cindex_pathE (shiftpath s g) z = cindex_pathE g z" 
+proof -
+  define f where "f=(\<lambda>g t. Im (g (t::real) - z) / Re (g t - z))"
+  have "cindex_pathE (shiftpath s g) z = cindexE 0 1 (f (shiftpath s g))"
+    unfolding cindex_pathE_def f_def by simp
+  also have "... = cindexE 0 (1-s) (f (shiftpath s g)) + cindexE (1-s) 1 (f (shiftpath s g))"
+  proof (rule cindexE_combine)
+    have "finite_ReZ_segments (shiftpath s g) z"
+      using finite_ReZ_segments_shiftpah[OF assms] .
+    from finite_ReZ_segments_imp_jumpFs[OF this] path_shiftpath[OF \<open>path g\<close> loop \<open>s\<in>{0..1}\<close>]    
+    show "finite_jumpFs (f (shiftpath s g)) 0 1" unfolding f_def by simp
+    show "0 \<le> 1 - s" "1 - s \<le> 1" using \<open>s\<in>{0..1}\<close> by auto
+  qed 
+  also have "... = cindexE 0 s (f g) + cindexE s 1 (f g)"
+  proof -
+    have "cindexE 0 (1-s) (f (shiftpath s g)) = cindexE s 1 (f g)"
+    proof -
+      have "cindexE 0 (1-s) (f (shiftpath s g)) = cindexE 0 (1-s) ((f g) o (\<lambda>t. t+s))"
+        apply (rule cindexE_cong)
+        unfolding shiftpath_def f_def using \<open>s\<in>{0..1}\<close> by (auto simp add:algebra_simps)
+      also have "...= cindexE s 1 (f g)"
+        using cindexE_linear_comp[of 1 0 "1-s" "f g" s,simplified] .
+      finally show ?thesis .
+    qed
+    moreover have "cindexE (1 - s) 1 (f (shiftpath s g)) = cindexE 0 s (f g)"  
+    proof -
+      have "cindexE (1 - s) 1 (f (shiftpath s g)) = cindexE (1-s) 1 ((f g) o (\<lambda>t. t+s-1))"
+        apply (rule cindexE_cong)
+        unfolding shiftpath_def f_def using \<open>s\<in>{0..1}\<close> by (auto simp add:algebra_simps)
+      also have "... = cindexE 0 s (f g)"
+        using cindexE_linear_comp[of 1 "1-s" 1 "f g" "s-1",simplified] 
+        by (simp add:algebra_simps)
+      finally show ?thesis .
+    qed
+    ultimately show ?thesis by auto
+  qed
+  also have "... = cindexE 0 1 (f g)"
+  proof (rule cindexE_combine[symmetric])
+    show "finite_jumpFs (f g) 0 1"  
+      using finite_ReZ_segments_imp_jumpFs[OF assms(1,3)] unfolding f_def by simp
+    show "0 \<le> s" "s\<le>1" using \<open>s\<in>{0..1}\<close> by auto
+  qed
+  also have "... = cindex_pathE g z"
+    unfolding cindex_pathE_def f_def by simp
+  finally show ?thesis .
+qed 
+
 subsection \<open>Cauchy's Index Theorem\<close>  
     
 theorem winding_number_cindex_pathE_aux:

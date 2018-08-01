@@ -34,5 +34,18 @@ something I may want to improve in the future.
 value [code] "proots_half [:i,1:] (Complex 0 1) 0"
 value [code] "proots_rectangle [:0,1:] (Complex (-1) 0) (Complex 2 2)"  
 *)  
-  
+
+(*the result will be 3, as the polynomial P(x) = (x-2)^2*(x-3) has three complex roots counted 
+  with multiplicity within the circle centered as 0 with radius 4.*)
+value [code] "proots_ball ([:-2,1:]*[:-2,1:]*[:-3,1:]) 0 4"
+
+(*The following one will fail, as proots_ball cannot deal with the case when there is a root 
+  on the border. This is something I may want to improve in the future.
+
+value [code] "proots_ball ([:-2,1:]*[:-2,1:]*[:-3,1:]) 0 3"
+*)
+
+(*However, for now, we can count DISTINCT complex roots even when there are roots on the border*)
+value [code] "proots_ball_card ([:-2,1:]*[:-2,1:]*[:-3,1:]) 0 3"
+
 end
