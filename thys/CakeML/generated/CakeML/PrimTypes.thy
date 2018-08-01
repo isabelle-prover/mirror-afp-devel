@@ -25,13 +25,13 @@ begin
 (*val prim_types_program : prog*)
 definition prim_types_program  :: "(top0)list "  where 
      " prim_types_program = (
-  [Tdec  (Dexn undefined (''Bind'') []),
-   Tdec  (Dexn undefined (''Chr'') []),
-   Tdec  (Dexn undefined (''Div'') []),
-   Tdec  (Dexn undefined (''Subscript'') []),
-   Tdec  (Dtype undefined [([], (''bool''), [((''false''), []), ((''true''), [])])]),
-   Tdec  (Dtype undefined [([([(CHR 0x27), (CHR ''a'')])], (''list''), [((''nil''), []), ((''::''), [Tvar ([(CHR 0x27), (CHR ''a'')]), Tapp [Tvar ([(CHR 0x27), (CHR ''a'')])] (TC_name (Short (''list'')))]) ])]),
-   Tdec (Dtype undefined [([([(CHR 0x27), (CHR ''a'')])], (''option''), [((''NONE''), []),((''SOME''), [Tvar ([(CHR 0x27), (CHR ''a'')])]) ])]) ])"
+  [Tdec  (Dexn ((| row = 0, col = 0, offset = 0 |), (| row = 0, col = 0, offset = 0 |)) (''Bind'') []),
+   Tdec  (Dexn ((| row = 0, col = 0, offset = 0 |), (| row = 0, col = 0, offset = 0 |)) (''Chr'') []),
+   Tdec  (Dexn ((| row = 0, col = 0, offset = 0 |), (| row = 0, col = 0, offset = 0 |)) (''Div'') []),
+   Tdec  (Dexn ((| row = 0, col = 0, offset = 0 |), (| row = 0, col = 0, offset = 0 |)) (''Subscript'') []),
+   Tdec  (Dtype ((| row = 0, col = 0, offset = 0 |), (| row = 0, col = 0, offset = 0 |)) [([], (''bool''), [((''false''), []), ((''true''), [])])]),
+   Tdec  (Dtype ((| row = 0, col = 0, offset = 0 |), (| row = 0, col = 0, offset = 0 |)) [([([(CHR 0x27), (CHR ''a'')])], (''list''), [((''nil''), []), ((''::''), [Tvar ([(CHR 0x27), (CHR ''a'')]), Tapp [Tvar ([(CHR 0x27), (CHR ''a'')])] (TC_name (Short (''list'')))]) ])]),
+   Tdec (Dtype ((| row = 0, col = 0, offset = 0 |), (| row = 0, col = 0, offset = 0 |)) [([([(CHR 0x27), (CHR ''a'')])], (''option''), [((''NONE''), []),((''SOME''), [Tvar ([(CHR 0x27), (CHR ''a'')])]) ])]) ])"
 
 
 (*val add_to_sem_env :

@@ -20,6 +20,7 @@ session CakeML (AFP) = LEM +
   theories
     "generated/CakeML/Ast"
     "generated/CakeML/AstAuxiliary"
+    "generated/CakeML/BigSmallInvariants"
     "generated/CakeML/BigStep"
     "generated/CakeML/Evaluate"
     "generated/CakeML/Lib"
