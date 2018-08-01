@@ -1423,7 +1423,7 @@ proof -
   ultimately have "[?Lap * ?Lbp = ?Labp] (mod p)"
     using cong_trans by blast
   then obtain k where k: "?Labp = (?Lap*?Lbp) + p * k"
-    by (auto simp add: cong_iff_lin_int)
+    by (auto simp add: cong_iff_lin)
   have "k=0"
   proof (rule ccontr)
     assume "k \<noteq> 0" hence "\<bar>k\<bar> = 1 \<or> \<bar>k\<bar> > 1" by arith
