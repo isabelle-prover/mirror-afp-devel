@@ -3149,11 +3149,6 @@ definition cindexE::"real \<Rightarrow> real \<Rightarrow> (real \<Rightarrow> r
   "cindexE a b f = (\<Sum>x\<in>{x. jumpF f (at_right x) \<noteq>0 \<and> a\<le>x \<and> x<b}. jumpF f (at_right x)) 
                     - (\<Sum>x\<in>{x. jumpF f (at_left x) \<noteq>0 \<and> a<x \<and> x\<le>b}. jumpF f (at_left x))"     
 
-(*
-definition cindexE_ubd::"(real \<Rightarrow> real) \<Rightarrow> real" where
-  "cindexE_ubd f = (THE l. (\<forall>\<^sub>F r in at_top. cindexE (-r) r f = l))"
-*)
-
 definition cindexE_ubd::"(real \<Rightarrow> real) \<Rightarrow> real" where
   "cindexE_ubd f = (\<Sum>x\<in>{x. jumpF f (at_right x) \<noteq>0 }. jumpF f (at_right x)) 
                       - (\<Sum>x\<in>{x. jumpF f (at_left x) \<noteq>0}. jumpF f (at_left x))"
@@ -3352,41 +3347,6 @@ proof -
   qed
   ultimately show ?thesis using \<open>c\<noteq>0\<close> by auto
 qed
-
-(*
-lemma cindexE_cong:
-  assumes "\<And>x. \<lbrakk>a<x;x<b\<rbrakk> \<Longrightarrow> f x = g x"
-  shows "cindexE a b f = cindexE a b g"
-proof -
-  define left where 
-      "left=(\<lambda>f. (\<Sum>x | jumpF f (at_left x) \<noteq> 0 \<and> a < x \<and> x \<le> b. jumpF f (at_left x)))"
-  define right where 
-      "right=(\<lambda>f. (\<Sum>x | jumpF f (at_right x) \<noteq> 0 \<and> a \<le> x \<and> x < b. jumpF f (at_right x)))"
-  have "left f = left g"
-  proof -
-    have "jumpF f (at_left x) = jumpF g (at_left x)" when "a<x" "x\<le>b" for x 
-    proof (rule jumpF_cong)
-      show "\<forall>\<^sub>F x in at_left x. f x = g x"
-        unfolding eventually_at_left using assms that by auto
-    qed auto
-    then show ?thesis
-      unfolding left_def
-      by (auto intro: sum.cong)
-  qed
-  moreover have "right f = right g"
-  proof -
-    have "jumpF f (at_right x) = jumpF g (at_right x)" when "a\<le>x" "x<b" for x 
-    proof (rule jumpF_cong)
-      show "\<forall>\<^sub>F x in at_right x. f x = g x"
-        unfolding eventually_at_right using assms that by auto
-    qed auto
-    then show ?thesis
-      unfolding right_def
-      by (auto intro: sum.cong)
-  qed
-  ultimately show ?thesis unfolding cindexE_def left_def right_def by auto
-qed
-*)
 
 lemma cindexE_cong:
   assumes "finite s" and fg_eq:"\<And>x. \<lbrakk>a<x;x<b;x\<notin>s\<rbrakk> \<Longrightarrow> f x = g x"
@@ -3634,7 +3594,7 @@ qed
 
 subsection \<open>Cauchy index along a path\<close>
 
-\<comment>\<open>Deprecated, use "cindex_pathE" if possible\<close>
+\<comment>\<open>Deprecated, use "cindex\_pathE" if possible\<close>
 definition cindex_path::"(real \<Rightarrow> complex) \<Rightarrow> complex \<Rightarrow> int" where
   "cindex_path g z = cindex 0 1 (\<lambda>t. Im (g t - z) / Re (g t - z))" 
    
