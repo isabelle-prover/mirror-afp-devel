@@ -48,6 +48,7 @@ session CakeML (AFP) = LEM +
     Big_Step_Unclocked_Single
     Matching
     CakeML_Code
+    CakeML_Quickcheck
   theories
     "doc/Doc_Ported"
   theories
