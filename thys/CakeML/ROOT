@@ -46,6 +46,7 @@ session CakeML (AFP) = LEM +
     Big_Step_Total
     Big_Step_Unclocked
     Big_Step_Unclocked_Single
+    Matching
     CakeML_Code
   theories
     "doc/Doc_Ported"
