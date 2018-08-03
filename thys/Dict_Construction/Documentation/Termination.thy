@@ -157,6 +157,17 @@ proof -
     by (rule wfP_implies_dom)
 qed
 
+text \<open>This can be automated with a special tactic:\<close>
+
+termination sum_list'
+  apply (tactic \<open>
+    Transfer_Termination.termination_tac
+      (Function.get_info @{context} @{term sum_list'})
+      (Function.get_info @{context} @{term sum_list})
+      @{context}
+      1\<close>; fail)
+  oops
+
 text \<open>
   A similar technique can be used for making functions defined in locales executable when, for some
   reason, the definition of a ``defs'' locale is not feasible.
@@ -201,5 +212,16 @@ termination f'
      done
     done
   done
+
+text \<open>Automatic:\<close>
+
+termination f'
+  apply (tactic \<open>
+    Transfer_Termination.termination_tac
+      (Function.get_info @{context} @{term f'})
+      (Function.get_info @{context} @{term dummy.f})
+      @{context}
+      1\<close>; fail)
+  oops
 
 end

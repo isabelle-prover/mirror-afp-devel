@@ -48,6 +48,7 @@ by (metis wfP_implies_wf_set_of wf_implies_dom)
 named_theorems dict_construction_specs
 
 ML_file "dict_construction_util.ML"
+ML_file "transfer_termination.ML"
 ML_file "class_graph.ML"
 ML_file "dict_construction.ML"
 
