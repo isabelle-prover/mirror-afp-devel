@@ -8,7 +8,8 @@ imports
   "Euler_MacLaurin.Euler_MacLaurin"
   "Bernoulli.Bernoulli_Zeta"
   "Dirichlet_Series.Dirichlet_Series_Analysis"
-  "HOL-Library.Landau_Symbols"
+  "Winding_Number_Eval.Winding_Number_Eval"
+  "HOL-Real_Asymp.Real_Asymp"
 begin
 
 subsection \<open>Preliminary facts\<close>
@@ -443,7 +444,9 @@ proof -
   from \<zeta>.euler_maclaurin_strong_nat'[OF le_refl, simplified]
   have "of_real a powr -s = a powr (1 - s) / (1 - s) + \<zeta> s + a powr -s / 2 + (-?R) - ?S"
     unfolding sum_negf [symmetric] by (simp add: scaleR_conv_of_real pre_zeta_aux_def mult_ac)
-  thus ?thesis unfolding pre_zeta_aux_def by (simp add: field_simps)
+  thus ?thesis unfolding pre_zeta_aux_def 
+    (* TODO: Field_as_Ring causes some problems with field_simps vs. div_mult_self *)
+    by (simp add: field_simps del: div_mult_self3 div_mult_self4 div_mult_self2 div_mult_self1)
 qed
 
 end
@@ -539,6 +542,26 @@ lemma holomorphic_pre_zeta [holomorphic_intros]:
   "f holomorphic_on A \<Longrightarrow> a > 0 \<Longrightarrow> (\<lambda>z. pre_zeta a (f z)) holomorphic_on A"
   using holomorphic_on_compose [OF _ analytic_imp_holomorphic [OF analytic_pre_zeta], of f]
   by (simp add: o_def)
+
+corollary continuous_on_pre_zeta:
+  "a > 0 \<Longrightarrow> continuous_on A (pre_zeta a)"
+  by (intro holomorphic_on_imp_continuous_on holomorphic_intros) auto
+
+corollary continuous_on_pre_zeta' [continuous_intros]:
+  "continuous_on A f \<Longrightarrow> a > 0 \<Longrightarrow> continuous_on A (\<lambda>x. pre_zeta a (f x))"
+  using continuous_on_compose2 [OF continuous_on_pre_zeta, of a A f "f ` A"]
+  by (auto simp: image_iff)
+
+corollary continuous_pre_zeta [continuous_intros]:
+  "a > 0 \<Longrightarrow> continuous (at s within A) (pre_zeta a)"
+  by (rule continuous_within_subset[of _ UNIV])
+     (insert continuous_on_pre_zeta[of a UNIV], 
+      auto simp: continuous_on_eq_continuous_at open_Compl)
+
+corollary continuous_pre_zeta' [continuous_intros]:
+  "a > 0 \<Longrightarrow> continuous (at s within A) f \<Longrightarrow>
+     continuous (at s within A) (\<lambda>s. pre_zeta a (f s))"
+  using continuous_within_compose3[OF continuous_pre_zeta, of a s A f] by auto
 
 
 text \<open>
@@ -946,8 +969,9 @@ next
       finally have nz: "\<dots> \<noteq> 0" by auto
       
       have "of_nat m + of_real (real n / real k) = 
-              (inverse (of_nat k) * of_nat (m * k + n) :: complex)"
-        using assms by (simp add: field_simps)
+              (inverse (of_nat k) * of_nat (m * k + n) :: complex)" using assms
+        (* TODO: Field_as_Ring messing up things again *)
+        by (simp add: field_simps del: div_mult_self1 div_mult_self2 div_mult_self3 div_mult_self4)
       also from nz have "\<dots> powr -s = of_nat k powr s * of_nat (m * k + n) powr -s"
         by (subst powr_times_real) (auto simp: add_eq_0_iff powr_def exp_minus Ln_inverse)
       finally show ?case .
@@ -1421,6 +1445,12 @@ proof -
   finally show ?thesis .
 qed
 
+lemma hurwitz_zeta_0 [simp]: "a > 0 \<Longrightarrow> hurwitz_zeta a 0 = 1 / 2 - a"
+  using hurwitz_zeta_neg_of_nat[of a 0] by (simp add: bernpoly_def)
+
+lemma zeta_0 [simp]: "zeta 0 = -1 / 2"
+  by (simp add: zeta_def)
+
 theorem zeta_neg_of_nat: 
   "zeta (-of_nat n) = -of_real (bernoulli' (Suc n)) / of_nat (Suc n)"
   unfolding zeta_def by (simp add: hurwitz_zeta_neg_of_nat bernpoly_1')
@@ -1478,9 +1508,6 @@ proof -
     by (subst zeta_neg_of_nat) (simp add: numeral_inc)
   finally show ?thesis .
 qed
-
-corollary zeta_0 [simp]: "zeta 0 = - 1 / 2"
-  using zeta_neg_of_nat[of 0] by simp
 
 corollary zeta_neg1: "zeta (-1) = - 1 / 12"
   using zeta_neg_of_nat[of 1] by (simp add: eval_bernoulli)
@@ -1751,6 +1778,8 @@ proof -
 qed
 
 
+subsection \<open>An analytic proof of the infinitude of primes\<close>
+
 text \<open>
   We can now also do an analytic proof of the infinitude of primes.
 \<close>
@@ -1817,5 +1846,1699 @@ proof
     by (intro filterlim_cong refl eventually_mono [OF ev] eq [symmetric]) auto
   finally show False using is_pole_zeta by contradiction
 qed
+
+
+subsection \<open>The periodic zeta function\<close>
+
+text \<open>
+  The periodic zeta function $F(s, q)$ (as described e.\,g.\ by Apostol~\cite{apostol1976analytic} 
+  is related to the Hurwitz zeta function. It is periodic in \<open>q\<close> with period 1 and it can be 
+  represented by a Dirichlet series that is absolutely convergent for $\mathfrak{R}(s) > 1$.
+   If \<open>q \<notin> \<int>\<close>, it furthermore convergent for $\mathfrak{R}(s) > 0$.
+
+  It is clear that for integer \<open>q\<close>, we have $F(s, q) = F(s, 0) = \zeta(s)$. Moreover, for
+  non-integer \<open>q\<close>, $F(s, q)$ can be analytically continued to an entire function.
+\<close>
+definition fds_perzeta :: "real \<Rightarrow> complex fds" where
+  "fds_perzeta q = fds (\<lambda>m. exp (2 * pi * \<i> * m * q))"
+
+text \<open>
+  The definition of the periodic zeta function on the full domain is a bit unwieldy.
+  The precise reasoning for this definition will be given later, and, in any case, it
+  is probably more instructive to look at the derived ``alternative'' definitions later.
+\<close>
+definition perzeta :: "real \<Rightarrow> complex \<Rightarrow> complex" where
+  "perzeta q' s =
+     (if q' \<in> \<int> then zeta s
+      else let q = frac q' in
+        if s = 0 then \<i> / (2 * pi) * (pre_zeta q 1 - pre_zeta (1 - q) 1 + 
+                                             ln (1 - q) - ln q + pi * \<i>)
+        else if s \<in> \<nat> then eval_fds (fds_perzeta q) s 
+        else complex_of_real (2 * pi) powr (s - 1) * \<i> * Gamma (1 - s) *
+               (\<i> powr (-s) * hurwitz_zeta q (1 - s) -
+                \<i> powr s * hurwitz_zeta (1 - q) (1 - s)))"
+
+interpretation fds_perzeta: periodic_fun_simple' fds_perzeta
+  by standard (simp_all add: fds_perzeta_def exp_add ring_distribs exp_eq_polar
+                             cis_mult [symmetric] cis_multiple_2pi)
+
+interpretation perzeta: periodic_fun_simple' perzeta
+proof -
+  have [simp]: "n + 1 \<in> \<int> \<longleftrightarrow> n \<in> \<int>" for n :: real
+    by (simp flip: frac_eq_0_iff add: frac.plus_1)
+  show "periodic_fun_simple' perzeta"
+    by standard (auto simp: fun_eq_iff perzeta_def Let_def frac.plus_1)
+qed
+
+lemma perzeta_frac [simp]: "perzeta (frac q) = perzeta q"
+  by (auto simp: perzeta_def fun_eq_iff Let_def)
+
+lemma fds_perzeta_frac [simp]: "fds_perzeta (frac q) = fds_perzeta q"
+  using fds_perzeta.plus_of_int[of "frac q" "\<lfloor>q\<rfloor>"] by (simp add: frac_def)
+
+lemma abs_conv_abscissa_perzeta: "abs_conv_abscissa (fds_perzeta q) \<le> 1"
+proof (rule abs_conv_abscissa_leI)
+  fix c assume c: "ereal c > 1"
+  hence "summable (\<lambda>n. n powr -c)"
+    by (simp add: summable_real_powr_iff)
+  also have "?this \<longleftrightarrow> fds_abs_converges (fds_perzeta q) (of_real c)" unfolding fds_abs_converges_def
+    by (intro summable_cong eventually_mono[OF eventually_gt_at_top[of 0]])
+       (auto simp: norm_divide norm_powr_real_powr fds_perzeta_def powr_minus field_simps)
+  finally show "\<exists>s. s \<bullet> 1 = c \<and> fds_abs_converges (fds_perzeta q) s"
+    by (intro exI[of _ "of_real c"]) auto
+qed
+
+lemma conv_abscissa_perzeta: "conv_abscissa (fds_perzeta q) \<le> 1"
+  by (rule order.trans[OF conv_le_abs_conv_abscissa abs_conv_abscissa_perzeta])
+
+lemma fds_perzeta_0 [simp]: "fds_perzeta 0 = fds_zeta"
+  by (simp add: fds_perzeta_def fds_zeta_def)
+
+lemma perzeta_0 [simp]: "Re s > 1 \<Longrightarrow> perzeta 0 s = zeta s"
+  by (simp add: perzeta_def eval_fds_zeta)
+
+lemma perzeta_int: "q \<in> \<int> \<Longrightarrow> perzeta q = zeta"
+  by (simp add: perzeta_def fun_eq_iff)
+
+lemma fds_perzeta_int: "q \<in> \<int> \<Longrightarrow> fds_perzeta q = fds_zeta"
+  by (auto simp: fds_perzeta.of_int elim!: Ints_cases)
+
+lemma sums_fds_perzeta:
+  assumes "Re s > 1"
+  shows   "(\<lambda>m. exp (2 * pi * \<i> * Suc m * q) / of_nat (Suc m) powr s) sums
+             eval_fds (fds_perzeta q) s"
+proof -
+  have "conv_abscissa (fds_perzeta q) \<le> 1" by (rule conv_abscissa_perzeta)
+  also have "\<dots> < ereal (Re s)"  using assms by (simp add: one_ereal_def)
+  finally have "fds_converges (fds_perzeta q) s" by (intro fds_converges) auto
+  hence "(\<lambda>n. fds_nth (fds_perzeta q) (Suc n) / nat_power (Suc n) s) sums
+           eval_fds (fds_perzeta q) s" by (subst sums_Suc_iff) (auto simp: fds_converges_iff)
+  thus ?thesis by (simp add: fds_perzeta_def)
+qed
+
+lemma sum_tendsto_fds_perzeta:
+  assumes "Re s > 1"
+  shows   "(\<lambda>n. \<Sum>k\<in>{0<..n}. exp (2 * real k * pi * q * \<i>) * of_nat k powr - s)
+              \<longlonglongrightarrow> eval_fds (fds_perzeta q) s"
+proof -
+  have "(\<lambda>m. exp (2 * pi * \<i> * Suc m * q) / of_nat (Suc m) powr s) sums eval_fds (fds_perzeta q) s"
+    by (intro sums_fds_perzeta assms)
+  hence "(\<lambda>n. \<Sum>k<n. exp (2 * real (Suc k) * pi * q * \<i>) * of_nat (Suc k) powr -s) \<longlonglongrightarrow>
+           eval_fds (fds_perzeta q) s"
+    (is "filterlim ?f _ _") by (simp add: sums_def powr_minus field_simps)
+  also have "?f = (\<lambda>n. \<Sum>k\<in>{0<..n}. exp (2 * real k * pi * q * \<i>) * of_nat k powr -s)"
+    by (intro ext sum.reindex_bij_betw sum.reindex_bij_witness[of _ "\<lambda>n. n - 1" Suc]) auto
+  finally show ?thesis by simp
+qed
+
+text \<open>
+  Using the geometric series, it is easy to see that the Dirichlet series for $F(s, q)$
+  has bounded partial sums for non-integer \<open>q\<close>, so it must converge for any \<open>s\<close> with
+  $\mathfrak{R}(s) > 0$.
+\<close>
+lemma conv_abscissa_perzeta':
+  assumes "q \<notin> \<int>"
+  shows   "conv_abscissa (fds_perzeta q) \<le> 0"
+proof (rule conv_abscissa_leI)
+  fix c :: real assume c: "ereal c > 0"
+  have "fds_converges (fds_perzeta q) (of_real c)"
+  proof (rule bounded_partial_sums_imp_fps_converges)
+    define \<omega> where "\<omega> = exp (2 * pi * \<i> * q)"
+    have [simp]: "norm \<omega> = 1" by (simp add: \<omega>_def)
+    define M where "M = 2 / norm (1 - \<omega>)"
+    from \<open>q \<notin> \<int>\<close> have "\<omega> \<noteq> 1"
+      by (auto simp: \<omega>_def exp_eq_1)
+    hence "M > 0" by (simp add: M_def)
+  
+    show "Bseq (\<lambda>n. \<Sum>k\<le>n. fds_nth (fds_perzeta q) k / nat_power k 0)"
+      unfolding Bseq_def
+    proof (rule exI, safe)
+      fix n :: nat
+      show "norm (\<Sum>k\<le>n. fds_nth (fds_perzeta q) k / nat_power k 0) \<le> M"
+      proof (cases "n = 0")
+        case False
+        have "(\<Sum>k\<le>n. fds_nth (fds_perzeta q) k / nat_power k 0) =
+                (\<Sum>k\<in>{1..1 + (n - 1)}. \<omega> ^ k)" using False
+          by (intro sum.mono_neutral_cong_right)
+             (auto simp: fds_perzeta_def fds_nth_fds exp_of_nat_mult [symmetric] mult_ac \<omega>_def)
+        also have "\<dots> = \<omega> * (1 - \<omega> ^ n) / (1 - \<omega>)" using \<open>\<omega> \<noteq> 1\<close> and False
+          by (subst sum_gp_offset) simp
+        also have "norm \<dots> \<le> 1 * (norm (1::complex) + norm (\<omega> ^ n)) / norm (1 - \<omega>)"
+          unfolding norm_mult norm_divide
+          by (intro mult_mono divide_right_mono norm_triangle_ineq4) auto
+        also have "\<dots> = M" by (simp add: M_def norm_power)
+        finally show ?thesis .
+      qed (use \<open>M > 0\<close> in simp_all)
+    qed fact+
+  qed (insert c, auto)
+  thus "\<exists>s. s \<bullet> 1 = c \<and> fds_converges (fds_perzeta q) s"
+    by (intro exI[of _ "of_real c"]) auto
+qed
+
+
+subsection \<open>Hurwitz's formula\<close>
+
+text \<open>
+  We now move on to prove Hurwitz's formula relating the Hurwitz zeta function and the
+  periodic zeta function. We mostly follow Apostol's proof, although we do make some small
+  changes in order to make the proof more amenable to Isabelle's complex analysis library.
+ 
+  The big difference is that Apostol integrates along a circle with a slit, where the two
+  sides of the slit lie on different branches of the integrand. This makes sense when looking
+  as the integrand as a Riemann surface, but we do not have a notion of Riemann surfaces in
+  Isabelle.
+
+  It is therefore much easier to simply cut the circle into an upper and a lower half. In fact,
+  the integral on the lower half can be reduced to the one on the upper half easily by
+  symmetry, so we really only need to handle the integral on the upper half. The integration
+  contour that we will use is therefore a semi-annulus in the upper half of the complex plane,
+  centred around the origin.
+
+  Now, first of all, we prove the existence of an important improper integral 
+  that we will need later.
+\<close>
+(* TODO: Move *)
+lemma set_integrable_bigo:
+  fixes f g :: "real \<Rightarrow> 'a :: {banach, real_normed_field, second_countable_topology}"
+  assumes "f \<in> O(\<lambda>x. g x)" and "set_integrable lborel {a..} g"
+  assumes "\<And>b. b \<ge> a \<Longrightarrow> set_integrable lborel {a..<b} f"
+  assumes [measurable]: "set_borel_measurable borel {a..} f"
+  shows   "set_integrable lborel {a..} f"
+proof -
+  from assms(1) obtain C x0 where C: "C > 0" "\<And>x. x \<ge> x0 \<Longrightarrow> norm (f x) \<le> C * norm (g x)"
+    by (fastforce elim!: landau_o.bigE simp: eventually_at_top_linorder)
+  define x0' where "x0' = max a x0"
+
+  have "set_integrable lborel {a..<x0'} f"
+    by (intro assms) (auto simp: x0'_def)
+  moreover have "set_integrable lborel {x0'..} f" unfolding set_integrable_def
+  proof (rule Bochner_Integration.integrable_bound)
+    from assms(2) have "set_integrable lborel {x0'..} g"
+      by (rule set_integrable_subset) (auto simp: x0'_def)
+    thus "integrable lborel (\<lambda>x. C *\<^sub>R (indicator {x0'..} x *\<^sub>R g x))" unfolding set_integrable_def
+      by (intro integrable_scaleR_right) (simp add: abs_mult norm_mult)
+  next
+    from assms(4) have "set_borel_measurable borel {x0'..} f"
+      by (rule set_borel_measurable_subset) (auto simp: x0'_def)
+    thus "(\<lambda>x. indicator {x0'..} x *\<^sub>R f x) \<in> borel_measurable lborel"
+      by (simp add: set_borel_measurable_def)
+  next
+    show "AE x in lborel. norm (indicator {x0'..} x *\<^sub>R f x)
+                            \<le> norm (C *\<^sub>R (indicator {x0'..} x *\<^sub>R g x))"
+      using C by (intro AE_I2) (auto simp: abs_mult indicator_def x0'_def)
+  qed
+  ultimately have "set_integrable lborel ({a..<x0'} \<union> {x0'..}) f"
+    by (rule set_integrable_Un) auto
+  also have "{a..<x0'} \<union> {x0'..} = {a..}" by (auto simp: x0'_def)
+  finally show ?thesis .
+qed
+
+lemma set_integrable_Gamma_hurwitz_aux2_real:
+  fixes s a :: real
+  assumes "r > 0" and "a > 0"
+  shows "set_integrable lborel {r..} (\<lambda>x. x powr s * (exp (-a * x)) / (1 - exp (-x)))"
+    (is "set_integrable _ _ ?g")
+proof (rule set_integrable_bigo)
+  have "(\<lambda>x. exp (-(a/2) * x)) integrable_on {r..}" using assms
+    by (intro integrable_on_exp_minus_to_infinity) auto
+  hence "set_integrable lebesgue {r..} (\<lambda>x. exp (-(a/2) * x))"
+    by (intro nonnegative_absolutely_integrable) simp_all
+  thus "set_integrable lborel {r..} (\<lambda>x. exp (-(a/2) * x))"
+    by (simp add: set_integrable_def integrable_completion)
+next
+  fix y :: real
+  have "set_integrable lborel {r..y} ?g" using assms
+    by (intro borel_integrable_atLeastAtMost') (auto intro!: continuous_intros)
+  thus "set_integrable lborel {r..<y} ?g"
+    by (rule set_integrable_subset) auto
+next
+  from assms show "?g \<in> O(\<lambda>x. exp (-(a/2) * x))"
+    by real_asymp
+qed (auto simp: set_borel_measurable_def)
+
+lemma set_integrable_Gamma_hurwitz_aux2:
+  fixes s :: complex and a :: real
+  assumes "r > 0" and "a > 0"
+  shows   "set_integrable lborel {r..} (\<lambda>x. x powr -s * (exp (- a * x)) / (1 - exp (- x)))"
+             (is "set_integrable _ _ ?g")
+proof -
+  have "set_integrable lborel {r..} (\<lambda>x. x powr -Re s * (exp (-a * x)) / (1 - exp (-x)))" 
+    (is "set_integrable _ _ ?g'")
+    by (rule set_integrable_Gamma_hurwitz_aux2_real) (use assms in auto)
+  also have "?this \<longleftrightarrow> integrable lborel (\<lambda>x. indicator {r..} x *\<^sub>R ?g' x)"
+    by (simp add: set_integrable_def)
+  also have "(\<lambda>x. indicator {r..} x *\<^sub>R ?g' x) = (\<lambda>x. norm (indicator {r..} x *\<^sub>R ?g x))" using assms
+    by (auto simp: indicator_def norm_mult norm_divide norm_powr_real_powr fun_eq_iff
+                   exp_of_real exp_minus norm_inverse in_Reals_norm power2_eq_square divide_simps)
+  finally show ?thesis unfolding set_integrable_def
+    by (subst (asm) integrable_norm_iff) auto
+qed
+
+lemma closed_neg_Im_slit: "closed {z. Re z = 0 \<and> Im z \<le> 0}"
+proof -
+  have "closed ({z. Re z = 0} \<inter> {z. Im z \<le> 0})"
+    by (intro closed_Int closed_halfspace_Re_eq closed_halfspace_Im_le)
+  also have "{z. Re z = 0} \<inter> {z. Im z \<le> 0} = {z. Re z = 0 \<and> Im z \<le> 0}" by blast
+  finally show ?thesis .
+qed
+
+
+text \<open>
+  We define tour semi-annulus path. When this path is mirrored into the lower half of the complex
+  plane and subtracted from the original path and the outer radius tends to \<open>\<infinity>\<close>, this becomes a
+  Hankel contour extending to \<open>-\<infinity>\<close>.
+\<close>
+definition hankel_semiannulus :: "real \<Rightarrow> nat \<Rightarrow> real \<Rightarrow> complex" where
+ "hankel_semiannulus r N = (let R = (2 * N + 1) * pi in
+    part_circlepath 0 R 0 pi +++                  \<comment>\<open>Big half circle\<close>
+    linepath (of_real (-R)) (of_real (-r)) +++    \<comment>\<open>Line on the negative real axis\<close>
+    part_circlepath 0 r pi 0 +++                  \<comment>\<open>Small half circle\<close>
+    linepath (of_real r) (of_real R))             \<comment>\<open>Line on the positive real axis\<close>" 
+
+lemma path_hankel_semiannulus [simp, intro]: "path (hankel_semiannulus r R)"
+  and valid_path_hankel_semiannulus [simp, intro]: "valid_path (hankel_semiannulus r R)"
+  and pathfinish_hankel_semiannulus [simp, intro]:
+        "pathfinish (hankel_semiannulus r R) = pathstart (hankel_semiannulus r R)"
+  by (simp_all add: hankel_semiannulus_def Let_def)
+
+
+text \<open>
+  We set the stage for an application of the Residue Theorem. We define a function
+  \[f(s, z) = z^{-s} \frac{\exp(az)}{1-\exp(-z)}\ ,\]
+  which will be the integrand. However, the principal branch of $z^{-s}$ has a branch cut
+  along the non-positive real axis, which is bad because a part of our integration path also
+  lies on the non-positive real axis. We therefore choose a slightly different branch of $z^{-s}$
+  by moving the logarithm branch along by $90^{\circ}$ so that the branch cut lies on the
+  non-positive imaginary axis instead.
+\<close>
+context
+  fixes a :: real
+  fixes f :: "complex \<Rightarrow> complex \<Rightarrow> complex"
+    and g :: "complex \<Rightarrow> real \<Rightarrow> complex"
+    and h :: "real \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> complex"
+    and Res :: "complex \<Rightarrow> nat \<Rightarrow> complex" 
+    and Ln' :: "complex \<Rightarrow> complex"
+    and F :: "real \<Rightarrow> complex \<Rightarrow> complex"
+  assumes a: "a \<in> {0<..1}"
+
+  \<comment>\<open>Our custom branch of the logarithm\<close>
+  defines "Ln' \<equiv> (\<lambda>z. ln (-\<i> * z) + \<i> * pi / 2)"
+
+  \<comment>\<open>The integrand\<close>
+  defines "f \<equiv> (\<lambda>s z. exp (Ln' z * (-s) + of_real a * z) / (1 - exp z))"
+
+  \<comment>\<open>The integrand on the negative real axis\<close>
+  defines "g \<equiv> (\<lambda>s x. complex_of_real x powr -s * of_real (exp (-a*x)) / of_real (1 - exp (-x)))"
+
+  \<comment>\<open>The integrand on the circular arcs\<close>
+  defines "h \<equiv> (\<lambda>r s t. r * \<i> * cis t * exp (a * (r * cis t) - (ln r + \<i> * t) * s) /
+                        (1 - exp (r * cis t)))"
+
+  \<comment>\<open>The interesting part of the residues\<close>
+  defines "Res \<equiv> (\<lambda>s k. exp (of_real (2 * real k * pi * a) * \<i>) *
+                            of_real (2 * real k * pi) powr (-s))"
+
+  \<comment>\<open>The periodic zeta function (at least on $\mathfrak{R}(s) > 1$ half-plane)\<close>
+  defines "F \<equiv> (\<lambda>q. eval_fds (fds_perzeta q))"
+begin
+
+text \<open>
+  First, some basic properties of our custom branch of the logarithm:
+\<close>
+lemma Ln'_i: "Ln' \<i> = \<i> * pi / 2"
+  by (simp add: Ln'_def)
+
+lemma Ln'_of_real_pos:
+  assumes "x > 0"
+  shows   "Ln' (of_real x) = of_real (ln x)"
+proof -
+  have "Ln' (of_real x) = Ln (of_real x * (-\<i>)) + \<i> * pi / 2"
+    by (simp add: Ln'_def mult_ac)
+  also have "\<dots> = of_real (ln x)" using assms
+    by (subst Ln_times_of_real) (auto simp: Ln_of_real)
+  finally show ?thesis .
+qed
+
+lemma Ln'_of_real_neg:
+  assumes "x < 0"
+  shows   "Ln' (of_real x) = of_real (ln (-x)) + \<i> * pi"
+proof -
+  have "Ln' (of_real x) = Ln (of_real (-x) * \<i>) + \<i> * pi / 2"
+    by (simp add: Ln'_def mult_ac)
+  also have "\<dots> = of_real (ln (-x)) + \<i> * pi" using assms
+    by (subst Ln_times_of_real) (auto simp: Ln_Reals_eq)
+  finally show ?thesis .
+qed
+
+lemma Ln'_times_of_real:
+  "Ln' (of_real x * z) = of_real (ln x) + Ln' z" if "x > 0" "z \<noteq> 0" for z x
+proof -
+  have "Ln' (of_real x * z) = Ln (of_real x * (- \<i> * z)) + \<i> * pi / 2"
+    by (simp add: Ln'_def mult_ac)
+  also have "\<dots> = of_real (ln x) + Ln' z"
+    using that by (subst Ln_times_of_real) (auto simp: Ln'_def Ln_of_real)
+  finally show ?thesis .
+qed
+
+lemma Ln'_cis:
+  assumes "t \<in> {-pi / 2<..3 / 2 * pi}"
+  shows   "Ln' (cis t) = \<i> * t"
+proof -
+  have "exp (\<i> * pi / 2) = \<i>" by (simp add: exp_eq_polar)
+  hence "Ln (- (\<i> * cis t)) = \<i> * (t - pi / 2)" using assms
+    by (intro Ln_unique) (auto simp: algebra_simps exp_diff cis_conv_exp)
+  thus ?thesis by (simp add: Ln'_def algebra_simps)
+qed
+
+text \<open>
+  Next, we show that the line and circle integrals are holomorphic using Leibniz's rule:
+\<close>
+lemma contour_integral_part_circlepath_h:
+  assumes r: "r > 0"
+  shows   "contour_integral (part_circlepath 0 r 0 pi) (f s) = integral {0..pi} (h r s)"
+proof -
+  have "contour_integral (part_circlepath 0 r 0 pi) (f s) = 
+          integral {0..pi} (\<lambda>t. f s (r * cis t) * r * \<i> * cis t)"
+    by (simp add: contour_integral_part_circlepath_eq)
+  also have "integral {0..pi} (\<lambda>t. f s (r * cis t) * r * \<i> * cis t) = integral {0..pi} (h r s)"
+  proof (intro integral_cong)
+    fix t assume t: "t \<in> {0..pi}"
+    have "-(pi / 2) < 0" by simp
+    also have "0 \<le> t" using t by simp
+    finally have "t \<in> {-(pi/2)<..3/2*pi}" using t by auto
+    thus "f s (r * cis t) * r * \<i> * cis t = h r s t"
+      using r by (simp add: f_def Ln'_times_of_real Ln'_cis h_def Ln_Reals_eq)
+  qed
+  finally show ?thesis .
+qed
+
+lemma integral_g_holomorphic:
+  assumes "b > 0"
+  shows   "(\<lambda>s. integral {b..c} (g s)) holomorphic_on A"
+proof -
+  define g' where "g' = (\<lambda>s t. - (of_real t powr (-s)) * complex_of_real (ln t) * 
+                          of_real (exp (- (a * t))) / of_real (1 - exp (- t)))"
+  have "(\<lambda>s. integral (cbox b c) (g s)) holomorphic_on UNIV"
+  proof (rule leibniz_rule_holomorphic)
+    fix s :: complex and t :: real assume "t \<in> cbox b c"
+    thus "((\<lambda>s. g s t) has_field_derivative g' s t) (at s)" using assms
+      by (auto simp: g_def g'_def powr_def Ln_Reals_eq intro!: derivative_eq_intros)
+  next
+    fix s show "g s integrable_on cbox b c" for s unfolding g_def using assms
+      by (intro integrable_continuous continuous_intros) auto
+  next
+    show "continuous_on (UNIV \<times> cbox b c) (\<lambda>(s, t). g' s t)" using assms
+      by (auto simp: g'_def case_prod_unfold intro!: continuous_intros)
+  qed auto
+  thus ?thesis by auto
+qed
+
+lemma integral_h_holomorphic:
+  assumes r: "r \<in> {0<..<2}"
+  shows   "(\<lambda>s. integral {b..c} (h r s)) holomorphic_on A"
+proof -
+  have no_sing: "exp (r * cis t) \<noteq> 1" for t
+  proof
+    define z where "z = r * cis t"
+    assume "exp z = 1"
+    then obtain n where "norm z = 2 * pi * of_int \<bar>n\<bar>"
+      by (auto simp: exp_eq_1 cmod_def abs_mult)
+    moreover have "norm z = r" using r by (simp add: z_def norm_mult)
+    ultimately have r_eq: "r = 2 * pi * of_int \<bar>n\<bar>" by simp
+    with r have "n \<noteq> 0" by auto
+    moreover from r have "r < 2 * pi" using pi_gt3 by simp 
+    with r_eq have "\<bar>n\<bar> < 1" by simp
+    ultimately show False by simp
+  qed
+
+  define h' where "h' = (\<lambda>s t. exp (a * r * cis t - (ln r + \<i> * t) * s) *
+                           (-ln r - \<i> * t) * (r * \<i> * cis t) / (1 - exp (r * cis t)))"
+  have "(\<lambda>s. integral (cbox b c) (h r s)) holomorphic_on UNIV"
+  proof (rule leibniz_rule_holomorphic)
+    fix s t assume "t \<in> cbox b c"
+    thus "((\<lambda>s. h r s t) has_field_derivative h' s t) (at s)" using no_sing r
+      by (auto intro!: derivative_eq_intros simp: h_def h'_def mult_ac Ln_Reals_eq)
+  next
+    fix s show "h r s integrable_on cbox b c" using no_sing unfolding h_def
+      by (auto intro!: integrable_continuous_real continuous_intros)
+  next
+    show "continuous_on (UNIV \<times> cbox b c) (\<lambda>(s, t). h' s t)" using no_sing
+      by (auto simp: h'_def case_prod_unfold intro!: continuous_intros)
+  qed auto
+  thus ?thesis by auto
+qed
+
+text \<open>
+  We now move on to the core result, which uses the Residue Theorem to relate a contour integral
+  along a semi-annulus to a partial sum of the periodic zeta function.
+\<close>
+lemma hurwitz_formula_integral_semiannulus:
+  fixes N :: nat and r :: real and s :: complex
+  defines "R \<equiv> real (2 * N + 1) * pi"
+  assumes "r > 0" and "r < 2"
+  shows "exp (-\<i> * pi * s) * integral {r..R} (\<lambda>x. x powr (-s) * exp (-a * x) / (1 - exp (-x))) +
+         integral {r..R} (\<lambda>x. x powr (-s) * exp (a * x) / (1 - exp x)) +
+         contour_integral (part_circlepath 0 R 0 pi) (f s) +
+         contour_integral (part_circlepath 0 r pi 0) (f s)
+         = -2 * pi * \<i> * exp (- s * of_real pi * \<i> / 2) * (\<Sum>k\<in>{0<..N}. Res s k)" (is ?thesis1)
+    and "f s contour_integrable_on hankel_semiannulus r N"
+proof -
+  have "2 < 1 * pi" using pi_gt3 by simp
+  also have "\<dots> \<le> R" unfolding R_def by (intro mult_right_mono) auto
+  finally have "R > 2" by (auto simp: R_def)
+  note r_R = \<open>r > 0\<close> \<open>r < 2\<close> this
+
+  \<comment>\<open>We integrate along the edge of a semi-annulus in the upper half of the complex plane.
+     It consists of a big semicircle, a small semicircle, and two lines connecting the two
+     circles, one on the positive real axis and one on the negative real axis.
+
+     The integral along the big circle will vanish as the radius of the circle tends to \<open>\<infinity>\<close>,
+     whereas the remaining path becomes a Hankel contour, and the integral along that Hankel
+     contour is what we are interested in, since it is connected to the Hurwitz zeta function.\<close>
+  define big_circle where "big_circle = part_circlepath 0 R 0 pi"
+  define small_circle where "small_circle = part_circlepath 0 r pi 0"
+  define neg_line where "neg_line = linepath (complex_of_real (-R)) (complex_of_real (-r))"
+  define pos_line where "pos_line = linepath (complex_of_real r) (complex_of_real R)"
+  define \<gamma> where "\<gamma> = hankel_semiannulus r N"
+  have \<gamma>_altdef: "\<gamma> = big_circle +++ neg_line +++ small_circle +++ pos_line"
+    by (simp add: \<gamma>_def R_def add_ac hankel_semiannulus_def big_circle_def
+                  neg_line_def small_circle_def pos_line_def)
+  have [simp]: "path \<gamma>" "valid_path \<gamma>" "pathfinish \<gamma> = pathstart \<gamma>"
+    by (simp_all add: \<gamma>_def)
+
+  \<comment>\<open>The integrand has a branch cut along the non-positive imaginary axis and additional 
+     simple poles at $2n\pi i$ for any \<open>n \<in> \<nat>\<^sub>>\<^sub>0\<close>. The radius of the smaller circle will always
+     be less than $2\pi$ and the radius of the bigger circle of the form $(2N+1)\pi$, so we
+     always have precisely the first $N$ poles inside our path.\<close>
+  define sngs where "sngs = (\<lambda>n. of_real (2 * pi * real n) * \<i>) ` {0<..}"
+  define sngs' where "sngs' = (\<lambda>n. of_real (2 * pi * real n) * \<i>) ` {0<..N}"
+  have sngs_subset: "sngs' \<subseteq> sngs" unfolding sngs_def sngs'_def by (intro image_mono) auto
+  have closed_sngs [intro]: "closed (sngs - sngs')" unfolding sngs_def
+  proof (rule discrete_imp_closed[of "2 * pi"]; safe?)
+    fix m n :: nat
+    assume "dist (of_real (2 * pi * real m) * \<i>) (of_real (2 * pi * real n) * \<i>) < 2 * pi"
+    also have "dist (of_real (2 * pi * real m) * \<i>) (of_real (2 * pi * real n) * \<i>) =
+                norm (of_real (2 * pi * real m) * \<i> - of_real (2 * pi * real n) * \<i>)"
+      by (simp add: dist_norm)
+    also have "of_real (2 * pi * real m) * \<i> - of_real (2 * pi * real n) * \<i> =
+                 of_real (2 * pi) * \<i> * of_int (int m - int n)" by (simp add: algebra_simps)
+    also have "norm \<dots> = 2 * pi * of_int \<bar>int m - int n\<bar>"
+      unfolding norm_mult norm_of_int by (simp add: norm_mult)
+    finally have "\<bar>real m - real n\<bar> < 1" by simp
+    hence "m = n" by linarith
+    thus "of_real (2 * pi * real m) * \<i> = of_real (2 * pi * real n) * \<i>" by simp
+  qed auto
+
+  \<comment>\<open>We define an area within which the integrand is holomorphic. Choosing this area as big as
+     possible makes things easier later on, so we only remove the branch cut and the poles.\<close>
+  define S where "S = - {z. Re z = 0 \<and> Im z \<le> 0} - (sngs - sngs')"
+  define S' where "S' = - {z. Re z = 0 \<and> Im z \<le> 0}"
+
+  have sngs: "exp z = 1 \<longleftrightarrow> z \<in> sngs" if "Re z \<noteq> 0 \<or> Im z > 0" for z
+  proof
+    assume "exp z = 1"
+    then obtain n where n: "z = 2 * pi * of_int n * \<i>"
+      unfolding exp_eq_1 by (auto simp: complex_eq_iff mult_ac)
+    moreover from n and pi_gt_zero and that have "n > 0" by (auto simp: zero_less_mult_iff)
+    ultimately have "z = of_real (2 * pi * nat n) * \<i>" and "nat n \<in> {0<..}"
+      by auto
+    thus "z \<in> sngs" unfolding sngs_def by blast
+  qed (insert that, auto simp: sngs_def exp_eq_polar)
+
+  \<comment>\<open>We show that the path stays within the well-behaved area.\<close>
+  have "path_image neg_line = of_real ` {-R..-r}" using r_R
+    by (auto simp: neg_line_def closed_segment_Reals closed_segment_eq_real_ivl)
+  hence "path_image neg_line \<subseteq> S - sngs'" using r_R sngs_subset
+    by (auto simp: S_def sngs_def complex_eq_iff)
+
+  have "path_image pos_line = of_real ` {r..R}" using r_R
+    by (auto simp: pos_line_def closed_segment_Reals closed_segment_eq_real_ivl)
+  hence "path_image pos_line \<subseteq> S - sngs'" using r_R sngs_subset
+    by (auto simp: S_def sngs_def complex_eq_iff)
+
+  have part_circlepath_in_S: "z \<in> S - sngs'"
+    if "z \<in> path_image (part_circlepath 0 r' 0 pi) \<or> z \<in> path_image (part_circlepath 0 r' pi 0)"
+    and "r' > 0" "r' \<notin> (\<lambda>n. 2 * pi * real n) ` {0<..}" for z r'
+  proof -
+    have z: "norm z = r' \<and> Im z \<ge> 0" using that
+      by (auto simp: path_image_def part_circlepath_def norm_mult Im_exp linepath_def
+               intro!: mult_nonneg_nonneg sin_ge_zero)
+    hence "Re z \<noteq> 0 \<or> Im z > 0" using that by (auto simp: cmod_def)
+    moreover from z and that have "z \<notin> sngs"
+      by (auto simp: sngs_def norm_mult image_iff)
+    ultimately show "z \<in> S - sngs'" using sngs_subset by (auto simp: S_def)
+  qed
+
+  {
+    fix n :: nat assume n: "n > 0"
+    have "r < 2 * pi * 1" using pi_gt3 r_R by simp
+    also have "\<dots> \<le> 2 * pi * real n" using n by (intro mult_left_mono) auto
+    finally have "r < \<dots>" .
+  }
+  hence "r \<notin> (\<lambda>n. 2 * pi * real n) ` {0<..}" using r_R by auto
+  from part_circlepath_in_S[OF _ _ this] r_R have "path_image small_circle \<subseteq> S - sngs'"
+    by (auto simp: small_circle_def)
+
+  {
+    fix n :: nat assume n: "n > 0" "2 * pi * real n = real (2 * N + 1) * pi"
+    hence "real (2 * n) = real (2 * N + 1)" unfolding of_nat_mult by simp
+    hence False unfolding of_nat_eq_iff by presburger
+  }
+  hence "R \<notin> (\<lambda>n. 2 * pi * real n) ` {0<..}" unfolding R_def by force
+  from part_circlepath_in_S[OF _ _ this] r_R have "path_image big_circle \<subseteq> S - sngs'"
+    by (auto simp: big_circle_def)
+
+  note path_images =
+    \<open>path_image small_circle \<subseteq> S - sngs'\<close> \<open>path_image big_circle \<subseteq> S - sngs'\<close>
+    \<open>path_image neg_line \<subseteq> S - sngs'\<close> \<open>path_image pos_line \<subseteq> S - sngs'\<close>
+  have "path_image \<gamma> \<subseteq> S - sngs'" using path_images
+    by (auto simp: \<gamma>_altdef path_image_join big_circle_def neg_line_def 
+                   small_circle_def pos_line_def)
+
+  \<comment>\<open>We need to show that the complex plane is still connected after we removed the branch cut
+     and the poles. We do this by showing that the complex plane with the branch cut removed
+     is starlike and therefore connected. Then we remove the (countably many) poles, which does not
+     break connectedness either.\<close>
+  have "open S" using closed_neg_Im_slit by (auto simp: S_def)
+  have "starlike (UNIV - {z. Re z = 0 \<and> Im z \<le> 0})"
+    (is "starlike ?S'") unfolding starlike_def
+  proof (rule bexI ballI)+
+    have "1 \<le> 1 * pi" using pi_gt3 by simp
+    also have "\<dots> < (2 + 2 * real N) * pi" by (intro mult_strict_right_mono) auto
+    finally show *: "\<i> \<in> ?S'" by (auto simp: S_def)
+    fix z assume z: "z \<in> ?S'"
+    have "closed_segment \<i> z \<inter> {z. Re z = 0 \<and> Im z \<le> 0} = {}"
+    proof safe
+      fix s assume s: "s \<in> closed_segment \<i> z" "Re s = 0" "Im s \<le> 0"
+      then obtain t where t: "t \<in> {0..1}" "s = linepath \<i> z t"
+        using linepath_image_01 by blast
+      with z s t have z': "Re z = 0" "Im z > 0"
+        by (auto simp: Re_linepath' S_def linepath_0')
+      with s have "Im s \<in> closed_segment 1 (Im z) \<and> Im s \<le> 0"
+        by (subst (asm) closed_segment_same_Re) auto
+      with z' show "s \<in> {}"
+        by (auto simp: closed_segment_eq_real_ivl split: if_splits)
+    qed
+    thus "closed_segment \<i> z \<subseteq> ?S'" by (auto simp: S_def)
+  qed
+  hence "connected ?S'" by (rule starlike_imp_connected)
+  hence "connected S'" by (simp add: Compl_eq_Diff_UNIV S'_def)
+  have "connected S" unfolding S_def
+    by (rule connected_open_diff_countable)
+       (insert \<open>connected S'\<close>, auto simp: sngs_def closed_neg_Im_slit S'_def)
+
+  \<comment>\<open>The integrand is now clearly holomorphic on @{term "S - sngs'"} and we can apply the
+     Residue Theorem.\<close>
+  have holo: "f s holomorphic_on (S - sngs')"
+    unfolding f_def Ln'_def S_def using sngs
+    by (auto intro!: holomorphic_intros simp: complex_nonpos_Reals_iff)
+  have "contour_integral \<gamma> (f s) =
+          of_real (2 * pi) * \<i> * (\<Sum>z\<in>sngs'. winding_number \<gamma> z * residue (f s) z)"
+  proof (rule Residue_theorem)
+    show "\<forall>z. z \<notin> S \<longrightarrow> winding_number \<gamma> z = 0"
+    proof safe
+      fix z assume "z \<notin> S"
+      hence "Re z = 0 \<and> Im z \<le> 0 \<or> z \<in> sngs - sngs'" by (auto simp: S_def)
+      thus "winding_number \<gamma> z = 0"
+      proof
+        define x where "x = -Im z"
+        assume "Re z = 0 \<and> Im z \<le> 0"
+        hence x: "z = -of_real x * \<i>" "x \<ge> 0" unfolding complex_eq_iff by (simp_all add: x_def)
+        obtain B where "\<And>z. norm z \<ge> B \<Longrightarrow> winding_number \<gamma> z = 0"
+          using winding_number_zero_at_infinity[of \<gamma>] by auto
+        hence "winding_number \<gamma> (-of_real (max B 0) * \<i>) = 0" by (auto simp: norm_mult)
+        also have "winding_number \<gamma> (-of_real (max B 0) * \<i>) = winding_number \<gamma> z"
+        proof (rule winding_number_eq)
+          from x have "closed_segment (-of_real (max B 0) * \<i>) z \<subseteq> {z. Re z = 0 \<and> Im z \<le> 0}"
+            by (auto simp: closed_segment_same_Re closed_segment_eq_real_ivl)
+          with \<open>path_image \<gamma> \<subseteq> S - sngs'\<close>
+          show "closed_segment (-of_real (max B 0) * \<i>) z \<inter> path_image \<gamma> = {}"
+            by (auto simp: S_def)
+        qed auto
+        finally show "winding_number \<gamma> z = 0" .
+      next
+        assume z: "z \<in> sngs - sngs'"
+        show "winding_number \<gamma> z = 0"
+        proof (rule winding_number_zero_outside)
+          have "path_image \<gamma> = path_image big_circle \<union> path_image neg_line \<union>
+                                 path_image small_circle \<union> path_image pos_line"
+            unfolding \<gamma>_altdef small_circle_def big_circle_def pos_line_def neg_line_def
+            by (simp add: path_image_join Un_assoc)
+          also have "\<dots> \<subseteq> cball 0 ((2 * N + 1) * pi)" using r_R
+            by (auto simp: small_circle_def big_circle_def pos_line_def neg_line_def
+                           path_image_join norm_mult R_def path_image_part_circlepath'
+                           in_Reals_norm closed_segment_Reals closed_segment_eq_real_ivl)
+          finally show "path_image \<gamma> \<subseteq> \<dots>" .
+        qed (insert z, auto simp: sngs_def sngs'_def norm_mult)
+      qed
+    qed
+  qed (insert \<open>path_image \<gamma> \<subseteq> S - sngs'\<close> \<open>connected S\<close> \<open>open S\<close> holo, auto simp: sngs'_def)
+
+  \<comment>\<open>We can use Wenda Li's framework to compute the winding numbers at the poles and show that
+     they are all 1.\<close>
+  also have "winding_number \<gamma> z = 1" if "z \<in> sngs'" for z
+  proof -
+    have "r < 2 * pi * 1" using pi_gt3 r_R by simp
+    also have "\<dots> \<le> 2 * pi * real n" if "n > 0" for n using that by (intro mult_left_mono) auto
+    finally have norm_z: "norm z > r" "norm z < R" using that r_R
+      by (auto simp: sngs'_def norm_mult R_def)
+
+    have "cindex_pathE big_circle z = -1" using r_R that unfolding big_circle_def
+      by (subst cindex_pathE_circlepath_upper(1)) (auto simp: sngs'_def norm_mult R_def)
+    have "cindex_pathE small_circle z = -1" using r_R that norm_z unfolding small_circle_def
+      by (subst cindex_pathE_reversepath', subst reversepath_part_circlepath,
+          subst cindex_pathE_circlepath_upper(2)) (auto simp: sngs'_def norm_mult)
+    have "cindex_pathE neg_line z = 0" "cindex_pathE pos_line z = 0" 
+      unfolding neg_line_def pos_line_def using r_R that
+      by (subst cindex_pathE_linepath; force simp: neg_line_def cindex_pathE_linepath
+            closed_segment_Reals closed_segment_eq_real_ivl sngs'_def complex_eq_iff)+
+    note indices = \<open>cindex_pathE big_circle z = -1\<close> \<open>cindex_pathE small_circle z = -1\<close>
+                   \<open>cindex_pathE neg_line z = 0\<close> \<open>cindex_pathE pos_line z = 0\<close>
+    show ?thesis unfolding \<gamma>_altdef big_circle_def small_circle_def pos_line_def neg_line_def
+      by eval_winding (insert indices path_images that,
+                       auto simp: big_circle_def small_circle_def pos_line_def neg_line_def)
+  qed
+  hence "(\<Sum>z\<in>sngs'. winding_number \<gamma> z * residue (f s) z) = (\<Sum>z\<in>sngs'. residue (f s) z)"
+    by simp
+  also have "\<dots> = (\<Sum>k\<in>{0<..N}. residue (f s) (2 * pi * of_nat k * \<i>))"
+    unfolding sngs'_def by (subst sum.reindex) (auto intro!: inj_onI simp: o_def)
+
+  \<comment>\<open>Next, we compute the residues at each pole.\<close>
+  also have "residue (f s) (2 * pi * of_nat k * \<i>) = -exp (- s * of_real pi * \<i> / 2) * Res s k"
+    if "k \<in> {0<..N}" for k unfolding f_def
+  proof (subst residue_simple_pole_deriv)
+    show "open S'" using closed_neg_Im_slit by (auto simp: S'_def)
+    show "connected S'" by fact
+    show "(\<lambda>z. exp (Ln' z * (-s) + of_real a * z)) holomorphic_on S'"
+         "(\<lambda>z. 1 - exp z) holomorphic_on S'"
+      by (auto simp: S'_def Ln'_def complex_nonpos_Reals_iff intro!: holomorphic_intros)
+    have "((\<lambda>z. 1 - exp z) has_field_derivative -exp (2 * pi * k * \<i>))
+            (at (of_real (2 * pi * real k) * \<i>))"
+      by (auto intro!: derivative_eq_intros)
+    also have "-exp (2 * pi * k * \<i>) = -1" by (simp add: exp_eq_polar)
+    finally show "((\<lambda>z. 1 - exp z) has_field_derivative -1)
+                    (at (of_real (2 * pi * real k) * \<i>))" .
+    have "Im (of_real (2 * pi * real k) * \<i>) > 0" using pi_gt_zero that
+      by auto
+    thus "of_real (2 * pi * real k) * \<i> \<in> S'" by (simp add: S'_def)
+
+    have "exp (\<i> * pi / 2) = \<i>" by (simp add: exp_eq_polar)
+    hence "exp (Ln' (complex_of_real (2 * pi * real k) * \<i>) * -s +
+              of_real a * (of_real (2 * pi * real k) * \<i>)) / -1 = 
+            - exp (2 * k * a * pi * \<i> - s * pi * \<i> / 2 - s * ln (2 * k * pi))" (is "?R = _")
+      using that by (subst Ln'_times_of_real) (simp_all add: Ln'_i algebra_simps exp_diff)
+    also have "\<dots> = -exp (- s * of_real pi * \<i> / 2) * Res s k" using that 
+      by (simp add: Res_def exp_diff powr_def exp_minus inverse_eq_divide Ln_Reals_eq mult_ac)
+    finally show "?R = -exp (- s * of_real pi * \<i> / 2) * Res s k" .
+  qed (insert that, auto simp: S'_def exp_eq_polar)
+  hence "(\<Sum>k\<in>{0<..N}. residue (f s) (2 * pi * of_nat k * \<i>)) = 
+           -exp (- s * of_real pi * \<i> / 2) * (\<Sum>k\<in>{0<..N}. Res s k)"
+    by (simp add: sum_distrib_left)
+
+  \<comment>\<open>This gives us the final result:\<close>
+  finally have "contour_integral \<gamma> (f s) =
+                  -2 * pi * \<i> * exp (- s * of_real pi * \<i> / 2) * (\<Sum>k\<in>{0<..N}. Res s k)" by simp
+
+  \<comment>\<open>Lastly, we decompose the contour integral into its four constituent integrals because this
+     makes them somewhat nicer to work with later on.\<close>
+  also show "f s contour_integrable_on \<gamma>"
+  proof (rule contour_integrable_holomorphic_simple)
+    show "path_image \<gamma> \<subseteq> S - sngs'" by fact
+    have "closed sngs'" by (intro finite_imp_closed) (auto simp: sngs'_def)
+    with \<open>open S\<close> show "open (S - sngs')" by auto
+  qed (insert holo, auto)
+  hence eq: "contour_integral \<gamma> (f s) = 
+               contour_integral big_circle (f s) + contour_integral neg_line (f s) +
+               contour_integral small_circle (f s) + contour_integral pos_line (f s)"
+    unfolding \<gamma>_altdef big_circle_def neg_line_def small_circle_def pos_line_def by simp
+  
+  also have "contour_integral neg_line (f s) = integral {-R..-r} (\<lambda>x. f s (complex_of_real x))"
+    unfolding neg_line_def using r_R by (subst contour_integral_linepath_Reals_eq) auto
+  also have "\<dots> = exp (- \<i> * pi * s) * 
+                    integral {r..R} (\<lambda>x. exp (-ln x * s) * exp (-a * x) / (1 - exp (-x)))"
+    (is "_ = _ * ?I") unfolding integral_mult_right [symmetric] using r_R
+    by (subst integral_reflect_real [symmetric], intro integral_cong)
+       (auto simp: f_def exp_of_real Ln'_of_real_neg exp_minus exp_Reals_eq
+                   exp_diff exp_add field_simps)
+  also have "?I = integral {r..R} (\<lambda>x. x powr (-s) * exp (-a * x) / (1 - exp (-x)))" using r_R
+    by (intro integral_cong) (auto simp: powr_def Ln_Reals_eq exp_minus exp_diff field_simps)
+
+  also have "contour_integral pos_line (f s) = integral {r..R} (\<lambda>x. f s (complex_of_real x))"
+    unfolding pos_line_def using r_R by (subst contour_integral_linepath_Reals_eq) auto
+  also have "\<dots> = integral {r..R} (\<lambda>x. x powr (-s) * exp (a * x) / (1 - exp x))"
+    using r_R by (intro integral_cong) (simp add: f_def Ln'_of_real_pos exp_diff exp_minus
+                                                  exp_Reals_eq field_simps powr_def Ln_Reals_eq)
+  finally show ?thesis1 by (simp only: add_ac big_circle_def small_circle_def)
+qed
+
+text \<open>
+  Next, we need bounds on the integrands of the two semicircles.
+\<close>
+lemma hurwitz_formula_bound1:
+  defines "H \<equiv> \<lambda>z. exp (complex_of_real a * z) / (1 - exp z)"
+  assumes "r > 0"
+  obtains C where "C \<ge> 0" and "\<And>z. z \<notin> (\<Union>n::int. ball (2 * n * pi * \<i>) r) \<Longrightarrow> norm (H z) \<le> C"
+proof -
+  define A where "A = cbox (-1 - pi * \<i>) (1 + pi * \<i>) - ball 0 r"
+  {
+    fix z assume "z \<in> A"
+    have "exp z \<noteq> 1"
+    proof
+      assume "exp z = 1"
+      then obtain n :: int where [simp]: "z = 2 * n * pi * \<i>"
+        by (subst (asm) exp_eq_1) (auto simp: complex_eq_iff)
+      from \<open>z \<in> A\<close> have "(2 * n) * pi \<ge> (-1) * pi" and "(2 * n) * pi \<le> 1 * pi"
+        by (auto simp: A_def in_cbox_complex_iff)
+      hence "n = 0" by (subst (asm) (1 2) mult_le_cancel_right) auto
+      with \<open>z \<in> A\<close> and \<open>r > 0\<close> show False by (simp add: A_def)
+    qed
+  }
+  hence "continuous_on A H"
+    by (auto simp: A_def H_def intro!: continuous_intros)
+  moreover have "compact A" by (auto simp: A_def compact_eq_bounded_closed)
+  ultimately have "compact (H ` A)" by (rule compact_continuous_image)
+  hence "bounded (H ` A)" by (rule compact_imp_bounded)
+  then obtain C where bound_inside: "\<And>z. z \<in> A \<Longrightarrow> norm (H z) \<le> C"
+    by (auto simp: bounded_iff)
+
+  have bound_outside: "norm (H z) \<le> exp 1 / (exp 1 - 1)" if "\<bar>Re z\<bar> > 1" for z
+  proof -
+    have "norm (H z) = exp (a * Re z) / norm (1 - exp z)"
+      by (simp add: H_def norm_divide)
+    also have "\<bar>1 - exp (Re z)\<bar> \<le> norm (1 - exp z)"
+      by (rule order.trans[OF _ norm_triangle_ineq3]) simp
+    hence "exp (a * Re z) / norm (1 - exp z) \<le> exp (a * Re z) / \<bar>1 - exp (Re z)\<bar>"
+      using that by (intro divide_left_mono mult_pos_pos) auto
+    also have "\<dots> \<le> exp 1 / (exp 1 - 1)"
+    proof (cases "Re z > 1")
+      case True
+      hence "exp (a * Re z) / \<bar>1 - exp (Re z)\<bar> = exp (a * Re z) / (exp (Re z) - 1)"
+        by simp
+      also have "\<dots> \<le> exp (Re z) / (exp (Re z) - 1)"
+        using a True by (intro divide_right_mono) auto
+      also have "\<dots> = 1 / (1 - exp (-Re z))" by (simp add: exp_minus field_simps)
+      also have "\<dots> \<le> 1 / (1 - exp (-1))" using True by (intro divide_left_mono diff_mono) auto
+      also have "\<dots> = exp 1 / (exp 1 - 1)" by (simp add: exp_minus field_simps)
+      finally show ?thesis .
+    next
+      case False
+      with that have "Re z < -1" by simp
+      hence "exp (a * Re z) / \<bar>1 - exp (Re z)\<bar> = exp (a * Re z) / (1 - exp (Re z))" by simp
+      also have "\<dots> \<le> 1 / (1 - exp (Re z))"
+        using a and \<open>Re z < -1\<close> by (intro divide_right_mono) (auto intro: mult_nonneg_nonpos)
+      also have "\<dots> \<le> 1 / (1 - exp (-1))"
+        using \<open>Re z < -1\<close> by (intro divide_left_mono) auto
+      also have "\<dots> = exp 1 / (exp 1 - 1)" by (simp add: exp_minus field_simps)
+      finally show ?thesis .
+    qed
+    finally show ?thesis .
+  qed
+
+  define D where "D = max C (exp 1 / (exp 1 - 1))"
+  have "D \<ge> 0" by (simp add: D_def max.coboundedI2)
+
+  have "norm (H z) \<le> D" if "z \<notin> (\<Union>n::int. ball (2 * n * pi * \<i>) r)" for z
+  proof (cases "\<bar>Re z\<bar> \<le> 1")
+    case False
+    with bound_outside[of z] show ?thesis by (simp add: D_def)
+  next
+    case True
+    define n where "n = \<lfloor>Im z / (2 * pi) + 1 / 2\<rfloor>"
+
+    have "Im (z - 2 * n * pi * \<i>) = frac (Im z / (2 * pi) + 1 / 2) * (2 * pi) - pi"
+      by (simp add: n_def frac_def algebra_simps)
+    also have "\<dots> \<in> {-pi..<pi}" using frac_lt_1 by simp
+    finally have "norm (H (z - 2 * n * pi * \<i>)) \<le> C" using True that
+      by (intro bound_inside) (auto simp: A_def in_cbox_complex_iff dist_norm n_def)
+    also have "exp (2 * pi * n * \<i>) = 1" by (simp add: exp_eq_polar)
+    hence "norm (H (z - 2 * n * pi * \<i>)) = norm (H z)"
+      by (simp add: H_def norm_divide exp_diff mult_ac)
+    also have "C \<le> D" by (simp add: D_def)
+    finally show ?thesis .
+  qed
+  from \<open>D \<ge> 0\<close> and this show ?thesis by (rule that)
+qed
+
+lemma hurwitz_formula_bound2:
+  obtains C where "C \<ge> 0" and "\<And>r z. r > 0 \<Longrightarrow> r < pi \<Longrightarrow> z \<in> sphere 0 r \<Longrightarrow>
+     norm (f s z) \<le> C * r powr (-Re s - 1)"
+proof -
+  have "2 * pi > 0" by auto
+  have nz: "1 - exp z \<noteq> 0" if "z \<in> ball 0 (2 * pi) - {0}" for z :: complex
+  proof
+    assume "1 - exp z = 0"
+    then obtain n where "z = 2 * pi * of_int n * \<i>"
+      by (auto simp: exp_eq_1 complex_eq_iff[of z])
+    moreover have "\<bar>real_of_int n\<bar> < 1 \<longleftrightarrow> n = 0" by linarith
+    ultimately show False using that by (auto simp: norm_mult)
+  qed
+
+  have ev: "eventually (\<lambda>z::complex. 1 - exp z \<noteq> 0) (at 0)"
+    using eventually_at_ball'[OF \<open>2 * pi > 0\<close>] by eventually_elim (use nz in auto)
+  have [simp]: "subdegree (1 - fps_exp (1 :: complex)) = 1"
+    by (intro subdegreeI) auto
+  hence "(\<lambda>z. exp (a * z) * (if z = 0 then -1 else z / (1 - exp z :: complex)))
+            has_fps_expansion fps_exp a * (fps_X / (fps_const 1 - fps_exp 1))"
+    by (auto intro!: fps_expansion_intros)
+  hence "(\<lambda>z::complex. exp (a * z) * (if z = 0 then -1 else z / (1 - exp z))) \<in> O[at 0](\<lambda>z. 1)"
+    using continuous_imp_bigo_1 has_fps_expansion_imp_continuous by blast
+  also have "?this \<longleftrightarrow> (\<lambda>z::complex. exp (a * z) * (z / (1 - exp z))) \<in> O[at 0](\<lambda>z. 1)"
+    by (intro landau_o.big.in_cong eventually_mono[OF ev]) auto
+  finally have "\<exists>g. g holomorphic_on ball 0 (2 * pi) \<and>
+                    (\<forall>z\<in>ball 0 (2 * pi) - {0}. g z = exp (of_real a * z) * (z / (1 - exp z)))" 
+    using nz by (intro holomorphic_on_extend holomorphic_intros) auto
+  then guess g by (elim exE conjE) note g = this
+  hence "continuous_on (ball 0 (2 * pi)) g"
+    by (auto dest: holomorphic_on_imp_continuous_on)
+  hence "continuous_on (cball 0 pi) g"
+    by (rule continuous_on_subset) (subst cball_subset_ball_iff, use pi_gt_zero in auto)
+  hence "compact (g ` cball 0 pi)" by (intro compact_continuous_image) auto
+  hence "bounded (g ` cball 0 pi)" by (auto simp: compact_imp_bounded)
+  then obtain C where C: "\<forall>x\<in>cball 0 pi. norm (g x) \<le> C" by (auto simp: bounded_iff)
+
+  {
+    fix r :: real assume r: "r > 0" "r < pi"
+    fix z :: complex assume z: "z \<in> sphere 0 r"
+    define x where "x = (if Arg z \<le> -pi / 2 then Arg z + 2 * pi else Arg z)"
+    have "exp (\<i> * (2 * pi)) = 1" by (simp add: exp_eq_polar)
+    with z have "z = r * exp (\<i> * x)" using r pi_gt_zero Arg_eq[of z]
+      by (auto simp: x_def exp_add distrib_left)
+    have "x > - pi / 2" "x \<le> 3 / 2 * pi" using Arg_le_pi[of z] mpi_less_Arg[of z]
+      by (auto simp: x_def)
+    note x = \<open>z = r * exp (\<i> * x)\<close> this
+
+    from x r have z': "z \<in> cball 0 pi - {0}"
+      using pi_gt3 by (auto simp: norm_mult)
+    also have "cball 0 pi \<subseteq> ball (0::complex) (2 * pi)"
+      by (subst cball_subset_ball_iff) (use pi_gt_zero in auto)
+    hence "cball 0 pi - {0} \<subseteq> ball 0 (2 * pi) - {0::complex}" by blast
+    finally have z'': "z \<in> ball 0 (2 * pi) - {0}" .
+    hence bound: "norm (exp (a * z) * (z / (1 - exp z))) \<le> C" using C and g and z'
+      by force
+
+    have "exp z \<noteq> 1" using nz z'' by auto
+    with bound z'' have bound': "norm (exp (a * z) / (1 - exp z)) \<le> C / norm z"
+      by (simp add: norm_divide field_simps norm_mult)
+
+    have "Ln' z = of_real (ln r) + Ln' (exp (\<i> * of_real x))"
+      using x r by (simp add: Ln'_times_of_real)
+    also have "exp (\<i> * pi / 2) = \<i>"
+      by (simp add: exp_eq_polar)
+    hence "Ln' (exp (\<i> * of_real x)) = Ln (exp (\<i> * of_real (x - pi / 2))) + \<i> * pi / 2"
+      by (simp add: algebra_simps Ln'_def exp_diff)
+    also have "\<dots> = \<i> * x"
+      using x pi_gt3 by (subst Ln_exp) (auto simp: algebra_simps)
+    finally have "norm (exp (-Ln' z * s)) = exp (x * Im s - ln r * Re s)"
+      by simp
+    also {
+      have "x * Im s \<le> \<bar>x * Im s\<bar>" by (rule abs_ge_self)
+      also have "\<dots> \<le> (3/2 * pi) * \<bar>Im s\<bar>" unfolding abs_mult using x
+        by (intro mult_right_mono) auto
+      finally have "exp (x * Im s - ln r * Re s) \<le> exp (3 / 2 * pi * \<bar>Im s\<bar> - ln r * Re s)" by simp
+    }
+    finally have "norm (exp (-Ln' z * s) * (exp (a * z) / (1 - exp z))) \<le>
+                    exp (3 / 2 * pi * \<bar>Im s\<bar> - ln r * Re s) * (C / norm z)"
+      unfolding norm_mult[of "exp t" for t] by (intro mult_mono bound') simp_all
+    also have "norm z = r" using \<open>r > 0\<close> by (simp add: x norm_mult)
+    also have "exp (3 / 2 * pi * \<bar>Im s\<bar> - ln r * Re s) = exp (3 / 2 * pi * \<bar>Im s\<bar>) * r powr (-Re s)"
+      using r by (simp add: exp_diff powr_def exp_minus inverse_eq_divide)
+    finally have "norm (f s z) \<le> C * exp (3 / 2 * pi * \<bar>Im s\<bar>) * r powr (-Re s - 1)" using r
+      by (simp add: f_def exp_diff exp_minus field_simps powr_diff)
+    also have "\<dots> \<le> max 0 (C * exp (3 / 2 * pi * \<bar>Im s\<bar>)) * r powr (-Re s - 1)"
+      by (intro mult_right_mono max.coboundedI2) auto
+    finally have "norm (f s z) \<le> \<dots>" .
+  }
+  with that[of "max 0 (C * exp (3 / 2 * pi * \<bar>Im s\<bar>))"] show ?thesis by auto
+qed
+
+text \<open>
+  We can now relate the integral along a partial Hankel contour that is cut off at $-\pi$ to
+  $\zeta(1 - s, a) / \Gamma(s)$.
+\<close>
+lemma rGamma_hurwitz_zeta_eq_contour_integral:
+  fixes s :: complex and r :: real
+  assumes "s \<noteq> 0" and r: "r \<in> {1..<2}" and a: "a > 0"
+  defines "err1 \<equiv> (\<lambda>s r. contour_integral (part_circlepath 0 r pi 0) (f s))"
+  defines "err2 \<equiv> (\<lambda>s r. cnj (contour_integral (part_circlepath 0 r pi 0) (f (cnj s))))"
+  shows   "2 * \<i> * pi * rGamma s * hurwitz_zeta a (1 - s) =
+             err2 s r - err1 s r + 2 * \<i> * sin (pi * s) * (CLBINT x:{r..}. g s x)"
+  (is "?f s = ?g s")
+proof (rule analytic_continuation_open[where f = ?f])
+  fix s :: complex assume s: "s \<in> {s. Re s < 0}"
+
+  \<comment>\<open>We first show that the integrals along the Hankel contour cut off at $-\pi$ all have the
+     same value, no matter what the radius of the circle is (as long as it is small enough).
+     We call this value \<open>C\<close>.
+
+     This argument could be done by a homotopy argument, but it is easier to simply re-use the
+     above result about the contour integral along the annulus where we fix the radius of the 
+     outer circle to $\pi$.\<close>
+  define C where "C = -contour_integral (part_circlepath 0 pi 0 pi) (f s) +
+                       cnj (contour_integral (part_circlepath 0 pi 0 pi) (f (cnj s)))"
+  have integrable: "set_integrable lborel A (g s)"
+    if "A \<in> sets lborel" "A \<subseteq> {0<..}" for A
+  proof (rule set_integrable_subset)
+    show "set_integrable lborel {0<..} (g s)"
+      using Gamma_times_hurwitz_zeta_integrable[of "1 - s" a] s a
+      by (simp add: g_def exp_of_real exp_minus integrable_completion set_integrable_def)
+  qed (insert that, auto)
+
+  {
+    fix r' :: real assume r': "r' \<in> {0<..<2}"
+    from hurwitz_formula_integral_semiannulus(2)[of r' s 0] and r'
+    have "f s contour_integrable_on part_circlepath 0 r' pi 0"
+      by (auto simp: hankel_semiannulus_def add_ac)
+  } note integrable_circle = this
+  {
+    fix r' :: real assume r': "r' \<in> {0<..<2}"
+    from hurwitz_formula_integral_semiannulus(2)[of r' "cnj s" 0] and r'
+    have "f (cnj s) contour_integrable_on part_circlepath 0 r' pi 0"
+      by (auto simp: hankel_semiannulus_def add_ac)
+  } note integrable_circle' = this
+
+  have eq: "-2 * \<i> * sin (pi * s) * (CLBINT x:{r..pi}. g s x) + (err1 s r - err2 s r) = C"
+    if r: "r \<in> {0<..<2}" for r :: real
+  proof -
+    have eq1: "integral {r..pi} (\<lambda>x. cnj (x powr - cnj s) * (exp (- (a * x))) / (1 - (exp (- x)))) =
+               integral {r..pi} (g s)" using r
+      by (intro integral_cong) (auto simp: cnj_powr g_def exp_of_real exp_minus)
+    have eq2: "integral {r..pi} (\<lambda>x. cnj (x powr - cnj s) * (exp (a * x)) / (1 - (exp x))) =
+               integral {r..pi} (\<lambda>x. x powr - s * (exp (a * x)) / (1 - (exp x)))" using r
+      by (intro integral_cong) (auto simp: cnj_powr)
+  
+    from hurwitz_formula_integral_semiannulus(1)[of r s 0] hurwitz_formula_integral_semiannulus(1)[of r "cnj s" 0]
+    have "exp (-\<i>*pi * s) *
+            integral {r..real (2*0+1) * pi} (g s) +
+            integral {r..real (2*0+1) * pi} (\<lambda>x. x powr -s * exp (a * x) / (1 - exp x)) +
+            contour_integral (part_circlepath 0 (real (2 * 0 + 1) * pi) 0 pi) (f s) +
+            contour_integral (part_circlepath 0 r pi 0) (f s) - cnj (
+          exp (-\<i>*pi * cnj s) *
+            integral {r..real (2*0+1) * pi} (\<lambda>x. x powr - cnj s * exp (-a*x) / (1 - exp (-x))) +
+            integral {r..real (2*0+1) * pi} (\<lambda>x. x powr - cnj s * exp (a*x) / (1 - exp x)) +
+            contour_integral (part_circlepath 0 (real (2 * 0 + 1) * pi) 0 pi) (f (cnj s)) +
+            contour_integral (part_circlepath 0 r pi 0) (f (cnj s))) = 0" (is "?lhs = _") 
+      unfolding g_def using r by (subst (1 2) hurwitz_formula_integral_semiannulus) auto
+    also have "?lhs = -2 * \<i> * sin (pi * s) * integral {r..pi} (g s) + err1 s r - err2 s r - C"
+      using eq1 eq2
+      by (auto simp: integral_cnj exp_cnj err1_def err2_def sin_exp_eq algebra_simps C_def)
+    also have "integral {r..pi} (g s) = (CLBINT x:{r..pi}. g s x)" using r
+      by (intro set_borel_integral_eq_integral(2) [symmetric] integrable) auto
+    finally show "-2 * \<i> * sin (pi * s) * (CLBINT x:{r..pi}. g s x) + (err1 s r - err2 s r) = C"
+      by (simp add: algebra_simps)
+  qed
+
+  \<comment>\<open>Next, compute the value of @{term C} by letting the radius tend to 0 so that the contribution
+     of the circle vanishes.\<close>
+  have "((\<lambda>r. -2 * \<i> * sin (pi * s) * (CLBINT x:{r..pi}. g s x)  + (err1 s r - err2 s r)) \<longlongrightarrow>
+             -2 * \<i> * sin (pi * s) * (CLBINT x:{0<..pi}. g s x) + 0) (at_right 0)"
+  proof (intro tendsto_intros tendsto_set_lebesgue_integral_at_right integrable)
+    from hurwitz_formula_bound2[of s] guess C1 . note C1 = this
+    from hurwitz_formula_bound2[of "cnj s"] guess C2 . note C2 = this
+    have ev: "eventually (\<lambda>r::real. r \<in> {0<..<2}) (at_right 0)"
+      by (intro eventually_at_right_real) auto
+    show "((\<lambda>r. err1 s r - err2 s r) \<longlongrightarrow> 0) (at_right 0)"
+    proof (rule Lim_null_comparison[OF eventually_mono[OF ev]])
+      fix r :: real assume r: "r \<in> {0<..<2}"
+      have "norm (err1 s r - err2 s r) \<le> norm (err1 s r) + norm (err2 s r)"
+        by (rule norm_triangle_ineq4)
+      also have "norm (err1 s r) \<le> C1 * r powr (- Re s - 1) * r * \<bar>0 - pi\<bar>"
+        unfolding err1_def using C1(1) C1(2)[of r] pi_gt3 integrable_circle[of r]
+          path_image_part_circlepath_subset'[of r 0 pi 0] r
+        by (intro contour_integral_bound_part_circlepath) auto
+      also have "\<dots> = C1 * r powr (-Re s) * pi" using r
+        by (simp add: powr_diff field_simps)
+      also have "norm (err2 s r) \<le> C2 * r powr (- Re s - 1) * r * \<bar>0 - pi\<bar>"
+        unfolding err2_def complex_mod_cnj using C2(1) C2(2)[of r] r
+          pi_gt3 integrable_circle'[of r] path_image_part_circlepath_subset'[of r 0 pi 0]
+        by (intro contour_integral_bound_part_circlepath) auto
+      also have "\<dots> = C2 * r powr (-Re s) * pi" using r
+        by (simp add: powr_diff field_simps)
+      also have "C1 * r powr (-Re s) * pi + C2 * r powr (-Re s) * pi =
+                   (C1 + C2) * pi * r powr (-Re s)" by (simp add: algebra_simps)
+      finally show "norm (err1 s r - err2 s r) \<le> (C1 + C2) * pi * r powr - Re s" by simp
+    next
+      show "((\<lambda>x. (C1 + C2) * pi * x powr - Re s) \<longlongrightarrow> 0) (at_right 0)" using s
+        by (auto intro!: tendsto_eq_intros simp: eventually_at exI[of _ 1])
+    qed
+  qed auto
+  moreover have "eventually (\<lambda>r::real. r \<in> {0<..<2}) (at_right 0)"
+    by (intro eventually_at_right_real) auto
+  hence "eventually (\<lambda>r. -2 * \<i> * sin (pi * s) * (CLBINT x:{r..pi}. g s x) +
+           (err1 s r - err2 s r) = C) (at_right 0)" by eventually_elim (use eq in auto)
+  hence "((\<lambda>r. -2 * \<i> * sin (pi * s) * (CLBINT x:{r..pi}. g s x)  + (err1 s r - err2 s r)) \<longlongrightarrow> C)
+            (at_right 0)" by (rule Lim_eventually)
+  ultimately have [simp]: "C = -2 * \<i> * sin (pi * s) * (CLBINT x:{0<..pi}. g s x)"
+    using tendsto_unique by force
+
+  \<comment>\<open>We now rearrange everything and obtain the result.\<close>
+  have "2 * \<i> * sin (pi * s) * ((CLBINT x:{0<..pi}. g s x) - (CLBINT x:{r..pi}. g s x)) =
+          err2 s r - err1 s r"
+    using eq[of r] r by (simp add: algebra_simps)
+  also have "{0<..pi} = {0<..<r} \<union> {r..pi}" using r pi_gt3 by auto
+  also have "(CLBINT x:\<dots>. g s x) - (CLBINT x:{r..pi}. g s x) = (CLBINT x:{0<..<r}. g s x)"
+    using r pi_gt3 by (subst set_integral_Un[OF _ integrable integrable]) auto
+  also have "(CLBINT x:{0<..<r}. g s x) =
+               (CLBINT x:{0<..<r} \<union> {r..}. g s x) - (CLBINT x:{r..}. g s x)"
+    using r pi_gt3 by (subst set_integral_Un[OF _ integrable integrable]) auto
+  also have "{0<..<r} \<union> {r..} = {0<..}" using r by auto
+  also have "(CLBINT x:{0<..}. g s x) = Gamma (1 - s) * hurwitz_zeta a (1 - s)"
+    using Gamma_times_hurwitz_zeta_integral[of "1 - s" a] s a
+    by (simp add: g_def exp_of_real exp_minus integral_completion set_lebesgue_integral_def)
+  finally have "2 * \<i> * (sin (pi * s) * Gamma (1 - s)) * hurwitz_zeta a (1 - s) =
+                  err2 s r - err1 s r + 2 * \<i> * sin (pi * s) * (CLBINT x:{r..}. g s x)"
+    by (simp add: algebra_simps)
+  also have "sin (pi * s) * Gamma (1 - s) = pi * rGamma s"
+  proof (cases "s \<in> \<int>")
+    case False
+    with Gamma_reflection_complex[of s] show ?thesis
+      by (auto simp: divide_simps sin_eq_0 Ints_def rGamma_inverse_Gamma mult_ac split: if_splits)
+  next
+    case True
+    with s have "rGamma s = 0"
+      by (auto simp: rGamma_eq_zero_iff nonpos_Ints_def Ints_def)
+    moreover from True have "sin (pi * s) = 0"
+      by (subst sin_eq_0) (auto elim!: Ints_cases)
+    ultimately show ?thesis by simp
+  qed
+  finally show "2 * \<i> * pi * rGamma s * hurwitz_zeta a (1 - s) =
+                  err2 s r - err1 s r + 2 * \<i> * sin (pi * s) * (CLBINT x:{r..}. g s x)"
+    by (simp add: mult_ac)
+next
+  \<comment>\<open>By analytic continuation, we lift the result to the case of any non-zero @{term s}.\<close>
+  show "(\<lambda>s. 2 * \<i> * pi * rGamma s * hurwitz_zeta a (1 - s)) holomorphic_on - {0}" using a
+    by (auto intro!: holomorphic_intros)
+  show "(\<lambda>s. err2 s r - err1 s r + 2 * \<i> * sin (pi * s) * (CLBINT x:{r..}. g s x))
+           holomorphic_on -{0}"
+  proof (intro holomorphic_intros)
+    have "(\<lambda>s. err2 s r) = (\<lambda>s. - cnj (integral {0..pi} (h r (cnj s))))" using r
+      by (simp add: err2_def contour_integral_part_circlepath_reverse'
+                    contour_integral_part_circlepath_h)
+    also have "(\<lambda>s. - cnj (integral {0..pi} (h r (cnj s)))) = 
+               (\<lambda>s. (integral {0..pi} (\<lambda>x. h r s (-x))))" using r
+      by (simp add: integral_cnj h_def exp_cnj cis_cnj Ln_Reals_eq)
+    also have "\<dots> = (\<lambda>s. integral {-pi..0} (h r s))"
+      by (subst integral_reflect_real [symmetric]) simp
+    finally have "(\<lambda>s. err2 s r) = \<dots>" .
+    moreover have "(\<lambda>s. integral {-pi..0} (h r s)) holomorphic_on -{0}"
+      using r by (intro integral_h_holomorphic) auto
+    ultimately show "(\<lambda>s. err2 s r) holomorphic_on -{0}" by simp
+  next
+    have "(\<lambda>s. - integral {0..pi} (h r s)) holomorphic_on -{0}" using r
+      by (intro holomorphic_intros integral_h_holomorphic) auto
+    also have "(\<lambda>s. - integral {0..pi} (h r s)) = (\<lambda>s. err1 s r)"
+      unfolding err1_def using r
+      by (simp add: contour_integral_part_circlepath_reverse' contour_integral_part_circlepath_h)
+    finally show "(\<lambda>s. err1 s r) holomorphic_on -{0}" .
+  next
+    show "(\<lambda>s. CLBINT x:{r..}. g s x) holomorphic_on -{0}"
+    proof (rule holomorphic_on_balls_imp_entire')
+      fix R :: real
+      have "eventually (\<lambda>b. b > r) at_top" by (rule eventually_gt_at_top)
+      hence 1: "eventually (\<lambda>b. continuous_on (cball 0 R) (\<lambda>s. CLBINT x:{r..b}. g s x) \<and>
+                                (\<lambda>s. CLBINT x:{r..b}. g s x) holomorphic_on ball 0 R) at_top"
+      proof eventually_elim
+        case (elim b)
+        have integrable: "set_integrable lborel {r..b} (g s)" for s unfolding g_def using r
+              by (intro borel_integrable_atLeastAtMost' continuous_intros) auto
+        have "(\<lambda>s. integral {r..b} (g s)) holomorphic_on UNIV" using r
+          by (intro integral_g_holomorphic) auto
+        also have "(\<lambda>s. integral {r..b} (g s)) = (\<lambda>s. CLBINT x:{r..b}. g s x)"
+          by (intro ext set_borel_integral_eq_integral(2)[symmetric] integrable)
+        finally have "\<dots> holomorphic_on UNIV" .
+        thus ?case by (auto intro!: holomorphic_on_imp_continuous_on)
+      qed
+
+      have 2: "uniform_limit (cball 0 R) (\<lambda>b s. CLBINT x:{r..b}. g s x)
+                 (\<lambda>s. CLBINT x:{r..}. g s x) at_top"
+      proof (rule uniform_limit_set_lebesgue_integral_at_top)
+        fix s :: complex and x :: real
+        assume s: "s \<in> cball 0 R" and x: "x \<ge> r"
+        have "norm (g s x) = x powr -Re s * exp (-a * x) / (1 - exp (-x))" using x r
+          by (simp add: g_def norm_mult norm_divide in_Reals_norm norm_powr_real_powr)
+        also have "\<dots> \<le> x powr R * exp (-a * x) / (1 - exp (-x))" using r s x abs_Re_le_cmod[of s]
+          by (intro mult_right_mono divide_right_mono powr_mono) auto
+        finally show "norm (g s x) \<le> x powr R * exp (- a * x) / (1 - exp (- x))" .
+      next
+        show "set_integrable lborel {r..} (\<lambda>x. x powr R * exp (-a * x) / (1 - exp (-x)))"
+          using r a by (intro set_integrable_Gamma_hurwitz_aux2_real) auto
+      qed (simp_all add: set_borel_measurable_def g_def)
+  
+      show "(\<lambda>s. CLBINT x:{r..}. g s x) holomorphic_on ball 0 R"
+        using holomorphic_uniform_limit[OF 1 2] by auto
+    qed
+  qed
+qed (insert \<open>s \<noteq> 0\<close>, 
+     auto simp: connected_punctured_universe open_halfspace_Re_lt intro: exI[of _ "-1"])
+    
+text \<open>
+  Finally, we obtain Hurwitz's formula by letting the radius of the outer circle tend to \<open>\<infinity>\<close>.
+\<close>
+lemma hurwitz_zeta_formula_aux:
+  fixes s :: complex
+  assumes s: "Re s > 1"
+  shows   "rGamma s * hurwitz_zeta a (1 - s) = (2 * pi) powr -s * 
+                  (\<i> powr (-s) * F a s + \<i> powr s * F (-a) s)"
+proof -
+  from s have [simp]: "s \<noteq> 0" by auto
+  define r where "r = (1 :: real)"
+  have r: "r \<in> {0<..<2}" by (simp add: r_def)
+  define R where "R = (\<lambda>n. real (2 * n + 1) * pi)"
+  define bigc where "bigc = (\<lambda>n. contour_integral (part_circlepath 0 (R n) 0 pi) (f s) -
+                                 cnj (contour_integral (part_circlepath 0 (R n) 0 pi) (f (cnj s))))"
+  define smallc where "smallc = contour_integral (part_circlepath 0 r pi 0) (f s) - 
+                                cnj (contour_integral (part_circlepath 0 r pi 0) (f (cnj s)))"
+  define I where "I = (\<lambda>n. CLBINT x:{r..R n}. g s x)"
+
+  define F1 and F2 where
+    "F1 = (\<lambda>n. exp (-s * pi * \<i> / 2) * (\<Sum>k\<in>{0<..n}. exp (2 * real k * pi * a * \<i>) * k powr (-s)))"
+    "F2 = (\<lambda>n. exp (s * pi * \<i> / 2) * (\<Sum>k\<in>{0<..n}. exp (2 * real k * pi * (-a) * \<i>) * k powr (-s)))"
+  
+  have R: "R n \<ge> pi" for n using r by (auto simp: R_def field_simps)
+  have [simp]: "\<not>(pi \<le> 0)" using pi_gt_zero by linarith
+
+  have integrable: "set_integrable lborel A (g s)"
+    if "A \<in> sets lborel" "A \<subseteq> {r..}" for A
+  proof -
+    have "set_integrable lborel {r..} (g s)"
+      using set_integrable_Gamma_hurwitz_aux2[of r a s] a r
+      by (simp add: g_def exp_of_real exp_minus)
+    thus ?thesis by (rule set_integrable_subset) (use that in auto)
+  qed
+
+  {
+    fix n :: nat
+    from hurwitz_formula_integral_semiannulus(2)[of "r" s n] and r R[of n]
+    have "f s contour_integrable_on part_circlepath 0 (R n) 0 pi"
+      by (auto simp: hankel_semiannulus_def R_def add_ac)
+  } note integrable_circle = this
+  {
+    fix n :: nat
+    from hurwitz_formula_integral_semiannulus(2)[of "r" "cnj s" n] and r R[of n]
+    have "f (cnj s) contour_integrable_on part_circlepath 0 (R n) 0 pi"
+      by (auto simp: hankel_semiannulus_def R_def add_ac)
+  } note integrable_circle' = this
+
+  {
+    fix n :: nat
+    have "(exp (-\<i> * pi * s) * integral {r..R n} (g s) +
+            integral {r..R n} (\<lambda>x. x powr (-s) * exp (a * x) / (1 - exp x)) +
+            contour_integral (part_circlepath 0 (R n) 0 pi) (f s) +
+            contour_integral (part_circlepath 0 r pi 0) (f s)) - cnj (
+           exp (-\<i> * pi * cnj s) * integral {r..R n} (g (cnj s)) +
+            integral {r..R n} (\<lambda>x. x powr (-cnj s) * exp (a * x) / (1 - exp x)) +
+            contour_integral (part_circlepath 0 (R n) 0 pi) (f (cnj s)) +
+            contour_integral (part_circlepath 0 r pi 0) (f (cnj s)))
+           = -2 * pi * \<i> * exp (- s * of_real pi * \<i> / 2) * (\<Sum>k\<in>{0<..n}. Res s k) -
+             cnj (-2 * pi * \<i> * exp (- cnj s * of_real pi * \<i> / 2) * (\<Sum>k\<in>{0<..n}. Res (cnj s) k))"
+      (is "?lhs = ?rhs") unfolding R_def g_def using r
+      by (subst (1 2) hurwitz_formula_integral_semiannulus) auto
+    also have "?rhs = -2 * pi * \<i> * (exp (- s * pi * \<i> / 2) * (\<Sum>k\<in>{0<..n}. Res s k) +
+                                     exp (s * pi * \<i> / 2) * (\<Sum>k\<in>{0<..n}. cnj (Res (cnj s) k)))"
+      by (simp add: exp_cnj sum.distrib algebra_simps sum_distrib_left sum_distrib_right sum_negf)
+    also have "(\<Sum>k\<in>{0<..n}. Res s k) = 
+                 (2 * pi) powr (-s) * (\<Sum>k\<in>{0<..n}. exp (2 * k * pi * a * \<i>) * k powr (-s))"
+      (is "_ = ?S1") by (simp add: Res_def powr_times_real algebra_simps sum_distrib_left)
+    also have "(\<Sum>k\<in>{0<..n}. cnj (Res (cnj s) k)) =
+                 (2 * pi) powr (-s) * (\<Sum>k\<in>{0<..n}. exp (-2 * k * pi * a * \<i>) * k powr (-s))"
+      by (simp add: Res_def cnj_powr powr_times_real algebra_simps exp_cnj sum_distrib_left)
+    also have "exp (-s * pi * \<i> / 2) * ?S1 + exp (s * pi * \<i> / 2) * \<dots> =
+                 (2 * pi) powr (-s) *
+                   (exp (-s * pi * \<i> / 2) * (\<Sum>k\<in>{0<..n}. exp (2 * k * pi * a * \<i>) * k powr (-s)) +
+                    exp (s * pi * \<i> / 2) * (\<Sum>k\<in>{0<..n}. exp (-2 * k * pi * a * \<i>) * k powr (-s)))"
+      by (simp add: algebra_simps)
+    also have 1: "integral {r..R n} (g s) = I n" unfolding I_def
+      by (intro set_borel_integral_eq_integral(2) [symmetric] integrable) auto
+    have 2: "cnj (integral {r..R n} (g (cnj s))) = integral {r..R n} (g s)" using r
+      unfolding integral_cnj by (intro integral_cong) (auto simp: g_def cnj_powr)
+    have 3: "integral {r..R n} (\<lambda>x. exp (x * a) * cnj (x powr - cnj s) / (1 - exp x)) =
+             integral {r..R n} (\<lambda>x. exp (x * a) * of_real x powr - s / (1 - exp x))"
+      unfolding I_def g_def using r R[of n] by (intro integral_cong; force simp: cnj_powr)+
+    from 1 2 3 have "?lhs = (exp (-\<i> * s * pi) - exp (\<i> * s * pi)) * I n + bigc n + smallc"
+      by (simp add: integral_cnj cnj_powr algebra_simps exp_cnj
+                    bigc_def smallc_def g_def)
+    also have "exp (-\<i> * s * pi) - exp (\<i> * s * pi) = -2 * \<i> * sin (s * pi)"
+      by (simp add: sin_exp_eq' algebra_simps)
+    finally have "(- 2 * \<i> * sin (s * pi) * I n + smallc) + bigc n = 
+                    -2 * \<i> * pi * (2 * pi) powr (-s) * (F1 n + F2 n)"
+      by (simp add: F1_F2_def algebra_simps)
+  } note eq = this
+
+  
+  have "(\<lambda>n. - 2 * \<i> * sin (s * pi) * I n + smallc + bigc n) \<longlonglongrightarrow>
+           (-2 * \<i> * sin (s * pi)) * (CLBINT x:{r..}. g s x) + smallc + 0"
+    unfolding I_def
+  proof (intro tendsto_intros filterlim_compose[OF tendsto_set_lebesgue_integral_at_top] integrable)
+    show "filterlim R at_top sequentially" unfolding R_def
+      by (intro filterlim_at_top_mult_tendsto_pos[OF tendsto_const] pi_gt_zero
+                filterlim_compose[OF filterlim_real_sequentially] filterlim_subseq) 
+         (auto simp: strict_mono_Suc_iff)
+
+    from hurwitz_formula_bound1[OF pi_gt_zero] guess C . note C = this
+    define D where "D = C * exp (3 / 2 * pi * \<bar>Im s\<bar>)"
+    from \<open>C \<ge> 0\<close> have "D \<ge> 0" by (simp add: D_def)
+    show "bigc \<longlonglongrightarrow> 0"
+    proof (rule Lim_null_comparison[OF always_eventually[OF allI]])
+      fix n :: nat
+      have bound: "norm (f s' z) \<le> D * R n powr (-Re s')"
+        if z: "z \<in> sphere 0 (R n)" "Re s' = Re s" "\<bar>Im s'\<bar> = \<bar>Im s\<bar>" for z s'
+      proof -
+        from z and r R[of n] have [simp]: "z \<noteq> 0" by auto
+        have not_in_ball: "z \<notin> ball (2 * m * pi * \<i>) pi" for m :: int
+        proof -
+          have "dist z (2 * m * pi * \<i>) \<ge> \<bar>dist z 0 - dist 0 (2 * m * pi * \<i>)\<bar>"
+            by (rule abs_dist_diff_le)
+          also have "dist 0 (2 * m * pi * \<i>) = 2 * \<bar>m\<bar> * pi"
+            by (simp add: norm_mult)
+          also from z have "dist z 0 = R n" by simp
+          also have "R n - 2 * \<bar>m\<bar> * pi = (int (2 * n + 1) - 2 * \<bar>m\<bar>) * pi"
+            by (simp add: R_def algebra_simps)
+          also have "\<bar>\<dots>\<bar> = \<bar>int (2 * n + 1) - 2 * \<bar>m\<bar>\<bar> * pi"
+            by (subst abs_mult) simp_all
+          also have "\<bar>int (2 * n + 1) - 2 * \<bar>m\<bar>\<bar> \<ge> 1" by presburger
+          hence "\<dots> * pi \<ge> 1 * pi" by (intro mult_right_mono) auto
+          finally show ?thesis by (simp add: dist_commute)
+        qed
+
+        have "norm (f s' z) = norm (exp (-Ln' z * s')) * norm (exp (a * z) / (1 - exp z))"
+          by (simp add: f_def exp_diff norm_mult norm_divide mult_ac exp_minus norm_inverse
+                        divide_simps del: norm_exp_eq_Re)
+        also have "\<dots> \<le> norm (exp (-Ln' z * s')) * C" using not_in_ball
+          by (intro mult_left_mono C) auto
+        also have "norm (exp (-Ln' z * s')) = 
+                     exp (Im s' * (Im (Ln (- (\<i> * z))) + pi / 2)) / exp (Re s' * ln (R n))"
+          using z r R[of n] pi_gt_zero
+          by (simp add: Ln'_def norm_mult norm_divide exp_add exp_diff exp_minus
+                        norm_inverse algebra_simps inverse_eq_divide)
+        also have "\<dots> \<le> exp (3/2 * pi * \<bar>Im s'\<bar>) / exp (Re s' * ln (R n))"
+        proof (intro divide_right_mono, subst exp_le_cancel_iff)
+          have "Im s' * (Im (Ln (- (\<i> * z))) + pi / 2) \<le> \<bar>Im s' * (Im (Ln (- (\<i> * z))) + pi / 2)\<bar>"
+            by (rule abs_ge_self)
+          also have "\<dots> \<le> \<bar>Im s'\<bar> * (pi + pi / 2)"
+            unfolding abs_mult using mpi_less_Im_Ln[of "- (\<i> * z)"] Im_Ln_le_pi[of "- (\<i> * z)"]
+            by (intro mult_left_mono order.trans[OF abs_triangle_ineq] add_mono) auto
+          finally show "Im s' * (Im (Ln (- (\<i> * z))) + pi / 2) \<le> 3/2 * pi * \<bar>Im s'\<bar>"
+            by (simp add: algebra_simps)
+        qed auto
+        also have "exp (Re s' * ln (R n)) = R n powr Re s'"
+          using r R[of n] by (auto simp: powr_def)
+        finally show "norm (f s' z) \<le> D * R n powr (-Re s')" using \<open>C \<ge> 0\<close>
+          by (simp add:  that D_def powr_minus mult_right_mono mult_left_mono field_simps)
+      qed
+
+      have "norm (bigc n) \<le> norm (contour_integral (part_circlepath 0 (R n) 0 pi) (f s)) +
+              norm (cnj (contour_integral (part_circlepath 0 (R n) 0 pi) (f (cnj s))))"
+        (is "_ \<le> norm ?err1 + norm ?err2") unfolding bigc_def by (rule norm_triangle_ineq4)
+      also have "norm ?err1 \<le> D * R n powr (-Re s) * R n * \<bar>pi - 0\<bar>"
+        using \<open>D \<ge> 0\<close> and r R[of n] and pi_gt3 and integrable_circle and
+              path_image_part_circlepath_subset[of 0 pi "R n" 0] and bound[of _ s]
+        by (intro contour_integral_bound_part_circlepath) auto
+      also have "\<dots> = D * pi * R n powr (1 - Re s)" using r R[of n] pi_gt3
+        by (simp add: powr_diff field_simps powr_minus)
+      also have "norm ?err2 \<le> D * R n powr (-Re s) * R n * \<bar>pi - 0\<bar>"
+        unfolding complex_mod_cnj
+        using \<open>D \<ge> 0\<close> and r R[of n] and pi_gt3 and integrable_circle'[of n] and
+              path_image_part_circlepath_subset[of 0 pi "R n" 0] and bound[of _ "cnj s"]
+        by (intro contour_integral_bound_part_circlepath) auto
+      also have "\<dots> = D * pi * R n powr (1 - Re s)" using r R[of n] pi_gt3
+        by (simp add: powr_diff field_simps powr_minus)
+      finally show "norm (bigc n) \<le> 2 * D * pi * R n powr (1 - Re s)"
+        by simp
+    next
+      have "filterlim R at_top at_top" by fact
+      hence "(\<lambda>x. 2 * D * pi * R x powr (1 - Re s)) \<longlonglongrightarrow> 2 * D * pi * 0" using s unfolding R_def
+        by (intro tendsto_intros tendsto_neg_powr) auto
+      thus "(\<lambda>x. 2 * D * pi * R x powr (1 - Re s)) \<longlonglongrightarrow> 0" by simp
+    qed
+  qed auto
+  also have "(\<lambda>n. - 2 * \<i> * sin (s * pi) * I n + smallc + bigc n) =
+               (\<lambda>n. -2 * \<i> * pi * (2 * pi) powr -s * (F1 n + F2 n))" by (subst eq) auto
+  finally have "\<dots> \<longlonglongrightarrow> (-2 * \<i> * sin (s * pi)) * (CLBINT x:{r..}. g s x) + smallc" by simp
+
+  moreover have "(\<lambda>n. -2 * \<i> * pi * (2 * pi) powr -s * (F1 n + F2 n)) \<longlonglongrightarrow>
+                   -2 * \<i> * pi * (2 * pi) powr -s * 
+                   (exp (-s * pi * \<i> / 2) * F a s + exp (s * pi * \<i> / 2) * F (-a) s)"
+    unfolding F1_F2_def F_def using s by (intro tendsto_intros sum_tendsto_fds_perzeta)
+  ultimately have "-2 * \<i> * pi * (2 * pi) powr -s * 
+                       (exp (-s * pi * \<i> / 2) * F a s + exp (s * pi * \<i> / 2) * F (-a) s) =
+                     (-2 * \<i> * sin (s * pi)) * (CLBINT x:{r..}. g s x) + smallc"
+    by (force intro: tendsto_unique)
+  also have "\<dots> = -2 * \<i> * pi * rGamma s * hurwitz_zeta a (1 - s)" using s r a
+    using rGamma_hurwitz_zeta_eq_contour_integral[of s r]
+    by (simp add: r_def smallc_def algebra_simps)
+  also have "exp (- s * complex_of_real pi * \<i> / 2) = \<i> powr (-s)"
+    by (simp add: powr_def field_simps)
+  also have "exp (s * complex_of_real pi * \<i> / 2) = \<i> powr s"
+    by (simp add: powr_def field_simps)
+  finally show "rGamma s * hurwitz_zeta a (1 - s) = (2 * pi) powr -s * 
+                  (\<i> powr (-s) * F a s + \<i> powr s * F (-a) s)" by simp
+qed
+
+end
+
+text \<open>
+  We can now use Hurwitz's formula to prove the following nice formula that expresses the periodic 
+  zeta function in terms of the Hurwitz zeta function:
+  \[F(s, a) = (2\pi)^{s-1} i \Gamma(1 - s)
+                \left(i^{-s} \zeta(1 - s, a) - i^{s} \zeta(1 - s, 1 - a)\right)\]
+  This holds for all \<open>s\<close> with \<open>\mathfrak{R}(s) > 0\<close> as long as \<open>a \<notin> \<int>\<close>. For convenience, we
+  move the \<open>\<Gamma>\<close> function to the left-hand side in order to avoid having to account for its poles.
+\<close>
+lemma perzeta_conv_hurwitz_zeta_aux:
+  fixes a :: real and s :: complex
+  assumes a: "a \<in> {0<..<1}" and s: "Re s > 0"
+  shows   "rGamma (1 - s) * eval_fds (fds_perzeta a) s = (2 * pi) powr (s - 1) * \<i> *
+             (\<i> powr -s * hurwitz_zeta a (1 - s) -
+              \<i> powr s * hurwitz_zeta (1 - a) (1 - s))" 
+  (is "?lhs s = ?rhs s")
+proof (rule analytic_continuation_open[where f = ?lhs])
+  show "connected {s. Re s > 0}"
+    by (intro convex_connected convex_halfspace_Re_gt)
+  show "{s. Re s > 1} \<noteq> {}" by (auto intro: exI[of _ 2])
+  show "(\<lambda>s. rGamma (1 - s) * eval_fds (fds_perzeta a) s) holomorphic_on {s. 0 < Re s}"
+    unfolding perzeta_def using a
+    by (auto intro!: holomorphic_intros le_less_trans[OF conv_abscissa_perzeta'] elim!: Ints_cases)
+  show "?rhs holomorphic_on {s. 0 < Re s}" using assms by (auto intro!: holomorphic_intros)
+next
+  fix s assume s: "s \<in> {s. Re s > 1}"
+  have [simp]: "fds_perzeta (1 - a) = fds_perzeta (-a)"
+    using fds_perzeta.plus_of_nat[of "-a" 1] by simp
+  have [simp]: "fds_perzeta (a - 1) = fds_perzeta a"
+    using fds_perzeta.minus_of_nat[of a 1] by simp
+  from s have [simp]: "Gamma s \<noteq> 0" by (auto simp: Gamma_eq_zero_iff elim!: nonpos_Ints_cases)
+
+  have "(2 * pi) powr (-s) * (\<i> * (\<i> powr (-s) * (rGamma s * hurwitz_zeta a (1 - s)) -
+                              \<i> powr s * (rGamma s * hurwitz_zeta (1 - a) (1 - s)))) =
+        (2 * pi) powr (-s) * ((\<i> powr (1 - s) * (rGamma s * hurwitz_zeta a (1 - s)) +
+                               \<i> powr (s - 1) * (rGamma s * hurwitz_zeta (1 - a) (1 - s))))"
+    by (simp add: powr_diff field_simps powr_minus)
+  also have "\<dots> = ((2 * pi) powr (-s)) ^ 2 * (
+          eval_fds (fds_perzeta a) s * (\<i> powr s * \<i> powr (s - 1) + \<i> powr (-s) * \<i> powr (1 - s)) +
+          eval_fds (fds_perzeta (-a)) s * (\<i> powr s * \<i> powr (1 - s) + \<i> powr (-s) * \<i> powr (s - 1)))"
+    using s a by (subst (1 2) hurwitz_zeta_formula_aux) (auto simp: algebra_simps power2_eq_square)
+  also have "(\<i> powr s * \<i> powr (1 - s) + \<i> powr (-s) * \<i> powr (s - 1)) = 
+               exp (\<i> * complex_of_real pi / 2) + exp (- (\<i> * complex_of_real pi / 2))"
+    by (simp add: powr_def exp_add [symmetric] field_simps)
+  also have "\<dots> = 0" by (simp add: exp_eq_polar)
+  also have "\<i> powr s * \<i> powr (s - 1) = \<i> powr (2 * s - 1)"
+    by (simp add: powr_def exp_add [symmetric] field_simps)
+  also have "\<i> powr (-s) * \<i> powr (1 - s) = \<i> powr (1 - 2 * s)"
+    by (simp add: powr_def exp_add [symmetric] field_simps)
+  also have "\<i> powr (2 * s - 1) + \<i> powr (1 - 2 * s) = 2 * cos ((2 * s - 1) * pi / 2)"
+    by (simp add: powr_def cos_exp_eq algebra_simps minus_divide_left cos_sin_eq)
+  also have "\<dots> = 2 * sin (pi - s * pi)" by (simp add: cos_sin_eq field_simps)
+  also have "\<dots> = 2 * sin (s * pi)" by (simp add: sin_diff)
+  finally have "\<i> * (rGamma s * \<i> powr (-s) * hurwitz_zeta a (1 - s) -
+                     rGamma s * \<i> powr s * hurwitz_zeta (1 - a) (1 - s)) =
+                2 * (2 * pi) powr -s * sin (s * pi) * eval_fds (fds_perzeta a) s"
+    by (simp add: power2_eq_square mult_ac)
+  hence "(2 * pi) powr s / 2 * \<i> *
+           (\<i> powr (-s) * hurwitz_zeta a (1 - s) -
+            \<i> powr s * hurwitz_zeta (1 - a) (1 - s)) =
+         Gamma s * sin (s * pi) * eval_fds (fds_perzeta a) s"
+    by (subst (asm) (2) powr_minus) (simp add: field_simps rGamma_inverse_Gamma)
+  also have "Gamma s * sin (s * pi) = pi * rGamma (1 - s)"
+    using Gamma_reflection_complex[of s]
+    by (auto simp: divide_simps rGamma_inverse_Gamma mult_ac split: if_splits)
+  finally show "?lhs s = ?rhs s" by (simp add: powr_diff)
+qed (insert s, auto simp: open_halfspace_Re_gt)
+
+text \<open>
+  We can now use the above equation as a defining equation to continue the periodic
+  zeta function $F$ to the entire complex plane except at non-negative integer values for \<open>s\<close>.
+  However, the positive integers are already covered by the original Dirichlet series definition
+  of $F$, so we only need to take care of \<open>s = 0\<close>. We do this by cancelling the pole of \<open>\<Gamma>\<close> at \<open>0\<close>
+  with the zero of $i^{-s} \zeta(1 - s, a) - i^s \zeta(1 - s, 1 - a)$.
+\<close>
+lemma
+  assumes "q' \<notin> \<int>"
+  shows   holomorphic_perzeta': "perzeta q' holomorphic_on A"
+    and   perzeta_altdef2:   "Re s > 0 \<Longrightarrow> perzeta q' s = eval_fds (fds_perzeta q') s"
+proof -
+  define q where "q = frac q'"
+  from assms have q: "q \<in> {0<..<1}" by (auto simp: q_def frac_lt_1)
+  hence [simp]: "q \<notin> \<int>" by (auto elim!: Ints_cases)
+  have [simp]: "frac q = q" by (simp add: q_def frac_def)
+  define f where "f = (\<lambda>s. complex_of_real (2 * pi) powr (s - 1) * \<i> * Gamma (1 - s) *
+                        (\<i> powr (-s) * hurwitz_zeta q (1 - s) -
+                         \<i> powr s * hurwitz_zeta (1 - q) (1 - s)))"
+
+  {
+    fix s :: complex assume "1 - s \<in> \<int>\<^sub>\<le>\<^sub>0"
+    then obtain n where "1 - s = of_int n" "n \<le> 0" by (auto elim!: nonpos_Ints_cases)
+    hence "s = 1 - of_int n" by (simp add: algebra_simps)
+    also have "\<dots> \<in> \<nat>" using \<open>n \<le> 0\<close> by (auto simp: Nats_altdef1 intro: exI[of _ "1 - n"])
+    finally have "s \<in> \<nat>" .
+  } note * = this
+  hence "f holomorphic_on -\<nat>" using q
+    by (auto simp: f_def Nats_altdef2 nonpos_Ints_altdef not_le intro!: holomorphic_intros)
+  also have "?this \<longleftrightarrow> perzeta q holomorphic_on -\<nat>" using assms
+    by (intro holomorphic_cong refl) (auto simp: perzeta_def Let_def f_def)
+  finally have holo: "perzeta q holomorphic_on -\<nat>" .
+
+  have f_altdef: "f s = eval_fds (fds_perzeta q) s" if "Re s > 0" and "s \<notin> \<nat>" for s
+    using perzeta_conv_hurwitz_zeta_aux[OF q, of s] that *
+    by (auto simp: rGamma_inverse_Gamma Gamma_eq_zero_iff divide_simps f_def perzeta_def
+             split: if_splits)
+  show "perzeta q' s = eval_fds (fds_perzeta q') s" if "Re s > 0" for s
+    using f_altdef[of s] that assms by (auto simp: f_def perzeta_def Let_def q_def)
+
+  have cont: "isCont (perzeta q) s" if "s \<in> \<nat>" for s
+  proof (cases "s = 0")
+    case False
+    with that obtain n where [simp]: "s = of_nat n" and n: "n > 0"
+      by (auto elim!: Nats_cases)
+    have *: "open ({s. Re s > 0} - (\<nat> - {of_nat n}))" using Nats_subset_Ints
+      by (intro open_Diff closed_subset_Ints open_halfspace_Re_gt) auto
+    have "eventually (\<lambda>s. s \<in> {s. Re s > 0} - (\<nat> - {of_nat n})) (nhds (of_nat n))" using \<open>n > 0\<close>
+      by (intro eventually_nhds_in_open *) auto 
+    hence ev: "eventually (\<lambda>s. eval_fds (fds_perzeta q) s = perzeta q s) (nhds (of_nat n))"
+    proof eventually_elim
+      case (elim s)
+      thus ?case using q f_altdef[of s]
+        by (auto simp: perzeta_def dist_of_nat f_def elim!: Nats_cases Ints_cases)
+    qed
+    have "isCont (eval_fds (fds_perzeta q)) (of_nat n)" using q and \<open>n > 0\<close>
+      by (intro continuous_eval_fds le_less_trans[OF conv_abscissa_perzeta'])
+         (auto elim!: Ints_cases)
+    also have "?this \<longleftrightarrow> isCont (perzeta q) (of_nat n)" using ev
+      by (intro isCont_cong ev)
+    finally show ?thesis by simp
+  next
+    assume [simp]: "s = 0"
+    define a where "a = Complex (ln q) (-pi / 2)"
+    define b where "b = Complex (ln (1 - q)) (pi / 2)"
+    have "eventually (\<lambda>s::complex. s \<notin> \<nat>) (at 0)"
+      unfolding eventually_at_topological using Nats_subset_Ints
+      by (intro exI[of _ "-(\<nat>-{0})"] conjI open_Compl closed_subset_Ints) auto
+    hence ev: "eventually (\<lambda>s. perzeta q s = (2 * pi) powr (s - 1) * Gamma (1 - s) * \<i> *
+                 (\<i> powr - s * pre_zeta q (1 - s) -\<i> powr s * pre_zeta (1 - q) (1 - s) +
+                 (exp (b * s) - exp (a * s)) / s)) (at (0::complex))"
+      (is "eventually (\<lambda>s. _ = ?f s) _")
+    proof eventually_elim
+      case (elim s)
+      have "perzeta q s = (2 * pi) powr (s - 1) * Gamma (1 - s) * \<i> *
+              (\<i> powr (-s) * hurwitz_zeta q (1 - s) -
+               \<i> powr s * hurwitz_zeta (1 - q) (1 - s))" (is "_ = _ * ?T")
+        using elim by (auto simp: perzeta_def powr_diff powr_minus field_simps)
+      also have "?T = \<i> powr (-s) * pre_zeta q (1 - s) - \<i> powr s * pre_zeta (1 - q) (1 - s) +
+                      (\<i> powr s * (1 - q) powr s - \<i> powr (-s) * q powr s) / s" using elim
+        by (auto simp: hurwitz_zeta_def field_simps)
+      also have "\<i> powr s * (1 - q) powr s = exp (b * s)" using q
+        by (simp add: powr_def exp_add algebra_simps Ln_Reals_eq Complex_eq b_def)
+      also have "\<i> powr (-s) * q powr s = exp (a * s)" using q
+        by (simp add: powr_def exp_add Ln_Reals_eq exp_diff exp_minus diff_divide_distrib 
+                      ring_distribs inverse_eq_divide mult_ac Complex_eq a_def)
+      finally show ?case .
+    qed
+  
+    have [simp]: "\<not>(pi \<le> 0)" using pi_gt_zero by (simp add: not_le)
+    have "(\<lambda>s::complex. if s = 0 then b - a else (exp (b * s) - exp (a * s)) / s)
+                has_fps_expansion (fps_exp b - fps_exp a) / fps_X" (is "?f' has_fps_expansion _")
+      by (rule fps_expansion_intros)+ (auto intro!: subdegree_geI simp: Ln_Reals_eq a_def b_def)
+    hence "isCont ?f' 0" by (rule has_fps_expansion_imp_continuous)
+    hence "?f' \<midarrow>0\<rightarrow> b - a" by (simp add: isCont_def)
+    also have "?this \<longleftrightarrow> (\<lambda>s. (exp (b * s) - exp (a * s)) / s) \<midarrow>0\<rightarrow> b - a"
+      by (intro filterlim_cong refl) (auto simp: eventually_at intro: exI[of _ 1])
+    finally have "?f \<midarrow>0\<rightarrow> of_real (2 * pi) powr (0 - 1) * Gamma (1 - 0) * \<i> *
+                    (\<i> powr -0 * pre_zeta q (1 - 0) -\<i> powr 0 * pre_zeta (1 - q) (1 - 0) + (b - a))"
+      (is "filterlim _ (nhds ?c) _")
+      using q by (intro tendsto_intros isContD)
+                 (auto simp: complex_nonpos_Reals_iff intro!: continuous_intros)
+    also have "?c = perzeta q 0" using q
+      by (simp add: powr_minus perzeta_def Ln_Reals_eq a_def b_def
+                    Complex_eq mult_ac inverse_eq_divide)
+    also have "?f \<midarrow>0\<rightarrow> \<dots> \<longleftrightarrow> perzeta q \<midarrow>0\<rightarrow> \<dots>"
+      by (rule sym, intro filterlim_cong refl ev)
+    finally show "isCont (perzeta q) s" by (simp add: isCont_def)
+  qed
+
+  have "perzeta q field_differentiable at s" for s
+  proof (cases "s \<in> \<nat>")
+    case False
+    with holo have "perzeta q field_differentiable at s within -\<nat>" 
+      unfolding holomorphic_on_def by blast
+    also have "at s within -\<nat> = at s" using False
+      by (intro at_within_open) auto
+    finally show ?thesis .
+  next
+    case True
+    hence *: "perzeta q holomorphic_on (ball s 1 - {s})"
+      by (intro holomorphic_on_subset[OF holo]) (auto elim!: Nats_cases simp: dist_of_nat)
+    have "perzeta q holomorphic_on ball s 1" using cont True
+      by (intro no_isolated_singularity'[OF _ *])
+         (auto simp: at_within_open[of _ "ball s 1"] isCont_def)
+    hence "perzeta q field_differentiable at s within ball s 1" 
+      unfolding holomorphic_on_def by auto
+    thus ?thesis by (simp add: at_within_open[of _ "ball s 1"])
+  qed
+  hence "perzeta q holomorphic_on UNIV"
+    by (auto simp: holomorphic_on_def)
+  also have "perzeta q = perzeta q'" by (simp add: q_def)
+  finally show "perzeta q' holomorphic_on A" by auto
+qed
+
+lemma perzeta_altdef1: "Re s > 1 \<Longrightarrow> perzeta q' s = eval_fds (fds_perzeta q') s"
+  by (cases "q' \<in> \<int>") (auto simp: perzeta_int eval_fds_zeta fds_perzeta_int perzeta_altdef2)
+
+lemma holomorphic_perzeta: "q \<notin> \<int> \<or> 1 \<notin> A \<Longrightarrow> perzeta q holomorphic_on A"
+  by (cases "q \<in> \<int>") (auto simp: perzeta_int intro: holomorphic_perzeta' holomorphic_zeta)
+
+lemma holomorphic_perzeta'' [holomorphic_intros]:
+  assumes "f holomorphic_on A" and "q \<notin> \<int> \<or> (\<forall>x\<in>A. f x \<noteq> 1)"
+  shows   "(\<lambda>x. perzeta q (f x)) holomorphic_on A"
+proof -
+  have "perzeta q \<circ> f holomorphic_on A" using assms 
+    by (intro holomorphic_on_compose holomorphic_perzeta) auto
+  thus ?thesis by (simp add: o_def)
+qed
+
+text \<open>
+  Using this analytic continuation of the periodic zeta function, Hurwitz's formula now
+  holds (almost) on the entire complex plane.
+\<close>
+theorem hurwitz_zeta_formula:
+  fixes a :: real and s :: complex
+  assumes "a \<in> {0<..1}" and "s \<noteq> 0" and "a \<noteq> 1 \<or> s \<noteq> 1"
+  shows   "rGamma s * hurwitz_zeta a (1 - s) =
+             (2 * pi) powr - s * (\<i> powr - s * perzeta a s + \<i> powr s * perzeta (-a) s)"
+  (is "?f s = ?g s")
+proof -
+  define A where "A = UNIV - (if a \<in> \<int> then {0, 1} else {0 :: complex})"
+  show ?thesis
+  proof (rule analytic_continuation_open[where f = ?f])
+    show "?f holomorphic_on A" using assms by (auto intro!: holomorphic_intros simp: A_def)
+    show "?g holomorphic_on A" using assms
+      by (auto intro!: holomorphic_intros simp: A_def minus_in_Ints_iff)
+  next
+    fix s assume "s \<in> {s. Re s > 1}"
+    thus "?f s = ?g s" using hurwitz_zeta_formula_aux[of a s] assms
+      by (simp add: perzeta_altdef1)
+  qed (insert assms, auto simp: open_halfspace_Re_gt A_def elim!: Ints_cases
+                           intro: connected_open_delete_finite exI[of _ 2])
+qed
+
+text \<open>
+  The equation expressing the periodic zeta function in terms of the Hurwitz zeta function
+  can be extened similarly.
+\<close>
+theorem perzeta_conv_hurwitz_zeta:
+  fixes a :: real and s :: complex
+  assumes "a \<in> {0<..<1}" and "s \<noteq> 0"
+  shows   "rGamma (1 - s) * perzeta a s =
+             (2 * pi) powr (s - 1) * \<i> * (\<i> powr (-s) * hurwitz_zeta a (1 - s) -
+                                         \<i> powr s * hurwitz_zeta (1 - a) (1 - s))"
+  (is "?f s = ?g s")
+proof (rule analytic_continuation_open[where f = ?f])
+  show "?f holomorphic_on -{0}" using assms by (auto intro!: holomorphic_intros elim: Ints_cases)
+  show "?g holomorphic_on -{0}" using assms by (auto intro!: holomorphic_intros)
+next
+  fix s assume "s \<in> {s. Re s > 1}"
+  thus "?f s = ?g s" using perzeta_conv_hurwitz_zeta_aux[of a s] assms
+    by (simp add: perzeta_altdef1)
+qed (insert assms, auto simp: open_halfspace_Re_gt connected_punctured_universe intro: exI[of _ 2])
+
+
+text \<open>
+  As a simple corollary, we derive the reflection formula for the Riemann zeta function:
+\<close>
+corollary zeta_reflect:
+  fixes s :: complex
+  assumes "s \<noteq> 0" "s \<noteq> 1"
+  shows   "rGamma s * zeta (1 - s) = 2 * (2 * pi) powr -s * cos (s * pi / 2) * zeta s"
+  using hurwitz_zeta_formula[of 1 s] assms
+  by (simp add: zeta_def cos_exp_eq powr_def perzeta_int algebra_simps)
+
+corollary zeta_reflect':
+  fixes s :: complex
+  assumes "s \<noteq> 0" "s \<noteq> 1"
+  shows   "rGamma (1 - s) * zeta s = 2 * (2 * pi) powr (s - 1) * sin (s * pi / 2) * zeta (1 - s)"
+  using zeta_reflect[of "1 - s"] assms by (simp add: cos_sin_eq field_simps)
+
+text \<open>
+  It is now easy to see that all the non-trivial zeroes of the Riemann zeta function must lie
+  the critical strip $(0;1)$, and they must be symmetric around the
+  $\mathfrak{R}(z) = \frac{1}{2}$ line.
+\<close>
+corollary zeta_zeroD:
+  assumes "zeta s = 0" "s \<noteq> 1"
+  shows   "Re s \<in> {0<..<1} \<or> (\<exists>n::nat. n > 0 \<and> even n \<and> s = -real n)"
+proof (cases "Re s \<le> 0")
+  case False
+  with zeta_Re_ge_1_nonzero[of s] assms have "Re s < 1"
+    by (cases "Re s < 1") auto
+  with False show ?thesis by simp
+next
+  case True
+  {
+    assume *: "\<And>n. n > 0 \<Longrightarrow> even n \<Longrightarrow> s \<noteq> -real n"
+    have "s \<noteq> of_int n" for n :: int
+    proof
+      assume [simp]: "s = of_int n"
+      show False
+      proof (cases n "0::int" rule: linorder_cases)
+        assume "n < 0"
+        show False
+        proof (cases "even n")
+          case True
+          hence "nat (-n) > 0" "even (nat (-n))" using \<open>n < 0\<close>
+            by (auto simp: even_nat_iff)
+          with * have "s \<noteq> -real (nat (-n))" .
+          with \<open>n < 0\<close> and True show False by auto
+        next
+          case False
+          with \<open>n < 0\<close> have "of_int n = (-of_nat (nat (-n)) :: complex)" by simp
+          also have "zeta \<dots> = -(bernoulli' (Suc (nat (-n)))) / of_nat (Suc (nat (-n)))"
+            using \<open>n < 0\<close> by (subst zeta_neg_of_nat) (auto)
+          finally have "bernoulli' (Suc (nat (-n))) = 0" using assms
+            by (auto simp del: of_nat_Suc)
+          with False and \<open>n < 0\<close> show False
+            by (auto simp: bernoulli'_zero_iff even_nat_iff)
+        qed
+      qed (insert assms True, auto)
+    qed
+    hence "rGamma s \<noteq> 0"
+      by (auto simp: rGamma_eq_zero_iff nonpos_Ints_def)
+    moreover from assms have [simp]: "s \<noteq> 0" by auto
+    ultimately have "zeta (1 - s) = 0" using zeta_reflect[of s] and assms
+      by auto
+    with True zeta_Re_ge_1_nonzero[of "1 - s"] have "Re s > 0" by auto
+  }
+  with True show ?thesis by auto
+qed
+
+lemma zeta_zero_reflect:
+  assumes "Re s \<in> {0<..<1}" and "zeta s = 0"
+  shows   "zeta (1 - s) = 0"
+proof -
+  from assms have "rGamma s \<noteq> 0"
+    by (auto simp: rGamma_eq_zero_iff elim!: nonpos_Ints_cases)
+  moreover from assms have "s \<noteq> 0" and "s \<noteq> 1" by auto
+  ultimately show ?thesis using zeta_reflect[of s] and assms by auto
+qed
+
+corollary zeta_zero_reflect_iff:
+  assumes "Re s \<in> {0<..<1}"
+  shows   "zeta (1 - s) = 0 \<longleftrightarrow> zeta s = 0"
+  using zeta_zero_reflect[of s] zeta_zero_reflect[of "1 - s"] assms by auto
 
 end

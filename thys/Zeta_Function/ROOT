@@ -6,7 +6,9 @@ session Zeta_Function (AFP) = Dirichlet_Series +
     Euler_MacLaurin
     Bernoulli
     "HOL-Library"
+    "HOL-Real_Asymp"
     Dirichlet_Series
+    Winding_Number_Eval
   theories [document=false]
     "Euler_MacLaurin.Euler_MacLaurin"
     "Bernoulli.Bernoulli_Zeta"

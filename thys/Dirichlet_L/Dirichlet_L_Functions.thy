@@ -106,7 +106,7 @@ proof -
     proof (intro sum.cong refl, goal_cases)
       case (1 k)
       have "of_nat (m * n + k) = (of_nat m + of_nat k / of_nat n :: complex) * of_nat n"
-        using n by (simp add: divide_simps)
+        using n by (simp add: divide_simps del: div_mult_self1 div_mult_self2 div_mult_self3 div_mult_self4)
       also have "\<dots> powr -s = (of_nat m + of_nat k / of_nat n) powr -s * of_nat n powr -s"
         by (rule powr_times_real) auto
       finally show ?case by simp
@@ -1062,7 +1062,8 @@ proof (rule bigoI)
             \<le> real (totient n) * (2 + norm s / Re s) / x powr Re s"
       using elim assms by (intro Dirichlet_L_minus_partial_sum_bound) auto
     thus ?case using elim assms 
-      by (simp add: norm_powr_real_powr powr_minus divide_simps norm_divide)
+      by (simp add: norm_powr_real_powr powr_minus divide_simps norm_divide
+               del: div_mult_self1 div_mult_self2 div_mult_self3 div_mult_self4)
   qed
 qed
 
