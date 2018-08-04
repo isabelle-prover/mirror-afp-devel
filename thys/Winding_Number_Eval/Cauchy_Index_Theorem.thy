@@ -3619,6 +3619,14 @@ proof -
     by simp
 qed 
 
+lemma cindex_pathE_reversepath: "cindex_pathE (reversepath g) z = -cindex_pathE g z"
+  using cindexE_linear_comp[of "-1" 0 1 "\<lambda>t. (Im (g t) - Im z) / (Re (g t) - Re z)" 1]  
+  by (simp add: cindex_pathE_def reversepath_def o_def)
+
+lemma cindex_pathE_reversepath': "cindex_pathE g z = -cindex_pathE (reversepath g) z"
+  using cindexE_linear_comp[of "-1" 0 1 "\<lambda>t. (Im (g t) - Im z) / (Re (g t) - Re z)" 1]  
+  by (simp add: cindex_pathE_def reversepath_def o_def)
+
 lemma cindex_pathE_joinpaths:
   assumes g1:"finite_ReZ_segments g1 z" and g2: "finite_ReZ_segments g2 z" and
     "path g1" "path g2" "pathfinish g1 = pathstart g2"

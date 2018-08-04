@@ -454,6 +454,9 @@ corollary sgn_bernoulli:
 corollary bernoulli_zero_iff: "bernoulli n = 0 \<longleftrightarrow> odd n \<and> n \<noteq> 1"
   by (auto simp: bernoulli_even_nonzero bernoulli_odd_eq_0)
 
+corollary bernoulli'_zero_iff: "(bernoulli' n = 0) \<longleftrightarrow> (n \<noteq> 1 \<and> odd n)"
+  by (auto simp: bernoulli'_def bernoulli_zero_iff)
+
 corollary bernoulli_pos_iff: "bernoulli n > 0 \<longleftrightarrow> n = 0 \<or> n mod 4 = 2"
 proof -
   have "bernoulli n > 0 \<longleftrightarrow> sgn (bernoulli n) = 1"

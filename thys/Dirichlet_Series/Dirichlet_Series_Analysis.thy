@@ -285,7 +285,8 @@ qed
 
 
 lemma uniformly_Cauchy_eval_fds_aux:
-  assumes conv: "fds_converges f (s0 :: 'a)"
+  fixes s0 :: "'a :: dirichlet_series"
+  assumes bounded: "Bseq (\<lambda>n. \<Sum>k\<le>n. fds_nth f k / nat_power k s0)"
   assumes B: "compact B" "\<And>z. z \<in> B \<Longrightarrow> z \<bullet> 1 > s0 \<bullet> 1"
   shows   "uniformly_Cauchy_on B (\<lambda>N z. \<Sum>n\<le>N. fds_nth f n / nat_power n z)"
 proof (cases "B = {}")
@@ -312,10 +313,7 @@ proof (cases "B = {}")
       using norm_triangle_ineq4[of s s0] norm_B_aux[OF that] by (simp add: norm_B_def)
       
     define A where "A = sum_upto (\<lambda>k. fds_nth f k / nat_power k s0)"
-    from conv have "convergent (\<lambda>n. \<Sum>k\<le>n. fds_nth f k / nat_power k s0)"
-      by (simp add: fds_converges_def summable_iff_convergent')
-    hence "Bseq (\<lambda>n. \<Sum>k\<le>n. fds_nth f k / nat_power k s0)" by (rule convergent_imp_Bseq)
-    then obtain C_aux where C_aux: "\<And>n. norm (\<Sum>k\<le>n. fds_nth f k / nat_power k s0) \<le> C_aux"
+    from bounded obtain C_aux where C_aux: "\<And>n. norm (\<Sum>k\<le>n. fds_nth f k / nat_power k s0) \<le> C_aux"
       by (auto simp: Bseq_def)
     define C where "C = max C_aux 1"
     have C_pos: "C > 0" by (simp add: C_def)
@@ -343,7 +341,7 @@ proof (cases "B = {}")
               dist (\<Sum>n\<le>n. fds_nth f n / nat_power n s) (\<Sum>n\<le>m. fds_nth f n / nat_power n s)"
         by (simp add: dist_commute)
       also from 1 have "\<dots> = norm (\<Sum>k\<in>{..n}-{..m}. fds_nth f k / nat_power k s)"
-        by (subst sum_diff) (simp_all add: dist_norm sum_diff)
+        by (subst Groups_Big.sum_diff) (simp_all add: dist_norm)
       also from 1 have "{..n} - {..m} = real -` {real m<..real n}" by auto
       also have "(\<Sum>k\<in>\<dots>. fds_nth f k / nat_power k s) = 
                    (\<Sum>k\<in>\<dots>. fds_nth f k / nat_power k s0 * real_power (real k) (s0 - s))"
@@ -414,19 +412,41 @@ proof (cases "B = {}")
     qed
   qed
 qed (auto simp: uniformly_Cauchy_on_def)
-  
+
 lemma uniformly_convergent_eval_fds_aux:
-  assumes conv: "fds_converges f (s0 :: 'a)"
+  assumes "Bseq (\<lambda>n. \<Sum>k\<le>n. fds_nth f k / nat_power k (s0 :: 'a))"
   assumes B: "compact B" "\<And>z. z \<in> B \<Longrightarrow> z \<bullet> 1 > s0 \<bullet> 1"
   shows   "uniformly_convergent_on B (\<lambda>N z. \<Sum>n\<le>N. fds_nth f n / nat_power n z)"
   by (rule Cauchy_uniformly_convergent uniformly_Cauchy_eval_fds_aux assms)+
+
+lemma uniformly_convergent_eval_fds_aux':
+  assumes conv: "fds_converges f (s0 :: 'a)"
+  assumes B: "compact B" "\<And>z. z \<in> B \<Longrightarrow> z \<bullet> 1 > s0 \<bullet> 1"
+  shows   "uniformly_convergent_on B (\<lambda>N z. \<Sum>n\<le>N. fds_nth f n / nat_power n z)"
+proof (rule uniformly_convergent_eval_fds_aux)
+  from conv have "convergent (\<lambda>n. \<Sum>k\<le>n. fds_nth f k / nat_power k s0)"
+    by (simp add: fds_converges_def summable_iff_convergent')
+  thus "Bseq (\<lambda>n. \<Sum>k\<le>n. fds_nth f k / nat_power k s0)" by (rule convergent_imp_Bseq)
+qed (insert assms, auto)
+
+lemma bounded_partial_sums_imp_fps_converges:
+  fixes s0 :: "'a :: dirichlet_series"
+  assumes "Bseq (\<lambda>n. \<Sum>k\<le>n. fds_nth f k / nat_power k s0)" and "s \<bullet> 1 > s0 \<bullet> 1"
+  shows   "fds_converges f s"
+proof -
+  have "uniformly_convergent_on {s} (\<lambda>N z. \<Sum>n\<le>N. fds_nth f n / nat_power n z)" using assms(2)
+    by (intro uniformly_convergent_eval_fds_aux[OF assms(1)]) auto
+  thus ?thesis
+    by (auto simp: fds_converges_def summable_iff_convergent'
+             dest: uniformly_convergent_imp_convergent)
+qed
 
 theorem fds_converges_Re_le:
   assumes "fds_converges f (s0 :: 'a)" "s \<bullet> 1 > s0 \<bullet> 1"
   shows   "fds_converges f s"
 proof -
   have "uniformly_convergent_on {s} (\<lambda>N z. \<Sum>n\<le>N. fds_nth f n / nat_power n z)"
-    by (rule uniformly_convergent_eval_fds_aux assms)+ (insert assms(2), auto)
+    by (rule uniformly_convergent_eval_fds_aux' assms)+ (insert assms(2), auto)
   then obtain l where "uniform_limit {s} (\<lambda>N z. \<Sum>n\<le>N. fds_nth f n / nat_power n z) l at_top"
     by (auto simp: uniformly_convergent_on_def)
   from tendsto_uniform_limitI[OF this, of s]
@@ -618,9 +638,9 @@ proof (rule abs_conv_abscissa_leI)
 qed
 
   
-lemma uniformly_Cauchy_eval_fds:
+lemma uniformly_convergent_eval_fds:
   assumes B: "compact B" "\<And>z. z \<in> B \<Longrightarrow> z \<bullet> 1 > conv_abscissa (f :: 'a fds)"
-  shows   "uniformly_Cauchy_on B (\<lambda>N z. \<Sum>n\<le>N. fds_nth f n / nat_power n z)"
+  shows   "uniformly_convergent_on B (\<lambda>N z. \<Sum>n\<le>N. fds_nth f n / nat_power n z)"
 proof (cases "B = {}")
   case False
   define \<sigma> where "\<sigma> = Inf ((\<lambda>s. s \<bullet> 1) ` B)"
@@ -637,14 +657,9 @@ proof (cases "B = {}")
   from \<sigma>_gt have s: "conv_abscissa f < s \<and> s < \<sigma>"
     by (cases "conv_abscissa f") (auto simp: s_def)
   show ?thesis using s \<open>compact B\<close>
-    by (intro uniformly_Cauchy_eval_fds_aux[of f "of_real s"] fds_converges)
+    by (intro uniformly_convergent_eval_fds_aux'[of f "of_real s"] fds_converges)
        (auto dest: \<sigma>_le)
-qed (auto simp: uniformly_Cauchy_on_def)
-
-theorem uniformly_convergent_eval_fds:
-  assumes B: "compact B" "\<And>z. z \<in> B \<Longrightarrow> z \<bullet> 1 > conv_abscissa (f :: 'a fds)"
-  shows   "uniformly_convergent_on B (\<lambda>N z. \<Sum>n\<le>N. fds_nth f n / nat_power n z)"
-  by (rule Cauchy_uniformly_convergent uniformly_Cauchy_eval_fds assms)+
+qed auto
     
 corollary uniformly_convergent_eval_fds':
   assumes B: "compact B" "\<And>z. z \<in> B \<Longrightarrow> z \<bullet> 1 > conv_abscissa (f :: 'a fds)"
@@ -842,7 +857,7 @@ proof -
   
   have "uniformly_convergent_on (cball s \<delta>) 
           (\<lambda>n s. \<Sum>k\<le>n. fds_nth (fds_deriv f) k / nat_power k s)"
-  proof (intro uniformly_convergent_eval_fds_aux[OF conv])
+  proof (intro uniformly_convergent_eval_fds_aux'[OF conv])
     fix s'' :: 'a assume s'': "s'' \<in> cball s \<delta>"
     have "dist (s \<bullet> 1) (s'' \<bullet> 1) \<le> dist s s''" 
       by (intro Euclidean_dist_upper) (simp_all add: one_in_Basis)
