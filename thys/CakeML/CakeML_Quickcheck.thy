@@ -117,15 +117,15 @@ quickcheck_generator dec
 lemma
   fixes t u :: "dec"
   shows "t = u"
-  quickcheck [expect = counterexample]
-  quickcheck [random, expect = counterexample]
+  quickcheck [expect = counterexample, timeout = 30]
+  quickcheck [random, expect = counterexample, timeout = 30]
   oops
 
 lemma
   fixes t u :: "v"
   shows "t = u"
-  quickcheck [expect = counterexample]
-  quickcheck [random, expect = counterexample]
+  quickcheck [expect = counterexample, timeout = 30]
+  quickcheck [random, expect = counterexample, timeout = 30]
   oops
 
 end
