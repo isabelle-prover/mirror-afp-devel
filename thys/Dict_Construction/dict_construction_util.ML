@@ -2,7 +2,71 @@ infixr 5 ==>
 infixr ===>
 infix 1 CONTINUE_WITH CONTINUE_WITH_FW
 
-structure Dict_Construction_Util = struct
+signature DICT_CONSTRUCTION_UTIL = sig
+  (* general *)
+  val split_list3: ('a * 'b * 'c) list -> 'a list * 'b list * 'c list
+  val symreltab_of_symtab: 'a Symtab.table Symtab.table -> 'a Symreltab.table
+  val zip_symtabs: ('a -> 'b -> 'c) -> 'a Symtab.table -> 'b Symtab.table -> 'c Symtab.table
+  val cat_options: 'a option list -> 'a list
+  val partition: ('a -> bool) -> 'a list -> 'a list * 'a list
+  val unappend: 'a list * 'b -> 'c list -> 'c list * 'c list
+  val flat_right: ('a * 'b list) list -> ('a * 'b) list
+
+  (* logic *)
+  val ===> : term list * term -> term
+  val ==> : term * term -> term
+  val sortify: sort -> term -> term
+  val sortify_typ: sort -> typ -> typ
+  val typify: term -> term
+  val typify_typ: typ -> typ
+  val all_frees: term -> (string * typ) list
+  val all_frees': term -> string list
+  val all_tfrees: typ -> (string * sort) list
+
+  (* printing *)
+  val pretty_const: Proof.context -> string -> Pretty.T
+
+  (* conversion/tactic *)
+  val ANY: tactic list -> tactic
+  val ANY': ('a -> tactic) list -> 'a -> tactic
+  val CONTINUE_WITH: (int -> tactic) * (int -> tactic) list -> int -> thm -> thm Seq.seq
+  val CONTINUE_WITH_FW: (int -> tactic) * (int -> tactic) list -> int -> thm -> thm Seq.seq
+  val SOLVED: tactic -> tactic
+  val TRY': ('a -> tactic) -> 'a -> tactic
+  val descend_fun_conv: conv -> conv
+  val lhs_conv: conv -> conv
+  val rhs_conv: conv -> conv
+  val rewr_lhs_head_conv: thm -> conv
+  val rewr_rhs_head_conv: thm -> conv
+  val conv_result: ('a -> thm) -> 'a -> term
+  val changed_conv: ('a -> thm) -> 'a -> thm
+  val maybe_induct_tac: thm list option -> term list list -> term list list -> Proof.context -> tactic
+  val multi_induct_tac: thm list -> term list list -> term list list -> Proof.context -> tactic
+  val print_tac': Proof.context -> string -> int -> tactic
+
+  (* theorem manipulation *)
+  val contract: Proof.context -> thm -> thm
+  val on_thms_complete: (unit -> 'a) -> thm list -> thm list
+
+  (* theory *)
+  val define_params_nosyn: term -> local_theory -> thm * local_theory
+  val note_thm: binding -> thm -> local_theory -> thm * local_theory
+  val note_thms: binding -> thm list -> local_theory -> thm list * local_theory
+
+  (* timing *)
+  val with_timeout: Time.time -> ('a -> 'a) -> 'a -> 'a
+
+  (* debugging *)
+  val debug: bool Config.T
+  val if_debug: Proof.context -> (unit -> unit) -> unit
+  val ALLGOALS': Proof.context -> (int -> tactic) -> tactic
+  val prove': Proof.context -> string list -> term list -> term ->
+    ({prems: thm list, context: Proof.context} -> tactic) -> thm
+  val prove_common': Proof.context -> string list -> term list -> term list ->
+    ({prems: thm list, context: Proof.context} -> tactic) -> thm list
+end
+
+structure Dict_Construction_Util : DICT_CONSTRUCTION_UTIL = struct
 
 (* general *)
 
@@ -217,5 +281,24 @@ fun note_thm binding thm =
 
 fun note_thms binding thms =
   Local_Theory.note ((binding, []), thms) #>> snd
+
+(* timing *)
+
+fun with_timeout time f x =
+  case Exn.interruptible_capture (Timeout.apply time f) x of
+    Exn.Res y => y
+  | Exn.Exn (Timeout.TIMEOUT _) => x
+  | Exn.Exn e => Exn.reraise e
+
+(* debugging *)
+
+val debug = Attrib.setup_config_bool @{binding "dict_construction_debug"} (K false)
+
+fun if_debug ctxt f =
+  if Config.get ctxt debug then f () else ()
+
+fun ALLGOALS' ctxt = if Config.get ctxt debug then ALLGOALS else PARALLEL_ALLGOALS
+fun prove' ctxt = if Config.get ctxt debug then Goal.prove ctxt else Goal.prove_future ctxt
+fun prove_common' ctxt = Goal.prove_common ctxt (if Config.get ctxt debug then NONE else SOME ~1)
 
 end

@@ -40,8 +40,6 @@ sig
 
   (* utilities *)
 
-  val debug: bool Config.T
-
   val normalizer_conv: Proof.context -> conv
   val cong_of_const: Proof.context -> string -> thm option
   val get_code_eqs: Proof.context -> string -> thm list
@@ -67,15 +65,6 @@ fun cheat_tac ctxt i st =
   resolve_tac ctxt [make_thm ctxt (Var (("A", 0), propT))] i st
 
 (** utilities **)
-
-val debug = Attrib.setup_config_bool @{binding "dict_construction_debug"} (K false)
-
-fun if_debug ctxt f =
-  if Config.get ctxt debug then f () else ()
-
-fun ALLGOALS' ctxt = if Config.get ctxt debug then ALLGOALS else PARALLEL_ALLGOALS
-fun prove' ctxt = if Config.get ctxt debug then Goal.prove ctxt else Goal.prove_future ctxt
-fun prove_common' ctxt = Goal.prove_common ctxt (if Config.get ctxt debug then NONE else SOME ~1)
 
 val normalizer_conv = Axclass.overload_conv
 
