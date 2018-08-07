@@ -115,17 +115,17 @@ quickcheck_generator dec
   constructors: Dlet, Dletrec, Dtype, Dtabbrev, Dexn
 
 lemma
-  fixes t u :: "dec"
-  shows "t = u"
-  quickcheck [expect = counterexample, timeout = 30]
-  quickcheck [random, expect = counterexample, timeout = 30]
+  fixes t :: "dec"
+  shows "t \<noteq> t"
+  quickcheck [expect = counterexample, timeout = 90]
+  quickcheck [random, expect = counterexample, timeout = 90]
   oops
 
 lemma
-  fixes t u :: "v"
-  shows "t = u"
-  quickcheck [expect = counterexample, timeout = 30]
-  quickcheck [random, expect = counterexample, timeout = 30]
+  fixes t :: "v"
+  shows "t \<noteq> t"
+  quickcheck [expect = counterexample, timeout = 90]
+  quickcheck [random, expect = counterexample, timeout = 90]
   oops
 
 end
