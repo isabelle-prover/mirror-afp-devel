@@ -1148,4 +1148,13 @@ qed
 
 end
 
+lemma clocked_evaluate:
+  "(\<exists>k. BigStep.evaluate True env (update_clock (\<lambda>_. k) s) e (s', r) \<and> r \<noteq>  Rerr (Rabort Rtimeout_error)) =
+   (\<exists>k. BigStep.evaluate True env (update_clock (\<lambda>_. k) s) e ((update_clock (\<lambda>_. 0) s'), r) \<and> r \<noteq>  Rerr (Rabort Rtimeout_error))"
+  apply auto
+  apply (frule clock_monotone)
+  subgoal for k
+  by (force dest: sub_from_counter(3)[rule_format, where count' = 0 and count = "k - (clock s')"])
+  by (force dest: add_to_counter[where extra = "clock s'"])
+
 end

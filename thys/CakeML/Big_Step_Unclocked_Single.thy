@@ -1,7 +1,7 @@
 section "An even simpler version without mutual induction"
 
 theory Big_Step_Unclocked_Single
-  imports Big_Step_Unclocked
+  imports Big_Step_Unclocked Big_Step_Clocked Evaluate_Single Big_Step_Fun_Equiv
 begin
 
 inductive evaluate_list ::
@@ -226,5 +226,15 @@ by (simp add: unclocked_single_eq unclocked_eq)
 corollary unclocked_single_determ:
   "evaluate env s e r3a \<Longrightarrow> evaluate env s e r3b \<Longrightarrow> r3a = r3b"
 by (metis unclocked_single_eq unclocked_determ)
+
+lemma unclocked_single_fun_eq:
+  "((\<exists>k. Evaluate_Single.evaluate env (s \<lparr> clock:= k \<rparr>) e = (s', r)) \<and> r \<noteq>  Rerr (Rabort Rtimeout_error) \<and> (clock s) = (clock s')) =
+    evaluate env s e (s',r)"
+  apply (subst fun_evaluate_equiv')
+  apply (subst unclocked_single_eq)
+  apply (subst unclocked_eq)
+  apply (subst fun.evaluate_iff_sym(1)[symmetric])
+  apply (subst big_clocked_unclocked_equiv)
+  using clocked_evaluate by metis
 
 end
