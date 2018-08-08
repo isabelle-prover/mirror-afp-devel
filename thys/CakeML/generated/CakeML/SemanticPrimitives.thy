@@ -246,7 +246,7 @@ pmatch envC s (Pcon (Some n) ps) (Conv (Some (n', t')) vs) env = (
       Some (l, t1) =>
         if same_tid t1 t' \<and> (List.length ps = l) then
           if same_ctor (id_to_n n, t1) (n',t') then
-            pmatch_list envC s ps vs env
+            (if List.length vs = l then pmatch_list envC s ps vs env else Match_type_error)
           else
             No_match
         else
