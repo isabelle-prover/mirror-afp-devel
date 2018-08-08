@@ -403,6 +403,10 @@ lemma proots_within_iff[simp]:
   "x\<in>proots_within p s \<longleftrightarrow> poly p x=0 \<and> x\<in>s"
   unfolding proots_within_def by auto
 
+lemma proots_within_union:
+  "proots_within p A \<union> proots_within p B = proots_within p (A \<union> B)"
+  unfolding proots_within_def by auto
+
 lemma proots_within_times:
   fixes s::"'a::{semiring_no_zero_divisors,comm_semiring_0} set"
   shows "proots_within (p*q) s = proots_within p s \<union> proots_within q s"

@@ -42,9 +42,29 @@ qed
 
 lemma infinite_ball:
   fixes a :: "'a::euclidean_space"
-  assumes "r > 0"
+  assumes "r > 0" 
   shows "infinite (ball a r)"
   using uncountable_ball[OF assms, THEN uncountable_infinite] .
+
+lemma infinite_cball:
+  fixes a :: "'a::euclidean_space"
+  assumes "r > 0" 
+  shows "infinite (cball a r)"
+  using uncountable_cball[OF assms, THEN uncountable_infinite,of a] .
+
+(*FIXME: to generalise*)
+lemma infinite_sphere:
+  fixes a :: complex
+  assumes "r > 0" 
+  shows "infinite (sphere a r)" 
+proof -
+  have "uncountable (path_image (circlepath a r))"
+    apply (rule simple_path_image_uncountable)
+    using simple_path_circlepath assms by simp
+  then have "uncountable (sphere a r)"
+    using assms by simp
+  from uncountable_infinite[OF this] show ?thesis .
+qed
 
 lemma infinite_halfspace_Im_gt: "infinite {x. Im x > b}"
   apply (rule connected_uncountable[THEN uncountable_infinite,of _ "(b+1)* \<i>" "(b+2)*\<i>"])
@@ -311,6 +331,21 @@ proof (rule bij_betw_imageI)
     apply (rule rev_image_eqI[of "(x-z0)/r"])
     using that assms by (auto simp add: dist_norm norm_divide norm_minus_commute)
   ultimately show "(\<lambda>x. complex_of_real r  * x + z0) ` ball 0 1 = ball z0 r" 
+    by auto
+qed
+
+lemma bij_betw_sphere_usphere:
+  assumes "r>0"
+  shows "bij_betw (\<lambda>x. complex_of_real r*x + z0) (sphere 0 1) (sphere z0 r)"
+proof (rule bij_betw_imageI)
+  show "inj_on (\<lambda>x. complex_of_real r * x + z0) (sphere 0 1)"
+    unfolding inj_on_def using assms by simp
+  have "dist z0 (complex_of_real r * x + z0) = r" when "cmod x=1" for x 
+    using that assms by (auto simp:dist_norm norm_mult abs_of_pos)
+  moreover have "x \<in> (\<lambda>x. complex_of_real r * x + z0) ` sphere 0 1" when "dist z0 x = r" for x 
+    apply (rule rev_image_eqI[of "(x-z0)/r"])
+    using that assms by (auto simp add: dist_norm norm_divide norm_minus_commute)
+  ultimately show "(\<lambda>x. complex_of_real r  * x + z0) ` sphere 0 1 = sphere z0 r" 
     by auto
 qed
 
@@ -703,43 +738,50 @@ next
   ultimately show ?case by auto
 qed
 
-lemma proots_plane_ball_eq:
+lemma proots_ball_plane_eq:
   defines "q1\<equiv>[:\<i>,-1:]" and "q2\<equiv>[:\<i>,1:]"
   assumes "p\<noteq>0"
   shows "proots_count p (ball 0 1) = proots_count (fcompose p q1 q2) {x. 0 < Im x}"
-        "proots_count p (sphere 0 1 - {- 1}) = proots_count (fcompose p q1 q2) {x. 0 = Im x}"
-proof -
-  show "proots_count p (ball 0 1) = proots_count (fcompose p q1 q2) {x. 0 < Im x}"
-    unfolding q1_def q2_def 
-  proof (rule proots_fcompose_bij_eq[OF _ \<open>p\<noteq>0\<close>])
-    show "\<forall>x\<in>{x. 0 < Im x}. poly [:\<i>, 1:] x \<noteq> 0" 
-      apply simp 
-      by (metis add_less_same_cancel2 imaginary_unit.simps(2) not_one_less_zero 
+  unfolding q1_def q2_def 
+proof (rule proots_fcompose_bij_eq[OF _ \<open>p\<noteq>0\<close>])
+  show "\<forall>x\<in>{x. 0 < Im x}. poly [:\<i>, 1:] x \<noteq> 0" 
+    apply simp 
+    by (metis add_less_same_cancel2 imaginary_unit.simps(2) not_one_less_zero 
           plus_complex.simps(2) zero_complex.simps(2))
-    show "infinite (UNIV::complex set)" by (simp add: infinite_UNIV_char_0)
-  qed (use bij_betw_plane_ball in auto)
-  show "proots_count p (sphere 0 1 - {- 1}) = proots_count (fcompose p q1 q2) {x. 0 = Im x}"
-    unfolding q1_def q2_def 
-  proof (rule proots_fcompose_bij_eq[OF _ \<open>p\<noteq>0\<close>])
-    show "\<forall>x\<in>{x. 0 = Im x}. poly [:\<i>, 1:] x \<noteq> 0" by (simp add: Complex_eq_0 plus_complex.code)
-    show "infinite (UNIV::complex set)" by (simp add: infinite_UNIV_char_0)
-  qed (use bij_betw_axis_sphere in auto)
-qed
+  show "infinite (UNIV::complex set)" by (simp add: infinite_UNIV_char_0)
+qed (use bij_betw_plane_ball in auto)
 
-lemma proots_card_plane_ball_eq:
+lemma proots_sphere_axis_eq:
+  defines "q1\<equiv>[:\<i>,-1:]" and "q2\<equiv>[:\<i>,1:]"
+  assumes "p\<noteq>0"
+  shows "proots_count p (sphere 0 1 - {- 1}) = proots_count (fcompose p q1 q2) {x. 0 = Im x}"
+unfolding q1_def q2_def 
+proof (rule proots_fcompose_bij_eq[OF _ \<open>p\<noteq>0\<close>])
+  show "\<forall>x\<in>{x. 0 = Im x}. poly [:\<i>, 1:] x \<noteq> 0" by (simp add: Complex_eq_0 plus_complex.code)
+  show "infinite (UNIV::complex set)" by (simp add: infinite_UNIV_char_0)
+qed (use bij_betw_axis_sphere in auto)
+
+lemma proots_card_ball_plane_eq:
   defines "q1\<equiv>[:\<i>,-1:]" and "q2\<equiv>[:\<i>,1:]"
   assumes "p\<noteq>0"
   shows "card (proots_within p (ball 0 1)) = card (proots_within (fcompose p q1 q2) {x. 0 < Im x})"
-proof -
-  show ?thesis unfolding q1_def q2_def
-  proof (rule proots_card_fcompose_bij_eq[OF _ \<open>p\<noteq>0\<close>])
-    show "\<forall>x\<in>{x. 0 < Im x}. poly [:\<i>, 1:] x \<noteq> 0" 
-      apply simp 
-      by (metis add_less_same_cancel2 imaginary_unit.simps(2) not_one_less_zero 
+unfolding q1_def q2_def
+proof (rule proots_card_fcompose_bij_eq[OF _ \<open>p\<noteq>0\<close>])
+  show "\<forall>x\<in>{x. 0 < Im x}. poly [:\<i>, 1:] x \<noteq> 0" 
+    apply simp 
+    by (metis add_less_same_cancel2 imaginary_unit.simps(2) not_one_less_zero 
           plus_complex.simps(2) zero_complex.simps(2))
-    show "infinite (UNIV::complex set)" by (simp add: infinite_UNIV_char_0)
-  qed (use bij_betw_plane_ball in auto)
-qed
+qed (use bij_betw_plane_ball infinite_UNIV_char_0 in auto)
+
+lemma proots_card_sphere_axis_eq:
+  defines "q1\<equiv>[:\<i>,-1:]" and "q2\<equiv>[:\<i>,1:]"
+  assumes "p\<noteq>0"
+  shows "card (proots_within p (sphere 0 1 - {- 1})) 
+            = card (proots_within (fcompose p q1 q2) {x. 0 = Im x})"
+unfolding q1_def q2_def
+proof (rule proots_card_fcompose_bij_eq[OF _ \<open>p\<noteq>0\<close>])
+  show "\<forall>x\<in>{x. 0 = Im x}. poly [:\<i>, 1:] x \<noteq> 0" by (simp add: Complex_eq_0 plus_complex.code)
+qed (use bij_betw_axis_sphere infinite_UNIV_char_0 in auto)
 
 lemma proots_uball_eq:
   fixes z0::complex and r::real
@@ -760,18 +802,45 @@ lemma proots_card_uball_eq:
   assumes "r>0"
   shows "card (proots_within p (ball z0 r)) = card (proots_within (p \<circ>\<^sub>p q) (ball 0 1))"
 proof -
-  have ?thesis when "p=0"
+  have ?thesis 
+    when "p=0"
   proof -
     have "card (ball z0 r) = 0" "card (ball (0::complex) 1) = 0"
       using infinite_ball[OF \<open>r>0\<close>,of z0] infinite_ball[of 1 "0::complex"] by auto 
     then show ?thesis using that by auto
   qed
-  moreover have ?thesis when "p\<noteq>0"
+  moreover have ?thesis 
+    when "p\<noteq>0"
     apply (rule proots_card_pcompose_bij_eq[OF _ \<open>p\<noteq>0\<close>])
     subgoal unfolding q_def using bij_betw_ball_uball[OF \<open>r>0\<close>,of z0] by (auto simp:algebra_simps)
     subgoal unfolding q_def using \<open>r>0\<close> by auto
     done
-  ultimately show ?thesis by blast
+  ultimately show ?thesis 
+    by blast
+qed
+
+lemma proots_card_usphere_eq:
+  fixes z0::complex and r::real
+  defines "q\<equiv>[:z0, of_real r:]"
+  assumes "r>0"
+  shows "card (proots_within p (sphere z0 r)) = card (proots_within (p \<circ>\<^sub>p q) (sphere 0 1))"
+proof -
+  have ?thesis 
+    when "p=0"
+  proof -
+    have "card (sphere z0 r) = 0" "card (sphere (0::complex) 1) = 0"
+      using infinite_sphere[OF \<open>r>0\<close>,of z0] infinite_sphere[of 1 "0::complex"] by auto 
+    then show ?thesis using that by auto
+  qed
+  moreover have ?thesis
+    when "p\<noteq>0"
+    apply (rule proots_card_pcompose_bij_eq[OF _ \<open>p\<noteq>0\<close>])
+    subgoal unfolding q_def using bij_betw_sphere_usphere[OF \<open>r>0\<close>,of z0] 
+      by (auto simp:algebra_simps)
+    subgoal unfolding q_def using \<open>r>0\<close> by auto
+    done
+  ultimately show "card (proots_within p (sphere z0 r)) = card (proots_within (p \<circ>\<^sub>p q) (sphere 0 1))" 
+    by blast
 qed
   
 subsection \<open>Combining two real polynomials into a complex one\<close>  
@@ -799,8 +868,15 @@ lemma poly_cpoly_of_real_iff:
 
 subsection \<open>Number of roots on a (bounded or unbounded) segment\<close>
 
+\<comment> \<open>1 dimensional hyperplane\<close>
 definition unbounded_line::"'a::real_vector \<Rightarrow> 'a \<Rightarrow> 'a set" where 
    "unbounded_line a b = ({x. \<exists>u::real. x= (1 - u) *\<^sub>R a + u *\<^sub>R b})"
+
+definition proots_line_card:: "complex poly \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> nat" where
+  "proots_line_card p st tt = card (proots_within p (open_segment st tt))"
+
+definition proots_unbounded_line_card:: "complex poly \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> nat" where
+  "proots_unbounded_line_card p st tt = card (proots_within p (unbounded_line st tt))"
 
 lemma card_proots_open_segments:
   assumes "poly p st \<noteq>0" "poly p tt \<noteq> 0"
@@ -888,7 +964,7 @@ lemma card_proots_unbounded_line:
                      pR = map_poly Re pc;
                      pI = map_poly Im pc;
                      g  = gcd pR pI
-                 in changes_R_smods g (pderiv g))" (is "?L = ?R")
+                 in nat (changes_R_smods g (pderiv g)))" (is "?L = ?R")
 proof -
   define pc pR pI g where 
       "pc = pcompose p [:st, tt-st:]" and
@@ -908,7 +984,7 @@ proof -
     finally show ?thesis by auto
   qed      
 
-  have "?R = changes_R_smods g (pderiv g)"
+  have "?R = nat (changes_R_smods g (pderiv g))"
     unfolding pc_def g_def pI_def pR_def by (auto simp add:Let_def)
   also have "... = card {t. poly g t = 0}"
     using sturm_R[of g] by simp
@@ -950,6 +1026,19 @@ proof -
   qed  
   finally show ?thesis by simp
 qed
+
+lemma proots_unbounded_line_card_code[code]:
+  "proots_unbounded_line_card p st tt = 
+              (if st\<noteq>tt then 
+                (let pc = pcompose p [:st, tt - st:];
+                     pR = map_poly Re pc;
+                     pI = map_poly Im pc;
+                     g  = gcd pR pI
+                 in nat (changes_R_smods g (pderiv g))) 
+              else 
+                  Code.abort (STR ''proots_unbounded_line_card fails due to invalid hyperplanes.'') 
+                      (\<lambda>_. proots_unbounded_line_card p st tt))"
+unfolding proots_unbounded_line_card_def using card_proots_unbounded_line[of st tt p] by auto
   
 subsection \<open>Checking if there a polynomial root on a closed segment\<close>    
     
@@ -1044,12 +1133,10 @@ next
   finally show ?thesis by simp
 qed
    
-  
 subsection \<open>Counting roots in a rectangle\<close>  
   
-definition proots_rectangle ::"complex poly \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> int" where
+definition proots_rectangle ::"complex poly \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> nat" where
   "proots_rectangle p lb ub = proots_count p (box lb ub)"  
-  
   
 lemma closed_segment_imp_Re_Im:
   fixes x::complex
@@ -1175,10 +1262,10 @@ lemma proots_rectangle_code1:
                 p4 = pcompose p [:Complex (Re lb) (Im ub), Complex 0 (Im lb - Im ub):];
                 pR4 = map_poly Re p4; pI4 = map_poly Im p4; gc4 = gcd pR4 pI4
             in 
-              - (changes_alt_itv_smods 0 1 (pR1 div gc1) (pI1 div gc1)
+              nat (- (changes_alt_itv_smods 0 1 (pR1 div gc1) (pI1 div gc1)
                 + changes_alt_itv_smods 0 1 (pR2 div gc2) (pI2 div gc2)
                 + changes_alt_itv_smods 0 1 (pR3 div gc3) (pI3 div gc3)
-                + changes_alt_itv_smods 0 1 (pR4 div gc4) (pI4 div gc4))  div 4
+                + changes_alt_itv_smods 0 1 (pR4 div gc4) (pI4 div gc4))  div 4)
             )
             else Code.abort (STR ''proots_rectangle fails when there is a root on the border.'') 
             (\<lambda>_. proots_rectangle p lb ub)
@@ -1498,7 +1585,7 @@ proof -
         apply (subst *)
         by auto
     qed  
-    finally have "(of_int::_\<Rightarrow> complex) (proots_rectangle p lb ub) = of_int (- sms) / of_int 4" .
+    finally have "(of_nat::_\<Rightarrow>complex) (proots_rectangle p lb ub) = of_int (- sms) / of_int 4" .
     moreover have "4 dvd sms" 
     proof -
       have "winding_number (poly p \<circ> rec) 0 \<in> \<int>"
@@ -1515,9 +1602,9 @@ proof -
         by (simp only: winding_eq cindex_pathE_eq)
       then show ?thesis by (subst (asm) dvd_divide_Ints_iff[symmetric],auto) 
     qed
-    ultimately have "proots_rectangle p lb ub = - sms div 4"
+    ultimately have "proots_rectangle p lb ub = nat (- sms div 4)"
       apply (subst (asm) of_int_div_field[symmetric])
-      by auto
+      by (simp,metis nat_int of_int_eq_iff of_int_of_nat_eq)
     then show ?thesis 
       unfolding Let_def
       apply (fold p1_def p2_def p3_def p4_def pI1_def pR1_def pI2_def pR2_def pI3_def pR3_def
@@ -1549,10 +1636,10 @@ lemma proots_rectangle_code2[code]:
                    \<and> changes_itv_smods 0 1 gc3 (pderiv gc3) = 0
                    \<and> changes_itv_smods 0 1 gc4 (pderiv gc4) = 0
                 then 
-                   - (changes_alt_itv_smods 0 1 (pR1 div gc1) (pI1 div gc1)
+                   nat (- (changes_alt_itv_smods 0 1 (pR1 div gc1) (pI1 div gc1)
                     + changes_alt_itv_smods 0 1 (pR2 div gc2) (pI2 div gc2)
                     + changes_alt_itv_smods 0 1 (pR3 div gc3) (pI3 div gc3)
-                    + changes_alt_itv_smods 0 1 (pR4 div gc4) (pI4 div gc4))  div 4
+                    + changes_alt_itv_smods 0 1 (pR4 div gc4) (pI4 div gc4)) div 4)
                 else Code.abort (STR ''proots_rectangle fails when there is a root on the border.'') 
                         (\<lambda>_. proots_rectangle p lb ub))
             else Code.abort (STR ''proots_rectangle fails when there is a root on the border.'') 
@@ -1601,11 +1688,11 @@ qed
 subsection \<open>Polynomial roots on the upper half-plane\<close>
 
 \<comment> \<open>Roots counted WITH multiplicity\<close>
-definition proots_upper ::"complex poly \<Rightarrow> int" where
+definition proots_upper ::"complex poly \<Rightarrow> nat" where
   "proots_upper p= proots_count p {z. Im z>0}"
 
 \<comment> \<open>Roots counted WITHOUT multiplicity\<close>
-definition proots_upper_card::"complex poly \<Rightarrow> int" where 
+definition proots_upper_card::"complex poly \<Rightarrow> nat" where 
   "proots_upper_card p = card (proots_within p {x. Im x >0})"
 
 lemma Im_Ln_tendsto_at_top: "((\<lambda>x. Im (Ln (Complex a x))) \<longlongrightarrow> pi/2 ) at_top " 
@@ -3105,7 +3192,7 @@ proof -
     qed
     ultimately show ?thesis by auto
   qed
-  finally show ?thesis .
+  finally show ?thesis by simp
 qed
 
 (*If we know that the polynomial p is squarefree, we can cope with the case when there're 
@@ -3118,7 +3205,7 @@ lemma proots_within_upper_squarefree:
             pR = map_poly Re pp;
             g = gcd pR pI
         in
-            (degree p - changes_R_smods g (pderiv g) - changes_R_smods pR pI) div 2  
+            nat ((degree p - changes_R_smods g (pderiv g) - changes_R_smods pR pI) div 2)  
       )"
 proof -
   define pp where "pp = smult (inverse (lead_coeff p)) p"
@@ -3139,10 +3226,12 @@ proof -
       apply (rule proots_upper_cindex_eq'[of pp,folded rr_def cpp_def pR_def pI_def])
       unfolding pp_def using assms by auto
     also have "... = (degree pp - rr - cpp) div 2"
-      apply (subst real_of_int_div)
-      subgoal using * by (metis odd_add of_int_add of_int_add of_int_eq_iff field_sum_of_halves)
-      subgoal by simp
-      done
+    proof (subst real_of_int_div)
+      define tt where "tt=int (degree pp - rr) - cpp"
+      have "real_of_int tt=2*proots_upper pp"
+        by (simp add:*[folded tt_def])
+      then show "even tt" by (metis dvd_triv_left even_of_nat of_int_eq_iff of_int_of_nat_eq)
+    qed simp
     finally show ?thesis unfolding rr_def cpp_def by simp
   qed
   also have "... = (degree pp - changes_R_smods g (pderiv g) 
@@ -3167,17 +3256,17 @@ proof -
     qed
     also have "... = changes_R_smods g (pderiv g)"
       unfolding card_proots_unbounded_line[of 0 1 pp,simplified,folded pI_def pR_def] g_def
-      by (auto simp add:Let_def)
+      by (auto simp add:Let_def sturm_R[symmetric])
     finally have "proots_count pp {x. Im x = 0} = changes_R_smods g (pderiv g)" .
     moreover have "degree pp \<ge> proots_count pp {x. Im x = 0}" 
       by (metis \<open>rsquarefree pp\<close> proots_count_leq_degree rsquarefree_0)
     ultimately show ?thesis 
       by auto
   qed
-  also have "... = (degree pp - changes_R_smods g (pderiv g) 
+  also have "... = (degree p - changes_R_smods g (pderiv g) 
                         - changes_R_smods pR pI) div 2"
-    using cindex_poly_ubd_code by simp
-  finally have "card (proots_within p {x. 0 < Im x}) = (degree pp - changes_R_smods g (pderiv g) -
+    using cindex_poly_ubd_code unfolding pp_def by simp
+  finally have "card (proots_within p {x. 0 < Im x}) = (degree p - changes_R_smods g (pderiv g) -
                   changes_R_smods pR pI) div 2" .
   then show ?thesis unfolding Let_def
     apply (fold pp_def pR_def pI_def g_def)
@@ -3193,7 +3282,7 @@ lemma proots_upper_code1[code]:
         in
           if changes_R_smods g (pderiv g) = 0 
           then 
-            (degree p - changes_R_smods pR pI) div 2 
+            nat ((degree p - changes_R_smods pR pI) div 2) 
           else 
             Code.abort (STR ''proots_upper fails when there is a root on the border.'') 
               (\<lambda>_. proots_upper p) 
@@ -3255,8 +3344,9 @@ proof -
       by simp
     also have "... = real_of_int (dc div 2)"
       apply (subst real_of_int_div[symmetric])
-       apply (metis Ints_of_int \<open>(proots_upper pp) = real_of_int dc / 2\<close> 
-          fraction_not_in_ints of_int_numeral rel_simps(76)) 
+      apply (metis \<open>real (proots_upper pp) = real_of_int dc / 2\<close> cos_npi_int cos_zero_iff_int 
+          dvd_def dvd_minus_iff mult.commute mult_zero_left of_int_of_nat_eq times_divide_eq_right 
+          zero_neq_one)
       by simp
     finally have "(proots_upper pp) = real_of_int (dc div 2)" .
     then have "(proots_upper pp) = dc div 2" by simp
@@ -3281,7 +3371,7 @@ lemma proots_upper_card_code[code]:
             pR = map_poly Re pp;
             g = gcd pR pI
         in
-            (degree pf - changes_R_smods g (pderiv g) - changes_R_smods pR pI) div 2  
+            nat ((degree pf - changes_R_smods g (pderiv g) - changes_R_smods pR pI) div 2)  
       ))"
 proof (cases "p=0")
   case True
@@ -3301,7 +3391,7 @@ next
       by auto
     then show ?thesis unfolding proots_upper_card_def by auto
   qed
-  also have "... = (degree pf - changes_R_smods g (pderiv g) - changes_R_smods pR pI) div 2"
+  also have "... = nat ((degree pf - changes_R_smods g (pderiv g) - changes_R_smods pR pI) div 2)"
     using proots_within_upper_squarefree[OF rsquarefree_gcd_pderiv[OF \<open>p\<noteq>0\<close>]
         ,unfolded Let_def,folded pf_def,folded pp_def pI_def pR_def g_def]
     unfolding proots_upper_card_def by blast
@@ -3314,7 +3404,7 @@ subsection \<open>Polynomial roots on a general half-plane\<close>
 
 text \<open>the number of roots of polynomial @{term p}, counted with multiplicity,
    on the left half plane of the vector @{term "b-a"}.\<close>
-definition proots_half ::"complex poly \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> int" where
+definition proots_half ::"complex poly \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> nat" where
   "proots_half p a b = proots_count p {w. Im ((w-a) / (b-a)) > 0}"    
   
 lemma proots_half_empty:
@@ -3434,14 +3524,14 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-subsection \<open>Polynomial roots within a circle\<close>
+subsection \<open>Polynomial roots within a circle (open ball)\<close>
 
 \<comment> \<open>Roots counted WITH multiplicity\<close>
-definition proots_ball::"complex poly \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> int" where
+definition proots_ball::"complex poly \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> nat" where
   "proots_ball p z0 r = proots_count p (ball z0 r)" 
 
 \<comment> \<open>Roots counted WITHOUT multiplicity\<close>
-definition proots_ball_card ::"complex poly \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> int" where
+definition proots_ball_card ::"complex poly \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> nat" where
   "proots_ball_card p z0 r = card (proots_within p (ball z0 r))"
 
 lemma proots_ball_code1[code]:
@@ -3461,7 +3551,7 @@ proof (cases "p=0 \<or> r\<le>0")
     using False by auto
   also have "... = proots_upper (fcompose (p \<circ>\<^sub>p [:z0, of_real r:]) [:\<i>,-1:] [:\<i>,1:])"
     unfolding proots_upper_def
-    apply (rule proots_plane_ball_eq[THEN arg_cong])
+    apply (rule proots_ball_plane_eq[THEN arg_cong])
     using False pcompose_eq_0[of p "[:z0, of_real r:]"] by auto
   finally show ?thesis using False by auto
 qed (auto simp:proots_ball_def ball_empty)
@@ -3494,10 +3584,160 @@ next
     by (rule proots_card_uball_eq[OF \<open>r>0\<close>, THEN arg_cong])
   also have "... = proots_upper_card (fcompose (p \<circ>\<^sub>p [:z0, of_real r:]) [:\<i>,-1:] [:\<i>,1:])"
     unfolding proots_upper_card_def
-    apply (rule proots_card_plane_ball_eq[THEN arg_cong])
+    apply (rule proots_card_ball_plane_eq[THEN arg_cong])
     using False pcompose_eq_0[of p "[:z0, of_real r:]"] by auto
   finally show ?thesis using False by auto
 qed
-  
+
+subsection \<open>Polynomial roots on a circle (sphere)\<close>
+
+\<comment> \<open>Roots counted WITH multiplicity\<close>
+definition proots_sphere::"complex poly \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> nat" where
+  "proots_sphere p z0 r = proots_count p (sphere z0 r)" 
+
+\<comment> \<open>Roots counted WITHOUT multiplicity\<close>
+definition proots_sphere_card ::"complex poly \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> nat" where
+  "proots_sphere_card p z0 r = card (proots_within p (sphere z0 r))"
+
+lemma proots_sphere_card_code1[code]:
+  "proots_sphere_card p z0 r = 
+                ( if r=0 then 
+                      (if poly p z0=0 then 1 else 0) 
+                  else if r < 0 \<or> p=0 then 
+                      0
+                  else 
+                    (if poly p (z0-r) =0 then 1 else 0) +
+                    proots_unbounded_line_card (fcompose (p \<circ>\<^sub>p [:z0, of_real r:]) [:\<i>,-1:] [:\<i>,1:])
+                      0 1 
+                )" 
+proof -
+  have ?thesis when "r=0"
+  proof -
+    have "proots_within p {z0} = (if poly p z0 = 0 then {z0} else {})"
+      by auto
+    then show ?thesis unfolding proots_sphere_card_def using that by simp
+  qed
+  moreover have ?thesis when "r\<noteq>0" "r < 0 \<or> p=0"
+  proof -
+    have ?thesis when "r<0"
+    proof -
+      have "proots_within p (sphere z0 r) = {}" 
+        by (auto simp add: ball_empty that)
+      then show ?thesis unfolding proots_sphere_card_def using that by auto
+    qed
+    moreover have ?thesis when "r>0" "p=0"
+      unfolding proots_sphere_card_def using that infinite_sphere[of r z0]
+      by auto
+    ultimately show ?thesis using that by argo
+  qed
+  moreover have ?thesis when "r>0" "p\<noteq>0"
+  proof -
+    define pp where "pp = p \<circ>\<^sub>p [:z0, of_real r:]" 
+    define ppp where "ppp=fcompose pp [:\<i>, - 1:] [:\<i>, 1:]"
+
+    have "pp\<noteq>0" unfolding pp_def using that pcompose_eq_0 by fastforce
+
+    have "proots_sphere_card p z0 r = card (proots_within pp (sphere 0 1))"
+      unfolding proots_sphere_card_def pp_def
+      by (rule proots_card_usphere_eq[OF \<open>r>0\<close>, THEN arg_cong])
+    also have "... = card (proots_within pp {-1} \<union> proots_within pp (sphere 0 1 - {-1}))"
+      by (simp add: insert_absorb proots_within_union)
+    also have "... = card (proots_within pp {-1}) + card (proots_within pp (sphere 0 1 - {-1}))"
+      apply (rule card_Un_disjoint)
+      using \<open>pp\<noteq>0\<close> by auto
+    also have "... = card (proots_within pp {-1}) + card (proots_within ppp {x. 0 = Im x})"
+      using proots_card_sphere_axis_eq[OF \<open>pp\<noteq>0\<close>,folded ppp_def] by simp
+    also have "... = (if poly p (z0-r) =0 then 1 else 0) + proots_unbounded_line_card ppp 0 1"
+    proof -
+      have "proots_within pp {-1} = (if poly p (z0-r) =0 then {-1} else {})"
+        unfolding pp_def by (auto simp:poly_pcompose)
+      then have "card (proots_within pp {-1}) = (if poly p (z0-r) =0 then 1 else 0)"
+        by auto
+      moreover have "{x. Im x = 0} = unbounded_line 0 1" 
+        unfolding unbounded_line_def 
+        apply auto
+        by (metis complex_is_Real_iff of_real_Re of_real_def)
+      then have "card (proots_within ppp {x. 0 = Im x})
+                        = proots_unbounded_line_card ppp 0 1"
+        unfolding proots_unbounded_line_card_def by simp
+      ultimately show ?thesis by auto
+    qed
+    finally show ?thesis 
+      apply (fold pp_def,fold ppp_def)
+      using that by auto
+  qed
+  ultimately show ?thesis by auto
+qed
+
+subsection \<open>Polynomial roots on a closed ball\<close>
+
+\<comment> \<open>Roots counted WITH multiplicity\<close>
+definition proots_cball::"complex poly \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> nat" where
+  "proots_cball p z0 r = proots_count p (cball z0 r)" 
+
+\<comment> \<open>Roots counted WITHOUT multiplicity\<close>
+definition proots_cball_card ::"complex poly \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> nat" where
+  "proots_cball_card p z0 r = card (proots_within p (cball z0 r))"
+
+(*FIXME: this can be surely optimised/refined.*)
+lemma proots_cball_card_code1[code]:
+  "proots_cball_card p z0 r = 
+                ( if r=0 then 
+                      (if poly p z0=0 then 1 else 0) 
+                  else if r < 0 \<or> p=0 then 
+                      0
+                  else 
+                    ( let pp=fcompose (p \<circ>\<^sub>p [:z0, of_real r:]) [:\<i>,-1:] [:\<i>,1:] 
+                      in 
+                        (if poly p (z0-r) =0 then 1 else 0) 
+                        + proots_unbounded_line_card pp 0 1 
+                        + proots_upper_card pp
+                    )
+                )"
+proof -
+  have ?thesis when "r=0"
+  proof -
+    have "proots_within p {z0} = (if poly p z0 = 0 then {z0} else {})"
+      by auto
+    then show ?thesis unfolding proots_cball_card_def using that by simp
+  qed
+  moreover have ?thesis when "r\<noteq>0" "r < 0 \<or> p=0"
+  proof -
+    have ?thesis when "r<0"
+    proof -
+      have "proots_within p (cball z0 r) = {}" 
+        by (auto simp add: ball_empty that)
+      then show ?thesis unfolding proots_cball_card_def using that by auto
+    qed
+    moreover have ?thesis when "r>0" "p=0"
+      unfolding proots_cball_card_def using that infinite_cball[of r z0]
+      by auto
+    ultimately show ?thesis using that by argo
+  qed
+  moreover have ?thesis when "p\<noteq>0" "r>0"
+  proof -
+    define pp where "pp=fcompose (p \<circ>\<^sub>p [:z0, of_real r:]) [:\<i>,-1:] [:\<i>,1:]"
+
+    have "proots_cball_card p z0 r = card (proots_within p (sphere z0 r) 
+                                        \<union> proots_within p (ball z0 r))" 
+      unfolding proots_cball_card_def 
+      apply (simp add:proots_within_union)
+      by (metis Diff_partition cball_diff_sphere sphere_cball)
+    also have "... = card (proots_within p (sphere z0 r)) + card (proots_within p (ball z0 r))"
+      apply (rule card_Un_disjoint)
+      using \<open>p\<noteq>0\<close> by auto
+    also have "... = (if poly p (z0-r) =0 then 1 else 0) + proots_unbounded_line_card pp 0 1 
+                        + proots_upper_card pp"
+      using proots_sphere_card_code1[of p z0 r,folded pp_def,unfolded proots_sphere_card_def] 
+        proots_ball_card_code1[of p z0 r,folded pp_def,unfolded proots_ball_card_def]
+        that
+      by simp
+    finally show ?thesis 
+      apply (fold pp_def)
+      using that by auto
+  qed
+  ultimately show ?thesis by auto
+qed
+
 end
   
