@@ -2737,7 +2737,8 @@ next
 qed
 
 
-
+lemma max_list_Max: "ls \<noteq> [] \<Longrightarrow> max_list ls = Max (set ls)"
+  by (induction ls) (auto simp add: max_list_Cons)
 
 section \<open>Bounds\<close>
 
@@ -2746,8 +2747,7 @@ begin
 
 definition "A = Max (sq_norm ` set fs)"
 
-lemma max_list_Max: "ls \<noteq> [] \<Longrightarrow> max_list ls = Max (set ls)"
-  by (induction ls) (auto simp add: max_list_Cons)
+
 
 lemma A_ge_0:
   assumes "0 < m"
