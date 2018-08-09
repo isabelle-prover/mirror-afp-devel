@@ -165,6 +165,9 @@ begin
       using that by (coinduct) (metis snth_0 snth_Stream)
   qed
 
+  lemma stream_rel_pred_szip: "stream_all2 P u v \<longleftrightarrow> pred_stream (case_prod P) (szip u v)"
+    unfolding stream_pred_snth stream_rel_snth by simp
+
   lemma sconst_eq[iff]: "sconst x = sconst y \<longleftrightarrow> x = y" by (auto) (metis siterate.simps(1))
   lemma stream_pred__sconst[iff]: "pred_stream P (sconst x) \<longleftrightarrow> P x"
     unfolding stream_pred_snth by simp

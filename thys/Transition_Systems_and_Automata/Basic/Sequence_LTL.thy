@@ -70,6 +70,8 @@ begin
 
   lemma infs_mono: "(\<And> a. a \<in> sset w \<Longrightarrow> P a \<Longrightarrow> Q a) \<Longrightarrow> infs P w \<Longrightarrow> infs Q w"
     unfolding infs_snth by force
+  lemma infs_mono_strong: "stream_all2 (\<lambda> a b. P a \<longrightarrow> Q b) u v \<Longrightarrow> infs P u \<Longrightarrow> infs Q v"
+    unfolding stream_rel_snth infs_snth by blast
 
   lemma infs_all: "Ball (sset w) P \<Longrightarrow> infs P w" unfolding infs_snth by auto
   lemma infs_any: "infs P w \<Longrightarrow> Bex (sset w) P" unfolding ev_holds_sset by auto
