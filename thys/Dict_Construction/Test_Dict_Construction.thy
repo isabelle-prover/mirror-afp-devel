@@ -4,8 +4,6 @@ theory Test_Dict_Construction
 imports
   Dict_Construction
   "HOL-Library.ListVector"
-  Lazy_Case.Lazy_Case
-  Show.Show_Instances
 begin
 
 subsection \<open>Code equations with different number of explicit arguments\<close>
@@ -20,7 +18,6 @@ experiment begin
   lemma "List_fold = fold" by (rule valid)
 
 end
-
 
 subsection \<open>Complex class hierarchies\<close>
 
@@ -119,8 +116,8 @@ fun odd :: "nat \<Rightarrow> bool" and even where
 
 experiment begin
 
-declassify valid1: odd even
-thm valid1
+declassify valid: odd even
+thm valid
 
 end
 
@@ -128,8 +125,8 @@ datatype 'a bin_tree = Leaf | Node 'a "'a bin_tree" "'a bin_tree"
 
 experiment begin
 
-declassify valid2: map_bin_tree rel_bin_tree
-thm valid2
+declassify valid: map_bin_tree rel_bin_tree
+thm valid
 
 end
 
@@ -153,16 +150,16 @@ end
 
 experiment begin
 
-declassify valid3: test_w test_v
-thm valid3
+declassify valid: test_w test_v
+thm valid
 
 end
 
 experiment begin
 
 (* FIXME derive fundef_cong rule for sum_list *)
-declassify valid4: test_w1 test_v1
-thm valid4
+declassify valid: test_w1 test_v1
+thm valid
 
 end
 
@@ -176,9 +173,9 @@ lemma contrived[code]: "c = d 0" unfolding c_def d_def by simp
 
 experiment begin
 
-declassify valid5: c
-thm valid5
-lemma "Test__Dict__Construction_c = c" by (fact valid5)
+declassify valid: c
+thm valid
+lemma "Test__Dict__Construction_c = c" by (fact valid)
 
 end
 
@@ -199,48 +196,12 @@ by (induct n) simp+
 
 experiment begin
 
-declassify valid6: j k
-thm valid6
+declassify valid: j k
+thm valid
 lemma
   "Test__Dict__Construction_j = j"
   "Test__Dict__Construction_k = k"
-by (fact valid6)+
-
-end
-
-
-subsection \<open>Interaction with @{theory Lazy_Case.Lazy_Case}\<close>
-
-datatype 'a tree = Node | Fork 'a "'a tree list"
-
-lemma map_tree[code]:
-  "map_tree f t = (case t of Node \<Rightarrow> Node | Fork x ts \<Rightarrow> Fork (f x) (map (map_tree f) ts))" for f
-by (induction t) auto
-
-experiment begin
-
-text \<open>
-  Dictionary construction of @{const map_tree} requires the [@{attribute fundef_cong}] rule of
-  @{const Test_Dict_Construction.tree.case_lazy}.
-\<close>
-
-declassify valid7: map_tree
-thm valid7
-
-end
-
-
-subsection \<open>Application: deriving @{class show} instances\<close>
-
-definition i :: "(unit \<times> (bool list \<times> string \<times> nat option) list) option \<Rightarrow> string" where
-"i = show"
-
-experiment begin
-
-declassify valid8: i
-thm valid8
-
-lemma "Test__Dict__Construction_i = i" by (fact valid8)
+by (fact valid)+
 
 end
 
@@ -252,7 +213,7 @@ fun fac :: "nat \<Rightarrow> nat" where
 
 experiment begin
 
-declassify valid9: fac
+declassify valid: fac
 
 end
 
@@ -261,7 +222,7 @@ subsection \<open>Combination of various things\<close>
 
 experiment begin
 
-declassify valid10: sum_list
+declassify valid: sum_list
 
 end
 

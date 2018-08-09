@@ -23,7 +23,8 @@ sig
      base_thms: thm list,
      base_certs: thm list,
      simps: thm list,
-     code_thms: thm list}
+     code_thms: thm list, (* old defining theorems *)
+     congs: thm list option}
 
   type fun_target = (string * class) list * (term * term)
 
@@ -114,15 +115,27 @@ type const_info =
    base_thms: thm list,
    base_certs: thm list,
    simps: thm list,
-   code_thms: thm list}
+   code_thms: thm list,
+   congs: thm list option}
 
-fun morph_const_info phi {fun_info, inducts, base_thms, base_certs, simps, code_thms} =
-  {fun_info = Option.map (Function_Common.transform_function_data phi) fun_info,
-   inducts = Option.map (map (Morphism.thm phi)) inducts,
-   base_thms = map (Morphism.thm phi) base_thms,
-   base_certs = map (Morphism.thm phi) base_certs,
-   simps = map (Morphism.thm phi) simps,
-   code_thms = code_thms (* sic *)}
+fun map_const_info f1 f2 f3 f4 f5 f6 f7 {fun_info, inducts, base_thms, base_certs, simps, code_thms, congs} =
+  {fun_info = f1 fun_info,
+   inducts = f2 inducts,
+   base_thms = f3 base_thms,
+   base_certs = f4 base_certs,
+   simps = f5 simps,
+   code_thms = f6 code_thms,
+   congs = f7 congs}
+
+fun morph_const_info phi =
+  map_const_info
+    (Option.map (Function_Common.transform_function_data phi))
+    (Option.map (map (Morphism.thm phi)))
+    (map (Morphism.thm phi))
+    (map (Morphism.thm phi))
+    (map (Morphism.thm phi))
+    I (* sic *)
+    (Option.map (map (Morphism.thm phi)))
 
 type fun_target = (string * class) list * (term * term)
 
@@ -717,7 +730,7 @@ fun consts consts proof group lthy =
             val is_fun = length param_typs + length dicts > 0
           in
             fold_map mk_eq eqs lthy
-            |>> rpair is_fun
+            |>> rpair (new_typ, is_fun)
             |>> SOME
             |>> pair ((name, new_name, map fst dicts), {info = info, cong = cong})
           end
@@ -726,10 +739,11 @@ fun consts consts proof group lthy =
 
     val (items, lthy') = fold_map process_eqs group lthy
 
-    val ((metas, infos), ((eqs, code_thms), is_funs)) = items
+    val ((metas, infos), ((eqs, code_thms), (new_typs, is_funs))) = items
       |> map_filter (fn (meta, eqs) => Option.map (pair meta) eqs)
       |> split_list
       ||> split_list ||> apfst (flat #> split_list #>> map typify)
+      ||> apsnd split_list
       |>> split_list
 
     val _ = if_debug lthy (fn () =>
@@ -745,7 +759,9 @@ fun consts consts proof group lthy =
         [b] => b
       | [] => false
       | _ => error "unsupported feature: mixed non-function and function definitions"
-    val bindings = map (fn (_, new_name, _) => (Binding.name new_name, NONE, NoSyn)) metas
+    fun mk_binding (_, new_name, _) typ =
+      (Binding.name new_name, SOME typ, NoSyn)
+    val bindings = map2 mk_binding metas new_typs
 
     val {constants, instantiations} = Definitions.get (Context.Proof lthy')
     val base_thms = Symtab.dest constants |> map (apsnd fst o snd) |> map_filter snd
@@ -760,7 +776,7 @@ fun consts consts proof group lthy =
         val targets = map2 mk_target metas fs
         val args =
           {fun_info = SOME info, inducts = SOME inducts, simps = simps, base_thms = base_thms,
-           base_certs = base_certs, code_thms = code_thms}
+           base_certs = base_certs, code_thms = code_thms, congs = NONE}
       in
         (prove_fun_cert targets args proof lthy, args)
       end
@@ -772,7 +788,7 @@ fun consts consts proof group lthy =
         val targets = map2 mk_target metas (map (fst o HOLogic.dest_eq o HOLogic.dest_Trueprop o Thm.prop_of) defs)
         val args =
           {fun_info = NONE, inducts = NONE, simps = defs,
-           base_thms = base_thms, base_certs = base_certs, code_thms = code_thms}
+           base_thms = base_thms, base_certs = base_certs, code_thms = code_thms, congs = NONE}
       in
         (prove_fun_cert targets args proof lthy, args)
       end
@@ -804,7 +820,7 @@ fun consts consts proof group lthy =
           if Thm.nprems_of thm > 0 then
             (warning "No fundef_cong rule can be derived; this will likely not work later"; NONE)
           else
-            (writeln "Porting fundef_cong rule";
+            (print_info "Porting fundef_cong rule for ";
              SOME (Local_Defs.fold lthy [thm] cong))
 
         val congs' =
@@ -813,8 +829,11 @@ fun consts consts proof group lthy =
 
         fun add_congs phi =
           fold Function_Context_Tree.add_function_cong (map (Morphism.thm phi) congs')
+
+        val data' =
+          apsnd (map_const_info I I I I I I (K (SOME congs'))) data
       in
-        (data, Local_Theory.declaration {pervasive = false, syntax = false} add_congs lthy)
+        (data', Local_Theory.declaration {pervasive = false, syntax = false} add_congs lthy)
       end
 
     fun mk_fun lthy =
@@ -823,16 +842,17 @@ fun consts consts proof group lthy =
         val (info, lthy') =
           Function.add_function bindings specs fun_config pat_completeness_auto lthy
           |-> prove_termination
+        val simps = the (#simps info)
         val (_, lthy'') =
           (* [simp del] is required because otherwise non-matching function definitions
              (e.g. divmod_nat) make the simplifier loop
              separate step because otherwise we'll get tons of warnings because the psimp rules
              are not added to the simpset *)
-          Local_Theory.note ((Binding.empty, @{attributes [simp del]}), the (#simps info)) lthy'
+          Local_Theory.note ((Binding.empty, @{attributes [simp del]}), simps) lthy'
         fun prove_eq phi =
           prove_eq_fun (Function_Common.transform_function_data phi info)
       in
-        (prove_eq, lthy'')
+        (((simps, #inducts info), prove_eq), lthy'')
       end
 
     fun mk_def lthy =
@@ -840,7 +860,7 @@ fun consts consts proof group lthy =
         val (defs, lthy') = fold_map define_params_nosyn eqs lthy
         fun prove_eq phi = prove_eq_def (map (Morphism.thm phi) defs)
       in
-        (prove_eq, lthy')
+        (((defs, NONE), prove_eq), lthy')
       end
   in
     if null eqs then
@@ -851,9 +871,11 @@ fun consts consts proof group lthy =
            one; hence the proof needs to happen after exiting the local theory target
            conceptually, everything happening locally would be great, but the type checker won't
            allow us to add sort constraints to TFrees after they have been declared *)
-        val (prove_eq, (lthy', lthy)) = lthy'
+        val ((side, prove_eq), (lthy', lthy)) = lthy'
           |> Local_Theory.open_target |> snd
           |> (if is_fun then mk_fun else mk_def)
+          |-> (fn ((simps, inducts), prove_eq) =>
+                apfst (rpair prove_eq) o Side_Conditions.mk_side simps inducts)
           ||> `Local_Theory.close_target
         val phi = Proof_Context.export_morphism lthy lthy'
       in

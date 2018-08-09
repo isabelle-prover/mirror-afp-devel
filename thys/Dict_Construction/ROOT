@@ -13,6 +13,8 @@ session Dict_Construction (AFP) = HOL +
     Dict_Construction
     "Documentation/Termination"
     Test_Dict_Construction
+    Test_Side_Conditions
+    Test_Lazy_Case
   document_files
     "root.bib"
     "root.tex"

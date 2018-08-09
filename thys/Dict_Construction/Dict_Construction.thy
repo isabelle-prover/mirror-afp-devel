@@ -49,6 +49,8 @@ named_theorems dict_construction_specs
 
 ML_file "dict_construction_util.ML"
 ML_file "transfer_termination.ML"
+ML_file "congruences.ML"
+ML_file "side_conditions.ML"
 ML_file "class_graph.ML"
 ML_file "dict_construction.ML"
 
