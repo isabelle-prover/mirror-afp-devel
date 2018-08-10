@@ -1151,7 +1151,7 @@ proof -
   then have [simp]: "rat_of_int (MAXIMUM (set fs_init) sq_norm) \<in> rat_of_int ` sq_norm ` set fs_init"
     using 0 by auto
   have "(Missing_Lemmas.max_list (map (nat \<circ> sq_norm) fs_init)) = MAXIMUM (set fs_init) (nat \<circ> sq_norm)"
-    using assms len by (subst fs.gs.max_list_Max) (auto)
+    using assms len by (subst max_list_Max) (auto)
   also have "\<dots> = nat (MAXIMUM (set fs_init) sq_norm_vec)"
     using assms by (auto intro!: nat_mono Max_eqI simp add: 1)
   also have "int \<dots> = MAXIMUM (set fs_init) sq_norm_vec"

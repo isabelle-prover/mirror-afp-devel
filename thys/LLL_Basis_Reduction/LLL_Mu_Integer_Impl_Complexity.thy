@@ -613,12 +613,15 @@ lemma mn: "m \<le> n"
 
 lemma reduce_basis_cost_expanded':
   assumes Log: "Log = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) AA\<rceil>"   
-  and AA: "AA = max_list (map (nat \<circ> sq_norm) fs_init)"
-  and 0: "0 < Log" "0 < AA" "0 < n" "0 < m"
+  and AA: "AA =  Max {nat \<parallel>v\<parallel>\<^sup>2 | v. v \<in> set fs_init}"
+  and 0: "0 < Log" "0 < AA" "0 < n" "0 < m" "fs_init \<noteq> []"
   shows "cost (reduce_basis_cost fs_init)
   \<le> 49 * m ^ 3 * n * Log"
 proof -
-  note reduce_basis_cost_expanded[OF assms(1,2)]
+  have AA: "AA = real (max_list (map (nat \<circ> sq_norm) fs_init))"
+    using max_list_Max assms unfolding comp_apply 
+    by (auto simp add: Setcompr_eq_image  max_list_Max)
+  note reduce_basis_cost_expanded[OF assms(1) AA]
   also have "4 * Log * m * m * m * n = 4 * m ^ 3 * n * Log"
     using 0 by (auto simp add: power3_eq_cube)
   also have "4 * Log * m * m * m * m \<le> 4 * m ^ 3 * n * Log"
