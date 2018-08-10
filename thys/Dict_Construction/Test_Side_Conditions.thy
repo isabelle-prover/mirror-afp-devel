@@ -5,11 +5,7 @@ imports Dict_Construction
 begin
 
 ML \<open>
-fun assert_alt_total ctxt term =
-  let
-    val SOME {alt = SOME alt, ...} = Side_Conditions.get_predicate ctxt term
-    val (_, rhs) = Logic.dest_equals (Thm.prop_of alt)
-  in @{assert} (rhs = @{term True}) end
+fun assert_alt_total ctxt term = @{assert} (Side_Conditions.is_total ctxt term)
 \<close>
 
 fun head where

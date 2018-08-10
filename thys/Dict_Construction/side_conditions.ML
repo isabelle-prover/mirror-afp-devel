@@ -8,6 +8,7 @@ signature SIDE_CONDITIONS = sig
   val transform_predicate: morphism -> predicate -> predicate
   val get_predicate: Proof.context -> term -> predicate option
   val set_alt: term -> thm -> Context.generic -> Context.generic
+  val is_total: Proof.context -> term -> bool
 
   val mk_side: thm list -> thm list option -> local_theory -> predicate list * local_theory
 
@@ -18,7 +19,7 @@ structure Side_Conditions : SIDE_CONDITIONS = struct
 
 open Dict_Construction_Util
 
-val time_limit = Attrib.setup_config_real @{binding "side_conditions_time_limit"} (K 5.0)
+val time_limit = Attrib.setup_config_real @{binding side_conditions_time_limit} (K 5.0)
 
 val inductive_config =
   {quiet_mode = true, verbose = true, alt_name = Binding.empty, coind = false,
@@ -49,16 +50,29 @@ fun get_predicate ctxt t =
   |> try hd
   |> Option.map (transform_predicate (Morphism.transfer_morphism (Proof_Context.theory_of ctxt)))
 
+fun is_total ctxt t =
+  let
+    val SOME {alt = SOME alt, ...} = get_predicate ctxt t
+    val (_, rhs) = Logic.dest_equals (Thm.prop_of alt)
+  in rhs = @{term True} end
+
+(* must be of the form [f_side ?x ?y = True] *)
 fun set_alt t thm context =
   let
-    val thm = mk_eq thm
-    val (head, _) = strip_comb (fst (Logic.dest_equals (Thm.prop_of thm)))
+    val thm = safe_mk_meta_eq thm
+    val (lhs, _) = Logic.dest_equals (Thm.prop_of thm)
     val {f, index, inductive, ...} = hd (Item_Net.retrieve (Predicates.get context) t)
     val pred = nth (#preds inductive) index
-    val _ = Pattern.match (Context.theory_of context) (head, pred) (Vartab.empty, Vartab.empty)
+    val (arg_typs, _) = strip_type (fastype_of pred)
+    val args =
+      Name.invent_names (Variable.names_of (Context.proof_of context)) "x" arg_typs
+      |> map Free
     val new_pred = {f = f, index = index, inductive = inductive, alt = SOME thm}
   in
-    Predicates.map (Item_Net.update new_pred) context
+    if Pattern.matches (Context.theory_of context) (lhs, list_comb (pred, args)) then
+      Predicates.map (Item_Net.update new_pred) context
+    else
+      error "Alternative is not fully general"
   end
 
 fun apply_simps ctxt clear thms t =
