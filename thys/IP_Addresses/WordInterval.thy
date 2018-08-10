@@ -91,7 +91,7 @@ subsection\<open>WordInterval and Lists\<close>
     case 3 thus ?case by force
     qed
 
-  lemma l2wi_wi2l: "wordinterval_to_set (l2wi (wi2l r)) = wordinterval_to_set r"
+  lemma l2wi_wi2l[simp]: "wordinterval_to_set (l2wi (wi2l r)) = wordinterval_to_set r"
     by(induction r) (simp_all add: l2wi_append)
 
   lemma l2wi: "wordinterval_to_set (l2wi l) = (\<Union> (i,j) \<in> set l. {i .. j})"
@@ -100,9 +100,12 @@ subsection\<open>WordInterval and Lists\<close>
   lemma wi2l: "(\<Union>(i,j)\<in>set (wi2l r). {i .. j}) = wordinterval_to_set r"
     by(induction r rule: wi2l.induct, simp_all)
 
-  lemma l2wi_remdups: "wordinterval_to_set (l2wi (remdups ls)) = wordinterval_to_set (l2wi ls)"
+  lemma l2wi_remdups[simp]: "wordinterval_to_set (l2wi (remdups ls)) = wordinterval_to_set (l2wi ls)"
     by(simp add: l2wi)
 
+  lemma wi2l_empty[simp]: "wi2l Empty_WordInterval = []"
+    unfolding Empty_WordInterval_def
+    by simp
 
 
 subsection\<open>Optimizing and minimizing @{typ "('a::len) wordinterval"}s\<close>
@@ -524,6 +527,9 @@ lemma wordinterval_invert_set_eq[simp]:
 lemma wordinterval_invert_UNIV_empty:
   "wordinterval_empty (wordinterval_invert wordinterval_UNIV)" by simp
 
+lemma wi2l_univ[simp]: "wi2l wordinterval_UNIV = [(0, max_word)]"
+  unfolding wordinterval_UNIV_def
+  by simp
 
 text\<open>@{text "\<inter>"}\<close>
 context
