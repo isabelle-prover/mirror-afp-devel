@@ -60,4 +60,7 @@ lemma [code]: "True \<and> p \<longleftrightarrow> p" "False \<and> p \<longleft
 declare [[code drop: "(\<or>)"]]
 lemma [code]: "True \<or> p \<longleftrightarrow> True" "False \<or> p \<longleftrightarrow> p" by auto
 
+declare comp_cong[fundef_cong del]
+declare fun.map_cong[fundef_cong]
+
 end
