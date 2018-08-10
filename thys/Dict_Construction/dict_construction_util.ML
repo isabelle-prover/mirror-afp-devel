@@ -43,6 +43,7 @@ signature DICT_CONSTRUCTION_UTIL = sig
   val maybe_induct_tac: thm list option -> term list list -> term list list -> Proof.context -> tactic
   val multi_induct_tac: thm list -> term list list -> term list list -> Proof.context -> tactic
   val print_tac': Proof.context -> string -> int -> tactic
+  val fo_cong_tac: Proof.context -> thm -> int -> tactic
 
   (* theorem manipulation *)
   val contract: Proof.context -> thm -> thm
@@ -226,6 +227,17 @@ fun (tac CONTINUE_WITH_FW tacs) i st =
 fun SOLVED tac = tac THEN ALLGOALS (K no_tac)
 
 fun print_tac' ctxt str = SELECT_GOAL (print_tac ctxt str)
+
+fun fo_cong_tac ctxt thm = SUBGOAL (fn (concl, i) =>
+  let
+    val lhs_of = HOLogic.dest_Trueprop #> HOLogic.dest_eq #> fst
+    val concl_pat = lhs_of (Thm.concl_of thm) |> Thm.cterm_of ctxt
+    val concl = lhs_of concl |> Thm.cterm_of ctxt
+
+    val insts = Thm.first_order_match (concl_pat, concl)
+  in
+    resolve_tac ctxt [Drule.instantiate_normalize insts thm] i
+  end handle Pattern.MATCH => no_tac)
 
 (* theorem manipulation *)
 

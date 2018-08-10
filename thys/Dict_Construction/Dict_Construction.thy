@@ -54,6 +54,10 @@ ML_file "side_conditions.ML"
 ML_file "class_graph.ML"
 ML_file "dict_construction.ML"
 
+method_setup fo_cong_rule = \<open>
+  Attrib.thm >> (fn thm => fn ctxt => SIMPLE_METHOD' (Dict_Construction_Util.fo_cong_tac ctxt thm))
+\<close> "resolve congruence rule using first-order matching"
+
 declare [[code drop: "(\<and>)"]]
 lemma [code]: "True \<and> p \<longleftrightarrow> p" "False \<and> p \<longleftrightarrow> False" by auto
 
