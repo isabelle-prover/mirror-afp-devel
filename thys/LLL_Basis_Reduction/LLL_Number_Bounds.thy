@@ -19,6 +19,7 @@ text \<open>The LLL invariant does not contain bounds on the number that occur d
   Hence, each arithmetic operation in the LLL algorithm can be performed in polynomial time.\<close>
 theory LLL_Number_Bounds
   imports LLL
+    Gram_Schmidt_Int
 begin
 
 
@@ -1133,7 +1134,58 @@ qed
 text \<open>And a combined size bound for an integer implementation which stores values 
   $f_i$, $d_{j+1}\mu_{ij}$ and $d_i$.\<close>
 
-lemma combined_size_bound_integer:  
+interpretation fs: fs_int_indpt n fs_init
+  by (standard) (use lin_dep in auto)
+
+lemma fs_gs_A_A': assumes "m \<noteq> 0"
+  shows "fs.gs.A = of_nat A"
+proof -
+  have 0: "MAXIMUM (set fs_init) sq_norm \<in>  sq_norm ` set fs_init"
+    using len assms by auto
+  then have 1: " nat (MAXIMUM (set fs_init) sq_norm) \<in> (nat \<circ> sq_norm) ` set fs_init"
+    by (auto)
+  have [simp]: "0 \<le> MAXIMUM (set fs_init) sq_norm"
+    using 0 by force
+  have [simp]: "sq_norm ` of_int_hom.vec_hom ` set fs_init = rat_of_int ` sq_norm ` set fs_init"
+    by (auto simp add: sq_norm_of_int image_iff)
+  then have [simp]: "rat_of_int (MAXIMUM (set fs_init) sq_norm) \<in> rat_of_int ` sq_norm ` set fs_init"
+    using 0 by auto
+  have "(Missing_Lemmas.max_list (map (nat \<circ> sq_norm) fs_init)) = MAXIMUM (set fs_init) (nat \<circ> sq_norm)"
+    using assms len by (subst max_list_Max) (auto)
+  also have "\<dots> = nat (MAXIMUM (set fs_init) sq_norm_vec)"
+    using assms by (auto intro!: nat_mono Max_eqI simp add: 1)
+  also have "int \<dots> = MAXIMUM (set fs_init) sq_norm_vec"
+    by (subst int_nat_eq) (auto)
+  also have "rat_of_int \<dots> = MAXIMUM (set (map of_int_hom.vec_hom fs_init)) sq_norm"
+    by (rule Max_eqI[symmetric]) (auto simp add: sq_norm_of_int)
+  finally show ?thesis
+  unfolding A_def fs.gs.A_def by (auto)
+qed
+
+lemma fs_gs_A_A: "m \<noteq> 0 \<Longrightarrow> real_of_rat fs.gs.A = real A"
+  using fs_gs_A_A' by simp
+
+lemma combined_size_bound_gso_integer:
+  assumes "x \<in> {rat_of_int (fs_init ! i $v j) |i j. i < m \<and> j < n} \<union> {fs.gs.\<mu>' i j |i j. j \<le> i \<and> i < m} \<union> {fs.gs.\<sigma> l i j |i j l. i < m \<and> j \<le> i \<and> l \<le> j}"
+  and m: "m \<noteq> 0" and "x \<noteq> 0" "n \<noteq> 0"
+shows "log 2 \<bar>real_of_rat x\<bar> \<le> (6 + 6 * m) * log 2 (M * n) + log 2 m + m"
+proof -
+  from bound_invD[OF binv]
+  have inv: "LLL_invariant upw k fs"
+     and gbnd: "g_bound fs" 
+    by auto 
+  from LLL_inv_A_pos[OF inv gbnd m] have A: "A > 0" by auto
+  have "log 2 \<bar>real_of_rat x\<bar> \<le> log 2 m + real (3 + 3 * m) * log 2 A"
+    using assms len fs.combined_size_bound_integer_log by (auto simp add: fs_gs_A_A)
+  also have "\<dots> \<le> log 2 m + (3 + 3 * m) * (2 * log 2 (M * n))"
+    using logA_le_2log_Mn assms A by (intro add_left_mono, intro mult_left_mono) (auto)
+  also have "\<dots> = log 2 m + (6 + 6 * m) * log 2 (M * n)"
+    by (auto simp add: algebra_simps)
+  finally show ?thesis
+    by auto
+qed
+
+lemma combined_size_bound_integer':  
   assumes x: "x \<in> {fs ! i $ j | i j. i < m \<and> j < n} 
     \<union> {d\<mu> fs i j | i j. j < i \<and> i < m} 
     \<union> {d fs i | i. i \<le> m}" 
@@ -1192,7 +1244,36 @@ proof -
     by (intro add_right_mono mult_left_mono logA_le_2log_Mn, insert m n A, auto)
   finally show "?l1 \<le> ?b2" by simp  
 qed
-end (* LLL_bound_invariant *)
-  
+
+lemma combined_size_bound_integer:  
+  assumes x'': "x'' \<in> {fs ! i $ j | i j. i < m \<and> j < n} 
+    \<union> {d\<mu> fs i j | i j. j < i \<and> i < m} 
+    \<union> {d fs i | i. i \<le> m}" and 
+  x': "x' \<in> {rat_of_int (fs_init ! i $v j) |i j. i < m \<and> j < n}
+          \<union> {fs.gs.\<mu>' i j |i j. j \<le> i \<and> i < m}
+          \<union> {fs.gs.\<sigma> l i j |i j l. i < m \<and> j \<le> i \<and> l \<le> j}"
+  and x: "x = real_of_int x'' \<or> x = real_of_rat x'"
+  and m: "m \<noteq> 0" and n: "n \<noteq> 0" and "x \<noteq> 0" and "0 < M"
+shows "log 2 \<bar>x\<bar> \<le> (6 + 6 * m) * log 2 (M * n) + log 2 m + m"
+proof -
+  consider "x = real_of_int x''" | "x = real_of_rat x'"
+    using assms by blast
+  then show ?thesis
+  proof cases
+    assume "x = real_of_rat x'"
+    then show ?thesis
+      using combined_size_bound_gso_integer assms by (simp)
+  next
+    assume 0: "x = real_of_int x''"
+    then have "log 2 \<bar>x\<bar> \<le> 4 * m * log 2 (M * n) + m + log 2 m"
+      using assms 0 by (subst 0, intro combined_size_bound_integer') fastforce+
+    also have "\<dots> \<le> (6 + 6 * m) * log 2 (M * n) + m + log 2 m"
+       using assms by (intro add_right_mono, intro mult_right_mono) (auto)
+    finally show ?thesis
+      by simp
+  qed
+qed
+
+end (* LLL_bound_invariant *)  
 end (* LLL locale *)
 end

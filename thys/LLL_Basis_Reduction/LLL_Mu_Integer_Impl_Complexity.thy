@@ -238,30 +238,11 @@ proof -
   show ?g2 unfolding d nat_distrib using body by (auto split: if_splits simp: cost_simps alpha Let_def swapc)
 qed
 
-function basis_reduction_main_cost where
-  "basis_reduction_main_cost upw i state = (if i < m 
-     \<and> LLL_impl_inv state i (fs_state state) \<and> LLL_invariant upw i (fs_state state)
-     \<comment> \<open>The check on the invariants is just to be able to prove termination. 
-        One cannot use partial-function at this point, since the function with cost is not tail-recursive.\<close>
-     then case basis_reduction_step_cost upw i state of ((upw',i',state'), c_step) \<Rightarrow> 
-       case basis_reduction_main_cost upw' i' state' of (state'', c_rec) \<Rightarrow> (state'', c_step + c_rec) else
-       (state, 0))"
-  by pat_completeness auto
-
-termination
-proof (standard, rule wf_measure[of "\<lambda> (upw,i,state). LLL_measure i (fs_state state)"], goal_cases)
-  case (1 upw i state tup cost upw' pair i' state')
-  note * = 1(2-4)[symmetric] 
-  from 1(1) have i: "i < m" 
-    and impl: "LLL_impl_inv state i (fs_state state)" 
-    and inv: "LLL_invariant upw i (fs_state state)" by auto
-  from basis_reduction_step_cost[OF impl inv i, unfolded * cost_simps]
-  have "basis_reduction_step \<alpha> n m upw i state = (upw',i',state')" by auto
-  from basis_reduction_step[OF impl inv this i refl]
-  show ?case by simp
-qed
-
-declare basis_reduction_main_cost.simps[simp del]
+partial_function (tailrec) basis_reduction_main_cost where
+  "basis_reduction_main_cost upw i state c = (if i < m
+     then let ((upw',i',state'), c_step) = basis_reduction_step_cost upw i state
+       in basis_reduction_main_cost upw' i' state' (c + c_step)
+     else (state, c))"
 
 definition "num_loops = m + 2 * m * m * nat (ceiling (log base (real A)))"
 
@@ -269,18 +250,18 @@ lemma basis_reduction_main_cost: assumes impl: "LLL_impl_inv state i (fs_state s
   and inv: "LLL_invariant upw i (fs_state state)" 
   and state: "state = initial_state m fs_init" 
   and i: "i = 0" 
-  shows "result (basis_reduction_main_cost upw i state) = basis_reduction_main \<alpha> n m upw i state" (is ?g1) 
-   "cost (basis_reduction_main_cost upw i state) \<le> body_cost * num_loops" (is ?g2)
+  shows "result (basis_reduction_main_cost upw i state c) = basis_reduction_main \<alpha> n m upw i state" (is ?g1) 
+   "cost (basis_reduction_main_cost upw i state c) \<le> c + body_cost * num_loops" (is ?g2)
 proof -
-  have ?g1 and cost: "cost (basis_reduction_main_cost upw i state) \<le> body_cost * LLL_measure i (fs_state state)"
+  have ?g1 and cost: "cost (basis_reduction_main_cost upw i state c) \<le> c + body_cost * LLL_measure i (fs_state state)"
     using assms(1-2)
-  proof (atomize (full), induct "LLL_measure i (fs_state state)" arbitrary: upw i state rule: less_induct)
-    case (less i state upw)
+  proof (atomize (full), induct "LLL_measure i (fs_state state)" arbitrary: upw i state c rule: less_induct)
+    case (less i state upw c)
     note inv = less(3)
     note impl = less(2)
     obtain i' upw' state' c_step where step: "basis_reduction_step_cost upw i state = ((upw',i',state'),c_step)" 
       (is "?step = _") by (cases ?step, auto)
-    obtain state'' c_rec where rec: "basis_reduction_main_cost upw' i' state' = (state'', c_rec)"
+    obtain state'' c_rec where rec: "basis_reduction_main_cost upw' i' state' (c + c_step) = (state'', c_rec)"
       (is "?rec = _") by (cases ?rec, auto)
     note step' = result_costD[OF basis_reduction_step_cost[OF impl inv] step]
     note d = basis_reduction_main_cost.simps[of upw] step split rec 
@@ -299,12 +280,12 @@ proof -
         by auto
       from result_costD'[OF less(1)[OF meas impl' inv'] rec]
       have rec': "basis_reduction_main \<alpha> n m upw' i' state' = state''" 
-        and c_rec: "c_rec \<le> body_cost * LLL_measure i' (fs_state state')" by auto
-      from c_step c_rec have "c_step + c_rec \<le> body_cost * Suc (LLL_measure i' (fs_state state'))" 
+        and c_rec: "c_rec \<le> c + c_step + body_cost * LLL_measure i' (fs_state state')" by auto
+      from c_step c_rec have "c_rec \<le> c + body_cost * Suc (LLL_measure i' (fs_state state'))" 
         by auto
-      also have "\<dots> \<le> body_cost * LLL_measure i (fs_state state)" 
-        by (rule mult_left_mono, insert meas, auto)
-      finally show ?thesis unfolding d rec' using i inv impl by (auto simp: cost_simps)
+      also have "\<dots> \<le> c + body_cost * LLL_measure i (fs_state state)" 
+        using meas by (intro plus_right_mono mult_left_mono) auto
+      finally show ?thesis using i inv impl by (auto simp: cost_simps d rec')
     next
       case False
       thus ?thesis unfolding d by (auto simp: cost_simps)
@@ -325,7 +306,8 @@ proof -
       by (simp add: of_nat_ceiling times_right_mono)
     finally show "LLL_measure i (fs_state state) \<le> num_loops" .
   qed
-  finally show ?g2 .
+  finally show ?g2
+    by auto
 qed
 
 
@@ -537,7 +519,7 @@ definition "initial_state_cost fs = (let
 definition basis_reduction_cost :: "_ \<Rightarrow> LLL_dmu_d_state cost" where 
   "basis_reduction_cost fs = (
     case initial_state_cost fs of (state1, c1) \<Rightarrow> 
-    case basis_reduction_main_cost True 0 state1 of (state2, c2) \<Rightarrow> 
+    case basis_reduction_main_cost True 0 state1 0 of (state2, c2) \<Rightarrow> 
       (state2, c1 + c2))" 
 
 definition reduce_basis_cost :: "_ \<Rightarrow> int vec list cost" where
@@ -561,7 +543,7 @@ lemma basis_reduction_cost:
    "cost (basis_reduction_cost fs_init) \<le> initial_gso_cost + body_cost * num_loops" (is ?g2)
 proof -
   obtain state1 c1 where init: "initial_state_cost fs_init = (state1, c1)" (is "?init = _") by (cases ?init, auto)
-  obtain state2 c2 where main: "basis_reduction_main_cost True 0 state1 = (state2, c2)" (is "?main = _") by (cases ?main, auto)
+  obtain state2 c2 where main: "basis_reduction_main_cost True 0 state1 0 = (state2, c2)" (is "?main = _") by (cases ?main, auto)
   have res: "basis_reduction_cost fs_init = (state2, c1 + c2)" 
     unfolding basis_reduction_cost_def init main split by simp
   from result_costD[OF initial_state_cost init]
@@ -570,7 +552,7 @@ proof -
   note impl = initial_state
   from fs_state[OF impl inv _ len]  
   have fs: "fs_state (initial_state m fs_init) = fs_init" by (cases "initial_state m fs_init", auto)
-  from basis_reduction_main_cost[of "initial_state m fs_init", unfolded fs, OF impl inv,
+  from basis_reduction_main_cost[of "initial_state m fs_init" _ _ 0, unfolded fs, OF impl inv,
     unfolded init main cost_simps] 
   have main: "basis_reduction_main \<alpha> n m True 0 state1 = state2" and c2: "c2 \<le> body_cost * num_loops" 
     by auto
@@ -612,14 +594,56 @@ lemma reduce_basis_cost_expanded:
   assumes "Log = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) AA\<rceil>"   
   and "AA = max_list (map (nat \<circ> sq_norm) fs_init)" 
   shows "cost (reduce_basis_cost fs_init)
-  \<le> m * (m * Log * (4 * m * n + 4 * m * m + 16 * m + 4) 
-      + 3 * m * m + 3 * m * n 
-      + 10 * m + 2 * n 
-      + 3)"
+  \<le> 4 * Log * m * m * m * n
+    + 4 * Log * m * m * m * m
+    + 16 * Log * m * m * m
+    + 4 * Log * m * m
+    + 3 * m * m * m
+    + 3 * m * m * n 
+    + 10 * m * m
+    + 2 * n * m 
+    + 3 * m"
   unfolding assms A_def[symmetric]
   using reduce_basis_cost(2)[unfolded num_loops_def body_cost_def initial_gso_cost_def base_def]
   by (auto simp: algebra_simps)
 
+lemma mn: "m \<le> n"
+  unfolding len[symmetric] using lin_dep length_map unfolding gs.lin_indpt_list_def
+  by (metis distinct_card gs.dim_is_n gs.fin_dim gs.li_le_dim(2))
+
+lemma reduce_basis_cost_expanded':
+  assumes Log: "Log = nat \<lceil>log (of_rat (4 * \<alpha> / (4 + \<alpha>))) AA\<rceil>"   
+  and AA: "AA =  Max {nat \<parallel>v\<parallel>\<^sup>2 | v. v \<in> set fs_init}"
+  and 0: "0 < Log" "0 < AA" "0 < n" "0 < m" "fs_init \<noteq> []"
+  shows "cost (reduce_basis_cost fs_init)
+  \<le> 49 * m ^ 3 * n * Log"
+proof -
+  have AA: "AA = real (max_list (map (nat \<circ> sq_norm) fs_init))"
+    using max_list_Max assms unfolding comp_apply 
+    by (auto simp add: Setcompr_eq_image  max_list_Max)
+  note reduce_basis_cost_expanded[OF assms(1) AA]
+  also have "4 * Log * m * m * m * n = 4 * m ^ 3 * n * Log"
+    using 0 by (auto simp add: power3_eq_cube)
+  also have "4 * Log * m * m * m * m \<le> 4 * m ^ 3 * n * Log"
+    using 0 mn by (auto simp add: power3_eq_cube)
+  also have "16 * Log * m * m * m \<le> 16 * m ^ 3 * n * Log"
+    using 0 by (auto simp add: power3_eq_cube)
+  also have "4 * Log * m * m \<le> 4 *  m ^ 3 * n * Log"
+    using 0 by (auto simp add: power3_eq_cube)
+  also have "3 * m * m * m \<le> 3 *  m ^ 3 * n * Log"
+    using 0 by (auto simp add: power3_eq_cube)
+  also have "3 * m * m * n \<le> 3 * m ^ 3 * n * Log"
+    using 0 by (auto simp add: power3_eq_cube)
+  also have "10 * m * m \<le> 10 * m ^ 3 * n * Log"
+    using 0 by (auto simp add: power3_eq_cube)
+  also have "2 * n * m  \<le> 2 * m ^ 3 * n * Log"
+    using 0 by (auto simp add: power3_eq_cube)
+  also have "3 * m \<le> 3 * m ^ 3 * n * Log"
+    using 0 by (auto simp add: power3_eq_cube)
+  finally show ?thesis
+    by (auto simp add: algebra_simps)
+qed
+  
 end (* fixing arith_cost and assume \<alpha> > 4/3 *)
 end (* LLL locale *)
 end (* theory *)
