@@ -67,15 +67,14 @@ where
 
 end
 
-locale elgamal = elgamal_base + cyclic_group \<G> +
-  assumes finite_group: "finite (carrier \<G>)"
+locale elgamal = elgamal_base + cyclic_group \<G>
 begin 
 
 theorem advantage_elgamal: "ind_cpa.advantage \<A> = ddh.advantage (elgamal_adversary \<A>)"
   including monad_normalisation
 proof -
   obtain \<A>1 and \<A>2 where "\<A> = (\<A>1, \<A>2)" by(cases \<A>)
-  note [simp] = this order_gt_0_iff_finite finite_group try_spmf_bind_out split_def o_def spmf_of_set bind_map_spmf weight_spmf_le_1 scale_bind_spmf bind_spmf_const
+  note [simp] = this order_gt_0_iff_finite finite_carrier try_spmf_bind_out split_def o_def spmf_of_set bind_map_spmf weight_spmf_le_1 scale_bind_spmf bind_spmf_const
     and [cong] = bind_spmf_cong_simp
   have "ddh.ddh_1 (elgamal_adversary \<A>) = TRY do {
        x \<leftarrow> sample_uniform (order \<G>);

@@ -61,18 +61,39 @@ proof(rule inj_onI)
   qed
 qed
 
-lemma carrier_conv_generator: 
-  "finite (carrier G) \<Longrightarrow> carrier G = (\<lambda>n. \<^bold>g [^] n) ` {..<order G}"
+lemma finite_carrier: "finite (carrier G)" (* contributed by Dominique Unruh *)
 proof -
-  assume "finite (carrier G)"
-  moreover have "(\<lambda>n. \<^bold>g [^] n) ` {..<order G} \<subseteq> carrier G" by auto
+  from generator obtain n :: nat where "\<^bold>g [^] n = inv \<^bold>g"
+    by(metis generatorE generator_closed inv_closed)
+  then have g1: "\<^bold>g [^] (Suc n) = \<one>"
+    by auto
+  have mod: "\<^bold>g [^] m = \<^bold>g [^] (m mod Suc n)" for m
+  proof -
+    obtain k where "m mod Suc n + Suc n * k = m"
+      by (metis mod_less_eq_dividend mod_mod_trivial nat_mod_eq_lemma)
+    then have "\<^bold>g [^] m = \<^bold>g [^] (m mod Suc n + Suc n * k)" by simp
+    also have "\<dots> = \<^bold>g [^] (m mod Suc n)"
+      unfolding nat_pow_mult[symmetric, OF generator_closed] nat_pow_pow[symmetric, OF generator_closed] g1
+      by simp
+    finally show ?thesis .
+  qed
+  have "\<^bold>g [^] x \<in> ([^]) \<^bold>g ` {..<Suc n}" for x :: nat by (subst mod) auto
+  then have "range (([^]) \<^bold>g :: nat \<Rightarrow> _) \<subseteq> (([^]) \<^bold>g) ` {..<Suc n}" by auto
+  then have "finite (range (([^]) \<^bold>g :: nat \<Rightarrow> _))" by(rule finite_surj[rotated]) simp
+  with generator show ?thesis by(rule finite_subset)
+qed
+
+lemma carrier_conv_generator: "carrier G = (\<lambda>n. \<^bold>g [^] n) ` {..<order G}"
+proof -
+  have "(\<lambda>n. \<^bold>g [^] n) ` {..<order G} \<subseteq> carrier G" by auto
   moreover have "card ((\<lambda>n. \<^bold>g [^] n) ` {..<order G}) \<ge> order G"
     using inj_on_generator by(simp add: card_image)
-  ultimately show ?thesis unfolding order_def by(rule card_seteq[symmetric])
+  ultimately show ?thesis using finite_carrier 
+    unfolding order_def by(rule card_seteq[symmetric, rotated])
 qed
 
 lemma bij_betw_generator_carrier:
-  "finite (carrier G) \<Longrightarrow> bij_betw (\<lambda>n :: nat. \<^bold>g [^] n) {..<order G} (carrier G)"
+  "bij_betw (\<lambda>n :: nat. \<^bold>g [^] n) {..<order G} (carrier G)"
 by(simp add: bij_betw_def inj_on_generator carrier_conv_generator)
 
 end

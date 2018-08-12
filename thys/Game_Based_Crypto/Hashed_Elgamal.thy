@@ -141,8 +141,7 @@ interpretation cyclic_group \<G> by(fact cyclic_group)
 
 lemma advantage_elgamal: 
   includes lifting_syntax
-  assumes finite_group: "finite (carrier \<G>)"
-  and lossless: "ind_cpa.lossless \<A>"
+  assumes lossless: "ind_cpa.lossless \<A>"
   shows "ind_cpa.advantage hash.oracle hash.initial \<A> \<le> lcdh.advantage (elgamal_adversary \<A>)"
 proof -
   note [cong del] = if_weak_cong and [split del] = if_split
@@ -150,7 +149,7 @@ proof -
   obtain \<A>1 \<A>2 where \<A> [simp]: "\<A> = (\<A>1, \<A>2)" by(cases "\<A>")
 
   interpret cyclic_group: cyclic_group \<G> by(rule cyclic_group)
-  from finite_group have [simp]: "order \<G> > 0" using order_gt_0_iff_finite by(simp)
+  from finite_carrier have [simp]: "order \<G> > 0" using order_gt_0_iff_finite by(simp)
 
   from lossless have lossless1 [simp]: "\<And>pk. lossless_gpv \<I>_full (\<A>1 pk)"
     and lossless2 [simp]: "\<And>\<sigma> cipher. lossless_gpv \<I>_full (\<A>2 \<sigma> cipher)"
