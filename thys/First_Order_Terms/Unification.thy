@@ -51,10 +51,10 @@ where
     | Some us \<Rightarrow> unify (us @ E) bs)"
 | "unify ((Var x, t) # E) bs =
     (if t = Var x then unify E bs
-    else if x \<in> vars_term t then None 
+    else if x \<in> vars_term t then None
     else unify (subst_list (subst x t) E) ((x, t) # bs))"
 | "unify ((t, Var x) # E) bs =
-    (if x \<in> vars_term t then None 
+    (if x \<in> vars_term t then None
     else unify (subst_list (subst x t) E) ((x, t) # bs))"
   by pat_completeness auto
 termination
@@ -64,6 +64,13 @@ termination
 definition subst_of :: "('v \<times> ('f, 'v) term) list \<Rightarrow> ('f, 'v) subst"
   where
     "subst_of ss = List.foldr (\<lambda>(x, t) \<sigma>. \<sigma> \<circ>\<^sub>s subst x t) ss Var"
+
+text \<open>Computing the mgu of two terms.\<close>
+fun mgu :: "('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) subst option" where
+  "mgu s t =
+    (case unify [(s, t)] [] of
+      None \<Rightarrow> None
+    | Some res \<Rightarrow> Some (subst_of res))"
 
 lemma subst_of_simps [simp]:
   "subst_of [] = Var"
@@ -149,7 +156,7 @@ text \<open>If \<open>unify\<close> gives up, then the given set of equations
   cannot be reduced to the empty set by \<open>UNIF\<close>.\<close>
 lemma unify_None:
   assumes "unify E ss = None"
-  shows "\<exists>E'. E' \<noteq> {#} \<and> (mset E, E') \<in> unif\<^sup>!" 
+  shows "\<exists>E'. E' \<noteq> {#} \<and> (mset E, E') \<in> unif\<^sup>!"
 using assms
 proof (induction E ss rule: unify.induct)
   case (1 bs)
@@ -285,6 +292,53 @@ proof -
     using irreducible_reachable_imp_not_unifiable by force
   then show ?thesis
     by (auto simp: unifiable_def)
+qed
+
+lemma mgu_complete:
+  "mgu s t = None \<Longrightarrow> unifiers {(s, t)} = {}"
+proof -
+  assume "mgu s t = None"
+  then have "unify [(s, t)] [] = None" by (cases "unify [(s, t)] []", auto)
+  then have "unifiers (set [(s, t)]) = {}" by (rule unify_complete)
+  then show ?thesis by simp
+qed
+
+lemma finite_subst_domain_subst_of:
+  "finite (subst_domain (subst_of xs))"
+proof (induct xs)
+  case (Cons x xs)
+  moreover have "finite (subst_domain (subst (fst x) (snd x)))" by (metis finite_subst_domain_subst)
+  ultimately show ?case
+    using subst_domain_compose [of "subst_of xs" "subst (fst x) (snd x)"]
+    by (simp del: subst_subst_domain) (metis finite_subset infinite_Un)
+qed simp
+
+lemma mgu_subst_domain:
+  assumes "mgu s t = Some \<sigma>"
+  shows "subst_domain \<sigma> \<subseteq> vars_term s \<union> vars_term t"
+proof -
+  obtain xs where *: "unify [(s, t)] [] = Some xs" and [simp]: "subst_of xs = \<sigma>"
+    using assms by (simp split: option.splits)
+  from unify_Some_UNIF [OF *] obtain ss
+    where "compose ss = \<sigma>" and "UNIF ss {#(s, t)#} {#}" by auto
+  with UNIF_subst_domain_subset [of ss "{#(s, t)#}" "{#}"]
+  show ?thesis using vars_mset_singleton by fastforce
+qed
+
+lemma mgu_finite_subst_domain:
+  "mgu s t = Some \<sigma> \<Longrightarrow> finite (subst_domain \<sigma>)"
+  by (cases "unify [(s, t)] []")
+    (auto simp: finite_subst_domain_subst_of)
+
+lemma mgu_sound:
+  assumes "mgu s t = Some \<sigma>"
+  shows "is_imgu \<sigma> {(s, t)}"
+proof -
+  obtain ss where "unify [(s, t)] [] = Some ss"
+    and "\<sigma> = subst_of ss"
+    using assms by (auto split: option.splits)
+  then have "is_imgu \<sigma> (set [(s, t)])" by (metis unify_sound)
+  then show ?thesis by simp
 qed
 
 end
