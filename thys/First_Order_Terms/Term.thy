@@ -297,4 +297,36 @@ proof (induct t)
   ultimately show ?case by simp
 qed simp
 
+lemma finite_subst_domain_subst:
+  "finite (subst_domain (subst x y))"
+  by simp
+
+lemma subst_domain_compose:
+  "subst_domain (\<sigma> \<circ>\<^sub>s \<tau>) \<subseteq> subst_domain \<sigma> \<union> subst_domain \<tau>"
+  by (auto simp: subst_domain_def subst_compose_def)
+
+lemma vars_term_disjoint_imp_unifier:
+  fixes \<sigma> :: "('f, 'v, 'w) gsubst"
+  assumes "vars_term s \<inter> vars_term t = {}"
+    and "s \<cdot> \<sigma> = t \<cdot> \<tau>"
+  shows "\<exists>\<mu> :: ('f, 'v, 'w) gsubst. s \<cdot> \<mu> = t \<cdot> \<mu>"
+proof -
+  let ?\<mu> = "\<lambda>x. if x \<in> vars_term s then \<sigma> x else \<tau> x"
+  have "s \<cdot> \<sigma> = s \<cdot> ?\<mu>"
+    unfolding term_subst_eq_conv
+    by (induct s) (simp_all)
+  moreover have "t \<cdot> \<tau> = t \<cdot> ?\<mu>"
+    using assms(1)
+    unfolding term_subst_eq_conv
+    by (induct s arbitrary: t) (auto)
+  ultimately have "s \<cdot> ?\<mu> = t \<cdot> ?\<mu>" using assms(2) by simp
+  then show ?thesis by blast
+qed
+
+lemma vars_term_subset_subst_eq:
+  assumes "vars_term t \<subseteq> vars_term s"
+    and "s \<cdot> \<sigma> = s \<cdot> \<tau>"
+  shows "t \<cdot> \<sigma> = t \<cdot> \<tau>"
+  using assms by (induct t) (induct s, auto)
+
 end

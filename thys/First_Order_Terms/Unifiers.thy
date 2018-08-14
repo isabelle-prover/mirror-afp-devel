@@ -209,4 +209,9 @@ proof -
   ultimately show "is_mgu ?\<sigma> ?E'" by (simp add: is_mgu_def)
 qed
 
+lemma is_imgu_imp_is_mgu:
+  assumes "is_imgu \<sigma> E"
+  shows "is_mgu \<sigma> E"
+  using assms by (auto simp: is_imgu_def is_mgu_def)
+
 end
