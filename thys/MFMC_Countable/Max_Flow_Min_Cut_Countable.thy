@@ -3412,7 +3412,7 @@ proof -
   have "Partial_order r" unfolding order_on_defs
     by(auto intro!: refl_onI transI antisymI simp add: Field_r r_def Field_def)
   hence "\<exists>m\<in>Field r. \<forall>a\<in>Field r. (m, a) \<in> r \<longrightarrow> a = m"
-  proof(rule Zorns_po_lemma; intro strip)
+  proof(rule Zorns_po_lemma)
     fix Y
     assume "Y \<in> Chains r"
     hence Y: "Complete_Partial_Order.chain (\<le>) Y"
