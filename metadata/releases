@@ -89,6 +89,7 @@ afp-Applicative_Lifting-2015-12-22.tar.gz
 afp-Applicative_Lifting-2016-02-22.tar.gz
 afp-Applicative_Lifting-2016-12-17.tar.gz
 afp-Applicative_Lifting-2017-10-10.tar.gz
+afp-Architectural_Design_Patterns-2018-03-01.tar.gz
 afp-ArrowImpossibilityGS-2009-04-29.tar.gz
 afp-ArrowImpossibilityGS-2009-09-29.tar.gz
 afp-ArrowImpossibilityGS-2009-12-12.tar.gz
@@ -150,6 +151,7 @@ afp-AWN-2015-05-27.tar.gz
 afp-AWN-2016-02-22.tar.gz
 afp-AWN-2016-12-17.tar.gz
 afp-AWN-2017-10-10.tar.gz
+afp-AxiomaticCategoryTheory-2018-05-23.tar.gz
 afp-BDD-2008-03-07.tar.gz
 afp-BDD-2008-06-10.tar.gz
 afp-BDD-2009-04-29.tar.gz
@@ -219,6 +221,7 @@ afp-Binomial-Queues-2015-05-27.tar.gz
 afp-Binomial-Queues-2016-02-22.tar.gz
 afp-Binomial-Queues-2016-12-17.tar.gz
 afp-Binomial-Queues-2017-10-10.tar.gz
+afp-BNF_CC-2018-04-25.tar.gz
 afp-Bondy-2012-10-27.tar.gz
 afp-Bondy-2013-02-16.tar.gz
 afp-Bondy-2013-11-17.tar.gz
@@ -240,6 +243,7 @@ afp-Bounded_Deducibility_Security-2015-05-27.tar.gz
 afp-Bounded_Deducibility_Security-2016-02-22.tar.gz
 afp-Bounded_Deducibility_Security-2016-12-17.tar.gz
 afp-Bounded_Deducibility_Security-2017-10-10.tar.gz
+afp-Buchi_Complementation-2017-10-27.tar.gz
 afp-Buffons_Needle-2017-06-06.tar.gz
 afp-Buffons_Needle-2017-10-10.tar.gz
 afp-Buildings-2016-07-01.tar.gz
@@ -564,6 +568,7 @@ afp-CoreC++-2015-05-27.tar.gz
 afp-CoreC++-2016-02-22.tar.gz
 afp-CoreC++-2016-12-17.tar.gz
 afp-CoreC++-2017-10-10.tar.gz
+afp-Count_Complex_Roots-2017-10-18.tar.gz
 afp-CRDT-2017-07-07.tar.gz
 afp-CRDT-2017-10-10.tar.gz
 afp-CryptHOL-2017-05-11.tar.gz
@@ -679,6 +684,9 @@ afp-Dijkstra_Shortest_Path-2015-05-27.tar.gz
 afp-Dijkstra_Shortest_Path-2016-02-22.tar.gz
 afp-Dijkstra_Shortest_Path-2016-12-17.tar.gz
 afp-Dijkstra_Shortest_Path-2017-10-10.tar.gz
+afp-Diophantine_Eqns_Lin_Hom-2017-10-15.tar.gz
+afp-Dirichlet_Series-2017-10-16.tar.gz
+afp-DiscretePricing-2018-07-18.tar.gz
 afp-Discrete_Summation-2014-04-13.tar.gz
 afp-Discrete_Summation-2014-08-28.tar.gz
 afp-Discrete_Summation-2015-05-27.tar.gz
@@ -752,6 +760,7 @@ afp-Encodability_Process_Calculi-2017-10-10.tar.gz
 afp-Ergodic_Theory-2016-02-22.tar.gz
 afp-Ergodic_Theory-2016-12-17.tar.gz
 afp-Ergodic_Theory-2017-10-10.tar.gz
+afp-Error_Function-2018-02-07.tar.gz
 afp-E_Transcendental-2017-01-13.tar.gz
 afp-E_Transcendental-2017-10-10.tar.gz
 afp-Euler_MacLaurin-2017-03-14.tar.gz
@@ -760,6 +769,7 @@ afp-Euler_Partition-2015-11-20.tar.gz
 afp-Euler_Partition-2016-02-22.tar.gz
 afp-Euler_Partition-2016-12-17.tar.gz
 afp-Euler_Partition-2017-10-10.tar.gz
+afp-Falling_Factorial_Sum-2017-12-30.tar.gz
 afp-FeatherweightJava-2006-04-05.tar.gz
 afp-FeatherweightJava-2006-04-06.tar.gz
 afp-FeatherweightJava-2007-11-27.tar.gz
@@ -868,9 +878,13 @@ afp-Finite_Automata_HF-2015-05-27.tar.gz
 afp-Finite_Automata_HF-2016-02-22.tar.gz
 afp-Finite_Automata_HF-2016-12-17.tar.gz
 afp-Finite_Automata_HF-2017-10-10.tar.gz
+afp-First_Order_Terms-2018-02-06.tar.gz
+afp-First_Order_Terms-2018-02-07.tar.gz
 afp-First_Welfare_Theorem-2017-09-04.tar.gz
 afp-First_Welfare_Theorem-2017-09-05.tar.gz
 afp-First_Welfare_Theorem-2017-10-10.tar.gz
+afp-Fishburn_Impossibility-2018-03-23.tar.gz
+afp-Fishburn_Impossibility-2018-06-10.tar.gz
 afp-Fisher_Yates-2016-12-17.tar.gz
 afp-Fisher_Yates-2017-10-10.tar.gz
 afp-Flow_Networks-2017-06-02.tar.gz
@@ -1106,6 +1120,7 @@ afp-Graph_Theory-2015-05-27.tar.gz
 afp-Graph_Theory-2016-02-22.tar.gz
 afp-Graph_Theory-2016-12-17.tar.gz
 afp-Graph_Theory-2017-10-10.tar.gz
+afp-Green-2018-01-12.tar.gz
 afp-Groebner_Bases-2016-05-02.tar.gz
 afp-Groebner_Bases-2016-12-17.tar.gz
 afp-Groebner_Bases-2017-10-10.tar.gz
@@ -1151,6 +1166,8 @@ afp-Hermite-2015-07-07.tar.gz
 afp-Hermite-2016-02-22.tar.gz
 afp-Hermite-2016-12-17.tar.gz
 afp-Hermite-2017-10-10.tar.gz
+afp-Hidden_Markov_Models-2018-05-25.tar.gz
+afp-Hoare_Time-2018-02-26.tar.gz
 afp-HOLCF-Prelude-2017-07-15.tar.gz
 afp-HOLCF-Prelude-2017-10-10.tar.gz
 afp-HotelKeyCards-2007-11-27.tar.gz
@@ -1200,6 +1217,7 @@ afp-Huffman-2015-05-27.tar.gz
 afp-Huffman-2016-02-22.tar.gz
 afp-Huffman-2016-12-17.tar.gz
 afp-Huffman-2017-10-10.tar.gz
+afp-Hybrid_Multi_Lane_Spatial_Logic-2017-11-09.tar.gz
 afp-HyperCTL-2014-04-16.tar.gz
 afp-HyperCTL-2014-08-28.tar.gz
 afp-HyperCTL-2015-05-27.tar.gz
@@ -1214,6 +1232,7 @@ afp-IEEE_Floating_Point-2015-05-27.tar.gz
 afp-IEEE_Floating_Point-2016-02-22.tar.gz
 afp-IEEE_Floating_Point-2016-12-17.tar.gz
 afp-IEEE_Floating_Point-2017-10-10.tar.gz
+afp-IMAP-CRDT-2017-11-10.tar.gz
 afp-Imperative_Insertion_Sort-2014-09-25.tar.gz
 afp-Imperative_Insertion_Sort-2015-05-27.tar.gz
 afp-Imperative_Insertion_Sort-2016-02-22.tar.gz
@@ -1293,6 +1312,7 @@ afp-IP_Addresses-2017-10-10.tar.gz
 afp-Iptables_Semantics-2016-09-09.tar.gz
 afp-Iptables_Semantics-2016-12-17.tar.gz
 afp-Iptables_Semantics-2017-10-10.tar.gz
+afp-Irrationality_J_Hancl-2018-05-26.tar.gz
 afp-Isabelle_Meta_Model-2015-09-25.tar.gz
 afp-Isabelle_Meta_Model-2015-09-28.tar.gz
 afp-Isabelle_Meta_Model-2016-02-22.tar.gz
@@ -1397,6 +1417,7 @@ afp-Knot_Theory-2016-01-20.tar.gz
 afp-Knot_Theory-2016-02-22.tar.gz
 afp-Knot_Theory-2016-12-17.tar.gz
 afp-Knot_Theory-2017-10-10.tar.gz
+afp-Knuth_Morris_Pratt-2017-12-18.tar.gz
 afp-Koenigsberg_Friendship-2013-07-26.tar.gz
 afp-Koenigsberg_Friendship-2013-11-17.tar.gz
 afp-Koenigsberg_Friendship-2013-12-11.tar.gz
@@ -1405,6 +1426,7 @@ afp-Koenigsberg_Friendship-2015-05-27.tar.gz
 afp-Koenigsberg_Friendship-2016-02-22.tar.gz
 afp-Koenigsberg_Friendship-2016-12-17.tar.gz
 afp-Koenigsberg_Friendship-2017-10-10.tar.gz
+afp-Kuratowski_Closure_Complement-2017-10-27.tar.gz
 afp-Lambda_Free_KBOs-2016-12-17.tar.gz
 afp-Lambda_Free_KBOs-2017-10-10.tar.gz
 afp-Lambda_Free_RPOs-2016-12-17.tar.gz
@@ -1516,6 +1538,7 @@ afp-LinearQuantifierElim-2015-05-27.tar.gz
 afp-LinearQuantifierElim-2016-02-22.tar.gz
 afp-LinearQuantifierElim-2016-12-17.tar.gz
 afp-LinearQuantifierElim-2017-10-10.tar.gz
+afp-Linear_Recurrences-2017-10-17.tar.gz
 afp-Liouville_Numbers-2016-01-05.tar.gz
 afp-Liouville_Numbers-2016-02-22.tar.gz
 afp-Liouville_Numbers-2016-12-17.tar.gz
@@ -1554,6 +1577,9 @@ afp-List_Update-2016-02-23.tar.gz
 afp-List_Update-2016-10-15.tar.gz
 afp-List_Update-2016-12-17.tar.gz
 afp-List_Update-2017-10-10.tar.gz
+afp-LLL_Basis_Reduction-2018-02-03.tar.gz
+afp-LLL_Factorization-2018-02-07.tar.gz
+afp-Localization_Ring-2018-06-17.tar.gz
 afp-LocalLexing-2017-04-28.tar.gz
 afp-LocalLexing-2017-10-10.tar.gz
 afp-Locally-Nameless-Sigma-2010-05-03.tar.gz
@@ -1572,6 +1598,7 @@ afp-Locally-Nameless-Sigma-2017-10-10.tar.gz
 afp-LOFT-2016-10-21.tar.gz
 afp-LOFT-2016-12-17.tar.gz
 afp-LOFT-2017-10-10.tar.gz
+afp-Lowe_Ontological_Argument-2017-10-16.tar.gz
 afp-Lower_Semicontinuous-2011-02-11.tar.gz
 afp-Lower_Semicontinuous-2011-10-11.tar.gz
 afp-Lower_Semicontinuous-2012-05-24.tar.gz
@@ -1621,6 +1648,7 @@ afp-Marriage-2015-05-27.tar.gz
 afp-Marriage-2016-02-22.tar.gz
 afp-Marriage-2016-12-17.tar.gz
 afp-Marriage-2017-10-10.tar.gz
+afp-Mason_Stothers-2017-12-22.tar.gz
 afp-Matrix-2010-06-17.tar.gz
 afp-Matrix-2010-07-01.tar.gz
 afp-Matrix-2011-02-11.tar.gz
@@ -1651,6 +1679,7 @@ afp-Max-Card-Matching-2015-05-27.tar.gz
 afp-Max-Card-Matching-2016-02-22.tar.gz
 afp-Max-Card-Matching-2016-12-17.tar.gz
 afp-Max-Card-Matching-2017-10-10.tar.gz
+afp-Median_Of_Medians_Selection-2017-12-22.tar.gz
 afp-Menger-2017-02-27.tar.gz
 afp-Menger-2017-10-10.tar.gz
 afp-MFMC_Countable-2016-05-09.tar.gz
@@ -1681,10 +1710,13 @@ afp-MiniML-2016-12-17.tar.gz
 afp-MiniML-2017-10-10.tar.gz
 afp-Minkowskis_Theorem-2017-07-15.tar.gz
 afp-Minkowskis_Theorem-2017-10-10.tar.gz
+afp-Minsky_Machines-2018-08-14.tar.gz
 afp-Modal_Logics_for_NTS-2016-10-25.tar.gz
 afp-Modal_Logics_for_NTS-2016-10-27.tar.gz
 afp-Modal_Logics_for_NTS-2016-12-17.tar.gz
 afp-Modal_Logics_for_NTS-2017-10-10.tar.gz
+afp-Modular_Assembly_Kit_Security-2018-05-09.tar.gz
+afp-Monad_Memo_DP-2018-05-23.tar.gz
 afp-Monad_Normalisation-2017-05-11.tar.gz
 afp-Monad_Normalisation-2017-10-10.tar.gz
 afp-MonoBoolTranAlgebra-2011-09-27.tar.gz
@@ -1768,6 +1800,7 @@ afp-Network_Security_Policy_Verification-2015-05-27.tar.gz
 afp-Network_Security_Policy_Verification-2016-02-22.tar.gz
 afp-Network_Security_Policy_Verification-2016-12-17.tar.gz
 afp-Network_Security_Policy_Verification-2017-10-10.tar.gz
+afp-Neumann_Morgenstern_Utility-2018-07-04.tar.gz
 afp-No_FTL_observers-2016-04-28.tar.gz
 afp-No_FTL_observers-2016-12-17.tar.gz
 afp-No_FTL_observers-2017-10-10.tar.gz
@@ -1827,10 +1860,13 @@ afp-Open_Induction-2015-05-27.tar.gz
 afp-Open_Induction-2016-02-22.tar.gz
 afp-Open_Induction-2016-12-17.tar.gz
 afp-Open_Induction-2017-10-10.tar.gz
+afp-OpSets-2018-05-25.tar.gz
 afp-Optics-2017-06-01.tar.gz
 afp-Optics-2017-10-10.tar.gz
+afp-Optimal_BST-2018-05-29.tar.gz
 afp-Orbit_Stabiliser-2017-08-23.tar.gz
 afp-Orbit_Stabiliser-2017-10-10.tar.gz
+afp-Ordered_Resolution_Prover-2018-01-22.tar.gz
 afp-Ordinal-2005-11-16.tar.gz
 afp-Ordinal-2007-11-27.tar.gz
 afp-Ordinal-2008-06-10.tar.gz
@@ -1898,6 +1934,7 @@ afp-PCF-2015-05-27.tar.gz
 afp-PCF-2016-02-22.tar.gz
 afp-PCF-2016-12-17.tar.gz
 afp-PCF-2017-10-10.tar.gz
+afp-Pell-2018-06-25.tar.gz
 afp-Perfect-Number-Thm-2009-11-24.tar.gz
 afp-Perfect-Number-Thm-2009-12-12.tar.gz
 afp-Perfect-Number-Thm-2010-07-01.tar.gz
@@ -1915,6 +1952,7 @@ afp-Perfect-Number-Thm-2017-10-10.tar.gz
 afp-Perron_Frobenius-2016-05-20.tar.gz
 afp-Perron_Frobenius-2016-12-17.tar.gz
 afp-Perron_Frobenius-2017-10-10.tar.gz
+afp-Perron_Frobenius-2017-10-18.tar.gz
 afp-pGCL-2014-07-13.tar.gz
 afp-pGCL-2014-08-28.tar.gz
 afp-pGCL-2015-05-27.tar.gz
@@ -2029,6 +2067,7 @@ afp-Probabilistic_System_Zoo-2015-05-28.tar.gz
 afp-Probabilistic_System_Zoo-2016-02-22.tar.gz
 afp-Probabilistic_System_Zoo-2016-12-17.tar.gz
 afp-Probabilistic_System_Zoo-2017-10-10.tar.gz
+afp-Probabilistic_Timed_Automata-2018-05-25.tar.gz
 afp-Probabilistic_While-2017-05-11.tar.gz
 afp-Probabilistic_While-2017-10-10.tar.gz
 afp-Program-Conflict-Analysis-2007-12-20.tar.gz
@@ -2048,6 +2087,7 @@ afp-Program-Conflict-Analysis-2015-05-27.tar.gz
 afp-Program-Conflict-Analysis-2016-02-22.tar.gz
 afp-Program-Conflict-Analysis-2016-12-17.tar.gz
 afp-Program-Conflict-Analysis-2017-10-10.tar.gz
+afp-Projective_Geometry-2018-06-15.tar.gz
 afp-Promela-2014-05-29.tar.gz
 afp-Promela-2014-08-28.tar.gz
 afp-Promela-2015-05-27.tar.gz
@@ -2523,6 +2563,7 @@ afp-Stewart_Apollonius-2017-08-01.tar.gz
 afp-Stewart_Apollonius-2017-10-10.tar.gz
 afp-Stirling_Formula-2016-12-17.tar.gz
 afp-Stirling_Formula-2017-10-10.tar.gz
+afp-Stochastic_Matrices-2017-11-23.tar.gz
 afp-Stone_Algebras-2016-09-06.tar.gz
 afp-Stone_Algebras-2016-12-17.tar.gz
 afp-Stone_Algebras-2017-10-10.tar.gz
@@ -2621,6 +2662,7 @@ afp-Tarskis_Geometry-2015-05-27.tar.gz
 afp-Tarskis_Geometry-2016-02-22.tar.gz
 afp-Tarskis_Geometry-2016-12-17.tar.gz
 afp-Tarskis_Geometry-2017-10-10.tar.gz
+afp-Taylor_Models-2018-01-08.tar.gz
 afp-Timed_Automata-2016-03-11.tar.gz
 afp-Timed_Automata-2016-12-17.tar.gz
 afp-Timed_Automata-2017-10-10.tar.gz
@@ -2658,6 +2700,7 @@ afp-Topology-2017-10-10.tar.gz
 afp-TortoiseHare-2016-02-22.tar.gz
 afp-TortoiseHare-2016-12-17.tar.gz
 afp-TortoiseHare-2017-10-10.tar.gz
+afp-Transition_Systems_and_Automata-2017-10-27.tar.gz
 afp-Transitive-Closure-2011-03-14.tar.gz
 afp-Transitive-Closure-2011-10-11.tar.gz
 afp-Transitive-Closure-2011-10-12.tar.gz
@@ -2681,6 +2724,8 @@ afp-Transitive-Closure-II-2015-05-27.tar.gz
 afp-Transitive-Closure-II-2016-02-22.tar.gz
 afp-Transitive-Closure-II-2016-12-17.tar.gz
 afp-Transitive-Closure-II-2017-10-10.tar.gz
+afp-Treaps-2018-02-06.tar.gz
+afp-Treaps-2018-02-07.tar.gz
 afp-Tree-Automata-2009-11-29.tar.gz
 afp-Tree-Automata-2009-12-12.tar.gz
 afp-Tree-Automata-2009-12-13.tar.gz
@@ -2782,6 +2827,7 @@ afp-Verified-Prover-2015-05-27.tar.gz
 afp-Verified-Prover-2016-02-22.tar.gz
 afp-Verified-Prover-2016-12-17.tar.gz
 afp-Verified-Prover-2017-10-10.tar.gz
+afp-VerifyThis2018-2018-04-30.tar.gz
 afp-Vickrey_Clarke_Groves-2015-04-30.tar.gz
 afp-Vickrey_Clarke_Groves-2015-05-09.tar.gz
 afp-Vickrey_Clarke_Groves-2015-05-27.tar.gz
@@ -2803,6 +2849,9 @@ afp-VolpanoSmith-2015-05-27.tar.gz
 afp-VolpanoSmith-2016-02-22.tar.gz
 afp-VolpanoSmith-2016-12-17.tar.gz
 afp-VolpanoSmith-2017-10-10.tar.gz
+afp-WebAssembly-2018-04-29.tar.gz
+afp-WebAssembly-2018-04-30.tar.gz
+afp-Weight_Balanced_Trees-2018-03-13.tar.gz
 afp-Well_Quasi_Orders-2012-05-24.tar.gz
 afp-Well_Quasi_Orders-2013-02-16.tar.gz
 afp-Well_Quasi_Orders-2013-11-17.tar.gz
@@ -2818,6 +2867,7 @@ afp-WHATandWHERE_Security-2015-05-27.tar.gz
 afp-WHATandWHERE_Security-2016-02-22.tar.gz
 afp-WHATandWHERE_Security-2016-12-17.tar.gz
 afp-WHATandWHERE_Security-2017-10-10.tar.gz
+afp-Winding_Number_Eval-2017-10-18.tar.gz
 afp-Word_Lib-2016-06-09.tar.gz
 afp-Word_Lib-2016-12-17.tar.gz
 afp-Word_Lib-2017-10-10.tar.gz
@@ -2841,3 +2891,4 @@ afp-XML-2015-05-27.tar.gz
 afp-XML-2016-02-22.tar.gz
 afp-XML-2016-12-17.tar.gz
 afp-XML-2017-10-10.tar.gz
+afp-Zeta_Function-2017-10-16.tar.gz
