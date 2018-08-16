@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Finite Machine Word Library - Archive of Formal Proofs
+<title>Minsky Machines - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,13 +61,9 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>inite
+  <h1>          <font class="first">M</font>insky
   
-          <font class="first">M</font>achine
-  
-          <font class="first">W</font>ord
-  
-          <font class="first">L</font>ibrary
+          <font class="first">M</font>achines
   
 </h1>
   <p>&nbsp;</p>
@@ -76,23 +72,15 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Finite Machine Word Library</td>
+  <td class="data" width="80%">Minsky Machines</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                      Joel Beeren,
-                  Matthew Fernandez,
-                  Xin Gao,
-                  <a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>,
-                  Rafal Kolanski,
-                  Japheth Lim,
-                  Corey Lewis,
-                Daniel Matichuk and
-          Thomas Sewell
+              Bertram Felgenhauer
       </td>
 </tr>
 
@@ -100,32 +88,39 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-06-09</td>
+  <td class="data">2018-08-14</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-This entry contains an extension to the Isabelle library for
-fixed-width machine words. In particular, the entry adds quickcheck setup
-for words, printing as hexadecimals, additional operations, reasoning
-about alignment, signed words, enumerations of words, normalisation of
-word numerals, and an extensive library of properties about generic
-fixed-width words, as well as an instantiation of many of these to the
-commonly used 32 and 64-bit bases.</td>
+<p> We formalize undecidablity results for Minsky machines. To
+this end, we also formalize recursive inseparability.
+</p><p> We start by proving that Minsky machines can
+compute arbitrary primitive recursive and recursive functions. We then
+show that there is a deterministic Minsky machine with one argument
+and two final states such that the set of inputs that are accepted in
+one state is recursively inseparable from the set of inputs that are
+accepted in the other state. </p><p> As a corollary, the
+set of Minsky configurations that reach the first state but not the
+second recursively inseparable from the set of Minsky configurations
+that reach the second state but not the first. In particular both
+these sets are undecidable. </p><p> We do
+<em>not</em> prove that recursive functions can simulate
+Minsky machines. </p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Word_Lib-AFP,
-  author  = {Joel Beeren and Matthew Fernandez and Xin Gao and Gerwin Klein and Rafal Kolanski and Japheth Lim and Corey Lewis and Daniel Matichuk and Thomas Sewell},
-  title   = {Finite Machine Word Library},
+        <pre>@article{Minsky_Machines-AFP,
+  author  = {Bertram Felgenhauer},
+  title   = {Minsky Machines},
   journal = {Archive of Formal Proofs},
-  month   = jun,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Word_Lib.html},
+  month   = aug,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Minsky_Machines.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -136,10 +131,10 @@ commonly used 32 and 64-bit bases.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                    
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Complx.html">Complx</a>, <a href="IEEE_Floating_Point.html">IEEE_Floating_Point</a>, <a href="IP_Addresses.html">IP_Addresses</a>      </td></tr>
+                      <tr><td class="datahead">Depends on:</td>
+          <td class="data"><a href="Abstract-Rewriting.html">Abstract-Rewriting</a>, <a href="Recursion-Theory-I.html">Recursion-Theory-I</a>      </td></tr>
           
+                    
 
         
   </tbody>
@@ -151,34 +146,23 @@ commonly used 32 and 64-bit bases.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Word_Lib/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Word_Lib/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Minsky_Machines/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Minsky_Machines/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Word_Lib/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Minsky_Machines/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Word_Lib-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Minsky_Machines-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2016-1:
-          <a href="../release/afp-Word_Lib-2016-12-17.tar.gz">
-            afp-Word_Lib-2016-12-17.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016:
-          <a href="../release/afp-Word_Lib-2016-06-09.tar.gz">
-            afp-Word_Lib-2016-06-09.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>

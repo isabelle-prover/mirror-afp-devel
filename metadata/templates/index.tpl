@@ -24,7 +24,7 @@
 The Archive of Formal Proofs is a collection of proof libraries, examples, and larger scientific developments,
 mechanically checked in the theorem prover <a href="http://isabelle.in.tum.de/">Isabelle</a>. It is organized in the way
 of a scientific journal, is indexed by <a href="http://dblp.uni-trier.de/db/journals/afp/">dblp</a> and has an ISSN:
-2150-914x. Submissions are refereed. The preferred citation style is available <a href="citing.html">[here]</a>.
+2150-914x. Submissions are refereed. The preferred citation style is available <a href="citing.html">[here]</a>. We encourage companion AFP submissions to conference and journal publications.
 <br><br>
 {%- if not is_devel %}
 A <a href="http://devel.isa-afp.org">development version</a> of the archive is available as well.

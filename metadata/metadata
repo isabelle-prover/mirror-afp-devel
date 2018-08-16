@@ -7121,6 +7121,28 @@ abstract =
   and we build the natural homomorphism of rings from R to its
   localization.
 
+[Minsky_Machines]
+title = Minsky Machines
+author = Bertram Felgenhauer<>
+topic = Logic
+date = 2018-08-14
+notify = int-e@gmx.de
+abstract = 
+  <p> We formalize undecidablity results for Minsky machines. To
+  this end, we also formalize recursive inseparability.
+  </p><p> We start by proving that Minsky machines can
+  compute arbitrary primitive recursive and recursive functions. We then
+  show that there is a deterministic Minsky machine with one argument
+  and two final states such that the set of inputs that are accepted in
+  one state is recursively inseparable from the set of inputs that are
+  accepted in the other state. </p><p> As a corollary, the
+  set of Minsky configurations that reach the first state but not the
+  second recursively inseparable from the set of Minsky configurations
+  that reach the second state but not the first. In particular both
+  these sets are undecidable. </p><p> We do
+  <em>not</em> prove that recursive functions can simulate
+  Minsky machines. </p>
+
 [Neumann_Morgenstern_Utility]
 title = Von-Neumann-Morgenstern Utility Theorem
 author = Julian Parsert<mailto:julian.parsert@gmail.com>, Cezary Kaliszyk<http://cl-informatik.uibk.ac.at/users/cek/>
