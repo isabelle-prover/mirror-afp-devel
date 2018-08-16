@@ -24,6 +24,8 @@ thys/ClockSynchInst/document/bound_prec_enh.ics
 thys/ClockSynchInst/document/bound_prec_enh4.cvc
 thys/ClockSynchInst/document/bound_prec_enh7.cvc
 
+thys/Depth-First-Search/dfs.ML
+
 thys/Well_Quasi_Orders/generated/
 
 thys/JinjaThreads/Execute/JVM_Execute2.ML
@@ -37,15 +39,26 @@ thys/Vickrey_Clarke_Groves/VCG-withoutWrapper.scala
 
 thys/CAVA_LTL_Modelchecker/Nested_DFS/nested_dfs_hash.sml
 thys/CAVA_LTL_Modelchecker/code/CAVA_Export.sml
+
 thys/Collections/Examples/Autoref/nested_dfs.sml
+
 thys/Promela/Promela.sml
+
 thys/Formal_SSA/BraunSSA.ml
+
+thys/LTL/example/rewrite_example.sml
+
+thys/LTL_to_DRA/Code/LTL_to_DRA_Translator.sml
 
 thys/EdmondsKarp_Maxflow/evaluation/fofu-SML/Fofu_Export.sml
 
 thys/Diophantine_Eqns_Lin_Hom/generated
 
 thys/Buchi_Complementation/code/Complementation_Export.sml
+
+thys/Refine_Imperative_HOL/benchmarks/Dijkstra/isabelle/dijkstra_export.sml
+thys/Refine_Imperative_HOL/benchmarks/Heapmap/isabelle/heapmap_export.sml
+thys/Refine_Imperative_HOL/benchmarks/NestedDFS/isabelle/NDFS_Benchmark_export.sml
 
 thys/SPARCv8/SparcModel_MMU/sparc_seq
 
