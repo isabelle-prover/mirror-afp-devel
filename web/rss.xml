@@ -9,7 +9,29 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Jul 2018 00:00:00 +0000</pubDate>
+    <pubDate>14 Aug 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Minsky Machines</title>
+              <link>https://www.isa-afp.org/entries/Minsky_Machines.html</link>
+       <guid>https://www.isa-afp.org/entries/Minsky_Machines.html</guid>
+       <dc:creator> Bertram Felgenhauer       </dc:creator>
+       <pubDate>14 Aug 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt; We formalize undecidablity results for Minsky machines. To
+this end, we also formalize recursive inseparability.
+&lt;/p&gt;&lt;p&gt; We start by proving that Minsky machines can
+compute arbitrary primitive recursive and recursive functions. We then
+show that there is a deterministic Minsky machine with one argument
+and two final states such that the set of inputs that are accepted in
+one state is recursively inseparable from the set of inputs that are
+accepted in the other state. &lt;/p&gt;&lt;p&gt; As a corollary, the
+set of Minsky configurations that reach the first state but not the
+second recursively inseparable from the set of Minsky configurations
+that reach the second state but not the first. In particular both
+these sets are undecidable. &lt;/p&gt;&lt;p&gt; We do
+&lt;em&gt;not&lt;/em&gt; prove that recursive functions can simulate
+Minsky machines. &lt;/p&gt;</description>
+    </item>
     <item>
        <title>Pricing in discrete financial models</title>
               <link>https://www.isa-afp.org/entries/DiscretePricing.html</link>
@@ -541,23 +563,6 @@ is an interesting formalization exercise.  Along the way, we introduce
 basic material on isometries, quasi-isometries, Lipschitz maps,
 geodesic spaces, the Hausdorff distance, the Cauchy completion of a
 metric space, and the exponential on extended real numbers.</description>
-    </item>
-    <item>
-       <title>An Isabelle/HOL formalisation of Green's Theorem</title>
-              <link>https://www.isa-afp.org/entries/Green.html</link>
-       <guid>https://www.isa-afp.org/entries/Green.html</guid>
-       <dc:creator> Mohammad Abdulaziz, Lawrence C. Paulson       </dc:creator>
-       <pubDate>11 Jan 2018 00:00:00 +0000</pubDate>
-       <description>
-We formalise a statement of Green’s theorem—the first formalisation to
-our knowledge—in Isabelle/HOL. The theorem statement that we formalise
-is enough for most applications, especially in physics and
-engineering. Our formalisation is made possible by a novel proof that
-avoids the ubiquitous line integral cancellation argument. This
-eliminates the need to formalise orientations and region boundaries
-explicitly with respect to the outwards-pointing normal vector.
-Instead we appeal to a homological argument about equivalences between
-paths.</description>
     </item>
   </channel>
 </rss>
