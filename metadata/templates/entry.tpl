@@ -185,23 +185,25 @@
     </tr>
 
 
-    <tr><td class="links">Older releases:
-    {% if entry.releases|length > 1 %}
-      <ul>
-      {% for release, listdate in entry.releases[1:] %}
-        {% for tar in listdate %}
-          <li>Isabelle {{ release }}:
-          <a href="{{ ROOT_PATH }}release/afp-{{ entry.name }}-{{ tar }}.tar.gz">
-            afp-{{ entry.name }}-{{ tar }}.tar.gz
-          </a>
-          </li>
+    {% if not is_devel %}
+      <tr><td class="links">Older releases:
+      {% if entry.releases|length > 1 %}
+        <ul>
+        {% for release, listdate in entry.releases[1:] %}
+          {% for tar in listdate %}
+            <li>Isabelle {{ release }}:
+            <a href="{{ ROOT_PATH }}release/afp-{{ entry.name }}-{{ tar }}.tar.gz">
+              afp-{{ entry.name }}-{{ tar }}.tar.gz
+            </a>
+            </li>
+          {% endfor %}
         {% endfor %}
-      {% endfor %}
-      </ul>
-    {% else %}
-    None
+        </ul>
+      {% else %}
+      None
+      {% endif %}
+      </td></tr>
     {% endif %}
-    </td></tr>
 
   </tbody>
 </table>
