@@ -17,7 +17,7 @@ begin
 
 (*open import {hol} `lemTheory`*)
 
-datatype_record 'a Show_class=
+record 'a Show_class=
 
   show_method::" 'a \<Rightarrow> string "
 

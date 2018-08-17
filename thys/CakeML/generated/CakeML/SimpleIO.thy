@@ -4,6 +4,7 @@ theory "SimpleIO"
 
 imports
   Main
+  "HOL-Library.Datatype_Records"
   "LEM.Lem_pervasives"
   "LEM.Lem_pervasives_extra"
   "Lib"

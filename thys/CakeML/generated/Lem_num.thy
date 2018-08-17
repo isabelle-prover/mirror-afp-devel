@@ -28,68 +28,68 @@ end*)
 
 (* Typeclasses can be used as a mean to overload constants like +, -, etc *)
 
-datatype_record 'a NumNegate_class= 
+record 'a NumNegate_class= 
  
   numNegate_method ::" 'a \<Rightarrow> 'a " 
 
 
 
-datatype_record 'a NumAbs_class= 
+record 'a NumAbs_class= 
  
   abs_method ::" 'a \<Rightarrow> 'a " 
 
 
 
-datatype_record 'a NumAdd_class= 
+record 'a NumAdd_class= 
  
   numAdd_method ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a "
 
 
 
-datatype_record 'a NumMinus_class= 
+record 'a NumMinus_class= 
  
   numMinus_method ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a "
 
 
 
-datatype_record 'a NumMult_class= 
+record 'a NumMult_class= 
  
   numMult_method ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a "
 
 
 
-datatype_record 'a NumPow_class= 
+record 'a NumPow_class= 
  
   numPow_method ::" 'a \<Rightarrow> nat \<Rightarrow> 'a "
 
 
 
-datatype_record 'a NumDivision_class= 
+record 'a NumDivision_class= 
  
   numDivision_method ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a "
 
 
 
-datatype_record 'a NumIntegerDivision_class= 
+record 'a NumIntegerDivision_class= 
  
   div_method ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a "
 
 
 
 
-datatype_record 'a NumRemainder_class= 
+record 'a NumRemainder_class= 
  
   mod_method ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a "
 
 
 
-datatype_record 'a NumSucc_class= 
+record 'a NumSucc_class= 
  
   succ_method ::" 'a \<Rightarrow> 'a "
 
 
 
-datatype_record 'a NumPred_class= 
+record 'a NumPred_class= 
  
   pred_method ::" 'a \<Rightarrow> 'a "
 

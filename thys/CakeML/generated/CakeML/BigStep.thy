@@ -4,6 +4,7 @@ theory "BigStep"
 
 imports
   Main
+  "HOL-Library.Datatype_Records"
   "LEM.Lem_pervasives_extra"
   "Lib"
   "Namespace"

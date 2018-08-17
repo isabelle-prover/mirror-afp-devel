@@ -4,6 +4,7 @@ theory "FpSem"
 
 imports
   Main
+  "HOL-Library.Datatype_Records"
   "LEM.Lem_pervasives"
   "Lib"
   "IEEE_Floating_Point.FP64"

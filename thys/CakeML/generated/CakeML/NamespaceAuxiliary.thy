@@ -4,6 +4,7 @@ theory "NamespaceAuxiliary"
 
 imports
   Main
+  "HOL-Library.Datatype_Records"
   "LEM.Lem_pervasives"
   "LEM.Lem_set_extra"
   "Namespace"

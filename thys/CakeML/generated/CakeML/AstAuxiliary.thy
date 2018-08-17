@@ -4,6 +4,7 @@ theory "AstAuxiliary"
 
 imports
   Main
+  "HOL-Library.Datatype_Records"
   "LEM.Lem_pervasives"
   "Lib"
   "Namespace"

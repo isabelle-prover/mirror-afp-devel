@@ -447,44 +447,44 @@ definition instance_Basic_classes_OrdMaxMin_Word_bitSequence_dict  :: "(bitSeque
 (* Interface for bitoperations                                                *)
 (* ========================================================================== *)
 
-datatype_record 'a WordNot_class= 
+record 'a WordNot_class= 
 
   lnot_method ::" 'a \<Rightarrow> 'a "
 
 
 
-datatype_record 'a WordAnd_class= 
+record 'a WordAnd_class= 
 
   land_method  ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a "
 
 
 
-datatype_record 'a WordOr_class= 
+record 'a WordOr_class= 
 
   lor_method ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a "
 
 
 
 
-datatype_record 'a WordXor_class= 
+record 'a WordXor_class= 
 
   lxor_method ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a "
 
 
 
-datatype_record 'a WordLsl_class= 
+record 'a WordLsl_class= 
 
   lsl_method ::" 'a \<Rightarrow> nat \<Rightarrow> 'a "
 
 
 
-datatype_record 'a WordLsr_class= 
+record 'a WordLsr_class= 
 
   lsr_method ::" 'a \<Rightarrow> nat \<Rightarrow> 'a "
 
 
 
-datatype_record 'a WordAsr_class= 
+record 'a WordAsr_class= 
 
   asr_method ::" 'a \<Rightarrow> nat \<Rightarrow> 'a "
 

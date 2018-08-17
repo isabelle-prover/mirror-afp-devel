@@ -5,7 +5,6 @@ theory "Lem_basic_classes"
 imports
   Main
   "Lem_bool"
-  "HOL-Library.Datatype_Records"
 
 begin 
 
@@ -14,7 +13,6 @@ begin
 (******************************************************************************)
 
 (*open import Bool*) 
-(*open import {isabelle} `HOL-Library.Datatype_Records`*)
 
 (*open import {coq} `Coq.Strings.Ascii`*)
 (*open import {hol} `ternaryComparisonsTheory`*)
@@ -92,7 +90,7 @@ definition ordering_cases  :: " ordering \<Rightarrow> 'a \<Rightarrow> 'a \<Rig
 
 (*val orderingEqual : ordering -> ordering -> bool*)
 
-datatype_record 'a Ord_class= 
+record 'a Ord_class= 
  
   compare_method                 ::" 'a \<Rightarrow> 'a \<Rightarrow> ordering " 
 
@@ -151,7 +149,7 @@ definition ordCompare  :: " 'a Ord_class \<Rightarrow> 'a \<Rightarrow> 'a \<Rig
   if (x = y) then EQ else GT )"
 
 
-datatype_record 'a OrdMaxMin_class= 
+record 'a OrdMaxMin_class= 
  
   max_method ::" 'a \<Rightarrow> 'a \<Rightarrow> 'a " 
 
