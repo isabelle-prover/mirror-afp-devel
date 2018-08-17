@@ -1306,7 +1306,7 @@ proof -
     also have "... \<le> extended_Gromov_product_at basepoint x y + 4"
       by (intro mono_intros *)
     finally show "M0 \<le> extended_Gromov_product_at basepoint x y"
-      by (metis (no_types, lifting) PInfty_neq_ereal(1) add.commute ereal_add_nonneg_nonneg ereal_add_strict_mono ereal_le_distrib mult_2_ereal not_le numeral_Bit0 numeral_eq_ereal one_add_one zero_less_one_ereal)
+      by (metis (no_types, lifting) PInfty_neq_ereal(1) add.commute add_nonneg_nonneg ereal_add_strict_mono ereal_le_distrib mult_2_ereal not_le numeral_Bit0 numeral_eq_ereal one_add_one zero_less_one_ereal)
   qed
   ultimately show ?thesis using order_trans[OF \<open>M \<le> ereal M0\<close>] by force
 qed

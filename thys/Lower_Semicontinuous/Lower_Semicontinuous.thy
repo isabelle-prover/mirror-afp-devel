@@ -938,7 +938,7 @@ proof-
     fix u v ::real assume uv: "0 \<le> u" "0 \<le> v" "u + v = 1"
     ultimately have "f (u *\<^sub>R x + v *\<^sub>R y) + g (u *\<^sub>R x + v *\<^sub>R y)
       \<le> (ereal u * f x + ereal v * f y) + (ereal u * g x + ereal v * g y)"
-      using assms unfolding convex_on_def by (auto simp add:ereal_add_mono)
+      using assms unfolding convex_on_def by (auto simp add: add_mono)
     also have "\<dots>=(ereal u * f x + ereal u * g x) + (ereal v * f y + ereal v * g y)"
       by (simp add: algebra_simps)
     also have "\<dots>= ereal u * (f x + g x) + ereal v * (f y + g y)"
@@ -977,10 +977,10 @@ proof-
     fix u v ::real assume uv: "0 \<le> u" "0 \<le> v" "u + v = 1"
     ultimately have "max (f (u *\<^sub>R x + v *\<^sub>R y)) (g (u *\<^sub>R x + v *\<^sub>R y))
       \<le> max (ereal u * f x + ereal v * f y) (ereal u * g x + ereal v * g y)"
-      apply (subst ereal_max_mono) using assms unfolding convex_on_def by auto
+      apply (subst max.mono) using assms unfolding convex_on_def by auto
     also have "\<dots>\<le>ereal u * max (f x) (g x) + ereal v * max (f y) (g y)"
-      apply (subst ereal_max_least)
-      apply (subst ereal_add_mono) prefer 4 apply (subst ereal_add_mono)
+      apply (subst max.boundedI)
+      apply (subst add_mono) prefer 4 apply (subst add_mono)
       by (subst ereal_mult_left_mono, auto simp add: uv)+
     finally have "max (f (u *\<^sub>R x + v *\<^sub>R y)) (g (u *\<^sub>R x + v *\<^sub>R y))
       \<le> ereal u * max (f x) (g x) + ereal v * max (f y) (g y)" by auto }
@@ -1030,7 +1030,7 @@ by (metis assms convex_on_ereal_alt)
 
 
 lemma ereal_add_right_mono: "(a::ereal) \<le> b \<Longrightarrow> a + c \<le> b + c"
-by (metis ereal_add_mono order_refl)
+by (metis add_mono order_refl)
 
 lemma convex_on_ereal_sum_aux:
   assumes "1-a>0"
@@ -1217,7 +1217,7 @@ moreover
     ultimately have "f(u *\<^sub>R x + v *\<^sub>R y) \<le> (ereal u) * f x + (ereal v) * f y"
       using lhs convex_on_ereal_mem[of S f x y u v] uv by auto
     also have "\<dots> \<le> (ereal u) * (ereal fx) + (ereal v) * (ereal fy)"
-      apply (subst ereal_add_mono) apply (subst ereal_mult_left_mono)
+      apply (subst add_mono) apply (subst ereal_mult_left_mono)
       prefer 4 apply (subst ereal_mult_left_mono) using le uv by auto
     also have "\<dots> = ereal (u * fx + v * fy)" by auto
     finally have "(u *\<^sub>R x + v *\<^sub>R y, u * fx + v * fy) : Epigraph S f"

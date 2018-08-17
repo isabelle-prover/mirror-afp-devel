@@ -692,7 +692,7 @@ proof (rule order_tendstoI)
       using xs by (auto simp: lprefix_conv_lappend sum_list_sum_nth intro: sum_nonneg)
     note `a < sum_list ys`
     also have "sum_list ys \<le> sum_list zs"
-      using zs ereal_add_mono[OF order_refl nonneg] by auto
+      using zs add_mono[OF order_refl nonneg] by auto
     finally have "a < sum_list zs" . }
   ultimately show "eventually (\<lambda>x. a < (sum_list\<circ>list_of) x) (at' xs)"
     unfolding eventually_at'_llist by (auto simp: lfinite_eq_range_llist_of)
