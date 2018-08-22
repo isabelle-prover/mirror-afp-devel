@@ -8,22 +8,14 @@ imports
   Optimal_BST_Examples
 begin
 
-global_interpretation Wpl
-where a = a and b = b for a b
-defines w_ab = w and wpl_ab = "wpl.wpl w_ab" .
+locale Wpl_Optimal_BST = Wpl a b + Optimal_BST where w = "Wpl.w a b" for a b
 
-global_interpretation Optimal_BST
-where w = "w_ab a b" rewrites "wpl.wpl (w_ab a b) = wpl_ab a b" for a b
-defines opt_bst_ab = opt_bst
-by(simp add: wpl_ab_def)
+locale Wpl_Optimal_BST2 = Wpl a b + Optimal_BST2 where w = "Wpl.w a b" for a b
 
-global_interpretation Optimal_BST2
-where w = "w_ab a b" rewrites "wpl.wpl (w_ab a b) = wpl_ab a b" for a b
-defines opt_bst2_ab = opt_bst2
-proof -
-  show "wpl.wpl (w_ab a b) = wpl_ab a b" by(simp add: wpl_ab_def)
-  show "Optimal_BST2 (w_ab a b)"
-proof (standard, unfold w_ab_def Wpl.w_def, goal_cases)
+(* Simultaneous interpretation to avoid technical problem *)
+global_interpretation Wpl_Optimal_BST + Wpl_Optimal_BST2
+defines wpl_ab = wpl and opt_bst_ab = opt_bst and opt_bst2_ab = opt_bst2
+proof (standard, unfold Wpl.w_def, goal_cases)
   case (1 i i' j j')
   thus ?case by (simp add: add_mono_thms_linordered_semiring(1) sum_mono2)
 next
@@ -35,7 +27,6 @@ next
     using un2[of i' j j'] un1[of i i' j] un1[of i i' j']
           un2[of i' j "j'+1"] un1[of i i' "j+1"] un1[of i i' "j'+1"]
     by (simp add: sum_Un_nat algebra_simps ivl_disj_int Int_Un_distrib)
-qed
 qed
 
 text \<open>Examples:\<close>
