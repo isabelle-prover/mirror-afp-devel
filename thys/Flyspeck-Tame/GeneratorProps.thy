@@ -248,13 +248,6 @@ next
   qed
 qed
 
-
-lemma fin_aux: "finite B \<Longrightarrow> finite{f A|A. A \<subseteq> B \<and> P A}"
-apply(rule finite_subset[where B = "f ` Pow B"])
- apply blast
-apply simp
-done
-
 lemma sep_ne: "\<exists>P \<subseteq> M. separated g (fst ` P)"
 by(unfold separated_def separated\<^sub>2_def separated\<^sub>3_def) blast
 
@@ -294,7 +287,7 @@ proof(induct ps rule: length_induct)
       using Cons IH subset le dist dist' by (cases p) simp
     also have "snd p + Max (?M ?ps) =
       Max {snd p + (\<Sum>p\<in>P. snd p) | P. ?S ?ps P}"
-      by (auto simp add:add_Max_commute fin_aux sep_ne intro!: arg_cong [where f=Max])
+      by (auto simp add:Max_add_commute[symmetric] sep_ne intro!: arg_cong [where f=Max])
     also have "{snd p + (\<Sum>p\<in>P. snd p) |P. ?S ?ps P} =
       {sum snd (insert p P) |P. ?S ?ps P}"
       using dist Cons
@@ -333,7 +326,7 @@ proof(induct ps rule: length_induct)
         apply simp
         apply(rule_tac x="{p}" in exI)
         using `fst p : \<V> g` by(simp add:sep_conv[OF mgp])
-      thus ?thesis by(simp add: Max_Un fin_aux sep_ne)
+      thus ?thesis by(simp add: Max_Un sep_ne)
     qed
     also have "?U = ?M ps0" using Cons by simp blast
     finally show ?thesis .
@@ -383,7 +376,7 @@ apply(simp add: ExcessNotAt_def ExcessNotAtRec_conv_Max[OF _ _ dist_ExcessTab]
   fst_set_ExcessTable_subset)
 apply(rule Max_mono)
   prefer 2 apply (simp add: sep_ne)
- prefer 2 apply (simp add: fin_aux)
+ prefer 2 apply (simp)
 apply auto
 apply(rule_tac x=P in exI)
 apply auto

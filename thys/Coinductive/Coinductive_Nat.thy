@@ -471,8 +471,7 @@ lemma Sup_image_eadd1:
   shows "Sup ((\<lambda>y :: enat. x + y) ` Y) = x + Sup Y"
 proof(cases "finite Y")
   case True
-  have "(+) x ` Y = {x + m |m. m \<in> Y}" by auto
-  thus ?thesis using True by(simp add: Sup_enat_def add_Max_commute assms)
+  thus ?thesis by(simp add: Sup_enat_def Max_add_commute assms)
 next
   case False
   thus ?thesis

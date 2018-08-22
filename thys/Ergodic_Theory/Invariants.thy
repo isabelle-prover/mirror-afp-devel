@@ -646,9 +646,9 @@ proof -
       by (subst birkhoff_sum_cocycle, subst birkhoff_sum_1(2), auto)
     finally have c: "F (n+1) x = max 0 (Max {f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}})" using b by simp
 
-    have "{f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}} = {f x + m |m. m \<in>{birkhoff_sum f k (T x) |k. k \<in>{0..n}}}" by blast
+    have "{f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}} = (+) (f x) ` {birkhoff_sum f k (T x) |k. k \<in>{0..n}}" by blast
     also have "Max ... = f x + Max {birkhoff_sum f k (T x) |k. k \<in>{0..n}}"
-      by (rule add_Max_commute[symmetric], auto)
+      by (rule Max_add_commute) auto
     also have "... = f x + F n (T x)" unfolding F_def by simp
     finally have "Max {f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}} = f x + F n (T x)" by simp
     then have "F (n+1) x = max 0 (f x + F n (T x))" using c by simp
