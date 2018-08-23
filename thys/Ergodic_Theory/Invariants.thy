@@ -603,13 +603,6 @@ $\limsup S_n f/n \leq E(f|I)$.
 
 Applying the same result to $-f$ gives $S_n f/n \to E(f|I)$.
 \<close>
-lemma integrable_MAX:
-  fixes f:: "_ \<Rightarrow> _ \<Rightarrow> real"
-  assumes "finite I" "I \<noteq> {}"
-          "\<And>i. i \<in> I \<Longrightarrow> integrable M (f i)"
-  shows "integrable M (\<lambda>x. MAX i\<in>I. f i x)"
-using integrable_Max[of I M f, OF assms]
-by(simp add: Setcompr_eq_image)
 
 context fmpt
 begin
