@@ -283,12 +283,12 @@ proof(induct ps rule: length_induct)
     have "\<And>a. set (map fst (deleteAround g a ps)) \<subseteq> \<V> g"
       using deleteAround_subset[of g _ ps] subset Cons
       by auto
-    hence "ExcessNotAtRec ps0 g = max (Max(?M ps)) (snd p + Max(?M ?ps))"
+    hence "ExcessNotAtRec ps0 g = max (Max(?M ps)) (Max(?M ?ps) + snd p)"
       using Cons IH subset le dist dist' by (cases p) simp
-    also have "snd p + Max (?M ?ps) =
-      Max {snd p + (\<Sum>p\<in>P. snd p) | P. ?S ?ps P}"
-      by (auto simp add:Max_add_commute[symmetric] sep_ne intro!: arg_cong [where f=Max])
-    also have "{snd p + (\<Sum>p\<in>P. snd p) |P. ?S ?ps P} =
+    also have "Max (?M ?ps) + snd p =
+      Max {(\<Sum>p\<in>P. snd p) + snd p | P. ?S ?ps P}"
+      by (auto simp add:setcompr_eq_image Max_add_commute[symmetric] sep_ne intro!: arg_cong [where f=Max])
+    also have "{(\<Sum>p\<in>P. snd p) + snd p |P. ?S ?ps P} =
       {sum snd (insert p P) |P. ?S ?ps P}"
       using dist Cons
       apply (auto simp:delAround_def)
