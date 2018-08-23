@@ -51,7 +51,7 @@
         name of the entry. We strongly encourage precisely one session per
         entry, but exceptions can be made. All sessions must be in group
         (AFP), and all theory files of the submission must be contained in
-        at least one session. See also the example <a href="https://bitbucket.org/isa-afp/afp-2017/src/default/thys/Example-Submission/ROOT">ROOT</a> file
+        at least one session. See also the example <a href="https://bitbucket.org/isa-afp/afp-2018/src/default/thys/Example-Submission/ROOT">ROOT</a> file
         in the <a href="entries/Example-Submission.html">Example submission</a>.
 </ul>
 
