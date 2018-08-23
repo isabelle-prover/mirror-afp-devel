@@ -4416,7 +4416,7 @@ notify =
 [Tree_Decomposition]
 title = Tree Decomposition
 author = Christoph Dittmann <http://logic.las.tu-berlin.de/Members/Dittmann/>
-notify = christoph.dittmann@tu-berlin.de
+notify =
 date = 2016-05-31
 topic = Mathematics/Graph Theory
 abstract =
@@ -5186,7 +5186,7 @@ abstract =
 	We present a formalization of parity games (a two-player game on
 	directed graphs) and a proof of their positional determinacy in
 	Isabelle/HOL.  This proof works for both finite and infinite games.
-notify = christoph.dittmann@tu-berlin.de
+notify =
 
 [Ergodic_Theory]
 title = Ergodic Theory
@@ -7127,7 +7127,7 @@ author = Bertram Felgenhauer<>
 topic = Logic
 date = 2018-08-14
 notify = int-e@gmx.de
-abstract = 
+abstract =
   <p> We formalize undecidablity results for Minsky machines. To
   this end, we also formalize recursive inseparability.
   </p><p> We start by proving that Minsky machines can
