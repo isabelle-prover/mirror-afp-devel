@@ -468,7 +468,7 @@ qed
 
 lemma Sup_image_eadd1:
   assumes "Y \<noteq> {}"
-  shows "Sup ((\<lambda>y :: enat. x + y) ` Y) = x + Sup Y"
+  shows "Sup ((\<lambda>y :: enat. y+x) ` Y) = Sup Y + x"
 proof(cases "finite Y")
   case True
   thus ?thesis by(simp add: Sup_enat_def Max_add_commute assms)
@@ -477,7 +477,7 @@ next
   thus ?thesis
   proof(cases x)
     case (enat x')
-    hence "\<not> finite ((+) x ` Y)" using False
+    hence "\<not> finite ((\<lambda>y. y+x) ` Y)" using False
       by(auto dest!: finite_imageD intro: inj_onI)
     with False show ?thesis by(simp add: Sup_enat_def assms)
   next
@@ -488,9 +488,8 @@ next
 qed
 
 lemma Sup_image_eadd2:
-  "Y \<noteq> {} \<Longrightarrow> Sup ((\<lambda>y :: enat. y + x) ` Y) = Sup Y + x"
-by(subst (1 2) add.commute)(rule Sup_image_eadd1)
-
+  "Y \<noteq> {} \<Longrightarrow> Sup ((\<lambda>y :: enat. x + y) ` Y) = x + Sup Y"
+by(simp add: Sup_image_eadd1 add.commute)
 
 lemma mono2mono_eSuc [THEN lfp.mono2mono, cont_intro, simp]:
   shows monotone_eSuc: "monotone (\<le>) (\<le>) eSuc"
@@ -541,10 +540,10 @@ lemma mono2mono_eadd[THEN lfp.mono2mono2, cont_intro, simp]:
 by(simp add: monotone_eadd1 monotone_eadd2)
 
 lemma mcont_eadd2: "mcont Sup (\<le>) Sup (\<le>) (\<lambda>y. x + y :: enat)"
-by(auto intro: mcontI monotone_eadd2 contI Sup_image_eadd1[symmetric])
+by(auto intro: mcontI monotone_eadd2 contI Sup_image_eadd2[symmetric])
 
 lemma mcont_eadd1: "mcont Sup (\<le>) Sup (\<le>) (\<lambda>x. x + y :: enat)"
-by(auto intro: mcontI monotone_eadd1 contI Sup_image_eadd2[symmetric])
+by(auto intro: mcontI monotone_eadd1 contI Sup_image_eadd1[symmetric])
 
 lemma mcont2mcont_eadd [cont_intro, simp]:
   "\<lbrakk> mcont lub ord Sup (\<le>) (\<lambda>x. f x);

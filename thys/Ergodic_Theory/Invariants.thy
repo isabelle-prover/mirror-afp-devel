@@ -603,6 +603,13 @@ $\limsup S_n f/n \leq E(f|I)$.
 
 Applying the same result to $-f$ gives $S_n f/n \to E(f|I)$.
 \<close>
+lemma integrable_MAX:
+  fixes f:: "_ \<Rightarrow> _ \<Rightarrow> real"
+  assumes "finite I" "I \<noteq> {}"
+          "\<And>i. i \<in> I \<Longrightarrow> integrable M (f i)"
+  shows "integrable M (\<lambda>x. MAX i\<in>I. f i x)"
+using integrable_Max[of I M f, OF assms]
+by(simp add: Setcompr_eq_image)
 
 context fmpt
 begin
@@ -613,44 +620,45 @@ lemma birkhoff_aux1:
   defines "A \<equiv> {x \<in> space M. limsup (\<lambda>n. ereal(birkhoff_sum f n x)) = \<infinity>}"
     shows "A \<in> sets Invariants" "(\<integral>x. f x * indicator A x \<partial>M) \<ge> 0"
 proof -
+  let ?bsf = "birkhoff_sum f"
   have [measurable]: "A \<in> sets M" unfolding A_def by simp
   have Ainv: "x \<in> A \<longleftrightarrow> T x \<in> A" if "x \<in> space M" for x
   proof -
-    have "ereal(birkhoff_sum f (1 + n) x) = ereal(f x) + ereal(birkhoff_sum f n (T x))" for n
+    have "ereal(?bsf (1 + n) x) = ereal(f x) + ereal(?bsf n (T x))" for n
       unfolding birkhoff_sum_cocycle birkhoff_sum_1 by simp
-    moreover have "limsup (\<lambda>n. ereal(f x) + ereal(birkhoff_sum f n (T x)))
-                    = ereal(f x) + limsup(\<lambda>n. ereal(birkhoff_sum f n (T x)))"
+    moreover have "limsup (\<lambda>n. ereal(f x) + ereal(?bsf n (T x)))
+                    = ereal(f x) + limsup(\<lambda>n. ereal(?bsf n (T x)))"
       by (rule ereal_limsup_lim_add, auto)
-    moreover have "limsup (\<lambda>n. ereal(birkhoff_sum f (n+1) x)) = limsup (\<lambda>n. ereal(birkhoff_sum f n x))" using limsup_shift by simp
-    ultimately have "limsup (\<lambda>n. ereal(birkhoff_sum f n x)) = ereal(f x) + limsup (\<lambda>n. ereal(birkhoff_sum f n (T x)))" by simp
-    then have "limsup (\<lambda>n. ereal(birkhoff_sum f n x)) = \<infinity> \<longleftrightarrow> limsup (\<lambda>n. ereal(birkhoff_sum f n (T x))) = \<infinity>" by simp
+    moreover have "limsup (\<lambda>n. ereal(?bsf (n+1) x)) = limsup (\<lambda>n. ereal(?bsf n x))" using limsup_shift by simp
+    ultimately have "limsup (\<lambda>n. ereal(birkhoff_sum f n x)) = ereal(f x) + limsup (\<lambda>n. ereal(?bsf n (T x)))" by simp
+    then have "limsup (\<lambda>n. ereal(?bsf n x)) = \<infinity> \<longleftrightarrow> limsup (\<lambda>n. ereal(?bsf n (T x))) = \<infinity>" by simp
     then show "x \<in> A \<longleftrightarrow> T x \<in> A" using \<open>x \<in> space M\<close> A_def by simp
   qed
   then show "A \<in> sets Invariants" using assms(2) Invariants_sets by auto
 
-  define F where "F = (\<lambda>n x. Max {birkhoff_sum f k x |k. k \<in>{0..n}})"
+  define F where "F = (\<lambda>n x. MAX k \<in>{0..n}. ?bsf k x)"
   have [measurable]: "\<And>n. F n \<in> borel_measurable M" unfolding F_def by measurable
   have intFn: "integrable M (F n)" for n
-    unfolding F_def by (rule integrable_Max, auto simp add: birkhoff_sum_integral(1)[OF assms(1)])
+    unfolding F_def by (rule integrable_MAX, auto simp add: birkhoff_sum_integral(1)[OF assms(1)])
 
   have Frec: "F (n+1) x - F n (T x) = max (-F n (T x)) (f x)" for n x
   proof -
     have "{0..n+1} = {0} \<union> {1..n+1}" by auto
-    then have "{birkhoff_sum f k x |k. k \<in>{0..n+1}} = {birkhoff_sum f k x|k. k \<in> {0}} \<union> {birkhoff_sum f k x |k. k \<in>{1..n+1}}" by blast
-    then have *:"{birkhoff_sum f k x |k. k \<in>{0..n+1}} = {0} \<union> {birkhoff_sum f k x |k. k \<in>{1..n+1}}" using birkhoff_sum_1(1) by simp
-    have b: "F (n+1) x = max (Max {0}) (Max {birkhoff_sum f k x |k. k \<in>{1..n+1}})"
+    then have "(\<lambda>k. ?bsf k x) ` {0..n+1} = (\<lambda>k. ?bsf k x) ` {0} \<union> (\<lambda>k. ?bsf k x) ` {1..n+1}" by blast
+    then have *: "(\<lambda>k. ?bsf k x) ` {0..n+1} = {0} \<union> (\<lambda>k. ?bsf k x) ` {1..n+1}" using birkhoff_sum_1(1) by simp
+    have b: "F (n+1) x = max (Max {0}) (MAX k \<in>{1..n+1}. ?bsf k x)"
       by (subst F_def, subst *, rule Max.union, auto)
 
-    have "{birkhoff_sum f k x |k. k \<in>{1..n+1}} = {birkhoff_sum f (1+k) x |k. k \<in>{0..n}}" using Suc_le_D by auto
-    also have "... = { f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}}"
+    have "(\<lambda>k. ?bsf k x) ` {1..n+1} = (\<lambda>k. ?bsf (1+k) x) ` {0..n}" using Suc_le_D by fastforce
+    also have "... = (\<lambda>k. f x + ?bsf k (T x)) ` {0..n}"
       by (subst birkhoff_sum_cocycle, subst birkhoff_sum_1(2), auto)
-    finally have c: "F (n+1) x = max 0 (Max {f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}})" using b by simp
+    finally have c: "F (n+1) x = max 0 (MAX k \<in>{0..n}. ?bsf k (T x) + f x)" using b by (simp add: add_ac)
 
     have "{f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}} = (+) (f x) ` {birkhoff_sum f k (T x) |k. k \<in>{0..n}}" by blast
-    also have "Max ... = f x + Max {birkhoff_sum f k (T x) |k. k \<in>{0..n}}"
+    have "(MAX k \<in>{0..n}. ?bsf k (T x) + f x) = (MAX k \<in>{0..n}. ?bsf k (T x)) + f x"
       by (rule Max_add_commute) auto
-    also have "... = f x + F n (T x)" unfolding F_def by simp
-    finally have "Max {f x + birkhoff_sum f k (T x) |k. k \<in>{0..n}} = f x + F n (T x)" by simp
+    also have "... = F n (T x) + f x" unfolding F_def by simp
+    finally have "(MAX k \<in>{0..n}. ?bsf k (T x) + f x) = f x + F n (T x)" by simp
     then have "F (n+1) x = max 0 (f x + F n (T x))" using c by simp
     then show "F (n+1) x - F n (T x) = max (-F n (T x)) (f x)" by auto
   qed
@@ -674,12 +682,12 @@ proof -
     assume "x \<in> A"
     then have "T x \<in> A" using Ainv A_def by auto
     then have "limsup (\<lambda>n. ereal(birkhoff_sum f n (T x))) > ereal(-f x)" unfolding A_def by simp
-    then obtain N where "ereal(birkhoff_sum f N (T x)) > ereal(-f x)" using Limsup_obtain by blast
-    then have *: "birkhoff_sum f N (T x) > -f x" by simp
+    then obtain N where "ereal(?bsf N (T x)) > ereal(-f x)" using Limsup_obtain by blast
+    then have *: "?bsf N (T x) > -f x" by simp
     {
       fix n assume "n\<ge>N"
-      then have "birkhoff_sum f N (T x) \<in> {birkhoff_sum f k (T x) |k. k \<in> {0..n}}" by auto
-      then have "F n (T x) \<ge> birkhoff_sum f N (T x)" unfolding F_def by simp
+      then have "?bsf N (T x) \<in> (\<lambda>k. ?bsf k (T x)) ` {0..n}" by auto
+      then have "F n (T x) \<ge> ?bsf N (T x)" unfolding F_def by simp
       then have "F n (T x) \<ge> -f x" using * by simp
       then have "max (-F n (T x)) (f x) = f x" by simp
       then have "F (n+1) x - F n (T x) = f x" using Frec by simp
