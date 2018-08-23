@@ -145,7 +145,7 @@ lemma p_undefined[simp]: "s \<notin> S \<Longrightarrow> p s = undefined"
 lemma p_not_inf[simp]: "s \<in> S \<Longrightarrow> p s \<noteq> top"
   using p_le_1[of s] by (auto simp: top_unique)
 
-lemma p_S1: "s \<in> S1 \<Longrightarrow> p s = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. p t \<partial>D)"
+lemma p_S1: "s \<in> S1 \<Longrightarrow> p s = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. p t \<partial>measure_pmf D)"
   using S1 S1_S2 K_closed[of s] unfolding p_def
   by (simp add: P_sup_iterate[of _ s] subset_eq set_eq_iff suntil_Stream[of _ _ s])
      (auto intro!: SUP_cong nn_integral_cong_AE simp add: AE_measure_pmf_iff)
@@ -178,7 +178,7 @@ using assms proof (induction rule: converse_rtrancl_induct)
 qed simp
 
 definition F_sup :: "('s \<Rightarrow> ennreal) \<Rightarrow> 's \<Rightarrow> ennreal" where
-  "F_sup f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then SUP D:K s. \<integral>\<^sup>+t. f t \<partial>D else 0)"
+  "F_sup f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then SUP D:K s. \<integral>\<^sup>+t. f t \<partial>measure_pmf D else 0)"
 
 lemma F_sup_cong: "(\<And>s. s \<in> S \<Longrightarrow> f s = g s) \<Longrightarrow> F_sup f s = F_sup g s"
   using K_closed[of s]
@@ -235,7 +235,7 @@ proof -
             apply auto
             done
         next
-          show "(\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. P_sup t (\<lambda>\<omega>. (?F ^^ Suc n) \<bottom> (s ## t ## \<omega>)) \<partial>D) =
+          show "(\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. P_sup t (\<lambda>\<omega>. (?F ^^ Suc n) \<bottom> (s ## t ## \<omega>)) \<partial>measure_pmf D) =
             (F_sup ^^ Suc n) (\<lambda>x\<in>S. 0) s"
             unfolding funpow.simps comp_def
             using S1 S2 `s \<in> S`
@@ -939,7 +939,7 @@ proof atomize_elim
       moreover
       { have "0 \<le> ?v s"
           using `s\<in>S` ct by (simp add: PiE_def)
-        also assume v_less: "?v s < (SUP D:K s. integral\<^sup>N D ?v)"
+        also assume v_less: "?v s < (\<Squnion>D\<in>K s. \<integral>\<^sup>+ s. v (simple ct s) \<partial>measure_pmf D)"
         also have "\<dots> \<le> p s"
           unfolding p_S1[OF `s\<in>S1`] using `s\<in>S` ct v_le_p[OF simple_valid_cfg, OF `ct \<in> Pi S K`]
           by (auto intro!: SUP_mono nn_integral_mono_AE bexI
@@ -954,11 +954,11 @@ proof atomize_elim
         from proper[OF this(1)] min[OF this(1)] ct `D \<in> K s` `s\<in>S` this(2)
         have False
           by simp }
-      ultimately have "?v s = (SUP D:K s. integral\<^sup>N D ?v)"
+      ultimately have "?v s = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ s. ?v s \<partial>measure_pmf D)"
         by (auto intro: antisym SUP_upper2[where i="ct s"] leI)
-      also have "\<dots> = (SUP D:K s. integral\<^sup>N D (\<lambda>s\<in>S. ?v s))"
+      also have "\<dots> = (\<Squnion>D\<in>K s. integral\<^sup>N (measure_pmf D) (\<lambda>s\<in>S. ?v s))"
         using `s\<in>S` by (auto intro!: SUP_cong nn_integral_cong v_nS simp: ct simple_valid_cfg_iff `ct \<in> Pi S K`)
-      finally have "?v s = (SUP D:K s. integral\<^sup>N D (\<lambda>s\<in>S. ?v s))" . }
+      finally have "?v s = (\<Squnion>D\<in>K s. integral\<^sup>N (measure_pmf D) (\<lambda>s\<in>S. ?v s))" . }
     then have "?v = F_sup ?v"
       unfolding F_sup_def using ct
       by (auto intro!: ext v_S2 simple_cfg_on v_nS v_nS12 SUP_cong nn_integral_cong
@@ -1018,7 +1018,7 @@ lemma n_eq_0: "s \<in> S \<Longrightarrow> cfg \<in> cfg_on s \<Longrightarrow> 
 lemma n_not_inf[simp]: "s \<in> S \<Longrightarrow> n s \<noteq> top"
   using n_le_1[of s] by (auto simp: top_unique)
 
-lemma n_S1: "s \<in> S1 \<Longrightarrow> n s = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. n t \<partial>D)"
+lemma n_S1: "s \<in> S1 \<Longrightarrow> n s = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. n t \<partial>measure_pmf D)"
   using S1 S1_S2 unfolding n_def
   apply auto
   apply (subst P_inf_iterate)
@@ -1065,7 +1065,7 @@ proof (induction s)
 qed
 
 definition F_inf :: "('s \<Rightarrow> ennreal) \<Rightarrow> ('s \<Rightarrow> ennreal)" where
-  "F_inf f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. f t \<partial>D) else 0)"
+  "F_inf f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. f t \<partial>measure_pmf D) else 0)"
 
 lemma F_inf_n: "F_inf n = n"
   by (simp add: F_inf_def n_nS12 n_S1 fun_eq_iff)
@@ -1211,7 +1211,7 @@ proof -
     assume "s \<in> S - N"
     then show ?thesis
     proof (rule mono_les)
-      show "(\<Union>x\<in>S - N. sc x) \<subseteq> S - N \<union> N"
+      show "(\<Union>x\<in>S - N. set_pmf (sc x)) \<subseteq> S - N \<union> N"
         using Pi_closed[OF sc_Pi] by auto
       show "finite ((\<lambda>s. ?p s - x s) ` (S - N \<union> N))"
         using N_S by (intro finite_imageI finite_subset[OF _ S_finite]) auto
@@ -1281,7 +1281,7 @@ proof -
     with S1 S1_S2 have "n s = (\<Sqinter>D\<in>K s. ?I D)"
       by (subst n_eq_lfp_F_inf, subst lfp_unfold[OF mono_F_inf])
          (auto simp add: F_inf_def n_eq_lfp_F_inf)
-    moreover have "(\<Sqinter>D\<in>K s. \<integral>\<^sup>+x. n x \<partial>D) = Min (?I`K s)"
+    moreover have "(\<Sqinter>D\<in>K s. \<integral>\<^sup>+x. n x \<partial>measure_pmf D) = Min (?I`K s)"
       using `s \<in> S1` S1 K_wf
       by (intro cInf_eq_Min finite_imageI K_finite) auto
     moreover have "Min (?I`K s) \<in> ?I`K s"
@@ -1310,7 +1310,7 @@ proof -
     assume "s \<in> S - N"
     then show ?thesis
     proof (rule mono_les)
-      show "(\<Union>x\<in>S - N. sc x) \<subseteq> S - N \<union> N"
+      show "(\<Union>x\<in>S - N. set_pmf (sc x)) \<subseteq> S - N \<union> N"
         using Pi_closed[OF sc_Pi] by auto
       show "finite ((\<lambda>s. x s - ?n s) ` (S - N \<union> N))"
         using N_S by (intro finite_imageI finite_subset[OF _ S_finite]) auto

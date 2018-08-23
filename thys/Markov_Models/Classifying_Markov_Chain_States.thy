@@ -1301,7 +1301,7 @@ proof (rule pmf_eqI antisym)+
   show "pmf (bind_pmf N K) i \<le> pmf N i"
     by (simp add: pmf_bind le)
 
-  define \<Omega> where "\<Omega> = N \<union> (\<Union>i\<in>N. K i)"
+  define \<Omega> where "\<Omega> = N \<union> (\<Union>i\<in>N. set_pmf (K i))"
   then have \<Omega>: "countable \<Omega>"
     by (auto intro: countable_set_pmf)
   then interpret N: sigma_finite_measure "count_space \<Omega>"

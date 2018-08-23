@@ -98,15 +98,15 @@ proof -
       done
   qed
 
-  define \<Omega> where "\<Omega> = (\<Union>(n, m)\<in>F. p n m)"
+  define \<Omega> where "\<Omega> = (\<Union>(n, m)\<in>F. set_pmf (p n m))"
   have [measurable]: "\<Omega> \<in> sets (count_space UNIV)" by auto
   have in_\<Omega>: "(N, M) \<in> F \<Longrightarrow> y \<in> p N M \<Longrightarrow> y \<in> \<Omega>" for N M y
     by (auto simp: \<Omega>_def Bex_def)
 
   show ?thesis
   proof (intro stream_space_eq_sstart)
-    show "countable \<Omega>"
-      unfolding \<Omega>_def by (intro countable_UN countable_set_pmf) fact
+    from \<open>countable F\<close> show "countable \<Omega>"
+      by (auto simp add: \<Omega>_def)
     show "prob_space N" "prob_space M" "sets N = sets ?S" "sets M = sets ?S"
       using R_1[OF \<open>R N M\<close>] R_2[OF \<open>R N M\<close>] by (auto simp add: space_prob_algebra)
     have "\<And>N M. (N, M) \<in> F \<Longrightarrow> AE x in N. x !! i \<in> \<Omega>" for i
@@ -1025,7 +1025,7 @@ lemma prob_T_split:
            simp: T.emeasure_eq_measure SIGMA_Collect_eq)
 
 lemma enabled_imp_alw:
-  "(\<Union>s\<in>X. K s) \<subseteq> X \<Longrightarrow> x \<in> X \<Longrightarrow> enabled x \<omega> \<Longrightarrow> alw (HLD X) \<omega>"
+  "(\<Union>s\<in>X. set_pmf (K s)) \<subseteq> X \<Longrightarrow> x \<in> X \<Longrightarrow> enabled x \<omega> \<Longrightarrow> alw (HLD X) \<omega>"
 proof (coinduction arbitrary: \<omega> x)
   case alw then show ?case
     unfolding enabled.simps[of _ \<omega>]

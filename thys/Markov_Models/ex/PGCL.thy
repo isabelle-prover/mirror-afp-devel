@@ -98,15 +98,15 @@ lemma measurable_rF:
 lemma measurable_r[measurable]: "r f \<in> borel_measurable step.St"
   using continuous_rF measurable_rF by (rule borel_measurable_lfp)
 
-lemma mono_r': "mono (\<lambda>F s. \<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>D)"
+lemma mono_r': "mono (\<lambda>F s. \<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>measure_pmf D)"
   by (auto intro!: monoI le_funI INF_mono[OF bexI] nn_integral_mono simp: le_fun_def)
 
 lemma E_inf_r:
   "step.E_inf s (r f) =
-    lfp (\<lambda>F s. \<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>D) s"
+    lfp (\<lambda>F s. \<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>measure_pmf D) s"
 proof -
   have "step.E_inf s (r f) =
-    lfp (\<lambda>F s. \<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>D) s"
+    lfp (\<lambda>F s. \<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>measure_pmf D) s"
     unfolding rF_def[abs_def]
   proof (rule step.E_inf_lfp[THEN fun_cong])
     let ?F = "\<lambda>t x. (if fst t = Skip then f (snd t) else x)"
@@ -127,14 +127,14 @@ proof -
 qed
 
 lemma E_inf_r_unfold:
-  "step.E_inf s (r f) = (\<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else step.E_inf t (r f)) \<partial>D)"
+  "step.E_inf s (r f) = (\<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else step.E_inf t (r f)) \<partial>measure_pmf D)"
   unfolding E_inf_r by (simp add: lfp_unfold[OF mono_r'])
 
 lemma E_inf_r_induct[consumes 1, case_names step]:
   assumes "P s y"
   assumes *: "\<And>F s y. P s y \<Longrightarrow>
     (\<And>s y. P s y \<Longrightarrow> F s \<le> y) \<Longrightarrow> (\<And>s. F s \<le> step.E_inf s (r f)) \<Longrightarrow>
-    (\<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>D) \<le> y"
+    (\<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>measure_pmf D) \<le> y"
   shows "step.E_inf s (r f) \<le> y"
   using `P s y`
   unfolding E_inf_r
@@ -182,7 +182,7 @@ proof (rule antisym)
       by (rewrite E_inf_While_step) (auto intro!: step.E_inf_mono mono_r le_funI)
   qed (auto intro: SUP_least)
 
-  define w where "w F s = (\<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then if g (snd t) then F (c, snd t) else f (snd t) else F t) \<partial>D)"
+  define w where "w F s = (\<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then if g (snd t) then F (c, snd t) else f (snd t) else F t) \<partial>measure_pmf D)"
     for F s
   have "mono w"
     by (auto simp: w_def mono_def le_fun_def intro!: INF_mono[OF bexI] nn_integral_mono) []
@@ -227,7 +227,7 @@ proof (induction c arbitrary: f s)
 next
   case Abort then show ?case
   proof (intro antisym)
-    have "lfp (\<lambda>F s. \<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>D) \<le>
+    have "lfp (\<lambda>F s. \<Sqinter>D\<in>step s. \<integral>\<^sup>+ t. (if fst t = Skip then f (snd t) else F t) \<partial>measure_pmf D) \<le>
       (\<lambda>s. if \<exists>t. s = (Abort, t) then 0 else \<top>)"
       by (intro lfp_lowerbound) (auto simp: le_fun_def)
     then show "step.E_inf (Abort, s) (r f) \<le> wp Abort f s"

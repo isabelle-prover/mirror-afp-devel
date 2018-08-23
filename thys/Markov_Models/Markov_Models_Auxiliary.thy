@@ -99,7 +99,7 @@ end
 lemma mono_les:
   fixes s S N and l1 l2 :: "'a \<Rightarrow> real" and K :: "'a \<Rightarrow> 'a pmf"
   defines "\<Delta> x \<equiv> l2 x - l1 x"
-  assumes s: "s \<in> S" and S: "(\<Union>s\<in>S. K s) \<subseteq> S \<union> N"
+  assumes s: "s \<in> S" and S: "(\<Union>s\<in>S. set_pmf (K s)) \<subseteq> S \<union> N"
   assumes int_l1[simp]: "\<And>s. s \<in> S \<Longrightarrow> integrable (K s) l1"
   assumes int_l2[simp]: "\<And>s. s \<in> S \<Longrightarrow> integrable (K s) l2"
   assumes to_N: "\<And>s. s \<in> S \<Longrightarrow> \<exists>t\<in>N. (s, t) \<in> (SIGMA s:UNIV. K s)\<^sup>*"
@@ -189,7 +189,7 @@ qed
 lemma unique_les:
   fixes s S N and l1 l2 :: "'a \<Rightarrow> real" and K :: "'a \<Rightarrow> 'a pmf"
   defines "\<Delta> x \<equiv> l2 x - l1 x"
-  assumes s: "s \<in> S" and S: "(\<Union>s\<in>S. K s) \<subseteq> S \<union> N"
+  assumes s: "s \<in> S" and S: "(\<Union>s\<in>S. set_pmf (K s)) \<subseteq> S \<union> N"
   assumes "\<And>s. s \<in> S \<Longrightarrow> integrable (K s) l1"
   assumes "\<And>s. s \<in> S \<Longrightarrow> integrable (K s) l2"
   assumes "\<And>s. s \<in> S \<Longrightarrow> \<exists>t\<in>N. (s, t) \<in> (SIGMA s:UNIV. K s)\<^sup>*"

@@ -334,16 +334,16 @@ lemma E_sup_SUP:
 
 lemma E_sup_iterate:
   assumes [measurable]: "f \<in> borel_measurable St"
-  shows "E_sup s f = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. E_sup t (\<lambda>\<omega>. f (t ## \<omega>)) \<partial>D)"
+  shows "E_sup s f = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. E_sup t (\<lambda>\<omega>. f (t ## \<omega>)) \<partial>measure_pmf D)"
 proof -
   let ?v = "\<lambda>t. \<integral>\<^sup>+x. f (state t ## x) \<partial>T t"
   let ?p = "\<lambda>t. E_sup t (\<lambda>\<omega>. f (t ## \<omega>))"
   have "E_sup s f = (\<Squnion>cfg\<in>cfg_on s. \<integral>\<^sup>+t. ?v t \<partial>K_cfg cfg)"
     unfolding E_sup_def by (intro SUP_cong refl) (subst nn_integral_T, simp_all add: cfg_on_def)
-  also have "\<dots> = (\<Squnion>D\<in>K s. \<integral>\<^sup>+t. ?p t \<partial>D)"
+  also have "\<dots> = (\<Squnion>D\<in>K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D)"
   proof (intro antisym SUP_least)
     fix cfg :: "'s cfg" assume cfg: "cfg \<in> cfg_on s"
-    then show "(\<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (SUP D:K s. \<integral>\<^sup>+t. ?p t \<partial>D)"
+    then show "(\<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (SUP D:K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D)"
       by (auto simp: E_sup_def nn_integral_K_cfg AE_measure_pmf_iff
                intro!: nn_integral_mono_AE SUP_upper2)
   next
@@ -434,13 +434,13 @@ lemma E_sup_lfp:
   assumes cont_g: "\<And>s. sup_continuous (g s)"
   assumes int_g: "\<And>f cfg. f \<in> borel_measurable St \<Longrightarrow>
      (\<integral>\<^sup>+ \<omega>. g (state cfg) (f \<omega>) \<partial>T cfg) = g (state cfg) (integral\<^sup>N (T cfg) f)"
-  shows "(\<lambda>s. E_sup s (lfp l)) = lfp (\<lambda>f s. \<Squnion>D\<in>K s. \<integral>\<^sup>+t. g t (f t) \<partial>D)"
+  shows "(\<lambda>s. E_sup s (lfp l)) = lfp (\<lambda>f s. \<Squnion>D\<in>K s. \<integral>\<^sup>+t. g t (f t) \<partial>measure_pmf D)"
 proof (rule lfp_transfer_bounded[where \<alpha>="\<lambda>F s. E_sup s F" and f=l and P="\<lambda>f. f \<in> borel_measurable St"])
   show "sup_continuous (\<lambda>f s. \<Squnion>x\<in>K s. \<integral>\<^sup>+ t. g t (f t) \<partial>measure_pmf x)"
     using cont_g[THEN sup_continuous_compose] by (auto intro!: order_continuous_intros)
   show "sup_continuous l"
     using cont_g[THEN sup_continuous_compose] by (auto intro!: order_continuous_intros simp: l_def)
-  show "\<And>F. (\<lambda>s. E_sup s \<bottom>) \<le> (\<lambda>s. \<Squnion>D\<in>K s. \<integral>\<^sup>+ t. g t (F t) \<partial>D)"
+  show "\<And>F. (\<lambda>s. E_sup s \<bottom>) \<le> (\<lambda>s. \<Squnion>D\<in>K s. \<integral>\<^sup>+ t. g t (F t) \<partial>measure_pmf D)"
     using K_wf by (auto simp: E_sup_bot le_fun_def intro: SUP_upper2 )
 next
   fix f :: "'s stream \<Rightarrow> ennreal" assume f: "f \<in> borel_measurable St"
@@ -449,7 +449,7 @@ next
     unfolding E_sup_def using int_g[OF f]
     by (subst SUP_sup_continuous_ennreal[OF cont_g, symmetric])
        (auto intro!: SUP_cong simp del: cfg_onD_state dest: cfg_onD_state[symmetric])
-  ultimately show "(\<lambda>s. E_sup s (l f)) = (\<lambda>s. \<Squnion>D\<in>K s. \<integral>\<^sup>+ t. g t (E_sup t f) \<partial>D)"
+  ultimately show "(\<lambda>s. E_sup s (l f)) = (\<lambda>s. \<Squnion>D\<in>K s. \<integral>\<^sup>+ t. g t (E_sup t f) \<partial>measure_pmf D)"
     by (subst E_sup_iterate) (auto simp: l_def int_g fun_eq_iff intro!: SUP_cong nn_integral_cong)
 qed (auto simp: bot_fun_def l_def SUP_apply[abs_def] E_sup_SUP)
 
@@ -497,7 +497,7 @@ qed (intro mono_funpow sup_continuous_mono[OF Q] mono_compose[where f=f])
 
 lemma P_sup_iterate:
   assumes [measurable]: "Measurable.pred St P"
-  shows "P_sup s P = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. P_sup t (\<lambda>\<omega>. P (t ## \<omega>)) \<partial>D)"
+  shows "P_sup s P = (\<Squnion>D\<in>K s. \<integral>\<^sup>+ t. P_sup t (\<lambda>\<omega>. P (t ## \<omega>)) \<partial>measure_pmf D)"
 proof -
   have [simp]: "\<And>x s. indicator {x \<in> space St. P x} (x ## s) = indicator {s \<in> space St. P (x ## s)} s"
     by (auto simp: space_stream_space split: split_indicator)
@@ -516,16 +516,16 @@ lemma E_inf_mono:
 
 lemma E_inf_iterate:
   assumes [measurable]: "f \<in> borel_measurable St"
-  shows "E_inf s f = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. E_inf t (\<lambda>\<omega>. f (t ## \<omega>)) \<partial>D)"
+  shows "E_inf s f = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. E_inf t (\<lambda>\<omega>. f (t ## \<omega>)) \<partial>measure_pmf D)"
 proof -
   let ?v = "\<lambda>t. \<integral>\<^sup>+x. f (state t ## x) \<partial>T t"
   let ?p = "\<lambda>t. E_inf t (\<lambda>\<omega>. f (t ## \<omega>))"
   have "E_inf s f = (\<Sqinter>cfg\<in>cfg_on s. \<integral>\<^sup>+t. ?v t \<partial>K_cfg cfg)"
     unfolding E_inf_def by (intro INF_cong refl) (subst nn_integral_T, simp_all add: cfg_on_def)
-  also have "\<dots> = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+t. ?p t \<partial>D)"
+  also have "\<dots> = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D)"
   proof (intro antisym INF_greatest)
     fix cfg :: "'s cfg" assume cfg: "cfg \<in> cfg_on s"
-    then show "(INF D:K s. \<integral>\<^sup>+t. ?p t \<partial>D) \<le> (\<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
+    then show "(INF D:K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D) \<le> (\<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
       by (auto simp add: E_inf_def nn_integral_K_cfg AE_measure_pmf_iff intro!: nn_integral_mono_AE INF_lower2)
   next
     fix D assume D: "D \<in> K s" show "(INF cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+t. ?p t \<partial>D)"
@@ -594,9 +594,9 @@ lemma E_inf_lfp:
   assumes int_g: "\<And>f cfg. f \<in> borel_measurable St \<Longrightarrow>
      (\<integral>\<^sup>+ \<omega>. g (state cfg) (f \<omega>) \<partial>T cfg) = g (state cfg) (integral\<^sup>N (T cfg) f)"
   assumes K_finite: "\<And>s. finite (K s)"
-  shows "(\<lambda>s. E_inf s (lfp l)) = lfp (\<lambda>f s. \<Sqinter>D\<in>K s. \<integral>\<^sup>+t. g t (f t) \<partial>D)"
+  shows "(\<lambda>s. E_inf s (lfp l)) = lfp (\<lambda>f s. \<Sqinter>D\<in>K s. \<integral>\<^sup>+t. g t (f t) \<partial>measure_pmf D)"
 proof (rule antisym)
-  let ?F = "\<lambda>F s. \<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. g t (F t) \<partial>D"
+  let ?F = "\<lambda>F s. \<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. g t (F t) \<partial>measure_pmf D"
   let ?I = "\<lambda>D. (\<integral>\<^sup>+t. g t (lfp ?F t) \<partial>measure_pmf D)"
   have mono_F: "mono ?F"
     using sup_continuous_mono[OF cont_g]
@@ -737,7 +737,7 @@ qed
 
 lemma P_inf_iterate:
   assumes [measurable]: "Measurable.pred St P"
-  shows "P_inf s P = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. P_inf t (\<lambda>\<omega>. P (t ## \<omega>)) \<partial>D)"
+  shows "P_inf s P = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+ t. P_inf t (\<lambda>\<omega>. P (t ## \<omega>)) \<partial>measure_pmf D)"
 proof -
   have [simp]: "\<And>x s. indicator {x \<in> space St. P x} (x ## s) = indicator {s \<in> space St. P (x ## s)} s"
     by (auto simp: space_stream_space split: split_indicator)

@@ -1140,23 +1140,23 @@ interpretation fs: fs_int_indpt n fs_init
 lemma fs_gs_A_A': assumes "m \<noteq> 0"
   shows "fs.gs.A = of_nat A"
 proof -
-  have 0: "MAXIMUM (set fs_init) sq_norm \<in>  sq_norm ` set fs_init"
+  have 0: "Max (sq_norm ` set fs_init)  \<in>  sq_norm ` set fs_init"
     using len assms by auto
-  then have 1: " nat (MAXIMUM (set fs_init) sq_norm) \<in> (nat \<circ> sq_norm) ` set fs_init"
+  then have 1: " nat (Max (sq_norm ` set fs_init)) \<in> (nat \<circ> sq_norm) ` set fs_init"
     by (auto)
-  have [simp]: "0 \<le> MAXIMUM (set fs_init) sq_norm"
+  have [simp]: "0 \<le> Max (sq_norm ` set fs_init)"
     using 0 by force
   have [simp]: "sq_norm ` of_int_hom.vec_hom ` set fs_init = rat_of_int ` sq_norm ` set fs_init"
     by (auto simp add: sq_norm_of_int image_iff)
-  then have [simp]: "rat_of_int (MAXIMUM (set fs_init) sq_norm) \<in> rat_of_int ` sq_norm ` set fs_init"
+  then have [simp]: "rat_of_int (Max (sq_norm ` set fs_init)) \<in> rat_of_int ` sq_norm ` set fs_init"
     using 0 by auto
-  have "(Missing_Lemmas.max_list (map (nat \<circ> sq_norm) fs_init)) = MAXIMUM (set fs_init) (nat \<circ> sq_norm)"
+  have "(Missing_Lemmas.max_list (map (nat \<circ> sq_norm) fs_init)) = Max ((nat \<circ> sq_norm) ` set fs_init)"
     using assms len by (subst max_list_Max) (auto)
-  also have "\<dots> = nat (MAXIMUM (set fs_init) sq_norm_vec)"
+  also have "\<dots> = nat (Max (sq_norm_vec ` set fs_init))"
     using assms by (auto intro!: nat_mono Max_eqI simp add: 1)
-  also have "int \<dots> = MAXIMUM (set fs_init) sq_norm_vec"
+  also have "int \<dots> = Max (sq_norm_vec ` set fs_init)"
     by (subst int_nat_eq) (auto)
-  also have "rat_of_int \<dots> = MAXIMUM (set (map of_int_hom.vec_hom fs_init)) sq_norm"
+  also have "rat_of_int \<dots> = Max (sq_norm ` set (map of_int_hom.vec_hom fs_init))"
     by (rule Max_eqI[symmetric]) (auto simp add: sq_norm_of_int)
   finally show ?thesis
   unfolding A_def fs.gs.A_def by (auto)

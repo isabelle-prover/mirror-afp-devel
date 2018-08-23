@@ -2783,9 +2783,9 @@ proof -
 end
 
 lemma ex_MAXIMUM: assumes "finite A" "A \<noteq> {}"
-  shows "\<exists>a \<in> A.  MAXIMUM A f = f a"
+  shows "\<exists>a \<in> A. Max (f ` A) = f a"
 proof -
-  have "MAXIMUM A f \<in> f ` A"
+  have "Max (f ` A) \<in> f ` A"
     using assms by (auto intro!: Max_in)
   then show ?thesis
     using assms imageE by blast
