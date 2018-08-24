@@ -299,19 +299,12 @@ proof (induction n rule: nat_less_induct)
     then show ?thesis using H(2)[of 1] \<open>n = 1\<close> by auto
   next
     assume "n > 1"
-    {
-      fix x
-      have *: "(\<lambda>k. v k x + v (n-k) ((T^^k) x))`{0<..<n} = {v k x + v (n-k) ((T^^k) x) |k. k \<in> {0<..<n}}"
-        by blast
-      have "v n x = min (u n x) (Min ((\<lambda>k. v k x + v (n-k) ((T^^k) x))`{0<..<n}))"
-        using \<open>1<n\<close> by auto
-      then have "v n x = min (u n x) (Min { v k x + v (n-k) ((T^^k) x) |k. k \<in> {0<..<n}})"
-        using * by auto
-    }
-    moreover have "integrable M (\<lambda>x. min (u n x) (Min { v k x + v (n-k) ((T^^k) x) |k. k \<in> {0<..<n}}))"
+    hence "v n x = min (u n x) (MIN k \<in> {0<..<n}. v k x + v (n-k) ((T^^k) x))" for x
+      by auto
+    moreover have "integrable M (\<lambda>x. min (u n x) (MIN k \<in> {0<..<n}. v k x + v (n-k) ((T^^k) x)))"
       apply (rule integrable_min)
       apply (simp add: H(2))
-      apply (rule integrable_Min, simp)
+      apply (rule integrable_MIN, simp)
       using \<open>n >1\<close> apply auto[1]
       apply (rule Bochner_Integration.integrable_add)
       using "1.IH" apply auto[1]
