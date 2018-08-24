@@ -6,14 +6,6 @@ theory Optimal_BST
 imports Weighted_Path_Length
 begin
 
-(* FIXME mv *)
-lemma Min_add_const:
-fixes f :: "_ \<Rightarrow> (_::ordered_ab_semigroup_add)"
-shows "\<lbrakk> finite S; S \<noteq> {} \<rbrakk> \<Longrightarrow> Min ((\<lambda>x. f x + c) ` S) = Min(f ` S) + c"
-apply(induction rule: finite_ne_induct)
- apply(auto)
-by (metis add_right_mono min.commute min_def)
-
 subsection \<open>Function \<open>argmin\<close>\<close>
 
 text \<open>Function \<open>argmin\<close> iterates over a list and returns the rightmost element
@@ -93,7 +85,7 @@ lemma min_wpl_simps[simp]:
   "i > j \<Longrightarrow> min_wpl i j = 0"
   "i \<le> j \<Longrightarrow> min_wpl i j =
      Min ((\<lambda>k. min_wpl i (k-1) + min_wpl (k+1) j + w i j) ` {i..j})"
-by(auto simp add: min_wpl.simps[of i j] Min_add_const)
+by(auto simp add: min_wpl.simps[of i j] Min_add_commute)
 
 lemma upto_split1: 
   "\<lbrakk> i \<le> j;  j \<le> k \<rbrakk> \<Longrightarrow> [i..k] = [i..j-1] @ [j..k]"
