@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>14 Aug 2018 00:00:00 +0000</pubDate>
+    <pubDate>24 Aug 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
+              <link>https://www.isa-afp.org/entries/Simplex.html</link>
+       <guid>https://www.isa-afp.org/entries/Simplex.html</guid>
+       <dc:creator> Filip Marić, Mirko Spasić, René Thiemann       </dc:creator>
+       <pubDate>24 Aug 2018 00:00:00 +0000</pubDate>
+       <description>
+We present an Isabelle/HOL formalization and total correctness proof
+for the incremental version of the Simplex algorithm which is used in
+most state-of-the-art SMT solvers. It supports extraction of
+satisfying assignments, extraction of unsatisfiable cores, incremental
+assertion of constraints and backtracking. Formalization relies on
+stepwise program refinement, starting from a simple specification,
+going through a number of refinement steps, and ending up in a fully
+executable functional implementation. Symmetries present in the
+algorithm are handled with special care.</description>
+    </item>
     <item>
        <title>Minsky Machines</title>
               <link>https://www.isa-afp.org/entries/Minsky_Machines.html</link>
@@ -537,32 +554,6 @@ soundness and completeness of unordered and ordered variants of ground
 resolution with and without literal selection, the standard redundancy
 criterion, a general framework for refutational theorem proving, and
 soundness and completeness of an abstract first-order prover.</description>
-    </item>
-    <item>
-       <title>Gromov Hyperbolicity</title>
-              <link>https://www.isa-afp.org/entries/Gromov_Hyperbolicity.html</link>
-       <guid>https://www.isa-afp.org/entries/Gromov_Hyperbolicity.html</guid>
-       <dc:creator> Sebastien Gouezel       </dc:creator>
-       <pubDate>16 Jan 2018 00:00:00 +0000</pubDate>
-       <description>
-A geodesic metric space is Gromov hyperbolic if all its geodesic
-triangles are thin, i.e., every side is contained in a fixed
-thickening of the two other sides. While this definition looks
-innocuous, it has proved extremely important and versatile in modern
-geometry since its introduction by Gromov.  We formalize the basic
-classical properties of Gromov hyperbolic spaces, notably the Morse
-lemma asserting that quasigeodesics are close to geodesics, the
-invariance of hyperbolicity under quasi-isometries, we define and
-study the Gromov boundary and its associated distance, and prove that
-a quasi-isometry between Gromov hyperbolic spaces extends to a
-homeomorphism of the boundaries. We also prove a less classical
-theorem, by Bonk and Schramm, asserting that a Gromov hyperbolic space
-embeds isometrically in a geodesic Gromov-hyperbolic space. As the
-original proof uses a transfinite sequence of Cauchy completions, this
-is an interesting formalization exercise.  Along the way, we introduce
-basic material on isometries, quasi-isometries, Lipschitz maps,
-geodesic spaces, the Hausdorff distance, the Cauchy completion of a
-metric space, and the exponential on extended real numbers.</description>
     </item>
   </channel>
 </rss>

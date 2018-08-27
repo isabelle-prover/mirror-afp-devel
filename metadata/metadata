@@ -7165,3 +7165,19 @@ abstract =
   the underlying concepts including continuity and independence of
   preferences.
 
+[Simplex]
+title = An Incremental Simplex Algorithm with Unsatisfiable Core Generation
+author = Filip Marić <mailto:filip@matf.bg.ac.rs>, Mirko Spasić <mailto:mirko@matf.bg.ac.rs>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann/>
+topic = Computer Science/Algorithms
+date = 2018-08-24
+notify = rene.thiemann@uibk.ac.at
+abstract = 
+  We present an Isabelle/HOL formalization and total correctness proof
+  for the incremental version of the Simplex algorithm which is used in
+  most state-of-the-art SMT solvers. It supports extraction of
+  satisfying assignments, extraction of unsatisfiable cores, incremental
+  assertion of constraints and backtracking. Formalization relies on
+  stepwise program refinement, starting from a simple specification,
+  going through a number of refinement steps, and ending up in a fully
+  executable functional implementation. Symmetries present in the
+  algorithm are handled with special care.
