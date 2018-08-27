@@ -1,0 +1,14 @@
+chapter AFP
+
+session Simplex (AFP) = HOL +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories
+    Simplex_Auxiliary
+    Rel_Chain
+    Linear_Poly_Maps
+    Simplex_Incremental
+  document_files
+    "root.bib"
+    "root.tex"
