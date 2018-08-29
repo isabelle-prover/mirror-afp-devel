@@ -55,12 +55,12 @@ datatype v =
   | Conv "  (conN * tid_or_exn)option " " v list "
   (* Function closures
      The environment is used for the free variables in the function *)
-  | Closure " v sem_env " " varN " " exp "
+  | Closure " v sem_env " " varN " " exp0 "
   (* Function closure for recursive functions
    * See Closure and Letrec above
    * The last variable name indicates which function from the mutually
    * recursive bundle this closure value represents *)
-  | Recclosure " v sem_env " " (varN * varN * exp) list " " varN "
+  | Recclosure " v sem_env " " (varN * varN * exp0) list " " varN "
   | Loc " nat "
   | Vectorv " v list "
 
@@ -291,7 +291,7 @@ by pat_completeness auto
 
 (* Bind each function of a mutually recursive set of functions to its closure *)
 (*val build_rec_env : list (varN * varN * exp) -> sem_env v -> env_val -> env_val*)
-definition build_rec_env  :: "(varN*varN*exp)list \<Rightarrow>(v)sem_env \<Rightarrow>((string),(string),(v))namespace \<Rightarrow>((string),(string),(v))namespace "  where 
+definition build_rec_env  :: "(varN*varN*exp0)list \<Rightarrow>(v)sem_env \<Rightarrow>((string),(string),(v))namespace \<Rightarrow>((string),(string),(v))namespace "  where 
      " build_rec_env funs cl_env add_to_env = (
   List.foldr ( \<lambda>x .  
   (case  x of
@@ -373,7 +373,7 @@ definition prim_exn  :: " string \<Rightarrow> v "  where
 
 (* Do an application *)
 (*val do_opapp : list v -> maybe (sem_env v * exp)*)
-fun do_opapp  :: "(v)list \<Rightarrow>((v)sem_env*exp)option "  where 
+fun do_opapp  :: "(v)list \<Rightarrow>((v)sem_env*exp0)option "  where 
      " do_opapp ([Closure env n e, v2]) = (
       Some (( env (| v := (nsBind n v2(v   env)) |)), e))"
 |" do_opapp ([Recclosure env funs n, v2]) = (
@@ -523,7 +523,7 @@ definition Boolv  :: " bool \<Rightarrow> v "  where
 
 
 datatype exp_or_val =
-    Exp " exp "
+    Exp " exp0 "
   | Val " v "
 
 type_synonym( 'ffi, 'v) store_ffi =" 'v store * 'ffi ffi_state "
@@ -786,7 +786,7 @@ fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(
 
 (* Do a logical operation *)
 (*val do_log : lop -> v -> exp -> maybe exp_or_val*)
-fun do_log  :: " lop \<Rightarrow> v \<Rightarrow> exp \<Rightarrow>(exp_or_val)option "  where 
+fun do_log  :: " lop \<Rightarrow> v \<Rightarrow> exp0 \<Rightarrow>(exp_or_val)option "  where 
      " do_log And v2 e = ( 
   (case  v2 of
       Litv _ => None
@@ -880,7 +880,7 @@ fun do_log  :: " lop \<Rightarrow> v \<Rightarrow> exp \<Rightarrow>(exp_or_val)
 
 (* Do an if-then-else *)
 (*val do_if : v -> exp -> exp -> maybe exp*)
-definition do_if  :: " v \<Rightarrow> exp \<Rightarrow> exp \<Rightarrow>(exp)option "  where 
+definition do_if  :: " v \<Rightarrow> exp0 \<Rightarrow> exp0 \<Rightarrow>(exp0)option "  where 
      " do_if v2 e1 e2 = (
   if v2 = (Boolv True) then
     Some e1

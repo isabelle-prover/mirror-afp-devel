@@ -30,16 +30,16 @@ begin
      the context *)
 datatype ctxt_frame =
     Craise " unit "
-  | Chandle " unit " " (pat * exp) list "
-  | Capp " op0 " " v list " " unit " " exp list "
-  | Clog " lop " " unit " " exp "
-  | Cif " unit " " exp " " exp "
+  | Chandle " unit " " (pat * exp0) list "
+  | Capp " op0 " " v list " " unit " " exp0 list "
+  | Clog " lop " " unit " " exp0 "
+  | Cif " unit " " exp0 " " exp0 "
   (* The value is raised if none of the patterns match *)
-  | Cmat " unit " " (pat * exp) list " " v "
-  | Clet "  varN option " " unit " " exp "
+  | Cmat " unit " " (pat * exp0) list " " v "
+  | Clet "  varN option " " unit " " exp0 "
   (* Evaluating a constructor's arguments
    * The v list should be in reverse order. *)
-  | Ccon "  ( (modN, conN)id0)option " " v list " " unit " " exp list "
+  | Ccon "  ( (modN, conN)id0)option " " v list " " unit " " exp0 list "
   | Ctannot " unit " " t "
   | Clannot " unit " " locs "
 type_synonym ctxt =" ctxt_frame * v sem_env "
@@ -65,7 +65,7 @@ datatype 'ffi e_step_result =
  * single step *)
 
 (*val push : forall 'ffi. sem_env v -> store_ffi 'ffi v -> exp -> ctxt_frame -> list ctxt -> e_step_result 'ffi*)
-definition push  :: "(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow> exp \<Rightarrow> ctxt_frame \<Rightarrow>(ctxt_frame*(v)sem_env)list \<Rightarrow> 'ffi e_step_result "  where 
+definition push  :: "(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow> exp0 \<Rightarrow> ctxt_frame \<Rightarrow>(ctxt_frame*(v)sem_env)list \<Rightarrow> 'ffi e_step_result "  where 
      " push env s e c' cs = ( Estep (env, s, Exp e, ((c',env)# cs)))"
 
 
@@ -225,7 +225,7 @@ definition e_step_reln  :: "(v)sem_env*('ffi,(v))store_ffi*exp_or_val*(ctxt)list
 
 
 fun 
-small_eval  :: "(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow> exp \<Rightarrow>(ctxt)list \<Rightarrow>((v)store*'ffi ffi_state)*((v),(v))result \<Rightarrow> bool "  where 
+small_eval  :: "(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow> exp0 \<Rightarrow>(ctxt)list \<Rightarrow>((v)store*'ffi ffi_state)*((v),(v))result \<Rightarrow> bool "  where 
      "
 small_eval env s e c2 (s', Rval v2) = ((
   \<exists> env'.  (rtranclp (e_step_reln)) (env,s,Exp e,c2) (env',s',Val v2,[])))"
@@ -243,7 +243,7 @@ small_eval env s e c2 (s', Rerr (Rabort a)) = ((
 
 
 (*val e_diverges : forall 'ffi. sem_env v -> store_ffi 'ffi v -> exp -> bool*)
-definition e_diverges  :: "(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow> exp \<Rightarrow> bool "  where 
+definition e_diverges  :: "(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow> exp0 \<Rightarrow> bool "  where 
      " e_diverges env s e = ((
   \<forall> env'. 
   \<forall> s'. 

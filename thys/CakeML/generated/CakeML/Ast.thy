@@ -185,35 +185,35 @@ datatype pat =
   | Ptannot " pat " " t "
 
 (* Expressions *)
-datatype exp =
-    Raise " exp "
-  | Handle " exp " " (pat * exp) list "
+datatype exp0 =
+    Raise " exp0 "
+  | Handle " exp0 " " (pat * exp0) list "
   | Lit " lit "
   (* Constructor application.
      A Nothing constructor indicates a tuple pattern. *)
-  | Con "  ( (modN, conN)id0)option " " exp list "
+  | Con "  ( (modN, conN)id0)option " " exp0 list "
   | Var " (modN, varN) id0 "
-  | Fun " varN " " exp "
+  | Fun " varN " " exp0 "
   (* Application of a primitive operator to arguments.
      Includes function application. *)
-  | App " op0 " " exp list "
+  | App " op0 " " exp0 list "
   (* Logical operations (and, or) *)
-  | Log " lop " " exp " " exp "
-  | If " exp " " exp " " exp "
+  | Log " lop " " exp0 " " exp0 "
+  | If " exp0 " " exp0 " " exp0 "
   (* Pattern matching *)
-  | Mat " exp " " (pat * exp) list "
+  | Mat " exp0 " " (pat * exp0) list "
   (* A let expression
      A Nothing value for the binding indicates that this is a
      sequencing expression, that is: (e1; e2). *)
-  | Let "  varN option " " exp " " exp "
+  | Let "  varN option " " exp0 " " exp0 "
   (* Local definition of (potentially) mutually recursive
      functions.
      The first varN is the function's name, and the second varN
      is its parameter. *)
-  | Letrec " (varN * varN * exp) list " " exp "
-  | Tannot " exp " " t "
+  | Letrec " (varN * varN * exp0) list " " exp0 "
+  | Tannot " exp0 " " t "
   (* Location annotated expressions, not expected in source programs *)
-  | Lannot " exp " " locs "
+  | Lannot " exp0 " " locs "
 
 type_synonym type_def =" ( tvarN list * typeN * (conN * t list) list) list "
 
@@ -221,9 +221,9 @@ type_synonym type_def =" ( tvarN list * typeN * (conN * t list) list) list "
 datatype dec =
   (* Top-level bindings
    * The pattern allows several names to be bound at once *)
-    Dlet " locs " " pat " " exp "
+    Dlet " locs " " pat " " exp0 "
   (* Mutually recursive function definition *)
-  | Dletrec " locs " " (varN * varN * exp) list "
+  | Dletrec " locs " " (varN * varN * exp0) list "
   (* Type definition
      Defines several data types, each of which has several
      named variants, which can in turn have several arguments.

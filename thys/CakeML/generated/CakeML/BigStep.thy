@@ -33,11 +33,11 @@ begin
    runs out. *)
 
 inductive
-evaluate_match  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow> v \<Rightarrow>(pat*exp)list \<Rightarrow> v \<Rightarrow> 'ffi state*((v),(v))result \<Rightarrow> bool "  
+evaluate_match  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow> v \<Rightarrow>(pat*exp0)list \<Rightarrow> v \<Rightarrow> 'ffi state*((v),(v))result \<Rightarrow> bool "  
       and
-evaluate_list  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow>(exp)list \<Rightarrow> 'ffi state*(((v)list),(v))result \<Rightarrow> bool "  
+evaluate_list  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow>(exp0)list \<Rightarrow> 'ffi state*(((v)list),(v))result \<Rightarrow> bool "  
       and
-evaluate  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow> exp \<Rightarrow> 'ffi state*((v),(v))result \<Rightarrow> bool "  where
+evaluate  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow> exp0 \<Rightarrow> 'ffi state*((v),(v))result \<Rightarrow> bool "  where
 
 "lit" : " \<And> ck env l s.
 

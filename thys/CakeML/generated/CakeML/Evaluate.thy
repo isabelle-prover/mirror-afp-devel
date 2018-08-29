@@ -48,9 +48,9 @@ list_result (Rerr e) = ( Rerr e )"
 (*val evaluate : forall 'ffi. state 'ffi -> sem_env v -> list exp -> state 'ffi * result (list v) v*)
 (*val evaluate_match : forall 'ffi. state 'ffi -> sem_env v -> v -> list (pat * exp) -> v -> state 'ffi * result (list v) v*)
 function (sequential,domintros) 
-fun_evaluate_match  :: " 'ffi state \<Rightarrow>(v)sem_env \<Rightarrow> v \<Rightarrow>(pat*exp)list \<Rightarrow> v \<Rightarrow> 'ffi state*(((v)list),(v))result "  
+fun_evaluate_match  :: " 'ffi state \<Rightarrow>(v)sem_env \<Rightarrow> v \<Rightarrow>(pat*exp0)list \<Rightarrow> v \<Rightarrow> 'ffi state*(((v)list),(v))result "  
                    and
-fun_evaluate  :: " 'ffi state \<Rightarrow>(v)sem_env \<Rightarrow>(exp)list \<Rightarrow> 'ffi state*(((v)list),(v))result "  where 
+fun_evaluate  :: " 'ffi state \<Rightarrow>(v)sem_env \<Rightarrow>(exp0)list \<Rightarrow> 'ffi state*(((v)list),(v))result "  where 
      "
 fun_evaluate st env [] = ( (st, Rval []))"
 |"

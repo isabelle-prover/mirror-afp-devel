@@ -9,6 +9,8 @@ imports
   "HOL-Library.Simps_Case_Conv"
 begin
 
+type_synonym exp = exp0
+
 hide_const (open) sem_env.v
 
 code_pred

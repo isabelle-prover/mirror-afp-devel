@@ -785,7 +785,7 @@ definition check_exn_tenv  :: "(modN)list \<Rightarrow> string \<Rightarrow>(t)l
 (* For the value restriction on let-based polymorphism *)
 (*val is_value : exp -> bool*)
 function (sequential,domintros) 
-is_value  :: " exp \<Rightarrow> bool "  where 
+is_value  :: " exp0 \<Rightarrow> bool "  where 
      "
 is_value (Lit _) = ( True )"
 |"
@@ -904,11 +904,11 @@ type_ps tvs tenv ps ts bindings'
 type_ps tvs tenv (p # ps) (t0 # ts) (bindings'@bindings)"
 
 inductive
-type_funs  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow>(varN*varN*exp)list \<Rightarrow>(varN*t)list \<Rightarrow> bool "  
+type_funs  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow>(varN*varN*exp0)list \<Rightarrow>(varN*t)list \<Rightarrow> bool "  
       and
-type_es  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow>(exp)list \<Rightarrow>(t)list \<Rightarrow> bool "  
+type_es  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow>(exp0)list \<Rightarrow>(t)list \<Rightarrow> bool "  
       and
-type_e  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow> exp \<Rightarrow> t \<Rightarrow> bool "  where
+type_e  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow> exp0 \<Rightarrow> t \<Rightarrow> bool "  where
 
 "lit_int" : " \<And> tenv tenvE n.
 
@@ -1122,7 +1122,7 @@ definition tenv_add_tvs  :: " nat \<Rightarrow>(string*t)list \<Rightarrow>(stri
 
 
 (*val type_pe_determ : type_env -> tenv_val_exp -> pat -> exp -> bool*)
-definition type_pe_determ  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow> pat \<Rightarrow> exp \<Rightarrow> bool "  where 
+definition type_pe_determ  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow> pat \<Rightarrow> exp0 \<Rightarrow> bool "  where 
      " type_pe_determ tenv tenvE p e = ((
   \<forall> t1. 
   \<forall> tenv1. 

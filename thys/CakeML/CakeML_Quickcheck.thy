@@ -74,7 +74,7 @@ qualified definition vectorv_2 where
 
 end
 
-quickcheck_generator exp
+quickcheck_generator exp0
   constructors:
     Raise,
     CakeML_Quickcheck.handle_0,
