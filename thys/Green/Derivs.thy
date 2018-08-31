@@ -160,9 +160,17 @@ lemma piecewise_C1_differentiable_on_pair [simp, derivative_intros]:
   fixes f :: "real \<Rightarrow> 'a::euclidean_space" and g :: "real \<Rightarrow> 'b::euclidean_space"
   assumes "f piecewise_C1_differentiable_on S" "g piecewise_C1_differentiable_on S"
   shows "(\<lambda>x. (f x, g x)) piecewise_C1_differentiable_on S"
-  using assms
-  unfolding piecewise_C1_differentiable_on_def
-by (blast intro!: continuous_intros C1_differentiable_on_pair intro: C1_differentiable_on_subset elim: )
+  using assms unfolding piecewise_C1_differentiable_on_def
+proof safe
+  fix A B
+  assume *: "continuous_on S f" "continuous_on S g" "finite A" "finite B"
+            "f C1_differentiable_on (S - A)" "g C1_differentiable_on (S - B)"
+  from * show "continuous_on S (\<lambda>x. (f x, g x))"
+    by (intro continuous_on_Pair)
+  from * show "\<exists>C. finite C \<and> (\<lambda>x. (f x, g x)) C1_differentiable_on (S - C)"
+    by (intro exI[of _ "A \<union> B"] conjI C1_differentiable_on_pair
+              *(5,6)[THEN C1_differentiable_on_subset]) auto
+qed
 
 lemma test2:
   assumes s: "\<And>x. x \<in> {0..1} - s \<Longrightarrow> g differentiable at x"
