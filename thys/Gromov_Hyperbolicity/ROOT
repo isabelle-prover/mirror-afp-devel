@@ -13,6 +13,7 @@ session "Gromov_Hyperbolicity" (AFP) = "HOL-Analysis" +
     Hausdorff_Distance
     Isometries
     Gromov_Hyperbolicity
+    Morse_Gromov_Theorem
     Bonk_Schramm_Extension
     Gromov_Boundary
     Boundary_Extension

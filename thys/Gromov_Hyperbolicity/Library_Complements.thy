@@ -34,7 +34,7 @@ declare add_right_mono [mono_intros]
 declare add_strict_left_mono [mono_intros]
 declare add_strict_right_mono [mono_intros]
 declare add_mono [mono_intros]
-declare add_strict_mono [mono_intros]
+declare add_less_le_mono [mono_intros]
 declare diff_mono [mono_intros]
 declare mult_left_mono [mono_intros]
 declare mult_right_mono [mono_intros]
@@ -54,7 +54,7 @@ declare bot_least [mono_intros]
 declare dist_triangle [mono_intros]
 declare dist_triangle2 [mono_intros]
 declare dist_triangle3 [mono_intros]
-declare exp_ge_add_one_self_aux [mono_intros]
+declare exp_ge_add_one_self [mono_intros]
 declare exp_gt_one [mono_intros]
 declare exp_less_mono [mono_intros]
 declare dist_triangle [mono_intros]
@@ -67,6 +67,9 @@ declare Liminf_le_Limsup [mono_intros]
 declare ereal_liminf_add_mono [mono_intros]
 declare le_of_int_ceiling [mono_intros]
 declare ereal_minus_mono [mono_intros]
+declare infdist_triangle [mono_intros]
+declare divide_right_mono [mono_intros]
+declare self_le_power [mono_intros]
 
 lemma ln_le_cancelI [mono_intros]:
   assumes "(0::real) < x" "x \<le> y"
@@ -653,6 +656,11 @@ any closed bounded set is compact.\<close>
 definition proper::"('a::metric_space) set \<Rightarrow> bool"
   where "proper S \<equiv> (\<forall> x r. compact (cball x r \<inter> S))"
 
+lemma properI:
+  assumes "\<And>x r. compact (cball x r \<inter> S)"
+  shows "proper S"
+using assms unfolding proper_def by auto
+
 lemma proper_compact_cball:
   assumes "proper (UNIV::'a::metric_space set)"
   shows "compact (cball (x::'a) r)"
@@ -674,7 +682,7 @@ lemma proper_real [simp]:
   "proper (UNIV::real set)"
 unfolding proper_def by auto
 
-lemma proper_imp_complete:
+lemma complete_of_proper:
   assumes "proper S"
   shows "complete S"
 proof -
@@ -694,6 +702,93 @@ proof -
     unfolding complete_def by auto
 qed
 
+lemma proper_of_compact:
+  assumes "compact S"
+  shows "proper S"
+using assms by (auto intro: properI)
+
+lemma proper_Un:
+  assumes "proper A" "proper B"
+  shows "proper (A \<union> B)"
+using assms unfolding proper_def by (auto simp add: compact_Un inf_sup_distrib1)
+
+subsubsection \<open>Miscellaneous topology\<close>
+
+text \<open>When manipulating the triangle inequality, it is very frequent to deal with 4 points
+(and automation has trouble doing it automatically). Even sometimes with 5 points...\<close>
+
+lemma dist_triangle4 [mono_intros]:
+  "dist x t \<le> dist x y + dist y z + dist z t"
+using dist_triangle[of x z y] dist_triangle[of x t z] by auto
+
+lemma dist_triangle5 [mono_intros]:
+  "dist x u \<le> dist x y + dist y z + dist z t + dist t u"
+using dist_triangle4[of x u y z] dist_triangle[of z u t] by auto
+
+text \<open>A thickening of a compact set is closed.\<close>
+
+lemma compact_has_closed_thickening:
+  assumes "compact C"
+          "continuous_on C f"
+  shows "closed (\<Union>x\<in>C. cball x (f x))"
+proof (auto simp add: closed_sequential_limits)
+  fix u l assume *: "\<forall>n::nat. \<exists>x\<in>C. dist x (u n) \<le> f x" "u \<longlonglongrightarrow> l"
+  have "\<exists>x::nat\<Rightarrow>'a. \<forall>n. x n \<in> C \<and> dist (x n) (u n) \<le> f (x n)"
+    apply (rule choice) using * by auto
+  then obtain x::"nat \<Rightarrow> 'a" where x: "\<And>n. x n \<in> C" "\<And>n. dist (x n) (u n) \<le> f (x n)"
+    by blast
+  obtain r c where "strict_mono r" "c \<in> C" "(x o r) \<longlonglongrightarrow> c"
+    using x(1) \<open>compact C\<close> by (meson compact_eq_seq_compact_metric seq_compact_def)
+  then have "c \<in> C" using x(1) \<open>compact C\<close> by auto
+  have lim: "(\<lambda>n. f (x (r n)) - dist (x (r n)) (u (r n))) \<longlonglongrightarrow> f c - dist c l"
+    apply (intro tendsto_intros, rule continuous_on_tendsto_compose[of C f])
+    using *(2) x(1) \<open>(x o r) \<longlonglongrightarrow> c\<close> \<open>continuous_on C f\<close> \<open>c \<in> C\<close> \<open>strict_mono r\<close> LIMSEQ_subseq_LIMSEQ
+    unfolding comp_def by auto
+  have "f c - dist c l \<ge> 0" apply (rule LIMSEQ_le_const[OF lim]) using x(2) by auto
+  then show "\<exists>x\<in>C. dist x l \<le> f x" using \<open>c \<in> C\<close> by auto
+qed
+
+text \<open>congruence rule for continuity. The assumption that $f y = g y$ is necessary since \verb+at x+
+is the pointed neighborhood at $x$.\<close>
+
+lemma continuous_within_cong:
+  assumes "continuous (at y within S) f"
+          "eventually (\<lambda>x. f x = g x) (at y within S)"
+          "f y = g y"
+  shows "continuous (at y within S) g"
+using assms(1) assms(2) Lim_transform_eventually unfolding continuous_within assms(3) by auto
+
+text \<open>A function which tends to infinity at infinity, on a proper set, realizes its infimum\<close>
+
+lemma continuous_attains_inf_proper:
+  fixes f :: "'a::metric_space \<Rightarrow> 'b::linorder_topology"
+  assumes "proper s" "a \<in> s"
+          "continuous_on s f"
+          "\<And>z. z \<in> s - cball a r \<Longrightarrow> f z \<ge> f a"
+  shows "\<exists>x\<in>s. \<forall>y\<in>s. f x \<le> f y"
+proof (cases "r \<ge> 0")
+  case True
+  have "\<exists>x\<in>cball a r \<inter> s. \<forall>y \<in> cball a r \<inter> s. f x \<le> f y"
+    apply (rule continuous_attains_inf) using assms True unfolding proper_def apply (auto simp add: continuous_on_subset)
+    using centre_in_cball by blast
+  then obtain x where x: "x \<in> cball a r \<inter> s" "\<And>y. y \<in> cball a r \<inter> s \<Longrightarrow> f x \<le> f y"
+    by auto
+  have "f x \<le> f y" if "y \<in> s" for y
+  proof (cases "y \<in> cball a r")
+    case True
+    then show ?thesis using x(2) that by auto
+  next
+    case False
+    have "f x \<le> f a"
+      apply (rule x(2)) using assms True by auto
+    then show ?thesis using assms(4)[of y] that False by auto
+  qed
+  then show ?thesis using x(1) by auto
+next
+  case False
+  show ?thesis
+    apply (rule bexI[of _ a]) using assms False by auto
+qed
 
 subsubsection \<open>Measure of balls\<close>
 
@@ -759,7 +854,7 @@ proof -
       by (metis (mono_tags, lifting) borel_closed closed_cball emeasure_UN_eq_0 imageE sets_lborel subsetI)
     moreover have "(\<Union>n. cball (0::'a) (real n)) = UNIV" by (auto simp add: real_arch_simple)
     ultimately show False
-      by (simp add: emeasure_lborel_UNIV)
+      by simp
   qed
   moreover have "emeasure lborel (cball (0::'a::euclidean_space) 1) < \<infinity>"
     by (rule emeasure_bounded_finite, auto)
@@ -767,59 +862,167 @@ proof -
     by (metis borel_closed closed_cball ennreal_0 has_integral_iff_emeasure_lborel has_integral_measure_lborel less_irrefl order_refl zero_less_measure_iff)
 qed
 
-subsubsection \<open>Miscellaneous topology\<close>
+subsubsection \<open>infdist and closest point projection\<close>
 
-text \<open>When manipulating the triangle inequality, it is very frequent to deal with 4 points
-(and automation has trouble doing it automatically). Even sometimes with 5 points...\<close>
+text \<open>The distance to a union of two sets is the minimum of the distance to the two sets.\<close>
 
-lemma dist_triangle4 [mono_intros]:
-  "dist x t \<le> dist x y + dist y z + dist z t"
-using dist_triangle[of x z y] dist_triangle[of x t z] by auto
+lemma infdist_union_min [mono_intros]:
+  assumes "A \<noteq> {}" "B \<noteq> {}"
+  shows "infdist x (A \<union> B) = min (infdist x A) (infdist x B)"
+using assms by (simp add: infdist_def cINF_union inf_real_def)
 
-lemma dist_triangle5 [mono_intros]:
-  "dist x u \<le> dist x y + dist y z + dist z t + dist t u"
-using dist_triangle4[of x u y z] dist_triangle[of z u t] by auto
+text \<open>The distance to a set is non-increasing with the set.\<close>
 
-text \<open>A thickening of a compact set is closed.\<close>
-
-lemma compact_has_closed_thickening:
-  assumes "compact C"
-          "continuous_on C f"
-  shows "closed (\<Union>x\<in>C. cball x (f x))"
-proof (auto simp add: closed_sequential_limits)
-  fix u l assume *: "\<forall>n::nat. \<exists>x\<in>C. dist x (u n) \<le> f x" "u \<longlonglongrightarrow> l"
-  have "\<exists>x::nat\<Rightarrow>'a. \<forall>n. x n \<in> C \<and> dist (x n) (u n) \<le> f (x n)"
-    apply (rule choice) using * by auto
-  then obtain x::"nat \<Rightarrow> 'a" where x: "\<And>n. x n \<in> C" "\<And>n. dist (x n) (u n) \<le> f (x n)"
-    by blast
-  obtain r c where "strict_mono r" "c \<in> C" "(x o r) \<longlonglongrightarrow> c"
-    using x(1) \<open>compact C\<close> by (meson compact_eq_seq_compact_metric seq_compact_def)
-  then have "c \<in> C" using x(1) \<open>compact C\<close> by auto
-  have lim: "(\<lambda>n. f (x (r n)) - dist (x (r n)) (u (r n))) \<longlonglongrightarrow> f c - dist c l"
-    apply (intro tendsto_intros, rule continuous_on_tendsto_compose[of C f])
-    using *(2) x(1) \<open>(x o r) \<longlonglongrightarrow> c\<close> \<open>continuous_on C f\<close> \<open>c \<in> C\<close> \<open>strict_mono r\<close> LIMSEQ_subseq_LIMSEQ
-    unfolding comp_def by auto
-  have "f c - dist c l \<ge> 0" apply (rule LIMSEQ_le_const[OF lim]) using x(2) by auto
-  then show "\<exists>x\<in>C. dist x l \<le> f x" using \<open>c \<in> C\<close> by auto
+lemma infdist_mono [mono_intros]:
+  assumes "A \<subseteq> B" "A \<noteq> {}"
+  shows "infdist x B \<le> infdist x A"
+proof -
+  have "(INF a:B. dist x a) \<le> (INF a:A. dist x a)"
+    by (rule cINF_superset_mono[OF assms(2) _ assms(1)], auto)
+  then show ?thesis
+    unfolding infdist_def using assms by auto
 qed
 
-text \<open>congruence rule for continuity. The assumption that $f y = g y$ is necessary since \verb+at x+
-is the pointed neighborhood at $x$.\<close>
+text \<open>If a set is proper, then the infimum of the distances to this set is attained.\<close>
 
-lemma continuous_within_cong:
-  assumes "continuous (at y within S) f"
-          "eventually (\<lambda>x. f x = g x) (at y within S)"
-          "f y = g y"
-  shows "continuous (at y within S) g"
-using assms(1) assms(2) Lim_transform_eventually unfolding continuous_within assms(3) by auto
+lemma infdist_proper_attained:
+  assumes "proper C" "C \<noteq> {}"
+  shows "\<exists>c\<in>C. infdist x C = dist x c"
+proof -
+  obtain a where "a \<in> C" using assms by auto
+  have *: "dist x a \<le> dist x z" if "dist a z \<ge> 2 * dist a x" for z
+  proof -
+    have "2 * dist a x \<le> dist a z" using that by simp
+    also have "... \<le> dist a x + dist x z" by (intro mono_intros)
+    finally show ?thesis by (simp add: dist_commute)
+  qed
+  have "\<exists>c\<in>C. \<forall>d\<in>C. dist x c \<le> dist x d"
+    apply (rule continuous_attains_inf_proper[OF assms(1) \<open>a \<in> C\<close>, of _ "2 * dist a x"])
+    using * by (auto intro: continuous_intros)
+  then show ?thesis unfolding infdist_def using \<open>C \<noteq> {}\<close>
+    by (metis antisym bdd_below_image_dist cINF_lower le_cINF_iff)
+qed
+
+lemma infdist_almost_attained:
+  assumes "infdist x X < a" "X \<noteq> {}"
+  shows "\<exists>y\<in>X. dist x y < a"
+using assms using cInf_less_iff[of "(dist x)`X"] unfolding infdist_def by auto
+
+lemma infdist_triangle_abs [mono_intros]:
+  "\<bar>infdist x A - infdist y A\<bar> \<le> dist x y"
+by (metis (full_types) abs_diff_le_iff diff_le_eq dist_commute infdist_triangle)
+
+text \<open>The next lemma is missing in the library, contrary to its cousin \verb+continuous_infdist+.\<close>
+
+lemma continuous_on_infdist [continuous_intros]:
+  assumes "continuous_on S f"
+  shows "continuous_on S (\<lambda>x. infdist (f x) A)"
+using assms unfolding continuous_on by (auto intro: tendsto_infdist)
+
+text \<open>The infimum of the distance to a singleton set is simply the distance to the unique
+member of the set.\<close>
+
+lemma infdist_point [simp]:
+  "infdist x {y} = dist x y"
+unfolding infdist_def by (metis cInf_singleton image_empty image_insert insert_not_empty)
+
+text \<open>The closest point projection of $x$ on $A$. It is not unique, so we choose one point realizing the minimal
+distance. And if there is no such point, then we use $x$, to make some statements true without any
+assumption.\<close>
+
+definition proj_set::"'a::metric_space \<Rightarrow> 'a set \<Rightarrow> 'a set"
+  where "proj_set x A = {y \<in> A. dist x y = infdist x A}"
+
+definition distproj::"'a::metric_space \<Rightarrow> 'a set \<Rightarrow> 'a"
+  where "distproj x A = (if proj_set x A \<noteq> {} then SOME y. y \<in> proj_set x A else x)"
+
+lemma proj_setD:
+  assumes "y \<in> proj_set x A"
+  shows "y \<in> A" "dist x y = infdist x A"
+using assms unfolding proj_set_def by auto
+
+lemma proj_setI:
+  assumes "y \<in> A" "dist x y \<le> infdist x A"
+  shows "y \<in> proj_set x A"
+using assms infdist_le[OF \<open>y \<in> A\<close>, of x] unfolding proj_set_def by auto
+
+lemma proj_setI':
+  assumes "y \<in> A" "\<And>z. z \<in> A \<Longrightarrow> dist x y \<le> dist x z"
+  shows "y \<in> proj_set x A"
+proof (rule proj_setI[OF \<open>y \<in> A\<close>])
+  show "dist x y \<le> infdist x A"
+    apply (subst infdist_notempty)
+    using assms by (auto intro!: cInf_greatest)
+qed
+
+lemma distproj_in_proj_set:
+  assumes "proj_set x A \<noteq> {}"
+  shows "distproj x A \<in> proj_set x A"
+        "distproj x A \<in> A"
+        "dist x (distproj x A) = infdist x A"
+proof -
+  show "distproj x A \<in> proj_set x A"
+    using assms unfolding distproj_def using some_in_eq by auto
+  then show "distproj x A \<in> A" "dist x (distproj x A) = infdist x A"
+    unfolding proj_set_def by auto
+qed
+
+lemma proj_set_nonempty_of_proper:
+  assumes "proper A" "A \<noteq> {}"
+  shows "proj_set x A \<noteq> {}"
+proof -
+  have "\<exists>y. y \<in> A \<and> dist x y = infdist x A"
+    using infdist_proper_attained[OF assms, of x] by auto
+  then show "proj_set x A \<noteq> {}" unfolding proj_set_def by auto
+qed
+
+lemma distproj_self [simp]:
+  assumes "x \<in> A"
+  shows "proj_set x A = {x}"
+        "distproj x A = x"
+proof -
+  show "proj_set x A = {x}"
+    unfolding proj_set_def using assms by auto
+  then show "distproj x A = x"
+    unfolding distproj_def by auto
+qed
+
+lemma distproj_closure [simp]:
+  assumes "x \<in> closure A"
+  shows "distproj x A = x"
+proof (cases "proj_set x A \<noteq> {}")
+  case True
+  show ?thesis
+    using distproj_in_proj_set(3)[OF True] assms
+    by (metis closure_empty dist_eq_0_iff distproj_self(2) in_closure_iff_infdist_zero)
+next
+  case False
+  then show ?thesis unfolding distproj_def by auto
+qed
+
+lemma distproj_le:
+  assumes "y \<in> A"
+  shows "dist x (distproj x A) \<le> dist x y"
+proof (cases "proj_set x A \<noteq> {}")
+  case True
+  show ?thesis using distproj_in_proj_set(3)[OF True] infdist_le[OF assms] by auto
+next
+  case False
+  then show ?thesis unfolding distproj_def by auto
+qed
+
+lemma proj_set_dist_le:
+  assumes "y \<in> A" "p \<in> proj_set x A"
+  shows "dist x p \<le> dist x y"
+  using assms infdist_le unfolding proj_set_def by auto
 
 subsection \<open>Material on ereal and ennreal\<close>
 
 text \<open>We add the simp rules that we needed to make all computations become more or less automatic.\<close>
 
 lemma ereal_of_real_of_ereal_iff [simp]:
-  "ereal(real_of_ereal x) = x  \<longleftrightarrow> x \<noteq> \<infinity> \<and> x \<noteq> - \<infinity>"
-  "x = ereal(real_of_ereal x)  \<longleftrightarrow> x \<noteq> \<infinity> \<and> x \<noteq> - \<infinity>"
+  "ereal(real_of_ereal x) = x \<longleftrightarrow> x \<noteq> \<infinity> \<and> x \<noteq> - \<infinity>"
+  "x = ereal(real_of_ereal x) \<longleftrightarrow> x \<noteq> \<infinity> \<and> x \<noteq> - \<infinity>"
 by (metis MInfty_neq_ereal(1) PInfty_neq_ereal(2) real_of_ereal.elims)+
 
 lemma inverse_eq_infinity_iff_eq_zero [simp]:
@@ -1128,7 +1331,7 @@ proof (rule order_antisym)
     then have *: "eventually (\<lambda>n. u n < e) F" "eventually (\<lambda>n. v n < e) F"
       by (auto simp: Limsup_lessD)
     have "eventually (\<lambda>n. max (u n) (v n) \<le> max (Limsup F u) (Limsup F v)) F"
-      apply (rule eventually_mono[OF eventually_conj[OF *]])  using False not_le_imp_less by force
+      apply (rule eventually_mono[OF eventually_conj[OF *]]) using False not_le_imp_less by force
     then have "Limsup F (\<lambda>n. max (u n) (v n)) \<le> max (Limsup F u) (Limsup F v)"
       by (meson Limsup_obtain' leD leI)
     then show ?thesis using that le_less_trans by blast

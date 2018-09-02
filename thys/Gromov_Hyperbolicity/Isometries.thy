@@ -526,13 +526,33 @@ proof -
     using geodesic_segment_dist_unique[OF assms(1)] by (simp add: dist_commute)
 qed
 
+lemma dist_along_geodesic_wrt_endpoint:
+  assumes "geodesic_segment_between G x y"
+          "u \<in> G" "v \<in> G"
+  shows "dist u v = abs(dist u x - dist v x)"
+proof -
+  have *: "u = geodesic_segment_param G x (dist x u)" "v = geodesic_segment_param G x (dist x v)"
+    using assms by auto
+  have "dist u v = dist (geodesic_segment_param G x (dist x u)) (geodesic_segment_param G x (dist x v))"
+    using * by auto
+  also have "... = abs(dist x u - dist x v)"
+    apply (rule geodesic_segment_param(7)[OF assms(1)]) using assms apply auto
+    using geodesic_segment_dist_le geodesic_segment_endpoints(1) by blast+
+  finally show ?thesis by (simp add: dist_commute)
+qed
+
+text \<open>One often needs to restrict a geodesic segment to a subsegment. We introduce the tools
+to express this conveniently.\<close>
 definition geodesic_subsegment::"('a::metric_space) set \<Rightarrow> 'a \<Rightarrow> real \<Rightarrow> real \<Rightarrow> 'a set"
   where "geodesic_subsegment G x s t = G \<inter> {z. dist x z \<ge> s \<and> dist x z \<le> t}"
 
+text \<open>A subsegment is always contained in the original segment.\<close>
 lemma geodesic_subsegment_subset:
   "geodesic_subsegment G x s t \<subseteq> G"
 unfolding geodesic_subsegment_def by simp
 
+text \<open>A subsegment is indeed a geodesic segment, and its endpoints and parametrization can be
+expressed in terms of the original segment.\<close>
 lemma geodesic_subsegment:
   assumes "geodesic_segment_between G x y"
           "0 \<le> s" "s \<le> t" "t \<le> dist x y"
@@ -580,6 +600,7 @@ proof -
   qed
 qed
 
+text \<open>The parameterizations of a segment and a subsegment sharing an endpoint coincide where defined.\<close>
 lemma geodesic_segment_subparam:
   assumes "geodesic_segment_between G x z" "geodesic_segment_between H x y" "H \<subseteq> G" "t \<in> {0..dist x y}"
   shows "geodesic_segment_param G x t = geodesic_segment_param H x t"
@@ -591,6 +612,42 @@ proof -
   then show ?thesis using geodesic_segment_param(6)[OF assms(2) assms(4)] by auto
 qed
 
+text \<open>A segment contains a subsegment between any of its points\<close>
+lemma geodesic_subsegment_exists:
+  assumes "geodesic_segment G" "x \<in> G" "y \<in> G"
+  shows "\<exists>H. H \<subseteq> G \<and> geodesic_segment_between H x y"
+proof -
+  obtain a0 b0 where Ga0b0: "geodesic_segment_between G a0 b0"
+    using assms(1) unfolding geodesic_segment_def by auto
+  text \<open>Permuting the endpoints if necessary, we can ensure that the first endpoint $a$ is closer
+  to $x$ than $y$.\<close>
+  have "\<exists> a b. geodesic_segment_between G a b \<and> dist x a \<le> dist y a"
+  proof (cases "dist x a0 \<le> dist y a0")
+    case True
+    show ?thesis
+      apply (rule exI[of _ a0], rule exI[of _ b0]) using True Ga0b0 by auto
+  next
+    case False
+    show ?thesis
+      apply (rule exI[of _ b0], rule exI[of _ a0])
+      using Ga0b0 geodesic_segment_commute geodesic_segment_dist[OF Ga0b0 \<open>x \<in> G\<close>] geodesic_segment_dist[OF Ga0b0 \<open>y \<in> G\<close>] False
+      by (auto simp add: dist_commute)
+  qed
+  then obtain a b where Gab: "geodesic_segment_between G a b" "dist x a \<le> dist y a"
+    by auto
+  have *: "0 \<le> dist x a" "dist x a \<le> dist y a" "dist y a \<le> dist a b"
+    using Gab assms by (meson geodesic_segment_dist_le geodesic_segment_endpoints(1) zero_le_dist)+
+  have **: "x = geodesic_segment_param G a (dist x a)" "y = geodesic_segment_param G a (dist y a)"
+    using Gab \<open>x \<in> G\<close> \<open>y \<in> G\<close> by (metis dist_commute geodesic_segment_param(8))+
+  define H where "H = geodesic_subsegment G a (dist x a) (dist y a)"
+  have "H \<subseteq> G"
+    unfolding H_def by (rule geodesic_subsegment_subset)
+  moreover have "geodesic_segment_between H x y"
+    unfolding H_def using geodesic_subsegment(2)[OF Gab(1) *] ** by auto
+  ultimately show ?thesis by auto
+qed
+
+text \<open>A geodesic segment is homeomorphic to an interval.\<close>
 lemma geodesic_segment_homeo_interval:
   assumes "geodesic_segment_between G x y"
   shows "{0..dist x y} homeomorphic G"
@@ -600,9 +657,11 @@ proof -
   show ?thesis using isometry_on_homeomorphism(3)[OF g(3)] unfolding g(4) by simp
 qed
 
+text \<open>Just like an interval, a geodesic segment is compact, connected, path connected, bounded,
+closed, nonempty, and proper.\<close>
 lemma geodesic_segment_topology:
   assumes "geodesic_segment G"
-  shows "compact G" "connected G" "path_connected G" "bounded G" "closed G"
+  shows "compact G" "connected G" "path_connected G" "bounded G" "closed G" "G \<noteq> {}" "proper G"
 proof -
   show "compact G"
     using assms geodesic_segment_homeo_interval homeomorphic_compactness
@@ -617,6 +676,10 @@ proof -
     by (rule compact_imp_bounded, fact)
   show "closed G"
     by (rule compact_imp_closed, fact)
+  show "G \<noteq> {}"
+    using assms geodesic_segment_def geodesic_segment_endpoints(3) by auto
+  show "proper G"
+    using proper_of_compact \<open>compact G\<close> by auto
 qed
 
 lemma geodesic_segment_between_x_x [simp]:
@@ -716,7 +779,7 @@ lemma geodesic_segment_distance:
   shows "dist w x + dist w y \<le> dist x y + 2 * infdist w G"
 proof -
   have "\<exists>z \<in> G. infdist w G = dist w z"
-    apply (rule infdist_compact_attained) using assms by (auto simp add: geodesic_segment_topology(1))
+    apply (rule infdist_proper_attained) using assms by (auto simp add: geodesic_segment_topology)
   then obtain z where z: "z \<in> G" "infdist w G = dist w z" by auto
   have "dist w x + dist w y \<le> (dist w z + dist z x) + (dist w z + dist z y)"
     by (intro mono_intros)
@@ -725,6 +788,102 @@ proof -
   also have "... = dist x y + 2 * infdist w G"
     using z(1) assms geodesic_segment_dist unfolding z(2) by auto
   finally show ?thesis by auto
+qed
+
+text \<open>If a point $y$ is on a geodesic segment between $x$ and its closest projection $p$ on a set $A$,
+then $p$ is also a closest projection of $y$, and the closest projection set of $y$ is contained in
+that of $x$.\<close>
+
+lemma proj_set_geodesic_same_basepoint:
+  assumes "p \<in> proj_set x A" "geodesic_segment_between G p x" "y \<in> G"
+  shows "p \<in> proj_set y A"
+proof (rule proj_setI)
+  show "p \<in> A"
+    using assms proj_setD by auto
+  have *: "dist y p \<le> dist y q" if "q \<in> A" for q
+  proof -
+    have "dist p y + dist y x = dist p x"
+      using assms geodesic_segment_dist by blast
+    also have "... \<le> dist q x"
+      using proj_set_dist_le[OF \<open>q \<in> A\<close> assms(1)] by (simp add: dist_commute)
+    also have "... \<le> dist q y + dist y x"
+      by (intro mono_intros)
+    finally show ?thesis
+      by (simp add: dist_commute)
+  qed
+  have "dist y p \<le> INFIMUM A (dist y)"
+    apply (rule cINF_greatest) using \<open>p \<in> A\<close> * by auto
+  then show "dist y p \<le> infdist y A"
+    unfolding infdist_def using \<open>p \<in> A\<close> by auto
+qed
+
+lemma proj_set_subset:
+  assumes "p \<in> proj_set x A" "geodesic_segment_between G p x" "y \<in> G"
+  shows "proj_set y A \<subseteq> proj_set x A"
+proof -
+  have "z \<in> proj_set x A" if "z \<in> proj_set y A" for z
+  proof (rule proj_setI)
+    show "z \<in> A" using that proj_setD by auto
+    have "dist x z \<le> dist x y + dist y z"
+      by (intro mono_intros)
+    also have "... \<le> dist x y + dist y p"
+      using proj_set_dist_le[OF proj_setD(1)[OF \<open>p \<in> proj_set x A\<close>] that] by auto
+    also have "... = dist x p"
+      using assms geodesic_segment_commute geodesic_segment_dist by blast
+    also have "... = infdist x A"
+      using proj_setD(2)[OF assms(1)] by simp
+    finally show "dist x z \<le> infdist x A"
+      by simp
+  qed
+  then show ?thesis by auto
+qed
+
+lemma proj_set_thickening:
+  assumes "p \<in> proj_set x Z"
+          "0 \<le> D"
+          "D \<le> dist p x"
+          "geodesic_segment_between G p x"
+  shows "geodesic_segment_param G p D \<in> proj_set x (\<Union>z\<in>Z. cball z D)"
+proof (rule proj_setI')
+  have "dist p (geodesic_segment_param G p D) = D"
+    using geodesic_segment_param(7)[OF assms(4), of 0 D]
+    unfolding geodesic_segment_param(1)[OF assms(4)] using assms by simp
+  then show "geodesic_segment_param G p D \<in> (\<Union>z\<in>Z. cball z D)"
+    using proj_setD(1)[OF \<open>p \<in> proj_set x Z\<close>] by force
+  show "dist x (geodesic_segment_param G p D) \<le> dist x y" if "y \<in> (\<Union>z\<in>Z. cball z D)" for y
+  proof -
+    obtain z where y: "y \<in> cball z D" "z \<in> Z" using \<open>y \<in> (\<Union>z\<in>Z. cball z D)\<close> by auto
+    have "dist (geodesic_segment_param G p D) x + D = dist p x"
+      using geodesic_segment_param(7)[OF assms(4), of D "dist p x"]
+      unfolding geodesic_segment_param(2)[OF assms(4)] using assms by simp
+    also have "... \<le> dist z x"
+      using proj_setD(2)[OF \<open>p \<in> proj_set x Z\<close>] infdist_le[OF \<open>z \<in> Z\<close>, of x] by (simp add: dist_commute)
+    also have "... \<le> dist z y + dist y x"
+      by (intro mono_intros)
+    also have "... \<le> D + dist y x"
+      using y by simp
+    finally show ?thesis by (simp add: dist_commute)
+  qed
+qed
+
+lemma proj_set_thickening':
+  assumes "p \<in> proj_set x Z"
+          "0 \<le> D"
+          "D \<le> E"
+          "E \<le> dist p x"
+          "geodesic_segment_between G p x"
+  shows "geodesic_segment_param G p D \<in> proj_set (geodesic_segment_param G p E) (\<Union>z\<in>Z. cball z D)"
+proof -
+  define H where "H = geodesic_subsegment G p D (dist p x)"
+  have H1: "geodesic_segment_between H (geodesic_segment_param G p D) x"
+    apply (subst geodesic_segment_param(2)[OF \<open>geodesic_segment_between G p x\<close>, symmetric])
+    unfolding H_def apply (rule geodesic_subsegment(2)) using assms by auto
+  have H2: "geodesic_segment_param G p E \<in> H"
+    unfolding H_def using assms geodesic_subsegment(1) by force
+  have "geodesic_segment_param G p D \<in> proj_set x (\<Union>z\<in>Z. cball z D)"
+    apply (rule proj_set_thickening) using assms by auto
+  then show ?thesis
+    by (rule proj_set_geodesic_same_basepoint[OF _ H1 H2])
 qed
 
 text \<open>It is often convenient to use \emph{one} geodesic between $x$ and $y$, even if it is not unique.
@@ -2184,7 +2343,7 @@ the details on the two delicate points above as they are not treated in this art
 
 lemma quasi_geodesic_good_partition:
   fixes c::"real \<Rightarrow> ('a::metric_space)"
-  assumes "lambda C-quasi_isometry_on {a..b} c" "dist (c a) (c b) \<ge> 2 * C" "a < b" "Delta > 1" "Delta \<le> 2" "C>0"
+  assumes "lambda C-quasi_isometry_on {a..b} c" "dist (c a) (c b) \<ge> Delta * C" "a < b" "Delta > 1" "C>0"
   shows "\<exists>A. A \<subseteq> {a..b} \<and> finite A \<and> a \<in> A \<and> b \<in> A
             \<and> (\<forall>u \<in> A - {b}. dist (c u) (c (next_in A u)) \<le> 3 * Delta * C
                             \<and> dist (c u) (c (next_in A u)) \<ge> Delta * C)
@@ -2446,15 +2605,19 @@ if the distance between $c(a)$ and $c(b)$ is $>C$, say $\geq 2 C$ for instance. 
 assumption we make in the proposition.
 
 Usually, if one needs to smoothen a quasi-geodesic to prove some property, then the property is
-trivial if the quasi-geodesic is short, so this is not a true limitation.\<close>
+trivial if the quasi-geodesic is short, so this is not a true limitation.
+
+There is some flexibility in the next statement: one can improve the coefficients on $C$, at the
+price of worsening the coefficient on $\lambda$. Taking $\Delta = 2$ gives the best coefficient
+for $\lambda$, while taking $\Delta$ close to $1$ gives the best coefficient for $C$.\<close>
 
 proposition (in geodesic_space) quasi_geodesic_made_lipschitz:
   fixes c::"real \<Rightarrow> 'a"
-  assumes "lambda C-quasi_isometry_on {a..b} c" "dist (c a) (c b) \<ge> 2 * C"
+  assumes "lambda C-quasi_isometry_on {a..b} c" "dist (c a) (c b) \<ge> Delta * C" "Delta > 1"
   shows "\<exists>d. continuous_on {a..b} d \<and> d a = c a \<and> d b = c b
-              \<and> (\<forall>x\<in>{a..b}. dist (c x) (d x) \<le> 5 * C)
-              \<and> lambda (10 * C)-quasi_isometry_on {a..b} d
-              \<and> (9 * lambda)-lipschitz_on {a..b} d"
+              \<and> (\<forall>x\<in>{a..b}. dist (c x) (d x) \<le> 4 * Delta * C)
+              \<and> lambda ((8 * Delta + 1) * C)-quasi_isometry_on {a..b} d
+              \<and> ((Delta/(Delta-1)) * lambda)-lipschitz_on {a..b} d"
 proof -
   consider "C = 0" | "C > 0 \<and> b \<le> a" | "C > 0 \<and> a < b"
     using quasi_isometry_onD(4)[OF assms(1)] by fastforce
@@ -2464,30 +2627,31 @@ proof -
     case 1
     have "lambda-lipschitz_on {a..b} c"
       apply (rule lipschitz_onI) using 1 quasi_isometry_onD[OF assms(1)] by auto
-    then have a: "(9 * lambda)-lipschitz_on {a..b} c"
-      apply (rule lipschitz_on_mono) using quasi_isometry_onD[OF assms(1)] by auto
+    then have a: "((Delta/(Delta-1)) * lambda)-lipschitz_on {a..b} c"
+      apply (rule lipschitz_on_mono) using quasi_isometry_onD[OF assms(1)] assms by (auto simp add: divide_simps)
     then have b: "continuous_on {a..b} c"
       using lipschitz_on_continuous_on by blast
     have "continuous_on {a..b} c \<and> c a = c a \<and> c b = c b
-                \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 5*C)
-                \<and> lambda (10*C)-quasi_isometry_on {a..b} c
-                \<and> (9 * lambda)-lipschitz_on {a..b} c"
+                \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 4 * Delta * C)
+                \<and> lambda ((8 * Delta + 1) * C)-quasi_isometry_on {a..b} c
+                \<and> ((Delta/(Delta-1)) * lambda)-lipschitz_on {a..b} c"
       using 1 a b assms(1) by auto
     then show ?thesis by blast
   next
     text \<open>If the original interval is empty, anything will do.\<close>
     case 2
-    then have "b < a" using assms(2) less_eq_real_def by auto
+    then have "b < a" using assms(2) assms(3) less_eq_real_def
+      by (metis less_trans metric_space_class.dist_self mult.commute mult_pos_pos not_le zero_less_one)
     then have *: "{a..b} = {}" by auto
-    have a: "(9 * lambda)-lipschitz_on {a..b} c"
-      unfolding * apply (rule lipschitz_intros) using quasi_isometry_onD[OF assms(1)] by auto
+    have a: "((Delta/(Delta-1)) * lambda)-lipschitz_on {a..b} c"
+      unfolding * apply (rule lipschitz_intros) using quasi_isometry_onD[OF assms(1)] assms by (auto simp add: divide_simps)
     then have b: "continuous_on {a..b} c"
       using lipschitz_on_continuous_on by blast
     have "continuous_on {a..b} c \<and> c a = c a \<and> c b = c b
-                \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 5*C)
-                \<and> lambda (10*C)-quasi_isometry_on {a..b} c
-                \<and> (9 * lambda)-lipschitz_on {a..b} c"
-      using a b quasi_isometry_on_empty assms(1) quasi_isometry_onD[OF assms(1)] * by auto
+                \<and> (\<forall>x\<in>{a..b}. dist (c x) (c x) \<le> 4 * Delta * C)
+                \<and> lambda ((8 * Delta + 1) * C)-quasi_isometry_on {a..b} c
+                \<and> ((Delta/(Delta-1)) * lambda)-lipschitz_on {a..b} c"
+      using a b quasi_isometry_on_empty assms(1) quasi_isometry_onD[OF assms(1)] * assms by auto
     then show ?thesis by blast
   next
     text \<open>Now, for the only nontrivial case, we use the above good discretization and geodesic
@@ -2495,14 +2659,12 @@ proof -
     case 3
     then have C: "C > 0" "lambda \<ge> 1" using quasi_isometry_onD[OF assms(1)] by auto
     have "a < b" using 3 by simp
-    define Delta::real where "Delta = 9/8"
-    have Delta: "1 < Delta" "Delta \<le> 2" unfolding Delta_def using C by auto
     obtain A where A: "finite A" "A \<subseteq> {a..b}" "a \<in> A" "b \<in> A" "a < b"
               and Abounds:
               "\<And>u. u \<in> A - {b} \<Longrightarrow> dist (c u) (c (next_in A u)) \<le> 3 * Delta * C"
               "\<And>u. u \<in> A - {b} \<Longrightarrow> dist (c u) (c (next_in A u)) \<ge> Delta * C"
               "\<And>u v. u \<in> A - {b} \<Longrightarrow> v \<in> {u..next_in A u} \<Longrightarrow> dist (c u) (c v) \<le> Delta * C \<or> dist (c (next_in A u)) (c v) \<le> Delta * C"
-      using quasi_geodesic_good_partition[OF assms(1) assms(2) \<open>a < b\<close> Delta \<open>C > 0\<close>] \<open>a < b\<close> by blast
+      using quasi_geodesic_good_partition[OF assms(1) assms(2) \<open>a < b\<close> assms(3) \<open>C > 0\<close>] \<open>a < b\<close> by blast
 
     text \<open>We can now define the function $d$, by geodesic interpolation between points in $A$.\<close>
     define d where "d x = (if x \<in> A then c x
@@ -2543,14 +2705,14 @@ proof -
 
     text \<open>From the above formula, we deduce that $d$ is Lipschitz on those intervals.
     The good choice of $A$ is important here.\<close>
-    have lip: "(9 * lambda)-lipschitz_on {u..next_in A u} d" if "u \<in> A - {b}" for u
+    have lip: "((Delta/(Delta-1)) * lambda)-lipschitz_on {u..next_in A u} d" if "u \<in> A - {b}" for u
     proof -
       define v where "v = next_in A u"
       have "u \<in> {a..<b}" using that \<open>A \<subseteq> {a..b}\<close> by fastforce
       have "u \<in> A" "v \<in> A" "u< v" "A \<inter> {u<..<v} = {}"
         unfolding v_def using that next_in_basics[OF A \<open>u \<in> {a..<b}\<close>] by auto
 
-      have "(1 * ((9*lambda) * (1+0)))-lipschitz_on {u..v} (\<lambda>x. geodesic_segment_param {(c u)--(c v)} (c u) ((dist (c u) (c v) /(v-u)) * (x-u)))"
+      have "(1 * (((Delta/(Delta-1))*lambda) * (1+0)))-lipschitz_on {u..v} (\<lambda>x. geodesic_segment_param {(c u)--(c v)} (c u) ((dist (c u) (c v) /(v-u)) * (x-u)))"
       proof (rule lipschitz_on_compose2[of _ _ "\<lambda>x. ((dist (c u) (c v) /(v-u)) * (x-u))"], intro lipschitz_intros)
         have "(\<lambda>x. dist (c u) (c v) / (v - u) * (x - u)) ` {u..v} \<subseteq> {0..dist (c u) (c v)}"
           apply auto using \<open>u < v\<close> by (auto simp add: algebra_simps divide_simps intro: mult_right_mono)
@@ -2576,9 +2738,7 @@ proof -
           using \<open>Delta > 1\<close> by (auto simp add: algebra_simps divide_simps)
         finally have "dist (c u) (c v) / dist u v \<le> (Delta / (Delta - 1)) * lambda"
           using \<open>u < v\<close> by (auto simp add: algebra_simps divide_simps)
-        also have "... \<le> 9 * lambda"
-          unfolding Delta_def using C by auto
-        finally show "\<bar>dist (c u) (c v) / (v - u)\<bar> \<le> 9 * lambda"
+        then show "\<bar>dist (c u) (c v) / (v - u)\<bar> \<le> (Delta/(Delta-1)) * lambda"
           unfolding dist_real_def by (auto simp add: abs_minus_commute)
       qed
       then show ?thesis
@@ -2588,9 +2748,9 @@ proof -
 
     text \<open>The Lipschitz continuity of $d$ now follows from its Lipschitz continuity on each
     subinterval in $I$.\<close>
-    have "(9 * lambda)-lipschitz_on {a..b} d"
+    have "((Delta/(Delta-1)) * lambda)-lipschitz_on {a..b} d"
       apply (rule lipschitz_on_closed_Union[of "{{u..next_in A u} |u. u \<in> A - {b}}" _ "\<lambda>x. x"])
-      using lip \<open>finite A\<close> C intervals_decomposition[OF A] by auto
+      using lip \<open>finite A\<close> C intervals_decomposition[OF A] using assms by auto
     then have "continuous_on {a..b} d"
       using lipschitz_on_continuous_on by auto
 
@@ -2613,22 +2773,20 @@ proof -
       then show ?thesis
         using w(2) metric_space_class.dist_triangle2[of "c x" "d x" "c w"] by (auto simp add: metric_space_class.dist_commute)
     qed
-    have dist_c_d2: "dist (c x) (d x) \<le> 5 * C" if "x \<in> {a..b}" for x
-      using dist_c_d[OF that] C unfolding Delta_def by auto
 
     text \<open>We deduce that $d$, as a bounded perturbation of the quasi-isometry $c$, is also a
     quasi-isometry (with explicit constants).\<close>
     have "lambda (C + 2 * (4 * Delta * C))-quasi_isometry_on {a..b} d"
       apply (rule quasi_isometry_on_perturb[OF assms(1)])
       using dist_c_d C \<open>Delta > 1\<close> by auto
-    then have "lambda (10*C)-quasi_isometry_on {a..b} d" unfolding Delta_def by auto
+    then have "lambda ((8 * Delta + 1) *C)-quasi_isometry_on {a..b} d" by (auto simp add: algebra_simps)
 
     text \<open>We have proved that $d$ has all the properties we wanted.\<close>
     then have "continuous_on {a..b} d \<and> d a = c a \<and> d b = c b
-          \<and> lambda (10*C)-quasi_isometry_on {a..b} d
-          \<and> (\<forall>x\<in>{a..b}. dist (c x) (d x) \<le> 5*C)
-          \<and> (9*lambda)-lipschitz_on {a..b} d"
-      using dist_c_d2 \<open>continuous_on {a..b} d\<close> \<open>d a = c a\<close> \<open>d b = c b\<close> \<open> (9*lambda)-lipschitz_on {a..b} d\<close> by auto
+          \<and> lambda ((8 * Delta + 1) * C)-quasi_isometry_on {a..b} d
+          \<and> (\<forall>x\<in>{a..b}. dist (c x) (d x) \<le> 4 * Delta *C)
+          \<and> ((Delta/(Delta-1))*lambda)-lipschitz_on {a..b} d"
+      using dist_c_d \<open>continuous_on {a..b} d\<close> \<open>d a = c a\<close> \<open>d b = c b\<close> \<open> ((Delta/(Delta-1))*lambda)-lipschitz_on {a..b} d\<close> by auto
     then show ?thesis by auto
   qed
 qed

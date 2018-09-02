@@ -992,7 +992,7 @@ proof (auto)
     case boundary
     then have *: "extended_Gromov_product_at basepoint y y = \<infinity>"
       using Gromov_boundary_extended_product_PInf by auto
-    show ?thesis unfolding extended_predist_def *  apply (auto simp add: min_def)
+    show ?thesis unfolding extended_predist_def * apply (auto simp add: min_def)
       using constant_in_extended_predist_pos(1)[where ?'a = 'a] boundary by auto
   next
     case (to_Gromov_completion a)
@@ -1296,7 +1296,7 @@ proof -
     also have "... \<le> esqrt 4"
       by simp
     finally have *: "extended_Gromov_distance x y \<le> 4"
-      unfolding esqrt_le  using antisym by fastforce
+      unfolding esqrt_le using antisym by fastforce
     have "ereal M0+4 \<le> D"
       unfolding D_def by auto
     also have "... \<le> extended_Gromov_product_at basepoint x x"
@@ -1718,7 +1718,7 @@ lemma extended_Gromov_product_inside_boundary_aux:
 proof -
   have A: "abs_Gromov_completion v = to_Gromov_completion x \<and> Gromov_completion_rel v v \<longleftrightarrow> (v = (\<lambda>n. x))" for v
     apply (auto simp add: to_Gromov_completion_def)
-    by (metis (mono_tags) Gromov_completion_rel_def Quotient3_Gromov_completion abs_Gromov_completion_in_Gromov_boundary not_in_Gromov_boundary' rep_Gromov_completion_to_Gromov_completion rep_abs_rsp  to_Gromov_completion_def)
+    by (metis (mono_tags) Gromov_completion_rel_def Quotient3_Gromov_completion abs_Gromov_completion_in_Gromov_boundary not_in_Gromov_boundary' rep_Gromov_completion_to_Gromov_completion rep_abs_rsp to_Gromov_completion_def)
   have *: "{F u v |u v. abs_Gromov_completion u = to_Gromov_completion x \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v}
       = {F (\<lambda>n. x) v |v. (\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> y}" for F::"(nat \<Rightarrow> 'a) \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> ereal"
     unfolding Gromov_completion_converge_to_boundary[OF \<open>y \<in> Gromov_boundary\<close>] using A by force
@@ -1748,7 +1748,7 @@ proof (cases x)
       define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e (u n) yi)"
       have h: "h \<longlonglongrightarrow> 0"
         apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (v n) yi"])
-        unfolding h_def using Gromov_product_at_diff3[of e _ _  yi] that apply auto
+        unfolding h_def using Gromov_product_at_diff3[of e _ _ yi] that apply auto
         using tendsto_dist_iff by blast
       have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e (u n) yi)" for n
         unfolding h_def by auto
@@ -1770,7 +1770,7 @@ next
       define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e xi (v n))"
       have h: "h \<longlonglongrightarrow> 0"
         apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (u n) xi"])
-        unfolding h_def using Gromov_product_at_diff2[of e _ _  xi] that apply auto
+        unfolding h_def using Gromov_product_at_diff2[of e _ _ xi] that apply auto
         using tendsto_dist_iff by blast
       have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e xi (v n))" for n
         unfolding h_def by auto
@@ -1805,7 +1805,7 @@ proof -
     define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e x (v n))"
     have h: "h \<longlonglongrightarrow> 0"
       apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (u n) x"])
-      unfolding h_def using Gromov_product_at_diff2[of e _ _  x] that apply auto
+      unfolding h_def using Gromov_product_at_diff2[of e _ _ x] that apply auto
       using tendsto_dist_iff by blast
     have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e x (v n))" for n
       unfolding h_def by auto
@@ -1839,7 +1839,7 @@ lemma limsup_le_extended_Gromov_product_inside:
 proof (cases eta)
   case boundary
   have A: "limsup (\<lambda>n. Gromov_product_at e x (v n)) \<le> liminf (\<lambda>n. Gromov_product_at e x (v' n)) + deltaG(TYPE('a))"
-    if H: "(\<lambda>n. to_Gromov_completion (v' n)) \<longlonglongrightarrow> eta"  for v'
+    if H: "(\<lambda>n. to_Gromov_completion (v' n)) \<longlonglongrightarrow> eta" for v'
   proof -
     have "ereal a \<le> liminf (\<lambda>n. Gromov_product_at e x (v' n)) + deltaG(TYPE('a))" if L: "ereal a < limsup (\<lambda>n. Gromov_product_at e x (v n))" for a
     proof -
@@ -1850,7 +1850,7 @@ proof (cases eta)
       have *: "a - deltaG(TYPE('a)) \<le> Gromov_product_at e x (v' n)" if "n \<ge> Nv" for n
       proof -
         have "a \<le> min (Gromov_product_at e x (v N)) (Gromov_product_at e (v N) (v' n))"
-          apply auto using N(1)  Nv[OF \<open>N \<ge> Nv\<close> \<open>n \<ge> Nv\<close>] by auto
+          apply auto using N(1) Nv[OF \<open>N \<ge> Nv\<close> \<open>n \<ge> Nv\<close>] by auto
         also have "... \<le> Gromov_product_at e x (v' n) + deltaG(TYPE('a))"
           by (intro mono_intros)
         finally show ?thesis by auto
@@ -1892,7 +1892,7 @@ proof -
     case 1
     then have B: "xi \<in> Gromov_boundary" "eta \<in> Gromov_boundary" by auto
     have A: "limsup (\<lambda>n. Gromov_product_at e (u n) (v n)) \<le> liminf (\<lambda>n. Gromov_product_at e (u' n) (v' n)) + 2 * deltaG(TYPE('a))"
-      if H: "(\<lambda>n. to_Gromov_completion (u' n)) \<longlonglongrightarrow> xi" "(\<lambda>n. to_Gromov_completion (v' n)) \<longlonglongrightarrow> eta"  for u' v'
+      if H: "(\<lambda>n. to_Gromov_completion (u' n)) \<longlonglongrightarrow> xi" "(\<lambda>n. to_Gromov_completion (v' n)) \<longlonglongrightarrow> eta" for u' v'
     proof -
       have "ereal a \<le> liminf (\<lambda>n. Gromov_product_at e (u' n) (v' n)) + 2 * deltaG(TYPE('a))" if L: "ereal a < limsup (\<lambda>n. Gromov_product_at e (u n) (v n))" for a
       proof -
@@ -1908,7 +1908,7 @@ proof -
           have n: "n \<ge> Nu" "n \<ge> Nv" using that by auto
           have "a \<le> Min {Gromov_product_at e (u' n) (u N), Gromov_product_at e (u N) (v N), Gromov_product_at e (v N) (v' n)}"
             apply auto using N(1) Nu[OF n(1) \<open>N \<ge> Nu\<close>] Nv[OF \<open>N \<ge> Nv\<close> n(2)] by auto
-          also have "... \<le> Gromov_product_at e (u' n) (v' n) + 2 *  deltaG(TYPE('a))"
+          also have "... \<le> Gromov_product_at e (u' n) (v' n) + 2 * deltaG(TYPE('a))"
             by (intro mono_intros)
           finally show ?thesis by auto
         qed
@@ -1931,7 +1931,7 @@ proof -
       define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e x (v n))"
       have h: "h \<longlonglongrightarrow> 0"
         apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (u n) x"])
-        unfolding h_def using Gromov_product_at_diff2[of e _ _  x] assms(1) unfolding x apply auto
+        unfolding h_def using Gromov_product_at_diff2[of e _ _ x] assms(1) unfolding x apply auto
         using tendsto_dist_iff by blast
       have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e x (v n))" for n
         unfolding h_def by auto
@@ -1952,7 +1952,7 @@ proof -
       define h where "h = (\<lambda>n. Gromov_product_at e (u n) (v n) - Gromov_product_at e (u n) y)"
       have h: "h \<longlonglongrightarrow> 0"
         apply (rule tendsto_rabs_zero_cancel, rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. dist (v n) y"])
-        unfolding h_def using Gromov_product_at_diff3[of e _ _  y] assms(2) unfolding y apply auto
+        unfolding h_def using Gromov_product_at_diff3[of e _ _ y] assms(2) unfolding y apply auto
         using tendsto_dist_iff by blast
       have *: "ereal (Gromov_product_at e (u n) (v n)) = h n + ereal (Gromov_product_at e (u n) y)" for n
         unfolding h_def by auto
@@ -2510,7 +2510,7 @@ proof -
   qed
   then show ?thesis
     unfolding compact_eq_totally_bounded
-    using Gromov_completion_complete[OF proper_imp_complete[OF assms]] by auto
+    using Gromov_completion_complete[OF complete_of_proper[OF assms]] by auto
 qed
 
 text \<open>If the inner space is second countable, so is its completion, as the former is dense in the

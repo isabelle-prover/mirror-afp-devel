@@ -29,7 +29,7 @@ lemma Busemann_function_ereal:
   "ereal(Busemann_function_at xi x y) = Sup {limsup (\<lambda>n. ereal(dist x (u n) - dist y (u n))) |u. (\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi}"
 proof -
   have A: "Sup {limsup (\<lambda>n. ereal(dist x (u n) - dist y (u n))) |u. (\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi} \<le> dist x y"
-    by (rule Sup_least, auto intro!:  Limsup_bounded always_eventually mono_intros simp add: algebra_simps)
+    by (rule Sup_least, auto intro!: Limsup_bounded always_eventually mono_intros simp add: algebra_simps)
   have B: "Sup {limsup (\<lambda>n. ereal(dist x (u n) - dist y (u n))) |u. (\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi} \<ge> -dist x y"
   proof -
     obtain u where *: "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi"
@@ -134,7 +134,7 @@ text \<open>There is also a corresponding bound below, but with the loss of a co
 from the hyperbolicity of the space and a simple computation.\<close>
 
 lemma Busemann_function_liminf:
-  assumes  "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi"
+  assumes "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> xi"
   shows "Busemann_function_at xi x y \<le> liminf (\<lambda>n. dist (x::'a::Gromov_hyperbolic_space) (u n) - dist y (u n)) + 2 * deltaG(TYPE('a))"
 proof (cases xi)
   case (to_Gromov_completion z)
@@ -156,7 +156,7 @@ next
         by (intro mono_intros)
       then have "min (Gromov_product_at x (u m) (v n)) (Gromov_product_at x (v n) y) = Gromov_product_at x (v n) y"
         using N[OF \<open>m \<ge> N\<close> \<open>n \<ge> N\<close>] by linarith
-      moreover have "Gromov_product_at x (u m) y \<ge> min (Gromov_product_at x (u m) (v n))  (Gromov_product_at x (v n) y) - deltaG(TYPE('a))"
+      moreover have "Gromov_product_at x (u m) y \<ge> min (Gromov_product_at x (u m) (v n)) (Gromov_product_at x (v n) y) - deltaG(TYPE('a))"
         by (intro mono_intros)
       ultimately have "Gromov_product_at x (u m) y \<ge> Gromov_product_at x (v n) y - deltaG(TYPE('a))"
         by auto
@@ -186,7 +186,7 @@ proof -
     apply (rule Limsup_lessD)
     unfolding Busemann_function_inner using le_less_trans[OF Busemann_function_limsup[OF assms(2)]] \<open>e > 0\<close> by auto
   have B: "eventually (\<lambda>n. Busemann_function_at (to_Gromov_completion (t n)) x y > Busemann_function_at xi x y -2 * deltaG(TYPE('a)) - ereal e) sequentially"
-    apply (rule  less_LiminfD)
+    apply (rule less_LiminfD)
     unfolding Busemann_function_inner using less_le_trans[OF _ Busemann_function_liminf[OF assms(2)], of "ereal(Busemann_function_at xi x y) - ereal e" x y] \<open>e > 0\<close> apply auto
     apply (unfold ereal_minus(1)[symmetric], subst ereal_minus_less_iff, simp)+
     unfolding ereal_minus(1)[symmetric] by (simp only: ereal_minus_less_iff, auto simp add: algebra_simps)
@@ -474,6 +474,5 @@ proof -
   qed
   then show ?thesis by (rule field_le_epsilon)
 qed
-
 
 end (*of theory Busemann_Function*)

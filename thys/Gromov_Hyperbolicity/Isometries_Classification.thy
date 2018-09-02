@@ -242,7 +242,7 @@ proof -
     also have "... \<le> abs (Busemann_function_at xi ((f^^k) x) x - k * l x) + abs (Busemann_function_at xi ((f^^k) basepoint) basepoint - k * l basepoint)
                       + abs (Busemann_function_at xi ((f^^k) basepoint) basepoint - Busemann_function_at xi ((f^^k) x) x)"
       by auto
-    also have "... \<le> 2 * deltaG(TYPE('a)) + 2 * deltaG(TYPE('a)) + (dist ((f^^k) basepoint)  ((f^^k) x) + dist basepoint x)"
+    also have "... \<le> 2 * deltaG(TYPE('a)) + 2 * deltaG(TYPE('a)) + (dist ((f^^k) basepoint) ((f^^k) x) + dist basepoint x)"
       by (intro mono_intros *)
     also have "... = 4 * deltaG(TYPE('a)) + 2 * dist basepoint x"
       unfolding isometryD[OF isometry_iterates[OF assms(1)]] by auto
@@ -307,7 +307,7 @@ proof -
     case (Suc k)
     fix N::nat assume "N \<in> {1..2^(Suc k)}"
     then consider "N \<in> {1..2^k}" | "N \<in> {2^k<..2^(Suc k)}" using not_le by auto
-    then show "dist x ((f ^^ N) x) - real N * additive_strength f xi \<le> dist x (f x)  + real (Suc k) * 16 * deltaG TYPE('a)"
+    then show "dist x ((f ^^ N) x) - real N * additive_strength f xi \<le> dist x (f x) + real (Suc k) * 16 * deltaG TYPE('a)"
     proof (cases)
       case 1
       show ?thesis by (rule order_trans[OF Suc.IH[OF 1]], auto simp add: algebra_simps)
@@ -327,12 +327,12 @@ proof -
         using dist_minus_Busemann_max_ineq by auto
       also have "... \<le> max (dist x ((f^^n) x) - (n * additive_strength f xi - 2 * deltaG(TYPE('a)))) (dist ((f^^n) x) ((f^^(n+m)) x) - (m * additive_strength f xi - 2 * deltaG(TYPE('a))) - 2 * (n * additive_strength f xi - 2 * deltaG(TYPE('a)))) + 8 * deltaG(TYPE('a))"
         unfolding ** apply (intro mono_intros)
-        using Busemann_function_eq_additive_strength[OF assms(1) assms(2), of n x]  Busemann_function_eq_additive_strength[OF assms(1) assms(2), of m "(f^^n) x"] by auto
+        using Busemann_function_eq_additive_strength[OF assms(1) assms(2), of n x] Busemann_function_eq_additive_strength[OF assms(1) assms(2), of m "(f^^n) x"] by auto
       also have "... \<le> max (dist x ((f^^n) x) - n * additive_strength f xi + 6 * deltaG(TYPE('a))) (dist x ((f^^m) x) - m * additive_strength f xi + 6 * deltaG(TYPE('a))) + 8 * deltaG(TYPE('a))"
         unfolding * isometryD(2)[OF isometry_iterates[OF assms(1)], of n] using assms(3) by (intro mono_intros, auto)
       also have "... = max (dist x ((f^^n) x) - n * additive_strength f xi) (dist x ((f^^m) x) - m * additive_strength f xi) + 14 * deltaG(TYPE('a))"
         unfolding max_add_distrib_left[symmetric] by auto
-      also have "... \<le> dist x (f x)  + k * 16 * deltaG(TYPE('a)) + 14 * deltaG(TYPE('a))"
+      also have "... \<le> dist x (f x) + k * 16 * deltaG(TYPE('a)) + 14 * deltaG(TYPE('a))"
         using nm by (auto intro!: Suc.IH)
       finally show ?thesis by (auto simp add: algebra_simps)
     qed
@@ -343,7 +343,7 @@ proof -
   then have "dist x ((f^^n) x) - real n * additive_strength f xi \<le> dist x (f x) + k * 16 * deltaG(TYPE('a))"
     using A[of n k] \<open>n \<ge> 1\<close> by auto
   moreover have "real (nat \<lceil>log 2 (real n)\<rceil>) = real_of_int \<lceil>log 2 (real n)\<rceil>"
-    by (metis Transcendental.log_one \<open>n \<le> 2 ^ k\<close> assms(4) ceiling_zero int_ops(2) k_def le_antisym nat_eq_iff2  of_int_1 of_int_of_nat_eq  order_refl power_0)
+    by (metis Transcendental.log_one \<open>n \<le> 2 ^ k\<close> assms(4) ceiling_zero int_ops(2) k_def le_antisym nat_eq_iff2 of_int_1 of_int_of_nat_eq order_refl power_0)
   ultimately show ?thesis unfolding k_def by (auto simp add: algebra_simps)
 qed
 
@@ -360,7 +360,7 @@ proof -
     Gromov_extension_inv_fixed_point[OF assms], of n "(f^^n) x"] unfolding * by auto
   have B: "abs(additive_strength f xi + additive_strength (inv f) xi) \<le> 6 * deltaG(TYPE('a)) * (1/n)" if "n \<ge> 1" for n::nat
     using that A[of n] apply (simp add: divide_simps algebra_simps) unfolding distrib_left[symmetric] by auto
-  have "(\<lambda>n. abs(additive_strength f xi + additive_strength (inv f) xi)) \<longlonglongrightarrow>  6 * deltaG(TYPE('a)) * 0"
+  have "(\<lambda>n. abs(additive_strength f xi + additive_strength (inv f) xi)) \<longlonglongrightarrow> 6 * deltaG(TYPE('a)) * 0"
     apply (rule tendsto_sandwich[of "\<lambda>n. 0" _ _ "\<lambda>n. 6 * deltaG(TYPE('a)) * (1/real n)"], simp)
     unfolding eventually_sequentially apply (rule exI[of _ 1]) using B apply simp
     by (simp, intro tendsto_intros)
@@ -387,7 +387,7 @@ proof -
       unfolding eventually_sequentially by auto
 
     have A: "eventually (\<lambda>n. additive_strength f xi - (2 * deltaG(TYPE('a))) * (1/n) = (real n * additive_strength f xi - 2 * deltaG TYPE('a)) / real n) sequentially"
-      unfolding eventually_sequentially apply (rule exI[of _ 1])  by (simp add: divide_simps)
+      unfolding eventually_sequentially apply (rule exI[of _ 1]) by (simp add: divide_simps)
     have B: "(\<lambda>n. additive_strength f xi - (2 * deltaG(TYPE('a))) * (1/n)) \<longlonglongrightarrow> additive_strength f xi - (2 * deltaG(TYPE('a))) * 0"
       by (intro tendsto_intros)
     show "(\<lambda>n. (real n * additive_strength f xi - 2 * deltaG TYPE('a)) / real n) \<longlonglongrightarrow> additive_strength f xi"
@@ -400,9 +400,9 @@ proof -
     then show "\<forall>\<^sub>F n in sequentially. dist x ((f ^^ n) x) / real n \<le> (dist x (f x) + real n * additive_strength f xi + real_of_int (\<lceil>log 2 (real n)\<rceil> * 16) * deltaG TYPE('a)) / real n"
       unfolding eventually_sequentially by auto
 
-    have A: "eventually (\<lambda>n. dist x (f x) * (1/n) + additive_strength f xi +  16 * deltaG TYPE('a) * (\<lceil>log 2 n\<rceil> / n) = (dist x (f x) + real n * additive_strength f xi + real_of_int (\<lceil>log 2 (real n)\<rceil> * 16) * deltaG TYPE('a)) / real n) sequentially"
+    have A: "eventually (\<lambda>n. dist x (f x) * (1/n) + additive_strength f xi + 16 * deltaG TYPE('a) * (\<lceil>log 2 n\<rceil> / n) = (dist x (f x) + real n * additive_strength f xi + real_of_int (\<lceil>log 2 (real n)\<rceil> * 16) * deltaG TYPE('a)) / real n) sequentially"
       unfolding eventually_sequentially apply (rule exI[of _ 1]) by (simp add: algebra_simps divide_simps)
-    have B: "(\<lambda>n. dist x (f x) * (1/n) + additive_strength f xi +  16 * deltaG TYPE('a) * (\<lceil>log 2 n\<rceil> / n)) \<longlonglongrightarrow> dist x (f x) * 0 + additive_strength f xi + 16 * deltaG TYPE('a) * 0"
+    have B: "(\<lambda>n. dist x (f x) * (1/n) + additive_strength f xi + 16 * deltaG TYPE('a) * (\<lceil>log 2 n\<rceil> / n)) \<longlonglongrightarrow> dist x (f x) * 0 + additive_strength f xi + 16 * deltaG TYPE('a) * 0"
       by (intro tendsto_intros)
     show "(\<lambda>n. (dist x (f x) + n * additive_strength f xi + real_of_int (\<lceil>log 2 n\<rceil> * 16) * deltaG TYPE('a)) / real n) \<longlonglongrightarrow> additive_strength f xi"
       using Lim_transform_eventually[OF A B] by simp
@@ -474,7 +474,7 @@ proof -
   have "c = (f^^n) (((inv f)^^n) c)" for n
     using fn_o_inv_fn_is_id[OF isometry_inverse(2)[OF elliptic_isometryD(2)[OF assms]], of n]
     unfolding comp_def by metis
-  then have "dist ((f^^n) (((inv f)^^n) c))  ((f^^n) basepoint) \<le> e" for n
+  then have "dist ((f^^n) (((inv f)^^n) c)) ((f^^n) basepoint) \<le> e" for n
     using A by auto
   then have B: "dist basepoint (((inv f)^^n) c) \<le> e" for n
     unfolding isometryD(2)[OF isometry_iterates[OF elliptic_isometryD(2)[OF assms]]] by (auto simp add: dist_commute)
@@ -650,7 +650,7 @@ lemma high_scores:
 proof -
   define M where "M = max C (Max {u l|l. l < i})"
   define n where "n = Inf {m. u m > M}"
-  have "\<not>(range u  \<subseteq> {..M})"
+  have "\<not>(range u \<subseteq> {..M})"
     using assms by (meson bdd_above_Iic bdd_above_mono)
   then have "{m. u m > M} \<noteq> {}"
     using assms by (simp add: image_subset_iff not_less)
@@ -709,7 +709,7 @@ proof -
     have "r n \<ge> r p" using \<open>n \<ge> p\<close> \<open>strict_mono r\<close> by (simp add: strict_mono_less_eq)
     then have *: "f^^((r n)) = (f^^(r p)) o (f^^(r n - r p))"
       unfolding funpow_add[symmetric] by auto
-    have "dist ((f^^(r p)) basepoint) ((f^^(r n)) basepoint) = dist  ((f^^(r p)) basepoint) ((f^^(r p)) ((f^^(r n - r p)) basepoint))"
+    have "dist ((f^^(r p)) basepoint) ((f^^(r n)) basepoint) = dist ((f^^(r p)) basepoint) ((f^^(r p)) ((f^^(r n - r p)) basepoint))"
       unfolding * comp_def by auto
     also have "... = dist basepoint ((f^^(r n - r p)) basepoint)"
       using isometry_iterates[OF assms(1), of "r p"] isometryD by auto
@@ -722,8 +722,8 @@ proof -
   have *: "Gromov_product_at basepoint ((f^^(r p)) basepoint) ((f^^(r n)) basepoint) \<ge> p" if "n \<ge> p" for n p
   proof -
     have "2 * Gromov_product_at basepoint ((f^^(r p)) basepoint) ((f^^(r n)) basepoint)
-            = dist basepoint ((f^^(r p)) basepoint) + dist basepoint  ((f^^(r n)) basepoint)
-              - dist  ((f^^(r p)) basepoint)  ((f^^(r n)) basepoint)"
+            = dist basepoint ((f^^(r p)) basepoint) + dist basepoint ((f^^(r n)) basepoint)
+              - dist ((f^^(r p)) basepoint) ((f^^(r n)) basepoint)"
       unfolding Gromov_product_at_def by auto
     also have "... \<ge> dist basepoint ((f^^(r p)) basepoint)"
       using A[OF that] by auto
@@ -775,7 +775,7 @@ proof -
   have *: "\<not>elliptic_isometry (inv f)"
     using elliptic_isometry_inv_iff isometry_inverse(2)[OF assms(1)] assms(2) by auto
   obtain xi where xi: "xi \<in> Gromov_boundary" "Gromov_extension (inv f) xi = xi" "additive_strength (inv f) xi \<le> 0"
-    using  isometry_not_elliptic_has_attracting_fixed_point[OF isometry_inverse(1)[OF assms(1)] *] by auto
+    using isometry_not_elliptic_has_attracting_fixed_point[OF isometry_inverse(1)[OF assms(1)] *] by auto
   have *: "Gromov_extension f xi = xi"
     using Gromov_extension_inv_fixed_point[OF isometry_inverse(1)[OF assms(1)] xi(2)] inv_inv_eq[OF isometry_inverse(2)[OF assms(1)]] by auto
   moreover have "additive_strength f xi \<ge> 0"

@@ -10,43 +10,6 @@ begin
 
 subsection \<open>Preliminaries\<close>
 
-text \<open>The distance to a union of two sets is the minimum of the distance to the two sets.\<close>
-
-lemma infdist_union_min [mono_intros]:
-  assumes "A \<noteq> {}" "B \<noteq> {}"
-  shows "infdist x (A \<union> B) = min (infdist x A) (infdist x B)"
-using assms by (simp add: infdist_def cINF_union inf_real_def)
-
-text \<open>If a set is compact, then the infimum of the distances to this set is attained.\<close>
-
-lemma infdist_compact_attained:
-  assumes "compact C" "C \<noteq> {}"
-  shows "\<exists>c\<in>C. infdist x C = dist x c"
-proof -
-  have "\<exists>c\<in>C. \<forall>d\<in>C. dist x c \<le> dist x d"
-    by (rule continuous_attains_inf[OF assms], intro continuous_intros)
-  then show ?thesis unfolding infdist_def using \<open>C \<noteq> {}\<close>
-    by (metis antisym bdd_below_image_dist cINF_lower le_cINF_iff)
-qed
-
-lemma infdist_almost_attained:
-  assumes "infdist x X < a" "X \<noteq> {}"
-  shows "\<exists>y\<in>X. dist x y < a"
-using assms using cInf_less_iff[of "(dist x)`X"] unfolding infdist_def by auto
-
-text \<open>The next lemma is missing in the library, contrary to its cousin \verb+continuous_infdist+.\<close>
-
-lemma continuous_on_infdist [continuous_intros]:
-  assumes "continuous_on S f"
-  shows "continuous_on S (\<lambda>x. infdist (f x) A)"
-using assms unfolding continuous_on by (auto intro: tendsto_infdist)
-
-text \<open>The infimum of the distance to a singleton set is simply the distance to the unique
-member of the set.\<close>
-
-lemma infdist_point [simp]:
-  "infdist x {y} = dist x y"
-unfolding infdist_def by (metis cInf_singleton image_empty image_insert insert_not_empty)
 
 
 subsection \<open>Hausdorff distance\<close>
