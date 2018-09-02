@@ -324,7 +324,7 @@ lemma geodesics_nearby:
 using thin_triangles[OF geodesic_segment_between_x_x(1) assms(2) assms(1) assms(3)]
 geodesic_segment_endpoints(1)[OF assms(2)] insert_absorb by fastforce
 
-text \<open>A (p tm)all variant of the property of thin triangles is that triangles are slim, i.e., there is
+text \<open>A small variant of the property of thin triangles is that triangles are slim, i.e., there is
 a point which is close to the three sides of the triangle (a "center" of the triangle, but
 only defined up to $O(\delta)$). And one can take it on any side, and its distance to the corresponding
 vertices is expressed in terms of a Gromov product.\<close>
@@ -592,7 +592,7 @@ proof -
       show ?thesis using Main[OF 2] by simp
     next
       case 3
-      text \<open>In this case, we argue by approximating $t$ by a slightly (p tm)aller parameter, for which
+      text \<open>In this case, we argue by approximating $t$ by a slightly smaller parameter, for which
       the result has already been proved above. We need to argue that all functions are continuous
       on the sets we are considering, which is straightforward but tedious.\<close>
       define u::"nat \<Rightarrow> real" where "u = (\<lambda>n. t-1/n)"
