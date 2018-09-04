@@ -9,7 +9,30 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>24 Aug 2018 00:00:00 +0000</pubDate>
+    <pubDate>02 Sep 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Budan-Fourier Theorem and Counting Real Roots with Multiplicity</title>
+              <link>https://www.isa-afp.org/entries/Budan_Fourier.html</link>
+       <guid>https://www.isa-afp.org/entries/Budan_Fourier.html</guid>
+       <dc:creator> Wenda Li       </dc:creator>
+       <pubDate>02 Sep 2018 00:00:00 +0000</pubDate>
+       <description>
+This entry is mainly about counting and approximating real roots (of a
+polynomial) with multiplicity. We have first formalised the
+Budan-Fourier theorem: given a polynomial with real coefficients, we
+can calculate sign variations on Fourier sequences to over-approximate
+the number of real roots (counting multiplicity) within an interval.
+When all roots are known to be real, the over-approximation becomes
+tight: we can utilise this theorem to count real roots exactly. It is
+also worth noting that Descartes&#39; rule of sign is a direct
+consequence of the Budan-Fourier theorem, and has been included in
+this entry. In addition, we have extended previous formalised
+Sturm&#39;s theorem to count real roots with multiplicity, while the
+original Sturm&#39;s theorem only counts distinct real roots.
+Compared to the Budan-Fourier theorem, our extended Sturm&#39;s
+theorem always counts roots exactly but may suffer from greater
+computational cost.</description>
+    </item>
     <item>
        <title>An Incremental Simplex Algorithm with Unsatisfiable Core Generation</title>
               <link>https://www.isa-afp.org/entries/Simplex.html</link>
@@ -539,21 +562,6 @@ polynomial-time algorithm to factor polynomials. In this work we
 present the first mechanized soundness proof of the LLL algorithm to
 compute short vectors in lattices. The formalization follows a
 textbook by von zur Gathen and Gerhard.</description>
-    </item>
-    <item>
-       <title>Formalization of Bachmair and Ganzinger's Ordered Resolution Prover</title>
-              <link>https://www.isa-afp.org/entries/Ordered_Resolution_Prover.html</link>
-       <guid>https://www.isa-afp.org/entries/Ordered_Resolution_Prover.html</guid>
-       <dc:creator> Anders Schlichtkrull, Jasmin Christian Blanchette, Dmitriy Traytel, Uwe Waldmann       </dc:creator>
-       <pubDate>18 Jan 2018 00:00:00 +0000</pubDate>
-       <description>
-This Isabelle/HOL formalization covers Sections 2 to 4 of Bachmair and
-Ganzinger&#39;s &#34;Resolution Theorem Proving&#34; chapter in the
-&lt;em&gt;Handbook of Automated Reasoning&lt;/em&gt;. This includes
-soundness and completeness of unordered and ordered variants of ground
-resolution with and without literal selection, the standard redundancy
-criterion, a general framework for refutational theorem proving, and
-soundness and completeness of an abstract first-order prover.</description>
     </item>
   </channel>
 </rss>
