@@ -260,7 +260,7 @@ fun mk_node class info super_evs lthy =
       end
 
     val constructor =
-      (((Binding.empty, @{binding Dict}), all_fields), NoSyn)
+      (((Binding.empty, Binding.name "Dict"), all_fields), NoSyn)
     val datatyp =
       (([(NONE, (@{typ 'a}, @{sort type}))], Binding.name name), NoSyn)
 
