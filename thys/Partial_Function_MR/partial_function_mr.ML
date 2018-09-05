@@ -311,7 +311,7 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
         |-> (fn (_, simps) => 
           Spec_Rules.add Spec_Rules.Equational ([f], simps)
           #> Local_Theory.note 
-            ((Binding.qualify true fname @{binding "simps"}, 
+            ((Binding.qualify true fname (Binding.name "simps"),
               @{attributes [code]}), simps) #>> snd #>> hd)
       end
   in 
