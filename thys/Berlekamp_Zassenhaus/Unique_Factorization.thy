@@ -160,7 +160,7 @@ qed
 
 class ufd = idom +
   assumes mset_factors_exist: "\<And>x. x \<noteq> 0 \<Longrightarrow> \<not> x dvd 1 \<Longrightarrow> \<exists>F. mset_factors F x"
-    and mset_factors_unique: "\<And>x F G. x \<noteq> 0 \<Longrightarrow> mset_factors F x \<Longrightarrow> mset_factors G x \<Longrightarrow> rel_mset (ddvd) F G"
+    and mset_factors_unique: "\<And>x F G. mset_factors F x \<Longrightarrow> mset_factors G x \<Longrightarrow> rel_mset (ddvd) F G"
 
 subsubsection {* Connecting to HOL/Divisibility *}
 
@@ -303,7 +303,7 @@ context ufd begin
   proof-
     from a1 have "a \<noteq> 1" by auto
     with a0 fs gs have "mset_factors (mset fs) a" "mset_factors (mset gs) a" by (unfold factors_as_mset_factors)
-    from mset_factors_unique[OF a0 this] show ?thesis.
+    from mset_factors_unique[OF this] show ?thesis.
   qed
 
   lemma factorial_monoid: "factorial_monoid (mk_monoid :: 'a monoid)"
@@ -321,8 +321,9 @@ proof (unfold_locales)
     note * = factors_exist[simplified, OF this]
     with x show "\<exists>F. mset_factors F x" by (subst(asm) factors_as_mset_factors, auto)
   }
-  fix x F G assume x0: "x \<noteq> 0" and FG: "mset_factors F x" "mset_factors G x"
+  fix x F G assume FG: "mset_factors F x" "mset_factors G x"
   with mset_factors_imp_not_is_unit have x1: "\<not> x dvd 1" by auto
+  from FG(1) have x0: "x \<noteq> 0" by (rule mset_factors_imp_nonzero)
   obtain fs gs where fsgs: "F = mset fs" "G = mset gs" using ex_mset by metis
   note FG = FG[unfolded this]
   then have 0: "0 \<notin> set fs" "0 \<notin> set gs" by (auto elim!: mset_factorsE)
@@ -449,7 +450,7 @@ proof-
             with F' irrf have "\<And>f'. f' \<in># F' + {#f * c#} \<Longrightarrow> irreducible f'" by auto
           }
           ultimately have "mset_factors (F' + {#f * c#}) b" by (intro mset_factorsI, auto)
-          from mset_factors_unique[OF b0 this G]
+          from mset_factors_unique[OF this G]
           have F'G: "rel_mset (ddvd) (F' + {#f * c#}) G".
           from True add have FF': "rel_mset (ddvd) F (F' + {#f * c#})"
             by (auto simp add: multiset.rel_refl intro!: rel_mset_Plus)
@@ -462,7 +463,7 @@ proof-
     case False
       from mset_factors_exist[OF c0 this] obtain H where H: "mset_factors H c" by auto
       from c mset_factors_mult[OF F H] have "mset_factors (F + H) b" by auto
-      note mset_factors_unique[OF b0 this G]
+      note mset_factors_unique[OF this G]
       from rel_mset_split[OF this] obtain G1 G2
         where "G = G1 + G2" "rel_mset (ddvd) F G1" "rel_mset (ddvd) H G2" by auto
       then show ?thesis by (intro exI[of _ "G1"], auto)
@@ -577,7 +578,7 @@ proof (intro iffI, fact prime_elem_imp_irreducible, rule prime_elemI)
         case False
         from mset_factors_exist[OF c0 this] obtain H where "mset_factors H c" by auto
         with * have xHxc: "mset_factors (add_mset x H) (x * c)" by force
-        note rel = mset_factors_unique[OF xc0 this FGxc]
+        note rel = mset_factors_unique[OF this FGxc]
         obtain hs where "mset hs = H" using ex_mset by auto
         then have "mset (x#hs) = add_mset x H" by auto
         from rel_mset_free[OF rel this]
