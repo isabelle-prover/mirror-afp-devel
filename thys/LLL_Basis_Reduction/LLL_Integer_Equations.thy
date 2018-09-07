@@ -2,7 +2,7 @@
     Authors:    René Thiemann
     License:    BSD
 *)
-subsection \<open>LLL Implementation based on Integer Arithmetic\<close>
+subsection \<open>Integer LLL Implementation which Stores Multiples of the $\mu$-Values\<close>
 
 text \<open>In this part we aim to update the integer values $d\,(j+1) * \mu_{i,j}$ as well as the 
   Gramian determinants $d\,i$. \<close>

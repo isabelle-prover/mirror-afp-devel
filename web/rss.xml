@@ -9,7 +9,24 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>02 Sep 2018 00:00:00 +0000</pubDate>
+    <pubDate>05 Sep 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Quaternions</title>
+              <link>https://www.isa-afp.org/entries/Quaternions.html</link>
+       <guid>https://www.isa-afp.org/entries/Quaternions.html</guid>
+       <dc:creator> Lawrence C. Paulson       </dc:creator>
+       <pubDate>05 Sep 2018 00:00:00 +0000</pubDate>
+       <description>
+This theory is inspired by the HOL Light development of quaternions,
+but follows its own route. Quaternions are developed coinductively, as
+in the existing formalisation of the complex numbers. Quaternions are
+quickly shown to belong to the type classes of real normed division
+algebras and real inner product spaces. And therefore they inherit a
+great body of facts involving algebraic  laws, limits, continuity,
+etc., which must be proved explicitly in the HOL Light version.  The
+development concludes with the geometric interpretation of the product
+of imaginary quaternions.</description>
+    </item>
     <item>
        <title>The Budan-Fourier Theorem and Counting Real Roots with Multiplicity</title>
               <link>https://www.isa-afp.org/entries/Budan_Fourier.html</link>
@@ -541,27 +558,6 @@ subsumption order is a crucial ingredient for completion.</description>
 the complex and real error function erf and the complementary error
 function erfc. Additionally, it gives their full asymptotic
 expansions. &lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>A verified LLL algorithm</title>
-              <link>https://www.isa-afp.org/entries/LLL_Basis_Reduction.html</link>
-       <guid>https://www.isa-afp.org/entries/LLL_Basis_Reduction.html</guid>
-       <dc:creator> Ralph Bottesch, Jose Divasón, Maximilian Haslbeck, Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
-       <pubDate>02 Feb 2018 00:00:00 +0000</pubDate>
-       <description>
-The Lenstra-Lenstra-Lovász basis reduction algorithm, also known as
-LLL algorithm, is an algorithm to find a basis with short, nearly
-orthogonal vectors of an integer lattice. Thereby, it can also be seen
-as an approximation to solve the shortest vector problem (SVP), which
-is an NP-hard problem, where the approximation quality solely depends
-on the dimension of the lattice, but not the lattice itself. The
-algorithm also possesses many applications in diverse fields of
-computer science, from cryptanalysis to number theory, but it is
-specially well-known since it was used to implement the first
-polynomial-time algorithm to factor polynomials. In this work we
-present the first mechanized soundness proof of the LLL algorithm to
-compute short vectors in lattices. The formalization follows a
-textbook by von zur Gathen and Gerhard.</description>
     </item>
   </channel>
 </rss>

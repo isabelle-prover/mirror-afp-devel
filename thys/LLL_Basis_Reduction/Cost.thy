@@ -3,7 +3,7 @@
                 René Thiemann
     License:    BSD
 *)
-subsection \<open>Representing Computation Costs as Pairs of Results and Costs\<close>
+section \<open>Representing Computation Costs as Pairs of Results and Costs\<close>
 theory Cost
   imports Main
 begin
