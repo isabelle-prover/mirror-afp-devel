@@ -3,9 +3,7 @@
                 René Thiemann
     License:    BSD
 *)
-section \<open>Complexity of the LLL algorithm\<close>
-
-subsection \<open>Explicit Bound on Number of Arithmetic Operations\<close>
+subsection \<open>Bound on Number of Arithmetic Operations for Integer Implementation\<close>
 
 text \<open>In this section we define a version of the LLL algorithm which explicitly returns the
   costs of running the algorithm. Its soundness is mainly proven by stating that 

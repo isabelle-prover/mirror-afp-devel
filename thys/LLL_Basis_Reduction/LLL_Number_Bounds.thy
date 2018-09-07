@@ -13,7 +13,7 @@ text \<open>The LLL invariant does not contain bounds on the number that occur d
   and on the absolute values of the numbers in the vectors $f_i$ and $g_i$. 
   Moreover, we further show that also the denominators in all of these numbers doesn't grow to much.
   Finally, we prove that each number (i.e., numerator or denominator) during the execution 
-  can be represented with at most ${\cal OO}(m \cdot \log(M \cdot n))$ bits, where
+  can be represented with at most ${\cal O}(m \cdot \log(M \cdot n))$ bits, where
   $m$ is the number of input vectors, $n$ is the dimension of the input vectors,
   and $M$ is the maximum absolute value of all numbers in the input vectors.
   Hence, each arithmetic operation in the LLL algorithm can be performed in polynomial time.\<close>

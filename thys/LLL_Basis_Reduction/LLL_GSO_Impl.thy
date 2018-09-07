@@ -6,7 +6,7 @@
                 Akihisa Yamada
     License:    BSD
 *)
-subsection \<open>LLL Implementation which Stores the GSO and their Norms\<close>
+subsection \<open>Rational LLL Implementation which Stores the GSO and their Norms\<close>
 
 theory LLL_GSO_Impl
   imports LLL
