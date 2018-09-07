@@ -425,29 +425,20 @@ lemma list_of_vec_transfer[transfer_rule]: "(vec_rel A ===> list_all2 A) list_of
   unfolding rel_fun_def vec_rel_def vec_eq_iff list_all2_conv_all_nth
   by auto
 
-definition sub'' :: "'a iarray \<Rightarrow> integer \<Rightarrow> 'a" where "sub'' a i = IArray.sub' (a,i)" 
-definition tabulate'' :: "(integer \<Rightarrow> 'a) \<Rightarrow> integer \<Rightarrow> 'a iarray" where 
-  [simp]: "tabulate'' f n = IArray.tabulate (n,f)" 
-
-  
-code_printing 
-  constant sub'' \<rightharpoonup> (Haskell)  "(IArray.!)"
-| constant tabulate'' \<rightharpoonup> (Haskell)  "IArray.array"
-
-lemma sub''[simp]: "i < IArray.length a \<Longrightarrow> sub'' a (integer_of_nat i) = IArray.sub a i" 
-  unfolding sub''_def by auto
+lemma IArray_sub'[simp]: "i < IArray.length a \<Longrightarrow> IArray.sub' (a, integer_of_nat i) = IArray.sub a i" 
+  by auto
 
 lift_definition eliminate_entries_i2 ::
   "'a \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarrow> (integer \<Rightarrow> 'a) \<Rightarrow> 'a mat_impl \<Rightarrow> integer \<Rightarrow> 'a mat_impl" is
   "\<lambda> z mminus ttimes v (nr, nc, a) i'.
-   (nr,nc,let ai' = sub'' a i' in (tabulate'' (\<lambda> i. let ai = sub'' a i in
+   (nr,nc,let ai' = IArray.sub' (a, i') in (IArray.tabulate (integer_of_nat nr, \<lambda> i. let ai = IArray.sub' (a, i) in
      if i = i' then ai else 
      let vi'j = v i 
      in if vi'j = z then ai
         else 
-             tabulate'' (\<lambda> j. mminus (sub'' ai j) (ttimes vi'j 
-               (sub'' ai' j))) (integer_of_nat nc)
-       )) (integer_of_nat nr))" 
+             IArray.tabulate (integer_of_nat nc, \<lambda> j. mminus (IArray.sub' (ai, j)) (ttimes vi'j 
+               (IArray.sub' (ai', j))))
+       )))" 
 proof(goal_cases)
   case (1 z mm tt  vec prod nat2)
   thus ?case by(cases prod;cases "snd (snd prod)";auto simp:Let_def)
@@ -476,7 +467,7 @@ lemma dim_eliminate_entries_i2 [simp]:
   "dim_col_impl (eliminate_entries_i2 z mm tt v m i) = dim_col_impl m"
   by (transfer, auto)+
 
-lemma tabulate_nth: "i < n \<Longrightarrow> tabulate'' f (integer_of_nat n) !! i = f (integer_of_nat i)" 
+lemma tabulate_nth: "i < n \<Longrightarrow> IArray.tabulate (integer_of_nat n, f) !! i = f (integer_of_nat i)" 
   using of_fun_nth[of i n] by auto
 
 lemma eliminate_entries_i2[code]:"eliminate_entries_gen_zero mm tt z v (mat_impl m) i j
@@ -513,7 +504,7 @@ proof (cases "i < dim_row_impl m")
         hence id: "?c1 = False " "(integer_of_nat i = integer_of_nat ia) = False" "(False \<or> i = ia) = False" 
           by (auto simp add: integer_of_nat_eq_of_nat)
         show ?thesis unfolding m o_def Let_def split snd_conv mk of_fun id if_False 
-          by (auto simp: 1 sub''_def)
+          by (auto simp: 1)
       qed
     qed  
   qed (auto simp:eliminate_entries_i2.rep_eq)
