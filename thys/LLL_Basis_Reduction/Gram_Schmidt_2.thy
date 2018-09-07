@@ -2446,8 +2446,6 @@ proof -
     by simp
 qed
 
-subsection \<open>$\kappa$\<close>
-
 context gram_schmidt_fs_Rn
 begin
 
@@ -2740,7 +2738,7 @@ qed
 lemma max_list_Max: "ls \<noteq> [] \<Longrightarrow> max_list ls = Max (set ls)"
   by (induction ls) (auto simp add: max_list_Cons)
 
-section \<open>Bounds\<close>
+subsection \<open>Explicit Bounds for Size of Numbers that Occur During GSO Algorithm \<close>
 
 context gram_schmidt_fs_lin_indpt
 begin
@@ -2874,8 +2872,6 @@ lemma exact_division: assumes "of_int x / (of_int y  :: 'a :: floor_ceiling) \<i
   using assms by (metis Ints_cases division_to_div)
 
 lemma int_via_rat_eqI: "rat_of_int x = rat_of_int y \<Longrightarrow> x = y" by auto
-
-section \<open>New locale with fs :: int vec list\<close>
 
 locale fs_int =
   fixes

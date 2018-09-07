@@ -4,7 +4,7 @@
                 René Thiemann
     License:    BSD
 *)
-subsection \<open>Gram Schmidt Implementation for Integer Vectors\<close>
+subsection \<open>Gram-Schmidt Implementation for Integer Vectors\<close>
 
 text \<open>This theory implements the Gram-Schmidt algorithm on integer vectors
   using purely integer arithmetic. The formalization is based on \cite{GS_EKM}.\<close>
@@ -539,8 +539,6 @@ lemma d\<mu>_impl: "d\<mu>_impl fs = IArray.of_fun (\<lambda> i. IArray.of_fun (
 
 end (* fs_int_indpt *)
 
-section \<open>Bounds on $\sigma$ and $\mu'$\<close>
-
 context gram_schmidt_fs_int
 begin
 
@@ -645,7 +643,6 @@ lemma abs_leq_squared: "\<bar>z::int\<bar> \<le> z\<^sup>2"
 end (* gram_schmidt_fs_int *)
 
 
-section \<open>Calculate $g_i' = d_i g_i$\<close>
 
 fun vec_div :: "int list \<Rightarrow> int \<Rightarrow> int list" where
   "vec_div v n = (map (\<lambda>x. x div n) v)"
@@ -1007,6 +1004,8 @@ end
 
 value (code) "let v = map vec_of_list [[1,2,3],[4,5,6],[7,8,10]] in (gso_array.gso_array v)"
 value (code) "gram_schmidt 3 (map vec_of_list [[1::rat,2,3],[4,5,6],[7,8,10]])"
+
+subsection \<open>Lemmas Summarizing All Bounds During GSO Computation\<close>
 
 context gram_schmidt_fs_int
 begin
