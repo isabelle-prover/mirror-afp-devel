@@ -26,6 +26,8 @@ Isabelle. Older versions of archive entries will remain available.</p>
 <h2>Editors</h2>
 <p><a name="editors">The editors of the archive are</a></p>
 <ul>
+<li><a href="http://www.in.tum.de/~eberlm/">Manuel Eberl</a>,
+    <a href="http://www.tum.de/">Technische Universit&auml;t M&uuml;nchen</a></li>
 <li><a href="http://www.cse.unsw.edu.au/~kleing/">Gerwin Klein</a>,
     <a href="http://www.data61.csiro.au">Data61</a></li>
 <li><a href="http://www.in.tum.de/~nipkow/">Tobias Nipkow</a>,
