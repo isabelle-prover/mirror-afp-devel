@@ -148,10 +148,16 @@ fun gen_add_partial_function_mr prep mode fixes_raw eqns_raw lthy =
     val Setup_Data {mk_monad_map, mk_monadT, dest_monadT, monad_map_comp, monad_map_id} = setup_data;
     val _ = if length eqns_raw < 2 then error "require at least two function definitions" else ();
     val ((fixes, eq_abinding_eqns), _) = prep fixes_raw eqns_raw lthy;
+    val _ = if length eqns_raw = length fixes then () else error "# of eqns does not match # of constants";
     val fix_eq_abinding_eqns = fixes ~~ eq_abinding_eqns;
     val heads = map (get_head lthy) fix_eq_abinding_eqns;
+    val fnames = map (Binding.name_of o #1 o #1) fixes
+    val fnames' = map (#1 o Term.dest_Free) heads
+    val f_f = fnames ~~ fnames'
+    val _ = case find_first (fn (f,g) => not (f = g)) f_f of NONE => () | SOME _ => 
+      error ("list of function symbols does not match list of equations:\n" 
+        ^ @{make_string} fnames ^ "\nvs\n" ^ @{make_string} fnames')
     val all = map (get_infos lthy heads) fix_eq_abinding_eqns
-    val fnames = map #1 all
     val f_cucs = map #2 all
     val f_ucs = map #3 all
     val inTs = map #4 all
