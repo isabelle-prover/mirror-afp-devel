@@ -99,7 +99,7 @@ lemma extended_superset: "S \<subseteq> extended S" unfolding extended_def using
 
 lemma extended_complem:
   assumes fs: "fin_sat S"
-  shows "F \<in> extended S \<noteq> (Not F \<in> extended S)"
+  shows "(F \<in> extended S) \<noteq> (Not F \<in> extended S)"
 proof -
   note fs = fs[THEN extended_fin_sat]
   show ?thesis proof(cases "F \<in> extended S")

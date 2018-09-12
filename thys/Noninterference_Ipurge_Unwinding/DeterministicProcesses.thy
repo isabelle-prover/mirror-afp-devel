@@ -424,7 +424,7 @@ proof (subst divergences_def, rule equals0I)
    using D by (drule_tac mp, simp_all add: failures_def)
   hence F: "xs @ [x] \<in> traces P" by (rule failures_traces)
   hence "{x} \<inter> next_events P xs \<noteq> {}" by (simp add: next_events_def)
-  ultimately have G: "{x} \<in> refusals P xs \<noteq> ({x} \<inter> next_events P xs = {})"
+  ultimately have G: "({x} \<in> refusals P xs) \<noteq> ({x} \<inter> next_events P xs = {})"
    by simp
   have "\<forall>xs \<in> traces P. \<forall>X. X \<in> refusals P xs = (X \<inter> next_events P xs = {})"
    using A by (simp add: deterministic_def)
