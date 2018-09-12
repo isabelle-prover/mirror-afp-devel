@@ -212,9 +212,9 @@ proof -
   have one: "lattice_of fs \<subseteq> lattice_of gs" unfolding gs .
   have "lattice_of gs \<subseteq> lattice_of (gs[i := gs ! j, j := gs ! i])" 
     by (rule sub, insert ij fs, auto simp: gs)
-  also have "gs[i := gs ! j, j := gs ! i] = fs" unfolding gs using ij 
-    by (intro nth_equalityI, force, intro allI, 
-      rename_tac k, case_tac "k = i", force, case_tac "k = j", auto)
+  also have "gs[i := gs ! j, j := gs ! i] = fs" unfolding gs
+    apply (rule nth_equalityI, force)
+    by (simp add: ij nth_list_update)
   finally show ?thesis using one by auto
 qed  
     
