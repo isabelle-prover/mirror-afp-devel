@@ -3696,8 +3696,8 @@ proof-
   with assms(1) have "n + n' = [r + s. (r,s)\<leftarrow>zip rs ss] \<bullet>\<cdot> ms"
     using lincomb_sum_left by simp
   moreover from rs(1) ss(1) have "set [r + s. (r,s)\<leftarrow>zip rs ss] \<subseteq> R"
-    using set_zip_leftD[of _ _ rs ss] set_zip_rightD[of _ _ rs ss]  R_scalars.add_closed
-    by    force
+    using set_zip_leftD[of _ _ rs ss] set_zip_rightD[of _ _ rs ss]  
+          R_scalars.add_closed R_scalars.zip_add_closed by blast
   ultimately show "n + n' \<in> RSpan ms"
     using assms(1) RSpanI_lincomb_arb_len_coeffs by simp
 qed
@@ -5351,7 +5351,7 @@ proof (rule ex_ex1I)
               VectorSpace.delta_scalars_lincomb_eq_nth[OF VSpW, of ws]
         by    force
     qed
-    thus "\<forall>i<length (map T vs). map T vs ! i = ws ! i" by fast
+    thus "\<And>i. i < length (map T vs) \<Longrightarrow> map T vs ! i = ws ! i" by fast
   qed
   ultimately have "VectorSpaceHom (\<cdot>) V smult' T \<and> map T vs = ws" by fast
   thus "\<exists>T. VectorSpaceHom (\<cdot>) V smult' T \<and> map T vs = ws" by fast

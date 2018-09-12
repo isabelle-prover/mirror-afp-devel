@@ -144,10 +144,10 @@ proof (rule nth_equalityI)
   hence len_eq: "length ps = length p" by simp
   thus "length ps = length ?ps" by simp
 
-  show "\<forall> i < length ps. ps ! i = ?ps ! i"
-  proof (rule allI, rule impI)
-    fix i assume "i < length ps"
-    with len_eq have "i < length p" by auto
+  show "ps ! i = ?ps ! i" if "i < length ps" for i
+  proof -
+    have "i < length p"
+      using that len_eq by auto
 
     show "ps ! i = ?ps ! i"
     proof (cases "d = i")

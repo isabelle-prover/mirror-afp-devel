@@ -233,7 +233,7 @@ lemma border_positions: "border xs ys \<Longrightarrow> \<forall>i<length xs. ys
 lemma all_positions_drop_length_take: "\<lbrakk>i \<le> length w; i \<le> length x;
   \<forall>j<i. x ! j = w ! (length w + j - i)\<rbrakk>
     \<Longrightarrow> drop (length w - i) w = take i x"
-  by (cases "i = length x") (simp_all add: nth_equalityI)
+  by (cases "i = length x") (auto intro: nth_equalityI)
 
 lemma all_positions_suffix_take: "\<lbrakk>i \<le> length w; i \<le> length x;
   \<forall>j<i. x ! j = w ! (length w + j - i)\<rbrakk>

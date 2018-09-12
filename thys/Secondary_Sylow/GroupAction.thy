@@ -29,15 +29,15 @@ theorem singleton_intersection:
 using assms by(auto simp:card_Suc_eq)
 
 theorem card_singleton_set:
-  assumes finA:"finite A"
   assumes cardOne:"\<forall>x \<in> A.(card x = 1)"
   shows "card (\<Union>A) = card A"
 proof -
-  from finA have "card (\<Union>A) = (\<Sum>x\<in>A. card x)"
+  have "card (\<Union>A) = (\<Sum>x\<in>A. card x)"
   proof(rule card_Union_disjoint)
-    from cardOne show "\<forall>A\<in>A. finite A" by (auto intro: card_ge_0_finite)
+    from cardOne show "\<And>a. a\<in>A \<Longrightarrow> finite a" by (auto intro: card_ge_0_finite)
   next
-    show "\<forall>x\<in>A. \<forall>y\<in>A. x \<noteq> y \<longrightarrow> x \<inter> y = {}"
+    show "pairwise disjnt A"
+      unfolding pairwise_def disjnt_def
     proof(clarify)
       fix x y
       assume x:"x \<in> A" and y:"y \<in> A" and "x \<noteq> y"
@@ -497,12 +497,13 @@ proof -
   from assms have "\<And>N. N \<in> big_orbits \<Longrightarrow> p dvd card N" unfolding big_orbits_def by (auto simp: p_dvd_orbit_size)
   hence orbit_div:"\<And>N. N \<in> big_orbits \<Longrightarrow> card N = (card N div p) * p" by (metis dvd_mult_div_cancel mult.commute)
   have "card M = card (\<Union> orbits)" unfolding orbits_def by (metis Union_quotient same_orbit_is_equiv)
-  also from orbits_fin have "card (\<Union> orbits) = (\<Sum>N\<in>orbits. card N)" unfolding orbits_def
-  apply(rule card_Union_disjoint)
-    defer 1
-    apply(metis same_orbit_is_equiv quotient_disj)
-    using finM same_orbit_rel_def apply(auto dest:finite_equiv_class)
-  done
+  also  have "card (\<Union> orbits) = (\<Sum>N\<in>orbits. card N)" unfolding orbits_def
+  proof (rule card_Union_disjoint)
+    show "pairwise disjnt (M // same_orbit_rel)"
+      unfolding pairwise_def disjnt_def by(metis same_orbit_is_equiv quotient_disj)
+    show "\<And>A. A \<in> M // same_orbit_rel \<Longrightarrow> finite A"
+      using finM same_orbit_rel_def by (auto dest:finite_equiv_class)
+  qed
   also from orbit_part orbit_disj fin_parts have "... = (\<Sum>N\<in>big_orbits. card N) + (\<Sum>N\<in>{N'\<in>orbits. card N' = 1}. card N)" by (metis (lifting) sum.union_disjoint)
   also from assms orbit_div fin_parts have "... = (\<Sum>N\<in>big_orbits. (card N div p) * p) + card (\<Union>{N'\<in>orbits. card N' = 1})" by (auto simp: card_singleton_set)
   also have "... = (\<Sum>N\<in>big_orbits. card N div p) * p + card fixed_points" using singleton_orbits by (auto simp:sum_distrib_right)

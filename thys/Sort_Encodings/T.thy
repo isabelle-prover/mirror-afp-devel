@@ -524,21 +524,21 @@ next
   have l: "length ?ar = length Tl" using Fn by simp
   have 0: "map2 ntsem ?ar (map (Ik.int \<xi>) Tl) =
            map (TE.int ?e\<xi> \<circ> tNN) Tl"  (is "?L = ?R")
-  proof(rule nth_equalityI, safe)
+  proof(rule nth_equalityI)
     fix i assume "i < length ?L"
     hence i: "i < length ?ar" using l by simp
     hence 1: "TE.int (eenv \<xi>) (tNN (Tl!i)) = Ik.int \<xi> (Tl!i)"
-    using Fn by (auto simp: list_all_length)
+      using Fn by (auto simp: list_all_length)
     have 2: "?ar ! i = Ik.Ik.tpOf (Tl!i)" using Fn i by simp
     have 3: "intT (?ar ! i) (Ik.int \<xi> (Tl ! i))"
-    unfolding 2 apply(rule wt_int)
-    using Fn \<xi> i by (auto simp: list_all_length)
+      unfolding 2 apply(rule wt_int)
+      using Fn \<xi> i by (auto simp: list_all_length)
     show "?L!i = ?R!i" apply (cases "unprot (?ar ! i) \<or> protFw (?ar ! i)")
-    using i 1 l 3 unfolding intT_def by auto
+      using i 1 l 3 unfolding intT_def by auto
   qed(insert l, auto)
   show ?case apply(cases "unprot ?r \<or> protFw ?r")
-  using [[unfold_abs_def = false]]
-  unfolding Ik.int.simps TE.int.simps tT.simps unfolding intF_def using Fn 0 by auto
+    using [[unfold_abs_def = false]]
+    unfolding Ik.int.simps TE.int.simps tT.simps unfolding intF_def using Fn 0 by auto
 qed
 
 lemma map_int_tNN[simp]:

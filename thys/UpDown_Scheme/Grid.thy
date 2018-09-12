@@ -287,11 +287,9 @@ proof induct
     with True have d_eq: "p ! d = (?child) ! d" by (auto simp add: prod_eqI ix_def lv_def)
 
     have "length p = length ?child" using `p \<in> grid b {d}` and `p' \<in> grid b {d}` by auto
-    moreover have "\<forall> d' < length p. p ! d' = ?child ! d'"
-    proof (rule allI, rule impI)
-      fix d''
-      assume "d'' < length p"
-      hence "d'' < length b" using `p \<in> grid b {d}` by auto
+    moreover have "p ! d'' = ?child ! d''" if "d'' < length p" for d''
+    proof -
+      have "d'' < length b" using that `p \<in> grid b {d}` by auto
       show "p ! d'' = ?child ! d''"
       proof (cases "d = d''")
         case True with d_eq show ?thesis by auto
@@ -514,7 +512,7 @@ proof (rule ccontr)
           and grid_invariant[OF dl False `x \<in> grid p ds'`] by auto
     qed
   qed
-  ultimately have "p' = p" by (rule nth_equalityI)
+  ultimately have "p' = p" by (metis nth_equalityI)
   thus False using `p \<noteq> p'` by auto
 qed
 lemma grid_split1: assumes grid: "p \<in> grid b (ds' \<union> ds)" and "ds \<inter> ds' = {}"
@@ -943,9 +941,9 @@ proof (rule nth_equalityI)
     using grid_union_dims[OF Diff_subset[where A="{0..<dm}" and B="ds'"] baseE(1)[OF p_grid]] .
   from base_length[OF b_spg] base_length[OF p_grid] show "length (base ds (base ds' p)) = length (base (ds \<union> ds') p)" by auto
 
-  show "\<forall> i < length (base ds (base ds' p)). base ds (base ds' p) ! i = base (ds \<union> ds') p ! i"
-  proof (rule allI, rule impI)
-    fix i assume "i < length (base ds (base ds' p))" hence "i < dm" using base_length[OF b_spg] by auto
+  show "base ds (base ds' p) ! i = base (ds \<union> ds') p ! i" if "i < length (base ds (base ds' p))" for i
+  proof -
+    have "i < dm" using that base_length[OF b_spg] by auto
     show "base ds (base ds' p) ! i = base (ds \<union> ds') p ! i"
     proof (cases "i \<in> ds \<union> ds'")
       case True
@@ -1018,9 +1016,9 @@ proof -
     have bp_spg: "base ds p \<in> sparsegrid' dm" using base_grid[OF p_spg] grid.Start by auto
 
     show "length ?b = length ?p" using base_length[OF bp_spg] base_length[OF bb_spg] by auto
-    show "\<forall> i < length ?b. ?b ! i = ?p ! i"
-    proof (rule allI, rule impI)
-      fix i assume "i < length ?b" hence "i < dm" and "i < length (base ds b)" using base_length[OF bb_spg] `dm = length (base ds b)` by auto
+    show "?b ! i = ?p ! i" if "i < length ?b" for i
+    proof -
+      have "i < dm" and "i < length (base ds b)" using that base_length[OF bb_spg] `dm = length (base ds b)` by auto
       show "?b ! i = ?p ! i"
       proof (cases "i \<in> ds \<union> ds'")
         case True

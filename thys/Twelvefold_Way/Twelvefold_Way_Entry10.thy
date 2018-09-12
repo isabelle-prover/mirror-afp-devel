@@ -29,7 +29,7 @@ proof -
   moreover have "\<Union>((\<lambda>b. {x \<in> A. f x = b}) ` B - {{}}) = A"
     using \<open>f \<in> A \<rightarrow>\<^sub>E B\<close> by auto
   ultimately show ?thesis
-    by (subst card_Union_disjoint[symmetric]) auto
+    by (subst card_Union_disjoint[symmetric]) (auto simp: pairwise_def disjnt_def)
 qed
 
 lemma number_partition_of:

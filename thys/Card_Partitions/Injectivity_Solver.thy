@@ -34,7 +34,7 @@ proof -
     by (simp add: bind_UNION)
   also have "card (\<Union>(f ` S)) = (\<Sum>x\<in>S. card (f x))"
     using assms unfolding disjoint_family_on_def
-    by (subst card_Union_image) simp+
+    by (subst card_Union_image) (simp_all add: pairwise_def disjnt_def)
   finally show ?thesis .
 qed
 

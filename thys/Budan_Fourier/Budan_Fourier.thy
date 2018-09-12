@@ -352,18 +352,22 @@ next
                          = length (map sgn (coeffs p))"
       by (metis Suc.hyps(2) \<open>p \<noteq> 0\<close> \<open>pderiv p \<noteq> 0\<close> degree_pderiv diff_Suc_1 length_Cons 
           length_coeffs_degree length_map)
-    show "\<forall>i<length (sgn (coeff p 0) # map sgn (coeffs (pderiv p))).
-              (sgn (coeff p 0) # map sgn (coeffs (pderiv p))) ! i = map sgn (coeffs p) ! i"
-    proof (rule+)
-      fix i assume asm:"i < length (sgn (coeff p 0) # map sgn (coeffs (pderiv p)))"
+    show "(sgn (coeff p 0) # map sgn (coeffs (pderiv p))) ! i = map sgn (coeffs p) ! i"
+      if "i < length (sgn (coeff p 0) # map sgn (coeffs (pderiv p)))" for i
+    proof -
       show "(sgn (coeff p 0) # map sgn (coeffs (pderiv p))) ! i = map sgn (coeffs p) ! i"
-        apply (cases i)
-        subgoal by (simp add: \<open>p \<noteq> 0\<close> coeffs_nth)
-        subgoal for n using asm p_length
+      proof (cases i)
+        case 0
+        then show ?thesis
+          by (simp add: \<open>p \<noteq> 0\<close> coeffs_nth)
+      next
+        case (Suc i')
+        then show ?thesis 
+          using that p_length
           apply simp
           apply (subst (1 2) coeffs_nth)
           by (auto simp add: \<open>p \<noteq> 0\<close> \<open>pderiv p \<noteq> 0\<close> length_coeffs_degree coeff_pderiv sgn_mult)
-        done
+      qed
     qed
   qed
   finally show ?case .

@@ -270,13 +270,9 @@ proof -
   have fin_vc_elems: "\<And>c. c \<in> vc \<Longrightarrow> finite c"
     using vc_vc by (intro finite_subset[OF _ fin_G]) (auto simp: vertex_colorings_def)
 
-  { have "vc \<subseteq> Pow (uverts G)" "finite (Pow (uverts G))"
-      using assms vc_vc by (auto simp: vertex_colorings_def)
-    then have "finite vc" by (rule finite_subset)
-    with fin_vc_elems have "(\<Sum>c \<in> vc. card c) = card (uverts G)"
-      using vc_vc unfolding vertex_colorings_def
-      by (simp add: card_Union_disjoint[symmetric]) }
-  note sum_vc_card = this
+  have sum_vc_card: "(\<Sum>c \<in> vc. card c) = card (uverts G)"
+      using fin_vc_elems vc_vc unfolding vertex_colorings_def
+      by (simp add: card_Union_disjoint[symmetric] pairwise_def disjnt_def)
 
   have "\<And>c. c \<in> vc \<Longrightarrow> c \<in> independent_sets G"
     using vc_vc by (auto simp: vertex_colorings_def independent_sets_def all_edges_def)

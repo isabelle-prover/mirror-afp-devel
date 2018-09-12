@@ -376,11 +376,10 @@ proof (rule nth_equalityI)
       by (metis (mono_tags, lifting) card_mono finite_nat_set_iff_bounded mem_Collect_eq)
     then show ?thesis unfolding length_nths length_zip using False using min_def by linarith
   qed
-  show "\<forall>i<length (nths (zip xs ys) I). nths (zip xs ys) I ! i = zip (nths xs I) (nths ys I) ! i"
-  proof (rule allI; rule impI)
-   fix i assume "i < length (nths (zip xs ys) I)"
-   then have "i < length (nths xs I)" "i < length (nths ys I)"
-     by (simp_all add: \<open>length (nths (zip xs ys) I) = length (zip (nths xs I) (nths ys I))\<close>)
+  show "nths (zip xs ys) I ! i = zip (nths xs I) (nths ys I) ! i" if "i < length (nths (zip xs ys) I)" for i
+  proof -
+   have "i < length (nths xs I)" "i < length (nths ys I)"
+     using that by (simp_all add: \<open>length (nths (zip xs ys) I) = length (zip (nths xs I) (nths ys I))\<close>)
    show "nths (zip xs ys) I ! i = zip (nths xs I) (nths ys I) ! i"
      unfolding nth_nths[OF `i < length (nths (zip xs ys) I)`[unfolded length_nths]]
      unfolding nth_zip[OF `i < length (nths xs I)` `i < length (nths ys I)`]
@@ -418,9 +417,9 @@ shows "weave A (xs @ [x]) ys = weave A xs ys @ [x]"
 proof (rule nth_equalityI)
   show "length (weave A (xs @ [x]) ys) = length (weave A xs ys @ [x])"
     unfolding weave_def length_map by simp
-  show "\<forall>i<length (weave A (xs @ [x]) ys). weave A (xs @ [x]) ys ! i = (weave A xs ys @ [x]) ! i"
-  proof (rule allI, rule impI)
-    fix i assume "i < length (weave A (xs @ [x]) ys)"
+  show "weave A (xs @ [x]) ys ! i = (weave A xs ys @ [x]) ! i"
+    if "i < length (weave A (xs @ [x]) ys)" for i
+  proof -
     show "weave A (xs @ [x]) ys ! i = (weave A xs ys @ [x]) ! i"
     proof (cases "i = length xs + length ys")
       case True
@@ -458,9 +457,8 @@ shows "weave A xs (ys @ [y]) = weave A xs ys @ [y]"
 proof (rule nth_equalityI)
   show "length (weave A xs (ys @ [y])) = length (weave A xs ys @ [y])"
     unfolding weave_def length_map by simp
-  show "\<forall>i<length (weave A xs (ys @ [y])). weave A xs (ys @ [y]) ! i = (weave A xs ys @ [y]) ! i"
-  proof (rule allI, rule impI)
-    fix i assume "i < length (weave A xs (ys @ [y]))"
+  show "weave A xs (ys @ [y]) ! i = (weave A xs ys @ [y]) ! i" if "i < length (weave A xs (ys @ [y]))" for i
+  proof -
     show "weave A xs (ys @ [y]) ! i = (weave A xs ys @ [y]) ! i"
     proof (cases "i = length xs + length ys")
       case True
@@ -765,10 +763,7 @@ next
   qed
 qed
 
-lemma length_nths':
-"length (nths xs I) = card {i\<in>I. i < length xs}"
+lemma length_nths': "length (nths xs I) = card {i\<in>I. i < length xs}"
 unfolding length_nths by meson
-
-
 
 end

@@ -286,8 +286,9 @@ proof -
 
   have 3: "card ?D1 = (\<Sum>i=m..<n. F (n-i-1))"
   proof (subst card_Union_disjoint, goal_cases)
-    case 3
+    case 1
     show ?case
+      unfolding pairwise_def disjnt_def
     proof (clarsimp, goal_cases)
       case prems: (1 x y)
       from prems show ?case
@@ -299,7 +300,7 @@ proof -
         done
     qed
   next
-    case 4
+    case 3
     show ?case
     proof (subst sum.reindex, unfold inj_on_def, clarsimp, goal_cases)
       case prems: (1 x y)

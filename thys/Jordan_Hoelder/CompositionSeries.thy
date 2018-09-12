@@ -115,11 +115,9 @@ lemma (in normal_series) length_two_unique:
 proof(rule nth_equalityI)
   from assms show "length \<GG> = length [{\<one>}, carrier G]" by auto
 next
-  show "\<forall>i<length \<GG>. \<GG> ! i = [{\<one>}, carrier G] ! i"
-  proof(rule allI, rule impI)
-    fix i
-    assume i:"i < length \<GG>"
-    with assms have "i = 0 \<or> i = 1" by auto
+  show "\<GG> ! i = [{\<one>}, carrier G] ! i" if i:"i < length \<GG>" for i
+  proof -
+    have "i = 0 \<or> i = 1" using that assms by auto
     thus "\<GG> ! i = [{\<one>}, carrier G] ! i"
     proof(rule disjE)
       assume i:"i = 0"

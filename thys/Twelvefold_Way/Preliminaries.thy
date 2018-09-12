@@ -160,7 +160,7 @@ proof -
       using \<open>equiv A R\<close> quotient_disj
       by (metis (no_types, lifting) mem_Collect_eq quotientE quotientI)
     ultimately show ?thesis
-      by (subst card_Union_disjoint) auto
+      by (subst card_Union_disjoint) (auto simp: pairwise_def disjnt_def)
   qed
   finally show ?thesis .
 qed

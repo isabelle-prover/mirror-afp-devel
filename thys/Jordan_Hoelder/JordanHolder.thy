@@ -46,8 +46,9 @@ proof (rule nth_equalityI )
     also have "\<dots> = normal\<GG>butlast.quotients ! i" unfolding normal\<GG>butlast.quotients_def using i' by fastforce
     finally show "butlast (normal_series.quotients G \<GG>) ! i = normal_series.quotients (G\<lparr>carrier := \<GG> ! (n - Suc 0)\<rparr>) (take n \<GG>) ! i" by auto
   qed
-  thus "\<forall>i<length (butlast quotients). butlast quotients ! i
-    = normal_series.quotients (G\<lparr>carrier := \<GG> ! (length \<GG> - 1 - 1)\<rparr>)  (take (length \<GG> - 1) \<GG>) ! i"
+  thus "\<And>i. i < length (butlast quotients) 
+            \<Longrightarrow> butlast quotients ! i
+              = normal_series.quotients (G\<lparr>carrier := \<GG> ! (length \<GG> - 1 - 1)\<rparr>)  (take (length \<GG> - 1) \<GG>) ! i"
     unfolding n_def by auto
 qed
 

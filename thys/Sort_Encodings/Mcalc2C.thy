@@ -185,28 +185,28 @@ next
 qed
 
 lemma int_transE_proj:
-assumes wt: "Ik.wt T"
-shows "Ik.int (transE \<xi>) T = proj (tpOf T) (I.int \<xi> T)"
-using wt proof (induct T)
+  assumes wt: "Ik.wt T"
+  shows "Ik.int (transE \<xi>) T = proj (tpOf T) (I.int \<xi> T)"
+  using wt proof (induct T)
   case (Fn f Tl)
   have 0: "Ik_intT (resOf f) (I_intF f (map (int \<xi>) Tl))" (is "Ik_intT ?\<sigma> ?a")
-  unfolding I_intF_def apply(rule Ik.intF)
-  using Fn unfolding list_all2_length list_all_iff by auto
+    unfolding I_intF_def apply(rule Ik.intF)
+    using Fn unfolding list_all2_length list_all_iff by auto
   have 1: "proj ?\<sigma> ?a = ?a" using proj_id[OF 0] .
   show ?case
-  using [[unfold_abs_def = false]]
-  unfolding Ik.int.simps int.simps tpOf.simps 1
-  unfolding I_intF_def apply(rule arg_cong[of _ _ "intF f"])
-  proof (rule nth_equalityI, safe)
+    using [[unfold_abs_def = false]]
+    unfolding Ik.int.simps int.simps tpOf.simps 1
+    unfolding I_intF_def apply(rule arg_cong[of _ _ "intF f"])
+  proof (rule nth_equalityI)
     have l[simp]: "length (arOf f) = length Tl" using Fn by simp
     fix i assume "i < length (map (Ik.int (transE \<xi>)) Tl)"
     hence i[simp]: "i < length Tl" by simp
     have 0: "arOf f ! i = tpOf (Tl ! i)" using Fn by simp
     have [simp]: "Ik.int (transE \<xi>) (Tl ! i) = proj (arOf f ! i) (I.int \<xi> (Tl ! i))"
-    unfolding 0 using Fn by (auto simp: list_all_length transE_def)
+      unfolding 0 using Fn by (auto simp: list_all_length transE_def)
     show "map (Ik.int (transE \<xi>)) Tl ! i =
           map2 proj (arOf f) (map (I.int \<xi>) Tl) ! i"
-    using Fn unfolding list_all_length by simp
+      using Fn unfolding list_all_length by simp
   qed(insert Fn, simp)
 qed simp
 
