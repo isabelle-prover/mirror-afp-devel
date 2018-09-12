@@ -3637,7 +3637,7 @@ proof -
 qed
 
 lemma snd_apply_icrit [simp]: "map snd (apply_icrit crit data gs bs hs ps) = ps"
-  by (simp add: apply_icrit_def case_prod_beta' nth_equalityI)
+  by (auto simp add: apply_icrit_def case_prod_beta' intro: nth_equalityI)
 
 lemma set_snd_apply_icrit [simp]: "snd ` set (apply_icrit crit data gs bs hs ps) = set ps"
 proof -
@@ -4341,7 +4341,7 @@ next
   hence "punit.Keys_to_list (map fst bs) \<noteq> []" by simp
   thus "remdups (map (\<lambda>_. ()) (punit.Keys_to_list (map fst bs))) = [()]"
     by (metis (full_types) Nil_is_map_conv distinct_length_2_or_more distinct_remdups
-        old.unit.exhaust remdups_eq_nil_right_iff sorted.cases)
+        old.unit.exhaust remdups_eq_nil_right_iff sorted.cases) (*SLOW: 20s*)
 qed
 
 lemma count_const_lt_components_punit [code]:

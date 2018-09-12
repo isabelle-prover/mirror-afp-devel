@@ -91,7 +91,7 @@ proof (rule nth_equalityI)
     using assms by (rule function_of_in_extensional_funcset)
   from this show "length (sequence_of A enum (function_of A enum xs)) = length xs"
     using assms(1,3) by (simp add: length_sequence_of)
-  from this show "\<forall>i<length (sequence_of A enum (function_of A enum xs)). sequence_of A enum (function_of A enum xs) ! i = xs ! i"
+  from this show "\<And>i. i < length (sequence_of A enum (function_of A enum xs)) \<Longrightarrow> sequence_of A enum (function_of A enum xs) ! i = xs ! i"
     using assms by (auto simp add: nth_sequence_of function_of_enum)
 qed
 

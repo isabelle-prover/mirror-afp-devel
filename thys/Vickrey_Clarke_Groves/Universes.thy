@@ -801,9 +801,9 @@ proof -
 qed
 
 lemma cardinalityPreservation: 
-  assumes "finite XX" "\<forall>X \<in> XX. finite X" "is_non_overlapping XX" 
+  assumes "\<forall>X \<in> XX. finite X" "is_non_overlapping XX" 
   shows   "card (\<Union> XX) = sum card XX" 
-  using assms is_non_overlapping_def card_Union_disjoint by fast
+  by (metis assms is_non_overlapping_def card_Union_disjoint disjointI)
 
 corollary cardSumCommute: 
   assumes "XX partitions X" "finite X" "finite XX" 

@@ -333,14 +333,14 @@ proof -
 qed
 
 lemma lm029: 
-  assumes "{} \<notin> Range a" "finite (omega ` a)" "\<forall>X \<in> omega ` a. finite X" 
+  assumes "{} \<notin> Range a" "\<forall>X \<in> omega ` a. finite X" 
           "is_non_overlapping (omega ` a)"
   shows "card (pseudoAllocation a) = sum (card \<circ> omega) a" 
   (is "?L = ?R")
 proof -
   have "?L = sum card (omega ` a)" 
   unfolding pseudoAllocation_def
-  using assms(2,3,4) by (rule cardinalityPreservation)
+  using assms by (simp add: cardinalityPreservation)
   moreover have "... = ?R" using assms(1) lm028 sum.reindex by blast
   ultimately show ?thesis by simp
 qed
