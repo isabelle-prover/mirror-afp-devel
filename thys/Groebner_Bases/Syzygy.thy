@@ -1131,7 +1131,7 @@ proof (rule syzygy_module_listI)
     also have "... = sum_list (map (\<lambda>b. mult_scalar (lookup (pm_of_idx_pm bs (vectorize_poly s)) b) b) bs)"
       by (simp only: sum_code distinct_remdups_id[OF assms(1)])
     also have "... = sum_list (map2 mult_scalar (cofactor_list_syz (length bs) s) bs)"
-    proof (rule arg_cong[of _ _ sum_list], rule nth_equalityI, simp_all, intro allI impI)
+    proof (rule arg_cong[of _ _ sum_list], rule nth_equalityI, simp_all)
       fix i
       assume "i < length bs"
       with assms(1) have "lookup (pm_of_idx_pm bs (vectorize_poly s)) (bs ! i) =
@@ -1195,7 +1195,7 @@ proof
     also have "... = sum_list (map2 mult_scalar (cofactor_list_syz (length bs) s) bs)"
       by (simp add: proj_orig_basis_def[symmetric])
     also have "... = sum_list (map (\<lambda>b. mult_scalar (lookup s' b) b) bs)"
-    proof (rule arg_cong[of _ _ sum_list], rule nth_equalityI, simp_all, intro allI impI)
+    proof (rule arg_cong[of _ _ sum_list], rule nth_equalityI, simp_all)
       fix i
       assume "i < length bs"
       with assms(1) have "lookup s' (bs ! i) = cofactor_list_syz (length bs) s ! i"

@@ -4,10 +4,10 @@
     License:     LGPL
 *)
 
-(*  
+(*
 LevellistProof.thy
 
-Copyright (C) 2004-2008 Veronika Ortner and Norbert Schirmer 
+Copyright (C) 2004-2008 Veronika Ortner and Norbert Schirmer
 Some rights reserved, TU Muenchen
 
 This library is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@ theory LevellistProof imports ProcedureSpecs Simpl.HeapList begin
 hide_const (open) DistinctTreeProver.set_of tree.Node tree.Tip
 
 lemma (in Levellist_impl) Levellist_modifies:
-  shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>levellist :== PROC Levellist (\<acute>p, \<acute>m, \<acute>levellist) 
+  shows "\<forall>\<sigma>. \<Gamma>\<turnstile>{\<sigma>} \<acute>levellist :== PROC Levellist (\<acute>p, \<acute>m, \<acute>levellist)
              {t. t may_only_modify_globals \<sigma> in [mark,next]}"
   apply (hoare_rule HoarePartial.ProcRec1)
   apply (vcg spec=modifies)
@@ -40,33 +40,33 @@ lemma (in Levellist_impl) Levellist_modifies:
 
 (*a well formed levellist is a list that contains all nodes with variable
 i on position i
-because the elements of levellist can contain old elements before the call of Levellist, 
+because the elements of levellist can contain old elements before the call of Levellist,
 subdag_eq t pt can not be postulated for all elements of the sublists. One has to make
-shure that the initial call of Levellist is parameterized with a levellist with empty sublists. 
+shure that the initial call of Levellist is parameterized with a levellist with empty sublists.
 Otherwise some problems could arise in the call of Reduce!
 (\<exists> ptt. (Dag pt low high ptt \<and> subdag_eq (Node lt p rt) ptt \<and> pt\<rightarrow>var = i))
-consts wf_levellist :: "dag \<Rightarrow> ref list list \<Rightarrow> ref list list \<Rightarrow> 
+consts wf_levellist :: "dag \<Rightarrow> ref list list \<Rightarrow> ref list list \<Rightarrow>
                         (ref \<Rightarrow> nat) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow> bool"
-defs wf_levellist_def: "wf_levellist t levellist_old levellist_new var low high \<equiv> 
+defs wf_levellist_def: "wf_levellist t levellist_old levellist_new var low high \<equiv>
 case t of Tip \<Rightarrow> levellist_old = levellist_new
 | (Node lt p rt) \<Rightarrow>
   (\<forall> q. q \<in> set_of t \<longrightarrow> q \<in> set (levellist_new ! (q\<rightarrow>var))) \<and>
-  (\<forall> i \<le> p\<rightarrow>var. (\<exists> prx. (levellist_new ! i) = prx@(levellist_old ! i) 
+  (\<forall> i \<le> p\<rightarrow>var. (\<exists> prx. (levellist_new ! i) = prx@(levellist_old ! i)
                        \<and> (\<forall> pt \<in> set prx. pt \<in> set_of t \<and> pt\<rightarrow>var = i))) \<and>
   (\<forall> i. (p\<rightarrow>var) < i \<longrightarrow> (levellist_new ! i) = (levellist_old ! i)) \<and>
-  (length levellist_new = length levellist_old)" 
+  (length levellist_new = length levellist_old)"
 *)
 
 
 lemma all_stop_cong: "(\<forall>x. P x) = (\<forall>x. P x)"
   by simp
 
-lemma Dag_RefD: 
-  "\<lbrakk>Dag p l r t; p\<noteq>Null\<rbrakk> \<Longrightarrow>  
+lemma Dag_RefD:
+  "\<lbrakk>Dag p l r t; p\<noteq>Null\<rbrakk> \<Longrightarrow>
     \<exists>lt rt. t=Node lt p rt \<and> Dag (l p) l r lt \<and> Dag (r p) l r rt"
   by simp
 
-lemma Dag_unique_ex_conjI: 
+lemma Dag_unique_ex_conjI:
   "\<lbrakk>Dag p l r t;   P t\<rbrakk> \<Longrightarrow> (\<exists>t. Dag p l r t \<and> P t)"
   by simp
 
@@ -74,19 +74,10 @@ lemma Dag_unique_ex_conjI:
 lemma dag_Null [simp]: "dag Null l r = Tip"
   by (simp add: dag_def)
 
-lemma list_ext: 
-  "\<And>ys. \<lbrakk>length xs = length ys; \<forall>i < length xs. xs!i=ys!i\<rbrakk> \<Longrightarrow> xs=ys"
-apply (induct xs)
-apply  simp
-apply (case_tac ys)
-apply  simp
-apply force
-done
-
 definition first:: "ref list \<Rightarrow> ref" where
 "first ps = (case ps of [] \<Rightarrow> Null | (p#rs) \<Rightarrow> p)"
 
-lemma first_simps [simp]: 
+lemma first_simps [simp]:
  "first [] = Null"
  "first (r#rs) = r"
 by (simp_all add: first_def)
@@ -96,8 +87,8 @@ definition Levellist:: "ref list \<Rightarrow> (ref \<Rightarrow> ref) \<Rightar
                          (\<forall>i < length hds. List (hds ! i) next (ll!i))"
 
 lemma Levellist_unique:
-  assumes ll: "Levellist hds next ll" 
-  assumes ll': "Levellist hds next ll'" 
+  assumes ll: "Levellist hds next ll"
+  assumes ll': "Levellist hds next ll'"
   shows "ll=ll'"
 proof -
   from ll have "length ll = length hds"
@@ -107,7 +98,7 @@ proof -
     by (clarsimp simp add: Levellist_def)
   ultimately have leq: "length ll = length ll'" by simp
   show ?thesis
-  proof (rule list_ext [OF leq, rule_format])
+  proof (rule nth_equalityI [OF leq, rule_format])
     fix i
     assume "i < length ll"
     with ll ll'
@@ -120,7 +111,7 @@ proof -
   qed
 qed
 
-lemma Levellist_unique_ex_conj_simp [simp]: 
+lemma Levellist_unique_ex_conj_simp [simp]:
 "Levellist hds next ll \<Longrightarrow> (\<exists>ll. Levellist hds next ll \<and> P ll) = P ll"
 by (auto dest: Levellist_unique)
 
@@ -142,13 +133,13 @@ definition wf_levellist :: "dag \<Rightarrow> ref list list \<Rightarrow> ref li
 (case t of Tip \<Rightarrow> levellist_old = levellist_new
 | (Node lt p rt) \<Rightarrow>
   (\<forall> q. q \<in> set_of t \<longrightarrow> q \<in> set (levellist_new ! (var q))) \<and>
-  (\<forall> i \<le> var p. (\<exists> prx. (levellist_new ! i) = prx@(levellist_old ! i) 
+  (\<forall> i \<le> var p. (\<exists> prx. (levellist_new ! i) = prx@(levellist_old ! i)
                        \<and> (\<forall> pt \<in> set prx. pt \<in> set_of t \<and> var pt = i))) \<and>
   (\<forall> i. (var p) < i \<longrightarrow> (levellist_new ! i) = (levellist_old ! i)) \<and>
-  (length levellist_new = length levellist_old))" 
+  (length levellist_new = length levellist_old))"
 
-lemma wf_levellist_subset: 
-  assumes wf_ll: "wf_levellist t ll ll' var" 
+lemma wf_levellist_subset:
+  assumes wf_ll: "wf_levellist t ll ll' var"
   shows "set (concat ll') \<subseteq>  set (concat ll) \<union> set_of t"
 proof (cases t)
   case Tip with wf_ll show ?thesis by (simp add: wf_levellist_def)
@@ -165,7 +156,7 @@ next
       have "n \<in> set (concat ll) \<union> set_of t"
       proof (cases "i \<le> var p")
         case True
-        with wf_ll obtain prx where 
+        with wf_ll obtain prx where
           ll'_ll: "ll' ! i = prx @ ll ! i" and
           prx: "\<forall>pt \<in> set prx. pt \<in> set_of t"  and
           leq: "length ll' = length ll"
@@ -229,7 +220,7 @@ qed
         with wf_ll obtain "n \<in> set (ll' ! var n)" "length ll' = length ll"
           by (auto simp add: wf_levellist_def Node)
         with root
-        
+
             next
 
           proof (cases prx)
@@ -241,35 +232,35 @@ qed
           next
             case (Cons p prx')
             show ?thesis
-              
+
               apply auto
-        *)  
-      
+        *)
+
 
 (*
 consts wf_levellist :: "dag \<Rightarrow> ref list \<Rightarrow> ref list \<Rightarrow>
                         (ref \<Rightarrow> ref) \<Rightarrow> (ref \<Rightarrow> ref) \<Rightarrow>
                        (ref \<Rightarrow> nat) \<Rightarrow> bool"
-defs wf_levellist_def: 
-"wf_levellist t levellist_old levellist_new next_old next_new var  \<equiv> 
+defs wf_levellist_def:
+"wf_levellist t levellist_old levellist_new next_old next_new var  \<equiv>
 case t of Tip \<Rightarrow> levellist_old = levellist_new
 | (Node lt p rt) \<Rightarrow>
-  (\<forall> q. q \<in> set_of t \<longrightarrow> (\<exists>ns. List (levellist_new ! (var q)) next_new ns \<and> 
+  (\<forall> q. q \<in> set_of t \<longrightarrow> (\<exists>ns. List (levellist_new ! (var q)) next_new ns \<and>
                                 q \<in> set ns)) \<and>
-  (\<forall> i \<le> var p. (\<exists>ns_new ns_old. 
+  (\<forall> i \<le> var p. (\<exists>ns_new ns_old.
                   List (levellist_new ! i) next_new ns_new \<and>
-                  List (levellist_old ! i) next_old ns_old \<and>             
-                 (\<exists> prx. ns_new = prx@ns_old 
+                  List (levellist_old ! i) next_old ns_old \<and>
+                 (\<exists> prx. ns_new = prx@ns_old
                        \<and> (\<forall> pt \<in> set prx. pt \<in> set_of t \<and> var pt = i)))) \<and>
-  (\<forall> i. (var p) < i \<longrightarrow> (\<exists>ns_new ns_old. 
+  (\<forall> i. (var p) < i \<longrightarrow> (\<exists>ns_new ns_old.
                           List (levellist_new ! i) next_new ns_new \<and>
                           List (levellist_old ! i) next_old ns_old \<and>
                           ns_new = ns_old)) \<and>
-  (length levellist_new = length levellist_old)" 
+  (length levellist_new = length levellist_old)"
 *)
 
 lemma Levellist_ext_to_all: "((\<exists>ll. Levellist hds next ll \<and> P ll) \<longrightarrow> Q)
-       = 
+       =
        (\<forall>ll. Levellist hds next ll \<and> P ll \<longrightarrow> Q)"
 apply blast
 done
@@ -293,17 +284,17 @@ shows "\<forall>ll \<sigma> t. \<Gamma>,\<Theta>\<turnstile>\<^sub>t
         \<lbrace>\<sigma>. Dag \<acute>p \<acute>low \<acute>high t \<and> (\<acute>p \<noteq> Null \<longrightarrow> (\<acute>p\<rightarrow>\<acute>var) < length \<acute>levellist) \<and>
              ordered t \<acute>var \<and> Levellist \<acute>levellist \<acute>next ll \<and>
              (\<forall>n \<in> set_of t.
-              (if \<acute>mark n = \<acute>m 
-               then n \<in> set (ll ! \<acute>var n) \<and> 
-                    (\<forall>nt p. Dag n \<acute>low \<acute>high nt \<and> p \<in> set_of nt 
+              (if \<acute>mark n = \<acute>m
+               then n \<in> set (ll ! \<acute>var n) \<and>
+                    (\<forall>nt p. Dag n \<acute>low \<acute>high nt \<and> p \<in> set_of nt
                      \<longrightarrow> \<acute>mark p = \<acute>m)
-               else n \<notin> set (concat ll)))\<rbrace>  
+               else n \<notin> set (concat ll)))\<rbrace>
           \<acute>levellist :== PROC Levellist (\<acute>p, \<acute>m, \<acute>levellist)
-       \<lbrace>\<exists>ll'. Levellist \<acute>levellist \<acute>next ll' \<and> wf_levellist t ll ll' \<^bsup>\<sigma>\<^esup>var \<and> 
+       \<lbrace>\<exists>ll'. Levellist \<acute>levellist \<acute>next ll' \<and> wf_levellist t ll ll' \<^bsup>\<sigma>\<^esup>var \<and>
         wf_marking t  \<^bsup>\<sigma>\<^esup>mark \<acute>mark \<^bsup>\<sigma>\<^esup>m \<and>
         (\<forall>p. p \<notin> set_of t \<longrightarrow> \<^bsup>\<sigma>\<^esup>next p = \<acute>next p)
         \<rbrace>"
-apply (hoare_rule HoareTotal.ProcRec1 
+apply (hoare_rule HoareTotal.ProcRec1
            [where r="measure (\<lambda>(s,p). size (dag \<^bsup>s\<^esup>p \<^bsup>s\<^esup>low \<^bsup>s\<^esup>high))"])
 apply vcg
 apply (rule conjI)
@@ -324,30 +315,30 @@ proof -
   assume lt: "Dag (low p) low high lt"
   assume rt: "Dag (high p) low high rt"
   from pnN lt rt have Dag_p: "Dag p low high (Node lt p rt)" by simp
-  from Dag_p rt 
+  from Dag_p rt
   have size_rt_dec: "size (dag (high p) low high) < size (dag p low high)"
     by (simp only: Dag_dag) simp
-  from Dag_p lt 
+  from Dag_p lt
   have size_lt_dec: "size (dag (low p) low high) < size (dag p low high)"
     by (simp only: Dag_dag) simp
   assume ll: "Levellist levellist next ll"
-  
-  assume marked_child_ll: 
-    "\<forall>n \<in> set_of (Node lt p rt). 
-        if mark n = m  
-        then n \<in> set (ll ! var n) \<and> 
-             (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m) 
+
+  assume marked_child_ll:
+    "\<forall>n \<in> set_of (Node lt p rt).
+        if mark n = m
+        then n \<in> set (ll ! var n) \<and>
+             (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m)
         else n \<notin> set (concat ll)"
   with mark_p have p_notin_ll: "p \<notin> set (concat ll)"
     by auto
-  assume varsll': "var p < length levellist" 
+  assume varsll': "var p < length levellist"
   with ll have varsll: "var p < length ll"
     by (simp add: Levellist_length)
   assume orderedt: "ordered (Node lt p rt) var"
   show "(low p \<noteq> Null \<longrightarrow> var (low p) < length levellist) \<and>
           ordered lt var \<and>
-          (\<forall>n \<in> set_of lt. 
-              if mark n = m 
+          (\<forall>n \<in> set_of lt.
+              if mark n = m
               then n \<in> set (ll ! var n) \<and>
                    (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m)
               else n \<notin> set (concat ll)) \<and>
@@ -359,8 +350,8 @@ proof -
               (high p \<noteq> Null \<longrightarrow> var (high p) < length levellist) \<and>
               ordered rt var \<and>
               (\<exists>lla. Levellist levellist nexta lla \<and>
-                     (\<forall>n \<in> set_of rt. 
-                        if marka n = m 
+                     (\<forall>n \<in> set_of rt.
+                        if marka n = m
                         then n \<in> set (lla ! var n) \<and>
                              (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow>
                                     marka p = m)
@@ -384,9 +375,9 @@ proof -
     note lt_Tip = this
     show ?thesis
     proof (cases "rt")
-      case Tip 
+      case Tip
       show ?thesis
-        using size_rt_dec Tip lt_Tip Tip lt rt  
+        using size_rt_dec Tip lt_Tip Tip lt rt
         apply clarsimp
         subgoal premises prems for marka nexta levellista lla markb nextb levellistb llb
         proof -
@@ -394,10 +385,10 @@ proof -
           have llb: "Levellist levellistb nextb llb" by fact
           have wfll_lt: "wf_levellist Tip ll lla var"
                         "wf_marking Tip mark marka m" by fact+
-          
+
           then have ll_lla: "ll = lla"
             by (simp add: wf_levellist_def)
-  
+
           moreover
           with wfll_lt lt_Tip lt have "marka = mark"
             by (simp add: wf_marking_def)
@@ -406,7 +397,7 @@ proof -
                        "wf_marking Tip marka markb m" by fact+
           then have lla_llb: "lla = llb"
             by (simp add: wf_levellist_def)
-          moreover 
+          moreover
           with wfll_rt Tip rt have "markb = marka"
             by (simp add: wf_marking_def)
           moreover
@@ -427,7 +418,7 @@ proof -
             apply  simp
             apply simp
             done
-          ultimately 
+          ultimately
           show ?thesis
             using lt_Tip Tip varsll
             apply (clarsimp simp add: wf_levellist_def wf_marking_def)
@@ -463,7 +454,7 @@ proof -
       have s: "\<And>nexta. (\<forall>p. next p = nexta p) = (next = nexta)"
         by auto
       show ?thesis
-        using size_rt_dec size_lt_dec rt_node lt_Tip Tip lt rt  
+        using size_rt_dec size_lt_dec rt_node lt_Tip Tip lt rt
         apply (clarsimp simp del: set_of_Node split del: if_split simp add: s)
         subgoal premises prems for marka levellista lla
         proof -
@@ -507,7 +498,7 @@ proof -
               have llb: "Levellist levellistb nextb llb" by fact
               have wfll_rt: "wf_levellist (Node dag1 (high p) dag2) lla llb var" by fact
               have wfmarking_rt: "wf_marking (Node dag1 (high p) dag2) marka markb m" by fact
-              from wfll_rt varsll llb ll_lla 
+              from wfll_rt varsll llb ll_lla
               obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
                 by (simp add: Levellist_length wf_levellist_def)
               with p_notin_ll ll_lla wfll_rt
@@ -524,7 +515,7 @@ proof -
                 apply clarsimp
                 done
               with llb pnN var_p_bounds
-              have llc: "Levellist (levellistb[var p := p]) 
+              have llc: "Levellist (levellistb[var p := p])
                             (nextb(p := levellistb ! var p))
                             (llb[var p := p # llb ! var p])"
                 apply (clarsimp simp add: Levellist_def map_update)
@@ -543,7 +534,7 @@ proof -
                 apply (intro conjI)
                 apply  (rule allI)
                 apply  (rule conjI)
-                apply   (erule_tac x="q" in allE)  
+                apply   (erule_tac x="q" in allE)
                 apply   (case_tac "var p = var q")
                 apply    fastforce
                 apply   fastforce
@@ -578,10 +569,10 @@ proof -
     case (Node llt l rlt)
     have lt_Node: "lt = Node llt l rlt" by fact
     from orderedt lt varsll' lt_Node
-    obtain ordered_lt: 
+    obtain ordered_lt:
       "ordered lt var" "(low p \<noteq> Null \<longrightarrow> var (low p) < length levellist)"
       by (cases rt) auto
-    from lt lt_Node marked_child_ll 
+    from lt lt_Node marked_child_ll
     have mark_lt: "\<forall>n\<in>set_of lt.
      if mark n = m
      then n \<in> set (ll ! var n) \<and>
@@ -603,33 +594,33 @@ proof -
         have lla: "Levellist levellista nexta lla" by fact
         have wfll_lt: "wf_levellist lt ll lla var"  by fact
         have wfmarking_lt:"wf_marking lt mark marka m" by fact
-        from wfll_lt lt_Node 
+        from wfll_lt lt_Node
         have lla_eq_ll: "length lla = length ll"
           by (simp add: wf_levellist_def)
         with ll lla have lla_eq_ll': "length levellista = length levellist"
           by (simp add: Levellist_length)
-        with orderedt rt lt_Node lt varsll' 
-        obtain ordered_rt: 
-          "ordered rt var" "(high p \<noteq> Null \<longrightarrow> var (high p) < length levellista)" 
+        with orderedt rt lt_Node lt varsll'
+        obtain ordered_rt:
+          "ordered rt var" "(high p \<noteq> Null \<longrightarrow> var (high p) < length levellista)"
           by (cases rt) auto
-        from wfll_lt lt_Node 
+        from wfll_lt lt_Node
         have nodes_in_lla: "\<forall> q. q \<in> set_of lt \<longrightarrow> q \<in> set (lla ! (q\<rightarrow>var))"
           by (simp add: wf_levellist_def)
-        from wfll_lt lt_Node lt 
-        have lla_st: "(\<forall>i \<le> (low p)\<rightarrow>var. 
-                        (\<exists>prx. (lla ! i) = prx@(ll ! i) \<and> 
+        from wfll_lt lt_Node lt
+        have lla_st: "(\<forall>i \<le> (low p)\<rightarrow>var.
+                        (\<exists>prx. (lla ! i) = prx@(ll ! i) \<and>
                                (\<forall>pt \<in> set prx. pt \<in> set_of lt \<and> pt\<rightarrow>var = i)))"
           by (simp add: wf_levellist_def)
-        from wfll_lt lt_Node lt 
+        from wfll_lt lt_Node lt
         have lla_nc: "\<forall>i. ((low p)\<rightarrow>var) < i \<longrightarrow> (lla ! i) = (ll ! i)"
           by (simp add: wf_levellist_def)
-        from wfmarking_lt lt_Node lt 
+        from wfmarking_lt lt_Node lt
         have mot_nc: "\<forall> n. n \<notin> set_of lt \<longrightarrow> mark n = marka n"
           by (simp add: wf_marking_def)
-        from wfmarking_lt lt_Node lt 
+        from wfmarking_lt lt_Node lt
         have mit_marked: "\<forall>n. n \<in> set_of lt \<longrightarrow> marka n = m"
           by (simp add: wf_marking_def)
-        from marked_child_ll nodes_in_lla mot_nc mit_marked lla_st 
+        from marked_child_ll nodes_in_lla mot_nc mit_marked lla_st
         have mark_rt: "\<forall>n\<in>set_of rt.
                if marka n = m
                then n \<in> set (lla ! var n) \<and>
@@ -641,7 +632,7 @@ proof -
           apply (simp)
         proof -
           fix n
-            
+
           assume nodes_in_lla: "\<forall>q. q \<in> set_of lt \<longrightarrow> q \<in> set (lla ! var q)"
           assume mot_nc: "\<forall>n. n \<notin> set_of lt \<longrightarrow> mark n = marka n"
           assume mit_marked: "\<forall>n. n \<in> set_of lt \<longrightarrow> marka n = m"
@@ -649,11 +640,11 @@ proof -
            then n \<in> set (ll ! var n) \<and>
                 (\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m)
            else n \<notin> set (concat ll)"
-          
-          assume lla_st: "\<forall>i\<le>var (low p). 
-                               \<exists>prx. lla ! i = prx @ ll ! i \<and> 
+
+          assume lla_st: "\<forall>i\<le>var (low p).
+                               \<exists>prx. lla ! i = prx @ ll ! i \<and>
                                (\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)"
-          
+
           assume n_in_rt: " n \<in> set_of rt"
           show n_in_lla_marked: "if marka n = m
              then n \<in> set (lla ! var n) \<and>
@@ -676,7 +667,7 @@ proof -
               with lt True have subset_nt_lt: "set_of nt \<subseteq> set_of lt"
                 by (rule dag_setof_subsetD)
               moreover assume " p \<in> set_of nt"
-              ultimately have "p \<in> set_of lt" 
+              ultimately have "p \<in> set_of lt"
                 by blast
               with mit_marked have " marka p = m"
                 by simp
@@ -686,7 +677,7 @@ proof -
               apply clarsimp
               done
           next
-            assume n_notin_lt: "n \<notin> set_of lt" 
+            assume n_notin_lt: "n \<notin> set_of lt"
             show ?thesis
             proof (cases "marka n = m")
               case True
@@ -700,13 +691,13 @@ proof -
                 apply fastforce
                 apply assumption
                 done
-              from marked_child_ll n_in_rt marka_eq_mark nnN n_marked 
+              from marked_child_ll n_in_rt marka_eq_mark nnN n_marked
               have n_in_ll: "n \<in> set (ll ! var n)"
                 by fastforce
-              from marked_child_ll n_in_rt marka_eq_mark nnN n_marked lt rt 
+              from marked_child_ll n_in_rt marka_eq_mark nnN n_marked lt rt
               have nt_mark: "\<forall>nt p. Dag n low high nt \<and> p \<in> set_of nt \<longrightarrow> mark p = m"
                 by simp
-              from nodes_in_lla n_in_ll lla_st 
+              from nodes_in_lla n_in_ll lla_st
               have n_in_lla: "n \<in> set (lla ! var n)"
               proof (cases "var (low p) < (var n)")
                 case True
@@ -716,7 +707,7 @@ proof -
                   by fastforce
               next
                 assume varnslp: " \<not> var (low p) < var n"
-                with lla_st 
+                with lla_st
                 have ll_in_lla: "\<exists>prx. lla ! (var n) = prx @ ll ! (var n)"
                   apply -
                   apply (erule_tac x="var n" in allE)
@@ -742,7 +733,7 @@ proof -
                     by fastforce
                 qed
               }
-              then have nt_marka: 
+              then have nt_marka:
                 "\<forall>nt pt. Dag n low high nt \<and> pt \<in> set_of nt \<longrightarrow> marka pt = m"
                 by fastforce
               with n_in_lla nt_marka True show ?thesis
@@ -751,7 +742,7 @@ proof -
               case False
               note n_not_marka = this
               with wfmarking_lt n_notin_lt
-              have "mark n \<noteq> m" 
+              have "mark n \<noteq> m"
                 by (simp add: wf_marking_def lt_Node)
               with marked_child_ll
               have n_notin_ll: "n \<notin> set (concat ll)"
@@ -787,7 +778,7 @@ proof -
               from wfmarking_rt Tip rt have "markb = marka"
                 by (simp add: wf_marking_def)
               moreover
-              from wfll_lt varsll llb lla_llb 
+              from wfll_lt varsll llb lla_llb
               obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
                 by (simp add: Levellist_length wf_levellist_def lt_Node Tip)
               with p_notin_ll lla_llb wfll_lt
@@ -797,14 +788,14 @@ proof -
                 apply (clarsimp simp add: wf_levellist_def lt_Node)
                 apply (case_tac "i \<le> var l")
                 apply  (drule_tac x=i in spec)
-                using  orderedt Tip lt_Node 
+                using  orderedt Tip lt_Node
                 apply  clarsimp
                 apply (drule_tac x=i in spec)
                 apply (drule_tac x=i in spec)
                 apply clarsimp
                 done
               with llb pnN var_p_bounds
-              have llc: "Levellist (levellistb[var p := p]) 
+              have llc: "Levellist (levellistb[var p := p])
                             (nextb(p := levellistb ! var p))
                             (llb[var p := p # llb ! var p])"
                 apply (clarsimp simp add: Levellist_def map_update)
@@ -814,14 +805,14 @@ proof -
                 apply (case_tac "i=var p")
                 apply  simp
                 apply simp
-                done          
+                done
               ultimately show ?thesis
-                using Tip lt_Node varsll orderedt lt rt pnN wfll_lt wfmarking_lt 
+                using Tip lt_Node varsll orderedt lt rt pnN wfll_lt wfmarking_lt
                 apply (clarsimp simp add: wf_levellist_def wf_marking_def)
                 apply (intro conjI)
                 apply  (rule allI)
                 apply  (rule conjI)
-                apply   (erule_tac x="q" in allE)  
+                apply   (erule_tac x="q" in allE)
                 apply   (case_tac "var p = var q")
                 apply    fastforce
                 apply   fastforce
@@ -850,28 +841,28 @@ proof -
             next
               case (Node lrt r rrt)
               have rt_Node: "rt = Node lrt r rrt" by fact
-              from wfll_rt rt_Node 
+              from wfll_rt rt_Node
               have llb_eq_lla: "length llb = length lla"
                 by (simp add: wf_levellist_def)
-              with llb lla 
+              with llb lla
               have llb_eq_lla': "length levellistb = length levellista"
                 by (simp add: Levellist_length)
-              from wfll_rt rt_Node 
+              from wfll_rt rt_Node
               have nodes_in_llb: "\<forall>q. q \<in> set_of rt \<longrightarrow> q \<in> set (llb ! (q\<rightarrow>var))"
                 by (simp add: wf_levellist_def)
-              from wfll_rt rt_Node rt 
-              have llb_st: "(\<forall> i \<le> (high p)\<rightarrow>var. 
-                             (\<exists> prx. (llb ! i) = prx@(lla ! i) \<and> 
+              from wfll_rt rt_Node rt
+              have llb_st: "(\<forall> i \<le> (high p)\<rightarrow>var.
+                             (\<exists> prx. (llb ! i) = prx@(lla ! i) \<and>
                              (\<forall>pt \<in> set prx. pt \<in> set_of rt \<and> pt\<rightarrow>var = i)))"
                 by (simp add: wf_levellist_def)
-              from wfll_rt rt_Node rt 
-              have llb_nc: 
+              from wfll_rt rt_Node rt
+              have llb_nc:
                 "\<forall>i. ((high p)\<rightarrow>var) < i \<longrightarrow> (llb ! i) = (lla ! i)"
                 by (simp add: wf_levellist_def)
-              from wfmarking_rt rt_Node rt 
+              from wfmarking_rt rt_Node rt
               have mort_nc: "\<forall>n. n \<notin> set_of rt \<longrightarrow> marka n = markb n"
                 by (simp add: wf_marking_def)
-              from wfmarking_rt rt_Node rt 
+              from wfmarking_rt rt_Node rt
               have mirt_marked: "\<forall>n. n \<in> set_of rt \<longrightarrow> markb n = m"
                 by (simp add: wf_marking_def)
               with p_notin_ll wfll_rt wfll_lt
@@ -881,7 +872,7 @@ proof -
                 apply (clarsimp simp add: wf_levellist_def lt_Node rt_Node)
                 apply (case_tac "i \<le> var r")
                 apply  (drule_tac x=i in spec)
-                using  orderedt rt_Node lt_Node 
+                using  orderedt rt_Node lt_Node
                 apply  clarsimp
                 apply  (erule disjE)
                 apply   clarsimp
@@ -895,7 +886,7 @@ proof -
                 apply (case_tac "i \<le> var l")
                 apply  (drule_tac x=i in spec, erule impE, assumption)
                 apply  clarsimp
-                using  orderedt rt_Node lt_Node 
+                using  orderedt rt_Node lt_Node
                 apply  clarsimp
                 apply clarsimp
                 done
@@ -903,7 +894,7 @@ proof -
               obtain var_p_bounds: "var p < length levellistb" "var p < length llb"
                 by (simp add: Levellist_length wf_levellist_def lt_Node rt_Node)
               with p_notin_llb llb pnN var_p_bounds
-              have llc: "Levellist (levellistb[var p := p]) 
+              have llc: "Levellist (levellistb[var p := p])
                             (nextb(p := levellistb ! var p))
                             (llb[var p := p # llb ! var p])"
                 apply (clarsimp simp add: Levellist_def map_update)
@@ -913,13 +904,13 @@ proof -
                 apply (case_tac "i=var p")
                 apply  simp
                 apply simp
-                done          
+                done
               then show ?thesis
               proof (clarsimp)
                 show "wf_levellist (Node lt p rt) ll (llb[var p := p#llb ! var p]) var \<and>
                       wf_marking (Node lt p rt) mark (markb(p := m)) m"
                 proof -
-                  have nodes_in_upllb: "\<forall> q. q \<in> set_of (Node lt p rt) 
+                  have nodes_in_upllb: "\<forall> q. q \<in> set_of (Node lt p rt)
                     \<longrightarrow> q \<in> set (llb[var p :=p # llb ! var p] ! (var q))"
                     apply -
                     apply (rule allI)
@@ -927,17 +918,17 @@ proof -
                   proof -
                     fix q
                     assume q_in_t: "q \<in> set_of (Node lt p rt)"
-                    show q_in_upllb: 
+                    show q_in_upllb:
                       "q \<in> set (llb[var p :=p # llb ! var p] ! (var q))"
                     proof (cases "q \<in> set_of rt")
                       case True
                       with nodes_in_llb have q_in_llb: "q \<in> set (llb ! (var q))"
                         by fastforce
-                      from orderedt rt_Node lt_Node lt rt 
+                      from orderedt rt_Node lt_Node lt rt
                       have ordered_rt: "ordered rt var"
                         by fastforce
                       from True rt ordered_rt rt_Node lt lt_Node have "var q \<le> var r"
-                        apply -                
+                        apply -
                         apply (drule subnodes_ordered)
                         apply fastforce
                         apply fastforce
@@ -945,8 +936,8 @@ proof -
                         done
                       with orderedt rt lt rt_Node lt_Node have "var q < var p"
                         by fastforce
-                      then have 
-                        "llb[var p :=p#llb ! var p] ! var q = 
+                      then have
+                        "llb[var p :=p#llb ! var p] ! var q =
                          llb ! var q"
                         by fastforce
                       with q_in_llb show ?thesis
@@ -959,12 +950,12 @@ proof -
                         assume q_in_lt: "q \<in> set_of lt"
                         with nodes_in_lla have q_in_lla: "q \<in> set (lla ! (var q))"
                           by fastforce
-                        from orderedt rt_Node lt_Node lt rt 
+                        from orderedt rt_Node lt_Node lt rt
                         have ordered_lt: "ordered lt var"
                           by fastforce
-                        from q_in_lt lt ordered_lt rt_Node rt lt_Node 
+                        from q_in_lt lt ordered_lt rt_Node rt lt_Node
                         have "var q \<le> var l"
-                          apply -                
+                          apply -
                           apply (drule subnodes_ordered)
                           apply fastforce
                           apply fastforce
@@ -975,14 +966,14 @@ proof -
                         then show ?thesis
                         proof (cases "var q \<le> var (high p)")
                           case True
-                          with llb_st 
+                          with llb_st
                           have "\<exists>prx. (llb ! (var q)) = prx@(lla ! (var q))"
                             by fastforce
-                          with nodes_in_lla q_in_lla 
+                          with nodes_in_lla q_in_lla
                           have q_in_llb: "q \<in> set (llb ! (var q))"
                             by fastforce
-                          from qsp 
-                          have "llb[var p :=p#llb ! var p]!var q = 
+                          from qsp
+                          have "llb[var p :=p#llb ! var p]!var q =
                                    llb ! (var q)"
                             by fastforce
                           with q_in_llb show ?thesis
@@ -993,7 +984,7 @@ proof -
                             by fastforce
                           with q_in_lla have q_in_llb: "q \<in> set (llb ! (var q))"
                             by fastforce
-                          from qsp have 
+                          from qsp have
                             "llb[var p :=p # llb ! var p] ! var q = llb ! (var q)"
                             by fastforce
                           with q_in_llb show ?thesis
@@ -1010,7 +1001,7 @@ proof -
                       qed
                     qed
                   qed
-                  have prx_ll_st: "\<forall>i \<le> var p. 
+                  have prx_ll_st: "\<forall>i \<le> var p.
                    (\<exists>prx. llb[var p :=p#llb!var p]!i = prx@(ll!i) \<and>
                          (\<forall>pt \<in> set prx. pt \<in> set_of (Node lt p rt) \<and> var pt = i))"
                     apply -
@@ -1023,13 +1014,13 @@ proof -
                       (\<forall>pt\<in>set prx. pt \<in> set_of (Node lt p rt) \<and> var pt = i)"
                     proof (cases "i = var p")
                       case True
-                      with orderedt lt lt_Node rt rt_Node 
+                      with orderedt lt lt_Node rt rt_Node
                       have lpsp: "var (low p) < var p"
                         by fastforce
-                      with orderedt lt lt_Node rt rt_Node 
+                      with orderedt lt lt_Node rt rt_Node
                       have hpsp: "var (high p) < var p"
                         by fastforce
-                      with lpsp lla_nc 
+                      with lpsp lla_nc
                       have llall: "lla ! var p = ll ! var p"
                         by fastforce
                       with hpsp llb_nc have "llb ! var p = ll ! var p"
@@ -1067,8 +1058,8 @@ proof -
                           assume isehp: " \<not> var (high p) < i"
                           with vpsi lla_nc have lla_ll: "lla ! i = ll ! i"
                             by fastforce
-                          with isehp llb_st 
-                          have prx_lla: "\<exists>prx. llb ! i = prx @ lla ! i \<and> 
+                          with isehp llb_st
+                          have prx_lla: "\<exists>prx. llb ! i = prx @ lla ! i \<and>
                             (\<forall>pt\<in>set prx. pt \<in> set_of rt \<and> var pt = i)"
                             apply -
                             apply (erule_tac x="i" in allE)
@@ -1088,8 +1079,8 @@ proof -
                           case True
                           with llb_nc have llb_ll: "llb ! i = lla ! i"
                             by fastforce
-                          with iselp lla_st 
-                          have prx_ll: "\<exists>prx. lla ! i = prx @ ll ! i \<and> 
+                          with iselp lla_st
+                          have prx_ll: "\<exists>prx. lla ! i = prx @ ll ! i \<and>
                             (\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)"
                             apply -
                             apply (erule_tac x="i" in allE)
@@ -1103,12 +1094,12 @@ proof -
                             done
                         next
                           assume isehp: " \<not> var (high p) < i"
-                          from iselp lla_st 
-                          have prxl: "\<exists>prx. lla ! i = prx @ ll ! i \<and> 
-                            (\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)" 
+                          from iselp lla_st
+                          have prxl: "\<exists>prx. lla ! i = prx @ ll ! i \<and>
+                            (\<forall>pt\<in>set prx. pt \<in> set_of lt \<and> var pt = i)"
                             by fastforce
-                          from isehp llb_st 
-                          have prxh: "\<exists>prx. llb ! i = prx @ lla ! i \<and> 
+                          from isehp llb_st
+                          have prxh: "\<exists>prx. llb ! i = prx @ lla ! i \<and>
                             (\<forall>pt\<in>set prx. pt \<in> set_of rt \<and> var pt = i)"
                             by fastforce
                           with prxl inp lt pnN rt show ?thesis
@@ -1123,7 +1114,7 @@ proof -
                       qed
                     qed
                   qed
-                  have big_Nodes_nc: "\<forall>i. (p->var) < i 
+                  have big_Nodes_nc: "\<forall>i. (p->var) < i
                     \<longrightarrow> (llb[var p :=p # llb ! var p]) ! i = ll ! i"
                     apply -
                     apply (rule allI)
@@ -1131,29 +1122,29 @@ proof -
                   proof -
                     fix i
                     assume psi: "var p < i"
-                    with orderedt lt rt lt_Node rt_Node have lpsi: "var (low p) < i" 
+                    with orderedt lt rt lt_Node rt_Node have lpsi: "var (low p) < i"
                       by fastforce
                     with lla_nc have lla_ll: "lla ! i = ll ! i"
                       by fastforce
-                    from psi orderedt lt rt lt_Node rt_Node have hpsi: "var (high p) < i" 
+                    from psi orderedt lt rt lt_Node rt_Node have hpsi: "var (high p) < i"
                       by fastforce
                     with llb_nc have llb_lla: "llb ! i = lla ! i"
                       by fastforce
-                    from psi 
+                    from psi
                     have upllb_llb: "llb[var p :=p#llb!var p]!i = llb!i"
                       by fastforce
-                    from upllb_llb llb_lla lla_ll 
+                    from upllb_llb llb_lla lla_ll
                     show "llb[var p :=p # llb ! var p] ! i = ll ! i"
                       by fastforce
                   qed
-                  from lla_eq_ll llb_eq_lla 
+                  from lla_eq_ll llb_eq_lla
                   have length_eq: "length (llb[var p :=p # llb ! var p]) = length ll"
                     by fastforce
-                  from length_eq big_Nodes_nc prx_ll_st nodes_in_upllb 
-                  have wf_ll_upllb: 
+                  from length_eq big_Nodes_nc prx_ll_st nodes_in_upllb
+                  have wf_ll_upllb:
                     "wf_levellist (Node lt p rt) ll (llb[var p :=p # llb ! var p]) var"
                     by (simp add: wf_levellist_def)
-                  have mark_nc: 
+                  have mark_nc:
                     "\<forall> n. n \<notin> set_of (Node lt p rt) \<longrightarrow> (markb(p:=m)) n = mark n"
                     apply -
                     apply (rule allI)
@@ -1210,7 +1201,7 @@ proof -
                       qed
                     qed
                   qed
-                  from mark_c mark_nc 
+                  from mark_c mark_nc
                   have wf_mark: "wf_marking (Node lt p rt) mark (markb(p :=m)) m"
                     by (simp add: wf_marking_def)
                   with wf_ll_upllb show ?thesis
@@ -1237,10 +1228,10 @@ next
            else n \<notin> set (concat ll)"
   assume lt: "Dag (low p) low high lt"
   assume rt: "Dag (high p) low high rt"
-  show "wf_levellist (Node lt p rt) ll ll var \<and> 
+  show "wf_levellist (Node lt p rt) ll ll var \<and>
         wf_marking (Node lt p rt) mark mark (mark p)"
   proof -
-    from marked_child_ll pnN lt rt have marked_st: 
+    from marked_child_ll pnN lt rt have marked_st:
       "(\<forall>pa. pa \<in> set_of (Node lt p rt) \<longrightarrow> mark pa = mark p)"
       apply -
       apply (drule_tac x="p" in bspec)
@@ -1249,7 +1240,7 @@ next
       apply (erule_tac x="(Node lt p rt)" in allE)
       apply simp
       done
-    have nodest_in_ll: 
+    have nodest_in_ll:
       "\<forall>q. q \<in> set_of (Node lt p rt) \<longrightarrow> q \<in> set (ll ! var q)"
     proof -
       from marked_child_ll pnN have pinll: "p \<in> set (ll ! var p)"
@@ -1282,7 +1273,7 @@ next
       by fastforce
     have length_ll: "length ll = length ll"
       by fastforce
-    with ll_nc levellist_nc nodest_in_ll 
+    with ll_nc levellist_nc nodest_in_ll
     have wf: "wf_levellist (Node lt p rt) ll ll var"
       by (simp add: wf_levellist_def)
     have m_nc: "\<forall> n. n \<notin> set_of (Node lt p rt) \<longrightarrow> mark n = mark n"
@@ -1299,7 +1290,7 @@ qed
 lemma allD: "\<forall>ll. P ll \<Longrightarrow> P ll"
   by blast
 
-lemma replicate_spec: "\<lbrakk>\<forall>i < n. xs ! i = x; n=length xs\<rbrakk> 
+lemma replicate_spec: "\<lbrakk>\<forall>i < n. xs ! i = x; n=length xs\<rbrakk>
   \<Longrightarrow> replicate (length xs) x = xs"
 apply hypsubst_thin
 apply (induct xs)
@@ -1309,12 +1300,12 @@ done
 
 lemma (in Levellist_impl) Levellist_spec_total:
 shows "\<forall>\<sigma> t. \<Gamma>,\<Theta>\<turnstile>\<^sub>t
-        \<lbrace>\<sigma>. Dag \<acute>p \<acute>low \<acute>high t \<and> (\<forall>i < length \<acute>levellist. \<acute>levellist ! i = Null) \<and> 
-             length \<acute>levellist  = \<acute>p \<rightarrow> \<acute>var + 1 \<and> 
-             ordered t \<acute>var \<and> (\<forall>n \<in> set_of t. \<acute>mark n = (\<not> \<acute>m) )\<rbrace>   
+        \<lbrace>\<sigma>. Dag \<acute>p \<acute>low \<acute>high t \<and> (\<forall>i < length \<acute>levellist. \<acute>levellist ! i = Null) \<and>
+             length \<acute>levellist  = \<acute>p \<rightarrow> \<acute>var + 1 \<and>
+             ordered t \<acute>var \<and> (\<forall>n \<in> set_of t. \<acute>mark n = (\<not> \<acute>m) )\<rbrace>
           \<acute>levellist :== PROC Levellist (\<acute>p, \<acute>m, \<acute>levellist)
        \<lbrace>\<exists>ll. Levellist \<acute>levellist \<acute>next ll \<and> wf_ll t ll \<^bsup>\<sigma>\<^esup>var  \<and>
-         length \<acute>levellist = \<^bsup>\<sigma>\<^esup>p \<rightarrow> \<^bsup>\<sigma>\<^esup>var + 1 \<and> 
+         length \<acute>levellist = \<^bsup>\<sigma>\<^esup>p \<rightarrow> \<^bsup>\<sigma>\<^esup>var + 1 \<and>
          wf_marking t \<^bsup>\<sigma>\<^esup>mark \<acute>mark \<^bsup>\<sigma>\<^esup>m \<and>
          (\<forall>p. p \<notin> set_of t \<longrightarrow> \<^bsup>\<sigma>\<^esup>next p = \<acute>next p)\<rbrace>"
 apply (hoare_rule HoareTotal.conseq)

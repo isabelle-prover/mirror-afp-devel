@@ -67,7 +67,7 @@ sublocale arith_ops_record ff_ops p .
 
 lemma Mp_rel_iI: "poly_rel f1 f2 \<Longrightarrow> MP_Rel f3 f2 \<Longrightarrow> Mp_rel_i f1 f3" 
   unfolding Mp_rel_i_def MP_Rel_def poly_rel_def
-  by (simp add: list_all2_conv_all_nth nth_equalityI to_int)
+  by (auto simp add: list_all2_conv_all_nth to_int intro: nth_equalityI)
 
 lemma M_rel_iI: "R f1 f2 \<Longrightarrow> M_Rel f3 f2 \<Longrightarrow> M_rel_i f1 f3" 
   unfolding M_rel_i_def M_Rel_def by (simp add: to_int)

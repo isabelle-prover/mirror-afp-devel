@@ -735,7 +735,7 @@ proof clarify
   then have "\<forall>i < length Cs. (Cs ! i) \<cdot> \<sigma>s ! i = (Cs ! i) \<cdot> \<tau>"
     by auto
   then have "Cs \<cdot>\<cdot>cl \<sigma>s = Cs \<cdot>cl \<tau>"
-    using a by (simp add: nth_equalityI)
+    using a by (auto intro: nth_equalityI)
   then show "\<exists>\<tau>. Cs \<cdot>\<cdot>cl \<sigma>s = Cs \<cdot>cl \<tau>"
     by auto
 qed

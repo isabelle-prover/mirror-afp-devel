@@ -221,7 +221,7 @@ using T proof(induct T)
            map2 fromFull (arOf f) (map (F.int \<xi>) Tl)"
   (is "map ?F Tl = map2 fromFull (arOf f) (map ?H Tl)"
    is "?L = ?R")
-  proof(rule nth_equalityI, safe)
+  proof(rule nth_equalityI)
     have l: "length Tl = length (arOf f)" using Fn by simp
     thus "length ?L = length ?R" by simp
     fix i assume "i < length ?L"  hence i: "i < length Tl" by simp
@@ -230,9 +230,9 @@ using T proof(induct T)
     have wt: "wt (Tl!i)" using Fn i by (auto simp: list_all_iff)
     have "intT (arOf f!i) (?F (Tl!i))" using I.wt_int[OF \<xi> wt] unfolding tp .
     moreover have "?toFull (?F (Tl!i)) = ?H (Tl!i)"
-    using Fn tp i by (auto simp: list_all_iff kE_def)
+      using Fn tp i by (auto simp: list_all_iff kE_def)
     ultimately have "?F (Tl!i) = fromFull (arOf f!i) (?H (Tl!i))"
-    using toFull_iff_fromFull by blast
+      using toFull_iff_fromFull by blast
     thus "?L!i = ?R!i" using l i by simp
   qed
   show ?case unfolding I.int.simps F.int.simps tpOf.simps unfolding intFF_def 0 ..
@@ -245,10 +245,10 @@ using kE_int_toFull[OF assms]
 unfolding toFull_iff_fromFull[OF I.wt_int[OF \<xi> T]] .
 
 lemma map_kE_int[simp]:
-assumes \<xi>: "I.wtE (kE \<xi>)" and T: "list_all wt Tl"
-shows "map (I.int (kE \<xi>)) Tl = map2 fromFull (map tpOf Tl) (map (F.int \<xi>) Tl)"
-apply(rule nth_equalityI, safe)
-  apply (metis (lifting) length_map length_map2)
+  assumes \<xi>: "I.wtE (kE \<xi>)" and T: "list_all wt Tl"
+  shows "map (I.int (kE \<xi>)) Tl = map2 fromFull (map tpOf Tl) (map (F.int \<xi>) Tl)"
+  apply(rule nth_equalityI)
+   apply (metis (lifting) length_map length_map2)
   by (metis T \<xi> kE_int length_map list_all_length nth_map nth_map2)
 
 lemma kE_satA[simp]:

@@ -1068,10 +1068,8 @@ proof (cases rule: ord_resolve.cases)
     show "length (As0' \<cdot>al \<eta>) = length As"
       using n by auto
   next
-    show "\<forall>i<length (As0' \<cdot>al \<eta>). (As0' \<cdot>al \<eta>) ! i = As ! i"
-    proof (rule, rule)
-      fix i :: "nat"
-      assume a: "i < length (As0' \<cdot>al \<eta>)"
+    show "(As0' \<cdot>al \<eta>) ! i = As ! i" if a: "i < length (As0' \<cdot>al \<eta>)" for i
+    proof -
       have A_eq: "\<forall>A. A \<in> atms_of DA0' \<longrightarrow> A \<cdot>a \<eta>0' = A \<cdot>a \<eta>"
         using \<eta>_p_atm n by force
       have "As0' ! i \<in> atms_of DA0'"
@@ -1106,12 +1104,10 @@ proof (cases rule: ord_resolve.cases)
     show "length (Cs0' \<cdot>cl \<eta>) = length Cs"
       using n by auto
   next
-    show "\<forall>i<length (Cs0' \<cdot>cl \<eta>). (Cs0' \<cdot>cl \<eta>) ! i = Cs ! i"
-    proof (rule, rule) (* FIXME: Clean up this mess. *)
-      fix i
-      assume "i < length (Cs0' \<cdot>cl \<eta>)"
-      then have a: "i < n"
-        using n by force
+    show "(Cs0' \<cdot>cl \<eta>) ! i = Cs ! i" if "i < length (Cs0' \<cdot>cl \<eta>)" for i
+    proof -
+      have a: "i < n"
+        using that n by force
       have "(Cs0' \<cdot>\<cdot>cl \<eta>s0') ! i = Cs ! i"
         using Cs0'_Cs a n by force
       moreover
@@ -1131,12 +1127,10 @@ proof (cases rule: ord_resolve.cases)
     show "length (AAs0' \<cdot>aml \<eta>) = length AAs"
       using n by auto
   next
-    show "\<forall>i<length (AAs0' \<cdot>aml \<eta>). (AAs0' \<cdot>aml \<eta>) ! i = AAs ! i"
-    proof (rule, rule)
-      fix i :: "nat"
-      assume a: "i < length (AAs0' \<cdot>aml \<eta>)"
-      then have "i < n"
-        using n by force
+    show "(AAs0' \<cdot>aml \<eta>) ! i = AAs ! i" if a: "i < length (AAs0' \<cdot>aml \<eta>)" for i
+    proof -
+      have "i < n"
+        using that n by force
       then have "\<forall>A. A \<in> atms_of ((DA0' # CAs0') ! Suc i) \<longrightarrow> A \<cdot>a (\<eta>0' # \<eta>s0') ! Suc i = A \<cdot>a \<eta>"
         using \<eta>_p_atm n by force
       then have A_eq: "\<forall>A. A \<in> atms_of (CAs0' ! i) \<longrightarrow> A \<cdot>a \<eta>s0' ! i = A \<cdot>a \<eta>"

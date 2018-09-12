@@ -680,7 +680,8 @@ qed
 lemma polys_to_mat_to_polys:
   assumes "Keys (set ps) \<subseteq> set ts"
   shows "mat_to_polys ts (polys_to_mat ts ps) = (ps::('t \<Rightarrow>\<^sub>0 'b::semiring_1) list)"
-proof (simp add: mat_to_polys_def mat_to_list_def, rule nth_equalityI, simp_all, intro allI impI)
+  unfolding mat_to_polys_def mat_to_list_def
+proof (rule nth_equalityI, simp_all)
   fix i
   assume "i < length ps"
   have *: "keys (ps ! i) \<subseteq> set ts"
@@ -729,8 +730,8 @@ lemma vec_times_polys_to_mat:
 proof -
   from assms have *: "dim_vec v = length ps" by (simp only: carrier_dim_vec)
   have eq: "map (\<lambda>i. v \<bullet> col (polys_to_mat ts ps) i) [0..<length ts] =
-        map (\<lambda>s. v \<bullet> (vec_of_list (map (\<lambda>p. lookup p s) ps))) ts"
-  proof (rule nth_equalityI, simp, intro allI impI, simp)
+            map (\<lambda>s. v \<bullet> (vec_of_list (map (\<lambda>p. lookup p s) ps))) ts"
+  proof (rule nth_equalityI, simp_all)
     fix i
     assume "i < length ts"
     hence "col (polys_to_mat ts ps) i = vec_of_list (map (\<lambda>p. lookup p (ts ! i)) ps)"

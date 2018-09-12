@@ -177,7 +177,7 @@ proof -
   have "card {p. p partitions n} = card (\<Union>((\<lambda>k. {p. p partitions n \<and> (\<Sum>i\<le>n. p i) = k}) ` {..n}))"
     using finite by (simp add: seteq)
   also have "... = (\<Sum>x\<le>n. card {p. p partitions n \<and> sum p {..n} = x})"
-    using finite by (subst card_Union_image) auto
+    using finite by (subst card_Union_image) (auto simp: pairwise_def disjnt_def)
   also have "... = (\<Sum>k\<le>n. Partition n k)"
     by (simp add: card_partitions_k_parts)
   finally show ?thesis .
@@ -195,7 +195,7 @@ proof -
   qed
   also have "card (\<Union>((\<lambda>k'. {p. p partitions n \<and> sum p {..n} = k'}) ` {..k})) =
     sum (\<lambda>k'. card {p. p partitions n \<and> sum p {..n} = k'}) {..k}"
-    using finite_partitions_k_parts by (subst card_Union_image) auto
+    using finite_partitions_k_parts by (subst card_Union_image) (auto simp: pairwise_def disjnt_def)
   also have "\<dots> = sum (\<lambda>k'. Partition n k') {..k}"
     using card_partitions_k_parts by simp
   also have "\<dots> = Partition (n + k) k"
