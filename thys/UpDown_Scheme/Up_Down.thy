@@ -164,9 +164,9 @@ next
     proof (rule nth_equalityI)
       show l_eq: "length (fst x) = length (fst y)" using grid_length[OF `p \<in> grid (fst y) {d}`] grid_length[OF `p \<in> grid (fst x) {d}`]
         by auto
-      show "\<forall> i < length (fst x). fst x ! i = fst y ! i"
-      proof (rule allI, rule impI)
-        fix i assume "i < length (fst x)" hence "i < length (fst y)" and "i < dm" using l_eq and `length (fst y) = dm` by auto
+      show "fst x ! i = fst y ! i" if "i < length (fst x)" for i
+      proof -
+        have "i < length (fst y)" and "i < dm" using that l_eq and `length (fst y) = dm` by auto
         show "fst x ! i = fst y ! i"
         proof (cases "i = d")
           case False hence "i \<notin> {d}" by auto
@@ -294,9 +294,9 @@ next
         proof (rule nth_equalityI)
           from `?px \<in> grid ?bp1 {d}` have px_spg: "?px \<in> sparsegrid' dm" using base_grid[OF p_spg'] by auto
           from base_length[OF this] base_length[OF x_spg] show l_eq: "length (base {0..<d} ?px) = length ?bx"  by auto
-          show "\<forall> i < length (base {0..<d} ?px).  base {0..<d} ?px ! i = ?bx ! i"
-          proof (rule allI, rule impI)
-            fix i assume "i < length (base {0..<d} ?px)" hence "i < length ?bx" and "i < dm" using l_eq and base_length[OF px_spg] by auto
+          show "base {0..<d} ?px ! i = ?bx ! i" if "i < length (base {0..<d} ?px)" for i
+          proof -
+            have "i < length ?bx" and "i < dm" using that l_eq and base_length[OF px_spg] by auto
             show "base {0..<d} ?px ! i = ?bx ! i"
             proof (cases "i < d")
               case True hence "i \<in> {0..<d}" by auto

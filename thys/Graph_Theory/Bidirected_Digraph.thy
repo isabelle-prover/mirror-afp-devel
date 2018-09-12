@@ -79,13 +79,9 @@ context bidirected_digraph begin
         by (rule arg_cong[where f=card]) (auto intro!: exI[where x="{x, arev x}" for x])
       also have "\<dots>= sum card ?T"
       proof (rule card_Union_disjoint)
-        have "?T \<subseteq> Pow ?S" by auto
-        moreover have "finite (Pow ?S)"  unfolding finite_Pow_iff by (rule A)
-        ultimately show "finite ?T" by (rule finite_subset)
-      next
-        show "\<forall>A\<in>{{a, arev a} |a. a \<in> ?S}. finite A" by auto
-      next
-        show "\<forall>A\<in>{{a, arev a} |a. a \<in> ?S}. \<forall>B\<in>{{a, arev a} |a. a \<in> ?S}. A \<noteq> B \<longrightarrow> A \<inter> B = {}"
+        show "\<And>A. A\<in>{{a, arev a} |a. a \<in> ?S} \<Longrightarrow> finite A" by auto
+        show "pairwise disjnt {{a, arev a} |a. a \<in> in_arcs G w \<inter> out_arcs G w}"
+          unfolding pairwise_def disjnt_def
            by safe (simp_all add: arev_eq_iff)
       qed
       also have "\<dots> = sum (\<lambda>a. 2) ?T"

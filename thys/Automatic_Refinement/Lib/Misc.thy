@@ -152,7 +152,7 @@ lemma map_distinct_upd_conv:
   "\<lbrakk>i<length l; distinct l\<rbrakk> \<Longrightarrow> map f l [i := x] = map (f(l!i := x)) l"
   \<comment> \<open>Updating a mapped distinct list is equal to updating the 
     mapping function\<close>
-  by (simp add: nth_eq_iff_index_eq nth_equalityI)  
+  by (auto simp: nth_eq_iff_index_eq intro: nth_equalityI)
 
     
 lemma zip_inj: "\<lbrakk>length a = length b; length a' = length b'; zip a b = zip a' b'\<rbrakk> \<Longrightarrow> a=a' \<and> b=b'"

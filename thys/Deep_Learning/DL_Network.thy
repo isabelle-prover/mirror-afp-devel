@@ -197,7 +197,7 @@ proof (rule nth_equalityI)
       using \<open>i < length (input_sizes m)\<close> \<open>length (input_sizes m) = length (map dim_vec (base_input m is))\<close>
        base_input_def assms length_map nth_map valid_index_lt by (simp add: input_sizes_remove_weights)
   }
-  then show "\<forall>i<length (input_sizes m). input_sizes m ! i = map dim_vec (base_input m is) ! i" by auto
+  then show "\<And>i. i < length (input_sizes m) \<Longrightarrow> input_sizes m ! i = map dim_vec (base_input m is) ! i" by auto
 qed
 
 lemma nth_mat_tensorlist_mult:
@@ -667,7 +667,7 @@ assumes "\<And>inputs. input_sizes m1 = map dim_vec inputs \<Longrightarrow> eva
 shows "tensors_from_net m1 = tensors_from_net m2"
 proof -
   have "map dim_vec (map 0\<^sub>v (input_sizes m2)) = input_sizes m2"
-       "map dim_vec (map 0\<^sub>v (input_sizes m1)) = input_sizes m1" by (simp_all add: nth_equalityI)
+       "map dim_vec (map 0\<^sub>v (input_sizes m1)) = input_sizes m1" by (auto intro: nth_equalityI)
   then have "output_size' m1 = output_size' m2" using
     output_size_correct[OF `valid_net' m1` `map dim_vec (map 0\<^sub>v (input_sizes m1)) = input_sizes m1`]
     output_size_correct[OF `valid_net' m2` `map dim_vec (map 0\<^sub>v (input_sizes m2)) = input_sizes m2`]

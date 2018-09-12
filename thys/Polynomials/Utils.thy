@@ -130,7 +130,7 @@ qed
 subsection \<open>Lists\<close>
 
 lemma map_upt: "map (\<lambda>i. f (xs ! i)) [0..<length xs] = map f xs"
-  by (simp add: nth_equalityI)
+  by (auto intro: nth_equalityI)
 
 lemma map_upt_zip:
   assumes "length xs = length ys"

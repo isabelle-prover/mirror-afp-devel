@@ -184,7 +184,7 @@ proof -
        and index: "(\<lambda>i. if i < length x2 then IArray x1 !! i else undef_vec (i - length (IArray.list_of (IArray x1)))) =
             (\<lambda>i. if i < length x2 then IArray x2 !! i else undef_vec (i - length (IArray.list_of (IArray x2))))"    
     have "x1 = x2"
-    proof (intro nth_equalityI[OF len], intro allI impI)
+    proof (intro nth_equalityI[OF len])
       fix i
       assume "i < length x1"
       with fun_cong[OF index, of i] len show "x1 ! i = x2 ! i" by simp
@@ -204,7 +204,7 @@ proof -
       "length x1 = length x2"
     and index: "mk_mat (length x2) nc (\<lambda>(i, j). x1 ! i !! j) = mk_mat (length x2) nc (\<lambda>(i, j). x2 ! i !! j)"
     show "x1 = x2"
-    proof (rule nth_equalityI[OF len(3)], intro allI impI)
+    proof (rule nth_equalityI[OF len(3)])
       fix i
       assume i: "i < length x1"
       obtain ia1 where 1: "x1 ! i = IArray ia1" by (cases "x1 ! i")
@@ -213,7 +213,7 @@ proof -
       from i 2 len(2-3) have l2: "length ia2 = nc" using nth_mem by fastforce
       from l1 l2 have l: "length ia1 = length ia2" by simp
       show "x1 ! i = x2 ! i" unfolding 1 2
-      proof (simp, rule nth_equalityI[OF l], intro allI impI)
+      proof (simp, rule nth_equalityI[OF l])
         fix j
         assume j: "j < length ia1"
         with fun_cong[OF index, of "(i,j)"] i len(3)

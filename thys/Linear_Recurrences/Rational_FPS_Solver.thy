@@ -180,7 +180,7 @@ lemma length_nth_snd_poly_pfd_simple [simp]:
 
 lemma solve_factored_ratfps_roots:
   "map snd (snd (solve_factored_ratfps p cs)) = map fst cs"
-  by (rule list_ext)
+  by (rule nth_equalityI)
      (simp_all add: solve_factored_ratfps_def poly_pfd_simple case_prod_unfold Let_def
                     zip_with_altdef o_def)
 
