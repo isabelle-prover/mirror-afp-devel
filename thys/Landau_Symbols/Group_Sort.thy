@@ -204,7 +204,7 @@ proof (induction xs rule: group.induct)
   also from 2 have "g (group [y\<leftarrow>xs . f y \<noteq> f x]) = g [y\<leftarrow>xs . f y \<noteq> f x]" by (simp add: o_def)
   hence "?A = g ((x # [y\<leftarrow>xs . f y = f x]) @ [y\<leftarrow>xs . f y \<noteq> f x])"
     by (intro g_append_cong) simp_all
-  also have "... = g (x#xs)" by (intro g_cong) (simp_all add: mset_compl_union)
+  also have "... = g (x#xs)" by (intro g_cong) (simp_all)
   finally show ?case .
 qed simp
 
