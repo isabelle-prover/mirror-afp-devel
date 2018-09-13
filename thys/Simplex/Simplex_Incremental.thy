@@ -690,11 +690,11 @@ type_synonym 'i simplex_state = "QDelta ns_constraint list
   \<times> ('i, QDelta) state"
 
 definition "init_simplex = (init_cs init_nsc_code to_ns :: 'i :: linorder i_constraint list \<Rightarrow> 'i simplex_state)" 
-definition "assert_simplex = assert_cs assert_nsc_code" 
-definition "check_simplex = (check_cs check_nsc_code :: 'i :: linorder simplex_state \<Rightarrow> 'i list + 'i simplex_state)" 
-definition "solution_simplex = solution_cs solution_nsc_code from_ns" 
-definition "backtrack_simplex = backtrack_cs backtrack_nsc_code" 
-definition "checkpoint_simplex = checkpoint_cs checkpoint_nsc_code" 
+definition "assert_simplex = (assert_cs assert_nsc_code :: 'i \<Rightarrow> 'i simplex_state \<Rightarrow> 'i list + 'i simplex_state)" 
+definition "check_simplex = (check_cs check_nsc_code :: 'i simplex_state \<Rightarrow> 'i list + 'i simplex_state)" 
+definition "solution_simplex = (solution_cs solution_nsc_code from_ns :: 'i simplex_state \<Rightarrow> _)" 
+definition "backtrack_simplex = (backtrack_cs backtrack_nsc_code :: _ \<Rightarrow> 'i simplex_state \<Rightarrow> _)" 
+definition "checkpoint_simplex = (checkpoint_cs checkpoint_nsc_code :: 'i simplex_state \<Rightarrow> _)" 
 definition "invariant_simplex = Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.invariant_cs invariant_nsc to_ns" 
 definition "checked_simplex = Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.checked_cs checked_nsc to_ns" 
 
@@ -709,16 +709,16 @@ text \<open>The following code-lemmas unfold some layers in the code of the simp
 lemmas code_lemmas =
   fun_cong[OF init_simplex_def, of cs for cs, unfolded init_cs_def 
     Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.init_nsc_def]
-  assert_cs.simps[of assert_nsc_code, folded assert_simplex_def, of _ _ "((asi,tv),s)" for asi tv s, 
-    unfolded assert_nsc_code_def assert_nsc_def sum_wrap2.simps case_sum_case_sum]
+  fun_cong[OF fun_cong[OF assert_simplex_def], of i "(cs,((asi,tv),s))" for i cs asi tv s, 
+    unfolded assert_cs.simps assert_nsc_code_def assert_nsc_def sum_wrap2.simps case_sum_case_sum]
   fun_cong[OF check_simplex_def, of "(cs,(asi_tv,s))" for cs asi_tv s, 
     unfolded check_cs_def check_nsc_code_def check_nsc_def sum_wrap.simps case_sum_case_sum] 
-  solution_cs.simps[of solution_nsc_code from_ns, folded solution_simplex_def, of _ "((asi,tv),s)" for asi tv s, 
-    unfolded solution_nsc_code_def solution_nsc.simps]
-  checkpoint_cs.simps[of checkpoint_nsc_code, folded checkpoint_simplex_def, of _ "(asi_tv,s)" for asi_tv s, 
-    unfolded checkpoint_nsc_code_def checkpoint_nsc.simps]
-  backtrack_cs.simps[of backtrack_nsc_code, folded backtrack_simplex_def, of _ _ "(asi_tv,s)" for asi_tv s,
-    unfolded backtrack_nsc_code_def backtrack_nsc.simps]
+  fun_cong[OF solution_simplex_def, of "(cs,((asi,tv),s))" for cs asi tv s, 
+    unfolded solution_cs.simps solution_nsc_code_def solution_nsc.simps]
+  fun_cong[OF checkpoint_simplex_def, of "(cs,(asi_tv,s))" for cs asi_tv s,
+    unfolded checkpoint_nsc_code_def checkpoint_cs.simps checkpoint_nsc.simps]
+  fun_cong[OF fun_cong[OF backtrack_simplex_def], of c "(cs,(asi_tv,s))" for c cs asi_tv s,
+    unfolded backtrack_nsc_code_def backtrack_nsc.simps backtrack_cs.simps]
 
 declare code_lemmas[code]
 
@@ -794,7 +794,7 @@ lemma checked_invariant_simplex:
 text \<open>For convenience: an assert-all function which takes multiple indices.\<close>
 
 
-fun assert_all_simplex :: "'i :: linorder list \<Rightarrow> 'i simplex_state \<Rightarrow> 'i list + 'i simplex_state" where
+fun assert_all_simplex :: "'i list \<Rightarrow> 'i simplex_state \<Rightarrow> 'i list + 'i simplex_state" where
   "assert_all_simplex [] s = Inr s" 
 | "assert_all_simplex (j # J) s = (case assert_simplex j s of Unsat I \<Rightarrow> Unsat I 
      | Inr s' \<Rightarrow> assert_all_simplex J s')" 
@@ -859,5 +859,6 @@ value (code) "let cs = [
     s7 = (case check_simplex s6 of Inr s \<Rightarrow> s | Unsat _ \<Rightarrow> undefined); \<comment> \<open>check that 1,2,3,5,6 are sat.\<close>
     sol = solution_simplex s7 \<comment> \<open>solution for 1,2,3,5,6\<close>
   in (I, map (\<lambda> x. (''x_'', x, ''='', \<langle>sol\<rangle> x)) [0,1,2,3]) \<comment> \<open>output unsat core and solution\<close>" 
+
 end
 
