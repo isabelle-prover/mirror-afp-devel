@@ -399,7 +399,7 @@ lemma is_median_altdef:
                       size (filter_mset (\<lambda>y. y > x) (mset xs)) \<le> length xs div 2"
 proof -
   have *: "length (filter P xs) = size (filter_mset P (mset xs))" for P and xs :: "'a list"
-    by (simp add: mset_filter [symmetric])
+    by (simp flip: mset_filter)
   show ?thesis by (simp only: is_median_def *)
 qed
 

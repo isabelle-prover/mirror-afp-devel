@@ -145,7 +145,7 @@ lemma filter_mset_cong[fundef_cong]:
   shows "filter_mset P M = filter_mset Q M"
 proof -
   have "M - filter_mset Q M = filter_mset (\<lambda>a. \<not>Q a) M"
-    by (subst multiset_partition[of _ Q]) simp
+    by (metis multiset_partition add_diff_cancel_left')
   then show ?thesis
     by (auto simp: filter_mset_eq_conv assms)
 qed
