@@ -178,10 +178,9 @@ proof -
   proof (rule nth_equalityI)
     let ?M = "map (sq_norm \<circ> row (sylvester_mat f g)) [0..<degree g]"
     show "length ?M = length (replicate k \<parallel>f\<parallel>\<^sup>2)" using k_def by auto
-    show "\<forall>i<length ?M. ?M ! i = replicate k \<parallel>f\<parallel>\<^sup>2 ! i"
-    proof (rule+)
-      fix i assume i: "i < length ?M"
-      hence ik: "i<k" using k_def by auto
+    show "?M ! i = replicate k \<parallel>f\<parallel>\<^sup>2 ! i" if i: "i < length ?M" for i
+    proof -
+      have ik: "i<k" using i k_def by auto
       hence i_deg_g: "i < degree g" using k_def by auto
       have "replicate k \<parallel>f\<parallel>\<^sup>2 ! i = \<parallel>f\<parallel>\<^sup>2" by (rule nth_replicate[OF ik])
       also have "... = (sq_norm \<circ> row (sylvester_mat f g)) (0 + i)"
@@ -194,10 +193,9 @@ proof -
   proof (rule nth_equalityI)
     let ?M = "map (sq_norm \<circ> row (sylvester_mat f g)) [degree g..<degree f + degree g]"
     show "length ?M = length (replicate n \<parallel>g\<parallel>\<^sup>2)" by (simp add: n_def)
-    show "\<forall>i<length ?M. ?M ! i = replicate n \<parallel>g\<parallel>\<^sup>2 ! i"
-    proof (rule+)
-      fix i assume "i<length ?M"
-      hence i_n: "i<n" using n_def by auto
+    show "?M ! i = replicate n \<parallel>g\<parallel>\<^sup>2 ! i" if "i<length ?M" for i
+    proof -
+      have i_n: "i<n" using n_def that by auto
       hence i_deg_f: "i < degree f" using n_def by auto
       have "replicate n \<parallel>g\<parallel>\<^sup>2 ! i = \<parallel>g\<parallel>\<^sup>2" by (rule nth_replicate[OF i_n])
       also have "... = (sq_norm \<circ> row (sylvester_mat f g)) (degree g + i)"
