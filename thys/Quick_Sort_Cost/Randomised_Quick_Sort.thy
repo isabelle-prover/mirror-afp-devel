@@ -169,7 +169,7 @@ proof (induction xs arbitrary: ys n rule: length_induct)
       by (intro sorted_wrt_append \<open>trans R\<close> sorted_wrt_singleton sorted)
          (auto intro: rs_ge ls_le transD[OF \<open>trans R\<close>, of _ "xs!i"])
     moreover have "mset ys = mset xs" unfolding ys using \<open>i < length xs\<close>
-      by (simp add: mset ls'_def rs'_def add_mset_delete_index)
+      by (simp add: mset ls'_def rs'_def add_mset_delete_index mset_compl_union)
     ultimately show ?thesis ..
   qed (insert "1.prems", simp_all)
 qed
