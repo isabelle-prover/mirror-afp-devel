@@ -73,7 +73,7 @@ proof (induct n arbitrary: M)
   moreover have "base * base ^ n = base ^ n + (base - Suc 0) * base ^ n"
     using base_ge_2 mult_eq_if by auto
   ultimately show ?case
-    using ih[OF well_Mne in_Mne_lt_n] by (subst M) simp
+    using ih[OF well_Mne in_Mne_lt_n] by (subst M) (simp del: union_mset_compl)
 qed simp
 
 inductive well_base\<^sub>h :: "hmultiset \<Rightarrow> bool" where
