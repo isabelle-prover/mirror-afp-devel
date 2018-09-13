@@ -26,7 +26,7 @@ text \<open>
   We can easily show that this QuickSort is correct:
 \<close>
 theorem mset_quicksort [simp]: "mset (quicksort R xs) = mset xs"
-  by (induction R xs rule: quicksort.induct) (simp_all add: mset_compl_union)
+  by (induction R xs rule: quicksort.induct) (simp_all)
 
 corollary set_quicksort [simp]: "set (quicksort R xs) = set xs"
   by (induction R xs rule: quicksort.induct) auto

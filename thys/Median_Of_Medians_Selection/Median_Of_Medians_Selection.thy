@@ -399,7 +399,7 @@ lemma is_median_altdef:
                       size (filter_mset (\<lambda>y. y > x) (mset xs)) \<le> length xs div 2"
 proof -
   have *: "length (filter P xs) = size (filter_mset P (mset xs))" for P and xs :: "'a list"
-    by (simp add: mset_filter [symmetric])
+    by (simp flip: mset_filter)
   show ?thesis by (simp only: is_median_def *)
 qed
 
@@ -641,7 +641,7 @@ theorem select_rec_partition:
 proof -
   define ys zs where "ys = filter (\<lambda>y. y \<le> x) xs" and "zs = filter (\<lambda>y. \<not>(y \<le> x)) xs"
   have "select k xs = select k (ys @ zs)"
-    by (intro select_cong) (simp_all add: mset_compl_union ys_def zs_def)
+    by (intro select_cong) (simp_all add: ys_def zs_def)
   also have "\<dots> = (if k < length ys then select k ys else select (k - length ys) zs)"
     using assms(2) by (intro select_append') (auto simp: ys_def zs_def sum_length_filter_compl)
   finally show ?thesis by (simp add: ys_def zs_def Let_def o_def)
