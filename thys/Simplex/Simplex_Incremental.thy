@@ -619,6 +619,8 @@ end
 
 subsection \<open>Concrete Implementation\<close>
 
+subsubsection \<open>Connecting all the locales\<close>
+
 definition "assert_s = Incremental_State_Ops_Simplex.assert_s assert_bound_code"  
 definition "check_s = Incremental_State_Ops_Simplex.check_s check_code" 
 definition "checkpoint_s = Incremental_State_Ops_Simplex.checkpoint_s" 
@@ -685,18 +687,18 @@ global_interpretation Incremental_Atom_Ops_For_NS_Constraint_Ops_Default:
       assert_all_s_def
       )
 
-type_synonym 'i simplex_state = "QDelta ns_constraint list 
+type_synonym 'i simplex_state' = "QDelta ns_constraint list 
   \<times> (('i \<Rightarrow> ('i \<times> QDelta atom) list) \<times> ((var,QDelta)mapping \<Rightarrow> (var,QDelta)mapping)) 
   \<times> ('i, QDelta) state"
 
-definition "init_simplex = (init_cs init_nsc_code to_ns :: 'i :: linorder i_constraint list \<Rightarrow> 'i simplex_state)" 
-definition "assert_simplex = (assert_cs assert_nsc_code :: 'i \<Rightarrow> 'i simplex_state \<Rightarrow> 'i list + 'i simplex_state)" 
-definition "check_simplex = (check_cs check_nsc_code :: 'i simplex_state \<Rightarrow> 'i list + 'i simplex_state)" 
-definition "solution_simplex = (solution_cs solution_nsc_code from_ns :: 'i simplex_state \<Rightarrow> _)" 
-definition "backtrack_simplex = (backtrack_cs backtrack_nsc_code :: _ \<Rightarrow> 'i simplex_state \<Rightarrow> _)" 
-definition "checkpoint_simplex = (checkpoint_cs checkpoint_nsc_code :: 'i simplex_state \<Rightarrow> _)" 
-definition "invariant_simplex = Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.invariant_cs invariant_nsc to_ns" 
-definition "checked_simplex = Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.checked_cs checked_nsc to_ns" 
+definition "init_simplex' = (init_cs init_nsc_code to_ns :: 'i :: linorder i_constraint list \<Rightarrow> 'i simplex_state')" 
+definition "assert_simplex' = (assert_cs assert_nsc_code :: 'i \<Rightarrow> 'i simplex_state' \<Rightarrow> 'i list + 'i simplex_state')" 
+definition "check_simplex' = (check_cs check_nsc_code :: 'i simplex_state' \<Rightarrow> 'i list + 'i simplex_state')" 
+definition "solution_simplex' = (solution_cs solution_nsc_code from_ns :: 'i simplex_state' \<Rightarrow> _)" 
+definition "backtrack_simplex' = (backtrack_cs backtrack_nsc_code :: _ \<Rightarrow> 'i simplex_state' \<Rightarrow> _)" 
+definition "checkpoint_simplex' = (checkpoint_cs checkpoint_nsc_code :: 'i simplex_state' \<Rightarrow> _)" 
+definition "invariant_simplex' = Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.invariant_cs invariant_nsc to_ns" 
+definition "checked_simplex' = Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.checked_cs checked_nsc to_ns" 
 
 lemma case_sum_case_sum: "(case (case x of Inl y \<Rightarrow> Inl (f1 y) | Inr z \<Rightarrow> Inr (f2 z)) 
   of Inl y \<Rightarrow> Inl (g1 y) | Inr z \<Rightarrow> Inr (g2 z)) = (case x of Inl y \<Rightarrow> Inl (g1 (f1 y)) | Inr z \<Rightarrow> Inr (g2 (f2 z)))" 
@@ -707,17 +709,17 @@ text \<open>The following code-lemmas unfold some layers in the code of the simp
   the operations working on simplex type @{typ "('i,QDelta) state"}.\<close>
 
 lemmas code_lemmas =
-  fun_cong[OF init_simplex_def, of cs for cs, unfolded init_cs_def 
+  fun_cong[OF init_simplex'_def, of cs for cs, unfolded init_cs_def 
     Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.init_nsc_def]
-  fun_cong[OF fun_cong[OF assert_simplex_def], of i "(cs,((asi,tv),s))" for i cs asi tv s, 
+  fun_cong[OF fun_cong[OF assert_simplex'_def], of i "(cs,((asi,tv),s))" for i cs asi tv s, 
     unfolded assert_cs.simps assert_nsc_code_def assert_nsc_def sum_wrap2.simps case_sum_case_sum]
-  fun_cong[OF check_simplex_def, of "(cs,(asi_tv,s))" for cs asi_tv s, 
+  fun_cong[OF check_simplex'_def, of "(cs,(asi_tv,s))" for cs asi_tv s, 
     unfolded check_cs_def check_nsc_code_def check_nsc_def sum_wrap.simps case_sum_case_sum] 
-  fun_cong[OF solution_simplex_def, of "(cs,((asi,tv),s))" for cs asi tv s, 
+  fun_cong[OF solution_simplex'_def, of "(cs,((asi,tv),s))" for cs asi tv s, 
     unfolded solution_cs.simps solution_nsc_code_def solution_nsc.simps]
-  fun_cong[OF checkpoint_simplex_def, of "(cs,(asi_tv,s))" for cs asi_tv s,
+  fun_cong[OF checkpoint_simplex'_def, of "(cs,(asi_tv,s))" for cs asi_tv s,
     unfolded checkpoint_nsc_code_def checkpoint_cs.simps checkpoint_nsc.simps]
-  fun_cong[OF fun_cong[OF backtrack_simplex_def], of c "(cs,(asi_tv,s))" for c cs asi_tv s,
+  fun_cong[OF fun_cong[OF backtrack_simplex'_def], of c "(cs,(asi_tv,s))" for c cs asi_tv s,
     unfolded backtrack_nsc_code_def backtrack_nsc.simps backtrack_cs.simps]
 
 declare code_lemmas[code]
@@ -727,14 +729,14 @@ global_interpretation Incremental_Simplex:
   init_nsc_code assert_nsc_code check_nsc_code solution_nsc_code checkpoint_nsc_code backtrack_nsc_code 
   invariant_nsc checked_nsc to_ns from_ns
   rewrites 
-    "init_cs init_nsc_code to_ns = init_simplex" and
-    "backtrack_cs backtrack_nsc_code = backtrack_simplex" and
-    "checkpoint_cs checkpoint_nsc_code = checkpoint_simplex" and
-    "check_cs check_nsc_code = check_simplex" and
-    "assert_cs assert_nsc_code = assert_simplex" and
-    "solution_cs solution_nsc_code from_ns = solution_simplex" and
-    "Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.invariant_cs invariant_nsc to_ns = invariant_simplex" and
-    "Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.checked_cs checked_nsc to_ns = checked_simplex" 
+    "init_cs init_nsc_code to_ns = init_simplex'" and
+    "backtrack_cs backtrack_nsc_code = backtrack_simplex'" and
+    "checkpoint_cs checkpoint_nsc_code = checkpoint_simplex'" and
+    "check_cs check_nsc_code = check_simplex'" and
+    "assert_cs assert_nsc_code = assert_simplex'" and
+    "solution_cs solution_nsc_code from_ns = solution_simplex'" and
+    "Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.invariant_cs invariant_nsc to_ns = invariant_simplex'" and
+    "Incremental_NS_Constraint_Ops_To_Ns_For_Incremental_Simplex.checked_cs checked_nsc to_ns = checked_simplex'" 
 proof -
   interpret Incremental_NS_Constraint_Ops init_nsc_code assert_nsc_code check_nsc_code solution_nsc_code checkpoint_nsc_code
     backtrack_nsc_code invariant_nsc checked_nsc
@@ -743,40 +745,128 @@ proof -
      solution_nsc_code checkpoint_nsc_code backtrack_nsc_code invariant_nsc checked_nsc to_ns from_ns" 
     ..
 qed (auto simp: 
-    init_simplex_def
-    check_simplex_def
-    solution_simplex_def
-    backtrack_simplex_def
-    checkpoint_simplex_def
-    assert_simplex_def
-    invariant_simplex_def
-    checked_simplex_def
+    init_simplex'_def
+    check_simplex'_def
+    solution_simplex'_def
+    backtrack_simplex'_def
+    checkpoint_simplex'_def
+    assert_simplex'_def
+    invariant_simplex'_def
+    checked_simplex'_def
     )
 
-text \<open>Explicitly write down soundness lemmas outside locale.\<close>
+subsubsection \<open>An implementation which encapsulates the state\<close>
+
+text \<open>In principle, we now already have a complete implementation of the incremental simplex algorithm with
+  @{const init_simplex'}, @{const assert_simplex'}, etc. However, this implementation results in code where
+  the interal type @{typ "'i simplex_state'"} becomes visible. Therefore, we now define all operations
+  on a new type which encapsulates the internal construction.\<close>
+
+datatype 'i simplex_state = Simplex_State "'i simplex_state'" 
+datatype 'i simplex_checkpoint = Simplex_Checkpoint "(nat, 'i \<times> QDelta) mapping \<times> (nat, 'i \<times> QDelta) mapping" 
+
+fun init_simplex where "init_simplex cs =
+  (let tons_cs = to_ns cs
+   in Simplex_State (map snd tons_cs,
+       case preprocess tons_cs of (t, as, trans_v) \<Rightarrow> ((list_map_to_fun (create_map as), trans_v), init_state t)))" 
+
+fun assert_simplex where "assert_simplex i (Simplex_State (cs, (asi, tv), s)) =
+  (case assert_all_s (asi i) s of Inl y \<Rightarrow> Inl y | Inr s' \<Rightarrow> Inr (Simplex_State (cs, (asi, tv), s')))" 
+
+fun check_simplex where 
+  "check_simplex (Simplex_State (cs, asi_tv, s)) = (case check_s s of Inl y \<Rightarrow> Inl y | Inr s' \<Rightarrow> Inr (Simplex_State (cs, asi_tv, s')))"
+
+fun solution_simplex where
+  "solution_simplex (Simplex_State (cs, (asi, tv), s)) = from_ns (tv (\<V> s)) cs" 
+
+fun checkpoint_simplex where "checkpoint_simplex (Simplex_State (cs, asi_tv, s)) = Simplex_Checkpoint (checkpoint_s s)" 
+
+fun backtrack_simplex where
+  "backtrack_simplex (Simplex_Checkpoint c) (Simplex_State (cs, asi_tv, s)) = Simplex_State (cs, asi_tv, backtrack_s c s)" 
+
+subsubsection \<open>Soundness of the incremental simplex implementation\<close>
+
+text \<open>First link the unprimed constants against their primed counterparts.\<close>
+
+lemma init_simplex': "init_simplex cs = Simplex_State (init_simplex' cs)" 
+  by (simp add: code_lemmas Let_def)
+
+lemma assert_simplex': "assert_simplex i (Simplex_State s) = map_sum id Simplex_State (assert_simplex' i s)" 
+  by (cases s, auto simp: code_lemmas split: sum.splits)
+
+lemma check_simplex': "check_simplex (Simplex_State s) = map_sum id Simplex_State (check_simplex' s)" 
+  by (cases s, auto simp: code_lemmas split: sum.splits)
+
+lemma solution_simplex': "solution_simplex (Simplex_State s) = solution_simplex' s" 
+  by (cases s, auto simp: code_lemmas)
+
+lemma checkpoint_simplex': "checkpoint_simplex (Simplex_State s) = Simplex_Checkpoint (checkpoint_simplex' s)" 
+  by (cases s, auto simp: code_lemmas split: sum.splits)
+
+lemma backtrack_simplex': "backtrack_simplex (Simplex_Checkpoint c) (Simplex_State s) = Simplex_State (backtrack_simplex' c s)" 
+  by (cases s, auto simp: code_lemmas split: sum.splits)
+
+fun invariant_simplex where
+  "invariant_simplex cs J (Simplex_State s) = invariant_simplex' cs J s" 
+
+fun checked_simplex where
+  "checked_simplex cs J (Simplex_State s) = checked_simplex' cs J s" 
+
+text \<open>Hide implementation\<close>
+
+declare init_simplex.simps[simp del]
+declare assert_simplex.simps[simp del]
+declare check_simplex.simps[simp del]
+declare solution_simplex.simps[simp del]
+declare checkpoint_simplex.simps[simp del]
+declare backtrack_simplex.simps[simp del]
+
+
+text \<open>Soundness lemmas\<close>
 
 lemma init_simplex: "checked_simplex cs {} (init_simplex cs)" 
-  by (rule Incremental_Simplex.init_cs)
+  using Incremental_Simplex.init_cs by (simp add: init_simplex')
 
 lemma assert_simplex_ok:
   "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inr s' \<Longrightarrow> invariant_simplex cs (insert j J) s'"  
-  by (rule Incremental_Simplex.assert_cs_ok)
-
+proof (cases s)
+  case s: (Simplex_State ss)
+  show "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inr s' \<Longrightarrow> invariant_simplex cs (insert j J) s'"
+    unfolding s invariant_simplex.simps assert_simplex' using Incremental_Simplex.assert_cs_ok[of cs J ss j]
+    by (cases "assert_simplex' j ss", auto)
+qed
+  
 lemma assert_simplex_unsat:
   "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inl I \<Longrightarrow> set I \<subseteq> insert j J \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" 
-  by (rule Incremental_Simplex.assert_cs_unsat)
+proof (cases s)
+  case s: (Simplex_State ss)
+  show "invariant_simplex cs J s \<Longrightarrow> assert_simplex j s = Inl I \<Longrightarrow> set I \<subseteq> insert j J \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
+    unfolding s invariant_simplex.simps assert_simplex' using Incremental_Simplex.assert_cs_unsat[of cs J ss j]
+    by (cases "assert_simplex' j ss", auto)
+qed
 
 lemma check_simplex_ok:
   "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Inr s' \<Longrightarrow> checked_simplex cs J s'" 
-  by (rule Incremental_Simplex.check_cs_ok)
+proof (cases s)
+  case s: (Simplex_State ss)
+  show "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Inr s' \<Longrightarrow> checked_simplex cs J s'"
+    unfolding s invariant_simplex.simps check_simplex.simps check_simplex' using Incremental_Simplex.check_cs_ok[of cs J ss]
+    by (cases "check_simplex' ss", auto)
+qed
 
 lemma check_simplex_unsat:
   "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Unsat I \<Longrightarrow> set I \<subseteq> J \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" 
-  by (rule Incremental_Simplex.check_cs_unsat)
+proof (cases s)
+  case s: (Simplex_State ss)
+  show "invariant_simplex cs J s \<Longrightarrow> check_simplex s = Unsat I \<Longrightarrow> set I \<subseteq> J \<and> (\<nexists>v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
+    unfolding s invariant_simplex.simps check_simplex.simps check_simplex' using Incremental_Simplex.check_cs_unsat[of cs J ss]
+    by (cases "check_simplex' ss", auto)
+qed
 
 lemma solution_simplex:
   "checked_simplex cs J s \<Longrightarrow> solution_simplex s = v \<Longrightarrow> (J, \<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" 
-  by (rule Incremental_Simplex.solution_cs)
+  using Incremental_Simplex.solution_cs[of cs J]
+  by (cases s, auto simp: solution_simplex')
 
 lemma backtrack_simplex:
   "checked_simplex cs J s \<Longrightarrow>
@@ -785,11 +875,30 @@ lemma backtrack_simplex:
    backtrack_simplex c s' = s'' \<Longrightarrow> 
    J \<subseteq> K \<Longrightarrow> 
    invariant_simplex cs J s''" 
-  by (rule Incremental_Simplex.backtrack_cs)
+proof -
+  obtain ss where ss: "s = Simplex_State ss" by (cases s, auto)
+  obtain ss' where ss': "s' = Simplex_State ss'" by (cases s', auto)
+  obtain ss'' where ss'': "s'' = Simplex_State ss''" by (cases s'', auto)
+  obtain cc where cc: "c = Simplex_Checkpoint cc" by (cases c, auto)
+  show "checked_simplex cs J s \<Longrightarrow>
+   checkpoint_simplex s = c \<Longrightarrow>
+   invariant_simplex cs K s' \<Longrightarrow> 
+   backtrack_simplex c s' = s'' \<Longrightarrow> 
+   J \<subseteq> K \<Longrightarrow> 
+   invariant_simplex cs J s''" 
+    unfolding ss ss' ss'' cc checked_simplex.simps invariant_simplex.simps checkpoint_simplex' backtrack_simplex'
+    using Incremental_Simplex.backtrack_cs[of cs J ss cc K ss' ss''] by simp
+qed
 
 lemma checked_invariant_simplex:
   "checked_simplex cs J s \<Longrightarrow> invariant_simplex cs J s" 
-  by (rule Incremental_Simplex.checked_invariant_cs)
+  using Incremental_Simplex.checked_invariant_cs[of cs J] by (cases s, auto)
+
+declare checked_simplex.simps[simp del]
+declare invariant_simplex.simps[simp del]
+
+text \<open>From this point onwards, one should not look into the types @{typ "'i simplex_state"}
+  and @{typ "'i simplex_checkpoint"}.\<close>
 
 text \<open>For convenience: an assert-all function which takes multiple indices.\<close>
 
@@ -827,6 +936,8 @@ proof (induct K arbitrary: s J)
   qed
 qed simp
 
+text \<open>The collection of soundness lemmas for the incremental simplex algorithm.\<close>
+
 lemmas incremental_simplex = 
   init_simplex
   assert_simplex_ok
@@ -839,7 +950,7 @@ lemmas incremental_simplex =
   backtrack_simplex
   checked_invariant_simplex
 
-text \<open>Test Executability and Example for Incremental Interface\<close>
+subsection \<open>Test Executability and Example for Incremental Interface\<close>
 
 value (code) "let cs = [
     (1 :: int, LT (lp_monom 1 1) 4), \<comment> \<open>$x_1 < 4$\<close>

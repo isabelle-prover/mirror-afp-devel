@@ -1,9 +1,7 @@
 chapter AFP
 
-session Simplex (AFP) = HOL +
+session Simplex (AFP) = "HOL-Library" +
   options [timeout = 600]
-  sessions
-    "HOL-Library"
   theories
     Simplex_Auxiliary
     Rel_Chain
