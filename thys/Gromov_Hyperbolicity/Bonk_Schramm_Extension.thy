@@ -1300,14 +1300,14 @@ theorem (in Gromov_hyperbolic_space) Morse_Gromov_theorem2':
   assumes "lambda C-quasi_isometry_on {A..B} c"
           "lambda C-quasi_isometry_on {A..B} d"
           "c A = d A" "c B = d B"
-  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 528 * lambda^2 * (C + deltaG(TYPE('a)))"
+  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 196 * lambda^2 * (C + deltaG(TYPE('a)))"
 proof -
   interpret BS: Gromov_hyperbolic_space_geodesic "dist::('a Bonk_Schramm_extension \<Rightarrow> 'a Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('a)))"
     apply standard using Bonk_Schramm_extension_hyperbolic by auto
   have "hausdorff_distance (c`{A..B}) (d`{A..B}) = hausdorff_distance ((to_Bonk_Schramm_extension o c)`{A..B}) ((to_Bonk_Schramm_extension o d)`{A..B})"
     unfolding image_comp[symmetric] apply (rule isometry_preserves_hausdorff_distance[symmetric, of UNIV])
     using to_Bonk_Schramm_extension_isometry by auto
-  also have "... \<le> 528 * (lambda*1)^2 * ((C*1+0) + deltaG(TYPE('a)))"
+  also have "... \<le> 196 * (lambda*1)^2 * ((C*1+0) + deltaG(TYPE('a)))"
     apply (intro BS.Morse_Gromov_theorem2 quasi_isometry_on_compose[where Y = UNIV])
     using assms isometry_quasi_isometry_on to_Bonk_Schramm_extension_isometry by auto
   finally show ?thesis by simp
@@ -1316,7 +1316,7 @@ qed
 lemma Gromov_hyperbolic_invariant_under_quasi_isometry_explicit':
   fixes f::"'a::geodesic_space \<Rightarrow> 'b::Gromov_hyperbolic_space"
   assumes "lambda C-quasi_isometry f"
-  shows "Gromov_hyperbolic_subset (2128 * lambda^3 * (C + deltaG(TYPE('b)))) (UNIV::('a set))"
+  shows "Gromov_hyperbolic_subset (800 * lambda^3 * (C + deltaG(TYPE('b)))) (UNIV::('a set))"
 proof -
   interpret BS: Gromov_hyperbolic_space_geodesic "dist::('b Bonk_Schramm_extension \<Rightarrow> 'b Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('b)))"
     apply standard using Bonk_Schramm_extension_hyperbolic by auto

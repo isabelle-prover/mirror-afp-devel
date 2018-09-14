@@ -370,6 +370,96 @@ proof -
   show ?thesis using xy xz yz * \<open>w \<in> Gxy\<close> by force
 qed
 
+text \<open>The distance of a vertex of a triangle to the opposite side is essentially given by the
+Gromov product, up to $2\delta$.\<close>
+
+lemma dist_triangle_side_middle:
+  assumes "geodesic_segment_between G x (y::'a)"
+  shows "dist z (geodesic_segment_param G x (Gromov_product_at x z y)) \<le> Gromov_product_at z x y + 2 * deltaG(TYPE('a))"
+proof -
+  define m where "m = geodesic_segment_param G x (Gromov_product_at x z y)"
+  have "m \<in> G"
+    unfolding m_def using assms(1) by auto
+  have A: "dist x m = Gromov_product_at x z y"
+    unfolding m_def by (rule geodesic_segment_param(6)[OF assms(1)], auto)
+  have B: "dist y m = dist x y - dist x m"
+    using geodesic_segment_dist[OF assms \<open>m \<in> G\<close>] by (auto simp add: metric_space_class.dist_commute)
+  have *: "dist x z + dist y m = Gromov_product_at z x y + dist x y"
+          "dist x m + dist y z = Gromov_product_at z x y + dist x y"
+    unfolding B A Gromov_product_at_def by (auto simp add: metric_space_class.dist_commute divide_simps)
+
+  have "dist x y + dist z m \<le> max (dist x z + dist y m) (dist x m + dist y z) + 2 * deltaG(TYPE('a))"
+    by (rule hyperb_quad_ineq)
+  then have "dist z m \<le> Gromov_product_at z x y + 2 * deltaG(TYPE('a))"
+    unfolding * by auto
+  then show ?thesis
+    unfolding m_def by auto
+qed
+
+lemma infdist_triangle_side [mono_intros]:
+  assumes "geodesic_segment_between G x (y::'a)"
+  shows "infdist z G \<le> Gromov_product_at z x y + 2 * deltaG(TYPE('a))"
+proof -
+  have "infdist z G \<le> dist z (geodesic_segment_param G x (Gromov_product_at x z y))"
+    using assms by (auto intro!: infdist_le)
+  then show ?thesis
+    using dist_triangle_side_middle[OF assms, of z] by auto
+qed
+
+text \<open>The distance of a point on a side of triangle to the opposite vertex is controlled by
+the length of the opposite sides, up to $\delta$.\<close>
+
+lemma dist_le_max_dist_triangle:
+  assumes "geodesic_segment_between G x y"
+          "m \<in> G"
+  shows "dist m z \<le> max (dist x z) (dist y z) + deltaG(TYPE('a))"
+proof -
+  consider "dist m x \<le> deltaG(TYPE('a))" | "dist m y \<le> deltaG(TYPE('a))" |
+           "dist m x \<ge> deltaG(TYPE('a)) \<and> dist m y \<ge> deltaG(TYPE('a)) \<and> Gromov_product_at z x m \<le> Gromov_product_at z m y" |
+           "dist m x \<ge> deltaG(TYPE('a)) \<and> dist m y \<ge> deltaG(TYPE('a)) \<and> Gromov_product_at z m y \<le> Gromov_product_at z x m"
+    by linarith
+  then show ?thesis
+  proof (cases)
+    case 1
+    have "dist m z \<le> dist m x + dist x z"
+      by (intro mono_intros)
+    then show ?thesis using 1 by auto
+  next
+    case 2
+    have "dist m z \<le> dist m y + dist y z"
+      by (intro mono_intros)
+    then show ?thesis using 2 by auto
+  next
+    case 3
+    then have "Gromov_product_at z x m = min (Gromov_product_at z x m) (Gromov_product_at z m y)"
+      by auto
+    also have "... \<le> Gromov_product_at z x y + deltaG(TYPE('a))"
+      by (intro mono_intros)
+    finally have "dist z m \<le> dist z y + dist x m - dist x y + 2 * deltaG(TYPE('a))"
+      unfolding Gromov_product_at_def by (auto simp add: divide_simps algebra_simps)
+    also have "... = dist z y - dist m y + 2 * deltaG(TYPE('a))"
+      using geodesic_segment_dist[OF assms] by auto
+    also have "... \<le> dist z y + deltaG(TYPE('a))"
+      using 3 by auto
+    finally show ?thesis
+      by (simp add: metric_space_class.dist_commute)
+  next
+    case 4
+    then have "Gromov_product_at z m y = min (Gromov_product_at z x m) (Gromov_product_at z m y)"
+      by auto
+    also have "... \<le> Gromov_product_at z x y + deltaG(TYPE('a))"
+      by (intro mono_intros)
+    finally have "dist z m \<le> dist z x + dist m y - dist x y + 2 * deltaG(TYPE('a))"
+      unfolding Gromov_product_at_def by (auto simp add: divide_simps algebra_simps)
+    also have "... = dist z x - dist x m + 2 * deltaG(TYPE('a))"
+      using geodesic_segment_dist[OF assms] by auto
+    also have "... \<le> dist z x + deltaG(TYPE('a))"
+      using 4 by (simp add: metric_space_class.dist_commute)
+    finally show ?thesis
+      by (simp add: metric_space_class.dist_commute)
+  qed
+qed
+
 end (* of locale Gromov_hyperbolic_space *)
 
 text \<open>A useful variation around the previous properties is that quadrilaterals are thin, in the
