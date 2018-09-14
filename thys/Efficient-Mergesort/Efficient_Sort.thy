@@ -162,17 +162,17 @@ fun sequences :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b list \<Rightarrow> 'b l
   and asc :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> ('b list \<Rightarrow> 'b list) \<Rightarrow> 'b list \<Rightarrow> 'b list list"
   and desc :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> 'b list list"
   where
-    "sequences key (a#b#xs) =
+    "sequences key (a # b # xs) =
       (if key a > key b then desc key b [a] xs else asc key b ((#) a) xs)"
   | "sequences key xs = [xs]"
-  | "asc key a f (b#bs) =
+  | "asc key a f (b # bs) =
       (if \<not> key a > key b then asc key b (f \<circ> (#) a) bs
-      else f [a] # sequences key (b#bs))"
-  | "asc key a f bs = f [a] # sequences key bs"
-  | "desc key a as (b#bs) =
-      (if key a > key b then desc key b (a#as) bs
-      else (a#as) # sequences key (b#bs))"
-  | "desc key a as bs = (a#as) # sequences key bs"
+      else f [a] # sequences key (b # bs))"
+  | "asc key a f [] = [f [a], []]"
+  | "desc key a as (b # bs) =
+      (if key a > key b then desc key b (a # as) bs
+      else (a # as) # sequences key (b # bs))"
+  | "desc key a as [] = [a # as, []]"
 
 fun merge :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b list \<Rightarrow> 'b list \<Rightarrow> 'b list"
   where
@@ -253,7 +253,7 @@ lemma asc_take_chain_drop_chain_conv_append:
   assumes "\<And>xs ys. f (xs @ ys) = f xs @ ys"
   shows "asc key a (f \<circ> (@) as) xs =
     (f as @ a # take_chain a (le key) xs) # sequences key (drop_chain a (le key) xs)"
-using assms
+  using assms
 proof (induct xs arbitrary: as a)
   case (Cons x xs)
   show ?case
@@ -344,7 +344,7 @@ lemma filter_by_key_dropWhile [simp]:
   assumes "sorted (map key xs)"
   shows "[y\<leftarrow>dropWhile (\<lambda>x. key x \<le> key z) xs. key z = key y] = []"
     (is "[y\<leftarrow>dropWhile ?P xs. key z = key y] = []")
-using assms
+  using assms
 proof (induct xs rule: rev_induct)
   case Nil then show ?case by simp
 next
