@@ -480,7 +480,7 @@ proof -
   also have "\<dots> = (\<Sum>ys\<in>#YS. {#y \<in># mset ys. y < x#})" unfolding YS_def
     by (subst sum_mset_sum_list [symmetric]) simp_all
   also have "YS = YS1 + YS2"
-    by (simp add: YS_def YS1_def YS2_def not_le multiset_partition [symmetric])
+    by (simp add: YS_def YS1_def YS2_def not_le)
   also have "(\<Sum>ys\<in>#\<dots>. {#y \<in># mset ys. y < x#}) = 
                (\<Sum>ys\<in>#YS1. {#y \<in># mset ys. y < x#}) + (\<Sum>ys\<in>#YS2. {#y \<in># mset ys. y < x#})"
     by simp

@@ -58,7 +58,7 @@ proof (induct n arbitrary: M)
   let ?K = "{#base ^ m. m \<in># M#}"
 
   have M: "M = ?Meq + ?Mne"
-    by (simp add: multiset_partition)
+    by (simp)
 
   have well_Mne: "well_base ?Mne"
     by (rule well_base_filter[OF well_M])
@@ -73,7 +73,7 @@ proof (induct n arbitrary: M)
   moreover have "base * base ^ n = base ^ n + (base - Suc 0) * base ^ n"
     using base_ge_2 mult_eq_if by auto
   ultimately show ?case
-    using ih[OF well_Mne in_Mne_lt_n] by (subst M) (simp del: union_mset_compl)
+    using ih[OF well_Mne in_Mne_lt_n] by (subst M) (simp del: union_filter_mset_complement)
 qed simp
 
 inductive well_base\<^sub>h :: "hmultiset \<Rightarrow> bool" where

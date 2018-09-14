@@ -78,7 +78,7 @@ qed
 
 lemma lemmaA_3_8:  "(M + N) -s S = (M -s S) + (N -s S)" unfolding diff_def by (rule multiset_eqI) simp
 lemma lemmaA_3_9:  "(M -s S) -s T = M -s (S \<union> T)" unfolding diff_def by (rule multiset_eqI) simp
-lemma lemmaA_3_10: "M = (M \<inter>s S) + (M -s S)" using multiset_partition unfolding diff_def intersect_def filter_def by auto
+lemma lemmaA_3_10: "M = (M \<inter>s S) + (M -s S)" unfolding diff_def intersect_def by auto
 lemma lemmaA_3_11: "(M -s T) \<inter>s S = (M \<inter>s S) -s T" unfolding diff_def intersect_def by (rule multiset_eqI) simp
 
 subsubsection {* Multisets *}

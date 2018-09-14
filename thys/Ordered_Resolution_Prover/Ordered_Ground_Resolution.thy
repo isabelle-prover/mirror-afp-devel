@@ -264,7 +264,7 @@ proof -
   have pospos: "\<And>LL A. {#Pos (atm_of x). x \<in># {#L \<in># LL. L = Pos A#}#} = {#L \<in># LL. L = Pos A#}"
     by (metis (mono_tags, lifting) image_filter_cong literal.sel(1) multiset.map_ident)
   have ca_of_c_of_aj_of: "\<And>A. CA_of A = C_of A + poss (Aj_of A)"
-    using pospos[of _ "CA_of _"] by (simp add: C_of_def Aj_of_def add.commute multiset_partition)
+    using pospos[of _ "CA_of _"] by (simp add: C_of_def Aj_of_def)
 
   define n :: nat where
     "n = length As"

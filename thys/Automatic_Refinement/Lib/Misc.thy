@@ -2552,7 +2552,7 @@ proof (induct xs arbitrary: sl rule: measure_induct_rule[of "length"])
 
     from part_rev_eq[symmetric] have xs'_multi_eq : "mset xs' = mset xs1 + mset xs2"
       unfolding partition_rev_filter_conv
-      by (simp add: mset_filter multiset_partition)
+      by (simp add: mset_filter)
 
     from part_rev_eq[symmetric]
     have length_le: "length xs1 < length xs" "length xs2 < length xs"

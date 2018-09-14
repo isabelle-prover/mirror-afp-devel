@@ -77,7 +77,7 @@ lemma image_mset_ordering:
 proof -
   let ?L' = "{# u \<in># L.  (f1 u) = (f2 u) #}"
   let ?L'' = "{# u \<in># L.  (f1 u) \<noteq> (f2 u) #}"
-  have "L = ?L' + ?L''" by (simp add: multiset_partition) 
+  have "L = ?L' + ?L''" by (simp) 
   from assms(3) have "\<forall>u. (u \<in># ?L'' \<longrightarrow> ((f1 u),(f2 u)) \<in> r)" by auto
   let ?M1' = "{# (f1 u). u \<in># ?L' #}"
   let ?M2' = "{# (f2 u). u \<in># ?L' #}"
@@ -120,7 +120,7 @@ proof (cases)
   next assume "M1 \<noteq> M2"
   let ?L' = "{# u \<in># L.  (f1 u) = (f2 u) #}"
   let ?L'' = "{# u \<in># L.  (f1 u) \<noteq> (f2 u) #}"
-  have "L = ?L' + ?L''" by (simp add: multiset_partition) 
+  have "L = ?L' + ?L''" by (simp) 
   from assms(3) have "\<forall>u. (u \<in># ?L'' \<longrightarrow> ((f1 u),(f2 u)) \<in> r)" by auto
   let ?M1' = "{# (f1 u). u \<in># ?L' #}"
   let ?M2' = "{# (f2 u). u \<in># ?L' #}"
