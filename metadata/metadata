@@ -7066,7 +7066,7 @@ abstract =
 
 [Irrationality_J_Hancl]
 title = Irrational Rapidly Convergent Series
-author = Angeliki Koutsoukou Argyraki <http://www.cl.cam.ac.uk/~ak2110/>, Wenda Li <http://www.cl.cam.ac.uk/~wl302/>
+author = Angeliki Koutsoukou-Argyraki <http://www.cl.cam.ac.uk/~ak2110/>, Wenda Li <http://www.cl.cam.ac.uk/~wl302/>
 topic = Mathematics/Number Theory, Mathematics/Analysis
 date = 2018-05-23
 notify = ak2110@cam.ac.uk, wl302@cam.ac.uk
@@ -7208,7 +7208,7 @@ abstract =
 [Quaternions]
 title = Quaternions
 author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
-topic = Mathematics/Analysis
+topic = Mathematics/Algebra, Mathematics/Geometry
 date = 2018-09-05
 notify = lp15@cam.ac.uk
 abstract = 
@@ -7221,4 +7221,20 @@ abstract =
   etc., which must be proved explicitly in the HOL Light version.  The
   development concludes with the geometric interpretation of the product
   of imaginary quaternions.
-  
+
+[Octonions]
+title = Octonions
+author = Angeliki Koutsoukou-Argyraki <http://www.cl.cam.ac.uk/~ak2110/>
+topic = Mathematics/Algebra, Mathematics/Geometry
+date = 2018-09-14
+notify = ak2110@cam.ac.uk
+abstract = 
+  We develop the basic theory of Octonions, including various identities
+  and properties of the octonions and of the octonionic product, a
+  description of 7D isometries and representations of orthogonal
+  transformations. To this end we first develop the theory of the vector
+  cross product in 7 dimensions. The development of the theory of
+  Octonions is inspired by that of the theory of Quaternions by Lawrence
+  Paulson. However, we do not work within the type class real_algebra_1
+  because the octonionic product is not associative.
+

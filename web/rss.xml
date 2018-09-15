@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>05 Sep 2018 00:00:00 +0000</pubDate>
+    <pubDate>14 Sep 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Octonions</title>
+              <link>https://www.isa-afp.org/entries/Octonions.html</link>
+       <guid>https://www.isa-afp.org/entries/Octonions.html</guid>
+       <dc:creator> Angeliki Koutsoukou-Argyraki       </dc:creator>
+       <pubDate>14 Sep 2018 00:00:00 +0000</pubDate>
+       <description>
+We develop the basic theory of Octonions, including various identities
+and properties of the octonions and of the octonionic product, a
+description of 7D isometries and representations of orthogonal
+transformations. To this end we first develop the theory of the vector
+cross product in 7 dimensions. The development of the theory of
+Octonions is inspired by that of the theory of Quaternions by Lawrence
+Paulson. However, we do not work within the type class real_algebra_1
+because the octonionic product is not associative.</description>
+    </item>
     <item>
        <title>Quaternions</title>
               <link>https://www.isa-afp.org/entries/Quaternions.html</link>
@@ -258,7 +274,7 @@ our ITP paper [2].</description>
        <title>Irrational Rapidly Convergent Series</title>
               <link>https://www.isa-afp.org/entries/Irrationality_J_Hancl.html</link>
        <guid>https://www.isa-afp.org/entries/Irrationality_J_Hancl.html</guid>
-       <dc:creator> Angeliki Koutsoukou Argyraki, Wenda Li       </dc:creator>
+       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
        <pubDate>23 May 2018 00:00:00 +0000</pubDate>
        <description>
 We formalize with Isabelle/HOL a proof of a theorem by J. Hancl asserting the
@@ -546,18 +562,6 @@ where first-order terms are omni-present: the unification algorithm is
 used to certify several confluence and termination techniques, like
 critical-pair computation and dependency graph approximations; and the
 subsumption order is a crucial ingredient for completion.</description>
-    </item>
-    <item>
-       <title>The Error Function</title>
-              <link>https://www.isa-afp.org/entries/Error_Function.html</link>
-       <guid>https://www.isa-afp.org/entries/Error_Function.html</guid>
-       <dc:creator> Manuel Eberl       </dc:creator>
-       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt; This entry provides the definitions and basic properties of
-the complex and real error function erf and the complementary error
-function erfc. Additionally, it gives their full asymptotic
-expansions. &lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
