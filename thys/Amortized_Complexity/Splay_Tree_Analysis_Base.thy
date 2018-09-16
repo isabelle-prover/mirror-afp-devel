@@ -8,7 +8,7 @@ imports
   Splay_Tree.Splay_Tree
 begin
 
-declare size1_def[simp]
+declare size1_size[simp]
 
 abbreviation "\<phi> t == log 2 (size1 t)"
 

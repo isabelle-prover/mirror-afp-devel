@@ -222,7 +222,7 @@ definition t_bal_tree :: "nat \<Rightarrow> 'a tree \<Rightarrow> nat" where
 lemma t_bal_tree: "n = size xs \<Longrightarrow> t_bal_tree n xs = 4*n+3"
 by(simp add: t_bal_tree_def bal_tree_tm_def tm_simps bal_list_tm_def
     surj_TM[OF inorder2_def t_inorder2_def] t_inorder2
-    surj_TM[OF bal_def t_bal_def] t_bal size1_def
+    surj_TM[OF bal_def t_bal_def] t_bal size1_size
     split: tm.split prod.split)
 
 
@@ -489,7 +489,7 @@ proof (cases "ins (size t) 0 x t")
 next
   case Bal
   thus ?thesis
-    using ins_bal_i_Bal[OF Bal] assms ins_size by(simp add: size1_def)
+    using ins_bal_i_Bal[OF Bal] assms ins_size by(simp add: size1_size)
 next
   case (Unbal t')
   hence False using ins0_neq_Unbal by blast
@@ -574,7 +574,7 @@ proof -
            = real(size1 ?sh) - (real(size1 t) - size1 ?sh) - 1"
     by (simp add: assms(1))
   also have "\<dots> \<le> imbal t"
-    by (auto simp add: t assms(1) imbal.simps size1_def)
+    by (auto simp add: t assms(1) imbal.simps size1_size)
   finally show ?thesis by simp
 qed
 
@@ -899,13 +899,13 @@ qed
 lemma imbal_ins_Bal: "ins n d x t = Bal t' \<Longrightarrow>
  real(imbal (node tw t' y s)) - imbal (node tw t y s) \<le> 1"
 apply(drule ins_size)
-apply(auto simp add: size1_def imbal.simps)
+apply(auto simp add: size1_size imbal.simps)
 done
 
 lemma imbal_ins_Unbal: "ins n d x t = Unbal t' \<Longrightarrow>
  real(imbal (node tw t' y s)) - imbal (node tw t y s) \<le> 1"
 apply(drule ins_size)
-apply(auto simp add: size1_def imbal.simps)
+apply(auto simp add: size1_size imbal.simps)
 done
 
 lemma t_ins3_Same:
@@ -920,7 +920,7 @@ lemma t_ins3_Unbal:
   t_ins3 n d x t \<le> 2 * size t + 1 + height t"
 apply(induction t arbitrary: d t' n' h')
  apply simp
-apply (auto simp: ins3_ins2 ins2_iff_ins ins_height size_tree size1_def max_def mono_bal_i'
+apply (auto simp: ins3_ins2 ins2_iff_ins ins_height size_tree size1_size max_def mono_bal_i'
          dest: unbal_ins_Unbal split!: up2.splits if_splits)
    apply (fastforce simp: mono_bal_i')+
 done
@@ -991,7 +991,7 @@ lemma amor_Unbal:
   t_ins3 n d x t + \<Phi> t' - \<Phi> t \<le> 2*size1 t + (6*e + 1) * height t"
 apply(frule (1) t_ins3_Unbal)
 apply(drule (1) Phi_diff_Unbal)
-by(simp add: ring_distribs size1_def)
+by(simp add: ring_distribs size1_size)
 
 lemma t_ins3_Bal:
   "\<lbrakk> ins3 n d x t = Bal2 t'; bal_i n (height t + d) \<rbrakk>
@@ -1068,12 +1068,12 @@ next
       also have "\<dots> \<le> real(t_ins3 n d x ?t) - 6*(size1 ?t' - e) - \<Phi> l + 6*e + 1"
         using imbal_size[OF bal_t'] hl' bal_l' by(simp add: ring_distribs)
       also have "\<dots> = real(t_ins3 n (d+1) x l) + 2*size1 l' + 4*size1 r - 4*size1 ?t' - \<Phi> l + 6*e + 6*e + 1"
-        using ls Unbal2 inv bal_t' hl' by (simp add: t_bal_tree max_def size1_def)
+        using ls Unbal2 inv bal_t' hl' by (simp add: t_bal_tree max_def size1_size)
       also have "\<dots> = real(t_ins3 n (d+1) x l) - 2*size1 l' - \<Phi> l + 6*e + 6*e + 1"
         by simp
       also have "\<dots> \<le> (6*e + 2) * height l + 6*e + 6*e"
         using amor_Unbal[OF Unbal2 *] ins_size(2)[OF Unbal] \<Phi>_nn[of l']
-        by(simp add: ring_distribs size1_def)
+        by(simp add: ring_distribs size1_size)
       also have "\<dots> \<le> (6*e + 2) * (height l + 2)"
         by (simp add: ring_distribs)
       also have "\<dots> \<le> (6*e+2) * (height \<langle>l, y, r\<rangle> + 1)"
@@ -1144,12 +1144,12 @@ next
       also have "\<dots> \<le> real(t_ins3 n d x ?t) - 6*(size1 ?t' - e) - \<Phi> r + 6*e + 1"
         using imbal_size[OF bal_t'] hr' bal_r' by (simp add: ring_distribs)
       also have "\<dots> = real(t_ins3 n (d+1) x r) + 2*size1 r' + 4*size1 l - 4*size1 ?t' - \<Phi> r + 6*e + 6*e + 1"
-        using gr Unbal2 inv bal_t' hr' by (simp add: t_bal_tree max_def size1_def add_ac)
+        using gr Unbal2 inv bal_t' hr' by (simp add: t_bal_tree max_def size1_size add_ac)
       also have "\<dots> = real(t_ins3 n (d+1) x r) - 2*size1 r' - \<Phi> r + 6*e + 6*e + 1"
         by simp
       also have "\<dots> \<le> (6*e + 2) * height r + 6*e + 6*e"
         using amor_Unbal[OF Unbal2 *] ins_size(2)[OF Unbal] \<Phi>_nn[of r']
-        by(simp add: ring_distribs size1_def)
+        by(simp add: ring_distribs size1_size)
       also have "\<dots> \<le> (6*e + 2) * (height r + 2)"
         by (simp add: ring_distribs)
       also have "\<dots> \<le> (6*e+2) * (height \<langle>l, y, r\<rangle> + 1)"
@@ -1251,7 +1251,7 @@ next
 next
   case (4 t) thus ?case
     using size1_imbal2[of t]
-    by(simp add: bal_log_def size1_def add_ac ring_distribs)
+    by(simp add: bal_log_def size1_size add_ac ring_distribs)
 qed
 
 
@@ -1359,7 +1359,7 @@ proof (cases "ins (size t + dl) 0 x t")
 next
   case Bal
   thus ?thesis
-    using ins_bal_i_Bal[OF Bal] assms ins_size by(simp add: size1_def)
+    using ins_bal_i_Bal[OF Bal] assms ins_size by(simp add: size1_size)
 next
   case (Unbal t')
   hence False by(simp add: ins0_neq_Unbal)
@@ -1808,7 +1808,7 @@ next
       using False Some
       by(simp add: delete2_def2 t_delete2_def2 \<Phi>_wbalanced bal_tree)
     also have "\<dots> = t_del x t + 4 * size t - \<Phi> t - 4*dl/cd"
-      using False assms Some by(simp add: t_delete2_def2 t_bal_tree size_del size1_def)
+      using False assms Some by(simp add: t_delete2_def2 t_bal_tree size_del size1_size)
     also have "\<dots> \<le> (6*e+1)*height t + 4*(size t - dl/cd + 1)"
       using amor_del_Some[OF Some] \<Phi>_nn[of t] \<Phi>_nn[of t']
       by(simp add: ring_distribs)
@@ -1978,7 +1978,7 @@ proof -
   also have "\<dots> \<le> ceiling(c * log 2 (size t + 1 + (2 powr (b/c) - 1) * (size t + 1)))"
     using * ** cd_le_log c1 by(simp add: ceiling_mono mult_left_mono)
   also have "\<dots> = ceiling(c * log 2 (2 powr (b/c) * (size1 t)))"
-    by(simp add:algebra_simps size1_def)
+    by(simp add:algebra_simps size1_size)
   also have "\<dots> = ceiling(c * (b/c + log 2 (size1 t)))"
     by(simp add: log_mult)
   also have "\<dots> = ceiling(c * log 2 (size1 t) + b)"
