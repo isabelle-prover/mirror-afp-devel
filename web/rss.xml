@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>14 Sep 2018 00:00:00 +0000</pubDate>
+    <pubDate>15 Sep 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Aggregation Algebras</title>
+              <link>https://www.isa-afp.org/entries/Aggregation_Algebras.html</link>
+       <guid>https://www.isa-afp.org/entries/Aggregation_Algebras.html</guid>
+       <dc:creator> Walter Guttmann       </dc:creator>
+       <pubDate>15 Sep 2018 00:00:00 +0000</pubDate>
+       <description>
+We develop algebras for aggregation and minimisation for weight
+matrices and for edge weights in graphs. We verify the correctness of
+Prim&#39;s and Kruskal&#39;s minimum spanning tree algorithms based
+on these algebras. We also show numerous instances of these algebras
+based on linearly ordered commutative semigroups.</description>
+    </item>
     <item>
        <title>Octonions</title>
               <link>https://www.isa-afp.org/entries/Octonions.html</link>
@@ -545,23 +558,6 @@ Berlekamp–Zassenhaus development, where the exponential reconstruction
 phase has been replaced by the polynomial-time basis reduction
 algorithm. Thanks to this formalization we found a serious flaw in a
 textbook.</description>
-    </item>
-    <item>
-       <title>First-Order Terms</title>
-              <link>https://www.isa-afp.org/entries/First_Order_Terms.html</link>
-       <guid>https://www.isa-afp.org/entries/First_Order_Terms.html</guid>
-       <dc:creator> Christian Sternagel, René Thiemann       </dc:creator>
-       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
-       <description>
-We formalize basic results on first-order terms, including matching and a
-first-order unification algorithm, as well as well-foundedness of the
-subsumption order. This entry is part of the &lt;i&gt;Isabelle
-Formalization of Rewriting&lt;/i&gt; &lt;a
-href=&#34;http://cl-informatik.uibk.ac.at/isafor&#34;&gt;IsaFoR&lt;/a&gt;,
-where first-order terms are omni-present: the unification algorithm is
-used to certify several confluence and termination techniques, like
-critical-pair computation and dependency graph approximations; and the
-subsumption order is a crucial ingredient for completion.</description>
     </item>
   </channel>
 </rss>

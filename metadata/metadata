@@ -7238,3 +7238,16 @@ abstract =
   Paulson. However, we do not work within the type class real_algebra_1
   because the octonionic product is not associative.
 
+[Aggregation_Algebras]
+title = Aggregation Algebras
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
+topic = Mathematics/Algebra
+date = 2018-09-15
+notify = walter.guttmann@canterbury.ac.nz
+abstract = 
+  We develop algebras for aggregation and minimisation for weight
+  matrices and for edge weights in graphs. We verify the correctness of
+  Prim's and Kruskal's minimum spanning tree algorithms based
+  on these algebras. We also show numerous instances of these algebras
+  based on linearly ordered commutative semigroups.
+
