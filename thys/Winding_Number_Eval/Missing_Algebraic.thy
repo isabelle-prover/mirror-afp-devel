@@ -9,33 +9,10 @@ theory Missing_Algebraic imports
   "HOL-Computational_Algebra.Fundamental_Theorem_Algebra"
   "HOL-Analysis.Analysis"
   Missing_Topology
+  "Budan_Fourier.BF_Misc"
 begin
 
 subsection \<open>Misc\<close>
-
-(*adapted from the poly_root_induct in Polynomial.thy.*)
-lemma poly_root_induct_alt [case_names 0 no_proots root]:
-  fixes p :: "'a :: idom poly"
-  assumes "Q 0"
-  assumes "\<And>p. (\<And>a. poly p a \<noteq> 0) \<Longrightarrow> Q p"
-  assumes "\<And>a p. Q p \<Longrightarrow> Q ([:-a, 1:] * p)"
-  shows   "Q p"
-proof (induction "degree p" arbitrary: p rule: less_induct)
-  case (less p)
-  have ?case when "p=0" using \<open>Q 0\<close> that by auto
-  moreover have ?case when "\<nexists>a. poly p a = 0"
-    using assms(2) that by blast
-  moreover have ?case when "\<exists>a. poly p a = 0" "p\<noteq>0"
-  proof -
-    obtain a where "poly p a =0" using \<open>\<exists>a. poly p a = 0\<close> by auto
-    then obtain q where pq:"p= [:-a,1:] * q" by (meson dvdE poly_eq_0_iff_dvd)
-    then have "q\<noteq>0" using \<open>p\<noteq>0\<close> by auto
-    then have "degree q<degree p" unfolding pq by (subst degree_mult_eq,auto)
-    then have "Q q" using less by auto
-    then show ?case using assms(3) unfolding pq by auto
-  qed
-  ultimately show ?case by auto
-qed
 
 lemma poly_holomorphic_on[simp]:
   "(poly p) holomorphic_on s"
@@ -116,17 +93,7 @@ qed
 
 lemma pcompose_pCons_0:"pcompose p [:a:] = [:poly p a:]"
   apply (induct p)
-  by (auto simp add:pcompose_pCons algebra_simps)      
-  
-lemma Im_poly_of_real:
-  "Im (poly p (of_real x)) = poly (map_poly Im p) x"
-  apply (induct p)
-  by (auto simp add:map_poly_pCons)
- 
-lemma Re_poly_of_real:
-  "Re (poly p (of_real x)) = poly (map_poly Re p) x"
-  apply (induct p)
-  by (auto simp add:map_poly_pCons)    
+  by (auto simp add:pcompose_pCons algebra_simps)       
    
 lemma pcompose_coeff_0:
   "coeff (pcompose p q) 0 = poly p (coeff q 0)"
@@ -377,76 +344,8 @@ definition roots_within::"('a \<Rightarrow> 'b::zero) \<Rightarrow> 'a set \<Rig
   
 abbreviation roots::"('a \<Rightarrow> 'b::zero) \<Rightarrow> 'a set" where
   "roots f \<equiv> roots_within f UNIV"
-  
-subsection {*polynomial roots / zeros*}
 
-definition proots_within::"'a::comm_semiring_0 poly \<Rightarrow> 'a set \<Rightarrow> 'a set" where
-  "proots_within p s = {x\<in>s. poly p x=0}"
-
-abbreviation proots::"'a::comm_semiring_0 poly \<Rightarrow> 'a set" where
-  "proots p \<equiv> proots_within p UNIV"
-
-lemma proots_def: "proots p = {x. poly p x=0}" 
-  unfolding proots_within_def by auto 
-
-lemma proots_within_empty[simp]:
-  "proots_within p {} = {}" unfolding proots_within_def by auto
-
-lemma proots_within_0[simp]:
-  "proots_within 0 s = s" unfolding proots_within_def by auto
-
-lemma proots_withinI[intro,simp]:
-  "poly p x=0 \<Longrightarrow> x\<in>s \<Longrightarrow> x\<in>proots_within p s"
-  unfolding proots_within_def by auto
-
-lemma proots_within_iff[simp]:
-  "x\<in>proots_within p s \<longleftrightarrow> poly p x=0 \<and> x\<in>s"
-  unfolding proots_within_def by auto
-
-lemma proots_within_union:
-  "proots_within p A \<union> proots_within p B = proots_within p (A \<union> B)"
-  unfolding proots_within_def by auto
-
-lemma proots_within_times:
-  fixes s::"'a::{semiring_no_zero_divisors,comm_semiring_0} set"
-  shows "proots_within (p*q) s = proots_within p s \<union> proots_within q s"
-unfolding proots_within_def by auto
-
-lemma proots_within_gcd:
-  fixes s::"'a::factorial_ring_gcd set"
-  shows "proots_within (gcd p q) s= proots_within p s \<inter> proots_within q s"
-unfolding proots_within_def 
-by (auto simp add: poly_eq_0_iff_dvd) 
-
-lemma proots_within_inter:
-    "NO_MATCH UNIV s \<Longrightarrow> proots_within p s = proots p \<inter> s" 
-  unfolding proots_within_def by auto
-
-lemma proots_within_proots[simp]:
-  "proots_within p s \<subseteq> proots p"
-unfolding proots_within_def by auto
-
-lemma finite_proots[simp]: 
-  fixes p :: "'a::idom poly"
-  shows "p\<noteq>0 \<Longrightarrow> finite (proots_within p s)"
-  unfolding proots_within_def using poly_roots_finite by fast
-
-lemma proots_within_pCons_1_iff:
-  fixes a::"'a::idom"
-  shows "proots_within [:-a,1:] s = (if a\<in>s then {a} else {})"
-        "proots_within [:a,-1:] s = (if a\<in>s then {a} else {})"
-  by (cases "a\<in>s",auto)
-    
-lemma proots_within_uminus[simp]:
-  fixes p :: "'a::comm_ring poly"
-  shows "proots_within (- p) s = proots_within p s"
-by auto
-
-lemma proots_within_smult:
-  fixes a::"'a::{semiring_no_zero_divisors,comm_semiring_0}"
-  assumes "a\<noteq>0"
-  shows "proots_within (smult a p) s = proots_within p s"
-  unfolding proots_within_def using assms by auto
+subsection \<open>The argument principle specialised to polynomials.\<close>
 
 lemma argument_principle_poly:
   assumes "p\<noteq>0" and valid:"valid_path g" and loop: "pathfinish g = pathstart g" 
@@ -468,178 +367,5 @@ proof -
   qed
   finally show ?thesis . 
 qed  
-  
-subsection \<open>The number of polynomial roots counted with multiplicities.\<close>
-  
-(*counting the number of proots WITH MULTIPLICITIES within a set*)
-definition proots_count::"'a::idom poly \<Rightarrow> 'a set \<Rightarrow> nat" where
-  "proots_count p s = (\<Sum>r\<in>proots_within p s. order r p)"  
-
-lemma proots_count_emtpy[simp]:"proots_count p {} = 0"
-  unfolding proots_count_def by auto
-  
-lemma proots_count_times:
-  fixes s :: "'a::idom set"
-  assumes "p*q\<noteq>0"
-  shows "proots_count (p*q) s = proots_count p s + proots_count q s"
-proof -
-  define pts where "pts=proots_within p s" 
-  define qts where "qts=proots_within q s"
-  have [simp]: "finite pts" "finite qts" 
-    using `p*q\<noteq>0` unfolding pts_def qts_def by auto
-  have "(\<Sum>r\<in>pts \<union> qts. order r p) =  (\<Sum>r\<in>pts. order r p)" 
-    proof (rule comm_monoid_add_class.sum.mono_neutral_cong_right,simp_all)
-      show "\<forall>i\<in>pts \<union> qts - pts. order i p = 0" 
-        unfolding pts_def qts_def proots_within_def using order_root by fastforce
-    qed
-  moreover have "(\<Sum>r\<in>pts \<union> qts. order r q) = (\<Sum>r\<in>qts. order r q)" 
-    proof (rule comm_monoid_add_class.sum.mono_neutral_cong_right,simp_all)
-      show "\<forall>i\<in>pts \<union> qts - qts. order i q = 0" 
-        unfolding pts_def qts_def proots_within_def using order_root by fastforce
-    qed
-  ultimately show ?thesis unfolding proots_count_def
-    apply (simp add:proots_within_times order_mult[OF `p*q\<noteq>0`] sum.distrib)
-    apply (fold pts_def qts_def)
-    by auto
-qed
-
-lemma proots_count_power_n_n:
-  shows "proots_count ([:- a, 1:]^n) s = (if a\<in>s \<and> n>0 then n else 0)"
-proof -
-  have "proots_within ([:- a, 1:] ^ n) s= (if a\<in>s \<and> n>0 then {a} else {})"
-    unfolding proots_within_def by auto
-  thus ?thesis unfolding proots_count_def using order_power_n_n by auto
-qed
-
-lemma degree_proots_count:
-  fixes p::"complex poly"
-  shows "degree p = proots_count p UNIV"
-proof (induct "degree p" arbitrary:p )
-  case 0
-  then obtain c where c_def:"p=[:c:]" using degree_eq_zeroE by auto
-  then show ?case unfolding proots_count_def 
-    apply (cases "c=0")
-    by (auto intro!:sum.infinite simp add:infinite_UNIV_char_0 order_0I)
-next
-  case (Suc n)
-  then have "degree p\<noteq>0" and "p\<noteq>0" by auto
-  obtain z where "poly p z = 0" 
-    using Fundamental_Theorem_Algebra.fundamental_theorem_of_algebra `degree p\<noteq>0` constant_degree[of p]
-    by auto
-  define onez where "onez=[:-z,1:]" 
-  have [simp]: "onez\<noteq>0" "degree onez = 1" unfolding onez_def by auto
-  obtain q where q_def:"p= onez * q" 
-    using poly_eq_0_iff_dvd `poly p z = 0` dvdE unfolding onez_def by blast
-  hence "q\<noteq>0" using `p\<noteq>0` by auto
-  hence "n=degree q" using degree_mult_eq[of onez q] `Suc n = degree p` 
-    apply (fold q_def)
-    by auto
-  hence "degree q = proots_count q UNIV" using Suc.hyps(1) by simp
-  moreover have " Suc 0 = proots_count onez UNIV" 
-    unfolding onez_def using proots_count_power_n_n[of z 1 UNIV]
-    by auto
-  ultimately show ?case 
-    unfolding q_def using degree_mult_eq[of onez q] proots_count_times[of onez q UNIV] `q\<noteq>0`
-    by auto
-qed
-  
-lemma proots_count_smult:
-  fixes a::"'a::{semiring_no_zero_divisors,idom}"
-  assumes "a\<noteq>0"
-  shows "proots_count (smult a p) s= proots_count p s"
-proof (cases "p=0")
-  case True
-  then show ?thesis by auto
-next
-  case False
-  then show ?thesis 
-    unfolding proots_count_def
-    using order_smult[OF assms] proots_within_smult[OF assms] by auto
-qed
-
- 
-lemma proots_count_pCons_1_iff:
-  fixes a::"'a::idom"
-  shows "proots_count [:-a,1:] s = (if a\<in>s then 1 else 0)"
-  unfolding proots_count_def 
-  by (cases "a\<in>s",auto simp add:proots_within_pCons_1_iff order_power_n_n[of _ 1,simplified])
-      
-lemma proots_count_uminus[simp]:
-  "proots_count (- p) s = proots_count p s"
-  unfolding proots_count_def by simp
-    
-lemma card_proots_within_leq:
-  assumes "p\<noteq>0"
-  shows "proots_count p s \<ge> card (proots_within p s)" using assms
-proof (induct rule:poly_root_induct[of _ "\<lambda>x. x\<in>s"])
-  case 0
-  then show ?case unfolding proots_within_def proots_count_def by auto
-next
-  case (no_roots p)
-  then have "proots_within p s = {}" by auto
-  then show ?case unfolding proots_count_def by auto
-next
-  case (root a p)
-  have "card (proots_within ([:- a, 1:] * p) s) 
-      \<le> card (proots_within [:- a, 1:] s)+card (proots_within p s)" 
-    unfolding proots_within_times by (auto simp add:card_Un_le)
-  also have "... \<le> 1+ proots_count p s"
-  proof -
-    have "card (proots_within [:- a, 1:] s) \<le> 1"
-    proof (cases "a\<in>s")
-      case True
-      then have "proots_within [:- a, 1:] s = {a}" by auto
-      then show ?thesis by auto
-    next
-      case False
-      then have "proots_within [:- a, 1:] s = {}" by auto
-      then show ?thesis by auto
-    qed
-    moreover have "card (proots_within p s) \<le> proots_count p s"
-      apply (rule root.hyps)
-      using root by auto
-    ultimately show ?thesis by auto
-  qed
-  also have "... =  proots_count ([:- a,1:] * p) s"
-    apply (subst proots_count_times)
-    subgoal by (metis mult_eq_0_iff pCons_eq_0_iff root.prems zero_neq_one)  
-    using root by (auto simp add:proots_count_pCons_1_iff)
-  finally have "card (proots_within ([:- a, 1:] * p) s) \<le> proots_count ([:- a, 1:] * p) s" .
-  then show ?case 
-    by (metis (no_types, hide_lams) add.inverse_inverse add.inverse_neutral minus_pCons 
-        mult_minus_left proots_count_uminus proots_within_uminus)
-qed
- 
-lemma proots_count_leq_degree:
-  assumes "p\<noteq>0"
-  shows "proots_count p s\<le> degree p" using assms
-proof (induct rule:poly_root_induct[of _ "\<lambda>x. x\<in>s"])
-  case 0
-  then show ?case by auto
-next
-  case (no_roots p)
-  then have "proots_within p s = {}" by auto
-  then show ?case unfolding proots_count_def by auto
-next
-  case (root a p)
-  have "proots_count ([:a, - 1:] * p) s = proots_count [:a, - 1:] s + proots_count p s"
-    apply (subst proots_count_times)
-    using root by auto
-  also have "... = 1 + proots_count p s"
-  proof -
-    have "proots_count [:a, - 1:] s  =1"
-      by (metis (no_types, lifting) add.inverse_inverse add.inverse_neutral minus_pCons 
-          proots_count_pCons_1_iff proots_count_uminus root.hyps(1))
-    then show ?thesis by auto
-  qed
-  also have "... \<le>  degree ([:a,-1:] * p)" 
-    apply (subst degree_mult_eq)
-    subgoal by auto
-    subgoal using root by auto
-    subgoal using root by (simp add: \<open>p \<noteq> 0\<close>)
-    done
-  finally show ?case .
-qed
- 
   
 end

@@ -871,43 +871,192 @@ proof -
   ultimately show ?thesis by auto
 qed
 
-text \<open>If we knowing that all roots of a polynomial are real, we can use the 
+subsection \<open>Count exactly when all roots are real\<close>
+
+definition all_roots_real:: "real poly \<Rightarrow> bool " where 
+  "all_roots_real p = (\<forall>r\<in>proots (map_poly of_real p). Im r=0)"
+
+lemma all_roots_real_mult[simp]:
+  "all_roots_real (p*q) \<longleftrightarrow> all_roots_real p \<and> all_roots_real q"
+  unfolding all_roots_real_def by auto
+
+lemma all_roots_real_const_iff:
+  assumes all_real:"all_roots_real p"
+  shows "degree p\<noteq>0 \<longleftrightarrow> (\<exists>x. poly p x=0)"
+proof 
+  assume "degree p \<noteq> 0"
+  moreover have "degree p=0" when "\<forall>x. poly p x\<noteq>0"
+  proof -
+    define pp where "pp=map_poly complex_of_real p"
+    have "\<forall>x. poly pp x\<noteq>0"
+    proof (rule ccontr)
+      assume "\<not> (\<forall>x. poly pp x \<noteq> 0)"
+      then obtain x where "poly pp x=0" by auto
+      moreover have "Im x=0" thm that
+        using all_real[unfolded all_roots_real_def, rule_format,of x,folded pp_def] \<open>poly pp x=0\<close> 
+        by auto
+      ultimately have "poly pp (of_real (Re x)) = 0"
+        by (simp add: complex_is_Real_iff)
+      then have "poly p (Re x) = 0"
+        unfolding pp_def 
+        by (metis Re_complex_of_real of_real_poly_map_poly zero_complex.simps(1))
+      then show False using that by simp
+    qed
+    then obtain a where "pp=[:of_real a:]" "a\<noteq>0"
+      by (metis \<open>degree p \<noteq> 0\<close> constant_degree degree_map_poly 
+            fundamental_theorem_of_algebra of_real_eq_0_iff pp_def)
+    then have "p=[:a:]" unfolding pp_def 
+      by (metis map_poly_0 map_poly_pCons of_real_0 of_real_poly_eq_iff)
+    then show ?thesis by auto
+  qed
+  ultimately show "\<exists>x. poly p x = 0" by auto
+next
+  assume "\<exists>x. poly p x = 0"
+  then show "degree p \<noteq> 0" 
+    by (metis UNIV_I all_roots_real_def assms degree_pCons_eq_if 
+        imaginary_unit.sel(2) map_poly_0 nat.simps(3) order_root pCons_eq_0_iff 
+        proots_within_iff synthetic_div_eq_0_iff synthetic_div_pCons zero_neq_one)
+qed
+  
+lemma all_roots_real_degree:
+  assumes "all_roots_real p" 
+  shows "proots_count p UNIV =degree p" using assms 
+proof (induct p rule:poly_root_induct_alt)
+  case 0
+  then have False using imaginary_unit.sel(2) unfolding all_roots_real_def by auto
+  then show ?case by simp
+next
+  case (no_proots p)
+  from all_roots_real_const_iff[OF this(2)] this(1)
+  have "degree p=0" by auto
+  then obtain a where "p=[:a:]" "a\<noteq>0" 
+    by (metis degree_eq_zeroE no_proots.hyps poly_const_conv)
+  then have "proots p={}" by auto
+  then show ?case using \<open>p=[:a:]\<close> by (simp add:proots_count_def)
+next
+  case (root a p)
+  define a1 where "a1=[:- a, 1:]"
+  have "p\<noteq>0" using root.prems 
+    apply auto
+    using imaginary_unit.sel(2) unfolding all_roots_real_def by auto
+  have "a1\<noteq>0" unfolding a1_def by auto
+
+  have "proots_count (a1 * p) UNIV = proots_count a1 UNIV + proots_count p UNIV"
+    using \<open>p\<noteq>0\<close> \<open>a1\<noteq>0\<close> by (subst proots_count_times,auto)
+  also have "... = 1 + degree p"
+  proof -
+    have "proots_count a1 UNIV = 1" unfolding a1_def by (simp add: proots_count_pCons_1_iff)
+    moreover have hyps:"proots_count p UNIV = degree p"
+      apply (rule root.hyps)
+      using root.prems[folded a1_def] unfolding all_roots_real_def by auto
+    ultimately show ?thesis by auto
+  qed
+  also have "... = degree (a1*p)"
+    apply (subst degree_mult_eq)
+    using \<open>a1\<noteq>0\<close> \<open>p\<noteq>0\<close> unfolding a1_def by auto
+  finally show ?case unfolding a1_def .
+qed
+
+lemma all_real_roots_mobius:
+  fixes a b::real 
+  assumes "all_roots_real p" and "a<b"
+  shows "all_roots_real (fcompose p [:a,b:] [:1,1:])" using assms(1)
+proof (induct p rule:poly_root_induct_alt)
+  case 0
+  then show ?case by simp
+next
+  case (no_proots p)
+  from all_roots_real_const_iff[OF this(2)] this(1)
+  have "degree p=0" by auto
+  then obtain a where "p=[:a:]" "a\<noteq>0" 
+    by (metis degree_eq_zeroE no_proots.hyps poly_const_conv)
+  then show ?case by (auto simp add:all_roots_real_def)
+next
+  case (root x p)
+  define x1 where "x1=[:- x, 1:]"
+  define fx where "fx=fcompose x1 [:a, b:] [:1, 1:]"
+
+  have "all_roots_real fx"
+  proof (cases "x=b")
+    case True
+    then have "fx = [:a-x:]" "a\<noteq>x"
+      subgoal unfolding fx_def by (simp add:fcompose_def smult_add_right x1_def)
+      subgoal using \<open>a<b\<close> True by auto
+      done
+    then have "proots (map_poly complex_of_real fx) = {}"
+      by auto
+    then show ?thesis unfolding all_roots_real_def by auto
+  next
+    case False
+    then have "fx = [:a-x,b-x:]" 
+      unfolding fx_def by (simp add:fcompose_def smult_add_right x1_def)
+    then have "proots (map_poly complex_of_real fx) = {of_real ((x-a)/(b-x))}"
+      using False by (auto simp add:field_simps)
+    then show ?thesis unfolding all_roots_real_def by auto
+  qed
+  moreover have "all_roots_real (fcompose p [:a, b:] [:1, 1:])"
+    using root[folded x1_def] all_roots_real_mult by auto
+  ultimately show ?case 
+    apply (fold x1_def)
+    by (auto simp add:fcompose_mult fx_def)
+qed
+
+text \<open>If all roots are real, we can use the 
       Budan-Fourier theorem to EXACTLY count the number of real roots.\<close>
 corollary budan_fourier_real:
-  assumes "p\<noteq>0" "a<b"
-  assumes proots_deg:"proots_count p UNIV =degree p" \<comment>\<open>All of @{term p}'s roots are real.\<close>
+  assumes "p\<noteq>0" 
+  assumes "all_roots_real p"
   shows "proots_count p {x. x \<le>a} = changes_le_der a p"
-    "proots_count p {x. a <x \<and> x \<le>b} = changes_itv_der a b p"
-    "proots_count p {x. b <x} = changes_gt_der b p"
+        "a<b \<Longrightarrow> proots_count p {x. a <x \<and> x \<le>b} = changes_itv_der a b p"
+        "proots_count p {x. b <x} = changes_gt_der b p"
 proof -
-  define c1 c2 c3 where 
-    "c1=changes_le_der a p - proots_count p {x. x \<le>a}" and
-    "c2=changes_itv_der a b p - proots_count p {x. a <x \<and> x \<le>b}" and
-    "c3=changes_gt_der b p - proots_count p {x. b <x}" 
-
-  have "c1\<ge>0" "c2\<ge>0" "c3\<ge>0" 
-    using budan_fourier_interval[OF \<open>a<b\<close> \<open>p\<noteq>0\<close>] budan_fourier_gt[OF \<open>p\<noteq>0\<close>,of b]
-      budan_fourier_le[OF \<open>p\<noteq>0\<close>,of a] 
-    unfolding c1_def c2_def c3_def by auto
-  moreover have "c1+c2+c3=0" 
+  have *:"proots_count p {x. x \<le>a} = changes_le_der a p
+        \<and> proots_count p {x. a <x \<and> x \<le>b} = changes_itv_der a b p
+        \<and> proots_count p {x. b <x} = changes_gt_der b p"
+    when "a<b" for a b
   proof -
-    have "changes_le_der a p + changes_itv_der a b p + changes_gt_der b p = degree p"
-      unfolding changes_le_der_def changes_itv_der_def changes_gt_der_def 
-      by (auto simp add:Let_def)
-    moreover have "proots_count p {x. x \<le>a} + proots_count p {x. a <x \<and> x \<le>b} 
+    define c1 c2 c3 where 
+      "c1=changes_le_der a p - proots_count p {x. x \<le>a}" and
+      "c2=changes_itv_der a b p - proots_count p {x. a <x \<and> x \<le>b}" and
+      "c3=changes_gt_der b p - proots_count p {x. b <x}" 
+
+    have "c1\<ge>0" "c2\<ge>0" "c3\<ge>0" 
+      using budan_fourier_interval[OF \<open>a<b\<close> \<open>p\<noteq>0\<close>] budan_fourier_gt[OF \<open>p\<noteq>0\<close>,of b]
+          budan_fourier_le[OF \<open>p\<noteq>0\<close>,of a] 
+      unfolding c1_def c2_def c3_def by auto
+    moreover have "c1+c2+c3=0" 
+    proof -
+      have proots_deg:"proots_count p UNIV =degree p"
+        using all_roots_real_degree[OF \<open>all_roots_real p\<close>] .
+      have "changes_le_der a p + changes_itv_der a b p + changes_gt_der b p = degree p"
+        unfolding changes_le_der_def changes_itv_der_def changes_gt_der_def 
+        by (auto simp add:Let_def)
+      moreover have "proots_count p {x. x \<le>a} + proots_count p {x. a <x \<and> x \<le>b} 
           + proots_count p {x. b <x} = degree p"
-      using \<open>p\<noteq>0\<close> \<open>a<b\<close>
-      apply (subst proots_count_union_disjoint[symmetric],auto)+
-      apply (subst proots_deg[symmetric])
-      by (auto intro!:arg_cong2[where f=proots_count])
-    ultimately show ?thesis unfolding c1_def c2_def c3_def
-      by (auto simp add:algebra_simps)
+        using \<open>p\<noteq>0\<close> \<open>a<b\<close>
+        apply (subst proots_count_union_disjoint[symmetric],auto)+
+        apply (subst proots_deg[symmetric])
+        by (auto intro!:arg_cong2[where f=proots_count])
+      ultimately show ?thesis unfolding c1_def c2_def c3_def
+        by (auto simp add:algebra_simps)
+    qed
+    ultimately have "c1 =0 \<and> c2=0 \<and> c3=0" by auto
+    then show ?thesis unfolding c1_def c2_def c3_def by auto
   qed
-  ultimately have "c1 =0 \<and> c2=0 \<and> c3=0" by auto
-  then show "proots_count p {x. x \<le>a} = changes_le_der a p"
-    "proots_count p {x. a <x \<and> x \<le>b} = changes_itv_der a b p"
-    "proots_count p {x. b <x} = changes_gt_der b p"
-    unfolding c1_def c2_def c3_def by auto
+  show "proots_count p {x. x \<le>a} = changes_le_der a p" using *[of a "a+1"] by auto
+  show "proots_count p {x. a <x \<and> x \<le>b} = changes_itv_der a b p" when "a<b"
+    using *[OF that] by auto
+  show "proots_count p {x. b <x} = changes_gt_der b p"
+    using *[of "b-1" b] by auto
 qed
+
+text \<open>Similarly, Descartes' rule of sign counts exactly when all roots are real.\<close>
+corollary descartes_sign_real:
+  fixes p::"real poly" and a b::real
+  assumes "p\<noteq>0" 
+  assumes "all_roots_real p"
+  shows "proots_count p {x. 0 < x} = changes (coeffs p)"
+  using budan_fourier_real(3)[OF \<open>p\<noteq>0\<close> \<open>all_roots_real p\<close>] 
+  unfolding changes_gt_der_def by (simp add:changes_poly_at_pders_0)
 
 end
