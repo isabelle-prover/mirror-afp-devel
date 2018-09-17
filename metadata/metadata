@@ -7066,7 +7066,7 @@ abstract =
 
 [Irrationality_J_Hancl]
 title = Irrational Rapidly Convergent Series
-author = Angeliki Koutsoukou Argyraki <http://www.cl.cam.ac.uk/~ak2110/>, Wenda Li <http://www.cl.cam.ac.uk/~wl302/>
+author = Angeliki Koutsoukou-Argyraki <http://www.cl.cam.ac.uk/~ak2110/>, Wenda Li <http://www.cl.cam.ac.uk/~wl302/>
 topic = Mathematics/Number Theory, Mathematics/Analysis
 date = 2018-05-23
 notify = ak2110@cam.ac.uk, wl302@cam.ac.uk
@@ -7208,7 +7208,7 @@ abstract =
 [Quaternions]
 title = Quaternions
 author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
-topic = Mathematics/Analysis
+topic = Mathematics/Algebra, Mathematics/Geometry
 date = 2018-09-05
 notify = lp15@cam.ac.uk
 abstract = 

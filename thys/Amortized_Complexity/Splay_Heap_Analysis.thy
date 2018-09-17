@@ -46,7 +46,7 @@ proof(induction t rule: t_dm.induct)
     have 1: "log 2 (real (size1 lr) + real (size1 r))
         \<le> 3 * log 2 (1 + (real (size1 lr) + real (size1 r)))" (is "?l \<le> 3 * ?r")
     proof -
-      have "?l \<le> ?r" by(simp add: size1_def)
+      have "?l \<le> ?r" by(simp add: size1_size)
       also have "\<dots> \<le> 3 * ?r" by(simp)
       finally show ?thesis .
     qed
@@ -57,9 +57,9 @@ proof(induction t rule: t_dm.induct)
     let ?l' = "del_min ll"
     let ?s = "Node ll a lr"  let ?t = "Node ?s b r"
     let ?s' = "Node lr b r"  let ?t' = "Node ?l' a ?s'"
-    have 0: "\<phi> ?t' \<le> \<phi> ?t" by(simp add: size1_def)
-    have 1: "\<phi> ll < \<phi> ?s" by(simp add: size1_def)
-    have 2: "log 2 (size1 ll + size1 ?s') \<le> log 2 (size1 ?t)" by(simp add: size1_def)
+    have 0: "\<phi> ?t' \<le> \<phi> ?t" by(simp add: size1_size)
+    have 1: "\<phi> ll < \<phi> ?s" by(simp add: size1_size)
+    have 2: "log 2 (size1 ll + size1 ?s') \<le> log 2 (size1 ?t)" by(simp add: size1_size)
     have "t_dm ?t + \<Phi> (del_min ?t) - \<Phi> ?t
         = 1 + t_dm ll + \<Phi> (del_min ?t) - \<Phi> ?t" by simp
     also have "\<dots> \<le> 2 + 2 * \<phi> ll + \<Phi> ll - \<Phi> ?l'  + \<Phi> (del_min ?t) - \<Phi> ?t"
@@ -67,7 +67,7 @@ proof(induction t rule: t_dm.induct)
     also have "\<dots> = 2 + 2 * \<phi> ll + \<phi> ?t' + \<phi> ?s' - \<phi> ?t - \<phi> ?s" by(simp)
     also have "\<dots> \<le> 2 + \<phi> ll + \<phi> ?s'" using 0 1 by linarith
     also have "\<dots> < 2 * \<phi> ?t + 1" using 2 ld_ld_1_less[of "size1 ll" "size1 ?s'"]
-      by (simp add: size1_def)
+      by (simp add: size1_size)
     finally show ?case by simp
   qed
 qed auto
@@ -79,12 +79,12 @@ assumes "size r1' \<le> size r"
     "t_part p r + \<Phi> r1' + \<Phi> r2' - \<Phi> r \<le> 2 * \<phi> r + 1"
 shows "t_part p r + 1 + \<Phi> t' + \<Phi> r2' - \<Phi> t \<le> 2 * \<phi> t + 1"
 proof -
-  have 1: "\<phi> r \<le> \<phi> (Node u b r)" by (simp add: size1_def)
+  have 1: "\<phi> r \<le> \<phi> (Node u b r)" by (simp add: size1_size)
   have 2: "log 2 (real (size1 s + size1 u + size1 r1')) \<le> \<phi> t"
-    using assms(3) by (simp add: t_def size1_def)
+    using assms(3) by (simp add: t_def size1_size)
   from ld_ld_1_less[of "size1 s + size1 u" "size1 r"] 
   have "1 + \<phi> r + log 2 (size1 s + size1 u) \<le> 2 * log 2 (size1 s + size1 u + size1 r)"
-    by(simp add: size1_def)
+    by(simp add: size1_size)
   thus ?thesis using assms 1 2 by (simp add: algebra_simps)
 qed
 
@@ -95,11 +95,11 @@ assumes "size r = size r1' + size r2'"
     "t_part p r + \<Phi> r1' + \<Phi> r2' - \<Phi> r \<le> 2 * \<phi> r + 1"
 shows "t_part p r + 1 + \<Phi> t1' + \<Phi> t2' - \<Phi> t \<le> 2 * \<phi> t + 1"
 proof -
-  have 1: "\<phi> r \<le> \<phi> (Node u b r)" by (simp add: size1_def)
-  have 2: "\<phi> r \<le> \<phi> t" by (simp add: t_def size1_def)
+  have 1: "\<phi> r \<le> \<phi> (Node u b r)" by (simp add: size1_size)
+  have 2: "\<phi> r \<le> \<phi> t" by (simp add: t_def size1_size)
   from ld_ld_less2[of "size1 s + size1 r1'" "size1 u + size1 r2'"] 
   have "1 + log 2 (size1 s + size1 r1') + log 2 (size1 u + size1 r2') \<le> 2 * \<phi> t"
-    by(simp add: assms(4) size1_def t_def ac_simps)
+    by(simp add: assms(4) size1_size t_def ac_simps)
   thus ?thesis using assms 1 2 by (simp add: algebra_simps)
 qed
 
@@ -125,7 +125,7 @@ next
           where 0: "partition p rr = (rrl, r')" "l' = Node (Node l a rl) b rrl"
           by (auto split: tree.splits prod.splits)
         have "size rrl \<le> size rr"
-          using size_partition[OF 0(1)] by (simp add: size1_def)
+          using size_partition[OF 0(1)] by (simp add: size1_size)
         with 0 `a \<le> p` `b \<le> p` "2.prems"(1) "2.IH"(1)[OF _ Node , of rrl r']
           zig_zig[where s=l and u=rl and r=rr and r1'=rrl and r2'=r' and p=p, of a b]
         show ?thesis by (simp add: algebra_simps)
@@ -164,7 +164,7 @@ next
           where 0: "partition p ll = (l',llr)" "r' = Node llr b (Node lr a r)"
           by (auto split: tree.splits prod.splits)
         have "size llr \<le> size ll"
-          using size_partition[OF 0(1)] by (simp add: size1_def)
+          using size_partition[OF 0(1)] by (simp add: size1_size)
         with 0 `\<not> a \<le> p` `\<not> b \<le> p` "2.prems"(1) "2.IH"(4)[OF _ Node, of l' llr]
           zig_zig[where s=r and u=lr and r=ll and r1'=llr and r2'=l' and p=p, of a b]
         show ?thesis by (auto simp: algebra_simps)
@@ -196,7 +196,7 @@ proof (standard, goal_cases)
     by(cases f)
        (auto simp: insert_def bst_del_min dest!: bst_partition split: prod.splits)
 next
-  case (2 h) thus ?case by(induction h) (auto simp: size1_def)
+  case (2 h) thus ?case by(induction h) (auto simp: size1_size)
 next
   case (3 s f)
   show ?case
@@ -210,7 +210,7 @@ next
     { fix l r assume 1: "partition x t = (l,r)"
       have "log 2 (1 + size t) < log 2 (2 + size t)" by simp
       with 1 amor_partition[OF \<open>bst_wrt (\<le>) t\<close> 1] size_partition[OF 1] have ?thesis
-        by(simp add: t_in_def insert_def algebra_simps size1_def
+        by(simp add: t_in_def insert_def algebra_simps size1_size
              del: log_less_cancel_iff) }
     thus ?thesis by(simp add: insert_def split: prod.split)
   qed

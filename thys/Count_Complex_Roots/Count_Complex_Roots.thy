@@ -5,9 +5,10 @@
 section \<open>Procedures to count the number of complex roots\<close>
 
 theory Count_Complex_Roots imports 
-  "Winding_Number_Eval.Winding_Number_Eval" 
+  Winding_Number_Eval.Winding_Number_Eval 
   Extended_Sturm
   More_Polynomials
+  Budan_Fourier.Sturm_Multiple_Roots
 begin
 
 subsection \<open>Misc\<close>
@@ -349,395 +350,6 @@ proof (rule bij_betw_imageI)
     by auto
 qed
 
-lemma proots_fcompose_bij_eq:
-  fixes p::"'a::field poly"
-  assumes bij:"bij_betw (\<lambda>x. poly q1 x/poly q2 x) A B" and "p\<noteq>0" 
-      and nzero:"\<forall>x\<in>A. poly q2 x\<noteq>0"
-      and max_deg: "max (degree q1) (degree q2) \<le> 1"
-      and nconst:"\<forall>c. q1 \<noteq> smult c q2"
-      and infi:"infinite (UNIV::'a set)"
-  shows "proots_count p B = proots_count (fcompose p q1 q2) A"
-  using \<open>p\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
-  case 0
-  then show ?case by simp
-next
-  case (no_proots p)
-  have "proots_count p B = 0"
-  proof -
-    have "proots_within p B = {}"
-      using no_proots by auto
-    then show ?thesis unfolding proots_count_def by auto
-  qed
-  moreover have "proots_count (fcompose p q1 q2) A = 0"
-  proof -
-    have "proots_within (fcompose p q1 q2) A = {}"
-      using no_proots unfolding proots_within_def
-      by (smt div_0 empty_Collect_eq fcompose_poly nzero)
-    then show ?thesis unfolding proots_count_def by auto
-  qed
-  ultimately show ?case by auto
-next
-  case (root b p)
-  have "proots_count ([:- b, 1:] * p) B = proots_count [:- b, 1:] B + proots_count p B"
-    using proots_count_times[OF \<open>[:- b, 1:] * p \<noteq> 0\<close>] by simp
-  also have "... = proots_count (fcompose [:- b, 1:] q1 q2) A 
-                    + proots_count (fcompose p q1 q2) A" 
-  proof -
-    define g where "g=(\<lambda>x. poly q1 x/poly q2 x)"
-
-    have "proots_count [:- b, 1:] B = proots_count (fcompose [:- b, 1:] q1 q2) A" 
-    proof (cases "b\<in>B")
-      case True
-      then have "proots_count [:- b, 1:] B = 1"
-        unfolding proots_count_pCons_1_iff by simp
-      moreover have "proots_count (fcompose [:- b, 1:] q1 q2) A = 1"
-      proof -
-        obtain a where "b=g a" "a\<in>A"
-          using bij[folded g_def] True 
-          by (metis bij_betwE bij_betw_the_inv_into f_the_inv_into_f_bij_betw)
-        define qq where "qq=q1 - smult b q2"
-        have qq_0:"poly qq a=0" and qq_deg: "degree qq\<le>1" and \<open>qq\<noteq>0\<close>
-          unfolding qq_def
-          subgoal using \<open>b=g a\<close> nzero[rule_format,OF \<open>a\<in>A\<close>] unfolding g_def by auto
-          subgoal using max_deg by (simp add: degree_diff_le)
-          subgoal using nconst[rule_format,of b] by auto
-          done
-        have "proots_within qq A = {a}" 
-        proof -
-          have "a\<in>proots_within qq A" 
-            using qq_0 \<open>a\<in>A\<close> by auto
-          moreover have "card (proots_within qq A) = 1" 
-          proof -
-            have "finite (proots_within qq A)" using \<open>qq\<noteq>0\<close> by simp
-            moreover have "proots_within qq A \<noteq> {}"
-              using \<open>a\<in>proots_within qq A\<close> by auto
-            ultimately have "card (proots_within qq A) \<noteq>0" by auto
-            moreover have "card (proots_within qq A) \<le> 1" 
-              by (meson \<open>qq \<noteq> 0\<close> card_proots_within_leq le_trans proots_count_leq_degree qq_deg)
-            ultimately show ?thesis by auto
-          qed
-          ultimately show ?thesis by (metis card_1_singletonE singletonD)
-        qed
-        moreover have "order a qq=1" 
-          by (metis One_nat_def \<open>qq \<noteq> 0\<close> le_antisym le_zero_eq not_less_eq_eq order_degree
-                order_root qq_0 qq_deg)
-        ultimately show ?thesis unfolding fcompose_def proots_count_def qq_def  
-          by auto
-      qed
-      ultimately show ?thesis by auto
-    next
-      case False
-      then have "proots_count [:- b, 1:] B  = 0"
-        unfolding proots_count_pCons_1_iff by simp
-      moreover have "proots_count (fcompose [:- b, 1:] q1 q2) A = 0"
-      proof -
-        have "proots_within (fcompose [:- b, 1:] q1 q2) A = {}"
-        proof (rule ccontr)
-          assume "proots_within (fcompose [:- b, 1:] q1 q2) A \<noteq> {}"
-          then obtain a where "a\<in>A" "poly q1 a = b * poly q2 a"
-            unfolding fcompose_def proots_within_def by auto
-          then have "b = g a"
-            unfolding g_def using nzero[rule_format,OF \<open>a\<in>A\<close>] by auto
-          then have "b\<in>B" using \<open>a\<in>A\<close> bij[folded g_def] using bij_betwE by blast
-          then show False using False by auto
-        qed  
-        then show ?thesis unfolding proots_count_def by auto
-      qed      
-      ultimately show ?thesis by simp
-    qed
-    moreover have "proots_count p B = proots_count (fcompose p q1 q2) A" 
-      apply (rule root.hyps)
-      using mult_eq_0_iff root.prems by blast
-    ultimately show ?thesis by auto
-  qed
-  also have "... = proots_count (fcompose ([:- b, 1:] * p) q1 q2) A"
-  proof (cases "A={}")
-    case False
-    have "fcompose [:- b, 1:] q1 q2 \<noteq>0" 
-      using nconst[rule_format,of b] unfolding fcompose_def by auto
-    moreover have "fcompose p q1 q2 \<noteq> 0" 
-      apply (rule fcompose_nzero[OF _ _ nconst infi])
-      subgoal using \<open>[:- b, 1:] * p \<noteq> 0\<close> by auto
-      subgoal using nzero False by auto
-      done
-    ultimately show ?thesis unfolding fcompose_mult
-      apply (subst proots_count_times)
-      by auto
-  qed auto
-  finally show ?case .
-qed
-
-lemma proots_card_fcompose_bij_eq:
-  fixes p::"'a::field poly"
-  assumes bij:"bij_betw (\<lambda>x. poly q1 x/poly q2 x) A B" and "p\<noteq>0" 
-      and nzero:"\<forall>x\<in>A. poly q2 x\<noteq>0"
-      and max_deg: "max (degree q1) (degree q2) \<le> 1"
-      and nconst:"\<forall>c. q1 \<noteq> smult c q2"
-      and infi:"infinite (UNIV::'a set)"
-  shows "card (proots_within p B) = card (proots_within (fcompose p q1 q2) A)"
-  using \<open>p\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
-  case 0
-  then show ?case by simp
-next
-  case (no_proots p)
-  have "proots_within p B = {}" using no_proots by auto
-  moreover have "proots_within (fcompose p q1 q2) A = {}" 
-    using no_proots fcompose_poly 
-    by (smt Collect_empty_eq divide_eq_0_iff nzero proots_within_def)
-  ultimately show ?case by auto
-next
-  case (root b p)
-  then have [simp]:"p\<noteq>0" by auto
-
-  have ?case when "b\<notin>B \<or> poly p b=0"
-  proof -
-    have "proots_within ([:- b, 1:] * p) B = proots_within p B"
-      using that by auto
-    moreover have "proots_within (fcompose ([:- b, 1:] * p) q1 q2) A 
-        = proots_within (fcompose p q1 q2) A"
-      using that nzero unfolding fcompose_mult proots_within_times 
-      apply (auto simp add: poly_fcompose)
-      using bij bij_betwE by blast
-    ultimately show ?thesis using root by auto
-  qed
-  moreover have ?case when "b\<in>B" "poly p b\<noteq>0"
-  proof -
-    define bb where "bb=[:- b, 1:]"
-    have "card (proots_within (bb * p) B) = card {b} + card (proots_within p B)"
-    proof -
-      have "proots_within bb B = {b}" 
-        using that unfolding bb_def by auto
-      then show ?thesis unfolding proots_within_times
-        apply (subst card_Un_disjoint)
-        by (use that in auto)
-    qed
-    also have "... = 1 + card (proots_within (fcompose p q1 q2) A)"
-      using root.hyps by simp
-    also have "... = card (proots_within (fcompose (bb * p) q1 q2) A)"
-      unfolding proots_within_times fcompose_mult
-    proof (subst card_Un_disjoint) 
-      obtain a where b_poly:"b=poly q1 a / poly q2 a" and "a\<in>A" 
-        by (metis (no_types, lifting) \<open>b \<in> B\<close> bij bij_betwE bij_betw_the_inv_into 
-            f_the_inv_into_f_bij_betw)
-      define bbq pq where "bbq=fcompose bb q1 q2" and "pq=fcompose p q1 q2"
-      have bbq_0:"poly bbq a=0" and bbq_deg: "degree bbq\<le>1" and "bbq\<noteq>0"
-        unfolding bbq_def bb_def 
-        subgoal using \<open>a \<in> A\<close> b_poly nzero poly_fcompose by fastforce
-        subgoal by (metis (no_types, lifting) degree_add_le degree_pCons_eq_if degree_smult_le 
-           dual_order.trans fcompose_const fcompose_pCons max.boundedE max_deg mult_cancel_left2 
-           one_neq_zero one_poly_eq_simps(1) power.simps)
-        subgoal by (metis \<open>a \<in> A\<close> \<open>poly (fcompose [:- b, 1:] q1 q2) a = 0\<close> fcompose_nzero infi 
-                  nconst nzero one_neq_zero pCons_eq_0_iff)
-        done
-      show "finite (proots_within bbq A)" using \<open>bbq\<noteq>0\<close> by simp
-      show "finite (proots_within pq A)" unfolding pq_def 
-        by (metis \<open>a \<in> A\<close> \<open>p \<noteq> 0\<close> fcompose_nzero finite_proots infi nconst nzero poly_0 pq_def)
-      have bbq_a:"proots_within bbq A = {a}"
-      proof -
-        have "a\<in>proots_within bbq A" 
-          by (simp add: \<open>a \<in> A\<close> bbq_0)
-        moreover have "card (proots_within bbq A) = 1" 
-        proof -
-          have "card (proots_within bbq A) \<noteq>0" 
-            using \<open>a\<in>proots_within bbq A\<close> \<open>finite (proots_within bbq A)\<close>
-            by auto
-          moreover have "card (proots_within bbq A) \<le> 1" 
-            by (meson \<open>bbq \<noteq> 0\<close> card_proots_within_leq le_trans proots_count_leq_degree bbq_deg)
-          ultimately show ?thesis by auto
-        qed
-        ultimately show ?thesis by (metis card_1_singletonE singletonD)
-      qed
-      show "proots_within (bbq) A \<inter> proots_within (pq) A = {}" 
-        using b_poly bbq_a fcompose_poly nzero pq_def that(2) by fastforce
-      show "1 + card (proots_within pq A) = card (proots_within bbq A) + card (proots_within pq A)"
-        using bbq_a by simp
-    qed
-    finally show ?thesis unfolding bb_def .
-  qed
-  ultimately show ?case by auto
-qed 
-
-lemma proots_pcompose_bij_eq:
-  fixes p::"'a::idom poly"
-  assumes bij:"bij_betw (\<lambda>x. poly q x) A B" and "p\<noteq>0" 
-      and q_deg: "degree q = 1"
-  shows "proots_count p B = proots_count (p \<circ>\<^sub>p q) A" using \<open>p\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
-  case 0
-  then show ?case by simp
-next
-  case (no_proots p)
-  have "proots_count p B = 0"
-  proof -
-    have "proots_within p B = {}"
-      using no_proots by auto
-    then show ?thesis unfolding proots_count_def by auto
-  qed
-  moreover have "proots_count (p \<circ>\<^sub>p q) A = 0"
-  proof -
-    have "proots_within (p \<circ>\<^sub>p q) A = {}"
-      using no_proots unfolding proots_within_def
-      by (auto simp:poly_pcompose)
-    then show ?thesis unfolding proots_count_def by auto
-  qed
-  ultimately show ?case by auto
-next
-  case (root b p)
-  have "proots_count ([:- b, 1:] * p) B = proots_count [:- b, 1:] B + proots_count p B"
-    using proots_count_times[OF \<open>[:- b, 1:] * p \<noteq> 0\<close>] by simp
-  also have "... = proots_count ([:- b, 1:] \<circ>\<^sub>p q) A + proots_count (p \<circ>\<^sub>p q) A"
-  proof -
-    have "proots_count [:- b, 1:] B = proots_count ([:- b, 1:] \<circ>\<^sub>p q) A"
-    proof (cases "b\<in>B")
-      case True
-      then have "proots_count [:- b, 1:] B = 1" 
-        unfolding proots_count_pCons_1_iff by simp
-      moreover have "proots_count ([:- b, 1:] \<circ>\<^sub>p q) A = 1" 
-      proof -
-        obtain a where "b=poly q a" "a\<in>A"
-          using True bij by (metis bij_betwE bij_betw_the_inv_into f_the_inv_into_f_bij_betw)
-        define qq where "qq=[:- b:] + q"
-        have qq_0:"poly qq a=0" and qq_deg: "degree qq\<le>1" and \<open>qq\<noteq>0\<close>
-          unfolding qq_def
-          subgoal using \<open>b=poly q a\<close> by auto
-          subgoal using q_deg by (simp add: degree_add_le)
-          subgoal using q_deg add.inverse_unique by force
-          done
-        have "proots_within qq A = {a}" 
-        proof -
-          have "a\<in>proots_within qq A" 
-            using qq_0 \<open>a\<in>A\<close> by auto
-          moreover have "card (proots_within qq A) = 1" 
-          proof -
-            have "finite (proots_within qq A)" using \<open>qq\<noteq>0\<close> by simp
-            moreover have "proots_within qq A \<noteq> {}"
-              using \<open>a\<in>proots_within qq A\<close> by auto
-            ultimately have "card (proots_within qq A) \<noteq>0" by auto
-            moreover have "card (proots_within qq A) \<le> 1" 
-              by (meson \<open>qq \<noteq> 0\<close> card_proots_within_leq le_trans proots_count_leq_degree qq_deg)
-            ultimately show ?thesis by auto
-          qed
-          ultimately show ?thesis by (metis card_1_singletonE singletonD)
-        qed
-        moreover have "order a qq=1" 
-          by (metis One_nat_def \<open>qq \<noteq> 0\<close> le_antisym le_zero_eq not_less_eq_eq order_degree
-                order_root qq_0 qq_deg)
-        ultimately show ?thesis unfolding pcompose_def proots_count_def qq_def  
-          by auto
-      qed
-      ultimately show ?thesis by auto
-    next
-      case False
-      then have "proots_count [:- b, 1:] B  = 0"
-        unfolding proots_count_pCons_1_iff by simp
-      moreover have "proots_count ([:- b, 1:] \<circ>\<^sub>p q) A = 0"
-      proof -
-        have "proots_within ([:- b, 1:] \<circ>\<^sub>p q) A = {}"
-          unfolding pcompose_def 
-          apply auto
-          using False bij bij_betwE by blast
-        then show ?thesis unfolding proots_count_def by auto
-      qed      
-      ultimately show ?thesis by simp
-    qed
-    moreover have "proots_count p B = proots_count (p \<circ>\<^sub>p q) A"
-      apply (rule root.hyps)
-      using \<open>[:- b, 1:] * p \<noteq> 0\<close> by auto
-    ultimately show ?thesis by auto
-  qed
-  also have "... = proots_count (([:- b, 1:] * p) \<circ>\<^sub>p q) A"
-    unfolding pcompose_mult
-    apply (subst proots_count_times)
-    subgoal by (metis (no_types, lifting) One_nat_def add.right_neutral degree_0 degree_mult_eq
-      degree_pCons_eq_if degree_pcompose mult_eq_0_iff one_neq_zero one_pCons pcompose_mult
-      q_deg root.prems)
-    by simp
-  finally show ?case .
-qed
-
-lemma proots_card_pcompose_bij_eq:
-  fixes p::"'a::idom poly"
-  assumes bij:"bij_betw (\<lambda>x. poly q x) A B" and "p\<noteq>0" 
-      and q_deg: "degree q = 1"
-  shows "card (proots_within p B) = card (proots_within (p \<circ>\<^sub>p q) A)" using \<open>p\<noteq>0\<close>
-proof (induct p rule:poly_root_induct_alt)
-  case 0
-  then show ?case by auto
-next
-  case (no_proots p)
-  have "proots_within p B = {}" using no_proots by auto
-  moreover have "proots_within (p \<circ>\<^sub>p q) A = {}" using no_proots 
-    by (simp add: poly_pcompose proots_within_def)
-  ultimately show ?case by auto
-next
-  case (root b p)
-  then have [simp]:"p\<noteq>0" by auto
-  have ?case when "b\<notin>B \<or> poly p b=0"
-  proof -
-    have "proots_within ([:- b, 1:] * p) B = proots_within p B"
-      using that by auto
-    moreover have "proots_within (([:- b, 1:] * p) \<circ>\<^sub>p q) A = proots_within (p \<circ>\<^sub>p q) A"
-      using that unfolding pcompose_mult proots_within_times
-      apply (auto simp add: poly_pcompose)
-      using bij bij_betwE by blast
-    ultimately show ?thesis using root.hyps[OF \<open>p\<noteq>0\<close>] by auto
-  qed
-  moreover have ?case when "b\<in>B" "poly p b\<noteq>0"
-  proof -
-    define bb where "bb=[:- b, 1:]"
-    have "card (proots_within (bb * p) B) = card {b} + card (proots_within p B)"
-    proof -
-      have "proots_within bb B = {b}" 
-        using that unfolding bb_def by auto
-      then show ?thesis unfolding proots_within_times
-        apply (subst card_Un_disjoint)
-        by (use that in auto)
-    qed
-    also have "... = 1 + card (proots_within (p \<circ>\<^sub>p q) A)"
-      using root.hyps by simp
-    also have "... = card (proots_within ((bb * p) \<circ>\<^sub>p q) A)"
-      unfolding proots_within_times pcompose_mult
-    proof (subst card_Un_disjoint) 
-      obtain a where "b=poly q a" "a\<in>A" 
-        by (metis \<open>b \<in> B\<close> bij bij_betwE bij_betw_the_inv_into f_the_inv_into_f_bij_betw)
-      define bbq pq where "bbq=bb \<circ>\<^sub>p q" and "pq=p \<circ>\<^sub>p q"
-      have bbq_0:"poly bbq a=0" and bbq_deg: "degree bbq\<le>1" and "bbq\<noteq>0"
-        unfolding bbq_def bb_def poly_pcompose
-        subgoal using \<open>b=poly q a\<close> by auto
-        subgoal using q_deg by (simp add: degree_add_le degree_pcompose)
-        subgoal using pcompose_eq_0 q_deg by fastforce
-        done
-      show "finite (proots_within bbq A)" using \<open>bbq\<noteq>0\<close> by simp
-      show "finite (proots_within pq A)" unfolding pq_def 
-        by (metis \<open>p \<noteq> 0\<close> finite_proots pcompose_eq_0 q_deg zero_less_one) 
-      have bbq_a:"proots_within bbq A = {a}"
-      proof -
-        have "a\<in>proots_within bbq A" 
-          unfolding bb_def proots_within_def poly_pcompose bbq_def 
-          using \<open>b=poly q a\<close> \<open>a\<in>A\<close> by simp
-        moreover have "card (proots_within bbq A) = 1" 
-        proof -
-          have "card (proots_within bbq A) \<noteq>0" 
-            using \<open>a\<in>proots_within bbq A\<close> \<open>finite (proots_within bbq A)\<close>
-            by auto
-          moreover have "card (proots_within bbq A) \<le> 1" 
-            by (meson \<open>bbq \<noteq> 0\<close> card_proots_within_leq le_trans proots_count_leq_degree bbq_deg)
-          ultimately show ?thesis by auto
-        qed
-        ultimately show ?thesis by (metis card_1_singletonE singletonD)
-      qed
-      show "proots_within (bbq) A \<inter> proots_within (pq) A = {}" 
-        using bbq_a \<open>b = poly q a\<close> that(2) unfolding pq_def by (simp add:poly_pcompose)
-      show "1 + card (proots_within pq A) = card (proots_within bbq A) + card (proots_within pq A)"
-        using bbq_a by simp
-    qed
-    finally show ?thesis unfolding bb_def .
-  qed
-  ultimately show ?case by auto
-qed
-
 lemma proots_ball_plane_eq:
   defines "q1\<equiv>[:\<i>,-1:]" and "q2\<equiv>[:\<i>,1:]"
   assumes "p\<noteq>0"
@@ -847,7 +459,22 @@ subsection \<open>Combining two real polynomials into a complex one\<close>
 
 definition cpoly_of:: "real poly \<Rightarrow> real poly \<Rightarrow> complex poly" where
   "cpoly_of pR pI = map_poly of_real pR + smult \<i> (map_poly of_real pI)"
-  
+
+lemma cpoly_of_eq_0_iff[iff]:
+  "cpoly_of pR pI = 0 \<longleftrightarrow> pR = 0 \<and> pI = 0"
+proof -
+  have "pR = 0 \<and> pI = 0" when "cpoly_of pR pI = 0"
+  proof -
+    have "complex_of_real (coeff pR n) + \<i> * complex_of_real (coeff pI n) = 0" for n
+      using that unfolding poly_eq_iff cpoly_of_def by (auto simp:coeff_map_poly)
+    then have "coeff pR n = 0 \<and> coeff pI n = 0" for n
+      by (metis Complex_eq Im_complex_of_real Re_complex_of_real complex.sel(1) complex.sel(2) 
+          of_real_0)
+    then show ?thesis unfolding poly_eq_iff by auto 
+  qed
+  then show ?thesis by (auto simp:cpoly_of_def)
+qed
+
 lemma cpoly_of_decompose:
     "p = cpoly_of (map_poly Re p) (map_poly Im p)"
   unfolding cpoly_of_def 
@@ -866,6 +493,31 @@ lemma poly_cpoly_of_real_iff:
   shows "poly (cpoly_of pR pI) (of_real t) =0 \<longleftrightarrow> poly pR t = 0 \<and> poly pI t=0 "  
   unfolding  poly_cpoly_of_real using Complex_eq_0 by blast  
 
+lemma order_cpoly_gcd_eq:
+  assumes "pR\<noteq>0 \<or> pI\<noteq>0"
+  shows "order t (cpoly_of pR pI) = order t (gcd pR pI)"
+proof -
+  define g where "g = gcd pR pI"
+  have [simp]:"g\<noteq>0" unfolding g_def using assms by auto
+  obtain pr pi where pri: "pR = pr * g" "pI = pi * g" "coprime pr pi"
+    unfolding g_def using assms(1) gcd_coprime_exists \<open>g \<noteq> 0\<close> g_def by blast
+  then have "pr \<noteq>0 \<or> pi \<noteq>0" using assms mult_zero_left by blast
+
+  have "order t (cpoly_of pR pI) = order t (cpoly_of pr pi * (map_poly of_real g))"
+    unfolding pri cpoly_of_dist_right by simp
+  also have "... = order t (cpoly_of pr pi) + order t g" 
+    apply (subst order_mult)
+    using \<open>pr \<noteq>0 \<or> pi \<noteq>0\<close> by (auto simp:map_poly_order_of_real)
+  also have "... = order t g"
+  proof -
+    have "poly (cpoly_of pr pi) t \<noteq>0" unfolding poly_cpoly_of_real_iff
+      using \<open>coprime pr pi\<close> coprime_poly_0 by blast
+    then have "order t (cpoly_of pr pi) = 0" by (simp add: order_0I)
+    then show ?thesis by auto
+  qed
+  finally show ?thesis unfolding g_def .
+qed
+
 subsection \<open>Number of roots on a (bounded or unbounded) segment\<close>
 
 \<comment> \<open>1 dimensional hyperplane\<close>
@@ -877,6 +529,9 @@ definition proots_line_card:: "complex poly \<Rightarrow> complex \<Rightarrow> 
 
 definition proots_unbounded_line_card:: "complex poly \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> nat" where
   "proots_unbounded_line_card p st tt = card (proots_within p (unbounded_line st tt))"
+
+definition proots_unbounded_line :: "complex poly \<Rightarrow> complex \<Rightarrow> complex \<Rightarrow> nat" where
+  "proots_unbounded_line p st tt = proots_count p (unbounded_line st tt)"
 
 lemma card_proots_open_segments:
   assumes "poly p st \<noteq>0" "poly p tt \<noteq> 0"
@@ -1027,6 +682,68 @@ proof -
   finally show ?thesis by simp
 qed
 
+lemma proots_unbounded_line:
+  assumes "st\<noteq>tt" "p\<noteq>0"
+  shows "(proots_count p (unbounded_line st tt)) = 
+                (let pc = pcompose p [:st, tt - st:];
+                     pR = map_poly Re pc;
+                     pI = map_poly Im pc;
+                     g  = gcd pR pI
+                 in nat (changes_R_smods_ext g (pderiv g)))" (is "?L = ?R")
+proof -
+  define pc pR pI g where 
+      "pc = pcompose p [:st, tt-st:]" and
+      "pR = map_poly Re pc" and
+      "pI = map_poly Im pc" and
+      "g  = gcd pR pI"
+  have [simp]: "g\<noteq>0" "pc\<noteq>0"
+  proof -
+    show "pc\<noteq>0" using assms(1) assms(2) pc_def pcompose_eq_0 by fastforce
+    then have "pR\<noteq>0 \<or> pI\<noteq>0" unfolding pR_def pI_def by (metis cpoly_of_decompose map_poly_0)
+    then show "g\<noteq>0" unfolding g_def by simp
+  qed
+  have order_eq:"order t g = order t pc" for t
+    apply (subst order_cpoly_gcd_eq[of pR pI,folded g_def,symmetric])
+    subgoal using \<open>g\<noteq>0\<close> unfolding g_def by simp
+    subgoal unfolding pR_def pI_def by (simp add:cpoly_of_decompose[symmetric])
+    done
+
+  have "?R = nat (changes_R_smods_ext g (pderiv g))"
+    unfolding pc_def g_def pI_def pR_def by (auto simp add:Let_def)
+  also have "... = proots_count g UNIV"
+    using sturm_ext_R[OF \<open>g\<noteq>0\<close>] by auto
+  also have "... = proots_count (map_poly complex_of_real g) (of_real ` UNIV)"
+    apply (subst proots_count_of_real)
+    by auto
+  also have "... = proots_count (map_poly complex_of_real g) {x. Im x = 0}"
+    apply (rule arg_cong2[where f=proots_count])
+    using Reals_def complex_is_Real_iff by auto
+  also have "... = proots_count pc {x. Im x = 0}"
+    apply (rule proots_count_cong)
+    apply (metis (mono_tags) Im_complex_of_real Re_complex_of_real \<open>g \<noteq> 0\<close> complex_surj 
+            map_poly_order_of_real mem_Collect_eq order_eq)
+    by auto
+  also have "... = proots_count p (unbounded_line st tt)"
+  proof -
+    have "poly [:st, tt - st:] ` {x. Im x = 0} = unbounded_line st tt"
+      unfolding unbounded_line_def 
+      apply safe
+      subgoal for _ x 
+        apply (rule_tac x="Re x" in exI) 
+        apply (simp add:algebra_simps)
+        by (simp add: mult.commute scaleR_complex.code times_complex.code)
+      subgoal for _ u
+        apply (rule rev_image_eqI[of "of_real u"])
+        by (auto simp:scaleR_conv_of_real algebra_simps)
+      done
+    then show ?thesis 
+      unfolding pc_def 
+      apply (subst proots_pcompose)
+      using \<open>p\<noteq>0\<close> \<open>st\<noteq>tt\<close> by auto
+  qed
+  finally show ?thesis by simp
+qed
+
 lemma proots_unbounded_line_card_code[code]:
   "proots_unbounded_line_card p st tt = 
               (if st\<noteq>tt then 
@@ -1038,7 +755,24 @@ lemma proots_unbounded_line_card_code[code]:
               else 
                   Code.abort (STR ''proots_unbounded_line_card fails due to invalid hyperplanes.'') 
                       (\<lambda>_. proots_unbounded_line_card p st tt))"
-unfolding proots_unbounded_line_card_def using card_proots_unbounded_line[of st tt p] by auto
+  unfolding proots_unbounded_line_card_def using card_proots_unbounded_line[of st tt p] by auto
+
+lemma proots_unbounded_line_code[code]:
+  "proots_unbounded_line p st tt = 
+              ( if st\<noteq>tt then 
+                if p\<noteq>0 then 
+                  (let pc = pcompose p [:st, tt - st:];
+                     pR = map_poly Re pc;
+                     pI = map_poly Im pc;
+                     g  = gcd pR pI
+                  in nat (changes_R_smods_ext g (pderiv g)))
+                else 
+                  Code.abort (STR ''proots_unbounded_line fails due to p=0'') 
+                      (\<lambda>_. proots_unbounded_line p st tt)
+                else 
+                  Code.abort (STR ''proots_unbounded_line fails due to invalid hyperplanes.'') 
+                      (\<lambda>_. proots_unbounded_line p st tt) )"
+  unfolding proots_unbounded_line_def using proots_unbounded_line by auto
   
 subsection \<open>Checking if there a polynomial root on a closed segment\<close>    
     
@@ -3086,6 +2820,8 @@ next
   ultimately show ?case by auto
 qed
 
+
+
 lemma poly_decompose_by_proots:
   fixes p ::"'a::idom poly"
   assumes "p\<noteq>0"
@@ -3274,19 +3010,15 @@ proof -
 qed
     
 lemma proots_upper_code1[code]:
-  "proots_upper p = (if p \<noteq> 0 then
+  "proots_upper p = 
+    (if p \<noteq> 0 then
        (let pp=smult (inverse (lead_coeff p)) p;
             pI=map_poly Im pp;
             pR=map_poly Re pp;
             g = gcd pI pR
         in
-          if changes_R_smods g (pderiv g) = 0 
-          then 
-            nat ((degree p - changes_R_smods pR pI) div 2) 
-          else 
-            Code.abort (STR ''proots_upper fails when there is a root on the border.'') 
-              (\<lambda>_. proots_upper p) 
-      )
+            nat ((degree p - nat (changes_R_smods_ext g (pderiv g)) - changes_R_smods pR pI) div 2) 
+        )
     else 
       Code.abort (STR ''proots_upper fails when p=0.'') (\<lambda>_. proots_upper p))"
 proof -
@@ -3296,70 +3028,41 @@ proof -
   define g where  "g = gcd pI pR"
   have ?thesis when "p=0"
     using that by auto
-  moreover have ?thesis when "p\<noteq>0" "changes_R_smods g (pderiv g) \<noteq> 0"
-    using that unfolding Let_def by (fold pp_def pI_def pR_def g_def,auto)
   moreover have ?thesis when "p\<noteq>0" 
-    and changes_0:"changes_R_smods g (pderiv g) = 0"
   proof -
+    have "pp\<noteq>0" unfolding pp_def using that by auto
+    define rr where "rr=int (degree pp - proots_count pp {x. Im x = 0}) - cindex_poly_ubd pI pR"
     have "lead_coeff p\<noteq>0" using \<open>p\<noteq>0\<close> by simp
-    
-    define dc where "dc=int (degree pp) - cindex_poly_ubd pI pR"
-    have "(proots_upper pp) = of_int dc / 2" unfolding dc_def
-    proof (rule proots_upper_cindex_eq[of pp,folded pI_def pR_def])
-      show "lead_coeff pp = 1"
-        using \<open>lead_coeff p\<noteq>0\<close> unfolding pp_def lead_coeff_smult by auto
-    next
-      have "card {x. poly g x = 0} = 0"
-        using changes_0 by (subst (asm) sturm_R[symmetric],auto)
-      moreover have "g\<noteq>0" 
-      proof (rule ccontr)
-        assume "\<not> g \<noteq> 0"
-        then have "pI =0" "pR = 0" unfolding g_def by auto
-        then have "pp=0" unfolding pI_def pR_def
-          by (metis cpoly_of_decompose map_poly_0)
-        then have "p=0" unfolding pp_def by fastforce
-        then show False using \<open>p\<noteq>0\<close> by auto
+    then have "proots_upper pp = rr / 2" unfolding rr_def
+      apply (rule_tac proots_upper_cindex_eq'[of pp, folded pI_def pR_def])
+      unfolding pp_def lead_coeff_smult by auto
+    then have "proots_upper pp = nat (rr div 2)" by linarith
+    moreover have
+      "rr = degree p - nat (changes_R_smods_ext g (pderiv g)) - changes_R_smods pR pI"
+    proof -
+      have "degree pp = degree p" unfolding pp_def by auto
+      moreover have "proots_count pp {x. Im x = 0} = nat (changes_R_smods_ext g (pderiv g))"
+      proof -
+        have "{x. Im x = 0} = unbounded_line 0 1"
+          unfolding unbounded_line_def by (simp add: complex_eq_iff)
+        then show ?thesis 
+          using proots_unbounded_line[of 0 1 pp,simplified, folded pI_def pR_def] \<open>pp\<noteq>0\<close>
+          by (auto simp:Let_def g_def gcd.commute)
       qed
-      then have "finite (proots g)" by auto
-      ultimately have "proots g = {}"
-        unfolding card_eq_0_iff proots_def by auto
-      show "\<forall>x\<in>proots pp. Im x \<noteq> 0" 
-      proof (rule ccontr)
-        assume "\<not> (\<forall>x\<in>proots pp. Im x \<noteq> 0)"
-        then obtain x where "x\<in>proots pp" and "Im x=0" by auto
-        then obtain t where "x = of_real t"
-          by (simp add: complex_eq_iff)
-        then have "poly pp (of_real t) = 0"
-          using \<open>x\<in>proots pp\<close> by auto
-        then have "Re (poly pp (of_real t)) = 0" "Im (poly pp (of_real t)) = 0"
-          by auto
-        then have "poly pR t = 0" "poly pI t = 0"
-          unfolding pR_def pI_def Re_poly_of_real Im_poly_of_real by auto
-        then have "poly g t=0"
-          unfolding g_def poly_gcd_iff by auto
-        then show False using \<open>proots g = {}\<close> by auto
-      qed
+      moreover have "cindex_poly_ubd pI pR = changes_R_smods pR pI"
+        using cindex_poly_ubd_code by auto
+      ultimately show ?thesis unfolding rr_def by auto
     qed
-    also have "... = of_int dc / (of_int 2)"  
-      by simp
-    also have "... = real_of_int (dc div 2)"
-      apply (subst real_of_int_div[symmetric])
-      apply (metis \<open>real (proots_upper pp) = real_of_int dc / 2\<close> cos_npi_int cos_zero_iff_int 
-          dvd_def dvd_minus_iff mult.commute mult_zero_left of_int_of_nat_eq times_divide_eq_right 
-          zero_neq_one)
-      by simp
-    finally have "(proots_upper pp) = real_of_int (dc div 2)" .
-    then have "(proots_upper pp) = dc div 2" by simp
-    then have "proots_upper pp = (int (degree pp) - changes_R_smods pR pI) div 2" 
-      unfolding dc_def cindex_poly_ubd_code proots_upper_def by auto
-    then have "proots_upper p = (int (degree p) - changes_R_smods pR pI) div 2"   
-      unfolding pp_def proots_upper_def using \<open>lead_coeff p \<noteq>0\<close>
-      by (simp add:proots_count_smult)        
-    then show ?thesis unfolding Let_def
-      apply (fold pp_def pI_def pR_def g_def)
+    moreover have "proots_upper pp = proots_upper p"
+      unfolding pp_def proots_upper_def 
+      apply (subst proots_count_smult)
       using that by auto
+    ultimately show ?thesis 
+      unfolding Let_def using that
+      apply (fold pp_def pI_def pR_def g_def)
+      by argo
   qed
-  ultimately show ?thesis by fast
+  ultimately show ?thesis by blast
 qed
 
 lemma proots_upper_card_code[code]:
@@ -3679,7 +3382,7 @@ definition proots_cball::"complex poly \<Rightarrow> complex \<Rightarrow> real 
 definition proots_cball_card ::"complex poly \<Rightarrow> complex \<Rightarrow> real \<Rightarrow> nat" where
   "proots_cball_card p z0 r = card (proots_within p (cball z0 r))"
 
-(*FIXME: this can be surely optimised/refined.*)
+(*FIXME: this surely can be optimised/refined.*)
 lemma proots_cball_card_code1[code]:
   "proots_cball_card p z0 r = 
                 ( if r=0 then 

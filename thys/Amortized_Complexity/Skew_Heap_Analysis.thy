@@ -31,13 +31,13 @@ lemma Gexp: "2 ^ lrh h \<le> size h + 1"
 by (induction h) (auto simp: rh_def)
 
 corollary Glog: "lrh h \<le> log 2 (size1 h)"
-by (metis Gexp le_log2_of_power size1_def)
+by (metis Gexp le_log2_of_power size1_size)
 
 lemma Dexp: "2 ^ rlh h \<le> size h + 1"
 by (induction h) (auto simp: rh_def)
 
 corollary Dlog: "rlh h \<le> log 2 (size1 h)"
-by (metis Dexp le_log2_of_power size1_def)
+by (metis Dexp le_log2_of_power size1_size)
 
 function t_merge :: "'a::linorder heap \<Rightarrow> 'a heap \<Rightarrow> nat" where
 "t_merge Leaf h = 1" |
@@ -109,10 +109,10 @@ proof -
   also have "rlh t1 \<le> log 2 (size1 t1)" by(rule Dlog)
   also have "rlh t2 \<le> log 2 (size1 t2)" by(rule Dlog)
   also have "lrh (merge t1 t2) \<le> log 2 (size1(merge t1 t2))" by(rule Glog)
-  also have "size1(merge t1 t2) = size1 t1 + size1 t2 - 1" by(simp add: size1_def)
-  also have "log 2 (size1 t1 + size1 t2 - 1) \<le> log 2 (size1 t1 + size1 t2)" by(simp add: size1_def)
+  also have "size1(merge t1 t2) = size1 t1 + size1 t2 - 1" by(simp add: size1_size)
+  also have "log 2 (size1 t1 + size1 t2 - 1) \<le> log 2 (size1 t1 + size1 t2)" by(simp add: size1_size)
   also have "log 2 (size1 t1) + log 2 (size1 t2) \<le> 2 * log 2 (real(size1 t1) + (size1 t2))"
-    by(rule plus_log_le_2log_plus) (auto simp: size1_def)
+    by(rule plus_log_le_2log_plus) (auto simp: size1_size)
   finally show ?thesis by(simp)
 qed
 
@@ -134,7 +134,7 @@ next
   have [arith]: "log 2 (2 + (real (size t1) + real (size t2))) \<le>
                 log 2 (4 + (real (size t1) + real (size t2)))" by simp
   from Node show ?thesis using a_merge[of t1 t2]
-    by (simp add: size1_def t_del_min_def rh_def)
+    by (simp add: size1_size t_del_min_def rh_def)
 qed
 
 
@@ -189,7 +189,7 @@ next
       have [arith]: "log 2 (2 + (real (size t1) + real (size t2))) \<le>
                log 2 (4 + (real (size t1) + real (size t2)))" by simp
       from Del_min Node show ?thesis using a_merge[of t1 t2]
-        by (simp add: size1_def t_merge_nneg)
+        by (simp add: size1_size t_merge_nneg)
     qed
   next
     case [simp]: Merge

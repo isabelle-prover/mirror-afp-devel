@@ -22,11 +22,11 @@ continuous extension to the Gromov boundary, which is a homeomorphism.\<close>
 lemma Gromov_product_at_quasi_isometry:
   fixes f::"'a::Gromov_hyperbolic_space_geodesic \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
   assumes "lambda C-quasi_isometry f"
-  shows "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 531 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
-        "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 531 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
+  shows "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 199 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
+        "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 199 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
 proof -
   have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
-  define D where "D = 264 * lambda^2 * (C + deltaG(TYPE('b)))"
+  define D where "D = 98 * lambda^2 * (C + deltaG(TYPE('b)))"
   have Dxy: "hausdorff_distance (f`{x--y}) {f x--f y} \<le> D"
     unfolding D_def apply (rule geodesic_quasi_isometric_image[OF assms(1)]) by auto
   have Dyz: "hausdorff_distance (f`{y--z}) {f y--f z} \<le> D"
@@ -91,16 +91,16 @@ proof -
   then have **: "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + C + 2 * E"
     unfolding w(4) using \<open>E \<ge> 0\<close> by auto
 
-  have "C + 2 * E = 3 * 1 * C + 8 * lambda * deltaG(TYPE('a)) + 528 * lambda^2 * C + 528 * lambda^2 * deltaG(TYPE('b))"
+  have "C + 2 * E = 3 * 1 * C + 8 * lambda * deltaG(TYPE('a)) + 196 * lambda^2 * C + 196 * lambda^2 * deltaG(TYPE('b))"
     unfolding E_def D_def by (auto simp add: algebra_simps)
-  also have "... \<le> 3 * lambda^2 * C + 531 * lambda^2 * deltaG(TYPE('a)) + 528 * lambda^2 * C + 531 * lambda^2 * deltaG(TYPE('b))"
+  also have "... \<le> 3 * lambda^2 * C + 199 * lambda^2 * deltaG(TYPE('a)) + 196 * lambda^2 * C + 199 * lambda^2 * deltaG(TYPE('b))"
     apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> by auto
-  finally have I: "C + 2 * E \<le> 531 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
+  finally have I: "C + 2 * E \<le> 199 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
     by (auto simp add: algebra_simps)
 
-  show "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 531 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
+  show "Gromov_product_at (f x) (f y) (f z) \<ge> Gromov_product_at x y z / lambda - 199 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
     using * I by auto
-  show "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 531 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
+  show "Gromov_product_at (f x) (f y) (f z) \<le> lambda * Gromov_product_at x y z + 199 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
     using ** I by auto
 qed
 
@@ -113,7 +113,7 @@ proof
   show "Gromov_converging_at_boundary (\<lambda>n. f (u n))"
   proof (rule Gromov_converging_at_boundaryI[of "f (basepoint)"])
     have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
-    define D where "D = 531 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
+    define D where "D = 199 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
     fix M::real
     obtain M2::real where M2: "M = M2/lambda - D"
       using \<open>lambda \<ge> 1\<close> by (auto simp add: algebra_simps divide_simps)
@@ -135,7 +135,7 @@ next
   show "Gromov_converging_at_boundary u"
   proof (rule Gromov_converging_at_boundaryI[of "basepoint"])
     have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(1)] by auto
-    define D where "D = 531 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
+    define D where "D = 199 * lambda^2 * (C + deltaG(TYPE('a)) + deltaG(TYPE('b)))"
     fix M::real
     define M2 where "M2 = lambda * M + D"
     have M2: "M = (M2 - D)/lambda" unfolding M2_def using \<open>lambda \<ge> 1\<close> by (auto simp add: algebra_simps divide_simps)
