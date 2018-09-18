@@ -100,7 +100,7 @@ proof -
     using assms by (metis real_sqrt_mult real_sqrt_one)
   have "(sqrt u * x - sqrt v * y)^2 \<ge> 0" by auto
   then have "u * x^2 + v * y^2 - 2 * 1 * x * y \<ge> 0"
-    unfolding power2_eq_square *[symmetric] using \<open>u>0\<close> \<open>v > 0\<close> by (auto simp add: algebra_simps)
+    unfolding power2_eq_square *[symmetric] using \<open>u > 0\<close> \<open>v > 0\<close> by (auto simp add: algebra_simps)
   then show ?thesis by (auto simp add: algebra_simps divide_simps)
 qed
 
@@ -243,7 +243,7 @@ next
       have "n div 2 \<ge> N2" using that by auto
       then show ?thesis unfolding even_odd_interpolate_def using False N2 by auto
     qed
-    then show "\<exists>N. \<forall>n\<ge>N. P (even_odd_interpolate u v n)" by auto
+    then show "\<exists>N. \<forall>n \<ge> N. P (even_odd_interpolate u v n)" by auto
   qed
 qed
 
@@ -831,7 +831,7 @@ text \<open>From the rescaling properties of Lebesgue measure in a euclidean spa
 the measure of any ball can be expressed in terms of the measure of the unit ball.\<close>
 
 lemma lebesgue_measure_ball:
-  assumes "R\<ge>0"
+  assumes "R \<ge> 0"
   shows "measure lborel (cball (x::('a::euclidean_space)) R) = R^(DIM('a)) * measure lborel (cball (0::'a) 1)"
         "emeasure lborel (cball (x::('a::euclidean_space)) R) = R^(DIM('a)) * emeasure lborel (cball (0::'a) 1)"
 using measure_lebesgue_affine[of R x "cball 0 1"] emeasure_lebesgue_affine[of R x "cball 0 1"] assms
@@ -1394,7 +1394,7 @@ proof -
 
   have *: "f x \<noteq> f y" if "y \<ge> x + d" for x y
   proof -
-    have "(y-a)/d \<ge> (x-a)/d + 1" using \<open>d>0\<close> that by (auto simp add: divide_simps)
+    have "(y-a)/d \<ge> (x-a)/d + 1" using \<open>d > 0\<close> that by (auto simp add: divide_simps)
     then show ?thesis unfolding f_def by linarith
   qed
   have "inj_on f T"

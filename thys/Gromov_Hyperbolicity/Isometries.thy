@@ -284,7 +284,7 @@ proof -
     apply (rule isometry_onI)
     using \<open>isometry_on {a..b} g\<close> \<open>a \<le> b\<close> by (auto simp add: isometry_on_def h_def)
   have **: "dist (h 0) (h (b-a)) = b-a"
-    using isometry_onD[OF \<open>isometry_on {0..b-a} h\<close>, of 0 "b-a"] \<open>a\<le>b\<close> unfolding dist_real_def by auto
+    using isometry_onD[OF \<open>isometry_on {0..b-a} h\<close>, of 0 "b-a"] \<open>a \<le> b\<close> unfolding dist_real_def by auto
   have "geodesic_segment_between (h`{0..b-a}) (h 0) (h (b-a))"
     unfolding geodesic_segment_between_def apply (rule exI[of _ h]) unfolding ** using * by auto
   moreover have "g`{a..b} = h`{0..b-a}"
@@ -1470,7 +1470,7 @@ next
     have "abs (2^n * t/dist x0 y0 - k) \<le> 1" unfolding k_def by linarith
     then have "abs(t - k/2^n * dist x0 y0) \<le> dist x0 y0 / 2^n"
       by (auto simp add: algebra_simps divide_simps False)
-    also have "... < e" using n \<open>e>0\<close> by (auto simp add: algebra_simps divide_simps)
+    also have "... < e" using n \<open>e > 0\<close> by (auto simp add: algebra_simps divide_simps)
     finally have "abs(t - k/2^n * dist x0 y0) < e" by auto
     then have "abs(t - l/2^n * dist x0 y0) < e" using \<open>k = int l\<close> by auto
     moreover have "l/2^n * dist x0 y0 \<in> A" unfolding A_def using \<open>l \<le> 2^n\<close> by auto
@@ -2009,7 +2009,7 @@ proposition growth_rate_euclidean_above:
   shows "finite F \<and> card F \<le> 1 + ((6/D)^(DIM('a))) * R^(DIM('a))"
 proof -
   define C::real where "C = ((6/D)^(DIM('a)))"
-  have "C \<ge> 0" unfolding C_def using \<open>D>0\<close> by auto
+  have "C \<ge> 0" unfolding C_def using \<open>D > 0\<close> by auto
   have "D/3 \<ge> 0" using assms by auto
   have "finite F \<and> card F \<le> 1 + C * R^(DIM('a))"
   proof (cases "R < D/2")
@@ -2055,7 +2055,7 @@ proof -
 
       have "2 * R \<ge> 0" using \<open>R \<ge> 0\<close> by auto
       define A where "A = measure lborel (cball (0::'a) 1)"
-      have "A>0" unfolding A_def using lebesgue_measure_ball_pos by auto
+      have "A > 0" unfolding A_def using lebesgue_measure_ball_pos by auto
       have "card G * ((D/3)^(DIM('a)) * A) = (\<Sum>x\<in>G. ((D/3)^(DIM('a)) * A))"
         by auto
       also have "... = (\<Sum>x\<in>G. measure lborel (cball x (D/3)))"
@@ -2071,7 +2071,7 @@ proof -
       finally have "card G * (D/3)^(DIM('a)) \<le> (2*R)^(DIM('a))"
         using \<open>A > 0\<close> by (auto simp add: divide_simps)
       then have "card G \<le> C * R^(DIM('a))"
-        unfolding C_def using \<open>D>0\<close> apply (auto simp add: algebra_simps divide_simps)
+        unfolding C_def using \<open>D > 0\<close> apply (auto simp add: algebra_simps divide_simps)
         by (metis numeral_times_numeral power_mult_distrib semiring_norm(12) semiring_norm(14))
       then show ?thesis by auto
     qed
@@ -2195,7 +2195,7 @@ proof -
   define D where "D = lambda * (C+1)"
   define Ca where "Ca = (1/((max D 1) * DIM('a)))^(DIM('a))"
   have "Ca > 0" unfolding Ca_def by auto
-  have A: "\<And>R::real. R\<ge>0 \<Longrightarrow> (\<exists>F. (F \<subseteq> cball (0::'a::euclidean_space) R
+  have A: "\<And>R::real. R \<ge> 0 \<Longrightarrow> (\<exists>F. (F \<subseteq> cball (0::'a::euclidean_space) R
         \<and> (\<forall>x\<in>F. \<forall>y\<in>F. x = y \<or> dist x y \<ge> D) \<and> finite F \<and> card F \<ge> Ca * R^(DIM('a))))"
     using growth_rate_euclidean_below[of _ D] unfolding Ca_def by blast
   define Cb::real where "Cb = ((6/1)^(DIM('b)))"
@@ -2331,7 +2331,7 @@ To implement this argument, one needs to be careful at two places:
 \begin{itemize}
 \item to be able to take a maximal set, one needs to check that there is a uniform bound on the
 cardinality of possible separated sets. As local jumps have size $\leq C$, if
-$\epsilon$ is small enough then points at distance $<\epsilon$ have images that can not be
+$\epsilon$ is small enough then points at distance $ < \epsilon$ have images that can not be
 $\Delta C$-separated. This gives the desired cardinality bound.
 \item If two consecutive elements are too separated, then one wants to find an intermediate point
 that is away from the two, to increase strictly our maximal set and reach a contradiction. Since
@@ -2343,7 +2343,7 @@ the details on the two delicate points above as they are not treated in this art
 
 lemma quasi_geodesic_good_partition:
   fixes c::"real \<Rightarrow> ('a::metric_space)"
-  assumes "lambda C-quasi_isometry_on {a..b} c" "dist (c a) (c b) \<ge> Delta * C" "a < b" "Delta > 1" "C>0"
+  assumes "lambda C-quasi_isometry_on {a..b} c" "dist (c a) (c b) \<ge> Delta * C" "a < b" "Delta > 1" "C > 0"
   shows "\<exists>A. A \<subseteq> {a..b} \<and> finite A \<and> a \<in> A \<and> b \<in> A
             \<and> (\<forall>u \<in> A - {b}. dist (c u) (c (next_in A u)) \<le> 3 * Delta * C
                             \<and> dist (c u) (c (next_in A u)) \<ge> Delta * C)
@@ -2471,7 +2471,7 @@ proof -
     have "u \<in> {a..<b}" using \<open>u \<in> A - {b}\<close> A by fastforce
 
     text \<open>Since the quasi-geodesic is not continuous, we will make some mistake when
-    constructing the desired intermediate point. We introduce $\epsilon>0$ small enough
+    constructing the desired intermediate point. We introduce $\epsilon > 0$ small enough
     so that a mistake of order $\epsilon$ will not be a problem.\<close>
     define epsilon::real where "epsilon = min (next_in A u - u) ((Delta - 1) * C/ (2 * lambda))"
     have "epsilon > 0"
@@ -2601,7 +2601,7 @@ If one wants to make the new quasi-geodesic Lipschitz continuous, there is a dif
 if $b$ is very close to $a$, with $c(b)$ at distance $C$ from $c(a)$, then it is impossible to obtain
 $d$ with $d(a) = c(a)$ and $d(b) = c(b)$ and $d$ with a uniformly controlled Lipschitz constant.
 Thus, we have to require that the quasi-geodesic is not one single big jump. This is ensured
-if the distance between $c(a)$ and $c(b)$ is $>C$, say $\geq 2 C$ for instance. This is the
+if the distance between $c(a)$ and $c(b)$ is $ > C$, say $\geq 2 C$ for instance. This is the
 assumption we make in the proposition.
 
 Usually, if one needs to smoothen a quasi-geodesic to prove some property, then the property is
@@ -2681,7 +2681,7 @@ proof -
       if "u \<in> A - {b}" "v = next_in A u" "x \<in> {u..v}" for x u v
     proof -
       have "u \<in> {a..<b}" using that \<open>A \<subseteq> {a..b}\<close> by fastforce
-      have H: "u \<in> A" "v \<in> A" "u< v" "A \<inter> {u<..<v} = {}" using that next_in_basics[OF A \<open>u \<in> {a..<b}\<close>] by auto
+      have H: "u \<in> A" "v \<in> A" "u < v" "A \<inter> {u<..<v} = {}" using that next_in_basics[OF A \<open>u \<in> {a..<b}\<close>] by auto
       consider "x = u" | "x = v" | "x \<in> {u<..<v}" using \<open>x \<in> {u..v}\<close> by fastforce
       then show ?thesis
       proof (cases)
