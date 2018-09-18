@@ -10,10 +10,10 @@ section \<open>GHC Version of Mergesort\<close>
 
 text \<open>
   In the following we show that the mergesort implementation
-  used in GHC (see @{url "http://haskell.org/ghc/docs/7.0-latest/html/libraries/base-4.3.1.0/src/Data-List.html#sort"})
+  used in GHC (see \<^url>\<open>http://hackage.haskell.org/package/base-4.11.1.0/docs/src/Data.OldList.html#sort\<close>)
   is a correct and stable sorting algorithm. Furthermore, experimental
   data suggests that generated code for this implementation is much more
-  efficient than for the implementation provided by @{theory "HOL-Library.Multiset"}.
+  efficient than for the implementation provided by \<^theory>\<open>HOL-Library.Multiset\<close>.
 \<close>
 context linorder
 begin
@@ -62,7 +62,7 @@ lemma length_merge [simp]:
 
 lemma length_merge_pairs [termination_simp]:
   "length (merge_pairs key xs) \<le> length xs"
-  by (induct xs rule: merge_pairs.induct) simp_all
+  by (induct key xs rule: merge_pairs.induct) simp_all
 
 fun merge_all :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b list list \<Rightarrow> 'b list"
   where
@@ -87,7 +87,7 @@ lemma set_merge [simp]:
 
 lemma mset_concat_merge_pairs [simp]:
   "mset (concat (merge_pairs key xs)) = mset (concat xs)"
-  by (induct xs rule: merge_pairs.induct) (auto simp: ac_simps)
+  by (induct key xs rule: merge_pairs.induct) (auto simp: ac_simps)
 
 lemma set_concat_merge_pairs [simp]:
   "set (concat (merge_pairs key xs)) = set (concat xs)"
@@ -95,7 +95,7 @@ lemma set_concat_merge_pairs [simp]:
 
 lemma mset_merge_all [simp]:
   "mset (merge_all key xs) = mset (concat xs)"
-  by (induct xs rule: merge_all.induct) (simp_all add: ac_simps)
+  by (induct key xs rule: merge_all.induct) (simp_all add: ac_simps)
 
 lemma set_merge_all [simp]:
   "set (merge_all key xs) = set (concat xs)"
@@ -125,7 +125,7 @@ lemma mset_sequences [simp]:
   "mset (concat (sequences key xs)) = mset xs"
   "ascP f \<Longrightarrow> mset (concat (asc key x f ys)) = {#x#} + mset (f []) + mset ys"
   "mset (concat (desc key x xs ys)) = {#x#} + mset xs + mset ys"
-  by (induct xs and x f ys and x xs ys rule: sequences_asc_desc.induct)
+  by (induct key xs and key x f ys and key x xs ys rule: sequences_asc_desc.induct)
     (auto simp: ascP_f_singleton)
 
 lemma mset_msort_key:
@@ -135,17 +135,17 @@ lemma mset_msort_key:
 lemma sorted_merge [simp]:
   assumes "sorted (map key xs)" and "sorted (map key ys)"
   shows "sorted (map key (merge key xs ys))"
-  using assms by (induct xs ys rule: merge.induct) (auto)
+  using assms by (induct key xs ys rule: merge.induct) (auto)
 
 lemma sorted_merge_pairs [simp]:
   assumes "\<forall>x\<in>set xs. sorted (map key x)"
   shows "\<forall>x\<in>set (merge_pairs key xs). sorted (map key x)"
-  using assms by (induct xs rule: merge_pairs.induct) simp_all
+  using assms by (induct key xs rule: merge_pairs.induct) simp_all
 
 lemma sorted_merge_all:
   assumes "\<forall>x\<in>set xs. sorted (map key x)"
   shows "sorted (map key (merge_all key xs))"
-  using assms by (induct xs rule: merge_all.induct) simp_all
+  using assms by (induct key xs rule: merge_all.induct) simp_all
 
 lemma
   shows sorted_sequences: "\<forall>x \<in> set (sequences key xs). sorted (map key x)"
@@ -163,11 +163,11 @@ subsection \<open>Stability\<close>
 
 lemma
   shows filter_by_key_sequences [simp]:
-    "[y\<leftarrow>concat (sequences key xs). key x = key y] = [y\<leftarrow>xs. key x = key y]"
+    "[y\<leftarrow>concat (sequences key xs). key y = k] = [y\<leftarrow>xs. key y = k]"
     and filter_by_key_asc:
-    "ascP f \<Longrightarrow> [y\<leftarrow>concat (asc key a f ys). key x = key y] = [y\<leftarrow>f [a] @ ys. key x = key y]"
+    "ascP f \<Longrightarrow> [y\<leftarrow>concat (asc key a f ys). key y = k] = [y\<leftarrow>f [a] @ ys. key y = k]"
     and filter_by_key_desc:
-    "sorted (map key xs) \<Longrightarrow> \<forall>x\<in>set xs. key a \<le> key x \<Longrightarrow> [y\<leftarrow>concat (desc key a xs ys). key x = key y] = [y\<leftarrow>a # xs @ ys. key x = key y]"
+    "sorted (map key xs) \<Longrightarrow> \<forall>x\<in>set xs. key a \<le> key x \<Longrightarrow> [y\<leftarrow>concat (desc key a xs ys). key y = k] = [y\<leftarrow>a # xs @ ys. key y = k]"
 proof (induct key xs and key a f ys and key a xs ys rule: sequences_asc_desc.induct)
   case (4 key a f b bs)
   then show ?case
@@ -177,8 +177,8 @@ next
   then show ?case
   proof (cases "key b < key a")
     case True
-    with 6 have "[y\<leftarrow>concat (desc key b (a # as) bs). key x = key y] =
-      [y\<leftarrow>b # (a # as) @ bs. key x = key y]"
+    with 6 have "[y\<leftarrow>concat (desc key b (a # as) bs). key y = k] =
+      [y\<leftarrow>b # (a # as) @ bs. key y = k]"
       by  (auto) (insert dual_order.order_iff_strict dual_order.trans, blast+)
     moreover
     from 6 have "\<forall>x\<in>set (desc key a as (b # bs)). sorted (map key x)" by (intro sorted_desc)
@@ -189,35 +189,37 @@ qed auto
  
 lemma filter_by_key_merge_is_append [simp]:
   assumes "sorted (map key xs)"
-  shows "[y\<leftarrow>merge key xs ys. key x = key y] = [y\<leftarrow>xs. key x = key y] @ [y\<leftarrow>ys. key x = key y]"
+  shows "[y\<leftarrow>merge key xs ys. key y = k] = [y\<leftarrow>xs. key y = k] @ [y\<leftarrow>ys. key y = k]"
   using assms
-  by (induct xs ys rule: merge.induct) (auto simp: Cons_eq_append_conv leD intro!: filter_False)
+  by (induct key xs ys rule: merge.induct)
+    (auto simp: Cons_eq_append_conv leD intro!: filter_False)
 
 lemma filter_by_key_merge_pairs [simp]:
   assumes "\<forall>xs\<in>set xss. sorted (map key xs)"
-  shows "[y\<leftarrow>concat (merge_pairs key xss). key x = key y] = [y\<leftarrow>concat xss. key x = key y]"
-  using assms by (induct xss rule: merge_pairs.induct) simp_all
+  shows "[y\<leftarrow>concat (merge_pairs key xss). key y = k] = [y\<leftarrow>concat xss. key y = k]"
+  using assms by (induct key xss rule: merge_pairs.induct) simp_all
 
 lemma filter_by_key_merge_all [simp]:
   assumes "\<forall>xs\<in>set xss. sorted (map key xs)"
-  shows "[y\<leftarrow>merge_all key xss. key x = key y] = [y\<leftarrow>concat xss. key x = key y]"
-  using assms by (induct xss rule: merge_all.induct) simp_all
+  shows "[y\<leftarrow>merge_all key xss. key y = k] = [y\<leftarrow>concat xss. key y = k]"
+  using assms by (induct key xss rule: merge_all.induct) simp_all
 
 lemma filter_by_key_merge_all_sequences [simp]:
-  "[x\<leftarrow>merge_all key (sequences key xs) . key y = key x] = [x\<leftarrow>xs . key y = key x]"
+  "[x\<leftarrow>merge_all key (sequences key xs) . key x = k] = [x\<leftarrow>xs . key x = k]"
   using sorted_sequences [of key xs] by simp
 
 lemma msort_key_stable:
-  "[x\<leftarrow>msort_key key xs. key y = key x] = [x\<leftarrow>xs. key y = key x]"
+  "[x\<leftarrow>msort_key key xs. key x = k] = [x\<leftarrow>xs. key x = k]"
   by auto
 
 lemma sort_key_msort_key_conv:
   "sort_key key = msort_key key"
-  by (intro ext properties_for_sort_key mset_msort_key sorted_msort_key msort_key_stable)
+  using msort_key_stable [of key "key x" for key x, of key]
+  by (intro ext properties_for_sort_key mset_msort_key sorted_msort_key)
+    (metis (mono_tags, lifting) filter_cong)
 
 text \<open>
-Replace existing code equations for @{const sort_key} by
-@{term "merge_all key \<circ> sequences key"}.
+  Replace existing code equations for \<^const>\<open>sort_key\<close> by \<^term>\<open>msort_key key\<close>.
 \<close>
 declare sort_key_by_quicksort_code [code del]
 declare sort_key_msort_key_conv [code]
