@@ -32,7 +32,8 @@ fun sequences :: "('b \<Rightarrow> 'a) \<Rightarrow> 'b list \<Rightarrow> 'b l
   where
     "sequences key (a # b # xs) =
       (if key a > key b then desc key b [a] xs else asc key b ((#) a) xs)"
-  | "sequences key xs = [xs]"
+  | "sequences key [x] = [[x]]"
+  | "sequences key [] = []"
   | "asc key a f (b # bs) =
       (if \<not> key a > key b then asc key b (f \<circ> (#) a) bs
       else f [a] # sequences key (b # bs))"
@@ -168,21 +169,21 @@ lemma
     and filter_by_key_desc:
     "sorted (map key xs) \<Longrightarrow> \<forall>x\<in>set xs. key a \<le> key x \<Longrightarrow> [y\<leftarrow>concat (desc key a xs ys). key x = key y] = [y\<leftarrow>a # xs @ ys. key x = key y]"
 proof (induct key xs and key a f ys and key a xs ys rule: sequences_asc_desc.induct)
-  case (3 key a f b bs)
+  case (4 key a f b bs)
   then show ?case
     by (auto simp: o_def ascP_f_Cons [where f = f] ascP_comp_Cons')
 next
-  case (5 key a as b bs)
+  case (6 key a as b bs)
   then show ?case
   proof (cases "key b < key a")
     case True
-    with 5 have "[y\<leftarrow>concat (desc key b (a # as) bs). key x = key y] =
+    with 6 have "[y\<leftarrow>concat (desc key b (a # as) bs). key x = key y] =
       [y\<leftarrow>b # (a # as) @ bs. key x = key y]"
       by  (auto) (insert dual_order.order_iff_strict dual_order.trans, blast+)
     moreover
-    from 5 have "\<forall>x\<in>set (desc key a as (b # bs)). sorted (map key x)" by (intro sorted_desc)
+    from 6 have "\<forall>x\<in>set (desc key a as (b # bs)). sorted (map key x)" by (intro sorted_desc)
     ultimately show ?thesis
-      using True and 5 by (auto simp: Cons_eq_append_conv intro!: filter_False)
+      using True and 6 by (auto simp: Cons_eq_append_conv intro!: filter_False)
   qed auto
 qed auto
  
