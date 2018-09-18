@@ -34,10 +34,10 @@ fun sequences :: "'a list \<Rightarrow> 'a list list"
       (if key a > key b then desc b [a] xs else asc b ((#) a) xs)"
   | "sequences [x] = [[x]]"
   | "sequences [] = []"
-  | "asc a f (b # bs) =
-      (if \<not> key a > key b then asc b (f \<circ> (#) a) bs
-      else f [a] # sequences (b # bs))"
-  | "asc a f [] = [f [a]]"
+  | "asc a as (b # bs) =
+      (if \<not> key a > key b then asc b (\<lambda>ys. as (a # ys)) bs
+      else as [a] # sequences (b # bs))"
+  | "asc a as [] = [as [a]]"
   | "desc a as (b # bs) =
       (if key a > key b then desc b (a # as) bs
       else (a # as) # sequences (b # bs))"
@@ -80,10 +80,10 @@ definition "ascP f = (\<forall>xs ys. f (xs @ ys) = f xs @ ys)"
 
 lemma ascP_Cons [simp]: "ascP ((#) x)" by (simp add: ascP_def)
 
-lemma ascP_comp_Cons [simp]: "ascP f \<Longrightarrow> ascP (f \<circ> (#) x)"
+lemma ascP_comp_Cons [simp]: "ascP f \<Longrightarrow> ascP (\<lambda>ys. f (x # ys))"
   by (auto simp: ascP_def simp flip: append_Cons)
 
-lemma ascP_comp_Cons': "ascP f \<Longrightarrow> ascP (\<lambda>xs. f [] @ x # xs)"
+lemma ascP_comp_append: "ascP f \<Longrightarrow> ascP (\<lambda>xs. f [] @ x # xs)"
   by (auto simp: ascP_def)
 
 lemma ascP_f_singleton:
@@ -180,7 +180,7 @@ lemma
 proof (induct xs and a f ys and a xs ys rule: sequences_asc_desc.induct)
   case (4 a f b bs)
   then show ?case
-    by (auto simp: o_def ascP_f_Cons [where f = f] ascP_comp_Cons')
+    by (auto simp: o_def ascP_f_Cons [where f = f] ascP_comp_append)
 next
   case (6 a as b bs)
   then show ?case
