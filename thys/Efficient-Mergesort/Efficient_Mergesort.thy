@@ -188,10 +188,10 @@ next
     case True
     with 6 have "[y\<leftarrow>concat (desc b (a # as) bs). key y = k] = [y\<leftarrow>b # (a # as) @ bs. key y = k]"
       by (auto simp: less_le order_trans)
-    moreover
-    from 6 have "\<forall>x\<in>set (desc a as (b # bs)). sorted (map key x)" by (intro sorted_desc)
-    ultimately show ?thesis
-      using True and 6 by (auto simp: Cons_eq_append_conv intro!: filter_False)
+    then show ?thesis
+      using True and 6
+      by (cases "key a = k", cases "key b = k")
+        (auto simp: Cons_eq_append_conv intro!: filter_False)
   qed auto
 qed auto
  
