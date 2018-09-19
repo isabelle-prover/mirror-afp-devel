@@ -892,7 +892,7 @@ proof
     proof (rule ccontr)
       assume "\<not> (\<forall>x. poly pp x \<noteq> 0)"
       then obtain x where "poly pp x=0" by auto
-      moreover have "Im x=0" thm that
+      moreover have "Im x=0"
         using all_real[unfolded all_roots_real_def, rule_format,of x,folded pp_def] \<open>poly pp x=0\<close> 
         by auto
       ultimately have "poly pp (of_real (Re x)) = 0"

@@ -713,7 +713,6 @@ using assms proof(induction X arbitrary: \<tau> \<Gamma>)
           next
   
           case 2
-            thm *
             hence
               "ptrm_infer_type (\<Gamma>(b \<mapsto> \<tau>)) ([a \<leftrightarrow> b] \<bullet> PFn x \<sigma> A)
              = ptrm_infer_type (\<Gamma>(b \<mapsto> \<tau>)) (PFn x \<sigma> ([a \<leftrightarrow> b] \<bullet> A))"

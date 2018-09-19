@@ -294,7 +294,6 @@ proof -
         fix ys
         assume ys: "ys \<in> ?S"
         let ?expr = "?comp ys"
-        term ?expr
         have "finite ?expr"
           by (simp add: finite_interleavings)
         moreover have "card ?expr = (n choose k)"
