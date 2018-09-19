@@ -191,7 +191,7 @@ proof -
   have [simp]: "z/ereal 2 = -\<infinity> \<longleftrightarrow> z = -\<infinity>" for z
     by (auto simp add: ereal_divide_eq)
 
-  consider "a = 0" | "b = 0" | "a>0 \<and> b > 0"
+  consider "a = 0" | "b = 0" | "a > 0 \<and> b > 0"
     using zero_less_iff_neq_zero by auto
   then show ?thesis
     apply (cases, auto)

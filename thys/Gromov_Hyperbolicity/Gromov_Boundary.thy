@@ -161,7 +161,7 @@ text \<open>Now comes the only nontrivial statement of the construction, the fac
 distance is bounded from below by $f/2$.
 
 Here is the mathematical proof. We show by induction that all chains from $x$ to
-$y$ satisfy this bound. Assume this is done for all chains of length $<n$, we do it for a
+$y$ satisfy this bound. Assume this is done for all chains of length $ < n$, we do it for a
 chain of length $n$. Write $S = \sum f(u_i, u_{i+1})$ for the sum along the chain. Introduce $p$
 the last index where the sum is $\leq S/2$. Then the sum from $0$ to $p$ is $\leq S/2$, and the sum
 from $p+1$ to $n$ is also $\leq S/2$ (by maximality of $p$). The induction assumption
@@ -277,18 +277,18 @@ at infinity of the initial space, so their relations (and the topology of $X \cu
 central.\<close>
 
 definition Gromov_converging_at_boundary::"(nat \<Rightarrow> ('a::Gromov_hyperbolic_space)) \<Rightarrow> bool"
-  where "Gromov_converging_at_boundary u = (\<forall>a. \<forall>(M::real). \<exists>N. \<forall>n \<ge> N. \<forall> m\<ge>N. Gromov_product_at a (u m) (u n) \<ge> M)"
+  where "Gromov_converging_at_boundary u = (\<forall>a. \<forall>(M::real). \<exists>N. \<forall>n \<ge> N. \<forall> m \<ge> N. Gromov_product_at a (u m) (u n) \<ge> M)"
 
 lemma Gromov_converging_at_boundaryI:
   assumes "\<And>M. \<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. Gromov_product_at a (u m) (u n) \<ge> M"
   shows "Gromov_converging_at_boundary u"
 unfolding Gromov_converging_at_boundary_def proof (auto)
   fix b::'a and M::real
-  obtain N where *: "\<And>m n. n\<ge>N \<Longrightarrow> m\<ge>N \<Longrightarrow> Gromov_product_at a (u m) (u n) \<ge> M + dist a b"
+  obtain N where *: "\<And>m n. n \<ge> N \<Longrightarrow> m \<ge> N \<Longrightarrow> Gromov_product_at a (u m) (u n) \<ge> M + dist a b"
     using assms[of "M + dist a b"] by auto
   have "Gromov_product_at b (u m) (u n) \<ge> M" if "m \<ge> N" "n \<ge> N" for m n
     using *[OF that] Gromov_product_at_diff1[of a "u m" "u n" b] by (smt Gromov_product_commute)
-  then show "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. M \<le> Gromov_product_at b (u m) (u n)" by auto
+  then show "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. M \<le> Gromov_product_at b (u m) (u n)" by auto
 qed
 
 lemma Gromov_converging_at_boundary_imp_unbounded:
@@ -691,7 +691,7 @@ lemma extended_Gromov_product_at_diff1 [mono_intros]:
   "extended_Gromov_product_at e x y \<le> extended_Gromov_product_at f x y + dist e f"
 proof (cases "extended_Gromov_product_at f x y = \<infinity>")
   case False
-  have "extended_Gromov_product_at e x y \<le> (extended_Gromov_product_at f x y + dist e f) + h" if "h>0" for h
+  have "extended_Gromov_product_at e x y \<le> (extended_Gromov_product_at f x y + dist e f) + h" if "h > 0" for h
   proof -
     have "\<exists>t\<in>{liminf (\<lambda>n. ereal(Gromov_product_at f (u n) (v n))) |u v. abs_Gromov_completion u = x
                 \<and> abs_Gromov_completion v = y \<and> Gromov_completion_rel u u \<and> Gromov_completion_rel v v}.
@@ -1316,7 +1316,7 @@ distance or the new distance on the space.\<close>
 
 lemma inside_Gromov_distance_approx:
   assumes "C < (\<infinity>::ereal)"
-  shows "\<exists>e>0. \<forall>x y. extended_Gromov_distance (to_Gromov_completion basepoint) x \<le> C \<longrightarrow> dist x y \<le> e
+  shows "\<exists>e > 0. \<forall>x y. extended_Gromov_distance (to_Gromov_completion basepoint) x \<le> C \<longrightarrow> dist x y \<le> e
           \<longrightarrow> esqrt(extended_Gromov_distance x y) \<le> 2 * ereal(dist x y)"
 proof -
   obtain C0 where "C \<le> ereal C0" using assms by (cases C, auto)
@@ -1448,7 +1448,7 @@ next
   proof (rule tendsto_sandwich[of "\<lambda>_. 0" _ _ "\<lambda>n. 2 * ereal(dist (u n) x)"])
     have A: "extended_Gromov_distance (to_Gromov_completion basepoint) x < \<infinity>"
       by (simp add: assms extended_Gromov_distance_def)
-    obtain e where e: "e>0" "\<And>y. dist x y \<le> e \<Longrightarrow> esqrt(extended_Gromov_distance x y) \<le> 2 * ereal (dist x y)"
+    obtain e where e: "e > 0" "\<And>y. dist x y \<le> e \<Longrightarrow> esqrt(extended_Gromov_distance x y) \<le> 2 * ereal (dist x y)"
       using inside_Gromov_distance_approx[OF A] by auto
     have B: "eventually (\<lambda>n. dist x (u n) < e) F"
       using order_tendstoD(2)[OF iffD1[OF tendsto_dist_iff *] \<open>e > 0\<close>] by (simp add: dist_commute)
@@ -1559,13 +1559,13 @@ next
   assume H: "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> x"
   have Lu: "(\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x) \<longlonglongrightarrow> \<infinity>"
     using iffD1[OF Gromov_completion_boundary_limit[OF assms] H] by simp
-  have A: "\<exists>N. \<forall>n \<ge> N. \<forall> m\<ge>N. Gromov_product_at basepoint (u m) (u n) \<ge> M" for M
+  have A: "\<exists>N. \<forall>n \<ge> N. \<forall> m \<ge> N. Gromov_product_at basepoint (u m) (u n) \<ge> M" for M
   proof -
     have "eventually (\<lambda>n. extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x > M + deltaG(TYPE('a))) sequentially"
       by (rule order_tendstoD[OF Lu], auto)
     then obtain N where N: "\<And>n. n \<ge> N \<Longrightarrow> extended_Gromov_product_at basepoint (to_Gromov_completion (u n)) x > M + deltaG(TYPE('a))"
       unfolding eventually_sequentially by auto
-    have "Gromov_product_at basepoint (u m) (u n) \<ge> M" if "n \<ge> N" "m\<ge> N" for m n
+    have "Gromov_product_at basepoint (u m) (u n) \<ge> M" if "n \<ge> N" "m \<ge> N" for m n
     proof -
       have "ereal M \<le> min (ereal (M + deltaG(TYPE('a)))) (ereal (M + deltaG(TYPE('a)))) - ereal(deltaG(TYPE('a)))"
         by simp
@@ -1578,7 +1578,7 @@ next
     qed
     then show ?thesis by auto
   qed
-  have "\<exists>N. \<forall>n \<ge> N. \<forall> m\<ge>N. Gromov_product_at a (u m) (u n) \<ge> M" for M a
+  have "\<exists>N. \<forall>n \<ge> N. \<forall> m \<ge> N. Gromov_product_at a (u m) (u n) \<ge> M" for M a
   proof -
     obtain N where N: "\<And>m n. m \<ge> N \<Longrightarrow> n \<ge> N \<Longrightarrow> Gromov_product_at basepoint (u m) (u n) \<ge> M + dist a basepoint"
       using A[of "M + dist a basepoint"] by auto
@@ -1649,7 +1649,7 @@ lemma same_limit_imp_Gromov_product_tendsto_infinity:
   assumes "z \<in> Gromov_boundary"
           "(\<lambda>n. to_Gromov_completion (u n)) \<longlonglongrightarrow> z"
           "(\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> z"
-  shows "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. Gromov_product_at a (u n) (v m) \<ge> C"
+  shows "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. Gromov_product_at a (u n) (v m) \<ge> C"
 proof -
   have "Gromov_completion_rel u u" "Gromov_completion_rel v v" "abs_Gromov_completion u = abs_Gromov_completion v"
     using iffD1[OF Gromov_completion_converge_to_boundary[OF assms(1)]] assms by auto
@@ -2222,7 +2222,7 @@ proof (rule completeI)
     qed
     then have "M \<le> Gromov_product_at basepoint (v m) (v n)" if "n \<ge> max N1 N2" "m \<ge> max N1 N2" for m n
       using that by auto
-    then show "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. M \<le> Gromov_product_at basepoint (v m) (v n)"
+    then show "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. M \<le> Gromov_product_at basepoint (v m) (v n)"
       by blast
   qed
   then obtain l where l: "l \<in> Gromov_boundary" "(\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> l"
@@ -2318,7 +2318,7 @@ proof (rule completeI, auto)
       qed
       then have "M \<le> Gromov_product_at basepoint (v m) (v n)" if "n \<ge> N" "m \<ge> N" for m n
         using that by auto
-      then show "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. M \<le> Gromov_product_at basepoint (v m) (v n)"
+      then show "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. M \<le> Gromov_product_at basepoint (v m) (v n)"
         by blast
     qed
     then obtain l where l: "l \<in> Gromov_boundary" "(\<lambda>n. to_Gromov_completion (v n)) \<longlonglongrightarrow> l"
@@ -2387,7 +2387,7 @@ proof (rule completeI, auto)
         then show ?thesis
           using \<open>e > 0\<close> by auto
       qed
-      then show "\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. dist (v m) (v n) < e" by auto
+      then show "\<exists>M. \<forall>m \<ge> M. \<forall>n \<ge> M. dist (v m) (v n) < e" by auto
     qed
     then obtain l where "v \<longlonglongrightarrow> l"
       using \<open>complete (UNIV::'a set)\<close> complete_def by blast
@@ -2414,7 +2414,7 @@ to infinity. By a diagonal argument, we obtain a convergent subsequence of $u_n$
 
 As we have already proved that the space is complete, there is a shortcut to the above argument,
 avoiding subsequences and diagonal argument altogether. Indeed, in a complete space it suffices
-to show that for any $\epsilon>0$ it is covered by finitely many balls of radius $\epsilon$ to get
+to show that for any $\epsilon > 0$ it is covered by finitely many balls of radius $\epsilon$ to get
 the compactness. This is what we do in the following proof, although the argument is precisely
 modelled on the first proof we have explained.\<close>
 
@@ -2422,7 +2422,7 @@ theorem Gromov_completion_compact:
   assumes "proper (UNIV::'a::Gromov_hyperbolic_space_geodesic set)"
   shows "compact (UNIV::'a Gromov_completion set)"
 proof -
-  have "\<exists>k. finite k \<and> (UNIV::'a Gromov_completion set) \<subseteq> (\<Union>x\<in>k. ball x e)" if "e>0" for e
+  have "\<exists>k. finite k \<and> (UNIV::'a Gromov_completion set) \<subseteq> (\<Union>x\<in>k. ball x e)" if "e > 0" for e
   proof -
     define D::real where "D = max 0 (-ln(e/4)/epsilonG(TYPE('a)))"
     have "D \<ge> 0" unfolding D_def by auto
@@ -2471,7 +2471,7 @@ proof -
         using * by auto
       also have "... = ereal(exp(-epsilonG(TYPE('a)) * D))"
         by auto
-      also have "...\<le> ereal(e/4)"
+      also have "... \<le> ereal(e/4)"
         by (intro mono_intros, fact)
       finally have "dist (to_Gromov_completion x) (to_Gromov_completion x2) \<le> e/4"
         using \<open>e > 0\<close> by auto
@@ -2565,7 +2565,7 @@ proof -
       by (simp add: less_imp_le that)
     have "M \<le> Gromov_product_at 0 (u m) (u n)" if "n \<ge> N" "m \<ge> N" for m n
       using A[OF \<open>m \<ge> N\<close>] A[OF \<open>n \<ge> N\<close>] *[of "u m" "u n"] by auto
-    then show "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. M \<le> Gromov_product_at 0 (u m) (u n)"
+    then show "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. M \<le> Gromov_product_at 0 (u m) (u n)"
       by auto
   qed
   have *: "Gromov_product_at 0 m n \<ge> - max m n" for m n::real
@@ -2581,7 +2581,7 @@ proof -
       by (simp add: less_imp_le that)
     have "M \<le> Gromov_product_at 0 (u m) (u n)" if "n \<ge> N" "m \<ge> N" for m n
       using A[OF \<open>m \<ge> N\<close>] A[OF \<open>n \<ge> N\<close>] *[of "u m" "u n"] by auto
-    then show "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. M \<le> Gromov_product_at 0 (u m) (u n)"
+    then show "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. M \<le> Gromov_product_at 0 (u m) (u n)"
       by auto
   qed
   have L: "(u \<longlonglongrightarrow> \<infinity>) \<or> (u \<longlonglongrightarrow> - \<infinity>)" if "Gromov_converging_at_boundary u" for u::"nat \<Rightarrow> real"
@@ -2612,7 +2612,7 @@ proof -
     have "\<not>(liminf u = - \<infinity> \<and> limsup u = \<infinity>)"
     proof (rule ccontr, auto)
       assume "liminf u = -\<infinity>" "limsup u = \<infinity>"
-      have "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge>N. Gromov_product_at 0 (u m) (u n) \<ge> 1"
+      have "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. Gromov_product_at 0 (u m) (u n) \<ge> 1"
         using that unfolding Gromov_converging_at_boundary_def by blast
       then obtain N where N: "\<And>m n. m \<ge> N \<Longrightarrow> n \<ge> N \<Longrightarrow> Gromov_product_at 0 (u m) (u n) \<ge> 1"
         by auto

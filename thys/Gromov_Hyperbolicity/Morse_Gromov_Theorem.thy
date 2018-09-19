@@ -291,7 +291,7 @@ proof -
   qed
   have "continuous (at u within {a..b}) f"
     using assms(1) by (simp add: \<open>a \<le> u\<close> \<open>u \<le> b\<close> continuous_on_eq_continuous_within)
-  then have "\<exists>i>0. \<forall>s\<in>{a..b}. dist u s < i \<longrightarrow> dist (f u) (f s) < (delta - deltaG(TYPE('a)))"
+  then have "\<exists>i > 0. \<forall>s\<in>{a..b}. dist u s < i \<longrightarrow> dist (f u) (f s) < (delta - deltaG(TYPE('a)))"
     unfolding continuous_within_eps_delta using \<open>deltaG(TYPE('a)) < delta\<close> by (auto simp add: metric_space_class.dist_commute)
   then obtain e0 where e0: "e0 > 0" "\<And>s. s \<in> {a..b} \<Longrightarrow> dist u s < e0 \<Longrightarrow> dist (f u) (f s) < (delta - deltaG(TYPE('a)))"
     by auto
@@ -340,8 +340,8 @@ proof -
     text \<open>Next, consider the case where $u$ satisfies the defining property. Then we will take $t = u$.
     The only nontrivial point to check is that the distance of $f(u)$ to the starting point is not
     too small. For this, we need to separate the case where $u = b$ (in which case one argues directly)
-    and the case where $u<b$, where one can use a point slightly to the right of $u$ which has a
-    projection at distance $>d$ of the starting point, and use almost continuity.\<close>
+    and the case where $u < b$, where one can use a point slightly to the right of $u$ which has a
+    projection at distance $ > d$ of the starting point, and use almost continuity.\<close>
     case False
     have B: "dist (p a) (p s) \<le> d" if "s \<in> {a..u}" for s
     proof (cases "s = u")
@@ -464,34 +464,14 @@ the fact that the closest point projection on quasi-convex sets is exponentially
 We will also give afterwards for completeness the proof in~\cite{bridson_haefliger}, as it brings
 up interesting tools, although the dependency it gives is worse.\<close>
 
-text \<open>We start with Lemma 3 of~\cite{shchur}: If $s$ is a projection of $z$ on $[x,y]$, then a
-projection of $x$ on $[s,z]$ is close to $s$, up to $4 \delta$.\<close>
-
-lemma (in Gromov_hyperbolic_space_geodesic) orthogonal_projection_on_orthogonal_projection_close:
-  assumes "geodesic_segment_between G x y"
-          "s \<in> proj_set z G"
-          "geodesic_segment_between H s z"
-          "t \<in> proj_set x H"
-  shows "dist s t \<le> 4 * deltaG(TYPE('a))"
-proof -
-  have "dist x t + dist t s \<le> dist x s + 4 * deltaG(TYPE('a))"
-    apply (rule dist_along_geodesic[OF geodesic_segmentI[OF \<open>geodesic_segment_between H s z\<close>] \<open>t \<in> proj_set x H\<close>])
-    using assms by auto
-  moreover have "dist t s + dist s x \<le> dist t x + 4 * deltaG(TYPE('a))"
-    apply (rule dist_along_geodesic[OF geodesic_segmentI[OF \<open>geodesic_segment_between G x y\<close>]])
-    using proj_set_geodesic_same_basepoint[OF \<open>s \<in> proj_set z G\<close> \<open>geodesic_segment_between H s z\<close> proj_setD(1)[OF \<open>t \<in> proj_set x H\<close>]]
-    assms(1) by auto
-  ultimately show ?thesis
-    by (simp add: metric_space_class.dist_commute)
-qed
-
-text \<open>The next lemma (Lemma 2 in~\cite{shchur}) asserts that, if two points are not too far apart (at distance at most
+text \<open>The next lemma (for $C = 0$, Lemma 2 in~\cite{shchur}) asserts that, if two points are not too far apart (at distance at most
 $10 \delta$), and far enough from a given geodesic segment, then when one moves towards this
 geodesic segment by a fixed amount (here $5 \delta$), then the two points become closer (the new
 distance is at most $5 \delta$, gaining a factor of $2$). Later, we will iterate this lemma to
-show that the projection on a geodesic segment is exponentially contracting.
+show that the projection on a geodesic segment is exponentially contracting. For the application,
+we give a more general version involving an additional constant $C$.
 
-This lemma holds for $\delta$ the hyperbolicity constant. We will want to apply it with $\delta>0$,
+This lemma holds for $\delta$ the hyperbolicity constant. We will want to apply it with $\delta > 0$,
 so to avoid problems in the case $\delta = 0$ we formulate it not using the hyperbolicity constant of
 the given type, but any constant which is at least the hyperbolicity constant (this is to work
 around the fact that one can not say or use easily in Isabelle that a type with hyperbolicity
@@ -502,10 +482,11 @@ lemma (in Gromov_hyperbolic_space_geodesic) geodesic_projection_exp_contracting_
           "px \<in> proj_set x G"
           "py \<in> proj_set y G"
           "delta \<ge> deltaG(TYPE('a))"
-          "dist x y \<le> 10 * delta"
+          "dist x y \<le> 10 * delta + C"
           "M \<ge> 15/2 * delta"
-          "dist px x \<ge> M + 5 * delta"
-          "dist py y \<ge> M + 5 * delta"
+          "dist px x \<ge> M + 5 * delta + C/2"
+          "dist py y \<ge> M + 5 * delta + C/2"
+          "C \<ge> 0"
   shows "dist (geodesic_segment_param {px--x} px M)
               (geodesic_segment_param {py--y} py M) \<le> 5 * delta"
 proof -
@@ -624,12 +605,13 @@ proof -
     unfolding x'_def y'_def by auto
 qed
 
-text \<open>The next lemma (Lemma 10 in~\cite{shchur}) asserts that the projection on a geodesic segment is
+text \<open>The next lemma (Lemma 10 in~\cite{shchur} for $C = 0$) asserts that the projection on a geodesic segment is
 an exponential contraction.
 More precisely, if a path of length $L$ is at distance at least $D$ of a geodesic segment $G$,
 then the projection of the path on $G$ has diameter at most $C L \exp(-c D/\delta)$, where $C$ and
 $c$ are universal constants. This is not completely true at one can not go below a fixed size, as
-always, so the correct bound is $C \max(\delta, L \exp(-c D/\delta))$.
+always, so the correct bound is $K \max(\delta, L \exp(-c D/\delta))$. For the application, we
+give a slightly more general statement involving an additional constant $C$.
 
 This statement follows from the previous lemma: if one moves towards $G$ by $10 \delta$, then
 the distance between points is divided by $2$. Then one iterates this statement as many times
@@ -637,14 +619,16 @@ as possible, gaining a factor $2$ each time and therefore an exponential factor 
 
 lemma (in Gromov_hyperbolic_space_geodesic) geodesic_projection_exp_contracting:
   assumes "geodesic_segment G"
-          "M-lipschitz_on {a..b} f"
+          "\<And>x y. x \<in> {a..b} \<Longrightarrow> y \<in> {a..b} \<Longrightarrow> dist (f x) (f y) \<le> lambda * dist x y + C"
           "a \<le> b"
           "pa \<in> proj_set (f a) G"
           "pb \<in> proj_set (f b) G"
           "\<And>t. t \<in> {a..b} \<Longrightarrow> infdist (f t) G \<ge> D"
-          "D \<ge> 15/2 * delta"
+          "D \<ge> 15/2 * delta + C/2"
           "delta > deltaG(TYPE('a))"
-  shows "dist pa pb \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * M * (b-a) * exp(-D * ln 2 / (5 * delta)))"
+          "C \<ge> 0"
+          "lambda \<ge> 0"
+  shows "dist pa pb \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (b-a) * exp(-(D-C/2) * ln 2 / (5 * delta)))"
 proof -
   have "delta > 0" using assms
     using local.delta_nonneg by linarith
@@ -655,24 +639,25 @@ proof -
   finally have "exp(15/2/5 * ln 2) = 2 * exp(1/2 * ln (2::real))"
     by simp
 
-  text \<open>The idea of the proof is to start with a sequence of points separated by $10 \delta$ along
+  text \<open>The idea of the proof is to start with a sequence of points separated by $10 \delta + C$ along
   the original path, and push them by a fixed distance towards $G$ to bring them at distance at most
-  $16 \delta$, thanks to the previous lemma. Then, discard half the points, and start again. This
+  $5 \delta$, thanks to the previous lemma. Then, discard half the points, and start again. This
   is possible while one is far enough from $G$. In the first step of the proof, we formalize this
   in the case where the process can be iterated long enough that, at the end, the projections on $G$
   are very close together. This is a simple induction, based on the previous lemma.\<close>
 
-  have Main: "\<And>g p. (\<forall>i \<in> {0..2^k}. p i \<in> proj_set (g i) G)
-            \<Longrightarrow> (\<forall>i \<in> {0..2^k}. dist (p i) (g i) \<ge> 5 * delta * k + 15/2 * delta)
-            \<Longrightarrow> (\<forall>i \<in> {0..<2^k}. dist (g i) (g (Suc i)) \<le> 10 * delta)
+  have Main: "\<And>c g p. (\<forall>i \<in> {0..2^k}. p i \<in> proj_set (g i) G)
+            \<Longrightarrow> (\<forall>i \<in> {0..2^k}. dist (p i) (g i) \<ge> 5 * delta * k + 15/2 * delta + c/2)
+            \<Longrightarrow> (\<forall>i \<in> {0..<2^k}. dist (g i) (g (Suc i)) \<le> 10 * delta + c)
+            \<Longrightarrow> c \<ge> 0
             \<Longrightarrow> dist (p 0) (p (2^k)) \<le> 5 * deltaG(TYPE('a))" for k
   proof (induction k)
     case 0
     then have H: "p 0 \<in> proj_set (g 0) G"
                  "p 1 \<in> proj_set (g 1) G"
-                 "dist (g 0) (g 1) \<le> 10 * delta"
-                 "dist (p 0) (g 0) \<ge> 15/2 * delta"
-                 "dist (p 1) (g 1) \<ge> 15/2 * delta"
+                 "dist (g 0) (g 1) \<le> 10 * delta + c"
+                 "dist (p 0) (g 0) \<ge> 15/2 * delta + c/2"
+                 "dist (p 1) (g 1) \<ge> 15/2 * delta + c/2"
       by auto
     have "dist (p 0) (p 1) \<le> max (5 * deltaG(TYPE('a))) (dist (g 0) (g 1) - dist (p 0) (g 0) - dist (p 1) (g 1) + 10 * deltaG(TYPE('a)))"
       by (rule proj_along_geodesic_contraction[OF \<open>geodesic_segment G\<close> \<open>p 0 \<in> proj_set (g 0) G\<close> \<open>p 1 \<in> proj_set (g 1) G\<close>])
@@ -691,7 +676,7 @@ proof -
     define g' where "g' = (\<lambda>i. h (2 * i))"
     define p' where "p' = (\<lambda>i. p (2 * i))"
     have "dist (p' 0) (p' (2^k)) \<le> 5 * deltaG(TYPE('a))"
-    proof (rule Suc.IH[where ?g = g'])
+    proof (rule Suc.IH[where ?g = g' and ?c = 0])
       show "\<forall>i\<in>{0..2 ^ k}. p' i \<in> proj_set (g' i) G"
       proof
         fix i::nat assume "i \<in> {0..2^k}"
@@ -700,21 +685,21 @@ proof -
           unfolding p'_def g'_def h_def apply (rule proj_set_geodesic_same_basepoint[of _ "g (2 * i)" _ "{p(2 * i)--g(2 * i)}"])
           using Suc * by (auto simp add: geodesic_segment_param_in_segment)
       qed
-      show "\<forall>i\<in>{0..2 ^ k}. 5 * delta * k + 15/2 * delta \<le> dist (p' i) (g' i)"
+      show "\<forall>i\<in>{0..2 ^ k}. 5 * delta * k + 15/2 * delta + 0/2 \<le> dist (p' i) (g' i)"
       proof
         fix i::nat assume "i \<in> {0..2^k}"
         then have *: "2 * i \<in> {0..2^(Suc k)}" by auto
-        have "5 * delta * k + 15/2 * delta \<le> 5 * delta * Suc k + 15/2 * delta"
-          using \<open>delta > 0\<close> by auto
+        have "5 * delta * k + 15/2 * delta \<le> 5 * delta * Suc k + 15/2 * delta + c/2"
+          using \<open>delta > 0\<close> \<open>c \<ge> 0\<close> by (auto simp add: algebra_simps divide_simps)
         also have "... \<le> dist (p (2 * i)) (g (2 * i))"
           using Suc * by auto
         finally have *: "5 * delta * k + 15/2 * delta \<le> dist (p (2 * i)) (g (2 * i))" by simp
         have "dist (p' i) (g' i) = 5 * delta * k + 15/2 * delta"
           unfolding p'_def g'_def h_def apply (rule geodesic_segment_param_in_geodesic_spaces(6))
           using * \<open>delta > 0\<close> by auto
-        then show "5 * delta * k + 15/2 * delta \<le> dist (p' i) (g' i)" by simp
+        then show "5 * delta * k + 15/2 * delta + 0/2 \<le> dist (p' i) (g' i)" by simp
       qed
-      show "\<forall>i\<in>{0..<2 ^ k}. dist (g' i) (g' (Suc i)) \<le> 10 * delta"
+      show "\<forall>i\<in>{0..<2 ^ k}. dist (g' i) (g' (Suc i)) \<le> 10 * delta + 0"
       proof
         fix i::nat assume *: "i \<in> {0..<2 ^ k}"
         have "dist (g' i) (g' (Suc i)) = dist (h (2 * i)) (h (Suc (Suc (2 * i))))"
@@ -723,9 +708,9 @@ proof -
           by (intro mono_intros)
         also have "... \<le> 5 * delta + 5 * delta"
           apply (intro mono_intros h_dist) using * by auto
-        finally show "dist (g' i) (g' (Suc i)) \<le> 10 * delta" by simp
+        finally show "dist (g' i) (g' (Suc i)) \<le> 10 * delta + 0" by simp
       qed
-    qed
+    qed (simp)
     then show "dist (p 0) (p (2 ^ Suc k)) \<le> 5 * deltaG(TYPE('a))"
       unfolding p'_def by auto
   qed
@@ -734,14 +719,14 @@ proof -
   introduce $k$, the number of steps for which the pushing process can be done -- it only depends on
   the original distance $D$ to $G$. \<close>
 
-  define k where "k = nat(floor((D- 15/2 * delta)/(5 * delta)))"
-  have "int k = floor((D - 15/2 * delta)/(5 * delta))"
-    unfolding k_def apply (rule nat_0_le) using \<open>D \<ge> 15/2 * delta\<close> \<open>delta > 0\<close> by auto
-  then have "k \<le> (D - 15/2 * delta)/(5 * delta)" "(D - 15/2 * delta)/(5 * delta) \<le> k + 1"
+  define k where "k = nat(floor((D - C/2 - 15/2 * delta)/(5 * delta)))"
+  have "int k = floor((D - C/2 - 15/2 * delta)/(5 * delta))"
+    unfolding k_def apply (rule nat_0_le) using \<open>D \<ge> 15/2 * delta + C/2\<close> \<open>delta > 0\<close> by auto
+  then have "k \<le> (D - C/2 - 15/2 * delta)/(5 * delta)" "(D - C/2 - 15/2 * delta)/(5 * delta) \<le> k + 1"
     by linarith+
-  then have k: "D \<ge> 5 * delta * k + 15/2 * delta" "D \<le> 5 * delta * (k+1) + 15/2 * delta"
+  then have k: "D \<ge> 5 * delta * k + 15/2 * delta + C/2" "D \<le> 5 * delta * (k+1) + 15/2 * delta + C/2"
     using \<open>delta > 0\<close> by (auto simp add: algebra_simps divide_simps)
-  have "exp(D/(5 * delta) * ln 2) * exp(-15/2/5 * ln 2) = exp(((D-15/2 * delta)/(5 * delta)) * ln 2)"
+  have "exp((D-C/2)/(5 * delta) * ln 2) * exp(-15/2/5 * ln 2) = exp(((D-C/2-15/2 * delta)/(5 * delta)) * ln 2)"
     unfolding mult_exp_exp using \<open>delta > 0\<close> by (simp add: algebra_simps divide_simps)
   also have "... \<le> exp((k+1) * ln 2)"
     apply (intro mono_intros) using k(2) \<open>delta > 0\<close> by (auto simp add: divide_simps algebra_simps)
@@ -749,19 +734,19 @@ proof -
     by (subst powr_realpow[symmetric], auto simp add: powr_def)
   also have "... = 2 * 2^k"
     by auto
-  finally have k': "1/2^k \<le> 2 * exp(15/2/5 * ln 2) * exp(- (D * ln 2 / (5 * delta)))"
+  finally have k': "1/2^k \<le> 2 * exp(15/2/5 * ln 2) * exp(- ((D-C/2) * ln 2 / (5 * delta)))"
     by (auto simp add: algebra_simps divide_simps exp_minus)
 
   text \<open>We separate the proof into two cases. If the path is not too long, then it can be covered by
-  $2^k$ points at distance at most $10 \delta$. By the basic statement, it follows that the diameter
+  $2^k$ points at distance at most $10 \delta + C$. By the basic statement, it follows that the diameter
   of the projection is at most $5 \delta$. Otherwise, we subdivide the path into $2^N$ points at
-  distance at most $10 \delta$, with $N \geq k$, and apply the basic statement to blocks of $2^k$
+  distance at most $10 \delta + C$, with $N \geq k$, and apply the basic statement to blocks of $2^k$
   consecutive points. It follows that the projections of $g_0, g_{2^k}, g_{2\cdot 2^k},\dotsc$ are
-  at distances at most $6 \delta$. Hence, the first and last projections are at distance at most
-  $2^{N-k} \cdot 6 \delta$, which is the desired bound.\<close>
+  at distances at most $5 \delta$. Hence, the first and last projections are at distance at most
+  $2^{N-k} \cdot 5 \delta$, which is the desired bound.\<close>
 
   show ?thesis
-  proof (cases "M * (b-a) \<le> 10 * delta * 2^k")
+  proof (cases "lambda * (b-a) \<le> 10 * delta * 2^k")
     text \<open>First, treat the case where the path is rather short.\<close>
     case True
     define g::"nat \<Rightarrow> 'a" where "g = (\<lambda>i. f(a + (b-a) * i/2^k))"
@@ -773,15 +758,14 @@ proof -
         apply (intro mono_intros) using that \<open>a \<le> b\<close> by auto
       then show ?thesis using \<open>a \<le> b\<close> by auto
     qed
-    have A: "dist (g i) (g (Suc i)) \<le> 10 * delta" if "i \<in> {0..<2^k}" for i
+    have A: "dist (g i) (g (Suc i)) \<le> 10 * delta + C" if "i \<in> {0..<2^k}" for i
     proof -
-      have "dist (g i) (g (Suc i)) \<le> M * dist (a + (b-a) * i/2^k) (a + (b-a) * (Suc i)/2^k)"
-        unfolding g_def apply (intro lipschitz_onD[OF \<open>M-lipschitz_on {a..b} f\<close>] *)
-        using that by auto
-      also have "... = M * (b-a)/2^k"
+      have "dist (g i) (g (Suc i)) \<le> lambda * dist (a + (b-a) * i/2^k) (a + (b-a) * (Suc i)/2^k) + C"
+        unfolding g_def apply (intro assms(2) *) using that by auto
+      also have "... = lambda * (b-a)/2^k + C"
         unfolding dist_real_def using \<open>a \<le> b\<close> by (auto simp add: algebra_simps divide_simps)
-      also have "... \<le> 10 * delta"
-        using True by (simp add: divide_simps)
+      also have "... \<le> 10 * delta + C"
+        using True by (simp add: divide_simps algebra_simps)
       finally show ?thesis by simp
     qed
     define p where "p = (\<lambda>i. if i = 0 then pa else if i = 2^k then pb else SOME p. p \<in> proj_set (g i) G)"
@@ -799,9 +783,9 @@ proof -
       ultimately show ?thesis
         using some_in_eq by auto
     qed
-    have C: "dist (p i) (g i) \<ge> 5 * delta * k + 15/2 * delta" if "i \<in> {0..2^k}" for i
+    have C: "dist (p i) (g i) \<ge> 5 * delta * k + 15/2 * delta + C/2" if "i \<in> {0..2^k}" for i
     proof -
-      have "5 * delta * k + 15/2 * delta \<le> D"
+      have "5 * delta * k + 15/2 * delta + C/2 \<le> D"
         using k(1) by simp
       also have "... \<le> infdist (g i) G"
         unfolding g_def apply (rule \<open>\<And>t. t \<in> {a..b} \<Longrightarrow> infdist (f t) G \<ge> D\<close>) using * that by auto
@@ -810,39 +794,38 @@ proof -
       finally show ?thesis by simp
     qed
     have "dist (p 0) (p (2^k)) \<le> 5 * deltaG(TYPE('a))"
-      apply (rule Main[where ?g = g]) using A B C by auto
+      apply (rule Main[where ?g = g and ?c = C]) using A B C \<open>C \<ge> 0\<close> by auto
     then show ?thesis
       unfolding p_def by auto
   next
     text \<open>Now, the case where the path is long. We introduce $N$ such that it is roughly of length
     $2^N \cdot 10 \delta$.\<close>
     case False
-    have "M \<ge> 0" using lipschitz_on_nonneg assms by auto
-    have *: "10 * delta * 2^k \<le> M * (b-a)" using False by simp
-    have "M * (b-a) > 0" using \<open>delta > 0\<close>
-      using False \<open>0 \<le> M\<close> assms(3) less_eq_real_def mult_le_0_iff by auto
-    then have "a < b" "M>0"
-      using \<open>a \<le> b\<close> \<open>M \<ge> 0\<close> less_eq_real_def by auto
-    define n where "n = nat(floor(log 2 (M * (b-a)/(10 * delta))))"
-    have "log 2 (M * (b-a)/(10 * delta)) \<ge> log 2 (2^k)"
+    have *: "10 * delta * 2^k \<le> lambda * (b-a)" using False by simp
+    have "lambda * (b-a) > 0"
+      using \<open>delta > 0\<close> False \<open>0 \<le> lambda\<close> assms(3) less_eq_real_def mult_le_0_iff by auto
+    then have "a < b" "lambda > 0"
+      using \<open>a \<le> b\<close> \<open>lambda \<ge> 0\<close> less_eq_real_def by auto
+    define n where "n = nat(floor(log 2 (lambda * (b-a)/(10 * delta))))"
+    have "log 2 (lambda * (b-a)/(10 * delta)) \<ge> log 2 (2^k)"
       apply (subst log_le_cancel_iff)
-      using * \<open>delta > 0\<close> \<open>a < b\<close> \<open>M > 0\<close> by (auto simp add: divide_simps algebra_simps)
+      using * \<open>delta > 0\<close> \<open>a < b\<close> \<open>lambda > 0\<close> by (auto simp add: divide_simps algebra_simps)
     moreover have "log 2 (2^k) = k"
       by (simp add: log2_of_power_eq)
-    ultimately have A: "log 2 (M * (b-a)/(10 * delta)) \<ge> k" by auto
-    have **: "int n = floor(log 2 (M * (b-a)/(10 * delta)))"
+    ultimately have A: "log 2 (lambda * (b-a)/(10 * delta)) \<ge> k" by auto
+    have **: "int n = floor(log 2 (lambda * (b-a)/(10 * delta)))"
       unfolding n_def apply (rule nat_0_le) using A by auto
-    then have "log 2 (2^n) \<le> log 2 (M * (b-a)/(10 * delta))"
+    then have "log 2 (2^n) \<le> log 2 (lambda * (b-a)/(10 * delta))"
       apply (subst log_nat_power, auto) by linarith
-    then have I: "2^n \<le> M * (b-a)/(10 * delta)"
-      using \<open>0 < M * (b - a)\<close> \<open>0 < delta\<close> by auto
-    have "log 2 (M * (b-a)/(10 * delta)) \<le> log 2 (2^(n+1))"
+    then have I: "2^n \<le> lambda * (b-a)/(10 * delta)"
+      using \<open>0 < lambda * (b - a)\<close> \<open>0 < delta\<close> by auto
+    have "log 2 (lambda * (b-a)/(10 * delta)) \<le> log 2 (2^(n+1))"
       apply (subst log_nat_power, auto) using ** by linarith
-    then have J: "M * (b-a)/(10 * delta) \<le> 2^(n+1)"
-      using \<open>0 < M * (b - a)\<close> \<open>0 < delta\<close> by auto
+    then have J: "lambda * (b-a)/(10 * delta) \<le> 2^(n+1)"
+      using \<open>0 < lambda * (b - a)\<close> \<open>0 < delta\<close> by auto
     have K: "k \<le> n" using A ** by linarith
     define N where "N = n+1"
-    have N: "k+1 \<le> N" "M * (b-a) / 2^N \<le> 10 *delta" "2 ^ N \<le> M * (b - a) / (5 * delta)"
+    have N: "k+1 \<le> N" "lambda * (b-a) / 2^N \<le> 10 *delta" "2 ^ N \<le> lambda * (b - a) / (5 * delta)"
       using I J K \<open>delta > 0\<close> unfolding N_def by (auto simp add: divide_simps algebra_simps)
     then have "2 ^ k \<noteq> (0::real)" "k \<le> N"
       by auto
@@ -859,14 +842,14 @@ proof -
         apply (intro mono_intros) using that \<open>a \<le> b\<close> by auto
       then show ?thesis using \<open>a \<le> b\<close> by auto
     qed
-    have A: "dist (g i) (g (Suc i)) \<le> 10 * delta" if "i \<in> {0..<2^N}" for i
+    have A: "dist (g i) (g (Suc i)) \<le> 10 * delta + C" if "i \<in> {0..<2^N}" for i
     proof -
-      have "dist (g i) (g (Suc i)) \<le> M * dist (a + (b-a) * i/2^N) (a + (b-a) * (Suc i)/2^N)"
-        unfolding g_def apply (intro lipschitz_onD[OF \<open>M-lipschitz_on {a..b} f\<close>] *)
+      have "dist (g i) (g (Suc i)) \<le> lambda * dist (a + (b-a) * i/2^N) (a + (b-a) * (Suc i)/2^N) + C"
+        unfolding g_def apply (intro assms(2) *)
         using that by auto
-      also have "... = M * (b-a)/2^N"
+      also have "... = lambda * (b-a)/2^N + C"
         unfolding dist_real_def using \<open>a \<le> b\<close> by (auto simp add: algebra_simps divide_simps)
-      also have "... \<le> 10 * delta"
+      also have "... \<le> 10 * delta + C"
         using N by simp
       finally show ?thesis by simp
     qed
@@ -885,9 +868,9 @@ proof -
       ultimately show ?thesis
         using some_in_eq by auto
     qed
-    have C: "dist (p i) (g i) \<ge> 5 * delta * k + 15/2 * delta" if "i \<in> {0..2^N}" for i
+    have C: "dist (p i) (g i) \<ge> 5 * delta * k + 15/2 * delta + C/2" if "i \<in> {0..2^N}" for i
     proof -
-      have "5 * delta * k + 15/2 * delta \<le> D"
+      have "5 * delta * k + 15/2 * delta + C/2 \<le> D"
         using k(1) by simp
       also have "... \<le> infdist (g i) G"
         unfolding g_def apply (rule \<open>\<And>t. t \<in> {a..b} \<Longrightarrow> infdist (f t) G \<ge> D\<close>) using * that by auto
@@ -918,7 +901,7 @@ proof -
       define g' where "g' = (\<lambda>i. g (i + 2^k * j))"
       define p' where "p' = (\<lambda>i. p (i + 2^k * j))"
       have "dist (p' 0) (p' (2^k)) \<le> 5 * deltaG(TYPE('a))"
-        apply (rule Main[where ?g = g']) unfolding p'_def g'_def using A B C I I' by auto
+        apply (rule Main[where ?g = g' and ?c = C]) unfolding p'_def g'_def using A B C I I' \<open>C \<ge> 0\<close> by auto
       also have "... \<le> 5 * delta"
         using \<open>deltaG(TYPE('a)) < delta\<close> by auto
       finally show ?thesis
@@ -948,10 +931,10 @@ proof -
       by auto
     also have "... = 5 * delta * 2^N * (1/ 2^k)"
       unfolding \<open>(2^(N-k)::real) = 2^N/2^k\<close> by simp
-    also have "... \<le> 5 * delta * (2 * M * (b-a)/(10 * delta)) * (2 * exp(15/2/5 * ln 2) * exp(- (D * ln 2 / (5 * delta))))"
-      apply (intro mono_intros) using \<open>delta > 0\<close> \<open>M > 0\<close> \<open>a < b\<close> k' N by auto
-    also have "... = (2 * exp(15/2/5 * ln 2)) * M * (b-a) * exp(-D * ln 2 / (5 * delta))"
-      using \<open>delta > 0\<close> by auto
+    also have "... \<le> 5 * delta * (2 * lambda * (b-a)/(10 * delta)) * (2 * exp(15/2/5 * ln 2) * exp(- ((D-C/2) * ln 2 / (5 * delta))))"
+      apply (intro mono_intros) using \<open>delta > 0\<close> \<open>lambda > 0\<close> \<open>a < b\<close> k' N by auto
+    also have "... = (2 * exp(15/2/5 * ln 2)) * lambda * (b-a) * exp(-(D-C/2) * ln 2 / (5 * delta))"
+      using \<open>delta > 0\<close> by (auto simp add: algebra_simps divide_simps)
     finally show ?thesis
       unfolding \<open>exp(15/2/5 * ln 2) = 2 * exp(1/2 * ln (2::real))\<close> by auto
   qed
@@ -964,97 +947,99 @@ original quasiconvex set or the geodesic do not have to coincide, but they are w
 most $C + 8 \delta$.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) quasiconvex_projection_exp_contracting:
-  assumes "quasiconvex C G"
-          "M-lipschitz_on {a..b} f"
+  assumes "quasiconvex K G"
+          "\<And>x y. x \<in> {a..b} \<Longrightarrow> y \<in> {a..b} \<Longrightarrow> dist (f x) (f y) \<le> lambda * dist x y + C"
           "a \<le> b"
           "pa \<in> proj_set (f a) G"
           "pb \<in> proj_set (f b) G"
           "\<And>t. t \<in> {a..b} \<Longrightarrow> infdist (f t) G \<ge> D"
-          "D \<ge> 15/2 * delta + C"
+          "D \<ge> 15/2 * delta + K + C/2"
           "delta > deltaG(TYPE('a))"
-  shows "dist pa pb \<le> 2 * C + 8 * delta + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * M * (b-a) * exp(-(D - C) * ln 2 / (5 * delta)))"
+          "C \<ge> 0"
+          "lambda \<ge> 0"
+  shows "dist pa pb \<le> 2 * K + 8 * delta + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (b-a) * exp(-(D - K - C/2) * ln 2 / (5 * delta)))"
 proof -
-  obtain H where H: "geodesic_segment_between H pa pb" "\<And>q. q \<in> H \<Longrightarrow> infdist q G \<le> C"
+  obtain H where H: "geodesic_segment_between H pa pb" "\<And>q. q \<in> H \<Longrightarrow> infdist q G \<le> K"
     using quasiconvexD[OF assms(1) proj_setD(1)[OF \<open>pa \<in> proj_set (f a) G\<close>] proj_setD(1)[OF \<open>pb \<in> proj_set (f b) G\<close>]] by auto
   obtain qa where qa: "qa \<in> proj_set (f a) H"
     using proj_set_nonempty_of_proper[of H "f a"] geodesic_segment_topology[OF geodesic_segmentI[OF H(1)]] by auto
   obtain qb where qb: "qb \<in> proj_set (f b) H"
     using proj_set_nonempty_of_proper[of H "f b"] geodesic_segment_topology[OF geodesic_segmentI[OF H(1)]] by auto
 
-  have I: "infdist (f t) H \<ge> D - C" if "t \<in> {a..b}" for t
+  have I: "infdist (f t) H \<ge> D - K" if "t \<in> {a..b}" for t
   proof -
-    have *: "D - C \<le> dist (f t) h" if "h \<in> H" for h
+    have *: "D - K \<le> dist (f t) h" if "h \<in> H" for h
     proof -
-      have "D - C - dist (f t) h \<le> e" if "e > 0" for e
+      have "D - K - dist (f t) h \<le> e" if "e > 0" for e
       proof -
-        have *: "infdist h G < C + e" using H(2)[OF \<open>h \<in> H\<close>] \<open>e > 0\<close> by auto
-        obtain g where g: "g \<in> G" "dist h g < C + e"
+        have *: "infdist h G < K + e" using H(2)[OF \<open>h \<in> H\<close>] \<open>e > 0\<close> by auto
+        obtain g where g: "g \<in> G" "dist h g < K + e"
           using infdist_almost_attained[OF *] proj_setD(1)[OF \<open>pa \<in> proj_set (f a) G\<close>] by auto
         have "D \<le> dist (f t) g"
           using \<open>\<And>t. t \<in> {a..b} \<Longrightarrow> infdist (f t) G \<ge> D\<close>[OF \<open>t \<in> {a..b}\<close>] infdist_le[OF \<open>g \<in> G\<close>, of "f t"] by auto
         also have "... \<le> dist (f t) h + dist h g"
           by (intro mono_intros)
-        also have "... \<le> dist (f t) h + C + e"
+        also have "... \<le> dist (f t) h + K + e"
           using g(2) by auto
         finally show ?thesis by auto
       qed
-      then have *: "D - C - dist (f t) h \<le> 0"
+      then have *: "D - K - dist (f t) h \<le> 0"
         using dense_ge by blast
       then show ?thesis by simp
     qed
-    have "D - C \<le> INFIMUM H (dist (f t))"
+    have "D - K \<le> INFIMUM H (dist (f t))"
       apply (rule cInf_greatest) using * H(1) by auto
-    then show "D - C \<le> infdist (f t) H"
+    then show "D - K \<le> infdist (f t) H"
       apply (subst infdist_notempty) using H(1) by auto
   qed
-  have Q: "dist qa qb \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * M * (b-a) * exp(-(D - C) * ln 2 / (5 * delta)))"
+  have Q: "dist qa qb \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (b-a) * exp(-((D - K)-C/2 ) * ln 2 / (5 * delta)))"
     apply (rule geodesic_projection_exp_contracting[OF geodesic_segmentI[OF \<open>geodesic_segment_between H pa pb\<close>] assms(2) assms(3)])
     using qa qb I assms by auto
 
-  have A: "dist pa qa \<le> 4 * delta + C"
+  have A: "dist pa qa \<le> 4 * delta + K"
   proof -
-    have "dist (f a) pa - dist (f a) qa - C \<le> e" if "e > 0" for e::real
+    have "dist (f a) pa - dist (f a) qa - K \<le> e" if "e > 0" for e::real
     proof -
-      have *: "infdist qa G < C + e" using H(2)[OF proj_setD(1)[OF qa]] \<open>e > 0\<close> by auto
-      obtain g where g: "g \<in> G" "dist qa g < C + e"
+      have *: "infdist qa G < K + e" using H(2)[OF proj_setD(1)[OF qa]] \<open>e > 0\<close> by auto
+      obtain g where g: "g \<in> G" "dist qa g < K + e"
         using infdist_almost_attained[OF *] proj_setD(1)[OF \<open>pa \<in> proj_set (f a) G\<close>] by auto
       have "dist (f a) pa \<le> dist (f a) g"
         unfolding proj_setD(2)[OF \<open>pa \<in> proj_set (f a) G\<close>] using infdist_le[OF \<open>g \<in> G\<close>, of "f a"] by simp
       also have "... \<le> dist (f a) qa + dist qa g"
         by (intro mono_intros)
-      also have "... \<le> dist (f a) qa + C + e"
+      also have "... \<le> dist (f a) qa + K + e"
         using g(2) by auto
       finally show ?thesis by simp
     qed
-    then have I: "dist (f a) pa - dist (f a) qa - C \<le> 0"
+    then have I: "dist (f a) pa - dist (f a) qa - K \<le> 0"
       using dense_ge by blast
     have "dist (f a) qa + dist qa pa \<le> dist (f a) pa + 4 * deltaG(TYPE('a))"
       apply (rule dist_along_geodesic[OF geodesic_segmentI[OF H(1)]]) using qa H(1) by auto
-    also have "... \<le> dist (f a) qa + C + 4 * delta"
+    also have "... \<le> dist (f a) qa + K + 4 * delta"
       using I assms by auto
     finally show ?thesis
       by (simp add: metric_space_class.dist_commute)
   qed
-  have B: "dist qb pb \<le> 4 * delta + C"
+  have B: "dist qb pb \<le> 4 * delta + K"
   proof -
-    have "dist (f b) pb - dist (f b) qb - C \<le> e" if "e > 0" for e::real
+    have "dist (f b) pb - dist (f b) qb - K \<le> e" if "e > 0" for e::real
     proof -
-      have *: "infdist qb G < C + e" using H(2)[OF proj_setD(1)[OF qb]] \<open>e > 0\<close> by auto
-      obtain g where g: "g \<in> G" "dist qb g < C + e"
+      have *: "infdist qb G < K + e" using H(2)[OF proj_setD(1)[OF qb]] \<open>e > 0\<close> by auto
+      obtain g where g: "g \<in> G" "dist qb g < K + e"
         using infdist_almost_attained[OF *] proj_setD(1)[OF \<open>pa \<in> proj_set (f a) G\<close>] by auto
       have "dist (f b) pb \<le> dist (f b) g"
         unfolding proj_setD(2)[OF \<open>pb \<in> proj_set (f b) G\<close>] using infdist_le[OF \<open>g \<in> G\<close>, of "f b"] by simp
       also have "... \<le> dist (f b) qb + dist qb g"
         by (intro mono_intros)
-      also have "... \<le> dist (f b) qb + C + e"
+      also have "... \<le> dist (f b) qb + K + e"
         using g(2) by auto
       finally show ?thesis by simp
     qed
-    then have I: "dist (f b) pb - dist (f b) qb - C \<le> 0"
+    then have I: "dist (f b) pb - dist (f b) qb - K \<le> 0"
       using dense_ge by blast
     have "dist (f b) qb + dist qb pb \<le> dist (f b) pb + 4 * deltaG(TYPE('a))"
       apply (rule dist_along_geodesic[OF geodesic_segmentI[OF H(1)]]) using qb H(1) by auto
-    also have "... \<le> dist (f b) qb + C + 4 * delta"
+    also have "... \<le> dist (f b) qb + K + 4 * delta"
       using I assms by auto
     finally show ?thesis
       by simp
@@ -1098,7 +1083,7 @@ away from $f(c^-)$ and $f(c^+)$ (again by the quasi-isometry property). Since th
 these points to $\pi_z$ is controlled (by $D+L$), we get a good control on $d(f(z),\pi_z)$, as
 desired.
 
-2.2 The interesting case is when $d^-$ and $d^+$ are both $>D$. Assume also for instance $d^- \geq
+2.2 The interesting case is when $d^-$ and $d^+$ are both $ > D$. Assume also for instance $d^- \geq
 d^+$, as the other case is analogous. We will construct two points $f(v)$ and $f(x)$ with $u^- \leq
 v \leq x \leq y^-$ with the following property:
 \begin{equation}
@@ -1190,29 +1175,21 @@ essentially a $4\delta$-length of $L$ for the forthcoming argument. In the secon
 projections on $H$ are on the other side of $\pi_z$ compared to $f(z)$, so one does not lose
 anything, and in the end it gives genuinely better bounds (making it possible to gain roughly
 $10 \delta$ in the final estimate).
-\item In the final argument, we will regularize a general quasi-geodesic to a Lipschitz one. There
-is flexibility in this argument, giving better Lipschitz controls at the expense of a loss in
-the $C$ parameter of the quasi-isometry. In the end, we will choose the regularization so that the
-constants in front of $\delta$ and $C$ in the final estimate are comparable. This is the explanation for
-the strange assumption that $f$ is $(61/29) \lambda$-Lipschitz: this $61/29$ will come out of the
-regularization process.
 \end{itemize}
 \<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) Morse_Gromov_theorem_aux1:
   fixes f::"real \<Rightarrow> 'a"
-  assumes "(61/29 * lambda)-lipschitz_on {a..b} f"
+  assumes "continuous_on {a..b} f"
           "lambda C-quasi_isometry_on {a..b} f"
           "a \<le> b"
           "geodesic_segment_between G (f a) (f b)"
           "z \<in> {a..b}"
           "delta > deltaG(TYPE('a))"
-  shows "infdist (f z) G \<le> lambda^2 * (11/2 * C + 97 * delta)"
+  shows "infdist (f z) G \<le> lambda^2 * (11/2 * C + 91 * delta)"
 proof -
   have "C \<ge> 0" "lambda \<ge> 1" using quasi_isometry_onD assms by auto
   have "delta > 0" using assms delta_nonneg order_trans by linarith
-  have "continuous_on {a..b} f"
-    using lipschitz_on_continuous_on[OF assms(1)] by auto
 
   text \<open>We give their values to the parameters $L$, $D$ and $\alpha$ that we will use in the proof.
   We also define two constants $K$ and $K_{mult}$ that appear in the precise formulation of the
@@ -1220,12 +1197,12 @@ proof -
   define alpha::real where "alpha = 12/100"
   have alphaaux:"alpha > 0" "alpha \<le> 1" unfolding alpha_def by auto
   define L::real where "L = 18 * delta"
-  define D::real where "D = 61 * delta"
+  define D::real where "D = 55 * delta"
   define K where "K = alpha * ln 2 / (5 * (4 + (L + 2 * delta)/D) * delta * lambda)"
   have "K > 0" "L > 0" "D > 0" unfolding K_def L_def D_def using \<open>delta > 0\<close> \<open>lambda \<ge> 1\<close> alpha_def by auto
   have Laux: "L \<ge> 18 * delta" "D \<ge> 50 * delta" "L \<le> D" "D \<le> 4 * L" unfolding L_def D_def using \<open>delta > 0\<close> by auto
   have Daux: "8 * delta \<le> (1 - alpha) * D" unfolding alpha_def D_def using \<open>delta > 0\<close> by auto
-  define Kmult where "Kmult = ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) / K)"
+  define Kmult where "Kmult = ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * lambda * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) / K)"
   have "Kmult > 0" unfolding Kmult_def using Laux \<open>delta > 0\<close> \<open>K > 0\<close> \<open>lambda \<ge> 1\<close> by (auto simp add: divide_simps)
 
   text \<open>We prove that, for any pair of points to the left and to the right of $f(z)$, the distance
@@ -1332,7 +1309,7 @@ proof -
                     \<and> (\<forall>r \<in> {um..ym}. dist (p um) (p r) \<le> L + dist pi_z (p um))"
       proof (rule quasi_convex_projection_small_gaps[where ?f = f and ?G = H])
         show "continuous_on {um..z} f"
-          apply (rule continuous_on_subset[OF lipschitz_on_continuous_on[OF \<open>(61/29 * lambda)-lipschitz_on {a..b} f\<close>]])
+          apply (rule continuous_on_subset[OF \<open>continuous_on {a..b} f\<close>])
           using \<open>um \<in> {a..z}\<close> \<open>z \<in> {a..b}\<close> by auto
         show "um \<le> z" using \<open>um \<in> {a..z}\<close> by auto
         show "quasiconvex 0 H" using quasiconvex_of_geodesic geodesic_segmentI H by auto
@@ -1384,7 +1361,7 @@ proof -
                     \<and> (\<forall>r \<in> {yM..uM}. dist (p uM) (p r) \<le> L + dist pi_z (p uM))"
       proof (rule quasi_convex_projection_small_gaps'[where ?f = f and ?G = H])
         show "continuous_on {z..uM} f"
-          apply (rule continuous_on_subset[OF lipschitz_on_continuous_on[OF \<open>(61/29 * lambda)-lipschitz_on {a..b} f\<close>]])
+          apply (rule continuous_on_subset[OF \<open>continuous_on {a..b} f\<close>])
           using \<open>uM \<in> {z..b}\<close> \<open>z \<in> {a..b}\<close> by auto
         show "z \<le> uM" using \<open>uM \<in> {z..b}\<close> by auto
         show "quasiconvex 0 H" using quasiconvex_of_geodesic geodesic_segmentI H by auto
@@ -1697,20 +1674,19 @@ proof -
               using I \<open>C \<ge> 0\<close> \<open>delta > 0\<close> \<open>D > 0\<close> by (auto simp add: algebra_simps divide_simps)
             ultimately have aux2: "L + C + 2 * delta \<le> ((L + 2 * delta)/D) * dm"
               by (auto simp add: algebra_simps divide_simps)
-            have aux3: "(1-alpha) * D + alpha * 2^k * dm \<le> dm * 2^k - QC k"
+            have aux3: "(1-alpha) * D + alpha * 2^k * dm \<le> dm * 2^k - C/2 - QC k"
             proof (cases "k = 0")
               case True
-              have "(1-alpha) * D + alpha * 2^k * dm \<le> (1-alpha) * dm + alpha * 2^k * dm"
-                apply (intro mono_intros) using I alphaaux \<open>C \<ge> 0\<close> by auto
-              then show ?thesis unfolding True QC_def by (auto simp add: algebra_simps)
+              show ?thesis
+                 using I \<open>C \<ge> 0\<close> unfolding True QC_def alpha_def by auto
             next
               case False
-              have "(1-alpha) * D + alpha * 2^k * dm = (1 - alpha) * 2 * D + alpha * 2^k * dm - (1 - alpha) * D"
+              have "C/2 + QC k + (1-alpha) * D \<le> 2 * (1-alpha) * dm"
+                using I \<open>C \<ge> 0\<close> unfolding QC_def alpha_def using False Laux by auto
+              also have "... \<le> 2^k * (1-alpha) * dm"
+                apply (intro mono_intros) using False alphaaux I \<open>D > 0\<close> \<open>C \<ge> 0\<close> by auto
+              finally show ?thesis
                 by (simp add: algebra_simps)
-              also have "... \<le> (1 - alpha) * 2^k * dm + alpha * 2^k * dm - QC k"
-                apply (intro mono_intros)
-                unfolding QC_def using False alphaaux I \<open>C \<ge> 0\<close> \<open>D > 0\<close> Daux by (auto simp add: self_le_power)
-              finally show ?thesis by (auto simp add: algebra_simps)
             qed
 
             text \<open>Construct a point $w$ such that its projection on $V_k$ is close to that of $um$
@@ -1720,7 +1696,7 @@ proof -
                     \<and> (\<forall>v \<in> {um..w}. dist (q k um) (q k v) \<le> 9 * delta + 4 * QC k)"
             proof (rule quasi_convex_projection_small_gaps[where ?f = f and ?G = "V k"])
               show "continuous_on {um..x} f"
-                apply (rule continuous_on_subset[OF lipschitz_on_continuous_on[OF \<open>(61/29 * lambda)-lipschitz_on {a..b} f\<close>]])
+                apply (rule continuous_on_subset[OF \<open>continuous_on {a..b} f\<close>])
                 using \<open>um \<in> {a..z}\<close> \<open>z \<in> {a..b}\<close> \<open>ym \<in> {um..z}\<close> \<open>x \<in> {um..ym}\<close> by auto
               show "um \<le> x" using \<open>x \<in> {um..ym}\<close> by auto
               show "quasiconvex (QC k) (V k)" by fact
@@ -1825,18 +1801,15 @@ proof -
                 using w(3)[of v] \<open>v \<in> {um..w}\<close> by auto
               finally have "L - 13 * delta + 3 * QC k \<le> dist (q k v) (q k x)"
                 by simp
-              also have "... \<le> 3 * QC k + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (x - v) * exp(-(dm * 2^k - QC k) * ln 2 / (5 * delta)))"
+              also have "... \<le> 3 * QC k + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (x - v) * exp(-(dm * 2^k - C/2 - QC k) * ln 2 / (5 * delta)))"
               proof (cases "k = 0")
                 text \<open>We use different statements for the projection in the case $k = 0$ (projection on
-                a geodesic) and $k>0$ (projection on a quasi-convex set) as the bounds are better in
+                a geodesic) and $k > 0$ (projection on a quasi-convex set) as the bounds are better in
                 the first case, which is the most important one for the final value of the constant.\<close>
                 case True
-                have "dist (q k v) (q k x) \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (x - v) * exp(-(dm * 2^k) * ln 2 / (5 * delta)))"
+                have "dist (q k v) (q k x) \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (x - v) * exp(-(dm * 2^k - C/2) * ln 2 / (5 * delta)))"
                 proof (rule geodesic_projection_exp_contracting[where ?G = "V k" and ?f = f])
                   show "geodesic_segment (V k)" unfolding True V_def using geodesic_segmentI[OF H] by auto
-                  show "(61/29 * lambda)-lipschitz_on {v..x} f"
-                    apply (rule lipschitz_on_mono[OF assms(1)])
-                    using \<open>v \<in> {um..w}\<close> \<open>w \<in> {um..x}\<close> \<open>x \<in> {um..ym}\<close> \<open>ym \<in> {um..z}\<close> \<open>um \<in> {a..z}\<close> \<open>z \<in> {a..b}\<close> closestm by auto
                   show "v \<le> x" using \<open>v \<in> {um..w}\<close> \<open>w \<in> {um..x}\<close> by auto
                   show "q k v \<in> proj_set (f v) (V k)"
                     unfolding q_def V_def apply (rule proj_set_thickening)
@@ -1844,21 +1817,21 @@ proof -
                   show "q k x \<in> proj_set (f x) (V k)"
                     unfolding q_def V_def apply (rule proj_set_thickening)
                     using aux p[of x] x(3)[of x] \<open>w \<in> {um..x}\<close> by (auto simp add: metric_space_class.dist_commute)
-                  show "15/2 * delta \<le> dm * 2^k"
+                  show "15/2 * delta + C/2 \<le> dm * 2^k"
                     apply (rule order_trans[of _ dm])
                     using I \<open>delta > 0\<close> \<open>C \<ge> 0\<close> Laux unfolding QC_def by auto
                   show "deltaG TYPE('a) < delta" by fact
                   show "\<And>t. t \<in> {v..x} \<Longrightarrow> dm * 2 ^ k \<le> infdist (f t) (V k)"
                     using aux4 by auto
+                  show "0 \<le> C" "0 \<le> lambda" using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
+                  show "dist (f x1) (f x2) \<le> lambda * dist x1 x2 + C" if "x1 \<in> {v..x}" "x2 \<in> {v..x}" for x1 x2
+                    using quasi_isometry_onD(1)[OF assms(2)] that \<open>v \<in> {um..w}\<close> \<open>w \<in> {um..x}\<close> \<open>x \<in> {um..ym}\<close> \<open>ym \<in> {um..z}\<close> \<open>um \<in> {a..z}\<close> \<open>z \<in> {a..b}\<close> by auto
                 qed
                 then show ?thesis unfolding QC_def True by auto
               next
                 case False
-                have "dist (q k v) (q k x) \<le> 2 * QC k + 8 * delta + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (x - v) * exp(-(dm * 2^k - QC k) * ln 2 / (5 * delta)))"
+                have "dist (q k v) (q k x) \<le> 2 * QC k + 8 * delta + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (x - v) * exp(-(dm * 2^k - QC k -C/2) * ln 2 / (5 * delta)))"
                 proof (rule quasiconvex_projection_exp_contracting[where ?G = "V k" and ?f = f])
-                  show "(61/29 * lambda)-lipschitz_on {v..x} f"
-                    apply (rule lipschitz_on_mono[OF assms(1)])
-                    using \<open>v \<in> {um..w}\<close> \<open>w \<in> {um..x}\<close> \<open>x \<in> {um..ym}\<close> \<open>ym \<in> {um..z}\<close> \<open>um \<in> {a..z}\<close> \<open>z \<in> {a..b}\<close> closestm by auto
                   show "quasiconvex (QC k) (V k)" by fact
                   show "v \<le> x" using \<open>v \<in> {um..w}\<close> \<open>w \<in> {um..x}\<close> by auto
                   show "q k v \<in> proj_set (f v) (V k)"
@@ -1867,26 +1840,29 @@ proof -
                   show "q k x \<in> proj_set (f x) (V k)"
                     unfolding q_def V_def apply (rule proj_set_thickening)
                     using aux p[of x] x(3)[of x] \<open>w \<in> {um..x}\<close> by (auto simp add: metric_space_class.dist_commute)
-                  show "15/2 * delta + QC k \<le> dm * 2^k"
+                  show "15/2 * delta + QC k + C/2 \<le> dm * 2^k"
                     apply (rule order_trans[of _ dm])
                     using I \<open>delta > 0\<close> \<open>C \<ge> 0\<close> Laux unfolding QC_def by auto
                   show "deltaG TYPE('a) < delta" by fact
                   show "\<And>t. t \<in> {v..x} \<Longrightarrow> dm * 2 ^ k \<le> infdist (f t) (V k)"
                     using aux4 by auto
+                  show "0 \<le> C" "0 \<le> lambda" using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
+                  show "dist (f x1) (f x2) \<le> lambda * dist x1 x2 + C" if "x1 \<in> {v..x}" "x2 \<in> {v..x}" for x1 x2
+                    using quasi_isometry_onD(1)[OF assms(2)] that \<open>v \<in> {um..w}\<close> \<open>w \<in> {um..x}\<close> \<open>x \<in> {um..ym}\<close> \<open>ym \<in> {um..z}\<close> \<open>um \<in> {a..z}\<close> \<open>z \<in> {a..b}\<close> by auto
                 qed
-                then show ?thesis unfolding QC_def using False by auto
+                then show ?thesis unfolding QC_def using False by (auto simp add: algebra_simps)
               qed
-              finally have "L - 13 * delta \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (x - v) * exp(-(dm * 2^k - QC k) * ln 2 / (5 * delta)))"
+              finally have "L - 13 * delta \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (x - v) * exp(-(dm * 2^k - C/2 - QC k) * ln 2 / (5 * delta)))"
                 by auto
-              then have "L - 13 * delta \<le> (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (x - v) * exp(-(dm * 2^k - QC k) * ln 2 / (5 * delta))"
+              then have "L - 13 * delta \<le> (4 * exp(1/2 * ln 2)) * lambda * (x - v) * exp(-(dm * 2^k - C/2 - QC k) * ln 2 / (5 * delta))"
                 using \<open>delta > deltaG(TYPE('a))\<close> Laux by auto
               text \<open>We separate the exponential gain coming from the contraction into two parts, one
               to be spent to improve the constant, and one for the inductive argument.\<close>
-              also have "... \<le> (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (x - v) * exp(-((1-alpha) * D + alpha * 2^k * dm) * ln 2 / (5 * delta))"
+              also have "... \<le> (4 * exp(1/2 * ln 2)) * lambda * (x - v) * exp(-((1-alpha) * D + alpha * 2^k * dm) * ln 2 / (5 * delta))"
                 apply (intro mono_intros) using aux3 \<open>delta > 0\<close> \<open>lambda \<ge> 1\<close> \<open>v \<in> {um..w}\<close> \<open>w \<in> {um..x}\<close> by auto
-              also have "... = (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (x - v) * (exp(-(1-alpha) * D * ln 2 / (5 * delta)) * exp(-alpha * 2^k * dm * ln 2 / (5 * delta)))"
+              also have "... = (4 * exp(1/2 * ln 2)) * lambda * (x - v) * (exp(-(1-alpha) * D * ln 2 / (5 * delta)) * exp(-alpha * 2^k * dm * ln 2 / (5 * delta)))"
                 unfolding mult_exp_exp by (auto simp add: algebra_simps divide_simps)
-              finally have A: "L - 13 * delta \<le> (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * exp(-(1-alpha) * D * ln 2 / (5 * delta)) * ((x - v) * exp(-alpha * 2^k * dm * ln 2 / (5 * delta)))"
+              finally have A: "L - 13 * delta \<le> (4 * exp(1/2 * ln 2)) * lambda * exp(-(1-alpha) * D * ln 2 / (5 * delta)) * ((x - v) * exp(-alpha * 2^k * dm * ln 2 / (5 * delta)))"
                 by (simp add: algebra_simps)
               text \<open>This is the end of the second substep.\<close>
 
@@ -1894,10 +1870,10 @@ proof -
               that $closestM - x$ (the endpoints of the new geodesic we want to consider in the
               inductive argument) are quantitatively closer than $uM - um$, which means that we
               will be able to use the inductive assumption over this new geodesic.\<close>
-              also have "... \<le> (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * exp 0 * ((x - v) * exp 0)"
+              also have "... \<le> (4 * exp(1/2 * ln 2)) * lambda * exp 0 * ((x - v) * exp 0)"
                 apply (intro mono_intros) using \<open>delta > 0\<close> \<open>lambda \<ge> 1\<close> \<open>v \<in> {um..w}\<close> \<open>w \<in> {um..x}\<close> alphaaux \<open>D > 0\<close> \<open>C \<ge> 0\<close> I
                 by (auto simp add: divide_simps mult_nonpos_nonneg)
-              also have "... = (4 * exp(1/2 * ln 2) * 61/29) * lambda * (x-v)"
+              also have "... = (4 * exp(1/2 * ln 2)) * lambda * (x-v)"
                 by simp
               also have "... \<le> 20 * lambda * (x - v)"
                 apply (intro mono_intros, approximation 10)
@@ -1918,9 +1894,9 @@ proof -
               to conclude the desired inequality for the old one.\<close>
               have "L + 4 * delta = ((L + 4 * delta)/(L - 13 * delta)) * (L - 13 * delta)"
                 using Laux \<open>delta > 0\<close> by (simp add: algebra_simps divide_simps)
-              also have "... \<le> ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) * ((x - v) * exp (- alpha * 2 ^ k * dm * ln 2 / (5 * delta))))"
+              also have "... \<le> ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * lambda * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) * ((x - v) * exp (- alpha * 2 ^ k * dm * ln 2 / (5 * delta))))"
                 apply (rule mult_left_mono) using A Laux \<open>delta > 0\<close> by (auto simp add: divide_simps)
-              also have "... \<le> ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) * ((exp(-K * (closestM - x)) - exp(-K * (uM - um)))/K))"
+              also have "... \<le> ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * lambda * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) * ((exp(-K * (closestM - x)) - exp(-K * (uM - um)))/K))"
                 apply (intro mono_intros B) using Laux \<open>delta > 0\<close> \<open>lambda \<ge> 1\<close> by (auto simp add: divide_simps)
               finally have C: "L + 4 * delta \<le> Kmult * (exp(-K * (closestM - x)) - exp(-K * (uM - um)))"
                 unfolding Kmult_def by auto
@@ -2059,27 +2035,26 @@ proof -
               using I \<open>C \<ge> 0\<close> \<open>delta > 0\<close> \<open>D > 0\<close> by (auto simp add: algebra_simps divide_simps)
             ultimately have aux2: "L + C + 2 * delta \<le> ((L + 2 * delta)/D) * dM"
               by (auto simp add: algebra_simps divide_simps)
-            have aux3: "(1-alpha) * D + alpha * 2^k * dM \<le> dM * 2^k - QC k"
+            have aux3: "(1-alpha) * D + alpha * 2^k * dM \<le> dM * 2^k - C/2 - QC k"
             proof (cases "k = 0")
               case True
-              have "(1-alpha) * D + alpha * 2^k * dM \<le> (1-alpha) * dM + alpha * 2^k * dM"
-                apply (intro mono_intros) using I alphaaux \<open>C \<ge> 0\<close> by auto
-              then show ?thesis unfolding True QC_def by (auto simp add: algebra_simps)
+              show ?thesis
+                 using I \<open>C \<ge> 0\<close> unfolding True QC_def alpha_def by auto
             next
               case False
-              have "(1-alpha) * D + alpha * 2^k * dM = (1 - alpha) * 2 * D + alpha * 2^k * dM - (1 - alpha) * D"
+              have "C/2 + QC k + (1-alpha) * D \<le> 2 * (1-alpha) * dM"
+                using I \<open>C \<ge> 0\<close> unfolding QC_def alpha_def using False Laux by auto
+              also have "... \<le> 2^k * (1-alpha) * dM"
+                apply (intro mono_intros) using False alphaaux I \<open>D > 0\<close> \<open>C \<ge> 0\<close> by auto
+              finally show ?thesis
                 by (simp add: algebra_simps)
-              also have "... \<le> (1 - alpha) * 2^k * dM + alpha * 2^k * dM - QC k"
-                apply (intro mono_intros)
-                unfolding QC_def using False alphaaux I \<open>C \<ge> 0\<close> \<open>D > 0\<close> Daux by (auto simp add: self_le_power)
-              finally show ?thesis by (auto simp add: algebra_simps)
             qed
 
             have "\<exists>w \<in> {x..uM}. (dist (q k uM) (q k w) \<in> {(9 * delta + 4 * QC k) - 4 * delta - 2 * QC k .. 9 * delta + 4 * QC k})
                     \<and> (\<forall>v \<in> {w..uM}. dist (q k uM) (q k v) \<le> 9 * delta + 4 * QC k)"
             proof (rule quasi_convex_projection_small_gaps'[where ?f = f and ?G = "V k"])
               show "continuous_on {x..uM} f"
-                apply (rule continuous_on_subset[OF lipschitz_on_continuous_on[OF \<open>(61/29 * lambda)-lipschitz_on {a..b} f\<close>]])
+                apply (rule continuous_on_subset[OF \<open>continuous_on {a..b} f\<close>])
                 using \<open>uM \<in> {z..b}\<close> \<open>z \<in> {a..b}\<close> \<open>yM \<in> {z..uM}\<close> \<open>x \<in> {yM..uM}\<close> by auto
               show "x \<le> uM" using \<open>x \<in> {yM..uM}\<close> by auto
               show "quasiconvex (QC k) (V k)" by fact
@@ -2167,14 +2142,11 @@ proof -
                 using w(3)[of v] \<open>v \<in> {w..uM}\<close> by auto
               finally have "L - 13 * delta + 3 * QC k \<le> dist (q k x) (q k v)"
                 by (simp add: metric_space_class.dist_commute)
-              also have "... \<le> 3 * QC k + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (v - x) * exp(-(dM * 2^k - QC k) * ln 2 / (5 * delta)))"
+              also have "... \<le> 3 * QC k + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (v - x) * exp(-(dM * 2^k - C/2 - QC k) * ln 2 / (5 * delta)))"
               proof (cases "k = 0")
                 case True
-                have "dist (q k x) (q k v) \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (v - x) * exp(-(dM * 2^k) * ln 2 / (5 * delta)))"
+                have "dist (q k x) (q k v) \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (v - x) * exp(-(dM * 2^k - C/2) * ln 2 / (5 * delta)))"
                 proof (rule geodesic_projection_exp_contracting[where ?G = "V k" and ?f = f])
-                  show "(61/29 * lambda)-lipschitz_on {x..v} f"
-                    apply (rule lipschitz_on_mono[OF assms(1)])
-                    using \<open>v \<in> {w..uM}\<close> \<open>w \<in> {x..uM}\<close> \<open>x \<in> {yM..uM}\<close> \<open>yM \<in> {z..uM}\<close> \<open>uM \<in> {z..b}\<close> \<open>z \<in> {a..b}\<close> closestm by auto
                   show "geodesic_segment (V k)" unfolding V_def True using geodesic_segmentI[OF H] by auto
                   show "x \<le> v" using \<open>v \<in> {w..uM}\<close> \<open>w \<in> {x..uM}\<close> by auto
                   show "q k v \<in> proj_set (f v) (V k)"
@@ -2183,20 +2155,20 @@ proof -
                   show "q k x \<in> proj_set (f x) (V k)"
                     unfolding q_def V_def apply (rule proj_set_thickening)
                     using aux p[of x] x(3)[of x] \<open>w \<in> {x..uM}\<close> by (auto simp add: metric_space_class.dist_commute)
-                  show "15/2 * delta \<le> dM * 2^k"
+                  show "15/2 * delta + C/2 \<le> dM * 2^k"
                     using I \<open>delta > 0\<close> \<open>C \<ge> 0\<close> Laux unfolding QC_def True by auto
                   show "deltaG TYPE('a) < delta" by fact
                   show "\<And>t. t \<in> {x..v} \<Longrightarrow> dM * 2 ^ k \<le> infdist (f t) (V k)"
                     using aux4 by auto
+                  show "0 \<le> C" "0 \<le> lambda" using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
+                  show "dist (f x1) (f x2) \<le> lambda * dist x1 x2 + C" if "x1 \<in> {x..v}" "x2 \<in> {x..v}" for x1 x2
+                    using quasi_isometry_onD(1)[OF assms(2)] that \<open>v \<in> {w..uM}\<close> \<open>w \<in> {x..uM}\<close> \<open>x \<in> {yM..uM}\<close> \<open>yM \<in> {z..uM}\<close> \<open>uM \<in> {z..b}\<close> \<open>z \<in> {a..b}\<close> by auto
                 qed
                 then show ?thesis unfolding QC_def True by auto
               next
                 case False
-                have "dist (q k x) (q k v) \<le> 2 * QC k + 8 * delta + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (v - x) * exp(-(dM * 2^k - QC k) * ln 2 / (5 * delta)))"
+                have "dist (q k x) (q k v) \<le> 2 * QC k + 8 * delta + max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (v - x) * exp(-(dM * 2^k - QC k - C/2) * ln 2 / (5 * delta)))"
                 proof (rule quasiconvex_projection_exp_contracting[where ?G = "V k" and ?f = f])
-                  show "(61/29 * lambda)-lipschitz_on {x..v} f"
-                    apply (rule lipschitz_on_mono[OF assms(1)])
-                    using \<open>v \<in> {w..uM}\<close> \<open>w \<in> {x..uM}\<close> \<open>x \<in> {yM..uM}\<close> \<open>yM \<in> {z..uM}\<close> \<open>uM \<in> {z..b}\<close> \<open>z \<in> {a..b}\<close> closestm by auto
                   show "quasiconvex (QC k) (V k)" by fact
                   show "x \<le> v" using \<open>v \<in> {w..uM}\<close> \<open>w \<in> {x..uM}\<close> by auto
                   show "q k v \<in> proj_set (f v) (V k)"
@@ -2205,30 +2177,33 @@ proof -
                   show "q k x \<in> proj_set (f x) (V k)"
                     unfolding q_def V_def apply (rule proj_set_thickening)
                     using aux p[of x] x(3)[of x] \<open>w \<in> {x..uM}\<close> by (auto simp add: metric_space_class.dist_commute)
-                  show "15/2 * delta + QC k \<le> dM * 2^k"
+                  show "15/2 * delta + QC k + C/2 \<le> dM * 2^k"
                     apply (rule order_trans[of _ dM])
                     using I \<open>delta > 0\<close> \<open>C \<ge> 0\<close> Laux unfolding QC_def by auto
                   show "deltaG TYPE('a) < delta" by fact
                   show "\<And>t. t \<in> {x..v} \<Longrightarrow> dM * 2 ^ k \<le> infdist (f t) (V k)"
                     using aux4 by auto
+                  show "0 \<le> C" "0 \<le> lambda" using \<open>C \<ge> 0\<close> \<open>lambda \<ge> 1\<close> by auto
+                  show "dist (f x1) (f x2) \<le> lambda * dist x1 x2 + C" if "x1 \<in> {x..v}" "x2 \<in> {x..v}" for x1 x2
+                    using quasi_isometry_onD(1)[OF assms(2)] that \<open>v \<in> {w..uM}\<close> \<open>w \<in> {x..uM}\<close> \<open>x \<in> {yM..uM}\<close> \<open>yM \<in> {z..uM}\<close> \<open>uM \<in> {z..b}\<close> \<open>z \<in> {a..b}\<close> by auto
                 qed
-                then show ?thesis unfolding QC_def using False by auto
+                then show ?thesis unfolding QC_def using False by (auto simp add: algebra_simps)
               qed
-              finally have "L - 13 * delta \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (v - x) * exp(-(dM * 2^k - QC k) * ln 2 / (5 * delta)))"
+              finally have "L - 13 * delta \<le> max (5 * deltaG(TYPE('a))) ((4 * exp(1/2 * ln 2)) * lambda * (v - x) * exp(-(dM * 2^k - C/2 - QC k) * ln 2 / (5 * delta)))"
                 by auto
-              then have "L - 13 * delta \<le> (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (v - x) * exp(-(dM * 2^k - QC k) * ln 2 / (5 * delta))"
+              then have "L - 13 * delta \<le> (4 * exp(1/2 * ln 2)) * lambda * (v - x) * exp(-(dM * 2^k - C/2 - QC k) * ln 2 / (5 * delta))"
                 using \<open>delta > deltaG(TYPE('a))\<close> Laux by auto
-              also have "... \<le> (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (v - x) * exp(-((1-alpha) * D + alpha * 2^k * dM) * ln 2 / (5 * delta))"
+              also have "... \<le> (4 * exp(1/2 * ln 2)) * lambda * (v - x) * exp(-((1-alpha) * D + alpha * 2^k * dM) * ln 2 / (5 * delta))"
                 apply (intro mono_intros) using aux3 \<open>delta > 0\<close> \<open>lambda \<ge> 1\<close> \<open>v \<in> {w..uM}\<close> \<open>w \<in> {x..uM}\<close> by auto
-              also have "... = (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * (v - x) * (exp(-(1-alpha) * D * ln 2 / (5 * delta)) * exp(-alpha * 2^k * dM * ln 2 / (5 * delta)))"
+              also have "... = (4 * exp(1/2 * ln 2)) * lambda * (v - x) * (exp(-(1-alpha) * D * ln 2 / (5 * delta)) * exp(-alpha * 2^k * dM * ln 2 / (5 * delta)))"
                 unfolding mult_exp_exp by (auto simp add: algebra_simps divide_simps)
-              finally have A: "L - 13 * delta \<le> (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * exp(-(1-alpha) * D * ln 2 / (5 * delta)) * ((v - x) * exp(-alpha * 2^k * dM * ln 2 / (5 * delta)))"
+              finally have A: "L - 13 * delta \<le> (4 * exp(1/2 * ln 2)) * lambda * exp(-(1-alpha) * D * ln 2 / (5 * delta)) * ((v - x) * exp(-alpha * 2^k * dM * ln 2 / (5 * delta)))"
                 by (simp add: algebra_simps)
 
-              also have "... \<le> (4 * exp(1/2 * ln 2)) * (61/29 * lambda) * exp 0 * ((v - x) * exp 0)"
+              also have "... \<le> (4 * exp(1/2 * ln 2)) * lambda * exp 0 * ((v - x) * exp 0)"
                 apply (intro mono_intros) using \<open>delta > 0\<close> \<open>lambda \<ge> 1\<close> \<open>v \<in> {w..uM}\<close> \<open>w \<in> {x..uM}\<close> alphaaux \<open>D > 0\<close> \<open>C \<ge> 0\<close> I
                 by (auto simp add: divide_simps mult_nonpos_nonneg)
-              also have "... = (4 * exp(1/2 * ln 2) * 61/29) * lambda * (v - x)"
+              also have "... = (4 * exp(1/2 * ln 2)) * lambda * (v - x)"
                 by simp
               also have "... \<le> 20 * lambda * (v - x)"
                 apply (intro mono_intros, approximation 10)
@@ -2245,9 +2220,9 @@ proof -
 
               have "L + 4 * delta = ((L + 4 * delta)/(L - 13 * delta)) * (L - 13 * delta)"
                 using Laux \<open>delta > 0\<close> by (simp add: algebra_simps divide_simps)
-              also have "... \<le> ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) * ((v - x) * exp (- alpha * 2 ^ k * dM * ln 2 / (5 * delta))))"
+              also have "... \<le> ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * lambda * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) * ((v - x) * exp (- alpha * 2 ^ k * dM * ln 2 / (5 * delta))))"
                 apply (rule mult_left_mono) using A Laux \<open>delta > 0\<close> by (auto simp add: divide_simps)
-              also have "... \<le> ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * (61/29 * lambda) * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) * ((exp(-K * (x - closestm)) - exp(-K * (uM - um)))/K))"
+              also have "... \<le> ((L + 4 * delta)/(L - 13 * delta)) * ((4 * exp(1/2 * ln 2)) * lambda * exp (- (1 - alpha) * D * ln 2 / (5 * delta)) * ((exp(-K * (x - closestm)) - exp(-K * (uM - um)))/K))"
                 apply (intro mono_intros B) using Laux \<open>delta > 0\<close> \<open>lambda \<ge> 1\<close> by (auto simp add: divide_simps)
               finally have C: "L + 4 * delta \<le> Kmult * (exp(-K * (x - closestm)) - exp(-K * (uM - um)))"
                 unfolding Kmult_def by argo
@@ -2335,9 +2310,9 @@ proof -
     by simp
   also have "... \<le> lambda^2 * (D + 3/2 * L + delta + 11/2 * C) + Kmult * (1 - 0)"
     apply (intro mono_intros) using \<open>Kmult > 0\<close> by auto
-  also have "... = lambda^2 * (11/2 * C + (193600/29*exp(-2559/250*ln 2)/ln 2 + 89) * delta)"
+  also have "... = lambda^2 * (11/2 * C + (3200*exp(-459/50*ln 2)/ln 2 + 83) * delta)"
     unfolding Kmult_def K_def L_def alpha_def D_def using \<open>delta > 0\<close> \<open>lambda \<ge> 1\<close> by (simp add: algebra_simps divide_simps power2_eq_square mult_exp_exp)
-  also have "... \<le> lambda^2 * (11/2 * C + 97 * delta)"
+  also have "... \<le> lambda^2 * (11/2 * C + 91 * delta)"
     apply (intro mono_intros, simp add: divide_simps, approximation 14)
     using \<open>delta > 0\<close> by auto
   finally show ?thesis by (simp add: algebra_simps)
@@ -2357,31 +2332,31 @@ follows that $x$ is at distance at most $D + 4\delta$ of $z$, concluding the pro
 
 lemma (in Gromov_hyperbolic_space_geodesic) Morse_Gromov_theorem_aux2:
   fixes f::"real \<Rightarrow> 'a"
-  assumes "(61/29 * lambda)-lipschitz_on {a..b} f"
+  assumes "continuous_on {a..b} f"
           "lambda C-quasi_isometry_on {a..b} f"
           "geodesic_segment_between G (f a) (f b)"
-  shows "hausdorff_distance (f`{a..b}) G \<le> lambda^2 * (11/2 * C + 98 * deltaG(TYPE('a)))"
+  shows "hausdorff_distance (f`{a..b}) G \<le> lambda^2 * (11/2 * C + 92 * deltaG(TYPE('a)))"
 proof (cases "a \<le> b")
   case True
   have "lambda \<ge> 1" "C \<ge> 0" using quasi_isometry_onD[OF assms(2)] by auto
-  have *: "infdist (f z) G \<le> lambda^2 * (11/2 * C + 97 * delta)" if "z \<in> {a..b}" "delta > deltaG(TYPE('a))" for z delta
+  have *: "infdist (f z) G \<le> lambda^2 * (11/2 * C + 91 * delta)" if "z \<in> {a..b}" "delta > deltaG(TYPE('a))" for z delta
     by (rule Morse_Gromov_theorem_aux1[OF assms(1) assms(2) True assms(3) that])
-  define D where "D = lambda^2 * (11/2 * C + 97 * deltaG(TYPE('a)))"
+  define D where "D = lambda^2 * (11/2 * C + 91 * deltaG(TYPE('a)))"
   have "D \<ge> 0" unfolding D_def using \<open>C \<ge> 0\<close> by auto
   have I: "infdist (f z) G \<le> D" if "z \<in> {a..b}" for z
   proof -
-    have "(infdist (f z) G/ lambda^2 - 11/2 * C)/97 \<le> delta" if "delta > deltaG(TYPE('a))" for delta
+    have "(infdist (f z) G/ lambda^2 - 11/2 * C)/91 \<le> delta" if "delta > deltaG(TYPE('a))" for delta
       using *[OF \<open>z \<in> {a..b}\<close> that] \<open>lambda \<ge> 1\<close> by (auto simp add: divide_simps algebra_simps)
-    then have "(infdist (f z) G/ lambda^2 - 11/2 * C)/97 \<le> deltaG(TYPE('a))"
+    then have "(infdist (f z) G/ lambda^2 - 11/2 * C)/91 \<le> deltaG(TYPE('a))"
       using dense_ge by blast
     then show ?thesis unfolding D_def using \<open>lambda \<ge> 1\<close> by (auto simp add: divide_simps algebra_simps)
   qed
   show ?thesis
   proof (rule hausdorff_distanceI)
-    show "0 \<le> lambda\<^sup>2 * (11/2 * C + 98 * deltaG TYPE('a))" using \<open>C \<ge> 0\<close> by auto
+    show "0 \<le> lambda\<^sup>2 * (11/2 * C + 92 * deltaG TYPE('a))" using \<open>C \<ge> 0\<close> by auto
     fix x assume "x \<in> f`{a..b}"
     then obtain z where z: "x = f z" "z \<in> {a..b}" by blast
-    show "infdist x G \<le> lambda\<^sup>2 * (11/2 * C + 98 * deltaG TYPE('a))"
+    show "infdist x G \<le> lambda\<^sup>2 * (11/2 * C + 92 * deltaG TYPE('a))"
       unfolding z(1) by (rule order_trans[OF I[OF \<open>z \<in> {a..b}\<close>]], auto simp add: algebra_simps D_def)
   next
     fix x assume "x \<in> G"
@@ -2415,7 +2390,7 @@ proof (cases "a \<le> b")
       have "(Km \<inter> f`{a..b}) \<inter> (KM \<inter> f`{a..b}) \<noteq> {}"
       proof (rule connected_as_closed_union[OF _ *])
         have "closed (f ` {a..b})"
-          apply (intro compact_imp_closed compact_continuous_image) using lipschitz_on_continuous_on[OF assms(1)] by auto
+          apply (intro compact_imp_closed compact_continuous_image) using assms(1) by auto
         have "closed Km"
           unfolding Km_def apply (intro compact_has_closed_thickening compact_continuous_image)
           apply (rule continuous_on_subset[of "{0..dist (f a) (f b)}" p])
@@ -2431,7 +2406,7 @@ proof (cases "a \<le> b")
           by (rule topological_space_class.closed_Int) fact
 
         show "connected (f`{a..b})"
-          apply (rule connected_continuous_image) using lipschitz_on_continuous_on[OF assms(1)] by auto
+          apply (rule connected_continuous_image) using assms(1) by auto
         have "f a \<in> Km \<inter> f`{a..b}" using True apply auto
           unfolding Km_def apply auto apply (rule bexI[of _ 0])
           unfolding p using \<open>D \<ge> 0\<close> t(2) by auto
@@ -2462,7 +2437,7 @@ proof (cases "a \<le> b")
     qed
     also have "... \<le> D + lambda^2 * deltaG TYPE('a)"
       apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> by auto
-    finally show "infdist x (f ` {a..b}) \<le> lambda\<^sup>2 * (11/2 * C + 98 * deltaG TYPE('a))"
+    finally show "infdist x (f ` {a..b}) \<le> lambda\<^sup>2 * (11/2 * C + 92 * deltaG TYPE('a))"
       unfolding D_def by (simp add: algebra_simps)
   qed
 next
@@ -2485,10 +2460,10 @@ theorem (in Gromov_hyperbolic_space_geodesic) Morse_Gromov_theorem:
   fixes f::"real \<Rightarrow> 'a"
   assumes "lambda C-quasi_isometry_on {a..b} f"
           "geodesic_segment_between G (f a) (f b)"
-  shows "hausdorff_distance (f`{a..b}) G \<le> 98 * lambda^2 * (C + deltaG(TYPE('a)))"
+  shows "hausdorff_distance (f`{a..b}) G \<le> 92 * lambda^2 * (C + deltaG(TYPE('a)))"
 proof -
   have C: "C \<ge> 0" "lambda \<ge> 1" using quasi_isometry_onD[OF assms(1)] by auto
-  define Delta where "Delta = 61/(32::real)"
+  define Delta where "Delta = 11/(10::real)"
   consider "dist (f a) (f b) \<ge> Delta * C \<and> a \<le> b" | "dist (f a) (f b) \<le> Delta * C \<and> a \<le> b" | "b < a"
     unfolding Delta_def by linarith
   then show ?thesis
@@ -2504,8 +2479,8 @@ proof -
                         "lambda ((8 * Delta + 1) * C)-quasi_isometry_on {a..b} d"
                         "((Delta/(Delta-1)) * lambda)-lipschitz_on {a..b} d"
       by auto
-    have a: "hausdorff_distance (d`{a..b}) G \<le> lambda^2 * ((11/2) * ((8 * Delta + 1) * C) + 98 * deltaG(TYPE('a)))"
-      apply (rule Morse_Gromov_theorem_aux2) using d assms unfolding Delta_def by auto
+    have a: "hausdorff_distance (d`{a..b}) G \<le> lambda^2 * ((11/2) * ((8 * Delta + 1) * C) + 92 * deltaG(TYPE('a)))"
+      apply (rule Morse_Gromov_theorem_aux2) using d assms lipschitz_on_continuous_on unfolding Delta_def by auto
     have b: "hausdorff_distance (f`{a..b}) (d`{a..b}) \<le> 4 * Delta * C"
       apply (rule hausdorff_distance_vimage) using d(3) \<open>C \<ge> 0\<close> unfolding Delta_def by auto
 
@@ -2514,13 +2489,13 @@ proof -
       apply (rule hausdorff_distance_triangle)
       using 1 apply simp
       by (rule quasi_isometry_on_bounded[OF d(4)], auto)
-    also have "... \<le> lambda^2 * ((11/2) * ((8 * Delta + 1) * C) + 98 * deltaG(TYPE('a))) + 1 * (4 * Delta) * C"
+    also have "... \<le> lambda^2 * ((11/2) * ((8 * Delta + 1) * C) + 92 * deltaG(TYPE('a))) + 1 * (4 * Delta) * C"
       using a b unfolding Delta_def by auto
-    also have "... \<le> lambda^2 * ((11/2) * ((8 * Delta + 1) * C) + 98 * deltaG(TYPE('a))) + lambda^2 * (4 * Delta) * C"
+    also have "... \<le> lambda^2 * ((11/2) * ((8 * Delta + 1) * C) + 92 * deltaG(TYPE('a))) + lambda^2 * (4 * Delta) * C"
       apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> unfolding Delta_def by auto
-    also have "... = lambda^2 * ((48 * Delta + 11/2) * C + 98 * deltaG(TYPE('a)))"
+    also have "... = lambda^2 * ((48 * Delta + 11/2) * C + 92 * deltaG(TYPE('a)))"
       by (simp add: algebra_simps divide_simps)
-    also have "... \<le> lambda^2 * (98 * C + 98 * deltaG(TYPE('a)))"
+    also have "... \<le> lambda^2 * (92 * C + 92 * deltaG(TYPE('a)))"
       apply (intro mono_intros) using \<open>lambda \<ge> 1\<close> \<open>C \<ge> 0\<close> unfolding Delta_def by auto
     finally show ?thesis by (auto simp add: algebra_simps)
   next
@@ -2533,17 +2508,17 @@ proof -
     then have *: "b - a \<le> (Delta + 1) * lambda * C" using 2 unfolding dist_real_def by auto
     show ?thesis
     proof (rule hausdorff_distanceI2)
-      show "0 \<le> 98 * lambda\<^sup>2 * (C + deltaG TYPE('a))" using C by auto
+      show "0 \<le> 92 * lambda\<^sup>2 * (C + deltaG TYPE('a))" using C by auto
       fix x assume "x \<in> f`{a..b}"
       then obtain t where t: "x = f t" "t \<in> {a..b}" by auto
       have "dist x (f a) \<le> lambda * dist t a + C"
         unfolding t(1) using quasi_isometry_onD(1)[OF assms(1) t(2)] 2 by auto
       also have "... \<le> lambda * (b - a) + 1 * 1 * C + 0 * 0 * deltaG(TYPE('a))" using t(2) 2 C unfolding dist_real_def by auto
-      also have "... \<le> lambda * ((Delta + 1) * lambda * C) + lambda^2 * (98-(Delta + 1)) * C + lambda^2 * 98 * deltaG(TYPE('a))"
+      also have "... \<le> lambda * ((Delta + 1) * lambda * C) + lambda^2 * (92-(Delta + 1)) * C + lambda^2 * 92 * deltaG(TYPE('a))"
         apply (intro mono_intros *) using C unfolding Delta_def by auto
-      finally have *: "dist x (f a) \<le> 98 * lambda\<^sup>2 * (C + deltaG TYPE('a))"
+      finally have *: "dist x (f a) \<le> 92 * lambda\<^sup>2 * (C + deltaG TYPE('a))"
         by (simp add: algebra_simps power2_eq_square)
-      show "\<exists>y\<in>G. dist x y \<le> 98 * lambda\<^sup>2 * (C + deltaG TYPE('a))"
+      show "\<exists>y\<in>G. dist x y \<le> 92 * lambda\<^sup>2 * (C + deltaG TYPE('a))"
         apply (rule bexI[of _ "f a"]) using * 2 assms(2) by auto
     next
       fix x assume "x \<in> G"
@@ -2551,11 +2526,11 @@ proof -
         by (meson assms geodesic_segment_dist_le geodesic_segment_endpoints(1) local.some_geodesic_is_geodesic_segment(1))
       also have "... \<le> 1 * Delta * C + lambda^2 * 0 * deltaG(TYPE('a))"
         using 2 by auto
-      also have "... \<le> lambda^2 * 98 * C + lambda^2 * 98 * deltaG(TYPE('a))"
+      also have "... \<le> lambda^2 * 92 * C + lambda^2 * 92 * deltaG(TYPE('a))"
         apply (intro mono_intros) using C unfolding Delta_def by auto
-      finally have *: "dist x (f a) \<le> 98 * lambda\<^sup>2 * (C + deltaG TYPE('a))"
+      finally have *: "dist x (f a) \<le> 92 * lambda\<^sup>2 * (C + deltaG TYPE('a))"
         by (simp add: algebra_simps)
-      show "\<exists>y\<in>f`{a..b}. dist x y \<le> 98 * lambda\<^sup>2 * (C + deltaG TYPE('a))"
+      show "\<exists>y\<in>f`{a..b}. dist x y \<le> 92 * lambda\<^sup>2 * (C + deltaG TYPE('a))"
         apply (rule bexI[of _ "f a"]) using * 2 by auto
     qed
   next
@@ -2574,16 +2549,16 @@ theorem (in Gromov_hyperbolic_space_geodesic) Morse_Gromov_theorem2:
   assumes "lambda C-quasi_isometry_on {A..B} c"
           "lambda C-quasi_isometry_on {A..B} d"
           "c A = d A" "c B = d B"
-  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 196 * lambda^2 * (C + deltaG(TYPE('a)))"
+  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 184 * lambda^2 * (C + deltaG(TYPE('a)))"
 proof (cases "A \<le> B")
   case False
   then have "hausdorff_distance (c`{A..B}) (d`{A..B}) = 0" by auto
   then show ?thesis using quasi_isometry_onD[OF assms(1)] delta_nonneg by auto
 next
   case True
-  have "hausdorff_distance (c`{A..B}) {c A--c B} \<le> 98 * lambda^2 * (C + deltaG(TYPE('a)))"
+  have "hausdorff_distance (c`{A..B}) {c A--c B} \<le> 92 * lambda^2 * (C + deltaG(TYPE('a)))"
     by (rule Morse_Gromov_theorem[OF assms(1)], auto)
-  moreover have "hausdorff_distance {c A--c B} (d`{A..B}) \<le> 98 * lambda^2 * (C + deltaG(TYPE('a)))"
+  moreover have "hausdorff_distance {c A--c B} (d`{A..B}) \<le> 92 * lambda^2 * (C + deltaG(TYPE('a)))"
     unfolding \<open>c A = d A\<close> \<open>c B = d B\<close> apply (subst hausdorff_distance_sym)
     by (rule Morse_Gromov_theorem[OF assms(2)], auto)
   moreover have "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> hausdorff_distance (c`{A..B}) {c A--c B} + hausdorff_distance {c A--c B} (d`{A..B})"
@@ -2601,12 +2576,12 @@ lemma geodesic_quasi_isometric_image:
   fixes f::"'a::metric_space \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
   assumes "lambda C-quasi_isometry_on UNIV f"
           "geodesic_segment_between G x y"
-  shows "hausdorff_distance (f`G) {f x--f y} \<le> 98 * lambda^2 * (C + deltaG(TYPE('b)))"
+  shows "hausdorff_distance (f`G) {f x--f y} \<le> 92 * lambda^2 * (C + deltaG(TYPE('b)))"
 proof -
   define c where "c = f o (geodesic_segment_param G x)"
   have *: "(1 * lambda) (0 * lambda + C)-quasi_isometry_on {0..dist x y} c"
     unfolding c_def by (rule quasi_isometry_on_compose[where Y = UNIV], auto intro!: isometry_quasi_isometry_on simp add: assms)
-  have "hausdorff_distance (c`{0..dist x y}) {c 0--c (dist x y)} \<le> 98 * lambda^2 * (C + deltaG(TYPE('b)))"
+  have "hausdorff_distance (c`{0..dist x y}) {c 0--c (dist x y)} \<le> 92 * lambda^2 * (C + deltaG(TYPE('b)))"
     apply (rule Morse_Gromov_theorem) using * by auto
   moreover have "c`{0..dist x y} = f`G"
     unfolding c_def image_comp[symmetric] using assms(2) by auto
@@ -2627,7 +2602,7 @@ distances by a bounded amount.\<close>
 lemma Gromov_hyperbolic_invariant_under_quasi_isometry_explicit:
   fixes f::"'a::geodesic_space \<Rightarrow> 'b::Gromov_hyperbolic_space_geodesic"
   assumes "lambda C-quasi_isometry f"
-  shows "Gromov_hyperbolic_subset (800 * lambda^3 * (C + deltaG(TYPE('b)))) (UNIV::('a set))"
+  shows "Gromov_hyperbolic_subset (752 * lambda^3 * (C + deltaG(TYPE('b)))) (UNIV::('a set))"
 proof -
   have C: "lambda \<ge> 1" "C \<ge> 0"
     using quasi_isometry_onD[OF assms] by auto
@@ -2635,11 +2610,11 @@ proof -
   text \<open>The Morse lemma gives a control bounded by $K$ below. Following the proof, we deduce
   a bound on the thinness of triangles by an ugly constant $L$. We bound it by a more tractable
   (albeit still ugly) constant $M$.\<close>
-  define K where "K = 98 * lambda^2 * (C + deltaG(TYPE('b)))"
+  define K where "K = 92 * lambda^2 * (C + deltaG(TYPE('b)))"
   have HD: "hausdorff_distance (f`G) {f a--f b} \<le> K" if "geodesic_segment_between G a b" for G a b
     unfolding K_def by (rule geodesic_quasi_isometric_image[OF assms that])
   define L where "L = lambda * (4 * 1 * deltaG(TYPE('b)) + 1 * 1 * C + 2 * K)"
-  define M where "M = 200 * lambda^3 * (C + deltaG(TYPE('b)))"
+  define M where "M = 188 * lambda^3 * (C + deltaG(TYPE('b)))"
 
   have "L \<le> lambda * (4 * lambda^2 * deltaG(TYPE('b)) + 4 * lambda^2 * C + 2 * K)"
     unfolding L_def apply (intro mono_intros) using C by auto
@@ -2683,7 +2658,7 @@ proof -
     then have A: "infdist (f w) (f`(Gxz \<union> Gyz)) \<le> 4 * deltaG(TYPE('b)) + 2 * K"
       using * ** by (auto simp add: image_Un)
 
-    have "infdist w (Gxz \<union> Gyz) \<le> L + epsilon" if "epsilon>0" for epsilon
+    have "infdist w (Gxz \<union> Gyz) \<le> L + epsilon" if "epsilon > 0" for epsilon
     proof -
       have *: "epsilon/lambda > 0" using that C by auto
       have "\<exists>z \<in> f`(Gxz \<union> Gyz). dist (f w) z < 4 * deltaG(TYPE('b)) + 2 * K + epsilon/lambda"
@@ -2908,7 +2883,7 @@ proof -
       then obtain t where t: "x = c t" "t \<in> {A..B}" by auto
       have "dist x (c A) \<le> lambda * dist t A + C"
         unfolding t(1) using quasi_isometry_onD(1)[OF assms t(2), of A] 2 by auto
-      also have "... \<le>lambda * (B-A) + C" using t(2) 2 C unfolding dist_real_def by auto
+      also have "... \<le> lambda * (B-A) + C" using t(2) 2 C unfolding dist_real_def by auto
       also have "... \<le> 3 * lambda * lambda * C + 1 * 1 * C" using * C by auto
       also have "... \<le> 3 * lambda * lambda * C + lambda * lambda * C"
         apply (intro mono_intros) using C by auto
@@ -2959,7 +2934,7 @@ proof -
     at least $D$ from $x$. It follows from the previous lemma that $D \leq \log(length)$, which
     implies a bound on $D$.
 
-    This argument has to be amended if $x$ is at distance $<2D$ from $c(A)$ or $c(B)$. In this case,
+    This argument has to be amended if $x$ is at distance $ < 2D$ from $c(A)$ or $c(B)$. In this case,
     simply use $x_m = y_m = c(A)$ or $x_M = y_M = c(B)$, then everything goes through.\<close>
 
     have "\<exists>x \<in> {c A--c B}. \<forall>y \<in> {c A--c B}. infdist y (d`{A..B}) \<le> infdist x (d`{A..B})"
@@ -3102,7 +3077,7 @@ proof -
       have [simp]: "L \<ge> 0" unfolding L_def by auto
       have "L > 0"
       proof (rule ccontr)
-        assume "\<not>(L>0)"
+        assume "\<not>(L > 0)"
         then have "L = 0" using \<open>L \<ge> 0\<close> by simp
         then have "xm = xM" using E0 EL by auto
         then have "tM = tm" unfolding xm_def xM_def
@@ -3274,10 +3249,10 @@ proof -
 
     text \<open>Now, we start the second step: we show that the quasi-geodesic is included in the
     neighborhood of size $D1$ of the geodesic, where $D1 \geq D0$ is the constant defined below.
-    The argument goes as follows. Assume that a point $y$ on the quasi-geodesic is at distance $>D0$
+    The argument goes as follows. Assume that a point $y$ on the quasi-geodesic is at distance $ > D0$
     of the geodesic. Consider the last point $y_m$ before $y$ which is at distance $D0$ of the
     geodesic, and the first point $y_M$ after $y$ likewise. On $(y_m, y_M)$, one is always at distance
-    $>D0$ of the geodesic. However, by the first step, the geodesic is covered by the balls of radius
+    $ > D0$ of the geodesic. However, by the first step, the geodesic is covered by the balls of radius
     $D0$ centered at points on the quasi-geodesic -- and only the points before $y_m$ or after $y_M$
     can be used. Let $K_m$ be the points on the geodesics that are at distance $\leq D0$ of a point
     on the quasi-geodesic before $y_m$, and likewise define $K_M$. These are two closed subsets of

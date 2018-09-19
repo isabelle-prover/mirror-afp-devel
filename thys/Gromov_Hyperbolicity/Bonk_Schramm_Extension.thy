@@ -319,7 +319,7 @@ fun extend_distance::"('a Bonk_Schramm_extension_unfolded \<Rightarrow> ('a Bonk
       else 1)"
   | "extend_distance f (would_be_Cauchy u) = (\<lambda>y z.
       if (y \<in> wo.underS (would_be_Cauchy u)) \<and> (z \<in> wo.underS (would_be_Cauchy u)) then f (wo.max2 y z) y z
-      else if (\<not>(\<forall>eps>(0::real). \<exists>N. \<forall>n\<ge> N. \<forall>m\<ge>N. f (wo.max2 (u n) (u m)) (u n) (u m) < eps)) then 1
+      else if (\<not>(\<forall>eps > (0::real). \<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. f (wo.max2 (u n) (u m)) (u n) (u m) < eps)) then 1
       else if (y \<in> wo.underS (would_be_Cauchy u)) \<and> (z = would_be_Cauchy u) then lim (\<lambda>n. f (wo.max2 (u n) y) (u n) y)
       else if (y = would_be_Cauchy u) \<and> (z \<in> wo.underS (would_be_Cauchy u)) then lim (\<lambda>n. f (wo.max2 (u n) z) (u n) z)
       else if (y = would_be_Cauchy u) \<and> (z = would_be_Cauchy u) \<and> (\<forall>n. f (u n) (u n) (u n) = 0) then 0
@@ -428,7 +428,7 @@ done
 lemma extended_distance_set_Cauchy:
   assumes "(would_be_Cauchy u) \<in> extended_distance_set"
   shows "u n \<in> extended_distance_set \<inter> wo.underS (would_be_Cauchy u)"
-        "\<forall>eps>(0::real). \<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. extended_distance (u n) (u m) < eps"
+        "\<forall>eps > (0::real). \<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. extended_distance (u n) (u m) < eps"
 proof -
   have *: "extend_distance (extend_distance_fp) (would_be_Cauchy u) (would_be_Cauchy u) (would_be_Cauchy u) = 0"
     apply (subst extend_distance_fp[symmetric])
@@ -440,7 +440,7 @@ proof -
     by (auto simp add: Bonk_Schramm_extension_unfolded_wo_props')
   ultimately show "u n \<in> extended_distance_set \<inter> wo.underS (would_be_Cauchy u)"
     by auto
-  show "\<forall>eps>(0::real). \<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. extended_distance (u n) (u m) < eps"
+  show "\<forall>eps > (0::real). \<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. extended_distance (u n) (u m) < eps"
     using * unfolding extended_distance_set_def extended_distance_def apply auto
     by (metis (no_types, hide_lams) zero_neq_one)
 qed
@@ -632,14 +632,14 @@ proof -
           have "extend_distance extend_distance_fp (wo.max2 (would_be_Cauchy u) (would_be_Cauchy u)) (would_be_Cauchy u) (would_be_Cauchy u) = 0"
             using 2 unfolding C extended_distance_set_def extended_distance_def
             using extend_distance_fp by auto
-          then have cauch: "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. extend_distance_fp (wo.max2 (u n) (u m)) (u n) (u m) < e" if "e>0" for e
+          then have cauch: "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. extend_distance_fp (wo.max2 (u n) (u m)) (u n) (u m) < e" if "e > 0" for e
             apply auto using \<open>e > 0\<close> by (metis (no_types, hide_lams) zero_neq_one)
-          have "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. abs(extended_distance y (u n) - extended_distance y (u m)) < e" if "e > 0" for e
+          have "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. abs(extended_distance y (u n) - extended_distance y (u m)) < e" if "e > 0" for e
           proof -
-            obtain N where *: "extend_distance_fp (wo.max2 (u n) (u m)) (u n) (u m) < e" if "n \<ge> N" "m\<ge>N" for m n
+            obtain N where *: "extend_distance_fp (wo.max2 (u n) (u m)) (u n) (u m) < e" if "n \<ge> N" "m \<ge> N" for m n
               using cauch by (meson \<open>0 < e\<close>)
             {
-              fix m n assume "m\<ge>N" "n\<ge>N"
+              fix m n assume "m \<ge> N" "n \<ge> N"
               then have e: "extended_distance (u n) (u m) < e" using * unfolding extended_distance_def by auto
               have "extended_distance y (u n) \<le> extended_distance y (u m) + extended_distance (u m) (u n)"
                 using IH y un C by blast
@@ -781,7 +781,7 @@ qed
 
 lemma extended_distance_Cauchy:
   assumes "\<And>(n::nat). u n \<in> extended_distance_set"
-      and "\<forall>eps>(0::real). \<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. extended_distance (u n) (u m) < eps"
+      and "\<forall>eps > (0::real). \<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. extended_distance (u n) (u m) < eps"
   shows "would_be_Cauchy u \<in> extended_distance_set"
         "(\<lambda>n. extended_distance (u n) (would_be_Cauchy u)) \<longlonglongrightarrow> 0"
 proof -
@@ -792,12 +792,12 @@ proof -
   have lim: "(\<lambda>n. extended_distance y (u n)) \<longlonglongrightarrow> (extended_distance y (would_be_Cauchy u))"
       if y: "y \<in> extended_distance_set \<inter> wo.underS (would_be_Cauchy u)" for y
   proof -
-    have "\<exists>N. \<forall>n\<ge>N. \<forall>m\<ge>N. abs(extended_distance y (u n) - extended_distance y (u m)) < e" if "e > 0" for e
+    have "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. abs(extended_distance y (u n) - extended_distance y (u m)) < e" if "e > 0" for e
     proof -
-      obtain N where *: "extended_distance (u n) (u m) < e" if "n \<ge> N" "m\<ge>N" for m n
-        using assms(2) that \<open>e>0\<close> by meson
+      obtain N where *: "extended_distance (u n) (u m) < e" if "n \<ge> N" "m \<ge> N" for m n
+        using assms(2) that \<open>e > 0\<close> by meson
       {
-        fix m n assume "m\<ge>N" "n\<ge>N"
+        fix m n assume "m \<ge> N" "n \<ge> N"
         then have e: "extended_distance (u n) (u m) < e" using * by auto
         have "extended_distance y (u n) \<le> extended_distance y (u m) + extended_distance (u m) (u n)"
           using extended_distance_triang_ineq y assms(1) by blast
@@ -824,10 +824,10 @@ proof -
       using lim extended_distance_symmetric by auto
   qed
 
-  have "\<exists>N. \<forall>n\<ge>N. abs(extended_distance (u n) (would_be_Cauchy u)) < e" if "e>0" for e
+  have "\<exists>N. \<forall>n \<ge> N. abs(extended_distance (u n) (would_be_Cauchy u)) < e" if "e > 0" for e
   proof -
-    obtain N where *: "extended_distance (u n) (u m) < e/2" if "n \<ge> N" "m\<ge>N" for m n
-      using assms(2) that \<open>e>0\<close> by (meson half_gt_zero)
+    obtain N where *: "extended_distance (u n) (u m) < e/2" if "n \<ge> N" "m \<ge> N" for m n
+      using assms(2) that \<open>e > 0\<close> by (meson half_gt_zero)
     have "abs(extended_distance (u n) (would_be_Cauchy u)) \<le> e/2" if "n \<ge> N" for n
     proof -
       have "eventually (\<lambda>m. extended_distance (u n) (u m) \<le> e/2) sequentially"
@@ -1300,14 +1300,14 @@ theorem (in Gromov_hyperbolic_space) Morse_Gromov_theorem2':
   assumes "lambda C-quasi_isometry_on {A..B} c"
           "lambda C-quasi_isometry_on {A..B} d"
           "c A = d A" "c B = d B"
-  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 196 * lambda^2 * (C + deltaG(TYPE('a)))"
+  shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 184 * lambda^2 * (C + deltaG(TYPE('a)))"
 proof -
   interpret BS: Gromov_hyperbolic_space_geodesic "dist::('a Bonk_Schramm_extension \<Rightarrow> 'a Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('a)))"
     apply standard using Bonk_Schramm_extension_hyperbolic by auto
   have "hausdorff_distance (c`{A..B}) (d`{A..B}) = hausdorff_distance ((to_Bonk_Schramm_extension o c)`{A..B}) ((to_Bonk_Schramm_extension o d)`{A..B})"
     unfolding image_comp[symmetric] apply (rule isometry_preserves_hausdorff_distance[symmetric, of UNIV])
     using to_Bonk_Schramm_extension_isometry by auto
-  also have "... \<le> 196 * (lambda*1)^2 * ((C*1+0) + deltaG(TYPE('a)))"
+  also have "... \<le> 184 * (lambda*1)^2 * ((C*1+0) + deltaG(TYPE('a)))"
     apply (intro BS.Morse_Gromov_theorem2 quasi_isometry_on_compose[where Y = UNIV])
     using assms isometry_quasi_isometry_on to_Bonk_Schramm_extension_isometry by auto
   finally show ?thesis by simp
@@ -1316,7 +1316,7 @@ qed
 lemma Gromov_hyperbolic_invariant_under_quasi_isometry_explicit':
   fixes f::"'a::geodesic_space \<Rightarrow> 'b::Gromov_hyperbolic_space"
   assumes "lambda C-quasi_isometry f"
-  shows "Gromov_hyperbolic_subset (800 * lambda^3 * (C + deltaG(TYPE('b)))) (UNIV::('a set))"
+  shows "Gromov_hyperbolic_subset (752 * lambda^3 * (C + deltaG(TYPE('b)))) (UNIV::('a set))"
 proof -
   interpret BS: Gromov_hyperbolic_space_geodesic "dist::('b Bonk_Schramm_extension \<Rightarrow> 'b Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('b)))"
     apply standard using Bonk_Schramm_extension_hyperbolic by auto

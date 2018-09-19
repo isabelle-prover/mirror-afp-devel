@@ -54,9 +54,9 @@ lemma convergent_Cauchy_dist:
   shows "convergent (\<lambda>n. dist (u n) (v n))"
 proof (rule real_Cauchy_convergent, intro CauchyI)
   fix e::real assume "e > 0"
-  obtain Nu where Nu: "\<forall>n\<ge>Nu. \<forall>m\<ge>Nu. dist (u n) (u m) < e/2" using assms(1)
+  obtain Nu where Nu: "\<forall>n \<ge> Nu. \<forall>m \<ge> Nu. dist (u n) (u m) < e/2" using assms(1)
     by (metis \<open>0 < e\<close> less_divide_eq_numeral1(1) metric_CauchyD mult_zero_left)
-  obtain Nv where Nv: "\<forall>n\<ge>Nv. \<forall>m\<ge>Nv. dist (v n) (v m) < e/2" using assms(2)
+  obtain Nv where Nv: "\<forall>n \<ge> Nv. \<forall>m \<ge> Nv. dist (v n) (v m) < e/2" using assms(2)
     by (metis \<open>0 < e\<close> less_divide_eq_numeral1(1) metric_CauchyD mult_zero_left)
   define M where "M = max Nu Nv"
   {
@@ -76,7 +76,7 @@ proof (rule real_Cauchy_convergent, intro CauchyI)
     finally have "dist (u n) (v n) - dist (u m) (v m) < e" by simp
     then have "norm(dist (u m) (v m) - dist (u n) (v n)) < e" using A by auto
   }
-  then show "\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. norm (dist (u m) (v m) - dist (u n) (v n)) < e"
+  then show "\<exists>M. \<forall>m \<ge> M. \<forall>n \<ge> M. norm (dist (u m) (v m) - dist (u n) (v n)) < e"
     by auto
 qed
 
@@ -179,15 +179,15 @@ This is essentially by design.\<close>
 instance metric_completion :: (metric_space) complete_space
 proof
   fix X::"nat \<Rightarrow> 'a metric_completion" assume "Cauchy X"
-  have *: "\<exists>N. \<forall>n\<ge>N. dist (rep_metric_completion (X k) N) (rep_metric_completion (X k) n) < (1/Suc k)" for k
+  have *: "\<exists>N. \<forall>n \<ge> N. dist (rep_metric_completion (X k) N) (rep_metric_completion (X k) n) < (1/Suc k)" for k
   proof -
     have "Cauchy (rep_metric_completion (X k))"
       using Quotient3_metric_completion Quotient3_rep_reflp by fastforce+
-    then have "\<exists>N. \<forall>m\<ge>N. \<forall>n\<ge>N. dist (rep_metric_completion (X k) m) (rep_metric_completion (X k) n) < (1/Suc k)"
+    then have "\<exists>N. \<forall>m \<ge> N. \<forall>n \<ge> N. dist (rep_metric_completion (X k) m) (rep_metric_completion (X k) n) < (1/Suc k)"
       unfolding Cauchy_def by auto
     then show ?thesis by auto
   qed
-  have "\<exists>N. \<forall>k. \<forall>n\<ge>N k. dist (rep_metric_completion (X k) (N k)) (rep_metric_completion (X k) n) < (1/Suc k)"
+  have "\<exists>N. \<forall>k. \<forall>n \<ge> N k. dist (rep_metric_completion (X k) (N k)) (rep_metric_completion (X k) n) < (1/Suc k)"
     apply (rule choice) using * by auto
   then obtain N::"nat \<Rightarrow> nat" where
     N: "dist (rep_metric_completion (X k) (N k)) (rep_metric_completion (X k) n) < (1/Suc k)" if "n \<ge> N k" for n k
@@ -198,8 +198,8 @@ proof
   proof (rule metric_CauchyI)
     fix e::real assume "e > 0"
     obtain K::nat where "K > 4/e" using reals_Archimedean2 by blast
-    obtain L::nat where L: "\<forall>m\<ge>L. \<forall>n\<ge>L. dist (X m) (X n) < e/2"
-      using metric_CauchyD[OF \<open>Cauchy X\<close>, of "e/2"] \<open>e>0\<close> by auto
+    obtain L::nat where L: "\<forall>m \<ge> L. \<forall>n \<ge> L. dist (X m) (X n) < e/2"
+      using metric_CauchyD[OF \<open>Cauchy X\<close>, of "e/2"] \<open>e > 0\<close> by auto
     {
       fix m n assume "m \<ge> max K L" "n \<ge> max K L"
       then have "dist (X m) (X n) < e/2" using L by auto
@@ -228,14 +228,14 @@ proof
       also have "... = e" by auto
       finally have "dist (u m) (u n) < e" by auto
     }
-    then show "\<exists>M. \<forall>m\<ge>M. \<forall>n\<ge>M. dist (u m) (u n) < e" by meson
+    then show "\<exists>M. \<forall>m \<ge> M. \<forall>n \<ge> M. dist (u m) (u n) < e" by meson
   qed
   have *: "(\<lambda>n. dist (abs_metric_completion u) (X n)) \<longlonglongrightarrow> 0"
   proof (rule order_tendstoI, auto simp add: less_le_trans eventually_sequentially)
-    fix e::real assume "e>0"
+    fix e::real assume "e > 0"
     obtain K::nat where "K > 4/e" using reals_Archimedean2 by blast
-    obtain L::nat where L: "\<forall>m\<ge>L. \<forall>n\<ge>L. dist (u m) (u n) < e/4"
-      using metric_CauchyD[OF \<open>Cauchy u\<close>, of "e/4"] \<open>e>0\<close> by auto
+    obtain L::nat where L: "\<forall>m \<ge> L. \<forall>n \<ge> L. dist (u m) (u n) < e/4"
+      using metric_CauchyD[OF \<open>Cauchy u\<close>, of "e/4"] \<open>e > 0\<close> by auto
     {
       fix n assume n: "n \<ge> max K L"
       {
@@ -263,7 +263,7 @@ proof
         apply (rule LIMSEQ_le_const2[OF B]) using A unfolding eventually_sequentially by auto
       then have "dist (abs_metric_completion u) (X n) < e" using \<open>e > 0\<close> by auto
     }
-    then show "\<exists>N. \<forall>n\<ge>N. dist (abs_metric_completion u) (X n) < e"
+    then show "\<exists>N. \<forall>n \<ge> N. dist (abs_metric_completion u) (X n) < e"
       by blast
   qed
   have "X \<longlonglongrightarrow> abs_metric_completion u"
@@ -300,7 +300,7 @@ proof -
     using \<open>y \<in> U\<close> \<open>open U\<close> by (metis open_dist)
   have *: "Cauchy (rep_metric_completion y)"
     using Quotient3_metric_completion Quotient3_rep_reflp by fastforce
-  then obtain N where N: "\<forall>n\<ge>N. \<forall>m\<ge>N. dist (rep_metric_completion y n) (rep_metric_completion y m) < e/2"
+  then obtain N where N: "\<forall>n \<ge> N. \<forall>m \<ge> N. dist (rep_metric_completion y n) (rep_metric_completion y m) < e/2"
     using \<open>e > 0\<close> unfolding Cauchy_def by (meson divide_pos_pos zero_less_numeral)
   define x where "x = rep_metric_completion y N"
   have "(\<lambda>n. dist x (rep_metric_completion y n)) \<longlonglongrightarrow> dist (to_metric_completion x) (abs_metric_completion (rep_metric_completion y))"
@@ -412,9 +412,9 @@ proof
   have "countable A" unfolding A_def using \<open>countable B\<close> by auto
   moreover have "closure A = UNIV"
   proof (auto simp add: closure_approachable)
-    fix x::'a and e::real assume "e>0"
+    fix x::'a and e::real assume "e > 0"
     obtain U where "U \<in> B" "x \<in> U" "U \<subseteq> ball x e"
-      by (rule topological_basisE[OF \<open>topological_basis B\<close>, of "ball x e" x], auto simp add: \<open>e>0\<close>)
+      by (rule topological_basisE[OF \<open>topological_basis B\<close>, of "ball x e" x], auto simp add: \<open>e > 0\<close>)
     define y where "y = (\<lambda>U. SOME x. x \<in> U) U"
     have "y \<in> U" unfolding y_def using \<open>x \<in> U\<close> some_in_eq by fastforce
     then have "dist y x < e"
@@ -431,10 +431,10 @@ next
   moreover have "topological_basis B"
   proof (rule topological_basisI)
     fix x::'a and U assume "x \<in> U" "open U"
-    then obtain e where "e>0" "ball x e \<subseteq> U"
+    then obtain e where "e > 0" "ball x e \<subseteq> U"
       using openE by blast
     obtain n::nat where "n > 2/e" using reals_Archimedean2 by auto
-    then have "n > 0" using \<open>e>0\<close> not_less by fastforce
+    then have "n > 0" using \<open>e > 0\<close> not_less by fastforce
     then have "1/n > 0" using zero_less_divide_iff by fastforce
     then obtain y where y: "y \<in> A" "dist x y < 1/n"
       by (metis \<open>closure A = UNIV\<close> UNIV_I closure_approachable dist_commute)
@@ -446,7 +446,7 @@ next
       have "dist z x \<le> dist z y + dist y x" using dist_triangle by auto
       also have "... < 1/n + 1/n" using z y(2) by (auto simp add: dist_commute)
       also have "... < e"
-        using \<open>n > 2/e\<close> \<open>e>0\<close> \<open>n>0\<close> by (auto simp add: divide_simps mult.commute)
+        using \<open>n > 2/e\<close> \<open>e > 0\<close> \<open>n > 0\<close> by (auto simp add: divide_simps mult.commute)
       finally have "z \<in> ball x e" by (auto simp add: dist_commute)
       then show "z \<in> U" using \<open>ball x e \<subseteq> U\<close> by auto
     qed
