@@ -30,7 +30,7 @@ thm comp\<^sub>T'.simps
 lemma (in dp_consistency_heap) shows comp\<^sub>T_transfer[transfer_rule]:
   "crel_vs ((R1 ===>\<^sub>T R2) ===>\<^sub>T (R0 ===>\<^sub>T R1) ===>\<^sub>T (R0 ===>\<^sub>T R2)) comp comp\<^sub>T"
   apply memoize_combinator_init
-  subgoal premises IH [transfer_rule] thm IH by memoize_unfold_defs transfer_prover
+  subgoal premises IH [transfer_rule] by memoize_unfold_defs transfer_prover
   done
 
 memoize_fun map\<^sub>T: map monadifies (heap) list.map

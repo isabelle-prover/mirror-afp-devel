@@ -2480,7 +2480,6 @@ case (acq_mode_rel c\<^sub>A x m tail\<^sub>A c\<^sub>C tail\<^sub>C mds\<^sub>A
                \<in> RefRel_HighBranch"
         using A.eval\<^sub>w.seq A.decl_eval\<^sub>w' mds\<^sub>C'_def A.update_modes.simps mode_acquire_refinement_helper
           by simp
-          term ?thesis
         thus ?thesis
           by(simp add: c\<^sub>2\<^sub>C_def c\<^sub>2\<^sub>A'_def mem\<^sub>2\<^sub>A'_def)
       qed

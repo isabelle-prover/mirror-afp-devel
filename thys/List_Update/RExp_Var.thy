@@ -206,7 +206,6 @@ next
     then have Bin:  "B \<in> lang (Star (verund bs))" by simp
     let ?c = "Star (verund (m#bs))"
 
-    thm Bin am mM x
     have ac: "lang m \<subseteq> lang (Star (verund (m # bs)))" 
       apply(cases bs) by(auto)
     have ad: "(lang (Star (verund bs))) \<subseteq> lang (Star (verund (m # bs)))"

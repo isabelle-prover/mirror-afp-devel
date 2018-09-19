@@ -109,7 +109,6 @@ proof (induction x n rule: newton_sqrt_aux.induct)
     case False
     with "1.prems" have x_gt_sqrt: "x > Discrete.sqrt n" by auto
     with Discrete.le_sqrt_iff[of x n] have "n < x ^ 2" by simp
-    thm Divides.div_mult2_eq div_eq_0_iff gr_implies_not0 x_gt_sqrt
     have "x * (n div x) \<le> n" using mult_div_mod_eq[of x n] by linarith
     also have "\<dots> < x ^ 2" using Discrete.le_sqrt_iff[of x n] and x_gt_sqrt by simp
     also have "\<dots> = x * x" by (simp add: power2_eq_square)
