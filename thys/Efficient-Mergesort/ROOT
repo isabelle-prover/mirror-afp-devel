@@ -5,6 +5,7 @@ session "Efficient-Mergesort" (AFP) = "HOL-Library" +
   theories
     Efficient_Sort
     Efficient_Mergesort
+    Mergesort_Complexity
   document_files
     "root.bib"
     "root.tex"
