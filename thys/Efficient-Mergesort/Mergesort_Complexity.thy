@@ -1,6 +1,9 @@
+(*  Author:      Christian Sternagel <c.sternagel@gmail.com>
+    Maintainer:  Christian Sternagel <c.sternagel@gmail.com>
+*)
 theory Mergesort_Complexity
   imports
-    Efficient_Mergesort
+    Efficient_Sort
     Complex_Main
 begin
 
@@ -10,7 +13,7 @@ lemma log2_mono:
   by auto
 
 
-section \<open>Running Time Analysis\<close>
+section \<open>Counting the Number of Comparisons\<close>
 
 context
   fixes key :: "'a \<Rightarrow> 'k::linorder"
