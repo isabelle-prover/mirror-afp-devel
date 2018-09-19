@@ -593,7 +593,7 @@ proof -
   qed
 qed
 
-lemma DBM_val_bounded_len':
+lemma DBM_val_bounded_len'':
   fixes v
   defines "vo \<equiv> \<lambda> k. if k = 0 then None else Some (SOME c. v c = k)"
   assumes "DBM_val_bounded v u m n" "i \<noteq> 0 \<or> j \<noteq> 0"

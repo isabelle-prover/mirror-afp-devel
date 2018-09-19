@@ -200,11 +200,11 @@ qed
 
 text {* Now we provide the counterexamples of Lemma 4.8. *}
 
-lemma d_inter: "(x \<parallel> y) \<cdot> d z = (x \<cdot> d z) \<parallel> (y \<cdot> d z)"
+lemma "(x \<parallel> y) \<cdot> d z = (x \<cdot> d z) \<parallel> (y \<cdot> d z)"
   nitpick
   oops
 
-lemma d_assoc: "(x \<cdot> y) \<cdot> d z = x \<cdot> (y \<cdot> d z)"
+lemma "(x \<cdot> y) \<cdot> d z = x \<cdot> (y \<cdot> d z)"
   nitpick
   oops
 

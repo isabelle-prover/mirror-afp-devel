@@ -1800,7 +1800,7 @@ proof -
     unfolding period_set_def by auto
 qed
 
-lemma not_ephemeralD_pos_period:
+lemma not_ephemeralD_pos_period':
   assumes C: "C \<in> UNIV // communicating"
   shows "not_ephemeral C \<longleftrightarrow> 0 < period C"
 proof (auto dest!: not_ephemeralD_pos_period intro: C)
