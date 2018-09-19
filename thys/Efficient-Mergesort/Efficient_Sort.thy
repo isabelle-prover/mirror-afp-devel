@@ -14,6 +14,9 @@ text \<open>
   is a correct and stable sorting algorithm. Furthermore, experimental
   data suggests that generated code for this implementation is much more
   efficient than for the implementation provided by \<^theory>\<open>HOL-Library.Multiset\<close>.
+
+  A high-level overview of an older version of this formalization as well as some experimental data
+  is to be found in @{cite "Sternagel2012"}.
 \<close>
 subsection \<open>Definition of Natural Mergesort\<close>
 
