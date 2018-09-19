@@ -159,6 +159,9 @@ qed
 
 text \<open>This can be automated with a special tactic:\<close>
 
+experiment
+begin
+
 termination sum_list'
   apply (tactic \<open>
     Transfer_Termination.termination_tac
@@ -166,7 +169,9 @@ termination sum_list'
       (Function.get_info @{context} @{term sum_list})
       @{context}
       1\<close>; fail)
-  oops
+  done
+
+end
 
 text \<open>
   A similar technique can be used for making functions defined in locales executable when, for some
@@ -215,6 +220,9 @@ termination f'
 
 text \<open>Automatic:\<close>
 
+experiment
+begin
+
 termination f'
   apply (tactic \<open>
     Transfer_Termination.termination_tac
@@ -222,6 +230,8 @@ termination f'
       (Function.get_info @{context} @{term dummy.f})
       @{context}
       1\<close>; fail)
-  oops
+  done
+
+end
 
 end
