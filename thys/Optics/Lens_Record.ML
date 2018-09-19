@@ -68,8 +68,8 @@ fun lens_proof x thy =
               [ Const (Trueprop, dummyT)
               $ (Const (vwb_lens, dummyT) $ Const (Context.theory_name thy ^ "." ^ x, dummyT))]))
       (fn {context = context, prems = _}
-                           => EVERY [ Locale.intro_locales_tac true context []
-                                    , PARALLEL_ALLGOALS (asm_simp_tac (Simplifier.add_simp (Global_Theory.get_thm thy (x ^ "_def")) context))])
+         => EVERY [ Locale.intro_locales_tac {strict = true, eager = true} context []
+                  , PARALLEL_ALLGOALS (asm_simp_tac (Simplifier.add_simp (Global_Theory.get_thm thy (x ^ "_def")) context))])
 
 (* Child lenses correspond to the field where a record extension may reside. This function constructs 
   a theorem that a given child lens field is very well-behaved *)
@@ -100,11 +100,11 @@ fun indep_proof thy (x, y) =
                 $ Const (Context.theory_name thy ^ "." ^ y, dummyT)
                 )]))
       (fn {context = context, prems = _}
-                           => EVERY [ Locale.intro_locales_tac true context []
-                                    , PARALLEL_ALLGOALS
-                                        (asm_simp_tac (Simplifier.add_simp (Global_Theory.get_thm thy (x ^ "_def"))
-                                                      (Simplifier.add_simp (Global_Theory.get_thm thy (y ^ "_def"))
-                                         context)))])
+         => EVERY [ Locale.intro_locales_tac {strict = true, eager = true} context []
+                  , PARALLEL_ALLGOALS
+                      (asm_simp_tac (Simplifier.add_simp (Global_Theory.get_thm thy (x ^ "_def"))
+                                    (Simplifier.add_simp (Global_Theory.get_thm thy (y ^ "_def"))
+                       context)))])
 
 (* The next function is similar, but does not unfold locales instead relying on existing independence
    proofs. The reason for this is that we when invoking this we have already proved that the lenses
