@@ -7294,3 +7294,27 @@ abstract =
   range of mathematical machinery available in Isabelle, staying as
   close as possible to Newman's simple paper proof.</p>
 
+[Signature_Groebner]
+title = Signature-Based Gröbner Basis Algorithms
+author = Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
+topic = Mathematics/Algebra, Computer Science/Algorithms
+date = 2018-09-20
+notify = alexander.maletzky@risc.jku.at
+abstract = 
+  <p>This article formalizes signature-based algorithms for computing
+  Gr&ouml;bner bases. Such algorithms are, in general, superior to
+  other algorithms in terms of efficiency, and have not been formalized
+  in any proof assistant so far. The present development is both
+  generic, in the sense that most known variants of signature-based
+  algorithms are covered by it, and effectively executable on concrete
+  input thanks to Isabelle's code generator. Sample computations of
+  benchmark problems show that the verified implementation of
+  signature-based algorithms indeed outperforms the existing
+  implementation of Buchberger's algorithm in Isabelle/HOL.</p>
+  <p>Besides total correctness of the algorithms, the article also proves
+  that under certain conditions they a-priori detect and avoid all
+  useless zero-reductions, and always return 'minimal' (in
+  some sense) Gr&ouml;bner bases if an input parameter is chosen in
+  the right way.</p><p>The formalization follows the recent survey article by
+  Eder and Faug&egrave;re.</p>
+
