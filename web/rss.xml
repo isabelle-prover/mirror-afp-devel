@@ -9,7 +9,31 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>19 Sep 2018 00:00:00 +0000</pubDate>
+    <pubDate>20 Sep 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Signature-Based Gröbner Basis Algorithms</title>
+              <link>https://www.isa-afp.org/entries/Signature_Groebner.html</link>
+       <guid>https://www.isa-afp.org/entries/Signature_Groebner.html</guid>
+       <dc:creator> Alexander Maletzky       </dc:creator>
+       <pubDate>20 Sep 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article formalizes signature-based algorithms for computing
+Gr&amp;ouml;bner bases. Such algorithms are, in general, superior to
+other algorithms in terms of efficiency, and have not been formalized
+in any proof assistant so far. The present development is both
+generic, in the sense that most known variants of signature-based
+algorithms are covered by it, and effectively executable on concrete
+input thanks to Isabelle&#39;s code generator. Sample computations of
+benchmark problems show that the verified implementation of
+signature-based algorithms indeed outperforms the existing
+implementation of Buchberger&#39;s algorithm in Isabelle/HOL.&lt;/p&gt;
+&lt;p&gt;Besides total correctness of the algorithms, the article also proves
+that under certain conditions they a-priori detect and avoid all
+useless zero-reductions, and always return &#39;minimal&#39; (in
+some sense) Gr&amp;ouml;bner bases if an input parameter is chosen in
+the right way.&lt;/p&gt;&lt;p&gt;The formalization follows the recent survey article by
+Eder and Faug&amp;egrave;re.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>The Prime Number Theorem</title>
               <link>https://www.isa-afp.org/entries/Prime_Number_Theorem.html</link>
@@ -556,30 +580,6 @@ too.  We also consider variants of the systems where we abstract from
 multiplicative constants in the running time bounds, thus supporting a
 big-O style of reasoning.  Finally we compare the expressive power of
 the three systems.</description>
-    </item>
-    <item>
-       <title>Treaps</title>
-              <link>https://www.isa-afp.org/entries/Treaps.html</link>
-       <guid>https://www.isa-afp.org/entries/Treaps.html</guid>
-       <dc:creator> Maximilian Haslbeck, Manuel Eberl, Tobias Nipkow       </dc:creator>
-       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt; A Treap is a binary tree whose nodes contain pairs
-consisting of some payload and an associated priority. It must have
-the search-tree property w.r.t. the payloads and the heap property
-w.r.t. the priorities. Treaps are an interesting data structure that
-is related to binary search trees (BSTs) in the following way: if one
-forgets all the priorities of a treap, the resulting BST is exactly
-the same as if one had inserted the elements into an empty BST in
-order of ascending priority. This means that a treap behaves like a
-BST where we can pretend the elements were inserted in a different
-order from the one in which they were actually inserted. &lt;/p&gt;
-&lt;p&gt; In particular, by choosing these priorities at random upon
-insertion of an element, we can pretend that we inserted the elements
-in &lt;em&gt;random order&lt;/em&gt;, so that the shape of the
-resulting tree is that of a random BST no matter in what order we
-insert the elements. This is the main result of this
-formalisation.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
