@@ -101,7 +101,7 @@ proof -
   also have "\<dots> \<le> (ln 3 + 1) / 3" using int exp_half
     by (intro decreasing_sum_le_integral divide_nonneg_pos mono) (auto simp: powr_minus field_simps)
   finally have "-Re (deriv zeta 2) \<le> (16 * ln 3 + 9 * ln 2 + 12) / 36"
-    by (simp add: field_simps)
+    by simp
   also have "ln 3 \<le> (11 / 10 :: real)"
     using ln_approx_bounds[of 3 2] by (simp add: power_numeral_reduce numeral_2_eq_2)
   hence "(16 * ln 3 + 9 * ln 2 + 12) / 36 \<le> (16 * (11 / 10) + 9 * 25 / 36 + 12) / (36 :: real)"

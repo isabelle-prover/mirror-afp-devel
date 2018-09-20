@@ -354,7 +354,7 @@ proof (rule DERIV_imp_deriv)
            deriv (pre_zeta 1) s - 1 / ((s - 1) * (s - 1))) (at s)"
     using assms by (auto intro!: derivative_eq_intros)
   also have "deriv (pre_zeta 1) s - 1 / ((s - 1) * (s - 1)) = ?rhs"
-    using * assms by (simp add: divide_simps) (auto simp: field_simps power2_eq_square)
+    using * assms by (simp add: divide_simps power2_eq_square, simp add: field_simps)
   also have "((\<lambda>s. pre_zeta 1 s + 1 / (s - 1)) has_field_derivative ?rhs) (at s) \<longleftrightarrow>
                (zeta has_field_derivative ?rhs) (at s)"
     using assms
