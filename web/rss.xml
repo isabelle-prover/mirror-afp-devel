@@ -9,7 +9,50 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>15 Sep 2018 00:00:00 +0000</pubDate>
+    <pubDate>19 Sep 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Prime Number Theorem</title>
+              <link>https://www.isa-afp.org/entries/Prime_Number_Theorem.html</link>
+       <guid>https://www.isa-afp.org/entries/Prime_Number_Theorem.html</guid>
+       <dc:creator> Manuel Eberl, Lawrence C. Paulson       </dc:creator>
+       <pubDate>19 Sep 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article provides a short proof of the Prime Number
+Theorem in several equivalent forms, most notably
+&amp;pi;(&lt;em&gt;x&lt;/em&gt;) ~ &lt;em&gt;x&lt;/em&gt;/ln
+&lt;em&gt;x&lt;/em&gt; where &amp;pi;(&lt;em&gt;x&lt;/em&gt;) is the
+number of primes no larger than &lt;em&gt;x&lt;/em&gt;. It also
+defines other basic number-theoretic functions related to primes like
+Chebyshev&#39;s functions &amp;thetasym; and &amp;psi; and the
+&amp;ldquo;&lt;em&gt;n&lt;/em&gt;-th prime number&amp;rdquo; function
+p&lt;sub&gt;&lt;em&gt;n&lt;/em&gt;&lt;/sub&gt;. We also show various
+bounds and relationship between these functions are shown. Lastly, we
+derive Mertens&#39; First and Second Theorem, i.&amp;thinsp;e.
+&amp;sum;&lt;sub&gt;&lt;em&gt;p&lt;/em&gt;&amp;le;&lt;em&gt;x&lt;/em&gt;&lt;/sub&gt;
+ln &lt;em&gt;p&lt;/em&gt;/&lt;em&gt;p&lt;/em&gt; = ln
+&lt;em&gt;x&lt;/em&gt; + &lt;em&gt;O&lt;/em&gt;(1) and
+&amp;sum;&lt;sub&gt;&lt;em&gt;p&lt;/em&gt;&amp;le;&lt;em&gt;x&lt;/em&gt;&lt;/sub&gt;
+1/&lt;em&gt;p&lt;/em&gt; = ln ln &lt;em&gt;x&lt;/em&gt; + M +
+&lt;em&gt;O&lt;/em&gt;(1/ln &lt;em&gt;x&lt;/em&gt;). We also give
+explicit bounds for the remainder terms.&lt;/p&gt; &lt;p&gt;The proof
+of the Prime Number Theorem builds on a library of Dirichlet series
+and analytic combinatorics. We essentially follow the presentation by
+Newman. The core part of the proof is a Tauberian theorem for
+Dirichlet series, which is proven using complex analysis and then used
+to strengthen Mertens&#39; First Theorem to
+&amp;sum;&lt;sub&gt;&lt;em&gt;p&lt;/em&gt;&amp;le;&lt;em&gt;x&lt;/em&gt;&lt;/sub&gt;
+ln &lt;em&gt;p&lt;/em&gt;/&lt;em&gt;p&lt;/em&gt; = ln
+&lt;em&gt;x&lt;/em&gt; + c + &lt;em&gt;o&lt;/em&gt;(1).&lt;/p&gt;
+&lt;p&gt;A variant of this proof has been formalised before by
+Harrison in HOL Light, and formalisations of Selberg&#39;s elementary
+proof exist both by Avigad &lt;em&gt;et al.&lt;/em&gt; in Isabelle and
+by Carneiro in Metamath. The advantage of the analytic proof is that,
+while it requires more powerful mathematical tools, it is considerably
+shorter and clearer. This article attempts to provide a short and
+clear formalisation of all components of that proof using the full
+range of mathematical machinery available in Isabelle, staying as
+close as possible to Newman&#39;s simple paper proof.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Aggregation Algebras</title>
               <link>https://www.isa-afp.org/entries/Aggregation_Algebras.html</link>
@@ -537,27 +580,6 @@ in &lt;em&gt;random order&lt;/em&gt;, so that the shape of the
 resulting tree is that of a random BST no matter in what order we
 insert the elements. This is the main result of this
 formalisation.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>A verified factorization algorithm for integer polynomials with polynomial complexity</title>
-              <link>https://www.isa-afp.org/entries/LLL_Factorization.html</link>
-       <guid>https://www.isa-afp.org/entries/LLL_Factorization.html</guid>
-       <dc:creator> Jose Divasón, Sebastiaan Joosten, René Thiemann, Akihisa Yamada       </dc:creator>
-       <pubDate>06 Feb 2018 00:00:00 +0000</pubDate>
-       <description>
-Short vectors in lattices and factors of integer polynomials are
-related. Each factor of an integer polynomial belongs to a certain
-lattice. When factoring polynomials, the condition that we are looking
-for an irreducible polynomial means that we must look for a small
-element in a lattice, which can be done by a basis reduction
-algorithm. In this development we formalize this connection and
-thereby one main application of the LLL basis reduction algorithm: an
-algorithm to factor square-free integer polynomials which runs in
-polynomial time. The work is based on our previous
-Berlekamp–Zassenhaus development, where the exponential reconstruction
-phase has been replaced by the polynomial-time basis reduction
-algorithm. Thanks to this formalization we found a serious flaw in a
-textbook.</description>
     </item>
   </channel>
 </rss>
