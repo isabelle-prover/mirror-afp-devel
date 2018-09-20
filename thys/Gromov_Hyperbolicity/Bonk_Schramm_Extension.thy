@@ -1295,6 +1295,24 @@ proof -
   finally show ?thesis by auto
 qed
 
+theorem (in Gromov_hyperbolic_space) Morse_Gromov_theorem':
+  fixes f::"real \<Rightarrow> 'a"
+  assumes "lambda C-quasi_isometry_on {a..b} f"
+          "geodesic_segment_between G (f a) (f b)"
+  shows "hausdorff_distance (f`{a..b}) G \<le> 92 * lambda\<^sup>2 * (C + deltaG(TYPE('a)))"
+proof -
+  interpret BS: Gromov_hyperbolic_space_geodesic "dist::('a Bonk_Schramm_extension \<Rightarrow> 'a Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('a)))"
+    apply standard using Bonk_Schramm_extension_hyperbolic by auto
+  have "hausdorff_distance (f`{a..b}) (G) = hausdorff_distance ((to_Bonk_Schramm_extension o f)`{a..b}) ((to_Bonk_Schramm_extension)`G)"
+    unfolding image_comp[symmetric] apply (rule isometry_preserves_hausdorff_distance[symmetric, of UNIV])
+    using to_Bonk_Schramm_extension_isometry by auto
+  also have "... \<le> 92 * (lambda*1)^2 * ((C*1+0) + deltaG(TYPE('a)))"
+    apply (intro BS.Morse_Gromov_theorem quasi_isometry_on_compose[where Y = UNIV])
+    using assms isometry_quasi_isometry_on to_Bonk_Schramm_extension_isometry apply auto
+    using isometry_preserves_geodesic_segment_between by blast
+  finally show ?thesis by simp
+qed
+
 theorem (in Gromov_hyperbolic_space) Morse_Gromov_theorem2':
   fixes c d::"real \<Rightarrow> 'a"
   assumes "lambda C-quasi_isometry_on {A..B} c"
