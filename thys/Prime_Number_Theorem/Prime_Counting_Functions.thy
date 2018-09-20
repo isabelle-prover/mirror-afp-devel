@@ -1068,14 +1068,13 @@ proof -
     also have "S = {p. prime p \<and> p \<le> x} \<times> {1} \<union> {(p, i). prime p \<and> 1 < i \<and> real (p ^ i) \<le> x}"
       by (auto simp: S_def not_less le_Suc_eq not_le intro!: Suc_lessI)
     also have "(\<Sum>(p,i)\<in>\<dots>. ln (real p) / real (p ^ i)) =
-                 (\<Sum>(p, i) \<in> {p. prime p \<and> p \<le> x} \<times> {1}. ln (real p) / real (p ^ i)) +
+                 (\<Sum>(p, i) \<in> {p. prime p \<and> of_nat p \<le> x} \<times> {1}. ln (real p) / real (p ^ i)) +
                  (\<Sum>(p, i) | prime p \<and> real (p ^ i) \<le> x \<and> i > 1. ln (real p) / real (p ^ i))"
       (is "_ = ?S1 + ?S2")
       by (subst sum.union_disjoint[OF fin fin]) (auto simp: conj_commute case_prod_unfold)
     also have "?S1 = \<MM> x"
       by (subst sum.cartesian_product [symmetric]) (auto simp: primes_M_def prime_sum_upto_def)
     finally have eq: "sum_upto f x - \<MM> x = ?S2" by simp
-
     have "?S2 \<le> (\<Sum>(p, i)\<in>S'. ln (real p) / real (p ^ i))"
       using primepows_le_subset[of x 2] x unfolding case_prod_unfold of_nat_power
       by (intro sum_mono2 divide_nonneg_pos zero_less_power)
