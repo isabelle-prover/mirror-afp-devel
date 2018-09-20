@@ -7231,4 +7231,76 @@ abstract =
   etc., which must be proved explicitly in the HOL Light version.  The
   development concludes with the geometric interpretation of the product
   of imaginary quaternions.
-  
+
+[Octonions]
+title = Octonions
+author = Angeliki Koutsoukou-Argyraki <http://www.cl.cam.ac.uk/~ak2110/>
+topic = Mathematics/Algebra, Mathematics/Geometry
+date = 2018-09-14
+notify = ak2110@cam.ac.uk
+abstract = 
+  We develop the basic theory of Octonions, including various identities
+  and properties of the octonions and of the octonionic product, a
+  description of 7D isometries and representations of orthogonal
+  transformations. To this end we first develop the theory of the vector
+  cross product in 7 dimensions. The development of the theory of
+  Octonions is inspired by that of the theory of Quaternions by Lawrence
+  Paulson. However, we do not work within the type class real_algebra_1
+  because the octonionic product is not associative.
+
+[Aggregation_Algebras]
+title = Aggregation Algebras
+author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
+topic = Mathematics/Algebra
+date = 2018-09-15
+notify = walter.guttmann@canterbury.ac.nz
+abstract = 
+  We develop algebras for aggregation and minimisation for weight
+  matrices and for edge weights in graphs. We verify the correctness of
+  Prim's and Kruskal's minimum spanning tree algorithms based
+  on these algebras. We also show numerous instances of these algebras
+  based on linearly ordered commutative semigroups.
+
+[Prime_Number_Theorem]
+title = The Prime Number Theorem
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>, Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
+topic = Mathematics/Number Theory
+date = 2018-09-19
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This article provides a short proof of the Prime Number
+  Theorem in several equivalent forms, most notably
+  &pi;(<em>x</em>) ~ <em>x</em>/ln
+  <em>x</em> where &pi;(<em>x</em>) is the
+  number of primes no larger than <em>x</em>. It also
+  defines other basic number-theoretic functions related to primes like
+  Chebyshev's functions &thetasym; and &psi; and the
+  &ldquo;<em>n</em>-th prime number&rdquo; function
+  p<sub><em>n</em></sub>. We also show various
+  bounds and relationship between these functions are shown. Lastly, we
+  derive Mertens' First and Second Theorem, i.&thinsp;e.
+  &sum;<sub><em>p</em>&le;<em>x</em></sub>
+  ln <em>p</em>/<em>p</em> = ln
+  <em>x</em> + <em>O</em>(1) and
+  &sum;<sub><em>p</em>&le;<em>x</em></sub>
+  1/<em>p</em> = ln ln <em>x</em> + M +
+  <em>O</em>(1/ln <em>x</em>). We also give
+  explicit bounds for the remainder terms.</p> <p>The proof
+  of the Prime Number Theorem builds on a library of Dirichlet series
+  and analytic combinatorics. We essentially follow the presentation by
+  Newman. The core part of the proof is a Tauberian theorem for
+  Dirichlet series, which is proven using complex analysis and then used
+  to strengthen Mertens' First Theorem to
+  &sum;<sub><em>p</em>&le;<em>x</em></sub>
+  ln <em>p</em>/<em>p</em> = ln
+  <em>x</em> + c + <em>o</em>(1).</p>
+  <p>A variant of this proof has been formalised before by
+  Harrison in HOL Light, and formalisations of Selberg's elementary
+  proof exist both by Avigad <em>et al.</em> in Isabelle and
+  by Carneiro in Metamath. The advantage of the analytic proof is that,
+  while it requires more powerful mathematical tools, it is considerably
+  shorter and clearer. This article attempts to provide a short and
+  clear formalisation of all components of that proof using the full
+  range of mathematical machinery available in Isabelle, staying as
+  close as possible to Newman's simple paper proof.</p>
+
