@@ -180,7 +180,7 @@ assumes chooseNext_all_code:
   chooseNext_all (usesOf (u g)) (p g) g = Max (CFG_SSA_wf_base_code.trivial_phis p g)"
 
 locale CFG_SSA_step_code =
-  CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses" phis var chooseNext_all
+  step_code: CFG_SSA_Transformed_notriv_linorder_code \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "uses" phis var chooseNext_all
 +
   CFG_SSA_step \<alpha>e \<alpha>n invar inEdges' Entry oldDefs oldUses "defs" "usesOf \<circ> uses" "\<lambda>g. Mapping.lookup (phis g)" var "\<lambda>uses phis. chooseNext_all uses (Mapping.Mapping phis)" g
 for

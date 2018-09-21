@@ -243,7 +243,7 @@ by standard (rule I_SAT)
 
 end (* context ModelIkMcalc *)
 
-sublocale ModelIkMcalc < InfModel where
+sublocale ModelIkMcalc < inf?: InfModel where
 intT = I_intT and intF = I_intF and intP = I_intP
 using InfModel .
 

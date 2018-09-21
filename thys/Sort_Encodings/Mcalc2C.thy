@@ -392,7 +392,7 @@ lemma InfModel: "IInfModel I_intT I_intF I_intP"
 
 end (* context ModelIkPolMcalc2C *)
 
-sublocale ModelIkPolMcalc2C < InfModel where
+sublocale ModelIkPolMcalc2C < inf?: InfModel where
 intT = I_intT and intF = I_intF and intP = I_intP
 using InfModel .
 
