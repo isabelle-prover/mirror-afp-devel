@@ -1164,10 +1164,10 @@ type_d extra_checks mn decls tenv (Dlet locs p e)
 |
 
 "dlet_mono" : " \<And> extra_checks mn tenv p e t0 bindings decls locs.
-(* The following line makes sure that when the value restriction prohibits
-   generalisation, a type error is given rather than picking an arbitrary
-   instantiation. However, we should only do the check when the extra_checks
-   argument tells us to. *)
+\<comment> \<open>The following line makes sure that when the value restriction prohibits\<close>
+\<comment> \<open>generalisation, a type error is given rather than picking an arbitrary\<close>
+\<comment> \<open>instantiation. However, we should only do the check when the extra_checks\<close>
+\<comment> \<open>argument tells us to.\<close>
 (extra_checks \<longrightarrow> (\<not> (is_value e) \<and> type_pe_determ tenv Empty p e)) \<and>
 (Lem_list.allDistinct (pat_bindings p []) \<and>
 (type_p(( 0 :: nat)) tenv p t0 bindings \<and>
@@ -1340,10 +1340,10 @@ definition weak_decls  :: " decls \<Rightarrow> decls \<Rightarrow> bool "  wher
 fun weak_tenvT  :: "((modN),(typeN))id0 \<Rightarrow>(string)list*t \<Rightarrow>(string)list*t \<Rightarrow> bool "  where 
      " weak_tenvT n (tvs_spec, t_spec) (tvs_impl, t_impl) = (
   (
-  (* For simplicity, we reject matches that differ only by renaming of bound type variables *)tvs_spec = tvs_impl) \<and>
+  \<comment> \<open>For simplicity, we reject matches that differ only by renaming of bound type variables.\<close> tvs_spec = tvs_impl) \<and>
   ((t_spec = t_impl) \<or>
    (
-   (* The specified type is opaque *)t_spec = Tapp (List.map Tvar tvs_spec) (TC_name n))))"
+   \<comment> \<open>The specified type is opaque.\<close> t_spec = Tapp (List.map Tvar tvs_spec) (TC_name n))))"
 
 
 definition tscheme_inst2  :: " 'a \<Rightarrow> nat*t \<Rightarrow> nat*t \<Rightarrow> bool "  where 
