@@ -44,8 +44,8 @@ definition
 definition "\<top> = FunDom (\<lambda>x. \<top>) []"
 
 instance
-proof
-  case goal2 thus ?case
+proof (standard, goal_cases)
+  case 2 thus ?case
     apply(auto simp: le_st_def)
     by (metis lookup_def preord_class.le_trans top)
 qed (auto simp: le_st_def lookup_def join_st_def Top_st_def)

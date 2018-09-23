@@ -35,7 +35,7 @@ inductive indexed_fmember :: "'a \<Rightarrow> nat \<Rightarrow> 'a fset \<Right
 
 lemma indexed_fmember_is_fmember: "x |\<in>|\<^bsub>i\<^esub> s \<Longrightarrow> x |\<in>| s"
 proof (induction rule: indexed_fmember.induct)
-case (goal1 i s)
+case (1 i s)
    hence "i < length (list_of_fset s)" by (metis length_list_of_fset)
    hence "list_of_fset s ! i \<in> set (list_of_fset s)" by (rule nth_mem)
    thus "list_of_fset s ! i |\<in>| s" by (metis mem_fset_from_list fset_from_list_of_fset)
