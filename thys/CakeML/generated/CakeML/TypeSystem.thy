@@ -1166,7 +1166,7 @@ type_d extra_checks mn decls tenv (Dlet locs p e)
 "dlet_mono" : " \<And> extra_checks mn tenv p e t0 bindings decls locs.
 \<comment> \<open>The following line makes sure that when the value restriction prohibits\<close>
 \<comment> \<open>generalisation, a type error is given rather than picking an arbitrary\<close>
-\<comment> \<open>instantiation. However, we should only do the check when the extra_checks\<close>
+\<comment> \<open>instantiation. However, we should only do the check when the \<open>extra_checks\<close>\<close>
 \<comment> \<open>argument tells us to.\<close>
 (extra_checks \<longrightarrow> (\<not> (is_value e) \<and> type_pe_determ tenv Empty p e)) \<and>
 (Lem_list.allDistinct (pat_bindings p []) \<and>
