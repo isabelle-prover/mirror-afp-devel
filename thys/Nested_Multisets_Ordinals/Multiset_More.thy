@@ -872,7 +872,7 @@ lemma subseteq_list_Union_mset:
   assumes "length Ci = n"
   assumes "length CAi = n"
   assumes "\<forall>i<n.  Ci ! i \<subseteq># CAi ! i "
-  shows "\<Union>#mset Ci \<subseteq># \<Union>#mset CAi"
+  shows "\<Union># (mset Ci) \<subseteq># \<Union># (mset CAi)"
   using assms proof (induction n arbitrary: Ci CAi)
   case 0
   then show ?case by auto
@@ -880,12 +880,12 @@ next
   case (Suc n)
   from Suc have "\<forall>i<n. tl Ci ! i \<subseteq># tl CAi ! i"
     by (simp add: nth_tl)
-  hence "\<Union>#mset (tl Ci) \<subseteq># \<Union>#mset (tl CAi)" using Suc by auto
+  hence "\<Union>#(mset (tl Ci)) \<subseteq># \<Union>#(mset (tl CAi))" using Suc by auto
   moreover
   have "hd Ci \<subseteq># hd CAi" using Suc
     by (metis hd_conv_nth length_greater_0_conv zero_less_Suc)
   ultimately
-  show "\<Union>#mset Ci \<subseteq># \<Union>#mset CAi"
+  show "\<Union>#(mset Ci) \<subseteq># \<Union>#(mset CAi)"
     using Suc by (cases Ci; cases CAi) (auto intro: subset_mset.add_mono)
 qed
 
@@ -949,7 +949,7 @@ lemma Melem_subset_eq_sum_list[simp]:
 
 lemma less_subset_eq_Union_mset[simp]:
   assumes "i < length CAi"
-  shows "CAi ! i \<subseteq># \<Union>#mset CAi"
+  shows "CAi ! i \<subseteq># \<Union>#(mset CAi)"
 proof -
   from assms have "CAi ! i \<in># mset CAi"
     by auto

@@ -61,7 +61,7 @@ where
      eligible As (D + negs (mset As)) \<Longrightarrow>
      (\<forall>i < n. strictly_maximal_wrt (As ! i) (Cs ! i)) \<Longrightarrow>
      (\<forall>i < n. S (CAs ! i) = {#}) \<Longrightarrow>
-     ord_resolve CAs (D + negs (mset As)) AAs As (\<Union># mset Cs + D)"
+     ord_resolve CAs (D + negs (mset As)) AAs As (\<Union># (mset Cs) + D)"
 
 lemma ord_resolve_sound:
   assumes
@@ -119,7 +119,7 @@ proof (cases rule: ord_resolve.cases)
     ai_len = this(6) and nz = this(7) and cas = this(8) and maxim = this(12)
 
   show ?thesis
-  proof (cases "\<Union># mset Cs = {#}")
+  proof (cases "\<Union># (mset Cs) = {#}")
     case True
     have "negs (mset As) \<noteq> {#}"
        using nz ai_len by auto
@@ -128,11 +128,11 @@ proof (cases rule: ord_resolve.cases)
   next
     case False
 
-    define max_A_of_Cs where "max_A_of_Cs = Max (atms_of (\<Union># mset Cs))"
+    define max_A_of_Cs where "max_A_of_Cs = Max (atms_of (\<Union># (mset Cs)))"
 
     have
-      mc_in: "max_A_of_Cs \<in> atms_of (\<Union># mset Cs)" and
-      mc_max: "\<And>B. B \<in> atms_of (\<Union># mset Cs) \<Longrightarrow> B \<le> max_A_of_Cs"
+      mc_in: "max_A_of_Cs \<in> atms_of (\<Union># (mset Cs))" and
+      mc_max: "\<And>B. B \<in> atms_of (\<Union># (mset Cs)) \<Longrightarrow> B \<le> max_A_of_Cs"
       using max_A_of_Cs_def False by auto
 
     then have "\<exists>C_max \<in> set Cs. max_A_of_Cs \<in> atms_of (C_max)"
@@ -150,16 +150,16 @@ proof (cases rule: ord_resolve.cases)
     have mc_lt_ma: "max_A_of_Cs < A_max"
       using maxim cm_in_cas mc_in_cm cas_len unfolding strictly_maximal_wrt_def A_max_def by auto
 
-    then have ucas_ne_neg_aa: "(\<Union># mset Cs) \<noteq> negs (mset As)"
+    then have ucas_ne_neg_aa: "\<Union># (mset Cs) \<noteq> negs (mset As)"
       using mc_in mc_max mc_lt_ma cm_in_cas cas_len ai_len unfolding A_max_def
       by (metis atms_of_negs nth_mem set_mset_mset leD)
-    moreover have ucas_lt_ma: "\<forall>B \<in> atms_of (\<Union># mset Cs). B < A_max"
+    moreover have ucas_lt_ma: "\<forall>B \<in> atms_of (\<Union># (mset Cs)). B < A_max"
       using mc_max mc_lt_ma by fastforce
-    moreover have "\<not> Neg A_max \<in># (\<Union># mset Cs)"
-      using ucas_lt_ma neg_lit_in_atms_of[of A_max "\<Union># mset Cs"] by auto
+    moreover have "\<not> Neg A_max \<in># \<Union># (mset Cs)"
+      using ucas_lt_ma neg_lit_in_atms_of[of A_max "\<Union># (mset Cs)"] by auto
     moreover have "Neg A_max \<in># negs (mset As)"
       using cm_in_cas cas_len ai_len A_max_def by auto
-    ultimately have "(\<Union># mset Cs) < negs (mset As)"
+    ultimately have "\<Union># (mset Cs) < negs (mset As)"
       unfolding less_multiset\<^sub>H\<^sub>O
       by (metis (no_types) atms_less_eq_imp_lit_less_eq_neg count_greater_zero_iff
           count_inI le_imp_less_or_eq less_imp_not_less not_le)
@@ -354,7 +354,7 @@ proof -
     using \<open>\<forall>CA\<in>set CAs. S CA = {#}\<close> by simp
   then have "\<forall>i < n. S (CAs ! i) = {#}"
     using \<open>length CAs = n\<close> nth_mem by blast
-  ultimately have res_e: "ord_resolve CAs (D + negs (mset As)) AAs As (\<Union># mset Cs + D)"
+  ultimately have res_e: "ord_resolve CAs (D + negs (mset As)) AAs As (\<Union># (mset Cs) + D)"
     using ord_resolve by auto
 
   have "\<And>A. A \<in> set As \<Longrightarrow> \<not> interp N (CA_of A) \<Turnstile> CA_of A"
@@ -366,12 +366,12 @@ proof -
     using a_max_c c'_le_c max_c'_lt_a not_Interp_imp_not_INTERP unfolding true_cls_def
     by (metis true_cls_def true_cls_empty)
 
-  have "\<not> INTERP N \<Turnstile> \<Union># mset Cs"
+  have "\<not> INTERP N \<Turnstile> \<Union># (mset Cs)"
     unfolding Cs_def true_cls_def using c'_at_n by fastforce
   moreover have "\<not> INTERP N \<Turnstile> D"
     using d_cex by (metis D_def add_diff_cancel_right' negs_as_le_d subset_mset.add_diff_assoc2
         true_cls_def union_iff)
-  ultimately have e_cex: "\<not> INTERP N \<Turnstile> \<Union># mset Cs + D"
+  ultimately have e_cex: "\<not> INTERP N \<Turnstile> \<Union># (mset Cs) + D"
     by simp
 
   have "set CAs \<subseteq> N"
@@ -380,11 +380,11 @@ proof -
     by (simp add: cs_true)
   moreover have "\<And>CA. CA \<in> set CAs \<Longrightarrow> productive N CA"
     by (simp add: prod_c)
-  moreover have "ord_resolve CAs DA AAs As (\<Union># mset Cs + D)"
+  moreover have "ord_resolve CAs DA AAs As (\<Union># (mset Cs) + D)"
     using D_def negs_as_le_d res_e by auto
-  moreover have "\<not> INTERP N \<Turnstile> \<Union># mset Cs + D"
+  moreover have "\<not> INTERP N \<Turnstile> \<Union># (mset Cs) + D"
     using e_cex by simp
-  moreover have "(\<Union># mset Cs + D) < DA"
+  moreover have "\<Union># (mset Cs) + D < DA"
     using calculation(4) ord_resolve_reductive by auto
   ultimately show thesis
     ..
@@ -400,19 +400,19 @@ proof (cases rule: ord_resolve.cases)
 
   have "\<forall>i < n. set_mset (Cs ! i) \<subseteq> set_mset (CAs ! i)"
     using cas by auto
-  then have "\<forall>i < n. Cs ! i \<subseteq># \<Union># mset CAs"
+  then have "\<forall>i < n. Cs ! i \<subseteq># \<Union># (mset CAs)"
     by (metis cas cas_len mset_subset_eq_add_left nth_mem_mset sum_mset.remove union_assoc)
-  then have "\<forall>C \<in> set Cs. C \<subseteq># \<Union># mset CAs"
+  then have "\<forall>C \<in> set Cs. C \<subseteq># \<Union># (mset CAs)"
     using cs_len in_set_conv_nth[of _ Cs] by auto
-  then have "set_mset (\<Union># mset Cs) \<subseteq> set_mset (\<Union># mset CAs)"
+  then have "set_mset (\<Union># (mset Cs)) \<subseteq> set_mset (\<Union># (mset CAs))"
     by auto (meson in_mset_sum_list2 mset_subset_eqD)
-  then have "atms_of (\<Union># mset Cs) \<subseteq> atms_of (\<Union># mset CAs)"
+  then have "atms_of (\<Union># (mset Cs)) \<subseteq> atms_of (\<Union># (mset CAs))"
     by (meson lits_subseteq_imp_atms_subseteq mset_subset_eqD subsetI)
-  moreover have "atms_of (\<Union># mset CAs) = (\<Union>CA \<in> set CAs. atms_of CA)"
+  moreover have "atms_of (\<Union># (mset CAs)) = (\<Union>CA \<in> set CAs. atms_of CA)"
     by (intro set_eqI iffI, simp_all,
       metis in_mset_sum_list2 atm_imp_pos_or_neg_lit neg_lit_in_atms_of pos_lit_in_atms_of,
       metis in_mset_sum_list atm_imp_pos_or_neg_lit neg_lit_in_atms_of pos_lit_in_atms_of)
-  ultimately have "atms_of (\<Union># mset Cs) \<subseteq> (\<Union>CA \<in> set CAs. atms_of CA)"
+  ultimately have "atms_of (\<Union># (mset Cs)) \<subseteq> (\<Union>CA \<in> set CAs. atms_of CA)"
     by auto
   moreover have "atms_of D \<subseteq> atms_of DA"
     using DA by auto

@@ -118,7 +118,7 @@ where
      eligible \<sigma> As (D + negs (mset As)) \<Longrightarrow>
      (\<forall>i < n. strictly_maximal_wrt (As ! i \<cdot>a \<sigma>) (Cs ! i \<cdot> \<sigma>)) \<Longrightarrow>
      (\<forall>i < n. S (CAs ! i) = {#}) \<Longrightarrow>
-     ord_resolve CAs (D + negs (mset As)) AAs As \<sigma> (((\<Union># mset Cs) + D) \<cdot> \<sigma>)"
+     ord_resolve CAs (D + negs (mset As)) AAs As \<sigma> ((\<Union># (mset Cs) + D) \<cdot> \<sigma>)"
 
 inductive
   ord_resolve_rename
@@ -187,7 +187,7 @@ proof (cases rule: ord_resolve.cases)
       using da len by (metis in_set_conv_nth)
     define C where "C \<equiv> Cs ! i"
     define BB where "BB \<equiv> AAs ! i"
-    have c_cf': "C \<subseteq># \<Union># mset CAs"
+    have c_cf': "C \<subseteq># \<Union># (mset CAs)"
       unfolding C_def using a_in_aa cas cas_len
       by (metis less_subset_eq_Union_mset mset_subset_eq_add_left subset_mset.order.trans)
     have c_in_cc: "C + poss BB \<in># mset CAs"
@@ -601,15 +601,15 @@ lemma ground_resolvent_subset:
     gr_cas: "is_ground_cls_list CAs" and
     gr_da: "is_ground_cls DA" and
     res_e: "ord_resolve S CAs DA AAs As \<sigma> E"
-  shows "E \<subseteq># (\<Union># mset CAs) + DA"
+  shows "E \<subseteq># \<Union># (mset CAs) + DA"
   using res_e
 proof (cases rule: ord_resolve.cases)
   case (ord_resolve n Cs D)
   note da = this(1) and e = this(2) and cas_len = this(3) and cs_len = this(4)
     and aas_len = this(5) and as_len = this(6) and cas = this(8) and mgu = this(10)
-  then have cs_sub_cas: "\<Union># mset Cs \<subseteq># \<Union># mset CAs"
+  then have cs_sub_cas: "\<Union># (mset Cs) \<subseteq># \<Union># (mset CAs)"
     using subseteq_list_Union_mset cas_len cs_len by force
-  then have cs_sub_cas: "\<Union># mset Cs \<subseteq># \<Union># mset CAs"
+  then have cs_sub_cas: "\<Union># (mset Cs) \<subseteq># \<Union># (mset CAs)"
     using subseteq_list_Union_mset cas_len cs_len by force
   then have gr_cs: "is_ground_cls_list Cs"
     using gr_cas by simp
@@ -618,9 +618,9 @@ proof (cases rule: ord_resolve.cases)
   then have gr_d: "is_ground_cls D"
     using gr_da is_ground_cls_mono by auto
 
-  have "is_ground_cls (\<Union># mset Cs + D)"
+  have "is_ground_cls (\<Union># (mset Cs) + D)"
     using gr_cs gr_d by auto
-  with e have "E = (\<Union># mset Cs + D)"
+  with e have "E = \<Union># (mset Cs) + D"
     by auto
   then show ?thesis
     using cs_sub_cas d_sub_da by (auto simp: subset_mset.add_mono)
@@ -1241,7 +1241,7 @@ proof (cases rule: ord_resolve.cases)
 
   \<comment> \<open>Resolve the lifted clauses\<close>
   define E0' where
-    "E0' = ((\<Union># mset Cs0') + D0') \<cdot> \<tau>"
+    "E0' = (\<Union># (mset Cs0') + D0') \<cdot> \<tau>"
 
   have res_e0': "ord_resolve S CAs0' DA0' AAs0' As0' \<tau> E0'"
     using ord_resolve.intros[of CAs0' n Cs0' AAs0' As0' \<tau> S D0',
@@ -1252,11 +1252,11 @@ proof (cases rule: ord_resolve.cases)
   \<comment> \<open>Prove resolvent instantiates to ground resolvent\<close>
   have e0'\<phi>e: "E0' \<cdot> \<phi> = E"
   proof -
-    have "E0' \<cdot> \<phi> = ((\<Union># mset Cs0') + D0') \<cdot> (\<tau> \<odot> \<phi>)"
+    have "E0' \<cdot> \<phi> = (\<Union># (mset Cs0') + D0') \<cdot> (\<tau> \<odot> \<phi>)"
       unfolding E0'_def by auto
-    also have "\<dots> = (\<Union># mset Cs0' + D0') \<cdot> (\<eta> \<odot> \<sigma>)"
+    also have "\<dots> = (\<Union># (mset Cs0') + D0') \<cdot> (\<eta> \<odot> \<sigma>)"
       using \<tau>\<phi> by auto
-    also have "\<dots> = (\<Union># mset Cs + D) \<cdot> \<sigma>"
+    also have "\<dots> = (\<Union># (mset Cs) + D) \<cdot> \<sigma>"
       using \<open>Cs0' \<cdot>cl \<eta> = Cs\<close> \<open>D0' \<cdot> \<eta> = D\<close> by auto
     also have "\<dots> = E"
       using e by auto

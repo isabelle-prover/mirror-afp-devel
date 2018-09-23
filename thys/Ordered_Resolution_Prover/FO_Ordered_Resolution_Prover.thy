@@ -1436,7 +1436,7 @@ proof -
       have m: "\<forall>i < n. S_Q (CAs ! i) = {#}"
         using ord_resolve by simp
 
-      have ground_e: "is_ground_cls (\<Union>#mset Cs + D)"
+      have ground_e: "is_ground_cls (\<Union># (mset Cs) + D)"
         using ground_d ground_cs ground_e e by simp
       show ?thesis
         using ord_resolve.intros[OF cas_len cs_len aas_len as_len nz cas aas_not_empt \<sigma>_p fo_elig ll] m DA e ground_e
