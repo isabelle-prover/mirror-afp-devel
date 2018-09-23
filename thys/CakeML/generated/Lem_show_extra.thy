@@ -56,8 +56,8 @@ definition stringFromRelation  :: "('a*'a \<Rightarrow> string)\<Rightarrow>('a*
   if trans rel then
     (let pruned_rel = (LemExtraDefs.without_trans_edges rel) in
     if ((\<forall> e \<in> rel.  (e \<in> pruned_rel))) then
-      (* The relations are the same (there are no transitive edges),
-         so we can just as well print the original one. *)
+      \<comment> \<open>The relations are the same (there are no transitive edges),\<close>
+      \<comment> \<open>so we can just as well print the original one.\<close>
       stringFromSet showX rel
     else
       (''trancl of '') @ stringFromSet showX pruned_rel)

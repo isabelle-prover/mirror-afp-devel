@@ -26,8 +26,8 @@ begin
 (* ========================================================================== *)
 
 datatype bitSequence = BitSeq " 
-    nat option  " " (* length of the sequence, Nothing means infinite length *)
-   bool " " bool       (* sign of the word, used to fill up after concrete value is exhausted *)
+    nat option  " " \<comment> \<open>length of the sequence, Nothing means infinite length\<close>
+   bool " " bool    \<comment> \<open>sign of the word, used to fill up after concrete value is exhausted\<close>
    list "    (* the initial part of the sequence, least significant bit first *)
 
 (*val bitSeqEq : bitSequence -> bitSequence -> bool*)
@@ -102,7 +102,7 @@ definition resizeBitSeq  :: "(nat)option \<Rightarrow> bitSequence \<Rightarrow>
     | Some l1 => (
                  (let bl' = (List.take l1 (bl @ [s])) in
                  (case  dest_init bl' of
-                       None => (BitSeq len s bl) (* do nothing if size 0 is requested *)
+                       None => (BitSeq len s bl) \<comment> \<open>do nothing if size 0 is requested\<close>
                    | Some (bl'', s') => cleanBitSeq (BitSeq new_len s' bl'')
                  )))
   ))

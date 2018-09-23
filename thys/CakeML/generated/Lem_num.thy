@@ -264,7 +264,7 @@ definition instance_Num_NumRemainder_nat_dict  :: "(nat)NumRemainder_class "  wh
 fun  gen_pow_aux  :: "('a \<Rightarrow> 'a \<Rightarrow> 'a)\<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a "  where 
      " gen_pow_aux (mul :: 'a \<Rightarrow> 'a \<Rightarrow> 'a) (a :: 'a) (b :: 'a) (e :: nat) = (
    (case  e of
-       0 => a (* cannot happen, call discipline guarentees e >= 1 *)
+       0 => a \<comment> \<open>cannot happen, call discipline guarentees \<open>e >= 1\<close>\<close>
      | (Suc 0) => mul a b
      | (  (Suc(Suc e'))) => (let e'' = (e div( 2 :: nat)) in
                    (let a' = (if (e mod( 2 :: nat)) =( 0 :: nat) then a else mul a b) in
