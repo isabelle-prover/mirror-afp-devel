@@ -9,9 +9,6 @@ struct
 
 fun pretty_cases ctxt =
   let
-    fun prepare (_, (_, {legacy = false})) = NONE
-      | prepare (name, (c, {legacy = true})) = SOME (name, c)
-
     val prt_term = Syntax.pretty_term ctxt;
     fun prt_asm (a, ts) = Pretty.block (Pretty.breaks
       ((if a = "" then []
@@ -41,7 +38,6 @@ fun pretty_cases ctxt =
     and pretty_cases cases = if null cases then []
       else [Pretty.big_list "subcases:" (map pretty_case cases)]
     val cases = Proof_Context.dest_cases NONE ctxt
-      |> map_filter prepare
       |> Pretty.big_list "cases:"  o map (Pretty.chunks o single o pretty_case)
   in cases end
 
