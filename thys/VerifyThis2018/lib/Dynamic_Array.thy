@@ -35,7 +35,7 @@ lemma dyn_array_new_sz_rl[sep_heap_rules]:
   by sep_auto
 
 definition "array_get_dyn dflt a i \<equiv> do {
-  (*nth_oo dflt a i*)
+  \<^cancel>\<open>\<open>nth_oo dflt a i\<close>\<close>
   l \<leftarrow> Array.len a;
   if i<l then Array.nth a i else return dflt
   }"

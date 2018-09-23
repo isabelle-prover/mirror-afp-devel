@@ -172,9 +172,9 @@ begin
   section \<open>Copy Array (Arrays, For i=l..u)\<close>  
   
   definition "cp_array xs \<equiv> doN {
-    let ys = op_array_replicate (length xs) 0;   (* Use proper constructors *)
+    let ys = op_array_replicate (length xs) 0;   \<comment> \<open>Use proper constructors\<close>
     
-    ys \<leftarrow> nfoldli [0..<length xs] (\<lambda>_. True) (\<lambda>i ys. doN {  (* Ensure linearity! ys\<leftarrow>\<dots> *)
+    ys \<leftarrow> nfoldli [0..<length xs] (\<lambda>_. True) (\<lambda>i ys. doN {  \<comment> \<open>Ensure linearity! \<open>ys\<leftarrow>\<dots>\<close>\<close>
       ASSERT (i<length xs \<and> i<length ys); 
       RETURN (ys[i:=xs!i]) 
     }) ys;

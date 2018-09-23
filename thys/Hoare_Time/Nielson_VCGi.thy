@@ -376,15 +376,15 @@ fun vc :: "acom \<Rightarrow> assn2 \<Rightarrow> vname set \<Rightarrow> vname 
   "vc (x ::= a) Q _ _ = True" |
   "vc (C\<^sub>1 ;; C\<^sub>2) Q LVQ LVE = ((vc C\<^sub>1 (pre C\<^sub>2 Q) (qdeps C\<^sub>2 LVQ) (fune C\<^sub>2 LVE \<union> kdeps C\<^sub>2)) \<and> (vc C\<^sub>2 Q LVQ LVE) )" |
   "vc (IF b THEN C\<^sub>1 ELSE C\<^sub>2) Q LVQ LVE = (vc C\<^sub>1 Q LVQ LVE \<and> vc C\<^sub>2 Q LVQ LVE)" |  
-  "vc ({(P',Ps)/(Q,Qs)/(e',es)} CONSEQ C) Q' LVQ LVE = (vc C Q Qs LVE  (* evtl LV weglassen - glaub eher nicht *)
-              \<and> (\<forall>s1 s2 l. (\<forall>x\<in>Ps. s1 x=s2 x) \<longrightarrow> P' l s1 = P' l s2)    (* annotation Ps (the set of variables P' depends on) is correct *)
-              \<and> (\<forall>s1 s2 l. (\<forall>x\<in>Qs. s1 x=s2 x) \<longrightarrow> Q l s1 = Q l s2)    (* annotation Qs (the set of variables Q depends on) is correct *)
-              \<and> (\<forall>s1 s2. (\<forall>x\<in>es. s1 x=s2 x) \<longrightarrow> e' s1 = e' s2)          (* annotation es (the set of variables e' depends on) is correct *)                                    
+  "vc ({(P',Ps)/(Q,Qs)/(e',es)} CONSEQ C) Q' LVQ LVE = (vc C Q Qs LVE  \<comment> \<open>evtl \<open>LV\<close> weglassen - glaub eher nicht\<close>
+              \<and> (\<forall>s1 s2 l. (\<forall>x\<in>Ps. s1 x=s2 x) \<longrightarrow> P' l s1 = P' l s2)    \<comment> \<open>annotation \<open>Ps\<close> (the set of variables \<open>P'\<close> depends on) is correct\<close>
+              \<and> (\<forall>s1 s2 l. (\<forall>x\<in>Qs. s1 x=s2 x) \<longrightarrow> Q l s1 = Q l s2)    \<comment> \<open>annotation \<open>Qs\<close> (the set of variables \<open>Q\<close> depends on) is correct\<close>
+              \<and> (\<forall>s1 s2. (\<forall>x\<in>es. s1 x=s2 x) \<longrightarrow> e' s1 = e' s2)          \<comment> \<open>annotation \<open>es\<close> (the set of variables \<open>e'\<close> depends on) is correct\<close>
               \<and> (\<exists>k>0. (\<forall>l s. P' l s \<longrightarrow> time C s \<le> k * e' s  \<and> (\<forall>t. \<exists>l'. (pre C Q) l' s \<and> ( Q l' t \<longrightarrow> Q' l t) ))))" |
   
-  "vc ({((I,Is),(S,(E,es,SS)))} WHILE b DO C) Q LVQ LVE = ((\<forall>s1 s2 l. (\<forall>x\<in>Is. s1 x = s2 x) \<longrightarrow> I l s1 = I l s2)  (* annotation Is is correct *)
-        \<and> (\<forall>y\<in>LVE \<union> LVQ. (let Ss=SS y in (\<forall>s1 s2. (\<forall>x\<in>Ss. s1 x = s2 x) \<longrightarrow> (S s1) y = (S s2) y)))                   (* annotation SS is correct, for only one step *)
-        \<and> (\<forall>s1 s2. (\<forall>x\<in>es. s1 x=s2 x) \<longrightarrow> E s1 = E s2)                                (* annotation es (the set of variables E depends on) is correct *)         
+  "vc ({((I,Is),(S,(E,es,SS)))} WHILE b DO C) Q LVQ LVE = ((\<forall>s1 s2 l. (\<forall>x\<in>Is. s1 x = s2 x) \<longrightarrow> I l s1 = I l s2)  \<comment> \<open>annotation \<open>Is\<close> is correct\<close>
+        \<and> (\<forall>y\<in>LVE \<union> LVQ. (let Ss=SS y in (\<forall>s1 s2. (\<forall>x\<in>Ss. s1 x = s2 x) \<longrightarrow> (S s1) y = (S s2) y)))                   \<comment> \<open>annotation \<open>SS\<close> is correct, for only one step\<close>
+        \<and> (\<forall>s1 s2. (\<forall>x\<in>es. s1 x=s2 x) \<longrightarrow> E s1 = E s2)                                \<comment> \<open>annotation \<open>es\<close> (the set of variables \<open>E\<close> depends on) is correct\<close>
   \<and> (\<forall>l s. (I l s \<and> bval b s \<longrightarrow> pre C I l s \<and>   E s \<ge> 1 + preT C E s + time C s
   \<and> (\<forall>v\<in>(\<Union>y\<in>LVE \<union> LVQ. (funStar SS) y). (S s) v = (S (postQ C s)) v) ) \<and>
   (I l s \<and> \<not> bval b s \<longrightarrow> Q l s \<and> E s \<ge> 1 \<and> (\<forall>v\<in>(\<Union>y\<in>LVE \<union> LVQ. (funStar SS) y). (S s) v  = s v)) ) \<and>
@@ -666,8 +666,8 @@ lemma vc_sound: "vc C Q LVQ LVE \<Longrightarrow> finite (support Q)
   \<Longrightarrow> finite (varacom C) 
   \<Longrightarrow> (\<forall>l s1 s2. s1 = s2 on LVQ \<longrightarrow> Q l s1 = Q l s2)
   \<Longrightarrow> (\<forall>l s1 s2. s1 = s2 on LVE \<longrightarrow> postList upds l s1 = postList upds l s2)
-  \<Longrightarrow> (\<forall>(a,b,c)\<in>set upds. (\<forall>s1 s2. s1 = s2 on c \<longrightarrow> b s1 = b s2))             (* c are really the variables b depends on  *)
-  \<Longrightarrow> (\<Union>(a,b,c)\<in>set upds. c) \<subseteq> LVE                                     (* in LV are all the variables that the expressions in upds depend on *)
+  \<Longrightarrow> (\<forall>(a,b,c)\<in>set upds. (\<forall>s1 s2. s1 = s2 on c \<longrightarrow> b s1 = b s2))             \<comment> \<open>\<open>c\<close> are really the variables \<open>b\<close> depends on\<close>
+  \<Longrightarrow> (\<Union>(a,b,c)\<in>set upds. c) \<subseteq> LVE                                     \<comment> \<open>in \<open>LV\<close> are all the variables that the expressions in \<open>upds\<close> depend on\<close>
   \<Longrightarrow> \<turnstile>\<^sub>1 {%l s. pre C Q l s \<and> preList upds C l s} strip C { time C \<Down> %l s. Q l s \<and> postList upds l s}
   \<and> ((\<forall>l s. pre C Q l s \<longrightarrow> Q l (postQ C s)) \<and>  K4 upds LVQ C Q)"
 proof(induction C arbitrary: Q upds LVE LVQ)    

@@ -20,7 +20,7 @@ definition desargues_config_2D ::
 rk {A, A', P} = 2 \<and> rk {B, B', P} = 2 \<and> rk {C, C', P} = 2 \<and> rk {A, B, \<gamma>} = 2 \<and> rk {A', B', \<gamma>} = 2 \<and>
 rk {A, C, \<beta>} = 2 \<and> rk {A', C', \<beta>} = 2 \<and> rk {B, C, \<alpha>} = 2 \<and> rk {B', C', \<alpha>} = 2 \<and> 
 rk {A, B, C, A', B', C'} = 3 \<and> 
-(* We add the following non-degeneracy conditions *)
+\<comment> \<open>We add the following non-degeneracy conditions\<close>
 rk {A, B, P} = 3 \<and> rk {A, C, P} = 3 \<and> rk {B, C, P} = 3 \<and> 
 rk {A, A'} = 2 \<and> rk {B, B'} = 2 \<and> rk {C, C'} = 2"
 

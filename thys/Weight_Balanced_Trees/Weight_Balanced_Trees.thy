@@ -54,18 +54,18 @@ insertion and deletion preserve the WB invariant, i.e.\
 
 definition valid_params :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> bool" where
 "valid_params \<Delta>1 \<Delta>2 \<Gamma>1 \<Gamma>2 = (
-  \<Delta>1 * 2 < \<Delta>2 * 9  (* right: \<open>\<Delta> < 4.5\<close> *) \<and>
-  \<Gamma>1 * \<Delta>2 + \<Gamma>2 * \<Delta>2 \<le> \<Gamma>2 * \<Delta>1 (* left: \<open>\<Gamma> + 1 \<le> \<Delta>\<close> *) \<and>
-  \<Gamma>1 * \<Delta>1 \<ge> \<Gamma>2 * (\<Delta>1 + \<Delta>2)  (* lower: \<open>\<Gamma> \<ge> (\<Delta> + 1) / \<Delta>\<close> *) \<and>
-  (* upper: *)
+  \<Delta>1 * 2 < \<Delta>2 * 9  \<comment> \<open>right: \<open>\<Delta> < 4.5\<close>\<close> \<and>
+  \<Gamma>1 * \<Delta>2 + \<Gamma>2 * \<Delta>2 \<le> \<Gamma>2 * \<Delta>1 \<comment> \<open>left: \<open>\<Gamma> + 1 \<le> \<Delta>\<close>\<close> \<and>
+  \<Gamma>1 * \<Delta>1 \<ge> \<Gamma>2 * (\<Delta>1 + \<Delta>2)  \<comment> \<open>lower: \<open>\<Gamma> \<ge> (\<Delta> + 1) / \<Delta>\<close>\<close> \<and>
+  \<comment> \<open>upper:\<close>
   (5*\<Delta>2 \<le> 2*\<Delta>1 \<and> 1*\<Delta>1 < 3*\<Delta>2 \<longrightarrow> \<Gamma>1*2 \<le> \<Gamma>2*3)
-     (*\<Gamma> \<le> 3/2 if 2.5 \<le> \<Delta> < 3*) \<and>
+     \<comment> \<open>\<open>\<Gamma> \<le> 3/2\<close> if \<open>2.5 \<le> \<Delta> < 3\<close>\<close> \<and>
   (3*\<Delta>2 \<le> 1*\<Delta>1 \<and> 2*\<Delta>1 < 7*\<Delta>2 \<longrightarrow> \<Gamma>1*2 \<le> \<Gamma>2*4)
-     (*\<Gamma> \<le> 4/2 if 3 \<le> \<Delta> < 3.5*) \<and>
+     \<comment> \<open>\<open>\<Gamma> \<le> 4/2\<close> if \<open>3 \<le> \<Delta> < 3.5\<close>\<close> \<and>
   (7*\<Delta>2 \<le> 2*\<Delta>1 \<and> 1*\<Delta>1 < 4*\<Delta>2 \<longrightarrow> \<Gamma>1*3 \<le> \<Gamma>2*4)
-     (*\<Gamma> \<le> 4/3 when 3.5 \<le> \<Delta> < 4*) \<and>
+     \<comment> \<open>\<open>\<Gamma> \<le> 4/3\<close> when \<open>3.5 \<le> \<Delta> < 4\<close>\<close> \<and>
   (4*\<Delta>2 \<le> 1*\<Delta>1 \<and> 2*\<Delta>1 < 9*\<Delta>2 \<longrightarrow> \<Gamma>1*3 \<le> \<Gamma>2*5)
-     (*\<Gamma> \<le> 5/3 when 4 \<le> \<Delta> < 4.5*)
+     \<comment> \<open>\<open>\<Gamma> \<le> 5/3\<close> when \<open>4 \<le> \<Delta> < 4.5\<close>\<close>
   )"
 
 text {* We do not make use of these constraints and do not prove that they guarantee

@@ -2,13 +2,12 @@ chapter AFP
 
 session Hoare_Time (AFP) = "HOL" +
   options [timeout = 600]
-  sessions 
+  sessions
     "Separation_Algebra"
     "HOL-Library"
-    "HOL-Eisbach" 
+    "HOL-Eisbach"
   theories
-  Hoare_Time 
-  
+    Hoare_Time
   document_files
     "root.bib"
     "root.tex"

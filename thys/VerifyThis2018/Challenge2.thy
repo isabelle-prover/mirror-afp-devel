@@ -318,7 +318,7 @@ subsection \<open>Verification of Program\<close>
     ASSERT (\<forall>i<4. c!i = lcount i);
     
     c\<leftarrow>nfoldli [4..<M+1] (\<lambda>_. True) (\<lambda>n c. doN {
-      (*let sum =    (\<Sum>i=3..<n. c!(n-i-1));*)
+      \<^cancel>\<open>\<open>let sum =    (\<Sum>i=3..<n. c!(n-i-1));\<close>\<close>
       sum \<leftarrow> sum_prog (\<lambda>i. n-i-1 < length c) 3 n (\<lambda>i. c!(n-i-1));
       ASSERT (n-1<length c \<and> n<length c);
       RETURN (c[n := c!(n-1) + 1 + sum])

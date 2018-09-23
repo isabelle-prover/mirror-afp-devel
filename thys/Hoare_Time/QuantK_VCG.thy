@@ -93,7 +93,7 @@ fun vc :: "acom \<Rightarrow> qassn \<Rightarrow> bool" where
 "vc (C\<^sub>1 ;; C\<^sub>2) Q = ((vc C\<^sub>1 (pre C\<^sub>2 Q)) \<and> (vc C\<^sub>2 Q) )" |
 "vc (IF b THEN C\<^sub>1 ELSE C\<^sub>2) Q = (vc C\<^sub>1 Q \<and> vc C\<^sub>2 Q)" |  
 "vc ({I} WHILE b DO C) Q =  ( (\<forall>s.  (pre C (\<lambda>s. I s + 1) s \<le> I s + \<up>(bval b s)) \<and> ( Q s \<le> I s + \<up> (\<not> bval b s))) \<and> vc C (%s. I s + 1))" |
-"vc ({k} Ab C) Q = (vc C (\<lambda>s. enat k* Q s) \<and> k>0 (* \<and> (\<forall>s. pre C (\<lambda>s. enat k * Q s) s \<le> enat k * ediv (pre C (\<lambda>s. enat k * Q s) s) k) *))"
+"vc ({k} Ab C) Q = (vc C (\<lambda>s. enat k* Q s) \<and> k>0 \<^cancel>\<open>\<and> (\<forall>s. pre C (\<lambda>s. enat k * Q s) s \<le> enat k * ediv (pre C (\<lambda>s. enat k * Q s) s) k)\<close>)"
 
 subsubsection "Soundness of VCG"
   

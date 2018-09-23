@@ -161,8 +161,8 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                                   | _ \<Rightarrow> (s', vs', r)))"
 | "run_one_step d i (s, vs, ves, e) =
      (case e of
-    (* B_E *)
-      (* UNOPS *)
+    \<comment> \<open>\<open>B_E\<close>\<close>
+      \<comment> \<open>\<open>UNOPS\<close>\<close>
         $(Unop_i T_i32 iop) \<Rightarrow>
          (case ves of
             (ConstInt32 c)#ves' \<Rightarrow>
@@ -185,7 +185,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                (s, vs, RSNormal (vs_to_es ((ConstFloat64 (app_unop_f fop c))#ves')))
            | _ \<Rightarrow> (s, vs, crash_error))
       | $(Unop_f _ fop) \<Rightarrow> (s, vs, crash_error)
-      (* BINOPS *)
+      \<comment> \<open>\<open>BINOPS\<close>\<close>
       | $(Binop_i T_i32 iop) \<Rightarrow>
           (case ves of
              (ConstInt32 c2)#(ConstInt32 c1)#ves' \<Rightarrow>
@@ -208,7 +208,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
               expect (app_binop_f fop c1 c2) (\<lambda>c. (s, vs, RSNormal (vs_to_es ((ConstFloat64 c)#ves')))) (s, vs, RSNormal ((vs_to_es ves')@[Trap]))
          | _ \<Rightarrow> (s, vs, crash_error))
       | $(Binop_f _ fop) \<Rightarrow> (s, vs, crash_error)
-      (* TESTOPS *)
+      \<comment> \<open>\<open>TESTOPS\<close>\<close>
       | $(Testop T_i32 testop) \<Rightarrow>
           (case ves of
              (ConstInt32 c)#ves' \<Rightarrow>
@@ -220,7 +220,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                (s, vs, RSNormal (vs_to_es ((ConstInt32 (wasm_bool (app_testop_i testop c)))#ves')))
            | _ \<Rightarrow> (s, vs, crash_error))
       | $(Testop _ testop) \<Rightarrow> (s, vs, crash_error)
-      (* RELOPS *)
+      \<comment> \<open>\<open>RELOPS\<close>\<close>
       | $(Relop_i T_i32 iop) \<Rightarrow>
           (case ves of
              (ConstInt32 c2)#(ConstInt32 c1)#ves' \<Rightarrow>
@@ -243,7 +243,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                (s, vs, RSNormal (vs_to_es ((ConstInt32 (wasm_bool (app_relop_f fop c1 c2)))#ves')))
            | _ \<Rightarrow> (s, vs, crash_error))
       | $(Relop_f _ fop) \<Rightarrow> (s, vs, crash_error)
-      (* CONVERT *)
+      \<comment> \<open>\<open>CONVERT\<close>\<close>
       | $(Cvtop t2 Convert t1 sx) \<Rightarrow>
           (case ves of
              v#ves' \<Rightarrow>
@@ -262,25 +262,25 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                   else
                     (s, vs, crash_error))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* UNREACHABLE *)
+      \<comment> \<open>\<open>UNREACHABLE\<close>\<close>
       | $Unreachable \<Rightarrow>
           (s, vs, RSNormal ((vs_to_es ves)@[Trap]))
-      (* NOP *)
+      \<comment> \<open>\<open>NOP\<close>\<close>
       | $Nop \<Rightarrow>
           (s, vs, RSNormal (vs_to_es ves))
-      (* DROP *)
+      \<comment> \<open>\<open>DROP\<close>\<close>
       | $Drop \<Rightarrow>
           (case ves of
              v#ves' \<Rightarrow>
                (s, vs, RSNormal (vs_to_es ves'))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* SELECT *)
+      \<comment> \<open>\<open>SELECT\<close>\<close>
       | $Select \<Rightarrow>
           (case ves of
              (ConstInt32 c)#v2#v1#ves' \<Rightarrow>
                (if int_eq c 0 then (s, vs, RSNormal (vs_to_es (v2#ves'))) else (s, vs, RSNormal (vs_to_es (v1#ves'))))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* BLOCK *)
+      \<comment> \<open>\<open>BLOCK\<close>\<close>
       | $(Block (t1s _> t2s) es) \<Rightarrow>
           (if length ves \<ge> length t1s
              then
@@ -288,7 +288,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                (s, vs, RSNormal ((vs_to_es ves'') @ [Label (length t2s) [] ((vs_to_es ves')@($* es))]))
              else
                (s, vs, crash_error))
-      (* LOOP *)
+      \<comment> \<open>\<open>LOOP\<close>\<close>
       | $(Loop (t1s _> t2s) es) \<Rightarrow>
           (if length ves \<ge> length t1s
              then
@@ -296,7 +296,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                (s, vs, RSNormal ((vs_to_es ves'') @ [Label (length t1s) [$(Loop (t1s _> t2s) es)] ((vs_to_es ves')@($* es))]))
              else
                (s, vs, crash_error))
-      (* IF *)
+      \<comment> \<open>\<open>IF\<close>\<close>
       | $(If tf es1 es2) \<Rightarrow>
           (case ves of
              (ConstInt32 c)#ves' \<Rightarrow>
@@ -306,10 +306,10 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                   else
                     (s, vs, RSNormal ((vs_to_es ves')@[$(Block tf es1)]))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* BR *)
+      \<comment> \<open>\<open>BR\<close>\<close>
       | $Br j \<Rightarrow>
           (s, vs, RSBreak j ves)
-      (* BR_IF *)
+      \<comment> \<open>\<open>BR_IF\<close>\<close>
       | $Br_if j \<Rightarrow>
           (case ves of
              (ConstInt32 c)#ves' \<Rightarrow>
@@ -319,7 +319,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                   else
                     (s, vs, RSNormal ((vs_to_es ves') @ [$Br j]))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* BR_TABLE *)
+      \<comment> \<open>\<open>BR_TABLE\<close>\<close>
       | $Br_table js j \<Rightarrow>
           (case ves of
              (ConstInt32 c)#ves' \<Rightarrow>
@@ -330,10 +330,10 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                   else
                     (s, vs, RSNormal ((vs_to_es ves') @ [$Br j]))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* CALL *)
+      \<comment> \<open>\<open>CALL\<close>\<close>
       | $Call j \<Rightarrow>
           (s, vs, RSNormal ((vs_to_es ves) @ [Callcl (sfunc s i j)]))
-      (* CALL_INDIRECT *)
+      \<comment> \<open>\<open>CALL_INDIRECT\<close>\<close>
       | $Call_indirect j \<Rightarrow>
           (case ves of
              (ConstInt32 c)#ves' \<Rightarrow>
@@ -346,15 +346,15 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                         (s, vs, RSNormal ((vs_to_es ves')@[Trap]))
                 | _ \<Rightarrow> (s, vs, RSNormal ((vs_to_es ves')@[Trap])))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* RETURN *)
+      \<comment> \<open>\<open>RETURN\<close>\<close>
       | $Return \<Rightarrow>
           (s, vs, RSReturn ves)
-      (* GET_LOCAL *)
+      \<comment> \<open>\<open>GET_LOCAL\<close>\<close>
       | $Get_local j \<Rightarrow>
           (if j < length vs
              then (s, vs, RSNormal (vs_to_es ((vs!j)#ves)))
              else (s, vs, crash_error))
-      (* SET_LOCAL *)
+      \<comment> \<open>\<open>SET_LOCAL\<close>\<close>
       | $Set_local j \<Rightarrow>
           (case ves of
              v#ves' \<Rightarrow>
@@ -362,21 +362,21 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                  then (s, vs[j := v], RSNormal (vs_to_es ves'))
                  else (s, vs, crash_error)
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* TEE_LOCAL *)
+      \<comment> \<open>\<open>TEE_LOCAL\<close>\<close>
       | $Tee_local j \<Rightarrow>
           (case ves of
              v#ves' \<Rightarrow>
                (s, vs, RSNormal ((vs_to_es (v#ves)) @ [$(Set_local j)]))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* GET_GLOBAL *)
+      \<comment> \<open>\<open>GET_GLOBAL\<close>\<close>
       | $Get_global j \<Rightarrow>
           (s, vs, RSNormal (vs_to_es ((sglob_val s i j)#ves)))
-      (* SET_GLOBAL *)
+      \<comment> \<open>\<open>SET_GLOBAL\<close>\<close>
       | $Set_global j \<Rightarrow>
           (case ves of
              v#ves' \<Rightarrow> ((supdate_glob s i j v), vs, RSNormal (vs_to_es ves'))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* LOAD *)
+      \<comment> \<open>\<open>LOAD\<close>\<close>
       | $(Load t None a off) \<Rightarrow>
           (case ves of
              (ConstInt32 k)#ves' \<Rightarrow>
@@ -387,7 +387,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                       (s, vs, RSNormal ((vs_to_es ves')@[Trap])))
                   (s, vs, crash_error)
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* LOAD PACKED *)
+      \<comment> \<open>\<open>LOAD PACKED\<close>\<close>
       | $(Load t (Some (tp, sx)) a off) \<Rightarrow>
           (case ves of
              (ConstInt32 k)#ves' \<Rightarrow>
@@ -398,7 +398,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                       (s, vs, RSNormal ((vs_to_es ves')@[Trap])))
                   (s, vs, crash_error)
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* STORE *)
+      \<comment> \<open>\<open>STORE\<close>\<close>
       | $(Store t None a off) \<Rightarrow>
           (case ves of
              v#(ConstInt32 k)#ves' \<Rightarrow>
@@ -413,7 +413,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                  else
                    (s, vs, crash_error))
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* STORE_PACKED *)
+      \<comment> \<open>\<open>STORE_PACKED\<close>\<close>
       | $(Store t (Some tp) a off) \<Rightarrow>
           (case ves of
                   v#(ConstInt32 k)#ves' \<Rightarrow>
@@ -428,12 +428,12 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                       else
                         (s, vs, crash_error))
                 | _ \<Rightarrow> (s, vs, crash_error))
-      (* CURRENT_MEMORY *)
+      \<comment> \<open>\<open>CURRENT_MEMORY\<close>\<close>
       | $Current_memory \<Rightarrow>
           expect (smem_ind s i)
             (\<lambda>j. (s, vs, RSNormal (vs_to_es ((ConstInt32 (int_of_nat (mem_size ((s.mem s)!j))))#ves))))
             (s, vs, crash_error)
-      (* GROW_MEMORY *)
+      \<comment> \<open>\<open>GROW_MEMORY\<close>\<close>
       | $Grow_memory \<Rightarrow>
           (case ves of
              (ConstInt32 c)#ves' \<Rightarrow>
@@ -445,10 +445,10 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                         (s, vs, RSNormal (vs_to_es ((ConstInt32 int32_minus_one)#ves')))))
                   (s, vs, crash_error)
            | _ \<Rightarrow> (s, vs, crash_error))
-      (* VAL - should not be executed *)
+      \<comment> \<open>\<open>VAL\<close> - should not be executed\<close>
       | $C v \<Rightarrow> (s, vs, crash_error)
-    (* E *)
-      (* CALLCL *)
+    \<comment> \<open>\<open>E\<close>\<close>
+      \<comment> \<open>\<open>CALLCL\<close>\<close>
       | Callcl cl \<Rightarrow>
           (case cl of
              Func_native i' (t1s _> t2s) ts es \<Rightarrow>
@@ -477,7 +477,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                    | None \<Rightarrow> (s, vs, RSNormal ((vs_to_es ves'')@[Trap]))
                  else
                    (s, vs, crash_error))
-      (* LABEL *)
+      \<comment> \<open>\<open>LABEL\<close>\<close>
       | Label ln les es \<Rightarrow>
           if es_is_trap es
             then
@@ -500,7 +500,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                      | RSNormal es' \<Rightarrow>
                          (s', vs', RSNormal ((vs_to_es ves)@[Label ln les es']))
                      | _ \<Rightarrow> (s', vs', crash_error)))
-     (* LOCAL *)
+     \<comment> \<open>\<open>LOCAL\<close>\<close>
      | Local ln j vls es \<Rightarrow>
           if es_is_trap es
             then
@@ -524,7 +524,7 @@ and run_one_step :: "depth \<Rightarrow> nat \<Rightarrow> config_one_tuple \<Ri
                          | RSNormal es' \<Rightarrow>
                              (s', vs, RSNormal ((vs_to_es ves)@[Local ln j vls' es']))
                          | _ \<Rightarrow> (s', vs, RSCrash CExhaustion)))
-     (* TRAP - should not be executed *)
+     \<comment> \<open>\<open>TRAP\<close> - should not be executed\<close>
      | Trap \<Rightarrow> (s, vs, crash_error))"
   by pat_completeness auto
 termination
