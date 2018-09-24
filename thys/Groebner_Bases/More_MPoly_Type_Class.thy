@@ -1,5 +1,7 @@
 (* Author: Alexander Maletzky *)
 
+section \<open>Further Properties of Multivariate Polynomials\<close>
+
 theory More_MPoly_Type_Class
   imports Polynomials.MPoly_Type_Class_Ordered General
 begin
@@ -7,12 +9,10 @@ begin
 text \<open>Some further general properties of (ordered) multivariate polynomials needed for Gr\"obner
   bases. This theory is an extension of @{theory Polynomials.MPoly_Type_Class_Ordered}.\<close>
 
-section \<open>Further Properties of Multivariate Polynomials\<close>
+subsection \<open>Modules and Linear Hulls\<close>
 
 context term_powerprod
 begin
-
-subsection \<open>Modules and Linear Hulls\<close>
 
 lemma monomial_1_in_pmdlI:
   assumes "(f::_ \<Rightarrow>\<^sub>0 'b::field) \<in> pmdl F" and "keys f = {t}"
@@ -113,12 +113,12 @@ qed
 
 end (* term_powerprod *)
   
-section \<open>Further Properties of Ordered Polynomials\<close>
+subsection \<open>Ordered Polynomials\<close>
   
 context ordered_term
 begin
 
-subsection \<open>Sets of Leading Terms and -Coefficients\<close>
+subsubsection \<open>Sets of Leading Terms and -Coefficients\<close>
   
 definition lt_set :: "('t, 'b::zero) poly_mapping set \<Rightarrow> 't set" where
   "lt_set F = lt ` (F - {0})"
@@ -268,7 +268,7 @@ proof -
   finally show ?thesis .
 qed
 
-subsection \<open>Monicity\<close>
+subsubsection \<open>Monicity\<close>
   
 definition monic :: "('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::field)" where
   "monic p = monom_mult (1 / lc p) 0 p"

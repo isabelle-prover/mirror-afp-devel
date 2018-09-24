@@ -8,7 +8,7 @@ begin
 
 text \<open>We only consider scalar polynomials here, but vector-polynomials could be handled, too.\<close>
 
-subsection \<open>Preliminaries\<close>
+subsection \<open>Preparations\<close>
 
 primrec remdups_wrt_rev :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a list \<Rightarrow> 'b list \<Rightarrow> 'a list" where
   "remdups_wrt_rev f [] vs = []" |
@@ -83,8 +83,6 @@ derive (eq) ceq rat
 derive (no) ccompare rat
 derive (dlist) set_impl rat
 derive (no) cenum rat
-
-subsection \<open>Interpretation\<close>
 
 global_interpretation punit': gd_powerprod "ord_pp_punit cmp_term" "ord_pp_strict_punit cmp_term"
   rewrites "punit.adds_term = (adds)"

@@ -6,6 +6,8 @@ theory Syzygy_Examples
   imports Buchberger Algorithm_Schema_Impl Syzygy Code_Target_Rat
 begin
 
+subsection \<open>Preparations\<close>
+
 text \<open>We must define the following four constants outside the global interpretation, since otherwise
   their types are too general.\<close>
 
@@ -238,9 +240,9 @@ next
   finally show "lookup (MP_oalist (OAlist_insert_ntm ((0, i), 1) (lift_keys_pprod n xs))) v = 0" .
 qed (simp_all add: oa_ntm.lookup_insert)
 
-experiment begin interpretation trivariate\<^sub>0_rat .
+subsection \<open>Computations\<close>
 
-subsubsection \<open>Computations\<close>
+experiment begin interpretation trivariate\<^sub>0_rat .
 
 lemma
   "syzygy_basis DRLEX [Vec\<^sub>0 0 (X\<^sup>2 * Z ^ 3 + 3 * X\<^sup>2 * Y), Vec\<^sub>0 0 (X * Y * Z + 2 * Y\<^sup>2)] =

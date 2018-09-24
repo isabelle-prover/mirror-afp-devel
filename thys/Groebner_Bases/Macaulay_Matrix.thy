@@ -1,5 +1,7 @@
 (* Author: Alexander Maletzky *)
 
+section \<open>Macaulay Matrices\<close>
+
 theory Macaulay_Matrix
   imports More_MPoly_Type_Class Jordan_Normal_Form.Gauss_Jordan_Elimination
 begin
