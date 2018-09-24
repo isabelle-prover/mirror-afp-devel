@@ -35,16 +35,17 @@ text \<open>\<open>cyclic n\<close> is a system of \<open>n\<close> polynomials 
 
 subsection \<open>Generating Katsura Polynomials\<close>
 
-definition Katsura_poly :: "(nat, nat) pp nat_term_order \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ((nat, nat) pp \<Rightarrow>\<^sub>0 rat)"
-  where "Katsura_poly to n i =
-            change_ord to ((\<Sum>j=-(int n)..<(int n) + 1 - i. V\<^sub>0 (nat (abs j)) * V\<^sub>0 (nat (abs j + i))) - V\<^sub>0 i)"
+definition katsura_poly :: "(nat, nat) pp nat_term_order \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ((nat, nat) pp \<Rightarrow>\<^sub>0 'a::comm_ring_1)"
+  where "katsura_poly to n i =
+            change_ord to ((\<Sum>j::int=-int n..<n + 1. if abs (i - j) \<le> n then V\<^sub>0 (nat (abs j)) * V\<^sub>0 (nat (abs (i - j))) else 0) - V\<^sub>0 i)"
 
-definition Katsura :: "(nat, nat) pp nat_term_order \<Rightarrow> nat \<Rightarrow> ((nat, nat) pp \<Rightarrow>\<^sub>0 rat) list"
-  where "Katsura to n =
+definition katsura :: "(nat, nat) pp nat_term_order \<Rightarrow> nat \<Rightarrow> ((nat, nat) pp \<Rightarrow>\<^sub>0 'a::comm_ring_1) list"
+  where "katsura to n =
           (let xs = [0..<n] in
-            (distr\<^sub>0 to ((sparse\<^sub>0 [(0, 1)], 1) # (map (\<lambda>i. (sparse\<^sub>0 [(Suc i, 1)], 2)) xs) @ [(0, -1)])) # (map (Katsura_poly to n) xs)
+            (distr\<^sub>0 to ((sparse\<^sub>0 [(0, 1)], 1) # (map (\<lambda>i. (sparse\<^sub>0 [(Suc i, 1)], 2)) xs) @ [(0, -1)])) #
+            (map (katsura_poly to n) xs)
           )"
 
-text \<open>\<open>Katsura n\<close> is a system of \<open>n + 1\<close> polynomials in \<open>n + 1\<close> indeterminates, with maximum degree \<open>2\<close>.\<close>
+text \<open>\<open>katsura n\<close> is a system of \<open>n + 1\<close> polynomials in \<open>n + 1\<close> indeterminates, with maximum degree \<open>2\<close>.\<close>
 
 end (* theory *)

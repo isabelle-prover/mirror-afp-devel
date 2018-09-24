@@ -202,6 +202,6 @@ end
 
 value [code] "length (f4_punit DRLEX (map (\<lambda>p. (p, ())) ((cyclic DRLEX 4)::(_ \<Rightarrow>\<^sub>0 rat) list)) ())"
 
-value [code] "length (f4_punit DRLEX (map (\<lambda>p. (p, ())) (Katsura DRLEX 2)) ())"
+value [code] "length (f4_punit DRLEX (map (\<lambda>p. (p, ())) ((katsura DRLEX 2)::(_ \<Rightarrow>\<^sub>0 rat) list)) ())"
 
 end (* theory *)

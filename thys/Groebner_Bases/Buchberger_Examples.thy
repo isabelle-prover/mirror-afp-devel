@@ -164,11 +164,9 @@ lemma
 
 end
 
-definition "gb_cyclic to n = (gb_punit to (map (\<lambda>p. (p, ())) (rev ((cyclic to n)::(_ \<Rightarrow>\<^sub>0 rat) list))) ())"
+value [code] "length (gb_punit DRLEX (map (\<lambda>p. (p, ())) ((katsura DRLEX 2)::(_ \<Rightarrow>\<^sub>0 rat) list)) ())"
 
-value [code] "length (gb_punit DRLEX (map (\<lambda>p. (p, ())) (Katsura DRLEX 2)) ())"
-
-value [code] "length (gb_cyclic DRLEX 5)"
+value [code] "length (gb_punit DRLEX (map (\<lambda>p. (p, ())) ((cyclic DRLEX 5)::(_ \<Rightarrow>\<^sub>0 rat) list)) ())"
 
 
 subsection \<open>Vector Polynomials\<close>
