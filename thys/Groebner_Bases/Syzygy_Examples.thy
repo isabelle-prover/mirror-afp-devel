@@ -21,6 +21,17 @@ definition mult_scalar_pprod :: "(('a::nat, 'b::nat) pp \<Rightarrow>\<^sub>0 'c
 definition adds_term_pprod :: "(('a::nat, 'b::nat) pp \<times> _) \<Rightarrow> _"
   where "adds_term_pprod = pprod.adds_term"
 
+lemma (in gd_term) compute_trd_aux [code]:
+  "trd_aux fs p r =
+    (if is_zero p then
+      r
+    else
+      case find_adds fs (lt p) of
+        None   \<Rightarrow> trd_aux fs (tail p) (plus_monomial_less r (lc p) (lt p))
+      | Some f \<Rightarrow> trd_aux fs (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f)) r
+    )"
+  by (simp only: trd_aux.simps[of fs p r] plus_monomial_less_def is_zero_def)
+
 locale gd_nat_inf_term = gd_nat_term pair_of_term term_of_pair cmp_term
     for pair_of_term::"'t::nat_term \<Rightarrow> ('a::{nat_term,graded_dickson_powerprod} \<times> nat)"
     and term_of_pair::"('a \<times> nat) \<Rightarrow> 't"
@@ -174,6 +185,9 @@ lemma compute_splus_pprod [code]: "splus_pprod t (s, i) = (t + s, i)"
 lemma compute_shift_map_keys_pprod [code abstract]:
   "list_of_oalist_ntm (shift_map_keys_pprod t f xs) = map_raw (\<lambda>(k, v). (splus_pprod t k, f v)) (list_of_oalist_ntm xs)"
   by (simp add: pprod'.list_of_oalist_shift_keys case_prod_beta')
+
+lemma compute_trd_pprod [code]: "trd_pprod to fs p = trd_aux_pprod to fs p (change_ord to 0)"
+  by (simp only: pprod'.trd_def change_ord_def)
 
 lemmas [code] = conversep_iff
 

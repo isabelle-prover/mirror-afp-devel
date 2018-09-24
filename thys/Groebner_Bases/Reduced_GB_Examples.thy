@@ -15,6 +15,17 @@ definition rgb :: "('t \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('t \<Righta
 definition rgb_punit :: "('a \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::field) list"
   where "rgb_punit bs = punit.comp_red_monic_basis (map fst (gb_punit (map (\<lambda>b. (b, ())) bs) ()))"
 
+lemma compute_trd_aux [code]:
+  "trd_aux fs p r =
+    (if is_zero p then
+      r
+    else
+      case find_adds fs (lt p) of
+        None   \<Rightarrow> trd_aux fs (tail p) (plus_monomial_less r (lc p) (lt p))
+      | Some f \<Rightarrow> trd_aux fs (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f)) r
+    )"
+  by (simp only: trd_aux.simps[of fs p r] plus_monomial_less_def is_zero_def)
+
 end
 
 text \<open>We only consider scalar polynomials here, but vector-polynomials could be handled, too.\<close>
@@ -79,6 +90,14 @@ global_interpretation punit': gd_powerprod "ord_pp_punit cmp_term" "ord_pp_stric
   subgoal by (simp only: ord_p_punit_def ord_pp_strict_punit_alt)
   subgoal by (simp only: ord_strict_p_punit_def ord_pp_strict_punit_alt)
   done
+
+lemma compute_spoly_punit [code]:
+  "spoly_punit to p q = (let t1 = lt_punit to p; t2 = lt_punit to q; l = lcs t1 t2 in
+         (monom_mult_punit (1 / lc_punit to p) (l - t1) p) - (monom_mult_punit (1 / lc_punit to q) (l - t2) q))"
+  by (simp add: punit'.punit.spoly_def Let_def punit'.punit.lc_def)
+
+lemma compute_trd_punit [code]: "trd_punit to fs p = trd_aux_punit to fs p (change_ord to 0)"
+  by (simp only: punit'.punit.trd_def change_ord_def)
 
 experiment begin interpretation trivariate\<^sub>0_rat .
 

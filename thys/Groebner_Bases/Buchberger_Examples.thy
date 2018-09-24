@@ -6,6 +6,17 @@ theory Buchberger_Examples
   imports Buchberger Algorithm_Schema_Impl Code_Target_Rat
 begin
 
+lemma (in gd_term) compute_trd_aux [code]:
+  "trd_aux fs p r =
+    (if is_zero p then
+      r
+    else
+      case find_adds fs (lt p) of
+        None   \<Rightarrow> trd_aux fs (tail p) (plus_monomial_less r (lc p) (lt p))
+      | Some f \<Rightarrow> trd_aux fs (tail p - monom_mult (lc p / lc f) (lp p - lp f) (tail f)) r
+    )"
+  by (simp only: trd_aux.simps[of fs p r] plus_monomial_less_def is_zero_def)
+
 subsection \<open>Scalar Polynomials\<close>
 
 global_interpretation punit': gd_powerprod "ord_pp_punit cmp_term" "ord_pp_strict_punit cmp_term"
@@ -66,16 +77,8 @@ lemma compute_spoly_punit [code]:
          (monom_mult_punit (1 / lc_punit to p) (l - t1) p) - (monom_mult_punit (1 / lc_punit to q) (l - t2) q))"
   by (simp add: punit'.punit.spoly_def Let_def punit'.punit.lc_def)
 
-lemma compute_trd_aux_punit [code]:
-  "trd_aux_punit to fs p r =
-    (if is_zero p then
-      r
-    else
-      case find_adds_punit to fs (lt_punit to p) of
-        None   \<Rightarrow> trd_aux_punit to fs (tail_punit to p) (plus_monomial_less r (lc_punit to p) (lt_punit to p))
-      | Some f \<Rightarrow> trd_aux_punit to fs (tail_punit to p - monom_mult_punit (lc_punit to p / lc_punit to f) (lt_punit to p - lt_punit to f) (tail_punit to f)) r
-    )"
-  by (simp only: punit'.punit.trd_aux.simps[of to fs p r] plus_monomial_less_def is_zero_def)
+lemma compute_trd_punit [code]: "trd_punit to fs p = trd_aux_punit to fs p (change_ord to 0)"
+  by (simp only: punit'.punit.trd_def change_ord_def)
 
 experiment begin interpretation trivariate\<^sub>0_rat .
 
@@ -247,6 +250,9 @@ lemma compute_splus_pprod [code]: "splus_pprod t (s, i) = (t + s, i)"
 lemma compute_shift_map_keys_pprod [code abstract]:
   "list_of_oalist_ntm (shift_map_keys_pprod t f xs) = map_raw (\<lambda>(k, v). (splus_pprod t k, f v)) (list_of_oalist_ntm xs)"
   by (simp add: pprod'.list_of_oalist_shift_keys case_prod_beta')
+
+lemma compute_trd_pprod [code]: "trd_pprod to fs p = trd_aux_pprod to fs p (change_ord to 0)"
+  by (simp only: pprod'.trd_def change_ord_def)
 
 lemmas [code] = conversep_iff
 
