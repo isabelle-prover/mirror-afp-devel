@@ -1417,7 +1417,7 @@ next
          (rule measurable_expr_sem, auto)
 
     let ?N' = "distr (?M \<bind> (\<lambda>\<sigma>. expr_sem \<sigma> e)) (stock_measure t)
-                          (lift_RealVal (( * ) (extract_real c)))"
+                          (lift_RealVal ((*) (extract_real c)))"
     let ?g = "\<lambda>f x. f (x / extract_real c) * ennreal (inverse (abs (extract_real c)))"
     let ?f' = "(\<lambda>x. f \<rho> (RealVal (x / extract_real c)) *
                     inverse (abs (extract_real c))) \<circ> extract_real"

@@ -21,7 +21,7 @@ unfolding plus_fun_def const_def apf_def ..
 lemma zero_fun_af [applicative_unfold]: "0 = pure 0"
 unfolding zero_fun_def const_def ..
 
-lemma times_fun_af [applicative_unfold]: "f * g = pure ( * ) \<diamondop> f \<diamondop> g"
+lemma times_fun_af [applicative_unfold]: "f * g = pure (*) \<diamondop> f \<diamondop> g"
 unfolding times_fun_def const_def apf_def ..
 
 lemma one_fun_af [applicative_unfold]: "1 = pure 1"

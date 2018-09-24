@@ -100,7 +100,7 @@ proof (rule poly_eqI)
     unfolding coeff_monom using 2 by auto
 qed
 
-lemma smult_as_map_poly: "smult a = map_poly (( * ) a)"
+lemma smult_as_map_poly: "smult a = map_poly ((*) a)"
   by (rule ext, rule poly_eqI, subst coeff_map_poly, auto)
 
 

@@ -177,7 +177,7 @@ begin
 
 
 lemma (in left_complemented_monoid) left_complemented_monoid: 
-    "class.left_complemented_monoid_algebra (( * )) inf (l\<rightarrow>) (\<le>) (<) 1"
+    "class.left_complemented_monoid_algebra (*) inf (l\<rightarrow>) (\<le>) (<) 1"
   by (unfold_locales, simp_all add: less_le_not_le lcm_A lcm_B lcm_C lcm_D)
 
 end

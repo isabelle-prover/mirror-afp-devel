@@ -324,7 +324,7 @@ proof cases
   } ultimately show ?thesis using \<open>x \<noteq> 1\<close> by arith
 qed (insert assms, simp)
 
-lemma ccw'_sorted_scaleR: "ccw'.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw'.sortedP 0 (map (( *\<^sub>R) r) xs)"
+lemma ccw'_sorted_scaleR: "ccw'.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw'.sortedP 0 (map ((*\<^sub>R) r) xs)"
   by (induct xs) (auto intro!: ccw'.sortedP.Cons  elim!: ccw'.sortedP_Cons simp del: scaleR_Pair)
 
 

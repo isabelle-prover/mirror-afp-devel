@@ -39,7 +39,7 @@ lift_definition one_uint64 :: uint64 is "1" .
 lift_definition plus_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is "(+) :: 64 word \<Rightarrow> _" .
 lift_definition minus_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is "(-)" .
 lift_definition uminus_uint64 :: "uint64 \<Rightarrow> uint64" is uminus .
-lift_definition times_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is "( * )" .
+lift_definition times_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is "(*)" .
 lift_definition divide_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is "(div)" .
 lift_definition modulo_uint64 :: "uint64 \<Rightarrow> uint64 \<Rightarrow> uint64" is "(mod)" .
 instance by standard (transfer, simp add: algebra_simps)+

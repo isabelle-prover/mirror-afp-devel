@@ -203,7 +203,7 @@ end
 lemmas [simp] = compute_zero_pp[symmetric]
 
 lemma compute_monom_mult_poly_mapping [code]:
-  "monom_mult c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys t (( * ) c) xs)"
+  "monom_mult c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys t ((*) c) xs)"
 proof (cases "c = 0")
   case True
   hence "monom_mult c t (Pm_fmap xs) = 0" using monom_mult_zero_left by simp
@@ -474,7 +474,7 @@ global_interpretation punit: term_powerprod to_pair_unit fst
   done
 
 lemma compute_monom_mult_punit [code]:
-  "monom_mult_punit c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys_punit t (( * ) c) xs)"
+  "monom_mult_punit c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys_punit t ((*) c) xs)"
   by (simp add: monom_mult_punit_def punit.compute_monom_mult_poly_mapping shift_map_keys_punit_def)
 
 lemma compute_mult_scalar_punit [code]:
@@ -590,7 +590,7 @@ lemma compute_shift_map_keys_pprod [code]:
   by (simp add: pprod.compute_shift_map_keys shift_map_keys_pprod_def splus_pprod_def)
 
 lemma compute_monom_mult_pprod [code]:
-  "monom_mult_pprod c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys_pprod t (( * ) c) xs)"
+  "monom_mult_pprod c t (Pm_fmap xs) = Pm_fmap (if c = 0 then fmempty else shift_map_keys_pprod t ((*) c) xs)"
   by (simp add: monom_mult_pprod_def pprod.compute_monom_mult_poly_mapping shift_map_keys_pprod_def)
 
 lemma compute_mult_scalar_pprod [code]:

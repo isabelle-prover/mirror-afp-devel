@@ -31,7 +31,7 @@ next
     sum ((\<lambda>x. \<Prod>i\<in>insert i I. f (x i) i) \<circ> ((\<lambda>(x, f). f(i := x)))) (S i \<times> Pi\<^sub>E I S)"
     unfolding * using insert by (intro sum.reindex) (auto intro!: inj_on_upd_PiE)
   also have "\<dots> = (\<Sum>(a, x)\<in>(S i \<times> Pi\<^sub>E I S). f a i * (\<Prod>i\<in>I. f (x i) i))"
-    using insert by (force intro!: sum.cong prod.cong arg_cong2[where f="( * )"])
+    using insert by (force intro!: sum.cong prod.cong arg_cong2[where f="(*)"])
   also have "\<dots> = (\<Sum>a\<in>S i. f a i * (\<Sum>x\<in>Pi\<^sub>E I S. \<Prod>i\<in>I. f (x i) i))"
     by (simp add: sum.cartesian_product sum_distrib_left)
   finally show ?case

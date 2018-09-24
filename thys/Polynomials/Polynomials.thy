@@ -555,13 +555,13 @@ next
     assume "mm \<in> fst ` set (monom_mult_poly (m,c) p)" 
        and two: "mm = m * m'"
     then obtain dd where one: "(mm,dd) \<in> set (monom_mult_poly (m,c) p)" by auto
-    have "poly_monoms (monom_mult_poly (m,c) p) \<subseteq> ( * ) m ` poly_monoms p" 
+    have "poly_monoms (monom_mult_poly (m,c) p) \<subseteq> (*) m ` poly_monoms p" 
     proof (induct p, simp)
       case (Cons md p)
       thus ?case
         by (cases md, auto)
     qed
-    with one have "mm \<in> ( * ) m ` poly_monoms p" by force
+    with one have "mm \<in> (*) m ` poly_monoms p" by force
     then obtain mmm where mmm: "mmm \<in> poly_monoms p" and mm: "mm = m * mmm" by blast
     from Cons(2)[simplified md] mmm have not1: "\<not> mmm = m'" unfolding poly_inv_def by auto
     from mm two have "m * mmm = m * m'" by simp

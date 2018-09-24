@@ -410,7 +410,7 @@ next
   then show ?case by blast
 qed
 
-lemma op_vec_scaleR: "( *s) = ( *\<^sub>R)"
+lemma op_vec_scaleR: "(*s) = (*\<^sub>R)"
   by (force simp: scalar_mult_eq_scaleR)
 
 end

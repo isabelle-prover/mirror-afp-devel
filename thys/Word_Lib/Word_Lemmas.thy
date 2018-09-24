@@ -3471,7 +3471,7 @@ lemma ucast_down_minus:
 
 lemma ucast_down_mult:
     "is_down (ucast:: 'a word \<Rightarrow> 'b word) \<Longrightarrow>  ucast ((a :: 'a::len word) * b) = (ucast a * ucast b :: 'b::len word)"
-  apply (rule ucast_distrib [where L="( * )"], (clarsimp simp: uint_word_ariths)+)
+  apply (rule ucast_distrib [where L="(*)"], (clarsimp simp: uint_word_ariths)+)
   apply (metis mod_mult_eq)
   apply simp
   done
@@ -3507,7 +3507,7 @@ lemma scast_down_minus:
 
 lemma scast_down_mult:
     "is_down (scast:: 'a word \<Rightarrow> 'b word) \<Longrightarrow>  scast ((a :: 'a::len word) * b) = (scast a * scast b :: 'b::len word)"
-  apply (rule scast_distrib [where L="( * )"], (clarsimp simp: uint_word_ariths)+)
+  apply (rule scast_distrib [where L="(*)"], (clarsimp simp: uint_word_ariths)+)
   apply (metis mod_mult_eq)
   apply simp
   done

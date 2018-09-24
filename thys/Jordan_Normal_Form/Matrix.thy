@@ -697,7 +697,7 @@ definition monoid_mat :: "'a :: monoid_add itself \<Rightarrow> nat \<Rightarrow
 definition ring_mat :: "'a :: semiring_1 itself \<Rightarrow> nat \<Rightarrow> 'b \<Rightarrow> ('a mat,'b) ring_scheme" where
   "ring_mat ty n b \<equiv> \<lparr>
     carrier = carrier_mat n n,
-    mult = ( * ),
+    mult = (*),
     one = 1\<^sub>m n,
     zero = 0\<^sub>m n n,
     add = (+),
@@ -706,14 +706,14 @@ definition ring_mat :: "'a :: semiring_1 itself \<Rightarrow> nat \<Rightarrow> 
 definition module_mat :: "'a :: semiring_1 itself \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a,'a mat)module" where
   "module_mat ty nr nc \<equiv> \<lparr>
     carrier = carrier_mat nr nc,
-    mult = ( * ),
+    mult = (*),
     one = 1\<^sub>m nr,
     zero = 0\<^sub>m nr nc,
     add = (+),
     smult = (\<cdot>\<^sub>m)\<rparr>"
 
 lemma ring_mat_simps:
-  "mult (ring_mat ty n b) = ( * )"
+  "mult (ring_mat ty n b) = (*)"
   "add (ring_mat ty n b) = (+)"
   "one (ring_mat ty n b) = 1\<^sub>m n"
   "zero (ring_mat ty n b) = 0\<^sub>m n n"
@@ -721,7 +721,7 @@ lemma ring_mat_simps:
   unfolding ring_mat_def by auto
 
 lemma module_mat_simps:
-  "mult (module_mat ty nr nc) = ( * )"
+  "mult (module_mat ty nr nc) = (*)"
   "add (module_mat ty nr nc) = (+)"
   "one (module_mat ty nr nc) = 1\<^sub>m nr"
   "zero (module_mat ty nr nc) = 0\<^sub>m nr nc"

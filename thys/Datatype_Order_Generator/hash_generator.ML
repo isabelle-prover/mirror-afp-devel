@@ -63,7 +63,7 @@ fun mk_hash thy info =
             fun multiply j t =
               let
                 val mult = mk_num (cons_hash cname idx i (j+1))
-              in @{term "( * ) :: hashcode => hashcode => hashcode"} $ mult $ t end
+              in @{term "(*) :: hashcode => hashcode => hashcode"} $ mult $ t end
             fun hash_of_dty (i,Old_Datatype_Aux.DtRec j) = res_var (j,rec_idx i dtysi) |> multiply i
               | hash_of_dty (i,_) =
                   let

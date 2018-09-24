@@ -118,7 +118,7 @@ qed
 lemma has_derivative_abs:
   fixes a::real
   assumes "a \<noteq> 0"
-  shows "(abs has_derivative (( * ) (sgn a))) (at a)"
+  shows "(abs has_derivative ((*) (sgn a))) (at a)"
 proof -
   have [simp]: "norm = abs"
     using real_norm_def by force

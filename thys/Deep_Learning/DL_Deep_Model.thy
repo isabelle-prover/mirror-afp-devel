@@ -901,7 +901,7 @@ proof -
   then have "listpr > 0" unfolding listpr_def 0
     by (metis "0" deep last_in_set length_greater_0_conv less_le_trans no_zeros dims_Aw'_pow(1) dims_Aw'(1)
     zero_less_numeral zero_less_power)
-  then have "inj (( * ) listpr)" by (metis injI mult_left_cancel neq0_conv)
+  then have "inj ((*) listpr)" by (metis injI mult_left_cancel neq0_conv)
   then show ?thesis using `\<And>i. listpr dvd i \<Longrightarrow> i \<in> rows_with_1`
     by (meson dvd_triv_left image_subset_iff infinite_iff_countable_subset)
 qed

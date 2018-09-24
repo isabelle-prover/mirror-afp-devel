@@ -575,7 +575,7 @@ lemma borel_measurable_safe_sqrt[measurable]: "safe_sqrt \<in> borel_measurable 
 
 fun op_sem :: "pdf_operator \<Rightarrow> val \<Rightarrow> val" where
   "op_sem Add = lift_RealIntVal2 (+) (+)"
-| "op_sem Mult = lift_RealIntVal2 ( * ) ( * )"
+| "op_sem Mult = lift_RealIntVal2 (*) (*)"
 | "op_sem Minus = lift_RealIntVal uminus uminus"
 | "op_sem Equals = (\<lambda> <|v1, v2|> \<Rightarrow> BoolVal (v1 = v2))"
 | "op_sem Less = lift_Comp (<) (<)"

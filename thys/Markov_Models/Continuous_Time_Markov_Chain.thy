@@ -98,12 +98,12 @@ proof (intro measure_eqI)
   then have [measurable]: "(\<lambda>x. x / l) -` A \<in> sets borel"
     by (rule measurable_sets_borel[rotated]) simp
   have "emeasure (exponential l) A =
-    (\<integral>\<^sup>+x. ennreal l * (indicator ((( * ) (1/l) -` A) \<inter> {0 ..}) (l * x) * ennreal (exp (- (l * x)))) \<partial>lborel)"
+    (\<integral>\<^sup>+x. ennreal l * (indicator (((*) (1/l) -` A) \<inter> {0 ..}) (l * x) * ennreal (exp (- (l * x)))) \<partial>lborel)"
     using \<open>0 < l\<close>
     by (auto simp: ac_simps emeasure_distr exponential_def emeasure_density exponential_density_def
                    ennreal_mult zero_le_mult_iff
              intro!: nn_integral_cong split: split_indicator)
-  also have "\<dots> = (\<integral>\<^sup>+x. indicator ((( * ) (1/l) -` A) \<inter> {0 ..}) x * ennreal (exp (- x)) \<partial>lborel)"
+  also have "\<dots> = (\<integral>\<^sup>+x. indicator (((*) (1/l) -` A) \<inter> {0 ..}) x * ennreal (exp (- x)) \<partial>lborel)"
     using \<open>0<l\<close>
     apply (subst nn_integral_stretch)
       apply (auto simp: nn_integral_cmult)
@@ -556,7 +556,7 @@ proof -
              split: split_indicator intro!: nn_integral_cong )
   also have "\<dots> = pmf (J x) y * emeasure (exponential (escape_rate x)) {t..}"
     using AE_exponential[OF escape_rate_pos[of x]]
-    by (intro arg_cong2[where f="( * )"] emeasure_eq_AE) (auto simp: J.rep_eq )
+    by (intro arg_cong2[where f="(*)"] emeasure_eq_AE) (auto simp: J.rep_eq )
   finally show ?thesis
     using assms by (simp add: mult_ac select_first_def)
 qed
@@ -1446,7 +1446,7 @@ proof -
      by (auto intro!: nn_integral_cong simp: nn_integral_multc)
   also have "\<dots> = (\<integral>\<^sup>+z. ennreal (p x z t) * ennreal (p z y t') \<partial>count_space (DTMC.acc``{x}))"
     unfolding p_def L.emeasure_eq_measure[symmetric]
-    by (auto intro!: nn_integral_cong arg_cong2[where f="( * )"]
+    by (auto intro!: nn_integral_cong arg_cong2[where f="(*)"]
              simp: nn_integral_indicator[symmetric] simp del: nn_integral_indicator )
   finally have "(\<integral>\<^sup>+z. p x z t * p z y t' \<partial>count_space (DTMC.acc``{x})) = p x y (t + t')"
     by (simp add: ennreal_mult)

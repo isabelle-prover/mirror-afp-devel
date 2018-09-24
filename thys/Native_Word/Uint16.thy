@@ -44,7 +44,7 @@ lift_definition one_uint16 :: uint16 is "1" .
 lift_definition plus_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(+)" .
 lift_definition minus_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(-)" .
 lift_definition uminus_uint16 :: "uint16 \<Rightarrow> uint16" is uminus .
-lift_definition times_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "( * )" .
+lift_definition times_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(*)" .
 lift_definition divide_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(div)" .
 lift_definition modulo_uint16 :: "uint16 \<Rightarrow> uint16 \<Rightarrow> uint16" is "(mod)" .
 instance by standard (transfer, simp add: algebra_simps)+

@@ -161,7 +161,7 @@ begin
 
 definition
   div_ordinal_def:
-   "x div y = (if 0 < y then oInv (( * ) y) x else 0)"
+   "x div y = (if 0 < y then oInv ((*) y) x else 0)"
 
 definition
   mod_ordinal_def: 
@@ -296,7 +296,7 @@ subsection {* Logarithms *}
 
 definition
   oLog :: "ordinal \<Rightarrow> ordinal \<Rightarrow> ordinal" where
-  "oLog b = (\<lambda>x. if 1 < b then oInv (( ** ) b) x else 0)"
+  "oLog b = (\<lambda>x. if 1 < b then oInv ((**) b) x else 0)"
 
 lemma ordinal_oLogI:
 "\<lbrakk>b ** y \<le> x; x < b ** y * b\<rbrakk> \<Longrightarrow> oLog b x = y"

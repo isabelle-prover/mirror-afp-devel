@@ -905,7 +905,7 @@ qed
 interpretation ccw: ccw_convex ccw S "\<lambda>a b. lex b a" for S
   by unfold_locales (rule ccw_convex)
 
-lemma ccw_sorted_scaleR: "ccw.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw.sortedP 0 (map (( *\<^sub>R) r) xs)"
+lemma ccw_sorted_scaleR: "ccw.sortedP 0 xs \<Longrightarrow> r > 0 \<Longrightarrow> ccw.sortedP 0 (map ((*\<^sub>R) r) xs)"
   by (induct xs)
     (auto intro!: ccw.sortedP.Cons ccw_scale23 elim!: ccw.sortedP_Cons simp del: scaleR_Pair)
 

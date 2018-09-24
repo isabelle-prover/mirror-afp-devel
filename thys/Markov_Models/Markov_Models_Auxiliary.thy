@@ -302,7 +302,7 @@ proof induction
   case (insert i I) then show ?case
     by (auto simp: PiE_insert_eq finite_PiE sum.reindex inj_combinator sum.swap[of _ "Pi\<^sub>E I J"]
                    sum_cartesian_product' sum_distrib_left sum_distrib_right
-             intro!: sum.cong prod.cong arg_cong[where f="( * ) x" for x])
+             intro!: sum.cong prod.cong arg_cong[where f="(*) x" for x])
 qed simp
 
 lemma prod_add_distrib:
@@ -315,7 +315,7 @@ proof -
     using \<open>finite I\<close> by (rule prod_sum_distrib) simp
   also have "\<dots> = (\<Sum>J\<in>Pow I. (\<Prod>i\<in>J. f i) * (\<Prod>i\<in>I - J. g i))"
     by (rule sum.reindex_bij_witness[where i="\<lambda>J. \<lambda>i\<in>I. i\<in>J" and j="\<lambda>m. {i\<in>I. m i}"])
-       (auto simp: fun_eq_iff prod.If_cases \<open>finite I\<close> intro!: arg_cong2[where f="( * )"] prod.cong)
+       (auto simp: fun_eq_iff prod.If_cases \<open>finite I\<close> intro!: arg_cong2[where f="(*)"] prod.cong)
   finally show ?thesis .
 qed
 

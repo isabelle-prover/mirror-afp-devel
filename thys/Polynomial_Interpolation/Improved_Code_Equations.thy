@@ -29,7 +29,7 @@ lemma divmod_integer_code': "divmod_integer k l =
              else case Code_Numeral.divmod_abs k l of (r, s) \<Rightarrow>
                   if s = 0 then (- r, 0) else (- r - 1, - l - s)))"
 proof -
-  have [simp]: "apsnd (( * ) (1 :: integer)) = id" 
+  have [simp]: "apsnd ((*) (1 :: integer)) = id" 
     by (intro ext, auto)
   show ?thesis
     unfolding divmod_integer_code 

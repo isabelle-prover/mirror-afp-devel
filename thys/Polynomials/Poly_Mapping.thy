@@ -1293,7 +1293,7 @@ lemma map_key_single [simp]:
 
 end
 
-lemma mult_map_scale_conv_mult: "map (( * ) s) p = single 0 s * p"
+lemma mult_map_scale_conv_mult: "map ((*) s) p = single 0 s * p"
 proof(transfer fixing: s)
   fix p :: "'a \<Rightarrow> 'b"
   assume *: "finite {x. p x \<noteq> 0}"

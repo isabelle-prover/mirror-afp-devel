@@ -76,7 +76,7 @@ lift_definition one_uint :: uint is "1" .
 lift_definition plus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(+) :: dflt_size word \<Rightarrow> _" .
 lift_definition minus_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(-)" .
 lift_definition uminus_uint :: "uint \<Rightarrow> uint" is uminus .
-lift_definition times_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "( * )" .
+lift_definition times_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(*)" .
 lift_definition divide_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(div)" .
 lift_definition modulo_uint :: "uint \<Rightarrow> uint \<Rightarrow> uint" is "(mod)" .
 instance by standard (transfer, simp add: algebra_simps)+

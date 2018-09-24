@@ -706,7 +706,7 @@ lemma orthogonal_transformation_quat_congruence:
 proof -
   have nq: "(quat.Re q)\<^sup>2 + (Im1 q)\<^sup>2 + (Im2 q)\<^sup>2 + (Im3 q)\<^sup>2 = 1"
     using assms norm_quat_def by auto
-  have "Vector_Spaces.linear ( *\<^sub>R) ( *\<^sub>R) (\<lambda>x. HIm (cnj q * Hv x * q))"
+  have "Vector_Spaces.linear (*\<^sub>R) (*\<^sub>R) (\<lambda>x. HIm (cnj q * Hv x * q))"
   proof
     show "\<And>r b. HIm (cnj q * Hv (r *\<^sub>R b) * q) = r *\<^sub>R HIm (cnj q * Hv b * q)"
       by (metis him_mult_left hv_cmult mult_scaleR_left mult_scaleR_right scaleR_conv_of_real)

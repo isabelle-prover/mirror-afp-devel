@@ -600,7 +600,7 @@ lemma matrix_scaleR_left: "(a::'a::real_algebra_1^'n^'m) ** r *\<^sub>R b = r *\
   by (vector matrix_matrix_mult_def algebra_simps scaleR_sum_right)
 
 lemma bounded_bilinear_matrix_matrix_mult[bounded_bilinear]:
-   "bounded_bilinear (( ** )::
+   "bounded_bilinear ((**)::
     ('a::{euclidean_space, real_normed_algebra_1}^'n^'m) \<Rightarrow>
     ('a::{euclidean_space, real_normed_algebra_1}^'p^'n) \<Rightarrow>
     ('a::{euclidean_space, real_normed_algebra_1}^'p^'m))"

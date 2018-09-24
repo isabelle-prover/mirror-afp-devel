@@ -132,13 +132,13 @@ lemma row_space_eq:
 
 lemma null_space_eq_ker:
   fixes f::"('a::field^'n) => ('a^'m)"
-  assumes lf: "Vector_Spaces.linear ( *s) ( *s) f"
+  assumes lf: "Vector_Spaces.linear (*s) (*s) f"
   shows "null_space (matrix f) = {x. f x = 0}" 
   unfolding null_space_def using matrix_works [OF lf] by auto
 
 lemma col_space_eq_range:
   fixes f::"('a::field^'n::{finite, wellorder}) \<Rightarrow> ('a^'m)"
-  assumes lf: "Vector_Spaces.linear ( *s) ( *s) f"
+  assumes lf: "Vector_Spaces.linear (*s) (*s) f"
   shows "col_space (matrix f) = range f"
   unfolding col_space_eq unfolding matrix_works[OF lf] by blast
 

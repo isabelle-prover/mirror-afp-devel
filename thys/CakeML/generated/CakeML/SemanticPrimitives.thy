@@ -468,7 +468,7 @@ definition chars_to_ws  :: "(char)list \<Rightarrow>(8 word)list "  where
 fun opn_lookup  :: " opn \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int "  where 
      " opn_lookup Plus = ( (+))"
 |" opn_lookup Minus = ( (-))"
-|" opn_lookup Times = ( ( * ))"
+|" opn_lookup Times = ( (*))"
 |" opn_lookup Divide = ( (div))"
 |" opn_lookup Modulo = ( (mod))"
 

@@ -165,8 +165,8 @@ text {* A query to the frame matcher. Contains the assertions
 
 definition [simp]: "FI_QUERY P Q F \<equiv> P \<Longrightarrow>\<^sub>A Q*F"
 
-abbreviation "fi_m_fst M \<equiv> foldr (( * )) (map fst M) emp"
-abbreviation "fi_m_snd M \<equiv> foldr (( * )) (map snd M) emp"
+abbreviation "fi_m_fst M \<equiv> foldr (*) (map fst M) emp"
+abbreviation "fi_m_snd M \<equiv> foldr (*) (map snd M) emp"
 abbreviation "fi_m_match M \<equiv> (\<forall>(p,q)\<in>set M. p \<Longrightarrow>\<^sub>A q)"
 
 text {* A result of the frame matcher. Contains a list of matching pairs,
@@ -408,7 +408,7 @@ struct
     (*val _ = tracing (tr_term redex);*)
     val export = singleton (Variable.export ctxt' ctxt)
 
-    fun mk_star t1 t2 = @{term "( * )::assn \<Rightarrow> _ \<Rightarrow> _"}$t2$t1;
+    fun mk_star t1 t2 = @{term "(*)::assn \<Rightarrow> _ \<Rightarrow> _"}$t2$t1;
 
     fun mk_star' NONE NONE = NONE
     | mk_star' (SOME t1) NONE  = SOME t1

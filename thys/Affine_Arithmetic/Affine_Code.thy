@@ -129,7 +129,7 @@ lemma binop_compose:
   "binop (\<lambda>x y. f (g x y)) z1 z2 xs ys = map (apsnd f) (binop g z1 z2 xs ys)"
   by (induct "\<lambda>x y. f (g x y)" z1 z2 xs ys rule: binop.induct) auto
 
-lemma linear_cmul_left[intro, simp]: "linear (( * ) x::real \<Rightarrow> _)"
+lemma linear_cmul_left[intro, simp]: "linear ((*) x::real \<Rightarrow> _)"
   by (auto intro!: linearI simp: algebra_simps)
 
 lemma length_merge_sorted_eq:

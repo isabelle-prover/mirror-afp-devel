@@ -33,7 +33,7 @@ sublocale pseudo_hoop_algebra < right: right_complemented_monoid_algebra lesseq_
 
 context pseudo_hoop_algebra begin
 
-  lemma right_complemented_monoid_algebra: "class.right_complemented_monoid_algebra lesseq_r less_r 1 (( * )) inf_rr (r\<rightarrow>)"
+  lemma right_complemented_monoid_algebra: "class.right_complemented_monoid_algebra lesseq_r less_r 1 (*) inf_rr (r\<rightarrow>)"
    (* by unfold_locales;*)
   apply unfold_locales
   apply simp_all
@@ -48,7 +48,7 @@ context pseudo_hoop_algebra begin
 
   lemma lesseq_lesseq_r: "lesseq_r a b = (a \<le> b)"
   proof -
-    interpret A: right_complemented_monoid_algebra lesseq_r less_r 1 "( * )" inf_rr "(r\<rightarrow>)"
+    interpret A: right_complemented_monoid_algebra lesseq_r less_r 1 "(*)" inf_rr "(r\<rightarrow>)"
       by (rule right_complemented_monoid_algebra)
     show "lesseq_r a b = (a \<le> b)"
       apply (subst  le_iff_inf)
@@ -401,7 +401,7 @@ lemma lemma_2_8_ii1:
   by auto
 
 lemma lemma_2_9_i:
-  "b \<in> supremum A \<Longrightarrow> a * b \<in> supremum (( * ) a ` A)"
+  "b \<in> supremum A \<Longrightarrow> a * b \<in> supremum ((*) a ` A)"
   apply (simp add: supremum_def upper_bound_def)
   apply safe
   apply (simp add: mult_left_mono)
@@ -670,7 +670,7 @@ end
 
 context pseudo_hoop_lattice_a begin end
 
-sublocale pseudo_hoop_lattice_b <  pseudo_hoop_lattice_a "(\<squnion>)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
+sublocale pseudo_hoop_lattice_b <  pseudo_hoop_lattice_a "(\<squnion>)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   by (unfold_locales, rule sup_inf_le_distr_b)
 
 class pseudo_hoop_lattice = pseudo_hoop_sup_algebra +
@@ -690,7 +690,7 @@ begin
 end
 
 
-sublocale pseudo_hoop_lattice <  pseudo_hoop_lattice_b "(\<squnion>)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
+sublocale pseudo_hoop_lattice <  pseudo_hoop_lattice_b "(\<squnion>)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   by (unfold_locales, rule le_sup_cong_c)
 
 
@@ -731,7 +731,7 @@ definition (in pseudo_hoop_algebra)
   sup1::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<squnion>1" 70) where 
   "a \<squnion>1 b = ((a l\<rightarrow> b) r\<rightarrow> b) \<sqinter> ((b l\<rightarrow> a) r\<rightarrow> a)"
 
-sublocale pseudo_hoop_algebra < sup1: pseudo_hoop_sup1_algebra "(\<squnion>1)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
+sublocale pseudo_hoop_algebra < sup1: pseudo_hoop_sup1_algebra "(\<squnion>1)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales 
   by (simp add: sup1_def)
 
@@ -741,7 +741,7 @@ definition (in pseudo_hoop_algebra)
   sup2::"'a \<Rightarrow> 'a \<Rightarrow> 'a" (infixl "\<squnion>2" 70) where 
   "a \<squnion>2 b = ((a r\<rightarrow> b) l\<rightarrow> b) \<sqinter> ((b r\<rightarrow> a) l\<rightarrow> a)"
 
-sublocale pseudo_hoop_algebra < sup2: pseudo_hoop_sup2_algebra "(\<squnion>2)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
+sublocale pseudo_hoop_algebra < sup2: pseudo_hoop_sup2_algebra "(\<squnion>2)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales 
   by (simp add: sup2_def)
 

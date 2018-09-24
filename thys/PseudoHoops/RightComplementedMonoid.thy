@@ -77,7 +77,7 @@ subclass right_complemented_monoid
   by (simp add: dual_algebra.right_divisibility)
 end
 
-lemma (in right_complemented_monoid) right_complemented_monoid: "class.right_complemented_monoid_algebra (\<le>) (<) 1 (( * )) inf (r\<rightarrow>)"
+lemma (in right_complemented_monoid) right_complemented_monoid: "class.right_complemented_monoid_algebra (\<le>) (<) 1 (*) inf (r\<rightarrow>)"
   by (unfold_locales, simp_all add: less_le_not_le rcm_A rcm_B rcm_C rcm_D)
 
 (*

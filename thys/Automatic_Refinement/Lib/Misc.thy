@@ -1395,7 +1395,7 @@ lemma foldl_set: "foldl (\<union>) {} l = \<Union>{x. x\<in>set l}"
   apply auto
   done
 
-lemma (in monoid_mult) foldl_absorb1: "x*foldl (( * )) 1 zs = foldl (( * )) x zs"
+lemma (in monoid_mult) foldl_absorb1: "x*foldl (*) 1 zs = foldl (*) x zs"
   apply (rule sym)
   apply (rule foldl_A1_eq)
   apply (auto simp add: mult.assoc)

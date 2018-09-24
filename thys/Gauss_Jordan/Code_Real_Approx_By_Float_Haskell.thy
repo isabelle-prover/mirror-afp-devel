@@ -32,7 +32,7 @@ code_printing
     (Haskell) "(_) + (_)"
   | constant "(-) :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
     (Haskell) "(_) - (_)"
-  | constant "( * ) :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
+  | constant "(*) :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
     (Haskell) "(_) * (_)"
   | constant "(/) :: real \<Rightarrow> real \<Rightarrow> real" \<rightharpoonup>
     (Haskell) " (_) '/ (_)"

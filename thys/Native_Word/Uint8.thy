@@ -35,7 +35,7 @@ lift_definition one_uint8 :: uint8 is "1" .
 lift_definition plus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(+)" .
 lift_definition minus_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(-)" .
 lift_definition uminus_uint8 :: "uint8 \<Rightarrow> uint8" is uminus .
-lift_definition times_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "( * )" .
+lift_definition times_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(*)" .
 lift_definition divide_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(div)" .
 lift_definition modulo_uint8 :: "uint8 \<Rightarrow> uint8 \<Rightarrow> uint8" is "(mod)" .
 instance by standard (transfer, simp add: algebra_simps)+

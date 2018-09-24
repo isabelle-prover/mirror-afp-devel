@@ -93,7 +93,7 @@ begin
   lemmas left_ac = left_assoc right_commute safe_commute
 end
 
-interpretation mult: ac_operator "( * ) ::'a::ab_semigroup_mult \<Rightarrow> _ \<Rightarrow> _"
+interpretation mult: ac_operator "(*) ::'a::ab_semigroup_mult \<Rightarrow> _ \<Rightarrow> _"
   apply unfold_locales
   apply (simp_all add: ac_simps)
   done

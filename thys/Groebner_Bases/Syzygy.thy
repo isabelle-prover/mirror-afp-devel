@@ -1169,7 +1169,7 @@ lemma map2_mult_scalar_proj_poly_syz:
   by (rule nth_equalityI, simp_all add: proj_poly_syz_mult_scalar)
 
 lemma map2_times_proj:
-  "map2 ( * ) xs (map (proj_poly k) ys) = map (proj_poly k \<circ> (\<lambda>(x, y). x \<odot> y)) (zip xs ys)"
+  "map2 (*) xs (map (proj_poly k) ys) = map (proj_poly k \<circ> (\<lambda>(x, y). x \<odot> y)) (zip xs ys)"
   by (rule nth_equalityI, simp_all add: proj_mult_scalar)
 
 text \<open>Probably the following lemma also holds without the distinctness constraint on \<open>bs\<close>.\<close>
@@ -1214,10 +1214,10 @@ proof
   next
     fix k
     assume "k < length bs"
-    have "proj_poly k s = map2 ( * ) (cofactor_list_syz (length bs) s) (map (proj_poly k)
+    have "proj_poly k s = map2 (*) (cofactor_list_syz (length bs) s) (map (proj_poly k)
                                             (init_syzygy_list bs)) ! k"
       by (simp add: \<open>k < length bs\<close> init_syzygy_list_nth proj_lift_poly_syz cofactor_list_syz_nth)
-    also have "... = sum_list (map2 ( * ) (cofactor_list_syz (length bs) s)
+    also have "... = sum_list (map2 (*) (cofactor_list_syz (length bs) s)
                                             (map (proj_poly k) (init_syzygy_list bs)))"
       by (rule sum_list_eq_nthI[symmetric],
           simp_all add: \<open>k < length bs\<close> init_syzygy_list_nth proj_lift_poly_syz)

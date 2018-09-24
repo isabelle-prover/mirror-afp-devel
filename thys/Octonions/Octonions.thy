@@ -1148,7 +1148,7 @@ lemma orthogonal_transformation_octo_congruence:
 proof -
   have nq: "(Ree q)\<^sup>2 + (Im1 q)\<^sup>2 + (Im2 q)\<^sup>2 + (Im3 q)\<^sup>2 + (Im4 q)\<^sup>2 + (Im5 q)\<^sup>2 + (Im6 q)\<^sup>2 + (Im7 q)\<^sup>2 = 1"
     using assms norm_octo_def by auto 
-  have "Vector_Spaces.linear ( *\<^sub>R) ( *\<^sub>R) (\<lambda>x. HIm (Octonions.cnj q * Hv x * q))"
+  have "Vector_Spaces.linear (*\<^sub>R) (*\<^sub>R) (\<lambda>x. HIm (Octonions.cnj q * Hv x * q))"
     by unfold_locales (simp_all add: octo_distrib_left octo_distrib_right
                                      octo_mult_scaleR_left octo_mult_scaleR_right)
   moreover have "HIm (Octonions.cnj q * Hv v * q) \<bullet> HIm (Octonions.cnj q * Hv w * q) =

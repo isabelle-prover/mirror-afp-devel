@@ -65,7 +65,7 @@ hide_const (open) gt geq max
 subsection {* A connection between class based semirings and set based semirings *}
 
 definition class_semiring :: "'a itself \<Rightarrow> 'b \<Rightarrow> ('a :: {plus,times,one,zero},'b)ring_scheme" where
-  "class_semiring _ b \<equiv> \<lparr> carrier = UNIV, mult = ( * ), one = 1, zero = 0, add = (+), \<dots> = b\<rparr>"
+  "class_semiring _ b \<equiv> \<lparr> carrier = UNIV, mult = (*), one = 1, zero = 0, add = (+), \<dots> = b\<rparr>"
 
 lemma class_semiring: "semiring (class_semiring (TYPE('a :: ordered_semiring_1)) b)"
   unfolding class_semiring_def

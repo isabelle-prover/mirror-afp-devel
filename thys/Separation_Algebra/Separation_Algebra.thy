@@ -121,7 +121,7 @@ abbreviation
 
 definition
   sep_list_conj :: "('a \<Rightarrow> bool) list \<Rightarrow> ('a \<Rightarrow> bool)"  ("\<And>* _" [60] 90) where
-  "sep_list_conj Ps \<equiv> foldl (( ** )) \<box> Ps"
+  "sep_list_conj Ps \<equiv> foldl (**) \<box> Ps"
 
 
 subsection {* Disjunction/Addition Properties *}
@@ -251,7 +251,7 @@ qed
 
 lemmas sep_conj_ac = sep_conj_commute sep_conj_assoc sep_conj_left_commute
 
-lemma ab_semigroup_mult_sep_conj: "class.ab_semigroup_mult ( ** )"
+lemma ab_semigroup_mult_sep_conj: "class.ab_semigroup_mult (**)"
   by (unfold_locales)
      (auto simp: sep_conj_ac)
 
@@ -302,10 +302,10 @@ lemma sep_conj_sep_emptyE:
   "\<lbrakk> P s; (P ** \<box>) s \<Longrightarrow> (Q ** R) s \<rbrakk> \<Longrightarrow> (Q ** R) s"
   by simp
 
-lemma monoid_add: "class.monoid_add (( ** )) \<box>"
+lemma monoid_add: "class.monoid_add ((**)) \<box>"
   by (unfold_locales) (auto simp: sep_conj_ac)
 
-lemma comm_monoid_add: "class.comm_monoid_add ( ** ) \<box>"
+lemma comm_monoid_add: "class.comm_monoid_add (**) \<box>"
   by (unfold_locales) (auto simp: sep_conj_ac)
 
 
@@ -646,10 +646,10 @@ lemma strictly_exact_conj_impl:
 
 end
 
-interpretation sep: ab_semigroup_mult "( ** )"
+interpretation sep: ab_semigroup_mult "(**)"
   by (rule ab_semigroup_mult_sep_conj)
 
-interpretation sep: comm_monoid_add "( ** )" \<box>
+interpretation sep: comm_monoid_add "(**)" \<box>
   by (rule comm_monoid_add)
 
 

@@ -348,7 +348,7 @@ lemma list_of_oalist_shift_keys:
       simp add: nat_term_compare_inv_conv[symmetric] nat_term_compare_inv_def splus_eq_splus nat_term_compare_splus)
 
 lemma lookup_shift_map_keys_plus:
-  "lookup (MP_oalist (shift_map_keys t (( * ) c) xs)) (t \<oplus> u) = c * lookup (MP_oalist xs) u" (is "?l = ?r")
+  "lookup (MP_oalist (shift_map_keys t ((*) c) xs)) (t \<oplus> u) = c * lookup (MP_oalist xs) u" (is "?l = ?r")
 proof -
   let ?f = "\<lambda>kv. (t \<oplus> fst kv, c * snd kv)"
   have "?l = lookup_ko_ntm (map_raw ?f (list_of_oalist_ntm xs)) (fst (?f (u, c)))"
@@ -361,7 +361,7 @@ proof -
 qed
 
 lemma keys_shift_map_keys_subset:
-  "keys (MP_oalist (shift_map_keys t (( * ) c) xs)) \<subseteq> ((\<oplus>) t) ` keys (MP_oalist xs)" (is "?l \<subseteq> ?r")
+  "keys (MP_oalist (shift_map_keys t ((*) c) xs)) \<subseteq> ((\<oplus>) t) ` keys (MP_oalist xs)" (is "?l \<subseteq> ?r")
 proof -
   let ?f = "\<lambda>kv. (t \<oplus> fst kv, c * snd kv)"
   have "?l = fst ` set (fst (map_raw ?f (list_of_oalist_ntm xs)))"
@@ -374,32 +374,32 @@ qed
 
 lemma monom_mult_MP_oalist [code]:
   "monom_mult c t (MP_oalist xs) =
-    MP_oalist (if c = 0 then OAlist_empty_ntm (snd (list_of_oalist_ntm xs)) else shift_map_keys t (( * ) c) xs)"
+    MP_oalist (if c = 0 then OAlist_empty_ntm (snd (list_of_oalist_ntm xs)) else shift_map_keys t ((*) c) xs)"
 proof (cases "c = 0")
   case True
   hence "monom_mult c t (MP_oalist xs) = 0" using monom_mult_zero_left by simp
   thus ?thesis using True by simp
 next
   case False
-  have "monom_mult c t (MP_oalist xs) = MP_oalist (shift_map_keys t (( * ) c) xs)"
+  have "monom_mult c t (MP_oalist xs) = MP_oalist (shift_map_keys t ((*) c) xs)"
   proof (rule poly_mapping_eqI, simp add: lookup_monom_mult del: MP_oalist.rep_eq, intro conjI impI)
     fix u
     assume "t adds\<^sub>p u"
     then obtain v where "u = t \<oplus> v" by (rule adds_ppE)
-    thus "c * lookup (MP_oalist xs) (u \<ominus> t) = lookup (MP_oalist (shift_map_keys t (( * ) c) xs)) u"
+    thus "c * lookup (MP_oalist xs) (u \<ominus> t) = lookup (MP_oalist (shift_map_keys t ((*) c) xs)) u"
       by (simp add: splus_sminus lookup_shift_map_keys_plus del: MP_oalist.rep_eq)
   next
     fix u
     assume "\<not> t adds\<^sub>p u"
-    have "u \<notin> keys (MP_oalist (shift_map_keys t (( * ) c) xs))"
+    have "u \<notin> keys (MP_oalist (shift_map_keys t ((*) c) xs))"
     proof
-      assume "u \<in> keys (MP_oalist (shift_map_keys t (( * ) c) xs))"
+      assume "u \<in> keys (MP_oalist (shift_map_keys t ((*) c) xs))"
       also have "... \<subseteq> ((\<oplus>) t) ` keys (MP_oalist xs)" by (fact keys_shift_map_keys_subset)
       finally obtain v where "u = t \<oplus> v" ..
       hence "t adds\<^sub>p u" by (rule adds_ppI)
       with \<open>\<not> t adds\<^sub>p u\<close> show False ..
     qed
-    thus "lookup (MP_oalist (shift_map_keys t (( * ) c) xs)) u = 0" by simp
+    thus "lookup (MP_oalist (shift_map_keys t ((*) c) xs)) u = 0" by simp
   qed
   thus ?thesis by (simp add: False)
 qed

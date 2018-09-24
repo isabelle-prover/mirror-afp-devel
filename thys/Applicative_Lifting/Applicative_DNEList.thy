@@ -139,7 +139,7 @@ text \<open>@{typ "_ dnelist"} does not have combinator C, so it cannot have W e
 context begin 
 private lift_definition x :: "int dnelist" is "[2,3]" by simp
 private lift_definition y :: "int dnelist" is "[5,7]" by simp
-private lemma "pure_dnelist (\<lambda>f x y. f y x) \<diamondop> pure_dnelist (( * )) \<diamondop> x \<diamondop> y \<noteq> pure_dnelist (( * )) \<diamondop> y \<diamondop> x"
+private lemma "pure_dnelist (\<lambda>f x y. f y x) \<diamondop> pure_dnelist ((*)) \<diamondop> x \<diamondop> y \<noteq> pure_dnelist ((*)) \<diamondop> y \<diamondop> x"
   by transfer(simp add: ap_list_def fun_eq_iff)
 end
 

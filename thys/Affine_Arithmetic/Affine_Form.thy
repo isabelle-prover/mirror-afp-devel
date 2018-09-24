@@ -508,7 +508,7 @@ qed
 subsection \<open>Pointwise Scaling of Partial Deviations\<close>
 
 definition scaleR_pdevs::"real \<Rightarrow> 'a::real_vector pdevs \<Rightarrow> 'a pdevs"
-  where "scaleR_pdevs r x = unop_pdevs (( *\<^sub>R) r) x"
+  where "scaleR_pdevs r x = unop_pdevs ((*\<^sub>R) r) x"
 
 lemma pdevs_apply_scaleR_pdevs[simp]:
   "pdevs_apply (scaleR_pdevs x Y) n = x *\<^sub>R pdevs_apply Y n"
@@ -1514,11 +1514,11 @@ lemma list_of_pdevs_nonzero: "x \<in> set (map snd (list_of_pdevs xs)) \<Longrig
 
 lemma pdevs_of_list_scaleR_0[simp]:
   fixes xs::"'a::real_vector list"
-  shows "pdevs_of_list (map (( *\<^sub>R) 0) xs) = zero_pdevs"
+  shows "pdevs_of_list (map ((*\<^sub>R) 0) xs) = zero_pdevs"
   by (auto simp: pdevs_apply_pdevs_of_list intro!: pdevs_eqI)
 
 lemma degree_pdevs_of_list_scaleR:
-  "degree (pdevs_of_list (map (( *\<^sub>R) c) xs)) = (if c \<noteq> 0 then degree (pdevs_of_list xs) else 0)"
+  "degree (pdevs_of_list (map ((*\<^sub>R) c) xs)) = (if c \<noteq> 0 then degree (pdevs_of_list xs) else 0)"
   by (auto simp: pdevs_apply_pdevs_of_list intro!: degree_cong)
 
 lemma list_of_pdevs_eq:
@@ -1675,7 +1675,7 @@ proof -
 qed
 
 lemma dense_list_of_pdevs_scaleR:
-  "r \<noteq> 0 \<Longrightarrow> map (( *\<^sub>R) r) (dense_list_of_pdevs x) = dense_list_of_pdevs (scaleR_pdevs r x)"
+  "r \<noteq> 0 \<Longrightarrow> map ((*\<^sub>R) r) (dense_list_of_pdevs x) = dense_list_of_pdevs (scaleR_pdevs r x)"
   by (auto simp: dense_list_of_pdevs_def)
 
 lemma degree_pdevs_of_list_eq:

@@ -73,7 +73,7 @@ and @{term y}, and also demonstrate that one can operate directly on a real-valu
 infinite) state space: *}
 
 lemma
-  "\<guillemotleft>\<lambda>s::real. s \<noteq> 0\<guillemotright> \<tturnstile> wp (Apply (( * ) 2) ;; Apply (\<lambda>s. s / s)) \<guillemotleft>\<lambda>s. s = 1\<guillemotright>"
+  "\<guillemotleft>\<lambda>s::real. s \<noteq> 0\<guillemotright> \<tturnstile> wp (Apply ((*) 2) ;; Apply (\<lambda>s. s / s)) \<guillemotleft>\<lambda>s. s = 1\<guillemotright>"
   by(pvcg, simp add:o_def)
 
 text {* So far, we haven't done anything that required probabilities, or expectations other than 0

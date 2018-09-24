@@ -607,7 +607,7 @@ lemma
   shows "f b + u * (x - b) \<le> f x"
 proof -
   from assms(2-)
-    mvt_very_simple[of x b f "\<lambda>x. ( * ) (f' x)",
+    mvt_very_simple[of x b f "\<lambda>x. (*) (f' x)",
       rule_format,
       OF _ has_derivative_subset[OF assms(1)[simplified has_field_derivative_def]]]
   obtain y where "y \<in> {x .. b}"  "f b - f x = (b - x) * f' y"
@@ -627,7 +627,7 @@ lemma
   shows "f x \<ge> f a + l * (x - a)"
 proof -
   from assms(2-)
-    mvt_very_simple[of a x f "\<lambda>x. ( * ) (f' x)",
+    mvt_very_simple[of a x f "\<lambda>x. (*) (f' x)",
       rule_format,
       OF _ has_derivative_subset[OF assms(1)[simplified has_field_derivative_def]]]
   obtain y where "y \<in> {a .. x}"  "f x - f a = (x - a) * f' y"
@@ -647,7 +647,7 @@ lemma
   shows "f x \<le> f a + u * (x - a)"
 proof -
   from assms(2-)
-    mvt_very_simple[of a x f "\<lambda>x. ( * ) (f' x)",
+    mvt_very_simple[of a x f "\<lambda>x. (*) (f' x)",
       rule_format,
       OF _ has_derivative_subset[OF assms(1)[simplified has_field_derivative_def]]]
   obtain y where "y \<in> {a .. x}"  "f x - f a = (x - a) * f' y"
@@ -667,7 +667,7 @@ lemma
   shows "f x \<le> f b + l * (x - b)"
 proof -
   from assms(2-)
-    mvt_very_simple[of x b f "\<lambda>x. ( * ) (f' x)",
+    mvt_very_simple[of x b f "\<lambda>x. (*) (f' x)",
       rule_format,
       OF _ has_derivative_subset[OF assms(1)[simplified has_field_derivative_def]]]
   obtain y where "y \<in> {x .. b}"  "f b - f x = (b - x) * f' y"

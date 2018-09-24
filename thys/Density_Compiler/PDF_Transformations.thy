@@ -33,15 +33,15 @@ lemma Int_stable_Icc: "Int_stable (range (\<lambda>(a, b). {a .. b::real}))"
 
 lemma distr_mult_real:
   assumes "c \<noteq> 0" "has_density M lborel (f :: real \<Rightarrow> ennreal)"
-  shows "has_density (distr M borel (( * ) c)) lborel (\<lambda>x. f (x / c) * inverse (abs c))"
+  shows "has_density (distr M borel ((*) c)) lborel (\<lambda>x. f (x / c) * inverse (abs c))"
             (is "has_density ?M' _ ?f'")
 proof
   from assms(2) have "M = density lborel f" by (rule has_densityD)
   also from assms have Mf[measurable]: "f \<in> borel_measurable borel"
     by (auto dest: has_densityD)
-  hence "distr (density lborel f) borel (( * ) c) = density lborel ?f'" (is "?M1 = ?M2")
+  hence "distr (density lborel f) borel ((*) c) = density lborel ?f'" (is "?M1 = ?M2")
   proof (intro measure_eqI)
-    fix X assume X[measurable]: "X \<in> sets (distr (density lborel f) borel (( * ) c))"
+    fix X assume X[measurable]: "X \<in> sets (distr (density lborel f) borel ((*) c))"
     with assms have "emeasure ?M1 X = \<integral>\<^sup>+x. f x * indicator X (c * x) \<partial>lborel"
       by (subst emeasure_distr, simp, simp, subst emeasure_density)
          (auto dest: has_densityD intro!: measurable_sets_borel nn_integral_cong
@@ -56,17 +56,17 @@ proof
       by (subst emeasure_density) auto
     finally show "emeasure ?M1 X = emeasure ?M2 X" .
   qed simp
-  finally show "distr M borel (( * ) c) = density lborel ?f'" .
+  finally show "distr M borel ((*) c) = density lborel ?f'" .
 qed (insert assms, auto dest: has_densityD)
 
 lemma distr_uminus_real:
   assumes "has_density M lborel (f :: real \<Rightarrow> ennreal)"
   shows "has_density (distr M borel uminus) lborel (\<lambda>x. f (- x))"
 proof-
-  from assms have "has_density (distr M borel (( * ) (- 1))) lborel
+  from assms have "has_density (distr M borel ((*) (- 1))) lborel
                        (\<lambda>x. f (x / -1) * ennreal (inverse (abs (-1))))"
     by (intro distr_mult_real) simp_all
-  also have "( * ) (-1) = (uminus :: real \<Rightarrow> real)" by (intro ext) simp
+  also have "(*) (-1) = (uminus :: real \<Rightarrow> real)" by (intro ext) simp
   also have "(\<lambda>x. f (x / -1) * ennreal (inverse (abs (-1)))) = (\<lambda>x. f (-x))"
     by (intro ext) (simp add: one_ennreal_def[symmetric])
   finally show ?thesis .

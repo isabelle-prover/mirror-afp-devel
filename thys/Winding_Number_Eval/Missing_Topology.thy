@@ -12,9 +12,9 @@ subsection \<open>Misc\<close>
 lemma open_times_image:
   fixes S::"'a::real_normed_field set"
   assumes "open S" "c\<noteq>0"
-  shows "open ((( * ) c) ` S)" 
+  shows "open (((*) c) ` S)" 
 proof -
-  let ?f = "\<lambda>x. x/c" and ?g="(( * ) c)"
+  let ?f = "\<lambda>x. x/c" and ?g="((*) c)"
   have "continuous_on UNIV ?f" using \<open>c\<noteq>0\<close> by (auto intro:continuous_intros)
   then have "open (?f -` S)" using \<open>open S\<close> by (auto elim:open_vimage)
   moreover have "?g ` S = ?f -` S" using \<open>c\<noteq>0\<close>

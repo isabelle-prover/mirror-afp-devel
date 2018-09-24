@@ -61,7 +61,7 @@ by(best intro: ccpo.mcont2mcont'[OF complete_lattice_ccpo] mcont_times_ennreal1 
 
 lemma ereal_INF_cmult: "0 < c \<Longrightarrow> (INF i:I. c * f i) = ereal c * (INF i:I. f i)"
 using ereal_Inf_cmult[where P="\<lambda>x. \<exists>i\<in>I. x = f i", of c]
-by(rule box_equals)(auto intro!: arg_cong[where f="Inf"] arg_cong2[where f="( * )"])
+by(rule box_equals)(auto intro!: arg_cong[where f="Inf"] arg_cong2[where f="(*)"])
 
 lemma ereal_INF_multc: "0 < c \<Longrightarrow> (INF i:I. f i * c) = (INF i:I. f i) * ereal c"
 using ereal_INF_cmult[of c f I] by(simp add: mult.commute)
@@ -466,7 +466,7 @@ proof(induction arbitrary: gpv rule: parallel_fixp_induct_1_1[OF complete_lattic
   case bottom show ?case by(simp add: bot_ennreal_def)
   case (step expectation_gpv' expectation_gpv'')
   show ?case using assms
-    apply(simp add: distrib_left mult_ac nn_integral_cmult[symmetric] generat.case_distrib[where h="( * ) _"])
+    apply(simp add: distrib_left mult_ac nn_integral_cmult[symmetric] generat.case_distrib[where h="(*) _"])
     apply(subst INF_mult_left_ennreal, simp_all add: step.IH)
     done
 qed

@@ -497,7 +497,7 @@ lemma hd_Basis_list[simp]: "hd Basis_list \<in> Basis"
   unfolding Basis_list[symmetric]
   by (rule hd_in_set) (auto simp: set_empty[symmetric])
 
-definition "inner_lv_rel a b = sum_list (map2 ( * ) a b)"
+definition "inner_lv_rel a b = sum_list (map2 (*) a b)"
 
 lemma eucl_of_list_inner_eq: "(eucl_of_list xs::'a) \<bullet> eucl_of_list ys = inner_lv_rel xs ys"
   if "length xs = DIM('a::executable_euclidean_space)" "length ys = DIM('a)"

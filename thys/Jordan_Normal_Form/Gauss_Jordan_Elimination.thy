@@ -22,7 +22,7 @@ definition mat_multrow_gen :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarr
      (\<lambda> (i,j). if k = i then mul a (A $$ (i,j)) else A $$ (i,j))"
 
 abbreviation mat_multrow :: "nat \<Rightarrow> 'a :: semiring_1 \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("multrow") where
-  "multrow \<equiv> mat_multrow_gen (( * ))"
+  "multrow \<equiv> mat_multrow_gen ((*))"
 
 lemmas mat_multrow_def = mat_multrow_gen_def
 
@@ -43,7 +43,7 @@ definition mat_addrow_gen :: "('a \<Rightarrow> 'a \<Rightarrow> 'a) \<Rightarro
     (\<lambda> (i,j). if k = i then ad (mul a (A $$ (l,j))) (A $$ (i,j)) else A $$ (i,j))"
 
 abbreviation mat_addrow :: "'a :: semiring_1 \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a mat \<Rightarrow> 'a mat" ("addrow") where
-  "addrow \<equiv> mat_addrow_gen (+) (( * ))"
+  "addrow \<equiv> mat_addrow_gen (+) ((*))"
 
 lemmas mat_addrow_def = mat_addrow_gen_def
 
@@ -218,7 +218,7 @@ subsection \<open>Gauss-Jordan Elimination\<close>
 fun eliminate_entries_rec where
   "eliminate_entries_rec B i [] = B"
 | "eliminate_entries_rec B i ((ai'j,i') # is) = ( 
-  eliminate_entries_rec (mat_addrow_gen ((+) :: 'b :: ring_1 \<Rightarrow> 'b \<Rightarrow> 'b) ( * ) ai'j i' i B) i is)"
+  eliminate_entries_rec (mat_addrow_gen ((+) :: 'b :: ring_1 \<Rightarrow> 'b \<Rightarrow> 'b) (*) ai'j i' i B) i is)"
 
 context
   fixes minus :: "'a \<Rightarrow> 'a \<Rightarrow> 'a"
@@ -244,7 +244,7 @@ lemma carrier_eliminate_entries: "A \<in> carrier_mat nr nc \<Longrightarrow> el
   unfolding carrier_mat_def by auto
 end
 
-abbreviation "eliminate_entries \<equiv> eliminate_entries_gen (-) (( * ) :: 'a :: ring_1 \<Rightarrow> 'a \<Rightarrow> 'a)"
+abbreviation "eliminate_entries \<equiv> eliminate_entries_gen (-) ((*) :: 'a :: ring_1 \<Rightarrow> 'a \<Rightarrow> 'a)"
 
 lemma eliminate_entries_convert: 
   assumes jA: "J < dim_col A" and *: "I < dim_row A" "dim_row B = dim_row A" 

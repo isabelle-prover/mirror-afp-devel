@@ -1201,7 +1201,7 @@ lemma proj_lift_poly_fun_homogenous:
 subsection \<open>Component-wise Multiplication\<close>
 
 definition mult_vec :: "('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::semiring_0)" (infixl "**" 75)
-  where "mult_vec = lift_poly_fun_2 ( * )"
+  where "mult_vec = lift_poly_fun_2 (*)"
 
 lemma lookup_mult_vec:
   "lookup (p ** q) v = lookup ((proj_poly (component_of_term v) p) * (proj_poly (component_of_term v) q)) (pp_of_term v)"
@@ -1332,7 +1332,7 @@ qed
 subsection \<open>Scalar Multiplication\<close>
 
 definition mult_scalar :: "('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::semiring_0)" (infixl "\<odot>" 75)
-  where "mult_scalar p = lift_poly_fun (( * ) p)"
+  where "mult_scalar p = lift_poly_fun ((*) p)"
 
 lemma lookup_mult_scalar:
   "lookup (p \<odot> q) v = lookup (p * (proj_poly (component_of_term v) q)) (pp_of_term v)"
@@ -1994,10 +1994,10 @@ lemma punit_adds_term [simp]: "punit.adds_term = (adds)"
 lemma punit_proj_poly [simp]: "punit.proj_poly = (\<lambda>_. id)"
   by (rule, rule, rule poly_mapping_eqI, simp add: punit.lookup_proj_poly)
 
-lemma punit_mult_vec [simp]: "punit.mult_vec = ( * )"
+lemma punit_mult_vec [simp]: "punit.mult_vec = (*)"
   by (rule, rule, rule poly_mapping_eqI, simp add: punit.lookup_mult_vec)
 
-lemma punit_mult_scalar [simp]: "punit.mult_scalar = ( * )"
+lemma punit_mult_scalar [simp]: "punit.mult_scalar = (*)"
   by (rule, rule, rule poly_mapping_eqI, simp add: punit.lookup_mult_scalar)
 
 context term_powerprod

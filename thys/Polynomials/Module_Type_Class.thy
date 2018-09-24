@@ -532,7 +532,7 @@ end (* module_struct *)
 
 section \<open>Left-Ideals over Rings\<close>
 
-lemma module_struct_times: "module_struct ( * )"
+lemma module_struct_times: "module_struct (*)"
   by (standard, simp_all add: algebra_simps)
 
 interpretation ideal: module_struct times

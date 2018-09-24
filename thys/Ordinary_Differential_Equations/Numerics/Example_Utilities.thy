@@ -868,10 +868,10 @@ lemma c0_info_of_appr_transfer[transfer_rule]:
 lemma aform_scaleR2_transfer[transfer_rule]:
   "((=) ===> (=) ===> rel_set (rel_prod A B) ===> rel_set (rel_prod A B))
     scaleR2 scaleR2"
-  if [unfolded Rel_def, transfer_rule]: "((=) ===> B ===> B) ( *\<^sub>R) ( *\<^sub>R)"
+  if [unfolded Rel_def, transfer_rule]: "((=) ===> B ===> B) (*\<^sub>R) (*\<^sub>R)"
   unfolding scaleR2_def
   by transfer_prover
-lemma scaleR_rel_blinfun_transfer[transfer_rule]: "((=) ===> rel_blinfun rel_ve rel_ve ===> rel_blinfun rel_ve rel_ve) ( *\<^sub>R) ( *\<^sub>R)"
+lemma scaleR_rel_blinfun_transfer[transfer_rule]: "((=) ===> rel_blinfun rel_ve rel_ve ===> rel_blinfun rel_ve rel_ve) (*\<^sub>R) (*\<^sub>R)"
   apply (auto intro!: rel_funI simp: rel_blinfun_def blinfun.bilinear_simps)
   apply (drule rel_funD)
    apply assumption
@@ -974,7 +974,7 @@ next
 qed
 
 lemma bounded_linear_matrix_vector_mul[THEN bounded_linear_compose, bounded_linear_intros]:
-  "bounded_linear (( *v) x)" for x::"real^'x^'y"
+  "bounded_linear ((*v) x)" for x::"real^'x^'y"
   unfolding linear_linear
   by (rule matrix_vector_mul_linear)
 
@@ -2480,7 +2480,7 @@ ML \<open>val ode_numerics_conv = @{computation_check
     "(/)::real\<Rightarrow>real\<Rightarrow>real"
     "(^)::real\<Rightarrow>nat\<Rightarrow>real"
     "uminus::real\<Rightarrow>_"
-    "(+)::real\<Rightarrow>real\<Rightarrow>real" "(-)::real\<Rightarrow>real\<Rightarrow>real"  "( * )::real\<Rightarrow>real\<Rightarrow>real"
+    "(+)::real\<Rightarrow>real\<Rightarrow>real" "(-)::real\<Rightarrow>real\<Rightarrow>real"  "(*)::real\<Rightarrow>real\<Rightarrow>real"
     real_divl real_divr
     real_of_int
     "0::real"
@@ -2492,7 +2492,7 @@ ML \<open>val ode_numerics_conv = @{computation_check
     "1::rat"
     "(+)::rat\<Rightarrow>rat\<Rightarrow>rat"
     "(-)::rat\<Rightarrow>rat\<Rightarrow>rat"
-    "( * )::rat\<Rightarrow>rat\<Rightarrow>rat"
+    "(*)::rat\<Rightarrow>rat\<Rightarrow>rat"
     "uminus::rat\<Rightarrow>_"
     "(/)::rat\<Rightarrow>rat\<Rightarrow>rat"
     "(^)::rat\<Rightarrow>nat\<Rightarrow>rat"
@@ -2586,7 +2586,7 @@ ML \<open>val ode_numerics_conv = @{computation_check
     "1::floatarith"
     "(+)::_\<Rightarrow>_\<Rightarrow>floatarith"
     "(-)::_\<Rightarrow>_\<Rightarrow>floatarith"
-    "( * )::_\<Rightarrow>_\<Rightarrow>floatarith"
+    "(*)::_\<Rightarrow>_\<Rightarrow>floatarith"
     "(/)::_\<Rightarrow>_\<Rightarrow>floatarith"
     "inverse::_\<Rightarrow>floatarith"
     "uminus::_\<Rightarrow>floatarith"

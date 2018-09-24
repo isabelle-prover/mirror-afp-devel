@@ -126,7 +126,7 @@ qed
 
 text\<open>Scaling\<close>
 definition scale :: "rat \<Rightarrow> (var, rat) fmap \<Rightarrow> (var, rat) fmap" where
-  "scale r lp = (if r = 0 then fmempty else (fmmap (( * ) r) lp))"
+  "scale r lp = (if r = 0 then fmempty else (fmmap ((*) r) lp))"
 
 lemma [code abstract]: 
   "linear_poly_map (r *R p) = scale r (linear_poly_map p)"

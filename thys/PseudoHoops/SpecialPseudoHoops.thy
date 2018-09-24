@@ -98,7 +98,7 @@ lemma lemma_4_3_ii_b: "a \<squnion>2 b = (b r\<rightarrow> a) l\<rightarrow> a"
 end
 
 
-sublocale wajsberg_pseudo_hoop_algebra < lattice1:pseudo_hoop_lattice_b "(\<squnion>1)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
+sublocale wajsberg_pseudo_hoop_algebra < lattice1:pseudo_hoop_lattice_b "(\<squnion>1)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   apply (simp add: lemma_4_3_i_a)
   by (simp add: lemma_2_5_13_b lemma_2_5_13_a)
@@ -112,7 +112,7 @@ begin
 end
 
 
-sublocale wajsberg_pseudo_hoop_algebra < lattice2:pseudo_hoop_lattice_b "(\<squnion>2)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
+sublocale wajsberg_pseudo_hoop_algebra < lattice2:pseudo_hoop_lattice_b "(\<squnion>2)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   apply (simp add: lemma_4_3_ii_a)
   by (simp add: lemma_2_5_13_b lemma_2_5_13_a)
@@ -383,7 +383,7 @@ sublocale basic_pseudo_hoop_algebra <  basic_lattice:lattice "(\<sqinter>)" "(\<
 
 context pseudo_hoop_lattice begin end
 
-sublocale basic_pseudo_hoop_algebra <  pseudo_hoop_lattice "(\<squnion>1)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
+sublocale basic_pseudo_hoop_algebra <  pseudo_hoop_lattice "(\<squnion>1)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   by (simp_all add: basic_lattice.sup_assoc)
 
@@ -391,11 +391,11 @@ class sup_assoc_pseudo_hoop_algebra = pseudo_hoop_algebra +
   assumes sup1_assoc: "a \<squnion>1 (b \<squnion>1 c) = (a \<squnion>1 b) \<squnion>1 c"
   and sup2_assoc: "a \<squnion>2 (b \<squnion>2 c) = (a \<squnion>2 b) \<squnion>2 c"
 
-sublocale sup_assoc_pseudo_hoop_algebra <  sup1_lattice: pseudo_hoop_lattice "(\<squnion>1)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
+sublocale sup_assoc_pseudo_hoop_algebra <  sup1_lattice: pseudo_hoop_lattice "(\<squnion>1)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   by (simp add: sup1_assoc)
 
-sublocale sup_assoc_pseudo_hoop_algebra <  sup2_lattice: pseudo_hoop_lattice "(\<squnion>2)" "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
+sublocale sup_assoc_pseudo_hoop_algebra <  sup2_lattice: pseudo_hoop_lattice "(\<squnion>2)" "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)"
   apply unfold_locales
   by (simp add: sup2_assoc)
 
@@ -432,7 +432,7 @@ lemma (in pseudo_hoop_lattice) sup_times_right:
 
 context basic_pseudo_hoop_algebra begin end
 
-sublocale sup_assoc_pseudo_hoop_algebra_1 <  basic_1: basic_pseudo_hoop_algebra  "( * )" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)" 
+sublocale sup_assoc_pseudo_hoop_algebra_1 <  basic_1: basic_pseudo_hoop_algebra  "(*)" "(\<sqinter>)" "(l\<rightarrow>)" "(\<le>)" "(<)" 1 "(r\<rightarrow>)" 
   apply unfold_locales
   apply (subst left_residual [THEN sym])
   apply (rule_tac y = "(a l\<rightarrow> b) \<squnion>1 (b l\<rightarrow> a) l\<rightarrow> c" in order_trans)
@@ -550,7 +550,7 @@ end
 
 context pseudo_bl_algebra begin end
 
-sublocale bounded_basic_pseudo_hoop_algebra < basic:pseudo_bl_algebra 1 "( * )" "0"  "(\<sqinter>)" "(\<squnion>1)" "(l\<rightarrow>)" "(r\<rightarrow>)" "(\<le>)" "(<)"
+sublocale bounded_basic_pseudo_hoop_algebra < basic:pseudo_bl_algebra 1 "(*)" "0"  "(\<sqinter>)" "(\<squnion>1)" "(l\<rightarrow>)" "(r\<rightarrow>)" "(\<le>)" "(<)"
   apply unfold_locales 
   apply (rule zero_smallest) 
   apply (rule left_residual) 

@@ -65,7 +65,7 @@ fun get_intros NONE b = if not b then master_intros else
 val allowed_consts =
   [@{term "(+) :: nat => nat => nat"}, @{term "Suc :: nat => nat"},
    @{term "(+) :: real => real => real"}, @{term "(-) :: real => real => real"},
-   @{term "uminus :: real => real"}, @{term "( * ) :: real => real => real"}, 
+   @{term "uminus :: real => real"}, @{term "(*) :: real => real => real"}, 
    @{term "(/) :: real => real => real"}, @{term "inverse :: real => real"},
    @{term "(powr) :: real => real => real"}, @{term "real_of_nat"}, @{term "real :: nat => real"},
    @{term "Num.numeral :: num => real"}, @{term "Num.Bit0"}, @{term "Num.Bit1"},
@@ -261,7 +261,7 @@ end;
 
 fun mk_prod [] = @{term "1 :: real"}
 |   mk_prod (x::xs) = 
-      fold (fn x => fn acc => @{term "( * ) :: real => real => real"} $ x $ acc) xs x
+      fold (fn x => fn acc => @{term "(*) :: real => real => real"} $ x $ acc) xs x
 
 fun mk_quot (xs, []) = mk_prod xs
   | mk_quot ([], ys) = @{term "inverse :: real => real"} $ mk_prod ys
@@ -270,7 +270,7 @@ fun mk_quot (xs, []) = mk_prod xs
 fun analyze_prod ctxt f x minus t (acc1, acc2) =
 let 
   fun go inv (oper $ t1 $ t2) acc =
-        if oper = @{term "( * ) :: real => real => real"} then
+        if oper = @{term "(*) :: real => real => real"} then
           go inv t1 (go inv t2 acc)
         else if oper = @{term "(/) :: real => real => real"} then
           go inv t1 (go (not inv) t2 acc)

@@ -386,9 +386,9 @@ definition circle_polar where
 
 lemma circle_polar_smooth: "(circle_polar) C1_differentiable_on {0..1}"
 proof -
-  have "inj (( * ) (2 * pi))"
+  have "inj ((*) (2 * pi))"
     by (auto simp: inj_on_def)
-  then have *: "\<And>x. finite ({0..1} \<inter> ( * ) (2 * pi) -` {x})"
+  then have *: "\<And>x. finite ({0..1} \<inter> (*) (2 * pi) -` {x})"
     by (simp add: finite_vimageI)
   have "(\<lambda>t. ((d/2)  * cos (2 * pi * t), (d/2) * sin (2 * pi * t))) C1_differentiable_on {0..1}"
     by (rule * derivative_intros)+
@@ -441,7 +441,7 @@ lemma circle_boundary_reparams:
     "reparam (rec_join [(rot_circle_right_edge)]) (rec_join [(subcube (3/4) 1 (1, circle_polar)), (subcube 0 (1/4) (1, circle_polar))])"
     (is ?P4)
 proof -
-  let ?\<phi> = "(( * ) (1/pi) \<circ> custom_arccos \<circ> (\<lambda>t. 2 * x_coord (1 - t)))" 
+  let ?\<phi> = "((*) (1/pi) \<circ> custom_arccos \<circ> (\<lambda>t. 2 * x_coord (1 - t)))" 
   let ?LHS1 = "(\<lambda>x. (- (d * sqrt (1/4 - x_coord (1 - x) * x_coord (1 - x))), x_coord (1 - x) * d))"
   let ?RHS1 = "((\<lambda>x. if x * 2 \<le> 1 then (d * cos (2 * pi * (2 * x/4 + 1/4))/2, d * sin (2 * pi * (2 * x/4 + 1/4))/2)
                         else (d * cos (2 * pi * ((2 * x - 1)/4 + 1/2))/2, d * sin (2 * pi * ((2 * x - 1)/4 + 1/2))/2)) \<circ> ?\<phi>)"

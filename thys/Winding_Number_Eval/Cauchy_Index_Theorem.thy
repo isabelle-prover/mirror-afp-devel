@@ -2065,7 +2065,7 @@ proof -
     unfolding joinpaths_def by auto
   moreover have "finite ?l1s"
   proof -
-    have "?l1s = (( * ) (1/2)) ` ?ls l1" by (auto intro:rev_image_eqI)
+    have "?l1s = ((*) (1/2)) ` ?ls l1" by (auto intro:rev_image_eqI)
     thus ?thesis using assms by simp 
   qed
   moreover have "finite ?l2s"
@@ -3108,7 +3108,7 @@ proof -
     using jumpF_linear_comp[of 2 ?h 0 0,simplified] by auto
   also have "... = jumpF ?f (at_right 0)"
   proof (rule jumpF_cong)
-    show " \<forall>\<^sub>F x in at_right 0. (?h \<circ> ( * ) 2) x =?f x"
+    show " \<forall>\<^sub>F x in at_right 0. (?h \<circ> (*) 2) x =?f x"
       unfolding eventually_at_right
       apply (intro exI[where x="1/2"])
       by (auto simp add:joinpaths_def)
@@ -3648,7 +3648,7 @@ proof -
   proof -
     have "cindexE 0 (1/2) (f (g1+++g2)) = cindex_pathE g1 z"
     proof -
-      have "cindexE 0 (1/2) (f (g1+++g2)) = cindexE 0 (1/2) (f g1 o (( * ) 2))"
+      have "cindexE 0 (1/2) (f (g1+++g2)) = cindexE 0 (1/2) (f g1 o ((*) 2))"
         apply (rule cindexE_cong)
         unfolding comp_def joinpaths_def f_def by auto
       also have "... = cindexE 0 1 (f g1)"

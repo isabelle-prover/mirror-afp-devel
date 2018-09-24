@@ -1389,15 +1389,15 @@ text {*
 
 lemma sign_changes_mult_aux:
   assumes "d \<noteq> (0::real)"
-  shows "length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map (( * ) d \<circ> f) xs))) =
+  shows "length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map ((*) d \<circ> f) xs))) =
          length (remdups_adj (filter (\<lambda>x. x \<noteq> 0) (map f xs)))"
 proof-
-  from assms have inj: "inj (( * ) d)" by (auto intro: injI)
-  from assms have [simp]: "filter (\<lambda>x. (( * ) d \<circ> f) x \<noteq> 0) = filter (\<lambda>x. f x \<noteq> 0)"
+  from assms have inj: "inj ((*) d)" by (auto intro: injI)
+  from assms have [simp]: "filter (\<lambda>x. ((*) d \<circ> f) x \<noteq> 0) = filter (\<lambda>x. f x \<noteq> 0)"
                           "filter ((\<lambda>x. x \<noteq> 0) \<circ> f) = filter (\<lambda>x. f x \<noteq> 0)"
       by (simp_all add: o_def)
-  have "filter (\<lambda>x. x \<noteq> 0) (map (( * ) d \<circ> f) xs) =
-        map (( * ) d \<circ> f) (filter (\<lambda>x. (( * ) d \<circ> f) x \<noteq> 0) xs)"
+  have "filter (\<lambda>x. x \<noteq> 0) (map ((*) d \<circ> f) xs) =
+        map ((*) d \<circ> f) (filter (\<lambda>x. ((*) d \<circ> f) x \<noteq> 0) xs)"
       by (simp add: filter_map o_def)
   thus ?thesis using remdups_adj_map_injective[OF inj] assms
       by (simp add: filter_map map_map[symmetric] del: map_map)
@@ -1448,7 +1448,7 @@ proof-
     also have "map (\<lambda>q. q div d) ps = ps'"
         by (simp add: ps_def ps'_def sturm_squarefree'_def Let_def d_def)
     also from f' have "map (\<lambda>q. f (q div d)) ps =
-                      map (\<lambda>x. (( * )(inverse s) \<circ> f) x) ps" by (simp add: o_def)
+                      map (\<lambda>x. ((*)(inverse s) \<circ> f) x) ps" by (simp add: o_def)
     also note sign_changes_mult_aux[OF `inverse s \<noteq> 0`, of f ps]
     finally have
         "length (remdups_adj [x\<leftarrow>map f ps' . x \<noteq> 0]) - 1 =

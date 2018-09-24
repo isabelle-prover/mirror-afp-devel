@@ -7,7 +7,7 @@ imports Tensor_Plus Tensor_Subtensor
 begin
 
 definition vec_smult::"'a::ring \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-"vec_smult \<alpha> \<beta> = map (( * ) \<alpha>) \<beta>"
+"vec_smult \<alpha> \<beta> = map ((*) \<alpha>) \<beta>"
 
 lemma vec_smult0: "vec_smult 0 as = vec0 (length as)"
   by (induction as; auto simp add:vec0_def vec_smult_def)
@@ -51,7 +51,7 @@ shows "0 \<cdot> A = tensor0 (dims A)"
   by (metis (no_types) vec_smult_def)
 
 lemma dims_smult[simp]:"dims (\<alpha> \<cdot> A) = dims A"
-and   vec_smult[simp]: "vec  (\<alpha> \<cdot> A) = map (( * ) \<alpha>) (vec A)"
+and   vec_smult[simp]: "vec  (\<alpha> \<cdot> A) = map ((*) \<alpha>) (vec A)"
   unfolding smult_def vec_smult_def by (simp add: length_vec)+
 
 lemma tensor_smult_distr_right: "(\<alpha> + \<beta>) \<cdot> A = \<alpha> \<cdot> A  + \<beta> \<cdot> A"

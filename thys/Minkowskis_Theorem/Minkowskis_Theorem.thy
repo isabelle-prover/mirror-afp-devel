@@ -399,10 +399,10 @@ next
   case True
   \<comment> \<open>If the volume is precisely one, we look at what happens when @{term B} is
       scaled with a factor of $1 + \varepsilon$.\<close>
-  define B' where "B' = (\<lambda>\<epsilon>. ( *\<^sub>R) (1 + \<epsilon>) ` B)"
+  define B' where "B' = (\<lambda>\<epsilon>. (*\<^sub>R) (1 + \<epsilon>) ` B)"
   from \<open>compact B\<close> have compact': "compact (B' \<epsilon>)" for \<epsilon>
     unfolding B'_def by (intro compact_scaling)
-  have B'_altdef: "B' \<epsilon> = ( *\<^sub>R) (inverse (1 + \<epsilon>)) -` B" if \<epsilon>: "\<epsilon> > 0" for \<epsilon>
+  have B'_altdef: "B' \<epsilon> = (*\<^sub>R) (inverse (1 + \<epsilon>)) -` B" if \<epsilon>: "\<epsilon> > 0" for \<epsilon>
     using \<epsilon> unfolding B'_def by force
 
   \<comment> \<open>Since the scaled sets are convex, they are stable under scaling.\<close>

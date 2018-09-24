@@ -192,7 +192,7 @@ next
   also have "\<dots> = smult (c * d) (?n q * ?n r)" unfolding id [symmetric]
     by (metis content_mult content_times_primitive_part primitive_part_mult)
   finally have id: "?cp = smult c (?n q * smult d (?n r))" by (simp add: mult.commute)
-  interpret map_poly_inj_zero_hom "( * ) c" using c by (unfold_locales, auto)
+  interpret map_poly_inj_zero_hom "(*) c" using c by (unfold_locales, auto)
   have "p = ?n q * smult d (?n r)" using id[unfolded smult_as_map_poly[of c]] by auto
   thus dvd: "?n q dvd p" unfolding dvd_def by blast
 qed

@@ -144,7 +144,7 @@ lemma param_nat1[param]:
   "((=), (=) ::nat \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
   "((+) ::nat\<Rightarrow>_,(+))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   "((-) ::nat\<Rightarrow>_,(-))\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(( * ) ::nat\<Rightarrow>_,( * ))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((*) ::nat\<Rightarrow>_,(*))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   "((div) ::nat\<Rightarrow>_,(div))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   "((mod) ::nat\<Rightarrow>_,(mod))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   by auto
@@ -175,7 +175,7 @@ lemma param_int[param]:
   "((=), (=) ::int \<Rightarrow> _) \<in> Id \<rightarrow> Id \<rightarrow> Id"
   "((+) ::int\<Rightarrow>_,(+))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   "((-) ::int\<Rightarrow>_,(-))\<in>Id\<rightarrow>Id\<rightarrow>Id"
-  "(( * ) ::int\<Rightarrow>_,( * ))\<in>Id\<rightarrow>Id\<rightarrow>Id"
+  "((*) ::int\<Rightarrow>_,(*))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   "((div) ::int\<Rightarrow>_,(div))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   "((mod) ::int\<Rightarrow>_,(mod))\<in>Id\<rightarrow>Id\<rightarrow>Id"
   by auto

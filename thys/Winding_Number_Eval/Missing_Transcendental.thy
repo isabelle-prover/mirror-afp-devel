@@ -658,7 +658,7 @@ proof -
   proof -
     obtain B g where "finite B" and g_def:"\<forall>x\<in>S. g x\<in>B \<and> (\<exists>k::int. x = g x + k * \<delta>)"
       using assms unfolding periodic_set_def by metis
-    define P where "P = (( * ) \<delta>) ` Ints"
+    define P where "P = ((*) \<delta>) ` Ints"
     define B_diff where "B_diff = {\<bar>x-y\<bar> | x y.  x\<in>B \<and> y\<in>B} - P"
     have "finite B_diff" unfolding B_diff_def using \<open>finite B\<close>
       by (simp add: finite_image_set2)

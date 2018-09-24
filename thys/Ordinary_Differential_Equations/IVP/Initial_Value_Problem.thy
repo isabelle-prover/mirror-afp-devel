@@ -126,8 +126,8 @@ proof safe
   fix x i::'a assume "i \<in> Basis" "x \<in> cball y r"
   with dist_component_le[OF \<open>i \<in> Basis\<close>, of y x]
   have "dist (y \<bullet> i) (x \<bullet> i) \<le> r" by (simp add: mem_cball)
-  thus "(y - sum (( *\<^sub>R) r) Basis) \<bullet> i \<le> x \<bullet> i"
-    "x \<bullet> i \<le> (y + sum (( *\<^sub>R) r) Basis) \<bullet> i"
+  thus "(y - sum ((*\<^sub>R) r) Basis) \<bullet> i \<le> x \<bullet> i"
+    "x \<bullet> i \<le> (y + sum ((*\<^sub>R) r) Basis) \<bullet> i"
     by (auto simp add: inner_diff_left inner_add_left inner_sum_left
       sum_distrib_left[symmetric] sum_inner_Basis_one \<open>i\<in>Basis\<close> dist_real_def)
 qed
@@ -1747,8 +1747,8 @@ next
       from cont have cont: "continuous_on (closed_segment t0 s) x"
         by (rule continuous_on_subset)
           (insert b_pos closed_segment_subset_domain s_bound, auto simp: closed_segment_eq_real_ivl)
-      have bnd_cont: "continuous_on (closed_segment t0 s) (( * ) B)"
-        and bnd_deriv: "(( * ) B has_vderiv_on (\<lambda>_. B)) (open_segment t0 s)"
+      have bnd_cont: "continuous_on (closed_segment t0 s) ((*) B)"
+        and bnd_deriv: "((*) B has_vderiv_on (\<lambda>_. B)) (open_segment t0 s)"
         by (auto intro!: continuous_intros derivative_eq_intros
           simp: has_vector_derivative_def has_vderiv_on_def)
       {

@@ -306,7 +306,7 @@ lemma zero_smult[simp]: "0 *\<^sub>S M = (0::'a::semiring_1^^'n)"
 lemma smult_smult: "a *\<^sub>S b *\<^sub>S M = (a * b::'a::monoid_mult) *\<^sub>S M"
   by transfer (simp add: mult_ac)
 
-lemma map_sq_matrix_mult_eq_smult[simp]: "map_sq_matrix (( * ) a) M = a *\<^sub>S M"
+lemma map_sq_matrix_mult_eq_smult[simp]: "map_sq_matrix ((*) a) M = a *\<^sub>S M"
   by transfer rule
 
 lemma coeff_smult_1: "coeff p i *\<^sub>S m = m * map_sq_matrix (\<lambda>p. coeff p i) (p *\<^sub>S 1::_::comm_ring_1 ^^ 'n)"

@@ -4982,15 +4982,15 @@ lemma smult_unique_scalars :
   assumes vs: "basis_for V vs" and v: "v \<in> V"
   defines as: "as \<equiv> (THE cs. length cs = length vs \<and> v = cs \<bullet>\<cdot> vs)"
   and     bs: "bs \<equiv> (THE cs. length cs = length vs \<and> a \<cdot> v = cs \<bullet>\<cdot> vs)"
-  shows   "bs = map (( * ) a) as"
+  shows   "bs = map ((*) a) as"
 proof-
   from vs v as have "length as = length vs \<and> v = as \<bullet>\<cdot> vs"
     using basis_for_obtain_unique_scalars theI'[
             of "\<lambda>cs. length cs = length vs \<and> v = cs \<bullet>\<cdot> vs"
           ]
     by    auto
-  with vs have "length (map (( * ) a) as)
-                      = length vs \<and> a \<cdot> v = (map (( * ) a) as) \<bullet>\<cdot> vs"
+  with vs have "length (map ((*) a) as)
+                      = length vs \<and> a \<cdot> v = (map ((*) a) as) \<bullet>\<cdot> vs"
     using smult_lincomb by auto
   moreover from vs v have "\<exists>! cs. length cs = length vs \<and> a \<cdot> v = cs \<bullet>\<cdot> vs"
     using smult_closed basis_for_obtain_unique_scalars by fast
@@ -6171,7 +6171,7 @@ lemma Gmult_closed : "g \<in> G \<Longrightarrow> v \<in> V \<Longrightarrow> g 
   using FG_fddg_closed smult_closed GmultD by simp
 
 lemma map_Gmult_closed :
-  "g \<in> G \<Longrightarrow> set vs \<subseteq> V \<Longrightarrow> set (map (( *\<cdot>) g) vs) \<subseteq> V"
+  "g \<in> G \<Longrightarrow> set vs \<subseteq> V \<Longrightarrow> set (map ((*\<cdot>) g) vs) \<subseteq> V"
   using Gmult_def FG_fddg_closed map_smult_closed[of "1 \<delta>\<delta> g" vs] by auto
 
 lemma Gmult0 :
@@ -7627,11 +7627,11 @@ lemmas AbGroup = AbGroup
 
 lemma zero_isomorphic_to_FG_zero :
   assumes "V = 0"
-  shows   "isomorphic ( * ) (0::('b,'a) aezfun set)"
+  shows   "isomorphic (*) (0::('b,'a) aezfun set)"
 proof
-  show "GRepIso ( * ) 0 0"
+  show "GRepIso (*) 0 0"
   proof (rule FGModuleIso.intro)
-    show "GRepHom ( * ) 0" using trivial_FGModuleHom[of "( * )"] by simp
+    show "GRepHom (*) 0" using trivial_FGModuleHom[of "(*)"] by simp
     show "FGModuleIso_axioms V 0 0"
     proof
       from assms show "bij_betw 0 V 0" unfolding bij_betw_def inj_on_def by simp
@@ -7658,8 +7658,8 @@ qed
 
 lemma (in Group) trivial_IrrFinGroupRepresentation_in_FG :
   "of_nat (card G) \<noteq> (0::'f::field)
-        \<Longrightarrow> IrrFinGroupRepresentation G ( * ) (0::('f,'g) aezfun set)"
-  using trivial_IrrFinGroupRepI[of "( * )"] by simp
+        \<Longrightarrow> IrrFinGroupRepresentation G (*) (0::('f,'g) aezfun set)"
+  using trivial_IrrFinGroupRepI[of "(*)"] by simp
 
 context FinGroupRepresentation
 begin
@@ -8191,11 +8191,11 @@ subsubsection {* The group ring is a representation space *}
 
 lemma (in Group) FGModule_FG :
   defines FG: "FG \<equiv> group_ring :: ('f::field, 'g) aezfun set"
-  shows   "FGModule G ( * ) FG"
+  shows   "FGModule G (*) FG"
 proof (rule FGModule.intro, rule Group_axioms, rule RModuleI)
   show 1: "Ring1 group_ring" using Ring1_RG by fast
   from 1 FG show "Group FG" using Ring1.axioms(1) by fast
-  from 1 FG show "RModule_axioms group_ring ( * ) FG"
+  from 1 FG show "RModule_axioms group_ring (*) FG"
     using Ring1.mult_closed
     by    unfold_locales (auto simp add: algebra_simps)
 qed
@@ -8203,10 +8203,10 @@ qed
 theorem (in Group) FinGroupRepresentation_FG :
   defines FG: "FG \<equiv> group_ring :: ('f::field, 'g) aezfun set"
   assumes good_char: "of_nat (card G) \<noteq> (0::'f)"
-  shows   "FinGroupRepresentation G ( * ) FG"
+  shows   "FinGroupRepresentation G (*) FG"
 proof (rule FinGroupRepresentation.intro)
-  from FG show "FGModule G ( * ) FG" using FGModule_FG by fast
-  show "FinGroupRepresentation_axioms G ( * ) FG"
+  from FG show "FGModule G (*) FG" using FGModule_FG by fast
+  show "FinGroupRepresentation_axioms G (*) FG"
   proof
     from FG good_char obtain gs
       where gs: "set gs = G"
@@ -8216,11 +8216,11 @@ proof (rule FinGroupRepresentation.intro)
       by    fast
     define xs where "xs = map ((\<delta>\<delta>) (1::'f)) gs"
     with FG gs(1) have 1: "set xs \<subseteq> FG" using RG_aezdeltafun_closed by auto
-    moreover have "aezfun_scalar_mult.fSpan ( * ) xs = FG"
+    moreover have "aezfun_scalar_mult.fSpan (*) xs = FG"
     proof
-      from 1 FG show "aezfun_scalar_mult.fSpan ( * ) xs \<subseteq> FG"
+      from 1 FG show "aezfun_scalar_mult.fSpan (*) xs \<subseteq> FG"
         using FGModule_FG FGModule.fSpan_closed by fast
-      show "aezfun_scalar_mult.fSpan ( * ) xs \<supseteq> FG"
+      show "aezfun_scalar_mult.fSpan (*) xs \<supseteq> FG"
       proof
         fix x assume "x \<in> FG"
         from this gs(2) obtain bs
@@ -8229,30 +8229,30 @@ proof (rule FinGroupRepresentation.intro)
           by    fast
         from bs(2) xs_def have "x = (\<Sum>(b,a)\<leftarrow>zip bs xs. (b \<delta>\<delta> 0) * a)"
           using sum_list_prod_map2[THEN sym] by fast
-        with bs(1) xs_def show "x \<in> aezfun_scalar_mult.fSpan ( * ) xs"
-          using aezfun_scalar_mult.fsmultD[of "( * )", THEN sym]
+        with bs(1) xs_def show "x \<in> aezfun_scalar_mult.fSpan (*) xs"
+          using aezfun_scalar_mult.fsmultD[of "(*)", THEN sym]
                 sum_list_prod_cong[
                   of "zip bs xs" "\<lambda>b a. (b \<delta>\<delta> 0) * a"
-                     "\<lambda>b a. aezfun_scalar_mult.fsmult ( * ) b a"
+                     "\<lambda>b a. aezfun_scalar_mult.fsmult (*) b a"
                 ]
-                scalar_mult.lincomb_def[of "aezfun_scalar_mult.fsmult ( * )" bs xs]
-                scalar_mult.SpanD_lincomb[of "aezfun_scalar_mult.fsmult ( * )"]
+                scalar_mult.lincomb_def[of "aezfun_scalar_mult.fsmult (*)" bs xs]
+                scalar_mult.SpanD_lincomb[of "aezfun_scalar_mult.fsmult (*)"]
           by    force
       qed
     qed
-    ultimately show "\<exists>xs. set xs \<subseteq> FG \<and> aezfun_scalar_mult.fSpan ( * ) xs = FG"
+    ultimately show "\<exists>xs. set xs \<subseteq> FG \<and> aezfun_scalar_mult.fSpan (*) xs = FG"
       by fast
   qed (rule good_char)
 qed
 
 lemma (in FinGroupRepresentation) FinGroupRepresentation_FG :
-  "FinGroupRepresentation G ( * ) FG"
+  "FinGroupRepresentation G (*) FG"
   using good_char ActingGroup.FinGroupRepresentation_FG by fast
 
 lemma (in Group) FG_reducible :
   assumes "of_nat (card G) \<noteq> (0::'f::field)"
   shows   "\<exists>Us::('f,'g) aezfun set list.
-                (\<forall>U\<in>set Us. IrrFinGroupRepresentation G ( * ) U) \<and> 0 \<notin> set Us
+                (\<forall>U\<in>set Us. IrrFinGroupRepresentation G (*) U) \<and> 0 \<notin> set Us
                   \<and> group_ring = (\<Oplus>U\<leftarrow>Us. U)"
   using   assms FinGroupRepresentation_FG FinGroupRepresentation.reducible
   by      fast
@@ -8327,15 +8327,15 @@ qed
 
 theorem (in IrrFinGroupRepresentation) iso_FG_constituent :
   assumes nonzero  : "V \<noteq> 0"
-  and     FG_decomp: "\<forall>U\<in>set Us. IrrFinGroupRepresentation G ( * ) U"
+  and     FG_decomp: "\<forall>U\<in>set Us. IrrFinGroupRepresentation G (*) U"
                      "0 \<notin> set Us" "FG = (\<Oplus>U\<leftarrow>Us. U)"
-  shows   "\<exists>U\<in>set Us. isomorphic ( * ) U"
+  shows   "\<exists>U\<in>set Us. isomorphic (*) U"
 proof-
   from nonzero obtain v where v: "v \<in> V" "v \<noteq> 0" using nonempty by auto
   define T where "T = (\<lambda>x. x \<cdot> v)\<down>FG"
-  have "FGModuleHom G ( * ) FG smult T"
+  have "FGModuleHom G (*) FG smult T"
   proof (rule FGModule.FGModuleHomI_fromaxioms)
-    show "FGModule G ( * ) FG"
+    show "FGModule G (*) FG"
       using ActingGroup.FGModule_FG by fast
     from T_def v(1) show "\<And>v v'. v \<in> FG \<Longrightarrow> v' \<in> FG \<Longrightarrow> T (v + v') = T v + T v'"
       using Ring1.add_closed[OF Ring1] smult_distrib_right by auto
@@ -8344,23 +8344,23 @@ proof-
       using ActingGroup.RG_mult_closed by auto
   qed
   then obtain W
-    where W: "FGModule.GSubspace G ( * ) FG W" "FG = W \<oplus> (ker T \<inter> FG)"
-             "FGModule.isomorphic G ( * ) W smult (T ` FG)"
+    where W: "FGModule.GSubspace G (*) FG W" "FG = W \<oplus> (ker T \<inter> FG)"
+             "FGModule.isomorphic G (*) W smult (T ` FG)"
     using FG_n0
           FinGroupRepresentation.GRepHom_decomp[
             OF FinGroupRepresentation_FG
           ]
     by    fast
   from T_def v have "T ` FG = V" using eq_GSpan_single RSpan_single by auto
-  with W(3) have W': "FGModule.isomorphic G ( * ) W smult V" by fast
+  with W(3) have W': "FGModule.isomorphic G (*) W smult V" by fast
   with W(1) nonzero have "W \<noteq> 0"
     using FGModule.GSubspace_is_FGModule[OF ActingGroup.FGModule_FG]
           FGModule.isomorphic_to_zero_left
     by    fastforce
-  moreover from W' have "IrrFinGroupRepresentation G ( * ) W"
+  moreover from W' have "IrrFinGroupRepresentation G (*) W"
     using IrrFinGroupRepresentation_axioms FGModuleIso.isomorphic_to_irr_right
     by    fast
-  ultimately have "\<exists>U\<in>set Us. FGModule.isomorphic G ( * ) W ( * ) U"
+  ultimately have "\<exists>U\<in>set Us. FGModule.isomorphic G (*) W (*) U"
     using FG_decomp W(1) good_char FG_n0
           FinGroupRepresentation.IrrGSubspace_iso_constituent[
             OF ActingGroup.FinGroupRepresentation_FG, of W
@@ -8368,7 +8368,7 @@ proof-
     by    simp
   with W(1) W' show ?thesis
     using FGModule.GSubspace_is_FGModule[OF ActingGroup.FGModule_FG]
-          FGModule.isomorphic_sym[of G "( * )" W smult] isomorphic_trans
+          FGModule.isomorphic_sym[of G "(*)" W smult] isomorphic_trans
     by    fast
 qed
 
@@ -8388,20 +8388,20 @@ begin
 primrec remisodups :: "('f::field,'g) aezfun set list \<Rightarrow> ('f,'g) aezfun set list" where
   "remisodups [] = []"
 | "remisodups (U # Us) = (if
-        (\<exists>W\<in>set Us. FGModule.isomorphic G ( * ) U ( * ) W)
+        (\<exists>W\<in>set Us. FGModule.isomorphic G (*) U (*) W)
           then remisodups Us else U # remisodups Us)"
 
 lemma set_remisodups : "set (remisodups Us) \<subseteq> set Us"
   by (induct Us) auto
 
 lemma isodistinct_remisodups :
-  "\<lbrakk> \<forall>U\<in>set Us. FGModule G ( * ) U; V \<in> set (remisodups Us);
+  "\<lbrakk> \<forall>U\<in>set Us. FGModule G (*) U; V \<in> set (remisodups Us);
         W \<in> set (remisodups Us); V \<noteq> W \<rbrakk>
-          \<Longrightarrow> \<not> (FGModule.isomorphic G ( * ) V ( * ) W)"
+          \<Longrightarrow> \<not> (FGModule.isomorphic G (*) V (*) W)"
 proof (induct Us arbitrary: V W)
   case (Cons U Us)
   show ?case
-  proof (cases "\<exists>X\<in>set Us. FGModule.isomorphic G ( * ) U ( * ) X")
+  proof (cases "\<exists>X\<in>set Us. FGModule.isomorphic G (*) U (*) X")
     case True with Cons show ?thesis by simp
   next
     case False show ?thesis
@@ -8412,7 +8412,7 @@ proof (induct Us arbitrary: V W)
         using set_remisodups by auto
     next
       case OtherTrue with False Cons(2,3) show ?thesis
-        using set_remisodups FGModule.isomorphic_sym[of G "( * )" V "( * )" W]
+        using set_remisodups FGModule.isomorphic_sym[of G "(*)" V "(*)" W]
         by    fastforce
     next
       case BothFalse with Cons False show ?thesis by simp
@@ -8421,13 +8421,13 @@ proof (induct Us arbitrary: V W)
 qed simp
 
 definition "FG_constituents \<equiv> SOME Us.
-                  (\<forall>U\<in>set Us. IrrFinGroupRepresentation G ( * ) U)
+                  (\<forall>U\<in>set Us. IrrFinGroupRepresentation G (*) U)
                     \<and> 0 \<notin> set Us \<and> group_ring = (\<Oplus>U\<leftarrow>Us. U)"
 
 lemma FG_constituents_irr :
   "of_nat (card G) \<noteq> (0::'f::field)
         \<Longrightarrow> \<forall>U\<in>set (FG_constituents::('f,'g) aezfun set list). 
-          IrrFinGroupRepresentation G ( * ) U"
+          IrrFinGroupRepresentation G (*) U"
   using someI_ex[OF FG_reducible] unfolding FG_constituents_def by fast
 
 lemma FG_consitutents_n0:
@@ -8448,10 +8448,10 @@ lemma finite_GIrrRep_repset : "finite GIrrRep_repset"
 lemma all_irr_GIrrRep_repset :
   assumes "of_nat (card G) \<noteq> (0::'f::field)"
   shows "\<forall>U\<in>(GIrrRep_repset::('f,'g) aezfun set set).
-              IrrFinGroupRepresentation G ( * ) U"
+              IrrFinGroupRepresentation G (*) U"
 proof
   fix U :: "('f,'g) aezfun set" assume "U \<in> GIrrRep_repset"
-  with assms show "IrrFinGroupRepresentation G ( * ) U"
+  with assms show "IrrFinGroupRepresentation G (*) U"
     using trivial_IrrFinGroupRepresentation_in_FG GIrrRep_repset_def
           set_remisodups FG_constituents_irr
     by    (cases "U = 0") auto
@@ -8460,13 +8460,13 @@ qed
 lemma isodistinct_GIrrRep_repset :
   defines "GIRRS \<equiv> GIrrRep_repset :: ('f::field,'g) aezfun set set"
   assumes "of_nat (card G) \<noteq> (0::'f)" "V \<in> GIRRS" "W \<in> GIRRS" "V \<noteq> W"
-  shows   "\<not> (FGModule.isomorphic G ( * ) V ( * ) W)"
+  shows   "\<not> (FGModule.isomorphic G (*) V (*) W)"
 proof (cases "V = 0" "W = 0" rule: conjcases)
   case BothTrue with assms(5) show ?thesis by fast
 next
   case OneTrue with assms(1,2,4,5) show ?thesis
     using GIrrRep_repset_def set_remisodups FG_consitutents_n0
-          trivial_FGModule[of "( * )"] FGModule.isomorphic_to_zero_left[of G "( * )"]
+          trivial_FGModule[of "(*)"] FGModule.isomorphic_to_zero_left[of G "(*)"]
     by    fastforce
 next
   case OtherTrue
@@ -8476,7 +8476,7 @@ next
     using assms(2) FG_consitutents_n0 FG_constituents_irr
           IrrFinGroupRepresentation.axioms(1)
           FinGroupRepresentation.axioms(1)
-          FGModule.isomorphic_to_zero_right[of G "( * )" V "( * )"]
+          FGModule.isomorphic_to_zero_right[of G "(*)" V "(*)"]
     by    fastforce
 next
   case BothFalse
@@ -8492,19 +8492,19 @@ qed
 end (* context Group *)
 
 lemma (in FGModule) iso_in_list_imp_iso_in_remisodups :
-  "\<exists>U\<in>set Us. isomorphic ( * ) U
-        \<Longrightarrow> \<exists>U\<in>set (ActingGroup.remisodups Us). isomorphic ( * ) U"
+  "\<exists>U\<in>set Us. isomorphic (*) U
+        \<Longrightarrow> \<exists>U\<in>set (ActingGroup.remisodups Us). isomorphic (*) U"
 proof (induct Us)
   case (Cons U Us)
-  from Cons(2) obtain W where W: "W \<in> set (U#Us)" "isomorphic ( * ) W"
+  from Cons(2) obtain W where W: "W \<in> set (U#Us)" "isomorphic (*) W"
     by fast
   show ?case
   proof (
-    cases "W = U" "\<exists>X\<in>set Us. FGModule.isomorphic G ( * ) U ( * ) X"
+    cases "W = U" "\<exists>X\<in>set Us. FGModule.isomorphic G (*) U (*) X"
     rule: conjcases
   )
     case BothTrue with W(2) Cons(1) show ?thesis
-      using isomorphic_trans[of "( * )" W] by force
+      using isomorphic_trans[of "(*)" W] by force
   next
     case OneTrue with W(2) show ?thesis by simp
   next
@@ -8515,7 +8515,7 @@ proof (induct Us)
 qed simp
 
 lemma (in IrrFinGroupRepresentation) iso_to_GIrrRep_rep :
-  "\<exists>U\<in>ActingGroup.GIrrRep_repset. isomorphic ( * ) U"
+  "\<exists>U\<in>ActingGroup.GIrrRep_repset. isomorphic (*) U"
   using zero_isomorphic_to_FG_zero ActingGroup.GIrrRep_repset_def
         good_char ActingGroup.FG_constituents_irr
         ActingGroup.FG_consitutents_n0 ActingGroup.FG_constituents_constituents
@@ -8527,11 +8527,11 @@ theorem (in Group) iso_class_reps :
   defines "GIRRS \<equiv> GIrrRep_repset :: ('f::field,'g) aezfun set set"
   assumes "of_nat (card G) \<noteq> (0::'f)"
   shows "finite GIRRS"
-        "\<forall>U\<in>GIRRS. IrrFinGroupRepresentation G ( * ) U"
+        "\<forall>U\<in>GIRRS. IrrFinGroupRepresentation G (*) U"
         "\<And>U W. \<lbrakk> U \<in> GIRRS; W \<in> GIRRS; U \<noteq> W \<rbrakk>
-              \<Longrightarrow> \<not> (FGModule.isomorphic G ( * ) U ( * ) W)"
+              \<Longrightarrow> \<not> (FGModule.isomorphic G (*) U (*) W)"
         "\<And>fgsmult V. IrrFinGroupRepresentation G fgsmult V
-              \<Longrightarrow> \<exists>U\<in>GIRRS. FGModule.isomorphic G fgsmult V ( * ) U"
+              \<Longrightarrow> \<exists>U\<in>GIRRS. FGModule.isomorphic G fgsmult V (*) U"
   using assms finite_GIrrRep_repset all_irr_GIrrRep_repset
         isodistinct_GIrrRep_repset IrrFinGroupRepresentation.iso_to_GIrrRep_rep
   by    auto

@@ -28,7 +28,7 @@ lift_definition one_uint32 :: uint32 is "1" .
 lift_definition plus_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(+) :: 32 word \<Rightarrow> _" .
 lift_definition minus_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(-)" .
 lift_definition uminus_uint32 :: "uint32 \<Rightarrow> uint32" is uminus .
-lift_definition times_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "( * )" .
+lift_definition times_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(*)" .
 lift_definition divide_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(div)" .
 lift_definition modulo_uint32 :: "uint32 \<Rightarrow> uint32 \<Rightarrow> uint32" is "(mod)" .
 instance by standard (transfer, simp add: algebra_simps)+

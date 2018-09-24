@@ -41,7 +41,7 @@ end
 
 instantiation stream :: (times) times begin
 context includes applicative_syntax begin
-definition [applicative_unfold]: "x * y = pure ( * ) \<diamondop> x \<diamondop> (y :: 'a stream)"
+definition [applicative_unfold]: "x * y = pure (*) \<diamondop> x \<diamondop> (y :: 'a stream)"
 end
 instance ..
 end

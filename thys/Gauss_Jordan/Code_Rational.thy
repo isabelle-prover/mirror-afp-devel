@@ -102,7 +102,7 @@ code_printing
     (Haskell) "(_) + (_)"
   | constant "(-) :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
     (Haskell) "(_) - (_)"
-  | constant "( * ) :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
+  | constant "(*) :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
     (Haskell) "(_) * (_)"
   | constant "(/) :: rat \<Rightarrow> rat \<Rightarrow> rat" \<rightharpoonup>
     (Haskell) " (_) '/ (_)"

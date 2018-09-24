@@ -8050,7 +8050,7 @@ lemma [autoref_rules_raw]: "DIM_precond TYPE(real) (Suc 0)"
   by auto
 lemma [autoref_rules]: "(ereal, ereal) \<in> rnv_rel \<rightarrow> ereal_rel"
   "(real_divr, real_divr) \<in> nat_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
-  "(( * ), ( * )) \<in> ereal_rel \<rightarrow> ereal_rel \<rightarrow> ereal_rel"
+  "((*), (*)) \<in> ereal_rel \<rightarrow> ereal_rel \<rightarrow> ereal_rel"
   by auto
 
 schematic_goal scaleR2_rep1_impl:

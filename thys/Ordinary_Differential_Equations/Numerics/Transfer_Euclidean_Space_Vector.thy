@@ -153,9 +153,9 @@ lemma linear_transfer[transfer_rule]: "((B ===> A) ===> (=)) linear linear"
     "bi_unique A"
     "bi_total B"
     "(A ===> A ===> A) (+) (+)"
-    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "((=) ===> A ===> A) (*\<^sub>R) (*\<^sub>R)"
     "(B ===> B ===> B) (+) (+)"
-    "((=) ===> B ===> B) ( *\<^sub>R) ( *\<^sub>R)"
+    "((=) ===> B ===> B) (*\<^sub>R) (*\<^sub>R)"
   unfolding linear_iff
   by transfer_prover
 
@@ -164,9 +164,9 @@ lemma bounded_linear_transfer[transfer_rule]: "((B ===> A) ===> (=)) bounded_lin
     "bi_unique A"
     "bi_total B"
     "(A ===> A ===> A) (+) (+)"
-    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "((=) ===> A ===> A) (*\<^sub>R) (*\<^sub>R)"
     "(B ===> B ===> B) (+) (+)"
-    "((=) ===> B ===> B) ( *\<^sub>R) ( *\<^sub>R)"
+    "((=) ===> B ===> B) (*\<^sub>R) (*\<^sub>R)"
     "(A ===> (=)) norm norm"
     "(B ===> (=)) norm norm"
   unfolding bounded_linear_def bounded_linear_axioms_def
@@ -176,7 +176,7 @@ lemma has_vderiv_on_transfer[transfer_rule]:
   "(((=) ===> A) ===> ((=) ===> A) ===> rel_set (=) ===> (=)) (has_vderiv_on) (has_vderiv_on)"
   if [transfer_rule]:
     "A 0 0" "bi_unique A" "bi_total A" "(rel_set A ===> (=)) open open"
-    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "((=) ===> A ===> A) (*\<^sub>R) (*\<^sub>R)"
     "(A ===> A ===> A) (+) (+)"
     "(A ===> A ===> A) (-) (-)"
     "(A ===> (=)) norm norm"
@@ -192,7 +192,7 @@ lemma solves_ode_transfer[transfer_rule]:
   "(((=) ===> A) ===> ((=) ===> A ===> A)  ===> rel_set (=) ===> rel_set A ===> (=)) (solves_ode) (solves_ode)"
   if [transfer_rule]:
     "A 0 0" "bi_unique A" "bi_total A" "(rel_set A ===> (=)) open open"
-    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "((=) ===> A ===> A) (*\<^sub>R) (*\<^sub>R)"
     "(A ===> A ===> A) (+) (+)"
     "(A ===> A ===> A) (-) (-)"
     "(A ===> (=)) norm norm"
@@ -214,9 +214,9 @@ lemma bi_total_rel_blinfun[transfer_rule]:
     "bi_unique A" "bi_total B" (* really? *)
     "bi_unique B" "bi_total A"
     "(B ===> B ===> B) (+) (+)"
-    "((=) ===> B ===> B) ( *\<^sub>R) ( *\<^sub>R)"
+    "((=) ===> B ===> B) (*\<^sub>R) (*\<^sub>R)"
     "(A ===> A ===> A) (+) (+)"
-    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "((=) ===> A ===> A) (*\<^sub>R) (*\<^sub>R)"
     "(B ===> (=)) norm norm"
     "(A ===> (=)) norm norm"
   using bounded_linear_transfer[OF that(3-)]
@@ -267,7 +267,7 @@ lemma c1_on_open_transfer[transfer_rule]:
     "bi_unique A" "bi_total A"
     "(A ===> A ===> A) (+) (+)"
     "(A ===> A ===> A) (-) (-)"
-    "((=) ===> A ===> A) ( *\<^sub>R) ( *\<^sub>R)"
+    "((=) ===> A ===> A) (*\<^sub>R) (*\<^sub>R)"
     "(A ===> (=)) norm norm"
     "A 0 0"
   unfolding c1_on_open_def has_derivative_at
@@ -624,9 +624,9 @@ lemma blinfun_of_matrix_transfer[transfer_rule]:
   unfolding rel_ve_def list_of_eucl_eq_iff inner_sum_left
   apply simp
   apply (intro allI impI sum.cong refl)
-  apply (rule arg_cong2[where f="( * )"])
+  apply (rule arg_cong2[where f="(*)"])
   subgoal for a b c d e f g
-    apply (rule arg_cong2[where f="( * )"])
+    apply (rule arg_cong2[where f="(*)"])
     subgoal by simp
     apply (drule rel_funD[where x="Basis_list ! f"]) defer
      apply (drule rel_funD[where x="Basis_list ! g"]) defer

@@ -1095,7 +1095,7 @@ where "vec1 \<equiv> vec1I zero one"
 abbreviation mat1 :: "nat \<Rightarrow> 'a mat"
 where "mat1 \<equiv> mat1I zero one"
 
-abbreviation mat_pow where "mat_pow \<equiv> mat_powI (0 :: 'a) 1 (+) (( * ))"
+abbreviation mat_pow where "mat_pow \<equiv> mat_powI (0 :: 'a) 1 (+) (*)"
 
 
 lemma scalar_left_one: assumes wf: "vec nn v"

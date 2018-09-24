@@ -116,7 +116,7 @@ context begin interpretation autoref_syn .
     "(-) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
     "(div) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
     "(mod) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
-    "( * ) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
+    "(*) ::\<^sub>i I \<rightarrow>\<^sub>i I \<rightarrow>\<^sub>i I"
     "0 ::\<^sub>i I"
     "1 ::\<^sub>i I"
     "numeral x ::\<^sub>i I"
@@ -202,7 +202,7 @@ context begin interpretation autoref_syn .
       "((+) ::nat\<Rightarrow>_,(+))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
       "((-) ::nat\<Rightarrow>_,(-))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
       "((div) ::nat\<Rightarrow>_,(div))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
-      "(( * ), ( * ))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
+      "((*), (*))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
       "((mod), (mod))\<in>nat_rel\<rightarrow>nat_rel\<rightarrow>nat_rel"
       by auto
     
@@ -254,7 +254,7 @@ context begin interpretation autoref_syn .
       "((-) ::int\<Rightarrow>_,(-))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
       "((div) ::int\<Rightarrow>_,(div))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
       "(uminus,uminus)\<in>int_rel\<rightarrow>int_rel"
-      "(( * ), ( * ))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
+      "((*), (*))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
       "((mod), (mod))\<in>int_rel\<rightarrow>int_rel\<rightarrow>int_rel"
       by auto
 end

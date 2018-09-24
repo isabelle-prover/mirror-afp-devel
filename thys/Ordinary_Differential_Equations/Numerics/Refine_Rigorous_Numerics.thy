@@ -836,7 +836,7 @@ lemma [autoref_rules]:
   "((+), (+)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
   "((-), (-)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
   "((/), (/)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
-  "(( * ), ( * )) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
+  "((*), (*)) \<in> rnv_rel \<rightarrow> rnv_rel \<rightarrow> rnv_rel"
   "((^), (^)) \<in> rnv_rel \<rightarrow> nat_rel \<rightarrow> rnv_rel"
   "(int, int) \<in> nat_rel \<rightarrow> int_rel"
   "(Float, Float) \<in> int_rel \<rightarrow> int_rel \<rightarrow> Id"

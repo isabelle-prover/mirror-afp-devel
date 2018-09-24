@@ -198,7 +198,7 @@ translations
   "_liftIf"       \<rightleftharpoons> "_lift3 (CONST If)"
   "_liftPlus"     \<rightleftharpoons> "_lift2 (+)"
   "_liftMinus"    \<rightleftharpoons> "_lift2 (-)"
-  "_liftTimes"    \<rightleftharpoons> "_lift2 (( * ))"
+  "_liftTimes"    \<rightleftharpoons> "_lift2 (*)"
   "_liftDiv"      \<rightleftharpoons> "_lift2 (div)"
  "_liftMod"      \<rightleftharpoons> "_lift2 (mod)"
   "_liftLess"     \<rightleftharpoons> "_lift2 (<)"

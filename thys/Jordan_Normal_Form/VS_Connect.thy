@@ -22,11 +22,11 @@ hide_const (open) Modules.module
 named_theorems class_ring_simps
 
 abbreviation class_ring :: "'a :: {times,plus,one,zero} ring" where
-  "class_ring \<equiv> \<lparr> carrier = UNIV, mult = ( * ), one = 1, zero = 0, add = (+) \<rparr>"
+  "class_ring \<equiv> \<lparr> carrier = UNIV, mult = (*), one = 1, zero = 0, add = (+) \<rparr>"
 
 interpretation class_semiring: semiring "class_ring :: 'a :: semiring_1 ring"
   rewrites [class_ring_simps]: "carrier class_ring = UNIV"
-    and [class_ring_simps]: "mult class_ring = ( * )"
+    and [class_ring_simps]: "mult class_ring = (*)"
     and [class_ring_simps]: "add class_ring = (+)"
     and [class_ring_simps]: "one class_ring = 1"
     and [class_ring_simps]: "zero class_ring = 0"
@@ -53,7 +53,7 @@ qed auto
 
 interpretation class_ring: ring "class_ring :: 'a :: ring_1 ring"
   rewrites "carrier class_ring = UNIV"
-    and "mult class_ring = ( * )"
+    and "mult class_ring = (*)"
     and "add class_ring = (+)"
     and "one class_ring = 1"
     and "zero class_ring = 0"
@@ -89,7 +89,7 @@ qed (auto simp: class_ring_simps)
 
 interpretation class_cring: cring "class_ring :: 'a :: comm_ring_1 ring"
   rewrites "carrier class_ring = UNIV"
-    and "mult class_ring = ( * )"
+    and "mult class_ring = (*)"
     and "add class_ring = (+)"
     and "one class_ring = 1"
     and "zero class_ring = 0"
@@ -133,7 +133,7 @@ qed
 
 interpretation class_field: field "class_ring :: 'a :: field ring"
   rewrites "carrier class_ring = UNIV"
-    and "mult class_ring = ( * )"
+    and "mult class_ring = (*)"
     and "add class_ring = (+)"
     and "one class_ring = 1"
     and "zero class_ring = 0"
@@ -181,7 +181,7 @@ abbreviation R where "R \<equiv> ring_mat TYPE('a) n n"
 sublocale ring R
   rewrites "carrier R = carrier_mat n n"
     and "add R = (+)"
-    and "mult R = ( * )"
+    and "mult R = (*)"
     and "one R = 1\<^sub>m n"
     and "zero R = 0\<^sub>m n n"
   using ring_mat by (auto simp: ring_mat_simps)
@@ -211,7 +211,7 @@ sublocale Module.module "class_ring :: 'a ring" V
     and "zero V = 0\<^sub>v n"
     and "module.smult V = (\<cdot>\<^sub>v)"
     and "carrier class_ring = UNIV"
-    and "monoid.mult class_ring = ( * )"
+    and "monoid.mult class_ring = (*)"
     and "add class_ring = (+)"
     and "one class_ring = 1"
     and "zero class_ring = 0"
@@ -243,12 +243,12 @@ sublocale
   vectorspace class_ring V
   rewrites "carrier V = carrier_mat nr nc"
     and "add V = (+)"
-    and "mult V = ( * )"
+    and "mult V = (*)"
     and "one V = 1\<^sub>m nr"
     and "zero V = 0\<^sub>m nr nc"
     and "smult V = (\<cdot>\<^sub>m)"
     and "carrier class_ring = UNIV"
-    and "mult class_ring = ( * )"
+    and "mult class_ring = (*)"
     and "add class_ring = (+)"
     and "one class_ring = 1"
     and "zero class_ring = 0"
@@ -295,7 +295,7 @@ begin
     and [simp]: "zero V = 0\<^sub>v n"
     and [simp]: "smult V = (\<cdot>\<^sub>v)"
     and "carrier class_ring = UNIV"
-    and "mult class_ring = ( * )"
+    and "mult class_ring = (*)"
     and "add class_ring = (+)"
     and "one class_ring = 1"
     and "zero class_ring = 0"

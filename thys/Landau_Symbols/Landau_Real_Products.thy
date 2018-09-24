@@ -1397,9 +1397,9 @@ next
   show ?case
   proof
     fix x
-    have "eval_primfuns fs x = fold ( * ) (map (\<lambda>f. eval_primfun f x) fs) 1"
+    have "eval_primfuns fs x = fold (*) (map (\<lambda>f. eval_primfun f x) fs) 1"
       unfolding eval_primfuns_def by (simp add: fold_plus_prod_list_rev)
-    also have "fold ( * ) (map (\<lambda>f. eval_primfun f x) fs) = fold ( * ) (map (\<lambda>f. eval_primfun f x) gs)"
+    also have "fold (*) (map (\<lambda>f. eval_primfun f x) fs) = fold (*) (map (\<lambda>f. eval_primfun f x) gs)"
       using 2 by (intro fold_multiset_equiv ext) auto
     also have "... 1 = eval_primfuns gs x"
       unfolding eval_primfuns_def by (simp add: fold_plus_prod_list_rev)

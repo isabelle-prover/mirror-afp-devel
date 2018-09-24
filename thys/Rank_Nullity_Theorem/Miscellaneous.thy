@@ -283,29 +283,29 @@ qed
 lemma independent_image_matrix_vector_mult:
   fixes P::"'a::{field}^'n^'m"
   assumes ind_B: "vec.independent B" and inv_P: "invertible P"
-  shows "vec.independent ((( *v) P)` B)"
+  shows "vec.independent (((*v) P)` B)"
 proof (rule vec.independent_injective_image)
   show "vec.independent B" using ind_B .
-  show "inj_on (( *v) P) (vec.span B)" 
+  show "inj_on ((*v) P) (vec.span B)" 
     using inj_matrix_vector_mult[OF inv_P] unfolding inj_on_def by simp
 qed
 
 lemma independent_preimage_matrix_vector_mult:
 fixes P::"'a::{field}^'n^'n"
-assumes ind_B: "vec.independent ((( *v) P)` B)" and inv_P: "invertible P"
+assumes ind_B: "vec.independent (((*v) P)` B)" and inv_P: "invertible P"
 shows "vec.independent B"
 proof -
-have "vec.independent ((( *v) (matrix_inv P))` ((( *v) P)` B))"
+have "vec.independent (((*v) (matrix_inv P))` (((*v) P)` B))"
   proof (rule independent_image_matrix_vector_mult)
-    show "vec.independent (( *v) P ` B)" using ind_B .
+    show "vec.independent ((*v) P ` B)" using ind_B .
     show "invertible (matrix_inv P)"
       by (metis matrix_inv_left matrix_inv_right inv_P invertible_def)
     qed
-moreover have "(( *v) (matrix_inv P))` ((( *v) P)` B) = B"
+moreover have "((*v) (matrix_inv P))` (((*v) P)` B) = B"
     proof (auto)
       fix x assume x: "x \<in> B" show "matrix_inv P *v (P *v x) \<in> B" 
       by (metis (full_types) x inv_P matrix_inv_left matrix_vector_mul_assoc matrix_vector_mul_lid)
-      thus "x \<in> ( *v) (matrix_inv P) ` ( *v) P ` B" 
+      thus "x \<in> (*v) (matrix_inv P) ` (*v) P ` B" 
       unfolding image_def 
       by (auto, metis  inv_P matrix_inv_left matrix_vector_mul_assoc matrix_vector_mul_lid)
      qed
@@ -369,7 +369,7 @@ proof (intro_classes, auto simp add: less_eq_bit_def less_bit_def)
 qed
 end
 
-interpretation matrix: vector_space "(( *k))::'a::{field}=>'a^'cols^'rows=>'a^'cols^'rows"
+interpretation matrix: vector_space "((*k))::'a::{field}=>'a^'cols^'rows=>'a^'cols^'rows"
 proof (unfold_locales)
 fix a::'a and x y::"'a^'cols^'rows"
 show "a *k (x + y) = a *k x + a *k y"

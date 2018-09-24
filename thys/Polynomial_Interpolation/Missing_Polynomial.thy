@@ -1215,7 +1215,7 @@ lemma dvd_dvd_smult: "a dvd b \<Longrightarrow> f dvd g \<Longrightarrow> smult 
 definition sdiv_poly :: "'a :: idom_divide poly \<Rightarrow> 'a \<Rightarrow> 'a poly" where
   "sdiv_poly p a = (map_poly (\<lambda> c. c div a) p)"  
 
-lemma smult_map_poly: "smult a = map_poly (( * ) a)"
+lemma smult_map_poly: "smult a = map_poly ((*) a)"
   by (rule ext, rule poly_eqI, subst coeff_map_poly, auto)
   
 lemma smult_exact_sdiv_poly: assumes "\<And> c. c \<in> set (coeffs p) \<Longrightarrow> a dvd c"

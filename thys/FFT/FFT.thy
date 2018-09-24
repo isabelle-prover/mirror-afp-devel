@@ -68,14 +68,14 @@ lemma sum_add_split_nat_ivl:
   using le g h by (simp add: sum_add_nat_ivl cong: sum.strong_cong)
 
 lemma ivl_splice_Un:
-  "{0..<2*n::nat} = (( * ) 2 ` {0..<n}) \<union> ((%i. Suc (2*i)) ` {0..<n})"
+  "{0..<2*n::nat} = ((*) 2 ` {0..<n}) \<union> ((%i. Suc (2*i)) ` {0..<n})"
   apply (unfold image_def Bex_def)
   apply auto
   apply arith
   done
 
 lemma ivl_splice_Int:
-  "(( * ) 2 ` {0..<n}) \<inter> ((%i. Suc (2*i)) ` {0..<n}) = {}"
+  "((*) 2 ` {0..<n}) \<inter> ((%i. Suc (2*i)) ` {0..<n}) = {}"
   by auto arith
 
 lemma double_inj_on:
@@ -90,7 +90,7 @@ lemma sum_splice:
   "(\<Sum>i::nat = 0..<2*n. f i) = (\<Sum>i = 0..<n. f (2*i)) + (\<Sum>i = 0..<n. f (2*i+1))"
 proof -
   have "(\<Sum>i::nat = 0..<2*n. f i) =
-    sum f (( * ) 2 ` {0..<n}) + sum f ((%i. 2*i+1) ` {0..<n})"
+    sum f ((*) 2 ` {0..<n}) + sum f ((%i. 2*i+1) ` {0..<n})"
     by (simp add: ivl_splice_Un ivl_splice_Int sum.union_disjoint)
   also have "... = (\<Sum>i = 0..<n. f (2*i)) + (\<Sum>i = 0..<n. f (2*i+1))"
     by (simp add: sum.reindex [OF double_inj_on]
