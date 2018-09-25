@@ -5,13 +5,6 @@ session Iptables_Semantics (AFP) = Routing +
   sessions
     Native_Word
   theories [document = false]
-    "HOL-Library.LaTeXsugar"
-    (*The Native_Word things destroy the LaTeX document! Does not compile, ...*)
-    Native_Word.More_Bits_Int
-    Native_Word.Code_Target_Bits_Int
-    "HOL-Library.Code_Target_Nat"
-    "HOL-Library.Code_Target_Int"
-    Automatic_Refinement.Misc (* mergesort *)
     "Common/List_Misc"
     "Common/WordInterval_Lists"
   theories
