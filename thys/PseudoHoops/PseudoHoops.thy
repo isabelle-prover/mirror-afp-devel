@@ -22,7 +22,7 @@ begin
 end
 
 (*
-sublocale pseudo_hoop_algebra < right: right_complemented_monoid_algebra lesseq_r less_r 1 "(*)" inf_rr "(r\<rightarrow>)";
+sublocale pseudo_hoop_algebra < right: right_complemented_monoid_algebra lesseq_r less_r 1 "( * )" inf_rr "(r\<rightarrow>)";
   apply unfold_locales;
   apply simp_all;
   apply (simp add: less_r_def);
