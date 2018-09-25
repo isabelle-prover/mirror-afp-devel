@@ -24,7 +24,7 @@ definition preprocess_keep_ifce where
               (unfold def (map_of fw))))))))"
 
 
-datatype ipt_chain = FWD | INP 
+datatype ipt_chain = FWD | INP
 
 fun get_unfold where
   "get_unfold FWD = unfold_ruleset_FORWARD" |
@@ -35,10 +35,10 @@ fun ipt_chain_toSting where
   "ipt_chain_toSting INPO = ''INPUT''"
 
 definition bench where
-  "bench closure f ipassmt def fw_in \<equiv> let fw = preprocess (get_unfold f) closure ipassmt def fw_in in 
+  "bench closure f ipassmt def fw_in \<equiv> let fw = preprocess (get_unfold f) closure ipassmt def fw_in in
       (length ((get_unfold f) def (map_of fw_in)), length (preprocess_keep_ifce (get_unfold f) closure ipassmt def fw_in), length fw, length (getParts fw), length (build_ip_partition parts_connection_ssh fw), length (build_ip_partition parts_connection_http fw))"
 definition view where
-  "view closure f ipassmt def fw_in \<equiv> let fw = preprocess (get_unfold f) closure ipassmt def fw_in in 
+  "view closure f ipassmt def fw_in \<equiv> let fw = preprocess (get_unfold f) closure ipassmt def fw_in in
       (''x'',
        map (simple_rule_iptables_save_toString (ipt_chain_toSting f)) (preprocess_keep_ifce (get_unfold f) closure ipassmt def fw_in),
        map (simple_rule_iptables_save_toString (ipt_chain_toSting f)) fw,
@@ -101,7 +101,7 @@ begin
     (ipv4addr_of_dotdecimal (192,168,0,0), 16),
     (ipv4addr_of_dotdecimal (172,16,0,0), 12),
     (ipv4addr_of_dotdecimal (10,0,0,0), 8)
-    ]), (*INET*)
+    ]), \<comment> \<open>INET\<close>
   (Iface ''tun0'', [(ipv4addr_of_dotdecimal (10,12,0,0),16)]),
   (Iface ''eth0.10'', [(ipv4addr_of_dotdecimal (192,168,10,0),24)]),
   (Iface ''eth0.11'', [(ipv4addr_of_dotdecimal (192,168,11,0),24)]),
@@ -134,20 +134,20 @@ context begin
     (ipv4addr_of_dotdecimal (172,16,0,0), 12),
     (ipv4addr_of_dotdecimal (10,0,0,0), 8)
     ]"
-  
+
   private definition "ipassmt = [(Iface ''ldit'', [(ipv4addr_of_dotdecimal (10,13,42,136), 29)]),
   (Iface ''lmd'', [(ipv4addr_of_dotdecimal (10,13,42,128), 29)]),
   (Iface ''loben'', [(ipv4addr_of_dotdecimal (10,13,42,144), 28)]),
   (Iface ''wg'', [(ipv4addr_of_dotdecimal (10,13,42,176), 28)]),
   (Iface ''wt'', [(ipv4addr_of_dotdecimal (10,13,42,160), 28)]),
-  (Iface ''lup'', everything_but_private_ips), (*INET*)
+  (Iface ''lup'', everything_but_private_ips), \<comment> \<open>INET\<close>
   (Iface ''lo'', [(ipv4addr_of_dotdecimal (127,0,0,0),8)]),
   (Iface ''vpriv'', [(0,0)]),
   (Iface ''vshit'', [(0,0)]),
   (Iface ''vocb'', [(0,0)]),
   (Iface ''lua'', [(0,0)])
   ]"
-  
+
 
  private parse_iptables_save fw1 = "configs_sqrl_shorewall" "2015_aug_iptables-save-spoofing-protection"
 
@@ -269,7 +269,7 @@ begin
 
   private  definition "ipassmt7 = [(Iface ''lo'', [(ipv4addr_of_dotdecimal (127,0,0,0),8)]),
   (Iface ''eth0'', [(ipv4addr_of_dotdecimal (192,168,1,0),24)]),
-  (*(Iface ''eth0.2'', [(ipv4addr_of_dotdecimal (192,168,2,0),24)]), cannot infer*)
+  \<^cancel>\<open>(Iface ''eth0.2'', [(ipv4addr_of_dotdecimal (192,168,2,0),24)]),\<close> \<comment> \<open>cannot infer\<close>
   (Iface ''tun0'', [(ipv4addr_of_dotdecimal (10,8,0,0),24)]),
   (Iface ''br-lan'', [(ipv4addr_of_dotdecimal (192,168,1,0),24)])]"
 
@@ -302,7 +302,7 @@ context
 begin
   private parse_iptables_save fw9 = "rlworkman.net" "iptables-save"
   thm fw9_def
- 
+
   (*I loaded the script on my local machine*)
   private definition "ipassmt9 = [(Iface ''lo'', [(ipv4addr_of_dotdecimal (127,0,0,0),8)]),
   (Iface ''eth0'', [(ipv4addr_of_dotdecimal (192,168,13,0),24)]),
