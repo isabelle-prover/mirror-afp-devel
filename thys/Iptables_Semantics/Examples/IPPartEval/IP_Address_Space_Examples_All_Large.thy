@@ -1,5 +1,5 @@
 theory IP_Address_Space_Examples_All_Large
-imports 
+imports
   IP_Address_Space_Examples_All_Small
 begin
 
@@ -15,13 +15,13 @@ begin
     (ipv4addr_of_dotdecimal (188,95,236,0), 22),
     (ipv4addr_of_dotdecimal (185,86,232,0), 22)
     ]"
-  
-  
+
+
   definition "ipassmt = [(Iface ''eth0'', [(ipv4addr_of_dotdecimal (192,168,213,4), 24)]),
   (Iface ''eth1.96'', [(ipv4addr_of_dotdecimal (131,159,14,3), 25)]),
   (Iface ''eth1.108'', [(ipv4addr_of_dotdecimal (131,159,14,129), 26)]),
   (Iface ''eth1.109'', [(ipv4addr_of_dotdecimal (131,159,20,11), 24)]),
-  (Iface ''eth1.110'', everything_but_my_ips), (*INET*)
+  (Iface ''eth1.110'', everything_but_my_ips), \<comment> \<open>INET\<close>
   (Iface ''eth1.116'', [(ipv4addr_of_dotdecimal (131,159,15,131), 26)]),
   (Iface ''eth1.152'', [(ipv4addr_of_dotdecimal (131,159,15,252), 28)]),
   (Iface ''eth1.171'', [(ipv4addr_of_dotdecimal (131,159,15,2), 26)]),
@@ -38,15 +38,15 @@ begin
   (Iface ''eth1.1020'', [(ipv4addr_of_dotdecimal (192,48,107,2), 24)]),
   (Iface ''eth1.1023'', [(ipv4addr_of_dotdecimal (188,95,236,2), 22)]),
   (Iface ''eth1.1025'', [(ipv4addr_of_dotdecimal (185,86,232,2), 22)]),
-  (Iface ''eth1.1024'', everything_but_my_ips) (*transfer net*)]"
-  
+  (Iface ''eth1.1024'', everything_but_my_ips) \<comment> \<open>transfer net\<close>)]"
+
   lemma "ipassmt_sanity_nowildcards (map_of ipassmt)" by eval
 
-  
+
   text\<open>We check for all interfaces, except for @{term "Iface ''eth0''"}, which does not need spoofing protection.\<close>
   definition "interfaces = tl (map (iface_sel \<circ> fst) ipassmt)"
-  
-  lemma "interfaces = 
+
+  lemma "interfaces =
     [''eth1.96'', ''eth1.108'', ''eth1.109'', ''eth1.110'',
      ''eth1.116'', ''eth1.152'', ''eth1.171'', ''eth1.173'', ''eth1.1010'',
      ''eth1.1011'', ''eth1.1012'', ''eth1.1014'', ''eth1.1016'', ''eth1.1017'',
@@ -88,10 +88,10 @@ begin
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw_FORWARD_default_policy net_fw in
      (access_matrix_pretty_ipv4 parts_connection_ssh fw)"
-  
+
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw_FORWARD_default_policy net_fw in
      (access_matrix_pretty_ipv4 parts_connection_http fw)"
-  
+
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw_FORWARD_default_policy net_fw in
      (access_matrix_pretty_ipv4 netbios fw)"
@@ -121,7 +121,7 @@ begin
   value[code] "view upper_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"
 
   value[code] "bench lower_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"
-  value[code] "view lower_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"  
+  value[code] "view lower_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"
 
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw2_FORWARD_default_policy net_fw2 in
@@ -141,7 +141,7 @@ begin
   value[code] "view upper_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"
 
   value[code] "bench lower_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"
-  value[code] "view lower_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"  
+  value[code] "view lower_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw2013_FORWARD_default_policy net_fw2013 in
      (access_matrix_pretty_ipv4 netbios fw)"
@@ -162,7 +162,7 @@ begin
   value[code] "view upper_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"
 
   value[code] "bench lower_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"
-  value[code] "view lower_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"  
+  value[code] "view lower_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw2014_FORWARD_default_policy net_fw2014 in
      (access_matrix_pretty_ipv4 netbios fw)"
