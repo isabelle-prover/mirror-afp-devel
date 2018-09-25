@@ -2,15 +2,14 @@
 section \<open>The Simplex Algorithm\<close>
 
 theory Simplex
-  imports 
-    Linear_Poly_Maps 
+  imports
+    Linear_Poly_Maps
     QDelta
-    Rel_Chain 
+    Rel_Chain
     Simplex_Algebra
     "HOL-Library.RBT_Mapping"
-    HOL.Order_Relation
     "HOL-Library.Permutation"
-    "HOL-Library.Code_Target_Numeral" 
+    "HOL-Library.Code_Target_Numeral"
 begin
 
 text\<open>Linear constraints are of the form @{text "p \<bowtie> c"} or @{text
@@ -24,9 +23,9 @@ denoted by @{text "\<Turnstile>\<^sub>c\<^sub>s"}, if all constraints are. There
 version @{text "\<Turnstile>\<^sub>i\<^sub>c\<^sub>s"} which takes an explicit set of indices and then only
 demands that these constraints are satisfied.\<close>
 
-datatype constraint = LT linear_poly rat    
-  | GT linear_poly rat 
-  | LEQ linear_poly rat   
+datatype constraint = LT linear_poly rat
+  | GT linear_poly rat
+  | LEQ linear_poly rat
   | GEQ linear_poly rat
   | EQ linear_poly rat
   | LTPP linear_poly linear_poly
@@ -41,22 +40,22 @@ text \<open>Indexed constraints are just pairs of indices and constraints. Indic
 type_synonym 'i i_constraint = "'i \<times> constraint"
 
 abbreviation (input) restrict_to :: "'i set \<Rightarrow> ('i \<times> 'a) set \<Rightarrow> 'a set" where
-  "restrict_to I xs \<equiv> snd ` (xs \<inter> (I \<times> UNIV))" 
+  "restrict_to I xs \<equiv> snd ` (xs \<inter> (I \<times> UNIV))"
 
-text \<open>The operation @{const restrict_to} is used to select constraints for a given index set.\<close> 
+text \<open>The operation @{const restrict_to} is used to select constraints for a given index set.\<close>
 
-abbreviation (input) flat :: "('i \<times> 'a) set \<Rightarrow> 'a set" where 
-  "flat xs \<equiv> snd ` xs"  
+abbreviation (input) flat :: "('i \<times> 'a) set \<Rightarrow> 'a set" where
+  "flat xs \<equiv> snd ` xs"
 
-text \<open>The operation @{const flat} is used to drop indices from a set of indexed constraints.\<close> 
+text \<open>The operation @{const flat} is used to drop indices from a set of indexed constraints.\<close>
 
-abbreviation (input) flat_list :: "('i \<times> 'a) list \<Rightarrow> 'a list" where 
-  "flat_list xs \<equiv> map snd xs"  
+abbreviation (input) flat_list :: "('i \<times> 'a) list \<Rightarrow> 'a list" where
+  "flat_list xs \<equiv> map snd xs"
 
 primrec
   satisfies_constraint :: "rat valuation \<Rightarrow> constraint \<Rightarrow> bool"  (infixl "\<Turnstile>\<^sub>c" 100) where
-  "v \<Turnstile>\<^sub>c LT l r \<longleftrightarrow> l\<lbrace>v\<rbrace> < r"    
-| "v \<Turnstile>\<^sub>c GT l r \<longleftrightarrow> l\<lbrace>v\<rbrace> > r" 
+  "v \<Turnstile>\<^sub>c LT l r \<longleftrightarrow> l\<lbrace>v\<rbrace> < r"
+| "v \<Turnstile>\<^sub>c GT l r \<longleftrightarrow> l\<lbrace>v\<rbrace> > r"
 | "v \<Turnstile>\<^sub>c LEQ l r \<longleftrightarrow> l\<lbrace>v\<rbrace> \<le> r"
 | "v \<Turnstile>\<^sub>c GEQ l r \<longleftrightarrow> l\<lbrace>v\<rbrace> \<ge>  r"
 | "v \<Turnstile>\<^sub>c EQ l r \<longleftrightarrow> l\<lbrace>v\<rbrace> = r"
@@ -70,38 +69,38 @@ primrec
 abbreviation satisfies_constraints :: "rat valuation \<Rightarrow> constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>c\<^sub>s" 100) where
   "v \<Turnstile>\<^sub>c\<^sub>s cs \<equiv> \<forall> c \<in> cs. v \<Turnstile>\<^sub>c c"
 
-lemma unsat_mono: assumes "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s cs)" 
-  and "cs \<subseteq> ds" 
-shows "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s ds)" 
+lemma unsat_mono: assumes "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s cs)"
+  and "cs \<subseteq> ds"
+shows "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s ds)"
   using assms by auto
 
-fun i_satisfies_cs (infixl "\<Turnstile>\<^sub>i\<^sub>c\<^sub>s" 100) where 
+fun i_satisfies_cs (infixl "\<Turnstile>\<^sub>i\<^sub>c\<^sub>s" 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s cs \<longleftrightarrow> v \<Turnstile>\<^sub>c\<^sub>s restrict_to I cs"
 
 text \<open>For the unsat-core predicate we distinguish two modes. The strict mode (True) requires that
   only indices may be returned which occur in the constraints, whereas the weak mode (False) does
   not require this. The weak mode is used for the incremental version of the simplex method where
   it is the obligation of the user to only select suitable indices, i.e., here the unsat-core will
-  be a subset of the user-selected indices. The strict mode is used in the 
+  be a subset of the user-selected indices. The strict mode is used in the
   non-incremental simplex-version where this mode guarantees that the unsat-core will only contain
   indices from the input-constraints.\<close>
 definition unsat_core :: "bool \<Rightarrow> 'i set \<Rightarrow> 'i i_constraint set \<Rightarrow> bool" where
-  "unsat_core mode I ics  = ((mode \<longrightarrow> I \<subseteq> fst ` ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s ics)))" 
+  "unsat_core mode I ics  = ((mode \<longrightarrow> I \<subseteq> fst ` ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s ics)))"
 
 subsection \<open>Procedure Specification\<close>
 
-abbreviation (input) Unsat where "Unsat \<equiv> Inl" 
-abbreviation (input) Sat where "Sat \<equiv> Inr" 
+abbreviation (input) Unsat where "Unsat \<equiv> Inl"
+abbreviation (input) Sat where "Sat \<equiv> Inr"
 
 
 text\<open>The specification for the satisfiability check procedure is given by:\<close>
-locale Solve = 
+locale Solve =
   \<comment> \<open>Decide if the given list of constraints is satisfiable. Return either
      an unsat core, or a satisfying valuation.\<close>
   fixes solve :: "'i i_constraint list \<Rightarrow> 'i list + rat valuation"
     \<comment> \<open>If the status @{const Sat} is returned, then returned valuation
       satisfies all constraints.\<close>
-  assumes  simplex_sat:  "solve cs = Sat v \<Longrightarrow> v \<Turnstile>\<^sub>c\<^sub>s flat (set cs)" 
+  assumes  simplex_sat:  "solve cs = Sat v \<Longrightarrow> v \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
     \<comment> \<open>If the status @{const Unsat} is returned, then constraints are
      unsatisfiable, i.e., an unsatisfiable core is returned.\<close>
   assumes  simplex_unsat:  "solve cs = Unsat I \<Longrightarrow> unsat_core True (set I) (set cs)"
@@ -109,7 +108,7 @@ locale Solve =
 abbreviation (input) look where "look \<equiv> Mapping.lookup"
 abbreviation (input) upd where "upd \<equiv> Mapping.update"
 
-lemma look_upd: "look (upd k v m) = (look m)(k \<mapsto> v)" 
+lemma look_upd: "look (upd k v m) = (look m)(k \<mapsto> v)"
   by (transfer, auto)
 
 lemmas look_upd_simps[simp] = look_upd Mapping.lookup_empty
@@ -138,17 +137,17 @@ generation \cite{florian-refinement}. A conversion from the @{text
 "mapping"} datatype to HOL function is denoted by @{text "\<langle>_\<rangle>"} and
 given by: @{thm map2fun_def'[no_vars]}.\<close>
 
-locale SolveExec = 
+locale SolveExec =
   fixes solve_exec :: "'i i_constraint list \<Rightarrow> 'i list + (var, rat) mapping"
   assumes  simplex_sat0:  "solve_exec cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
   assumes  simplex_unsat0:  "solve_exec cs = Unsat I \<Longrightarrow> unsat_core True (set I) (set cs)"
 begin
 definition solve where
-  "solve cs \<equiv> case solve_exec cs of Sat v \<Rightarrow> Sat \<langle>v\<rangle> | Unsat c \<Rightarrow> Unsat c" 
+  "solve cs \<equiv> case solve_exec cs of Sat v \<Rightarrow> Sat \<langle>v\<rangle> | Unsat c \<Rightarrow> Unsat c"
 end
 
 sublocale SolveExec < Solve solve
-  by (unfold_locales, insert simplex_sat0 simplex_unsat0, 
+  by (unfold_locales, insert simplex_sat0 simplex_unsat0,
       auto simp: solve_def split: sum.splits)
 
 
@@ -172,32 +171,32 @@ parameter @{text \<delta>}). So, all constraints are reduced to the form
 \<in> {\<le>, \<ge>}"}. The non-strict constraints are represented by the type
 @{text "'a ns_constraint"}, and their semantics is denoted by @{text
 "\<Turnstile>\<^sub>n\<^sub>s"} and @{text "\<Turnstile>\<^sub>n\<^sub>s\<^sub>s"}. The indexed variant is @{text "\<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s"}.\<close>
-datatype 'a ns_constraint = LEQ_ns linear_poly 'a    |    GEQ_ns linear_poly 'a 
+datatype 'a ns_constraint = LEQ_ns linear_poly 'a    |    GEQ_ns linear_poly 'a
 
-type_synonym ('i,'a) i_ns_constraint = "'i \<times> 'a ns_constraint" 
+type_synonym ('i,'a) i_ns_constraint = "'i \<times> 'a ns_constraint"
 
-primrec satisfiable_ns_constraint :: "'a::lrv valuation \<Rightarrow> 'a ns_constraint \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>n\<^sub>s" 100) where  
-  "v \<Turnstile>\<^sub>n\<^sub>s LEQ_ns l r \<longleftrightarrow> l\<lbrace>v\<rbrace> \<le> r"    
+primrec satisfiable_ns_constraint :: "'a::lrv valuation \<Rightarrow> 'a ns_constraint \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>n\<^sub>s" 100) where
+  "v \<Turnstile>\<^sub>n\<^sub>s LEQ_ns l r \<longleftrightarrow> l\<lbrace>v\<rbrace> \<le> r"
 | "v \<Turnstile>\<^sub>n\<^sub>s GEQ_ns l r \<longleftrightarrow> l\<lbrace>v\<rbrace> \<ge> r"
 
-abbreviation satisfies_ns_constraints :: "'a::lrv valuation \<Rightarrow> 'a ns_constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>n\<^sub>s\<^sub>s " 100) where 
+abbreviation satisfies_ns_constraints :: "'a::lrv valuation \<Rightarrow> 'a ns_constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>n\<^sub>s\<^sub>s " 100) where
   "v \<Turnstile>\<^sub>n\<^sub>s\<^sub>s cs \<equiv> \<forall> c \<in> cs. v \<Turnstile>\<^sub>n\<^sub>s c"
 
-fun i_satisfies_ns_constraints :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) i_ns_constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s " 100) where 
+fun i_satisfies_ns_constraints :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) i_ns_constraint set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s " 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs \<longleftrightarrow> v \<Turnstile>\<^sub>n\<^sub>s\<^sub>s restrict_to I cs"
 
-lemma i_satisfies_ns_constraints_mono: 
-  "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs \<Longrightarrow> J \<subseteq> I \<Longrightarrow> (J,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs" 
+lemma i_satisfies_ns_constraints_mono:
+  "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs \<Longrightarrow> J \<subseteq> I \<Longrightarrow> (J,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs"
   by auto
 
 definition unsat_core_ns :: "bool \<Rightarrow> 'i set \<Rightarrow> ('i,'a :: lrv) i_ns_constraint set \<Rightarrow> bool" where
-  "unsat_core_ns mode I cs = ((mode \<longrightarrow> I \<subseteq> fst ` cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs)))" 
+  "unsat_core_ns mode I cs = ((mode \<longrightarrow> I \<subseteq> fst ` cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs)))"
 
 
 text\<open>Specification of reduction of constraints to non-strict form is given by:\<close>
-locale To_ns = 
+locale To_ns =
   \<comment> \<open>Convert a constraint to an equisatisfiable non-strict constraint list.
-      The conversion must work for arbitrary subsets of constraints -- selected by some index set I -- 
+      The conversion must work for arbitrary subsets of constraints -- selected by some index set I --
       in order to carry over unsat-cores and in order to support incremental simplex solving.\<close>
   fixes to_ns :: "'i i_constraint list \<Rightarrow> ('i,'a::lrv) i_ns_constraint list"
     \<comment> \<open>Convert the valuation that satisfies all non-strict constraints to the valuation that
@@ -205,14 +204,14 @@ locale To_ns =
   fixes from_ns :: "(var, 'a) mapping \<Rightarrow> 'a ns_constraint list \<Rightarrow> (var, rat) mapping"
   assumes  to_ns_unsat:  "unsat_core_ns mode I (set (to_ns cs)) \<Longrightarrow> unsat_core mode I (set cs)"
   assumes  i_to_ns_sat:  "(I,\<langle>v'\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set (to_ns cs) \<Longrightarrow> (I,\<langle>from_ns v' (flat_list (to_ns cs))\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs"
-  assumes to_ns_indices: "fst ` set (to_ns cs) = fst ` set cs" 
+  assumes to_ns_indices: "fst ` set (to_ns cs) = fst ` set cs"
 begin
 lemma to_ns_sat: "\<langle>v'\<rangle>  \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set (to_ns cs)) \<Longrightarrow> \<langle>from_ns v' (flat_list (to_ns cs))\<rangle> \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
   using i_to_ns_sat[of UNIV v' cs] by auto
 end
 
 
-locale Solve_exec_ns = 
+locale Solve_exec_ns =
   fixes solve_exec_ns :: "('i,'a::lrv) i_ns_constraint list \<Rightarrow> 'i list + (var, 'a) mapping"
   assumes simplex_ns_sat:  "solve_exec_ns cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)"
   assumes simplex_ns_unsat:  "solve_exec_ns cs = Unsat I \<Longrightarrow> unsat_core_ns True (set I) (set cs)"
@@ -224,7 +223,7 @@ only the non-strict constraints, implemented in the @{text
 @{text "solve"} function. If @{text "to_ns"}, @{text "from_ns"} and
 @{text "solve_exec_ns"} are available, the @{text "solve_exec"}
 function can be easily defined and it can be easily shown that this
-definition satisfies its specification (also analogous to @{text solve}). 
+definition satisfies its specification (also analogous to @{text solve}).
 \<close>
 
 locale SolveExec' = To_ns to_ns from_ns + Solve_exec_ns solve_exec_ns for
@@ -233,7 +232,7 @@ locale SolveExec' = To_ns to_ns from_ns + Solve_exec_ns solve_exec_ns for
   solve_exec_ns :: "('i,'a) i_ns_constraint list \<Rightarrow> 'i list + (var, 'a) mapping"
 begin
 
-definition solve_exec where 
+definition solve_exec where
   "solve_exec cs \<equiv> let cs' = to_ns cs in case solve_exec_ns cs'
             of Sat v \<Rightarrow> Sat (from_ns v (flat_list cs'))
              | Unsat is \<Rightarrow> Unsat is"
@@ -243,7 +242,7 @@ end
 
 sublocale SolveExec' < SolveExec solve_exec
   by (unfold_locales, insert simplex_ns_sat simplex_ns_unsat to_ns_sat to_ns_unsat,
-      (force simp: solve_exec_def Let_def split: sum.splits)+) 
+      (force simp: solve_exec_def Let_def split: sum.splits)+)
 
 
 subsection \<open>Preprocessing\<close>
@@ -282,11 +281,11 @@ definition satisfies_tableau ::"'a::rational_vector valuation \<Rightarrow> tabl
   "v \<Turnstile>\<^sub>t t \<equiv> \<forall> e \<in> set t. v \<Turnstile>\<^sub>e e"
 
 
-definition lvars :: "tableau \<Rightarrow> var set" where 
+definition lvars :: "tableau \<Rightarrow> var set" where
   "lvars t = set (map lhs t)"
 definition rvars :: "tableau \<Rightarrow> var set" where
   "rvars t = \<Union> set (map rvars_eq t)"
-abbreviation tvars where "tvars t \<equiv> lvars t \<union> rvars t" 
+abbreviation tvars where "tvars t \<equiv> lvars t \<union> rvars t"
 
 
 definition normalized_tableau :: "tableau \<Rightarrow> bool" ("\<triangle>") where
@@ -337,7 +336,7 @@ proof
       unfolding normalized_tableau_def
       by auto
     show "?v' \<Turnstile>\<^sub>t t"
-      unfolding satisfies_tableau_def satisfies_eq_def 
+      unfolding satisfies_tableau_def satisfies_eq_def
     proof
       fix e
       assume "e \<in> set t"
@@ -460,39 +459,39 @@ qed
 
 text\<open>Elementary atoms are represented by the type @{text "'a atom"}
 and semantics for atoms and sets of atoms is denoted by @{text "\<Turnstile>\<^sub>a"} and
-@{text "\<Turnstile>\<^sub>a\<^sub>s"} and given by:  
+@{text "\<Turnstile>\<^sub>a\<^sub>s"} and given by:
 \<close>
 
 datatype 'a atom  = Leq var 'a    |    Geq var 'a
 
 primrec atom_var::"'a atom \<Rightarrow> var" where
-  "atom_var (Leq var a) = var" 
+  "atom_var (Leq var a) = var"
 | "atom_var (Geq var a) = var"
 
-primrec satisfies_atom :: "'a::linorder valuation \<Rightarrow> 'a atom \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>a" 100) where  
+primrec satisfies_atom :: "'a::linorder valuation \<Rightarrow> 'a atom \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>a" 100) where
   "v \<Turnstile>\<^sub>a Leq x c \<longleftrightarrow> v x \<le> c"    |    "v \<Turnstile>\<^sub>a Geq x c \<longleftrightarrow> v x \<ge> c"
 
-definition satisfies_atom_set :: "'a::linorder valuation \<Rightarrow> 'a atom set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>a\<^sub>s" 100) where 
+definition satisfies_atom_set :: "'a::linorder valuation \<Rightarrow> 'a atom set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>a\<^sub>s" 100) where
   "v \<Turnstile>\<^sub>a\<^sub>s as \<equiv> \<forall> a \<in> as. v \<Turnstile>\<^sub>a a"
 
 text \<open>There is also the indexed variant of an atom\<close>
 
 type_synonym ('i,'a) i_atom = "'i \<times> 'a atom"
 
-fun i_satisfies_atom_set :: "'i set \<times> 'a::linorder valuation \<Rightarrow> ('i,'a) i_atom set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>a\<^sub>s" 100) where 
+fun i_satisfies_atom_set :: "'i set \<times> 'a::linorder valuation \<Rightarrow> ('i,'a) i_atom set \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>a\<^sub>s" 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as \<longleftrightarrow> v \<Turnstile>\<^sub>a\<^sub>s restrict_to I as"
 
 lemma satisifies_atom_restrict_to_Cons: "v \<Turnstile>\<^sub>a\<^sub>s restrict_to I (set as) \<Longrightarrow> (i \<in> I \<Longrightarrow> v \<Turnstile>\<^sub>a a)
-  \<Longrightarrow> v \<Turnstile>\<^sub>a\<^sub>s restrict_to I (set ((i,a) # as))" 
+  \<Longrightarrow> v \<Turnstile>\<^sub>a\<^sub>s restrict_to I (set ((i,a) # as))"
   unfolding satisfies_atom_set_def by auto
 
-lemma satisfies_tableau_Cons: "v \<Turnstile>\<^sub>t t \<Longrightarrow> v \<Turnstile>\<^sub>e e \<Longrightarrow> v \<Turnstile>\<^sub>t (e # t)" 
+lemma satisfies_tableau_Cons: "v \<Turnstile>\<^sub>t t \<Longrightarrow> v \<Turnstile>\<^sub>e e \<Longrightarrow> v \<Turnstile>\<^sub>t (e # t)"
   unfolding satisfies_tableau_def by auto
 
 
 text\<open>
 The specification of the preprocessing function is given by:\<close>
-locale Preprocess = fixes preprocess::"('i,'a::lrv) i_ns_constraint list \<Rightarrow> tableau\<times> ('i,'a) i_atom list 
+locale Preprocess = fixes preprocess::"('i,'a::lrv) i_ns_constraint list \<Rightarrow> tableau\<times> ('i,'a) i_atom list
   \<times> ((var,'a) mapping \<Rightarrow> (var,'a) mapping)"
   assumes
     \<comment> \<open>The returned tableau is always normalized.\<close>
@@ -504,14 +503,14 @@ i_preprocess_sat: "\<And> v. preprocess cs = (t,as,trans_v) \<Longrightarrow> (I
 preprocess_unsat: "preprocess cs = (t, as,trans_v) \<Longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs \<Longrightarrow> \<exists> v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t" and
 
 \<comment> \<open>preprocessing does not change the set of indices\<close>
-preprocess_index: "preprocess cs = (t,as,trans_v) \<Longrightarrow> fst ` set cs = fst ` set as" 
+preprocess_index: "preprocess cs = (t,as,trans_v) \<Longrightarrow> fst ` set cs = fst ` set as"
 begin
 lemma preprocess_sat: "preprocess cs = (t,as,trans_v) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> \<langle>trans_v v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)"
   using i_preprocess_sat[of cs t as trans_v UNIV v] by auto
 
 end
 
-locale AssertAll = 
+locale AssertAll =
   fixes assert_all :: "tableau \<Rightarrow> ('i,'a::lrv) i_atom list \<Rightarrow> 'i list + (var, 'a)mapping"
   assumes assert_all_sat:  "\<triangle> t \<Longrightarrow> assert_all t as = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as)"
   assumes assert_all_unsat:  "\<triangle> t \<Longrightarrow> assert_all t as = Unsat I \<Longrightarrow> set I \<subseteq> fst ` set as \<and> (\<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (set I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as))"
@@ -520,41 +519,41 @@ locale AssertAll =
 text\<open>Once the preprocessing is done and tableau and atoms are
 obtained, their satisfiability is checked by the
 @{text assert_all} function. Its precondition is that the starting
-tableau is normalized, and its specification is analogue to the one for the 
+tableau is normalized, and its specification is analogue to the one for the
 @{text "solve"} function. If @{text "preprocess"} and @{text "assert_all"}
 are available, the  @{text "solve_exec_ns"} can be defined, and it
 can easily be shown that this definition satisfies the specification.\<close>
 
-locale Solve_exec_ns' = Preprocess preprocess + AssertAll assert_all for 
+locale Solve_exec_ns' = Preprocess preprocess + AssertAll assert_all for
   preprocess:: "('i,'a::lrv) i_ns_constraint list \<Rightarrow> tableau \<times> ('i,'a) i_atom list \<times> ((var,'a)mapping \<Rightarrow> (var,'a)mapping)" and
   assert_all :: "tableau \<Rightarrow> ('i,'a::lrv) i_atom list \<Rightarrow> 'i list + (var, 'a) mapping"
 begin
 definition solve_exec_ns where
 
-"solve_exec_ns s \<equiv> 
-    case preprocess s of (t,as,trans_v) \<Rightarrow> 
-      case assert_all t as of Inl I \<Rightarrow> Inl I | Inr v \<Rightarrow> Inr (trans_v v) " 
+"solve_exec_ns s \<equiv>
+    case preprocess s of (t,as,trans_v) \<Rightarrow>
+      case assert_all t as of Inl I \<Rightarrow> Inl I | Inr v \<Rightarrow> Inr (trans_v v) "
 end
 
 
 sublocale Solve_exec_ns' < Solve_exec_ns solve_exec_ns
 proof
-  fix cs 
+  fix cs
   obtain t as trans_v where prep: "preprocess cs = (t,as,trans_v)" by (cases "preprocess cs")
   from preprocess_tableau_normalized[OF prep]
-  have t: "\<triangle> t" . 
+  have t: "\<triangle> t" .
   from preprocess_index[OF prep] have index: "fst ` set cs = fst ` set as" by auto
   note solve = solve_exec_ns_def[of cs, unfolded prep split]
   {
     fix v
-    assume "solve_exec_ns cs = Sat v" 
+    assume "solve_exec_ns cs = Sat v"
     from this[unfolded solve] t assert_all_sat[OF t] preprocess_sat[OF prep]
     show " \<langle>v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)" by (auto split: sum.splits)
   }
   {
-    fix I 
-    assume "solve_exec_ns cs = Unsat I" 
-    from this[unfolded solve] have assert: "assert_all t as = Unsat I" 
+    fix I
+    assume "solve_exec_ns cs = Unsat I"
+    from this[unfolded solve] have assert: "assert_all t as = Unsat I"
       by (auto split: sum.splits)
     from assert_all_unsat[OF t assert] preprocess_unsat[OF prep, of "set I"]
     have "set I \<subseteq> fst ` set as" "\<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" by force+
@@ -565,7 +564,7 @@ qed
 subsection\<open>Incrementally Asserting Atoms\<close>
 
 text\<open>The function @{term assert_all} can be implemented by
-iteratively asserting one by one atom from the given list of atoms. 
+iteratively asserting one by one atom from the given list of atoms.
 \<close>
 
 type_synonym 'a bounds = "var \<rightharpoonup> 'a"
@@ -610,13 +609,13 @@ definition gtlb ("\<rhd>\<^sub>l\<^sub>b") where
   "\<rhd>\<^sub>l\<^sub>b lt c b \<equiv> case b of None \<Rightarrow> True | Some b' \<Rightarrow> lt b' c"
 
 
-definition ge_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "\<ge>\<^sub>u\<^sub>b" 100) where 
+definition ge_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "\<ge>\<^sub>u\<^sub>b" 100) where
   "c \<ge>\<^sub>u\<^sub>b b = \<unrhd>\<^sub>u\<^sub>b (<) c b"
-definition gt_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl ">\<^sub>u\<^sub>b" 100) where 
+definition gt_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl ">\<^sub>u\<^sub>b" 100) where
   "c >\<^sub>u\<^sub>b b = \<rhd>\<^sub>u\<^sub>b (<) c b"
-definition le_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "\<le>\<^sub>u\<^sub>b" 100) where 
+definition le_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "\<le>\<^sub>u\<^sub>b" 100) where
   "c \<le>\<^sub>u\<^sub>b b = \<unlhd>\<^sub>u\<^sub>b (<) c b"
-definition lt_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "<\<^sub>u\<^sub>b" 100) where 
+definition lt_ubound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "<\<^sub>u\<^sub>b" 100) where
   "c <\<^sub>u\<^sub>b b = \<lhd>\<^sub>u\<^sub>b (<) c b"
 definition le_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool" (infixl "\<le>\<^sub>l\<^sub>b" 100) where
   "c \<le>\<^sub>l\<^sub>b b = \<unlhd>\<^sub>l\<^sub>b (<) c b"
@@ -628,18 +627,18 @@ definition gt_lbound :: "'a::linorder \<Rightarrow> 'a option \<Rightarrow> bool
   "c >\<^sub>l\<^sub>b b = \<rhd>\<^sub>l\<^sub>b (<) c b"
 
 
-lemmas bound_compare'_defs = 
-  geub_def gtub_def leub_def ltub_def 
-  gelb_def gtlb_def lelb_def ltlb_def 
+lemmas bound_compare'_defs =
+  geub_def gtub_def leub_def ltub_def
+  gelb_def gtlb_def lelb_def ltlb_def
 
-lemmas bound_compare''_defs = 
-  ge_ubound_def gt_ubound_def le_ubound_def lt_ubound_def 
+lemmas bound_compare''_defs =
+  ge_ubound_def gt_ubound_def le_ubound_def lt_ubound_def
   le_lbound_def lt_lbound_def ge_lbound_def gt_lbound_def
 
 lemmas bound_compare_defs = bound_compare'_defs bound_compare''_defs
 
 
-lemma opposite_dir [simp]: 
+lemma opposite_dir [simp]:
   "\<unlhd>\<^sub>l\<^sub>b (>) a b = \<unrhd>\<^sub>u\<^sub>b (<) a b"
   "\<unlhd>\<^sub>u\<^sub>b (>) a b = \<unrhd>\<^sub>l\<^sub>b (<) a b"
   "\<unrhd>\<^sub>l\<^sub>b (>) a b = \<unlhd>\<^sub>u\<^sub>b (<) a b"
@@ -657,36 +656,36 @@ lemma [simp]: "\<not> c \<ge>\<^sub>u\<^sub>b None " "\<not> c \<le>\<^sub>l\<^s
   by (auto simp add: bound_compare_defs)
 
 lemma neg_bounds_compare:
-  "(\<not> (c \<ge>\<^sub>u\<^sub>b b)) \<Longrightarrow> c <\<^sub>u\<^sub>b b" "(\<not> (c \<le>\<^sub>u\<^sub>b b)) \<Longrightarrow> c >\<^sub>u\<^sub>b b" 
+  "(\<not> (c \<ge>\<^sub>u\<^sub>b b)) \<Longrightarrow> c <\<^sub>u\<^sub>b b" "(\<not> (c \<le>\<^sub>u\<^sub>b b)) \<Longrightarrow> c >\<^sub>u\<^sub>b b"
   "(\<not> (c >\<^sub>u\<^sub>b b)) \<Longrightarrow> c \<le>\<^sub>u\<^sub>b b" "(\<not> (c <\<^sub>u\<^sub>b b)) \<Longrightarrow> c \<ge>\<^sub>u\<^sub>b b"
-  "(\<not> (c \<le>\<^sub>l\<^sub>b b)) \<Longrightarrow> c >\<^sub>l\<^sub>b b" "(\<not> (c \<ge>\<^sub>l\<^sub>b b)) \<Longrightarrow> c <\<^sub>l\<^sub>b b" 
+  "(\<not> (c \<le>\<^sub>l\<^sub>b b)) \<Longrightarrow> c >\<^sub>l\<^sub>b b" "(\<not> (c \<ge>\<^sub>l\<^sub>b b)) \<Longrightarrow> c <\<^sub>l\<^sub>b b"
   "(\<not> (c <\<^sub>l\<^sub>b b)) \<Longrightarrow> c \<ge>\<^sub>l\<^sub>b b" "(\<not> (c >\<^sub>l\<^sub>b b)) \<Longrightarrow> c \<le>\<^sub>l\<^sub>b b"
   by (case_tac[!] b) (auto simp add: bound_compare_defs)
 
 lemma bounds_compare_contradictory [simp]:
   "\<lbrakk>c \<ge>\<^sub>u\<^sub>b b; c <\<^sub>u\<^sub>b b\<rbrakk> \<Longrightarrow> False" "\<lbrakk>c \<le>\<^sub>u\<^sub>b b; c >\<^sub>u\<^sub>b b\<rbrakk> \<Longrightarrow> False"
   "\<lbrakk>c >\<^sub>u\<^sub>b b; c \<le>\<^sub>u\<^sub>b b\<rbrakk> \<Longrightarrow> False" "\<lbrakk>c <\<^sub>u\<^sub>b b; c \<ge>\<^sub>u\<^sub>b b\<rbrakk> \<Longrightarrow> False"
-  "\<lbrakk>c \<le>\<^sub>l\<^sub>b b; c >\<^sub>l\<^sub>b b\<rbrakk> \<Longrightarrow> False" "\<lbrakk>c \<ge>\<^sub>l\<^sub>b b; c <\<^sub>l\<^sub>b b\<rbrakk> \<Longrightarrow> False" 
+  "\<lbrakk>c \<le>\<^sub>l\<^sub>b b; c >\<^sub>l\<^sub>b b\<rbrakk> \<Longrightarrow> False" "\<lbrakk>c \<ge>\<^sub>l\<^sub>b b; c <\<^sub>l\<^sub>b b\<rbrakk> \<Longrightarrow> False"
   "\<lbrakk>c <\<^sub>l\<^sub>b b; c \<ge>\<^sub>l\<^sub>b b\<rbrakk> \<Longrightarrow> False" "\<lbrakk>c >\<^sub>l\<^sub>b b; c \<le>\<^sub>l\<^sub>b b\<rbrakk> \<Longrightarrow> False"
   by (case_tac[!] b) (auto simp add: bound_compare_defs)
 
-lemma compare_strict_nonstrict: 
+lemma compare_strict_nonstrict:
   "x <\<^sub>u\<^sub>b b \<Longrightarrow> x \<le>\<^sub>u\<^sub>b b"
   "x >\<^sub>u\<^sub>b b \<Longrightarrow> x \<ge>\<^sub>u\<^sub>b b"
   "x <\<^sub>l\<^sub>b b \<Longrightarrow> x \<le>\<^sub>l\<^sub>b b"
   "x >\<^sub>l\<^sub>b b \<Longrightarrow> x \<ge>\<^sub>l\<^sub>b b"
   by (case_tac[!] b) (auto simp add: bound_compare_defs)
 
-lemma [simp]: 
-  "\<lbrakk> x \<le> c; c <\<^sub>u\<^sub>b b \<rbrakk> \<Longrightarrow> x <\<^sub>u\<^sub>b b" 
+lemma [simp]:
+  "\<lbrakk> x \<le> c; c <\<^sub>u\<^sub>b b \<rbrakk> \<Longrightarrow> x <\<^sub>u\<^sub>b b"
   "\<lbrakk> x < c; c \<le>\<^sub>u\<^sub>b b \<rbrakk> \<Longrightarrow> x <\<^sub>u\<^sub>b b"
   "\<lbrakk> x \<le> c; c \<le>\<^sub>u\<^sub>b b \<rbrakk> \<Longrightarrow> x \<le>\<^sub>u\<^sub>b b"
-  "\<lbrakk> x \<ge> c; c >\<^sub>l\<^sub>b b \<rbrakk> \<Longrightarrow> x >\<^sub>l\<^sub>b b" 
+  "\<lbrakk> x \<ge> c; c >\<^sub>l\<^sub>b b \<rbrakk> \<Longrightarrow> x >\<^sub>l\<^sub>b b"
   "\<lbrakk> x > c; c \<ge>\<^sub>l\<^sub>b b \<rbrakk> \<Longrightarrow> x >\<^sub>l\<^sub>b b"
   "\<lbrakk> x \<ge> c; c \<ge>\<^sub>l\<^sub>b b \<rbrakk> \<Longrightarrow> x \<ge>\<^sub>l\<^sub>b b"
   by (case_tac[!] b) (auto simp add: bound_compare_defs)
 
-lemma bounds_lg [simp]: 
+lemma bounds_lg [simp]:
   "\<lbrakk> c >\<^sub>u\<^sub>b b; x \<le>\<^sub>u\<^sub>b b\<rbrakk> \<Longrightarrow> x < c"
   "\<lbrakk> c \<ge>\<^sub>u\<^sub>b b; x <\<^sub>u\<^sub>b b\<rbrakk> \<Longrightarrow> x < c"
   "\<lbrakk> c \<ge>\<^sub>u\<^sub>b b; x \<le>\<^sub>u\<^sub>b b\<rbrakk> \<Longrightarrow> x \<le> c"
@@ -695,7 +694,7 @@ lemma bounds_lg [simp]:
   "\<lbrakk> c \<le>\<^sub>l\<^sub>b b; x \<ge>\<^sub>l\<^sub>b b\<rbrakk> \<Longrightarrow> x \<ge> c"
   by (case_tac[!] b) (auto simp add: bound_compare_defs)
 
-lemma bounds_compare_Some [simp]: 
+lemma bounds_compare_Some [simp]:
   "x \<le>\<^sub>u\<^sub>b Some c \<longleftrightarrow> x \<le> c" "x \<ge>\<^sub>u\<^sub>b Some c \<longleftrightarrow> x \<ge> c"
   "x <\<^sub>u\<^sub>b Some c \<longleftrightarrow> x < c" "x >\<^sub>u\<^sub>b Some c \<longleftrightarrow> x > c"
   "x \<ge>\<^sub>l\<^sub>b Some c \<longleftrightarrow> x \<ge> c" "x \<le>\<^sub>l\<^sub>b Some c \<longleftrightarrow> x \<le> c"
@@ -707,7 +706,7 @@ fun in_bounds where
 
 fun satisfies_bounds :: "'a::linorder valuation \<Rightarrow> 'a bounds \<times> 'a bounds \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>b" 100) where
   "v \<Turnstile>\<^sub>b b \<longleftrightarrow> (\<forall> x. in_bounds x v b)"
-declare satisfies_bounds.simps [simp del] 
+declare satisfies_bounds.simps [simp del]
 
 
 lemma satisfies_bounds_iff:
@@ -733,7 +732,7 @@ lemma atoms_equiv_bounds_simps:
 text\<open>A valuation satisfies bounds iff the value of each variable
 respects both its lower and upper bound, i.e, @{thm
 satisfies_bounds_iff[no_vars]}. Asserted atoms are precisely encoded
-by the current bounds in a state (denoted by @{text \<doteq>}) if every 
+by the current bounds in a state (denoted by @{text \<doteq>}) if every
 valuation satisfies them iff it satisfies the bounds, i.e.,
 @{thm atoms_equiv_bounds_simps[no_vars, iff]}.\<close>
 
@@ -754,9 +753,9 @@ text\<open>Since we also need to now about the indices of atoms, actually,
   the bounds are also indexed, and in addition to the flag for unsatisfiability,
   we also store an optional unsat core.\<close>
 
-type_synonym 'i bound_index = "var \<Rightarrow> 'i" 
+type_synonym 'i bound_index = "var \<Rightarrow> 'i"
 
-type_synonym ('i,'a) bounds_index = "(var, ('i \<times> 'a))mapping" 
+type_synonym ('i,'a) bounds_index = "(var, ('i \<times> 'a))mapping"
 
 datatype ('i,'a) state = State
   (\<T>: "tableau")
@@ -767,28 +766,28 @@ datatype ('i,'a) state = State
   (\<U>\<^sub>c: "'i list option")
 
 definition indexl :: "('i,'a) state \<Rightarrow> 'i bound_index" ("\<I>\<^sub>l") where
-  "\<I>\<^sub>l s = (fst o the) o look (\<B>\<^sub>i\<^sub>l s)" 
+  "\<I>\<^sub>l s = (fst o the) o look (\<B>\<^sub>i\<^sub>l s)"
 
 definition boundsl :: "('i,'a) state \<Rightarrow> 'a bounds" ("\<B>\<^sub>l") where
-  "\<B>\<^sub>l s = map_option snd o look (\<B>\<^sub>i\<^sub>l s)" 
+  "\<B>\<^sub>l s = map_option snd o look (\<B>\<^sub>i\<^sub>l s)"
 
 definition indexu :: "('i,'a) state \<Rightarrow> 'i bound_index" ("\<I>\<^sub>u") where
-  "\<I>\<^sub>u s = (fst o the) o look (\<B>\<^sub>i\<^sub>u s)" 
+  "\<I>\<^sub>u s = (fst o the) o look (\<B>\<^sub>i\<^sub>u s)"
 
 definition boundsu :: "('i,'a) state \<Rightarrow> 'a bounds" ("\<B>\<^sub>u") where
-  "\<B>\<^sub>u s = map_option snd o look (\<B>\<^sub>i\<^sub>u s)" 
+  "\<B>\<^sub>u s = map_option snd o look (\<B>\<^sub>i\<^sub>u s)"
 
-abbreviation BoundsIndicesMap ("\<B>\<^sub>i") where  "\<B>\<^sub>i s \<equiv> (\<B>\<^sub>i\<^sub>l s, \<B>\<^sub>i\<^sub>u s)" 
-abbreviation Bounds :: "('i,'a) state \<Rightarrow> 'a bounds \<times> 'a bounds" ("\<B>") where  "\<B> s \<equiv> (\<B>\<^sub>l s, \<B>\<^sub>u s)" 
-abbreviation Indices :: "('i,'a) state \<Rightarrow> 'i bound_index \<times> 'i bound_index" ("\<I>") where  "\<I> s \<equiv> (\<I>\<^sub>l s, \<I>\<^sub>u s)" 
-abbreviation BoundsIndices :: "('i,'a) state \<Rightarrow> ('a bounds \<times> 'a bounds) \<times> ('i bound_index \<times> 'i bound_index)" ("\<B>\<I>") 
-  where  "\<B>\<I> s \<equiv> (\<B> s, \<I> s)"  
+abbreviation BoundsIndicesMap ("\<B>\<^sub>i") where  "\<B>\<^sub>i s \<equiv> (\<B>\<^sub>i\<^sub>l s, \<B>\<^sub>i\<^sub>u s)"
+abbreviation Bounds :: "('i,'a) state \<Rightarrow> 'a bounds \<times> 'a bounds" ("\<B>") where  "\<B> s \<equiv> (\<B>\<^sub>l s, \<B>\<^sub>u s)"
+abbreviation Indices :: "('i,'a) state \<Rightarrow> 'i bound_index \<times> 'i bound_index" ("\<I>") where  "\<I> s \<equiv> (\<I>\<^sub>l s, \<I>\<^sub>u s)"
+abbreviation BoundsIndices :: "('i,'a) state \<Rightarrow> ('a bounds \<times> 'a bounds) \<times> ('i bound_index \<times> 'i bound_index)" ("\<B>\<I>")
+  where  "\<B>\<I> s \<equiv> (\<B> s, \<I> s)"
 
 fun satisfies_bounds_index :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('a bounds \<times> 'a bounds) \<times>
   ('i bound_index \<times> 'i bound_index) \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>b" 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>b ((BL,BU),(IL,IU)) \<longleftrightarrow> (
      (\<forall> x c. BL x = Some c \<longrightarrow> IL x \<in> I \<longrightarrow> v x \<ge> c)
-   \<and> (\<forall> x c. BU x = Some c \<longrightarrow> IU x \<in> I \<longrightarrow> v x \<le> c))" 
+   \<and> (\<forall> x c. BU x = Some c \<longrightarrow> IU x \<in> I \<longrightarrow> v x \<le> c))"
 declare satisfies_bounds_index.simps[simp del]
 
 fun atoms_imply_bounds_index :: "('i,'a::lrv) i_atom set \<Rightarrow> ('a bounds \<times> 'a bounds) \<times> ('i bound_index \<times> 'i bound_index)
@@ -796,57 +795,57 @@ fun atoms_imply_bounds_index :: "('i,'a::lrv) i_atom set \<Rightarrow> ('a bound
   "as \<Turnstile>\<^sub>i bi \<longleftrightarrow> (\<forall> I v. (I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as \<longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>b bi)"
 declare atoms_imply_bounds_index.simps[simp del]
 
-lemma i_satisfies_atom_set_mono: "as \<subseteq> as' \<Longrightarrow> v \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as' \<Longrightarrow> v \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as" 
+lemma i_satisfies_atom_set_mono: "as \<subseteq> as' \<Longrightarrow> v \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as' \<Longrightarrow> v \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as"
   by (cases v, auto simp: satisfies_atom_set_def)
 
-lemma atoms_imply_bounds_index_mono: "as \<subseteq> as' \<Longrightarrow> as \<Turnstile>\<^sub>i bi \<Longrightarrow> as' \<Turnstile>\<^sub>i bi" 
+lemma atoms_imply_bounds_index_mono: "as \<subseteq> as' \<Longrightarrow> as \<Turnstile>\<^sub>i bi \<Longrightarrow> as' \<Turnstile>\<^sub>i bi"
   unfolding atoms_imply_bounds_index.simps using i_satisfies_atom_set_mono by blast
 
-definition satisfies_state :: "'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>s" 100) where 
+definition satisfies_state :: "'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>s" 100) where
   "v \<Turnstile>\<^sub>s s \<equiv> v \<Turnstile>\<^sub>b \<B> s \<and> v \<Turnstile>\<^sub>t \<T> s"
 
 definition curr_val_satisfies_state :: "('i,'a::lrv) state \<Rightarrow> bool" ("\<Turnstile>") where
   "\<Turnstile> s \<equiv> \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>s s"
 
-fun satisfies_state_index :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>s" 100) where 
+fun satisfies_state_index :: "'i set \<times> 'a::lrv valuation \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<Turnstile>\<^sub>i\<^sub>s" 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>s s \<longleftrightarrow> (v \<Turnstile>\<^sub>t \<T> s \<and> (I,v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s)"
 declare satisfies_state_index.simps[simp del]
 
 definition indices_state :: "('i,'a)state \<Rightarrow> 'i set" where
-  "indices_state s = { i. \<exists> x b. look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b)}" 
+  "indices_state s = { i. \<exists> x b. look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b)}"
 
-definition unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where 
+definition unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
   "unsat_state_core s = (set (the (\<U>\<^sub>c s)) \<subseteq> indices_state s \<and> (\<not> (\<exists> v. (set (the (\<U>\<^sub>c s)),v) \<Turnstile>\<^sub>i\<^sub>s s)))"
 
-lemma state_satisfies_index: assumes "v \<Turnstile>\<^sub>s s" 
-  shows "(I,v) \<Turnstile>\<^sub>i\<^sub>s s" 
+lemma state_satisfies_index: assumes "v \<Turnstile>\<^sub>s s"
+  shows "(I,v) \<Turnstile>\<^sub>i\<^sub>s s"
   unfolding satisfies_state_index.simps satisfies_bounds_index.simps
 proof (intro conjI impI allI)
-  fix x c 
+  fix x c
   from assms[unfolded satisfies_state_def satisfies_bounds.simps, simplified]
   have "v \<Turnstile>\<^sub>t \<T> s" and bnd: "v x \<ge>\<^sub>l\<^sub>b \<B>\<^sub>l s x" "v x \<le>\<^sub>u\<^sub>b \<B>\<^sub>u s x" by auto
   show "v \<Turnstile>\<^sub>t \<T> s" by fact
-  show "\<B>\<^sub>l s x = Some c \<Longrightarrow> \<I>\<^sub>l s x \<in> I \<Longrightarrow> c \<le> v x" 
+  show "\<B>\<^sub>l s x = Some c \<Longrightarrow> \<I>\<^sub>l s x \<in> I \<Longrightarrow> c \<le> v x"
     using bnd(1) by auto
-  show "\<B>\<^sub>u s x = Some c \<Longrightarrow> \<I>\<^sub>u s x \<in> I \<Longrightarrow> v x \<le> c" 
+  show "\<B>\<^sub>u s x = Some c \<Longrightarrow> \<I>\<^sub>u s x \<in> I \<Longrightarrow> v x \<le> c"
     using bnd(2) by auto
 qed
 
-lemma unsat_state_core_unsat: "unsat_state_core s \<Longrightarrow> \<not> (\<exists> v. v \<Turnstile>\<^sub>s s)" 
+lemma unsat_state_core_unsat: "unsat_state_core s \<Longrightarrow> \<not> (\<exists> v. v \<Turnstile>\<^sub>s s)"
   unfolding unsat_state_core_def using state_satisfies_index by blast
 
 definition tableau_valuated ("\<nabla>") where
   "\<nabla> s \<equiv> \<forall> x \<in> tvars (\<T> s). Mapping.lookup (\<V> s) x \<noteq> None"
 
-definition index_valid where 
-  "index_valid as (s :: ('i,'a) state) = (\<forall> x b i. 
+definition index_valid where
+  "index_valid as (s :: ('i,'a) state) = (\<forall> x b i.
       (look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<longrightarrow> ((i, Geq x b) \<in> as))
-    \<and> (look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b) \<longrightarrow> ((i, Leq x b) \<in> as)))" 
+    \<and> (look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b) \<longrightarrow> ((i, Leq x b) \<in> as)))"
 
-lemma index_valid_indices_state: "index_valid as s \<Longrightarrow> indices_state s \<subseteq> fst ` as" 
+lemma index_valid_indices_state: "index_valid as s \<Longrightarrow> indices_state s \<subseteq> fst ` as"
   unfolding index_valid_def indices_state_def by force
 
-lemma index_valid_mono: "as \<subseteq> bs \<Longrightarrow> index_valid as s \<Longrightarrow> index_valid bs s" 
+lemma index_valid_mono: "as \<subseteq> bs \<Longrightarrow> index_valid as s \<Longrightarrow> index_valid bs s"
   unfolding index_valid_def by blast
 
 text\<open>To be a solution of the initial problem, a valuation should
@@ -867,18 +866,18 @@ definition update\<B>\<I> where
   [simp]: "update\<B>\<I> field_update i x c s = field_update (upd x (i,c)) s"
 
 fun \<B>\<^sub>i\<^sub>u_update where
-  "\<B>\<^sub>i\<^sub>u_update up (State T BIL BIU V U UC) = State T BIL (up BIU) V U UC" 
+  "\<B>\<^sub>i\<^sub>u_update up (State T BIL BIU V U UC) = State T BIL (up BIU) V U UC"
 
 fun \<B>\<^sub>i\<^sub>l_update where
-  "\<B>\<^sub>i\<^sub>l_update up (State T BIL BIU V U UC) = State T (up BIL) BIU V U UC" 
+  "\<B>\<^sub>i\<^sub>l_update up (State T BIL BIU V U UC) = State T (up BIL) BIU V U UC"
 
 fun \<V>_update where
-  "\<V>_update V (State T BIL BIU V_old U UC) = State T BIL BIU V U UC" 
+  "\<V>_update V (State T BIL BIU V_old U UC) = State T BIL BIU V U UC"
 
 fun \<T>_update where
-  "\<T>_update T (State T_old BIL BIU V U UC) = State T BIL BIU V U UC" 
+  "\<T>_update T (State T_old BIL BIU V U UC) = State T BIL BIU V U UC"
 
-lemma update_simps[simp]: 
+lemma update_simps[simp]:
   "\<B>\<^sub>i\<^sub>u (\<B>\<^sub>i\<^sub>u_update up s) = up (\<B>\<^sub>i\<^sub>u s)"
   "\<B>\<^sub>i\<^sub>l (\<B>\<^sub>i\<^sub>u_update up s) = \<B>\<^sub>i\<^sub>l s"
   "\<T> (\<B>\<^sub>i\<^sub>u_update up s) = \<T> s"
@@ -905,11 +904,11 @@ lemma update_simps[simp]:
   "\<U>\<^sub>c (\<T>_update T s) = \<U>\<^sub>c s"
   by (atomize(full), cases s, auto)
 
-declare 
-  \<B>\<^sub>i\<^sub>u_update.simps[simp del] 
+declare
+  \<B>\<^sub>i\<^sub>u_update.simps[simp del]
   \<B>\<^sub>i\<^sub>l_update.simps[simp del]
 
-fun set_unsat :: "'i list \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state" where 
+fun set_unsat :: "'i list \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state" where
   "set_unsat I (State T BIL BIU V U UC) = State T BIL BIU V True (Some (remdups I))"
 
 lemma set_unsat_simps[simp]: "\<B>\<^sub>i\<^sub>l (set_unsat I s) = \<B>\<^sub>i\<^sub>l s"
@@ -921,7 +920,7 @@ lemma set_unsat_simps[simp]: "\<B>\<^sub>i\<^sub>l (set_unsat I s) = \<B>\<^sub>
   by (atomize(full), cases s, auto)
 
 datatype ('i,'a) Direction = Direction
-  (lt: "'a::linorder \<Rightarrow> 'a \<Rightarrow> bool") 
+  (lt: "'a::linorder \<Rightarrow> 'a \<Rightarrow> bool")
   (LBI: "('i,'a) state \<Rightarrow> ('i,'a) bounds_index")
   (UBI: "('i,'a) state \<Rightarrow> ('i,'a) bounds_index")
   (LB: "('i,'a) state \<Rightarrow> 'a bounds")
@@ -943,9 +942,9 @@ definition Negative where
 text\<open>Assuming that the @{text \<U>} flag and the current valuation
 @{text "\<V>"} in the final state determine the solution of a problem, the
 @{text assert_all} function can be reduced to the @{text assert_all_state}
-function that operates on the states: 
-@{text[display] "assert_all t as \<equiv> let s = assert_all_state t as in 
-   if (\<U> s) then (False, None) else (True, Some (\<V> s))" } 
+function that operates on the states:
+@{text[display] "assert_all t as \<equiv> let s = assert_all_state t as in
+   if (\<U> s) then (False, None) else (True, Some (\<V> s))" }
 \<close>
 text\<open>Specification for the @{text assert_all_state} can be directly
 obtained from the specification of @{text assert_all}, and it describes
@@ -976,28 +975,28 @@ assert_all_state_unsat: "\<triangle> t \<Longrightarrow> assert_all_state t as =
 assert_all_state_unsat_atoms_equiv_bounds: "\<triangle> t \<Longrightarrow> assert_all_state t as = s' \<Longrightarrow> \<U> s' \<Longrightarrow> set as \<Turnstile>\<^sub>i \<B>\<I> s'" and
 
 \<comment> \<open>The set of indices is taken from the constraints\<close>
-assert_all_state_indices: "\<triangle> t \<Longrightarrow> assert_all_state t as = s \<Longrightarrow> indices_state s \<subseteq> fst ` set as" 
+assert_all_state_indices: "\<triangle> t \<Longrightarrow> assert_all_state t as = s \<Longrightarrow> indices_state s \<subseteq> fst ` set as"
 begin
 definition assert_all where
-  "assert_all t as \<equiv> let s = assert_all_state t as in 
+  "assert_all t as \<equiv> let s = assert_all_state t as in
      if (\<U> s) then Unsat (the (\<U>\<^sub>c s)) else Sat (\<V> s)"
 end
 
 
 
 sublocale AssertAllState < AssertAll assert_all
-proof 
-  fix t as v I 
+proof
+  fix t as v I
   assume D: "\<triangle> t"
-  from D show "assert_all t as = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as)" 
+  from D show "assert_all t as = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as)"
     unfolding Let_def assert_all_def
     using assert_all_state_tableau_equiv[OF D refl]
     using assert_all_state_sat[OF D refl]
     using assert_all_state_sat_atoms_equiv_bounds[OF D refl, of as]
     unfolding atoms_equiv_bounds.simps curr_val_satisfies_state_def satisfies_state_def satisfies_atom_set_def
     by (auto simp: Let_def split: if_splits)
-  assume "assert_all t as = Unsat I" 
-  then have i: "I = the (\<U>\<^sub>c (assert_all_state t as))" and U: "\<U> (assert_all_state t as)" 
+  assume "assert_all t as = Unsat I"
+  then have i: "I = the (\<U>\<^sub>c (assert_all_state t as))" and U: "\<U> (assert_all_state t as)"
     unfolding assert_all_def Let_def by (auto split: if_splits)
   note unsat = assert_all_state_unsat[OF D refl U, unfolded unsat_state_core_def i[symmetric]]
   from unsat have "set I \<subseteq> indices_state (assert_all_state t as)" by auto
@@ -1006,15 +1005,15 @@ proof
   show "set I \<subseteq> fst ` set as \<and> (\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as)"
   proof (intro conjI indices, clarify)
     fix v
-    assume model: "v \<Turnstile>\<^sub>t t" "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
+    assume model: "v \<Turnstile>\<^sub>t t" "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
     from unsat have no_model: "\<not> ((set I, v) \<Turnstile>\<^sub>i\<^sub>s assert_all_state t as)" by auto
-    from assert_all_state_unsat_atoms_equiv_bounds[OF D refl U] 
+    from assert_all_state_unsat_atoms_equiv_bounds[OF D refl U]
     have equiv: "set as \<Turnstile>\<^sub>i \<B>\<I> (assert_all_state t as)" by auto
     from assert_all_state_tableau_equiv[OF D refl, of v] model
     have model_t: "v \<Turnstile>\<^sub>t \<T> (assert_all_state t as)" by auto
-    have model_as': "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
+    have model_as': "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
       using model(2) by (auto simp: satisfies_atom_set_def)
-    with equiv model_t have "(set I, v) \<Turnstile>\<^sub>i\<^sub>s assert_all_state t as" 
+    with equiv model_t have "(set I, v) \<Turnstile>\<^sub>i\<^sub>s assert_all_state t as"
       unfolding satisfies_state_index.simps atoms_imply_bounds_index.simps by simp
     with no_model show False by simp
   qed
@@ -1029,20 +1028,20 @@ assert} function for each atom in the starting atoms list.\<close>
 text\<open>
 \begin{small}
   @{text "assert_loop as s \<equiv> foldl (\<lambda> s' a. if (\<U> s') then s' else assert a s') s as"}
-  
+
   @{text "assert_all_state t as \<equiv> assert_loop ats (init t)"}
 \end{small}
 \<close>
 
 
-locale Init' = 
+locale Init' =
   fixes init :: "tableau \<Rightarrow> ('i,'a::lrv) state"
   assumes init'_tableau_normalized: "\<triangle> t \<Longrightarrow> \<triangle> (\<T> (init t))"
   assumes init'_tableau_equiv: "\<triangle> t \<Longrightarrow> (v::'a valuation) \<Turnstile>\<^sub>t t = v \<Turnstile>\<^sub>t \<T> (init t)"
   assumes init'_sat: "\<triangle> t \<Longrightarrow> \<not> \<U> (init t) \<longrightarrow> \<Turnstile> (init t)"
   assumes init'_unsat: "\<triangle> t \<Longrightarrow> \<U> (init t) \<longrightarrow> unsat_state_core (init t)"
   assumes init'_atoms_equiv_bounds: "\<triangle> t \<Longrightarrow> {} \<doteq> \<B> (init t)"
-  assumes init'_atoms_imply_bounds_index: "\<triangle> t \<Longrightarrow> {} \<Turnstile>\<^sub>i \<B>\<I> (init t)" 
+  assumes init'_atoms_imply_bounds_index: "\<triangle> t \<Longrightarrow> {} \<Turnstile>\<^sub>i \<B>\<I> (init t)"
 
 
 text\<open>Specification for @{text "init"} can be obtained from the
@@ -1060,23 +1059,23 @@ asking that initial bounds are empty. Therefore, specification for
 
 locale Init = fixes init::"tableau \<Rightarrow> ('i,'a::lrv) state"
   assumes
-    \<comment> \<open>Tableau in the initial state for @{text t} is @{text t}:\<close> init_tableau_id: "\<T> (init t) = t" and 
+    \<comment> \<open>Tableau in the initial state for @{text t} is @{text t}:\<close> init_tableau_id: "\<T> (init t) = t" and
 
 \<comment> \<open>Since unsatisfiability is not detected, @{text \<U>}
-     flag must not be set:\<close> init_unsat_flag: "\<not> \<U> (init t)" and 
+     flag must not be set:\<close> init_unsat_flag: "\<not> \<U> (init t)" and
 
-\<comment> \<open>The current valuation must satisfy the tableau:\<close> init_satisfies_tableau: "\<langle>\<V> (init t)\<rangle> \<Turnstile>\<^sub>t t" and 
+\<comment> \<open>The current valuation must satisfy the tableau:\<close> init_satisfies_tableau: "\<langle>\<V> (init t)\<rangle> \<Turnstile>\<^sub>t t" and
 
 \<comment> \<open>In an inital state no atoms are yet asserted so the bounds
-     must be empty:\<close> 
-init_bounds: "\<B>\<^sub>i\<^sub>l (init t) = Mapping.empty"   "\<B>\<^sub>i\<^sub>u (init t) = Mapping.empty"  and 
+     must be empty:\<close>
+init_bounds: "\<B>\<^sub>i\<^sub>l (init t) = Mapping.empty"   "\<B>\<^sub>i\<^sub>u (init t) = Mapping.empty"  and
 
 \<comment> \<open>All tableau vars are valuated:\<close> init_tableau_valuated: "\<nabla> (init t)"
 
 begin
 
 
-lemma init_satisfies_bounds: 
+lemma init_satisfies_bounds:
   "\<langle>\<V> (init t)\<rangle> \<Turnstile>\<^sub>b \<B> (init t)"
   using init_bounds
   unfolding satisfies_bounds.simps in_bounds.simps bound_compare_defs
@@ -1098,7 +1097,7 @@ lemma init_atoms_equiv_bounds:
 lemma init_atoms_imply_bounds_index:
   "{} \<Turnstile>\<^sub>i \<B>\<I> (init t)"
   using init_bounds
-  unfolding atoms_imply_bounds_index.simps satisfies_bounds_index.simps in_bounds.simps 
+  unfolding atoms_imply_bounds_index.simps satisfies_bounds_index.simps in_bounds.simps
     i_satisfies_atom_set.simps satisfies_atom_set_def
   unfolding bound_compare_defs
   by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
@@ -1109,10 +1108,10 @@ lemma init_tableau_normalized:
   using init_tableau_id
   by simp
 
-lemma init_index_valid: "index_valid as (init t)" 
+lemma init_index_valid: "index_valid as (init t)"
   using init_bounds unfolding index_valid_def by auto
 
-lemma init_indices: "indices_state (init t) = {}" 
+lemma init_indices: "indices_state (init t) = {}"
   unfolding indices_state_def init_bounds by auto
 end
 
@@ -1165,14 +1164,14 @@ assert_atoms_equiv_bounds: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> 
 
 \<comment> \<open>There is a subset of asserted atoms which remains index-equivalent to the bounds
     in the state.\<close>
-assert_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> ats \<Turnstile>\<^sub>i \<B>\<I> s \<Longrightarrow> 
+assert_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> ats \<Turnstile>\<^sub>i \<B>\<I> s \<Longrightarrow>
   insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert a s)" and
 
 \<comment> \<open>If the @{term \<U>} flag is raised, then there is no valuation
    that satisfies both the current tableau and the current bounds.\<close>
 assert_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s; index_valid ats s\<rbrakk> \<Longrightarrow> \<U> (assert a s) \<Longrightarrow>  unsat_state_core (assert a s)" and
 
-assert_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid ats s \<Longrightarrow> index_valid (insert a ats) (assert a s)" 
+assert_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid ats s \<Longrightarrow> index_valid (insert a ats) (assert a s)"
 
 begin
 lemma assert_tableau_equiv: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> (v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> (assert a s)"
@@ -1201,24 +1200,24 @@ definition assert_all_state where [simp]:
   "assert_all_state t as \<equiv> assert_loop as (init t)"
 
 
-lemma AssertAllState'_precond: 
-  "\<triangle> t \<Longrightarrow> \<triangle> (\<T> (assert_all_state t as)) 
-    \<and> (\<nabla> (assert_all_state t as)) 
+lemma AssertAllState'_precond:
+  "\<triangle> t \<Longrightarrow> \<triangle> (\<T> (assert_all_state t as))
+    \<and> (\<nabla> (assert_all_state t as))
     \<and> (\<not> \<U> (assert_all_state t as) \<longrightarrow> \<Turnstile> (assert_all_state t as))"
   unfolding assert_all_state_def assert_loop_def
-  using init_satisfies init_tableau_normalized init_index_valid 
+  using init_satisfies init_tableau_normalized init_index_valid
   using assert_sat assert_tableau_normalized init_tableau_valuated assert_tableau_valuated
   by (induct as rule: rev_induct) auto
 
 lemma AssertAllState'Induct:
-  assumes 
+  assumes
     "\<triangle> t"
     "P {} (init t)"
-    "\<And> as bs t. as \<subseteq> bs \<Longrightarrow> P as t \<Longrightarrow> P bs t" 
+    "\<And> as bs t. as \<subseteq> bs \<Longrightarrow> P as t \<Longrightarrow> P bs t"
     "\<And> s a as. \<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s; P as s; index_valid as s\<rbrakk> \<Longrightarrow> P (insert a as) (assert a s)"
   shows "P (set as) (assert_all_state t as)"
 proof -
-  have "P (set as) (assert_all_state t as) \<and> index_valid (set as) (assert_all_state t as)" 
+  have "P (set as) (assert_all_state t as) \<and> index_valid (set as) (assert_all_state t as)"
   proof (induct as rule: rev_induct)
     case Nil
     then show ?case
@@ -1232,7 +1231,7 @@ proof -
     proof (cases "\<U> ?s")
       case True
       from snoc index_valid_mono[of _ "set (a # as')" "(assert_all_state t as')"]
-      have index: "index_valid (set (a # as')) (assert_all_state t as')" 
+      have index: "index_valid (set (a # as')) (assert_all_state t as')"
         by auto
       from snoc assms(3)[of "set as'" "set (a # as')"]
       have P: "P (set (a # as')) (assert_all_state t as')" by auto
@@ -1253,7 +1252,7 @@ proof -
   then show ?thesis ..
 qed
 
-lemma AssertAllState_index_valid: "\<triangle> t \<Longrightarrow> index_valid (set as) (assert_all_state t as)" 
+lemma AssertAllState_index_valid: "\<triangle> t \<Longrightarrow> index_valid (set as) (assert_all_state t as)"
   by (rule AssertAllState'Induct, auto intro: assert_index_valid init_index_valid index_valid_mono)
 
 lemma AssertAllState'_sat_atoms_equiv_bounds:
@@ -1284,12 +1283,12 @@ next
       by auto
   next
     case False
-    then have id: "assert_all_state t (as' @ [a]) = assert a ?s" 
+    then have id: "assert_all_state t (as' @ [a]) = assert a ?s"
       unfolding assert_all_state_def assert_loop_def by simp
     from snoc have as': "set as' \<Turnstile>\<^sub>i \<B>\<I> ?s" by auto
     from AssertAllState'_precond[of t as'] assms False
     have "\<Turnstile> ?s" "\<triangle> (\<T> ?s)" "\<nabla> ?s" by auto
-    from assert_atoms_imply_bounds_index[OF False this as', of a] 
+    from assert_atoms_imply_bounds_index[OF False this as', of a]
     show ?thesis unfolding id by auto
   qed
 qed
@@ -1305,7 +1304,7 @@ induction) that the previously shown implementation of @{text
 sublocale AssertAllState' < AssertAllState assert_all_state
 proof
   fix v::"'a valuation" and t as s'
-  assume *: "\<triangle> t" and id: "assert_all_state t as = s'" 
+  assume *: "\<triangle> t" and id: "assert_all_state t as = s'"
   note idsym = id[symmetric]
 
   show "v \<Turnstile>\<^sub>t t = v \<Turnstile>\<^sub>t \<T> s'" unfolding idsym
@@ -1329,7 +1328,7 @@ proof
     by (induct rule: AssertAllState'Induct) (auto simp add: * )
 
   show "indices_state s' \<subseteq> fst ` set as" unfolding idsym using *
-    by (intro index_valid_indices_state, induct rule: AssertAllState'Induct, 
+    by (intro index_valid_indices_state, induct rule: AssertAllState'Induct,
         auto simp: init_index_valid index_valid_mono assert_index_valid)
 qed
 
@@ -1354,7 +1353,7 @@ value for @{text "x"} in the current valuation violates the new bound
 @{text "b"}, the value for @{text "x"} can be updated and set to
 @{text "b"}, meanwhile updating the values for lhs variables of
 the tableau so that it remains satisfied. Otherwise, no changes to the
-current valuation are performed.\<close> 
+current valuation are performed.\<close>
 
 fun satisfies_bounds_set  :: "'a::linorder valuation \<Rightarrow> 'a bounds \<times> 'a bounds \<Rightarrow> var set \<Rightarrow> bool" where
   "satisfies_bounds_set v (lb, ub) S \<longleftrightarrow> (\<forall> x \<in> S. in_bounds x v (lb, ub))"
@@ -1376,13 +1375,13 @@ lemma satisfies_satisfies_no_lhs:
 
 
 definition bounds_consistent :: "('i,'a::linorder) state \<Rightarrow> bool" ("\<diamond>") where
-  "\<diamond> s \<equiv> 
+  "\<diamond> s \<equiv>
    \<forall> x. if \<B>\<^sub>l s x = None \<or> \<B>\<^sub>u s x = None then True else the (\<B>\<^sub>l s x) \<le> the (\<B>\<^sub>u s x)"
 
 
 text\<open>So, the @{text assert_bound} function must ensure that the
 given atom is included in the bounds, that the tableau remains
-satisfied by the valuation and that all variables except the lhs variables 
+satisfied by the valuation and that all variables except the lhs variables
 in the tableau are within their
 bounds. To formalize this, we introduce the notation @{text "v
 \<Turnstile>\<^sub>b (lb, ub) \<parallel> S"}, and define @{thm
@@ -1402,14 +1401,14 @@ lemma satisfies_consistent:
   "\<Turnstile> s \<longrightarrow> \<diamond> s"
   by (auto simp add: curr_val_satisfies_state_def satisfies_state_def satisfies_bounds_consistent)
 
-lemma bounds_consistent_geq_lb: 
+lemma bounds_consistent_geq_lb:
   "\<lbrakk>\<diamond> s; \<B>\<^sub>u s x\<^sub>i = Some c\<rbrakk>
     \<Longrightarrow> c \<ge>\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i"
   unfolding bounds_consistent_def
   by (cases "\<B>\<^sub>l s x\<^sub>i", auto simp add: bound_compare_defs split: if_splits)
     (erule_tac x="x\<^sub>i" in allE, auto)
 
-lemma bounds_consistent_leq_ub: 
+lemma bounds_consistent_leq_ub:
   "\<lbrakk>\<diamond> s; \<B>\<^sub>l s x\<^sub>i = Some c\<rbrakk>
     \<Longrightarrow> c \<le>\<^sub>u\<^sub>b \<B>\<^sub>u s x\<^sub>i"
   unfolding bounds_consistent_def
@@ -1447,17 +1446,17 @@ assert_bound_sat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s);
 
 \<comment> \<open>The set of asserted atoms remains equivalent to the bounds in the state.\<close>
 
-assert_bound_atoms_equiv_bounds: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> 
+assert_bound_atoms_equiv_bounds: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
   flat ats \<doteq> \<B> s \<Longrightarrow> flat (ats \<union> {a}) \<doteq> \<B> (assert_bound a s)" and
 
-assert_bound_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>  
+assert_bound_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
   ats \<Turnstile>\<^sub>i \<B>\<I> s \<Longrightarrow> insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound a s)" and
 
 \<comment> \<open>@{term \<U>} flag is raised, only if the bounds became inconsistent:\<close>
 
 assert_bound_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> assert_bound a s = s' \<Longrightarrow> \<U> s' \<Longrightarrow> unsat_state_core s'" and
 
-assert_bound_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> index_valid (insert a as) (assert_bound a s)" 
+assert_bound_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> index_valid (insert a as) (assert_bound a s)"
 
 begin
 lemma assert_bound_tableau_id: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> \<T> (assert_bound a s) = \<T> s"
@@ -1468,27 +1467,27 @@ lemma assert_bound_tableau_valuated: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<
 
 end
 
-locale AssertBoundNoLhs = 
+locale AssertBoundNoLhs =
   fixes assert_bound :: "('i,'a::lrv) i_atom \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
   assumes assert_bound_nolhs_tableau_id: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow> \<T> (assert_bound a s) = \<T> s"
-  assumes assert_bound_nolhs_sat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow> 
+  assumes assert_bound_nolhs_sat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     \<not> \<U> (assert_bound a s) \<Longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s (assert_bound a s) \<and> \<diamond> (assert_bound a s)"
-  assumes assert_bound_nolhs_atoms_equiv_bounds: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow> 
+  assumes assert_bound_nolhs_atoms_equiv_bounds: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     flat ats \<doteq> \<B> s \<Longrightarrow> flat (ats \<union> {a}) \<doteq> \<B> (assert_bound a s)"
-  assumes assert_bound_nolhs_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow> 
+  assumes assert_bound_nolhs_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     ats \<Turnstile>\<^sub>i \<B>\<I> s \<Longrightarrow> insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound a s)"
-  assumes assert_bound_nolhs_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow> 
+  assumes assert_bound_nolhs_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     index_valid as s \<Longrightarrow> \<U> (assert_bound a s) \<Longrightarrow> unsat_state_core (assert_bound a s)"
-  assumes assert_bound_nolhs_tableau_valuated: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow> 
+  assumes assert_bound_nolhs_tableau_valuated: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
    \<nabla> (assert_bound a s)"
-  assumes assert_bound_nolhs_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow> 
-    index_valid as s \<Longrightarrow> index_valid (insert a as) (assert_bound a s)" 
+  assumes assert_bound_nolhs_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
+    index_valid as s \<Longrightarrow> index_valid (insert a as) (assert_bound a s)"
 
 
 sublocale AssertBoundNoLhs < AssertBound
   by unfold_locales
-    ((metis satisfies_satisfies_no_lhs satisfies_consistent 
-        assert_bound_nolhs_tableau_id assert_bound_nolhs_sat assert_bound_nolhs_atoms_equiv_bounds 
+    ((metis satisfies_satisfies_no_lhs satisfies_consistent
+        assert_bound_nolhs_tableau_id assert_bound_nolhs_sat assert_bound_nolhs_atoms_equiv_bounds
         assert_bound_nolhs_index_valid assert_bound_nolhs_atoms_imply_bounds_index
         assert_bound_nolhs_unsat assert_bound_nolhs_tableau_valuated)+)
 
@@ -1497,7 +1496,7 @@ text\<open>The second phase of @{text assert}, the @{text check} function,
 is the heart of the Simplex algorithm. It is always called after
 @{text assert_bound}, but in two different situations. In the first
 case @{text assert_bound} raised the @{text \<U>} flag and then
-@{text check} should retain the flag and should not perform any changes. 
+@{text check} should retain the flag and should not perform any changes.
 In the second case @{text assert_bound} did not raise the
 @{text \<U>} flag, so @{text "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s"}, @{text "\<diamond> s"}, @{text "\<triangle> (\<T>
 s)"}, and @{text "\<nabla> s"} hold.\<close>
@@ -1510,7 +1509,7 @@ check_unsat_id: "\<U> s \<Longrightarrow> check s = s"  and
 
 \<comment> \<open>The tableau remains equivalent to the previous one, normalized and valuated.\<close>
 
-check_tableau:  "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> 
+check_tableau:  "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
    let s' = check s in ((v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> s') \<and> \<triangle> (\<T> s') \<and> \<nabla> s'" and
 
 \<comment> \<open>The bounds remain unchanged.\<close>
@@ -1528,13 +1527,13 @@ check_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub
 
 begin
 lemma check_tableau_equiv: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
-                      (v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> (check s)" 
+                      (v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> (check s)"
   using check_tableau
   by (simp add: Let_def)
 
-lemma check_tableau_index_valid: assumes "\<not> \<U> s" " \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<diamond> s" "\<triangle> (\<T> s)" "\<nabla> s" 
-  shows "index_valid as (check s) = index_valid as s" 
-  unfolding index_valid_def using check_bounds_id[OF assms] 
+lemma check_tableau_index_valid: assumes "\<not> \<U> s" " \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<diamond> s" "\<triangle> (\<T> s)" "\<nabla> s"
+  shows "index_valid as (check s) = index_valid as s"
+  unfolding index_valid_def using check_bounds_id[OF assms]
   by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
 
 
@@ -1555,11 +1554,11 @@ begin
 definition assert :: "('i,'a) i_atom \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state" where
   "assert a s \<equiv> check (assert_bound a s)"
 
-lemma Assert'Precond: 
+lemma Assert'Precond:
   assumes "\<not> \<U> s" "\<Turnstile> s" "\<triangle> (\<T> s)" "\<nabla> s"
-  shows 
-    "\<triangle> (\<T> (assert_bound a s))" 
-    "\<not> \<U> (assert_bound a s) \<Longrightarrow>  \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s (assert_bound a s) \<and> \<diamond> (assert_bound a s)" 
+  shows
+    "\<triangle> (\<T> (assert_bound a s))"
+    "\<not> \<U> (assert_bound a s) \<Longrightarrow>  \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s (assert_bound a s) \<and> \<diamond> (assert_bound a s)"
     "\<nabla> (assert_bound a s)"
   using assms
   using assert_bound_tableau_id assert_bound_sat assert_bound_tableau_valuated
@@ -1613,7 +1612,7 @@ next
     case True
     then show ?thesis
       unfolding assert_def
-      using * assert_bound_unsat check_tableau_equiv[of "assert_bound a s"] check_bounds_id 
+      using * assert_bound_unsat check_tableau_equiv[of "assert_bound a s"] check_bounds_id
       using check_unsat_id[of "assert_bound a s"]
       by (auto simp add: Assert'Precond satisfies_state_def Let_def)
   next
@@ -1624,13 +1623,13 @@ next
       by (metis assert_def)
   qed
 next
-  fix ats 
+  fix ats
   fix s::"('i,'a) state" and a::"('i,'a) i_atom"
-  assume *: "index_valid ats s" 
+  assume *: "index_valid ats s"
     and **: "\<not> \<U> s" "\<Turnstile> s" "\<triangle> (\<T> s)" "\<nabla> s"
-  have *: "index_valid (insert a ats) (assert_bound a s)" 
+  have *: "index_valid (insert a ats) (assert_bound a s)"
     using assert_bound_index_valid[OF ** *] .
-  show "index_valid (insert a ats) (assert a s)" 
+  show "index_valid (insert a ats) (assert a s)"
   proof (cases "\<U> (assert_bound a s)")
     case True
     show ?thesis unfolding assert_def check_unsat_id[OF True] using * .
@@ -1641,24 +1640,24 @@ next
   qed
 next
   fix s ats a
-  let ?s = "assert_bound a s" 
-  assume *: "\<not> \<U> s" "\<Turnstile> s" "\<triangle> (\<T> s)" "\<nabla> s" "ats \<Turnstile>\<^sub>i \<B>\<I> s" 
+  let ?s = "assert_bound a s"
+  assume *: "\<not> \<U> s" "\<Turnstile> s" "\<triangle> (\<T> s)" "\<nabla> s" "ats \<Turnstile>\<^sub>i \<B>\<I> s"
   from assert_bound_atoms_imply_bounds_index[OF this, of a]
   have as: "insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound a s)" by auto
-  show "insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert a s)" 
+  show "insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert a s)"
   proof (cases "\<U> ?s")
     case True
     from check_unsat_id[OF True] as show ?thesis unfolding assert_def by auto
   next
     case False
-    from assert_bound_tableau_id[OF *(1-4)] * 
+    from assert_bound_tableau_id[OF *(1-4)] *
     have t: "\<triangle> (\<T> ?s)" by simp
     from assert_bound_tableau_valuated[OF *(1-4)]
     have v: "\<nabla> ?s" .
     from assert_bound_sat[OF *(1-4) refl False]
     have "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s ?s" "\<diamond> ?s" by auto
     from check_bounds_id[OF False this t v]  as
-    show ?thesis unfolding assert_def 
+    show ?thesis unfolding assert_def
       by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
   qed
 qed
@@ -1714,19 +1713,19 @@ lemma AssertAllState''_precond:
          \<triangle> (\<T> s') \<and> \<nabla> s' \<and> (\<not> \<U> s' \<longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s' \<and> \<diamond> s')"
   using assms
   using AssertAllState''_precond'[of "init t" ats]
-  by (simp add: Let_def init_tableau_id init_unsat_flag init_satisfies satisfies_consistent 
+  by (simp add: Let_def init_tableau_id init_unsat_flag init_satisfies satisfies_consistent
       satisfies_satisfies_no_lhs init_tableau_valuated)
 
 lemma AssertAllState''Induct:
-  assumes 
+  assumes
     "\<triangle> t"
     "P {} (init t)"
-    "\<And> as bs t. as \<subseteq> bs \<Longrightarrow> P as t \<Longrightarrow> P bs t" 
-    "\<And> s a ats. \<lbrakk>\<not> \<U> s;  \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s; P (set ats) s; index_valid (set ats) s\<rbrakk> 
+    "\<And> as bs t. as \<subseteq> bs \<Longrightarrow> P as t \<Longrightarrow> P bs t"
+    "\<And> s a ats. \<lbrakk>\<not> \<U> s;  \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s; P (set ats) s; index_valid (set ats) s\<rbrakk>
       \<Longrightarrow> P (insert a (set ats)) (assert_bound a s)"
   shows "P (set ats) (assert_bound_loop ats (init t))"
 proof -
-  have "P (set ats) (assert_bound_loop ats (init t)) \<and> index_valid (set ats) (assert_bound_loop ats (init t))"   
+  have "P (set ats) (assert_bound_loop ats (init t)) \<and> index_valid (set ats) (assert_bound_loop ats (init t))"
   proof (induct ats rule: rev_induct)
     case Nil
     then show ?case
@@ -1735,9 +1734,9 @@ proof -
       by simp
   next
     case (snoc a as')
-    let ?s = "assert_bound_loop as' (init t)" 
+    let ?s = "assert_bound_loop as' (init t)"
     from snoc index_valid_mono[of _ "set (a # as')" "assert_bound_loop as' (init t)"]
-    have index: "index_valid (set (a # as')) (assert_bound_loop as' (init t))" 
+    have index: "index_valid (set (a # as')) (assert_bound_loop as' (init t))"
       by auto
     from snoc assms(3)[of "set as'" "set (a # as')"]
     have P: "P (set (a # as')) (assert_bound_loop as' (init t))" by auto
@@ -1751,12 +1750,12 @@ proof -
     next
       case False
       have id': "set (as' @ [a]) = insert a (set as')" by simp
-      have id: "assert_bound_loop (as' @ [a]) (init t) = 
-        assert_bound a (assert_bound_loop as' (init t))" 
+      have id: "assert_bound_loop (as' @ [a]) (init t) =
+        assert_bound a (assert_bound_loop as' (init t))"
         using False unfolding assert_bound_loop_def by auto
       from snoc have index: "index_valid (set as') ?s" by simp
       show ?thesis unfolding id unfolding id' using False snoc AssertAllState''_precond[OF assms(1)]
-        by (intro conjI assert_bound_nolhs_index_valid index assms(4); (force simp: Let_def curr_val_satisfies_no_lhs_def)?) 
+        by (intro conjI assert_bound_nolhs_index_valid index assms(4); (force simp: Let_def curr_val_satisfies_no_lhs_def)?)
     qed
   qed
   then show ?thesis ..
@@ -1766,14 +1765,14 @@ lemma AssertAllState''_tableau_id:
   "\<triangle> t \<Longrightarrow> \<T> (assert_bound_loop ats (init t)) = \<T> (init t)"
   by (rule AssertAllState''Induct) (auto simp add: init_tableau_id assert_bound_nolhs_tableau_id)
 
-lemma AssertAllState''_sat: 
-  "\<triangle> t \<Longrightarrow> 
+lemma AssertAllState''_sat:
+  "\<triangle> t \<Longrightarrow>
     \<not> \<U> (assert_bound_loop ats (init t)) \<longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s (assert_bound_loop ats (init t)) \<and> \<diamond> (assert_bound_loop ats (init t))"
   by (rule AssertAllState''Induct) (auto simp add: init_unsat_flag init_satisfies satisfies_consistent satisfies_satisfies_no_lhs assert_bound_nolhs_sat)
 
 lemma AssertAllState''_unsat:
   "\<triangle> t \<Longrightarrow> \<U> (assert_bound_loop ats (init t)) \<longrightarrow> unsat_state_core (assert_bound_loop ats (init t))"
-  by (rule AssertAllState''Induct) 
+  by (rule AssertAllState''Induct)
     (auto simp add: init_tableau_id assert_bound_nolhs_unsat init_unsat_flag)
 
 lemma AssertAllState''_sat_atoms_equiv_bounds:
@@ -1782,7 +1781,7 @@ lemma AssertAllState''_sat_atoms_equiv_bounds:
   using assert_bound_nolhs_atoms_equiv_bounds init_atoms_equiv_bounds
   by (induct ats rule: rev_induct) (auto simp add: Let_def assert_bound_loop_def)
 
-lemma AssertAllState''_atoms_imply_bounds_index: 
+lemma AssertAllState''_atoms_imply_bounds_index:
   assumes "\<triangle> t"
   shows "set ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound_loop ats (init t))"
 proof (induct ats rule: rev_induct)
@@ -1803,7 +1802,7 @@ next
       by auto
   next
     case False
-    then have id: "assert_bound_loop (ats' @ [a]) (init t) = assert_bound a ?s" 
+    then have id: "assert_bound_loop (ats' @ [a]) (init t) = assert_bound a ?s"
       unfolding assert_bound_loop_def by auto
     from snoc have ats: "set ats' \<Turnstile>\<^sub>i \<B>\<I> ?s" by auto
     from AssertAllState''_precond[of t ats', OF assms, unfolded Let_def] False
@@ -1812,7 +1811,7 @@ next
   qed
 qed
 
-lemma AssertAllState''_index_valid: 
+lemma AssertAllState''_index_valid:
   "\<triangle> t \<Longrightarrow> index_valid (set ats) (assert_bound_loop ats (init t))"
   by (rule AssertAllState''Induct, auto simp: init_index_valid index_valid_mono assert_bound_nolhs_index_valid)
 end
@@ -1820,9 +1819,9 @@ end
 sublocale AssertAllState'' < AssertAllState assert_all_state
 proof
   fix v::"'a valuation" and t ats s'
-  assume *: "\<triangle> t" and "assert_all_state t ats = s'" 
+  assume *: "\<triangle> t" and "assert_all_state t ats = s'"
   then have s': "s' = assert_all_state t ats" by simp
-  let ?s' = "assert_bound_loop ats (init t)" 
+  let ?s' = "assert_bound_loop ats (init t)"
   show "v \<Turnstile>\<^sub>t t = v \<Turnstile>\<^sub>t \<T> s'"
     unfolding assert_all_state_def s'
     using * check_tableau_equiv[of ?s' v] AssertAllState''_tableau_id[of t ats] init_tableau_id[of t]
@@ -1857,15 +1856,15 @@ proof
     using check_unsat_id[of ?s']
     by (cases "\<U> ?s'") (auto simp add: Let_def simp: indexl_def indexu_def boundsl_def boundsu_def)
 
-  show "indices_state s' \<subseteq> fst ` set ats" 
+  show "indices_state s' \<subseteq> fst ` set ats"
   proof (intro index_valid_indices_state)
-    show "index_valid (set ats) s'" 
+    show "index_valid (set ats) s'"
       unfolding assert_all_state_def s'
       using * AssertAllState''_precond[of t ats] AssertAllState''_index_valid[OF *, of ats]
       unfolding Let_def
       using check_tableau_index_valid[of ?s']
       using check_unsat_id[of ?s']
-      by (cases "\<U> ?s'", auto) 
+      by (cases "\<U> ?s'", auto)
   qed
 qed
 
@@ -1881,10 +1880,10 @@ variables of the tableau). The @{text update} function does this, and
 it is specified by:\<close>
 
 locale Update = fixes update::"var \<Rightarrow> 'a::lrv \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
-  assumes 
-    \<comment> \<open>Tableau, bounds, and the unsatisfiability flag are preserved.\<close> 
+  assumes
+    \<comment> \<open>Tableau, bounds, and the unsatisfiability flag are preserved.\<close>
 
-update_id:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x \<notin> lvars (\<T> s)\<rbrakk> \<Longrightarrow> 
+update_id:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x \<notin> lvars (\<T> s)\<rbrakk> \<Longrightarrow>
      let s' = update x c s in \<T> s' = \<T> s \<and> \<B>\<^sub>i s' = \<B>\<^sub>i s \<and> \<U> s' = \<U> s \<and> \<U>\<^sub>c s' = \<U>\<^sub>c s" and
 
 \<comment> \<open>Tableau remains valuated.\<close>
@@ -1896,7 +1895,7 @@ update_tableau_valuated:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x \<notin>
    (except those on the lhs of the tableau) are
    unchanged.\<close>
 
-update_valuation_nonlhs:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x \<notin> lvars (\<T> s)\<rbrakk> \<Longrightarrow> x' \<notin> lvars (\<T> s) \<longrightarrow> 
+update_valuation_nonlhs:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x \<notin> lvars (\<T> s)\<rbrakk> \<Longrightarrow> x' \<notin> lvars (\<T> s) \<longrightarrow>
        look (\<V> (update x v s)) x' = (if x = x' then Some v else look (\<V> s) x')" and
 
 \<comment> \<open>Updated valuation continues to satisfy the tableau.\<close>
@@ -1905,7 +1904,7 @@ update_satisfies_tableau:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x \<notin
 
 begin
 lemma update_bounds_id:
-  assumes "\<triangle> (\<T> s)" "\<nabla> s" "x \<notin> lvars (\<T> s)" 
+  assumes "\<triangle> (\<T> s)" "\<nabla> s" "x \<notin> lvars (\<T> s)"
   shows "\<B>\<^sub>i (update x c s) = \<B>\<^sub>i s"
     "\<B>\<I> (update x c s) = \<B>\<I> s"
     "\<B>\<^sub>l (update x c s) = \<B>\<^sub>l s"
@@ -1926,14 +1925,14 @@ lemma update_unsat_core_id: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x \<noti
   by (auto simp add: Let_def)
 
 definition assert_bound' where
-  [simp]: "assert_bound' dir i x c s \<equiv> 
+  [simp]: "assert_bound' dir i x c s \<equiv>
        (if (\<unrhd>\<^sub>u\<^sub>b (lt dir)) c (UB dir s x) then s
           else let s' = update\<B>\<I> (UBI_upd dir) i x c s in
-             if (\<lhd>\<^sub>l\<^sub>b (lt dir)) c ((LB dir) s x) then 
-                  set_unsat [i, ((LI dir) s x)] s'  
-             else if x \<notin> lvars (\<T> s') \<and> (lt dir) c (\<langle>\<V> s\<rangle> x) then 
+             if (\<lhd>\<^sub>l\<^sub>b (lt dir)) c ((LB dir) s x) then
+                  set_unsat [i, ((LI dir) s x)] s'
+             else if x \<notin> lvars (\<T> s') \<and> (lt dir) c (\<langle>\<V> s\<rangle> x) then
                   update x c s'
-             else 
+             else
                   s')"
 
 fun assert_bound :: "('i,'a::lrv) i_atom \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state" where
@@ -1942,13 +1941,13 @@ fun assert_bound :: "('i,'a::lrv) i_atom \<Rightarrow> ('i,'a) state \<Rightarro
 
 lemma assert_bound'_cases:
   assumes "\<lbrakk>\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)\<rbrakk> \<Longrightarrow> P s"
-  assumes "\<lbrakk>\<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x)\<rbrakk> \<Longrightarrow> 
+  assumes "\<lbrakk>\<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x)\<rbrakk> \<Longrightarrow>
      P (set_unsat [i, ((LI dir) s x)] (update\<B>\<I> (UBI_upd dir) i x c s))"
-  assumes "\<lbrakk>x \<notin> lvars (\<T> s); (lt dir) c (\<langle>\<V> s\<rangle> x); \<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x))\<rbrakk> \<Longrightarrow>  
+  assumes "\<lbrakk>x \<notin> lvars (\<T> s); (lt dir) c (\<langle>\<V> s\<rangle> x); \<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x))\<rbrakk> \<Longrightarrow>
      P (update x c (update\<B>\<I> (UBI_upd dir) i x c s))"
-  assumes "\<lbrakk>\<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x)); x \<in> lvars (\<T> s)\<rbrakk> \<Longrightarrow> 
+  assumes "\<lbrakk>\<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x)); x \<in> lvars (\<T> s)\<rbrakk> \<Longrightarrow>
      P (update\<B>\<I> (UBI_upd dir) i x c s)"
-  assumes "\<lbrakk>\<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x)); \<not> ((lt dir) c (\<langle>\<V> s\<rangle> x))\<rbrakk> \<Longrightarrow> 
+  assumes "\<lbrakk>\<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x)); \<not> ((lt dir) c (\<langle>\<V> s\<rangle> x))\<rbrakk> \<Longrightarrow>
      P (update\<B>\<I> (UBI_upd dir) i x c s)"
   assumes "dir = Positive \<or> dir = Negative"
   shows "P (assert_bound' dir i x c s)"
@@ -1968,7 +1967,7 @@ next
       by simp
   next
     case False
-    let ?s = "update\<B>\<I> (UBI_upd dir) i x c s" 
+    let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"
     show ?thesis
     proof (cases "x \<notin> lvars (\<T> ?s) \<and> (lt dir) c (\<langle>\<V> s\<rangle> x)")
       case True
@@ -2000,40 +1999,40 @@ qed
 
 lemma assert_bound_cases:
   assumes "\<And> c x dir.
-     \<lbrakk> dir = Positive \<or> dir = Negative; 
-       a = LE dir x c; 
-       \<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)
-     \<rbrakk> \<Longrightarrow> 
-       P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir) s"
-  assumes "\<And> c x dir. 
-     \<lbrakk>dir = Positive \<or> dir = Negative; 
-      a = LE dir x c;
-      \<not> \<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x); \<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x)
-     \<rbrakk> \<Longrightarrow> 
-        P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir) 
-          (set_unsat [i, ((LI dir) s x)] (update\<B>\<I> (UBI_upd dir) i x c s))"
-  assumes "\<And> c x dir. 
      \<lbrakk> dir = Positive \<or> dir = Negative;
        a = LE dir x c;
-       x \<notin> lvars (\<T> s); (lt dir) c (\<langle>\<V> s\<rangle> x); 
+       \<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)
+     \<rbrakk> \<Longrightarrow>
+       P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir) s"
+  assumes "\<And> c x dir.
+     \<lbrakk>dir = Positive \<or> dir = Negative;
+      a = LE dir x c;
+      \<not> \<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x); \<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x)
+     \<rbrakk> \<Longrightarrow>
+        P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)
+          (set_unsat [i, ((LI dir) s x)] (update\<B>\<I> (UBI_upd dir) i x c s))"
+  assumes "\<And> c x dir.
+     \<lbrakk> dir = Positive \<or> dir = Negative;
+       a = LE dir x c;
+       x \<notin> lvars (\<T> s); (lt dir) c (\<langle>\<V> s\<rangle> x);
       \<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x))
-     \<rbrakk> \<Longrightarrow>  
+     \<rbrakk> \<Longrightarrow>
         P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)
        (update x c ((update\<B>\<I> (UBI_upd dir) i x c s)))"
-  assumes "\<And> c x dir. 
+  assumes "\<And> c x dir.
      \<lbrakk> dir = Positive \<or> dir = Negative;
        a = LE dir x c;
        x \<in> lvars (\<T> s); \<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x));
        \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x))
-     \<rbrakk> \<Longrightarrow> 
+     \<rbrakk> \<Longrightarrow>
         P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)
           ((update\<B>\<I> (UBI_upd dir) i x c s))"
-  assumes "\<And> c x dir. 
+  assumes "\<And> c x dir.
      \<lbrakk> dir = Positive \<or> dir = Negative;
        a = LE dir x c;
-       \<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x)); 
+       \<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c ((UB dir) s x)); \<not> (\<lhd>\<^sub>l\<^sub>b (lt dir) c ((LB dir) s x));
        \<not> ((lt dir) c (\<langle>\<V> s\<rangle> x))
-     \<rbrakk> \<Longrightarrow> 
+     \<rbrakk> \<Longrightarrow>
         P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)
            ((update\<B>\<I> (UBI_upd dir) i x c s))"
 
@@ -2067,7 +2066,7 @@ next
 qed
 end
 
-lemma set_unsat_bounds_id: "\<B> (set_unsat I s) = \<B> s" 
+lemma set_unsat_bounds_id: "\<B> (set_unsat I s) = \<B> s"
   unfolding boundsl_def boundsu_def by auto
 
 
@@ -2099,12 +2098,12 @@ qed
 
 lemma atoms_equiv_bounds_extend:
   fixes x c dir
-  assumes "dir = Positive \<or> dir = Negative"  "\<not> \<unrhd>\<^sub>u\<^sub>b (lt dir) c (UB dir s x)"  "ats \<doteq> \<B> s" 
+  assumes "dir = Positive \<or> dir = Negative"  "\<not> \<unrhd>\<^sub>u\<^sub>b (lt dir) c (UB dir s x)"  "ats \<doteq> \<B> s"
   shows "(ats \<union> {LE dir x c}) \<doteq> \<B> (update\<B>\<I> (UBI_upd dir) i x c s)"
-  unfolding atoms_equiv_bounds.simps 
+  unfolding atoms_equiv_bounds.simps
 proof
   fix v
-  let ?s = "update\<B>\<I> (UBI_upd dir) i x c s" 
+  let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"
   show "v \<Turnstile>\<^sub>a\<^sub>s (ats \<union> {LE dir x c}) = v \<Turnstile>\<^sub>b \<B> ?s"
   proof
     assume "v \<Turnstile>\<^sub>a\<^sub>s (ats \<union> {LE dir x c})"
@@ -2156,7 +2155,7 @@ proof
   qed
 qed
 
-lemma bounds_updates: "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>u_update u s) = \<B>\<^sub>l s" 
+lemma bounds_updates: "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>u_update u s) = \<B>\<^sub>l s"
   "\<B>\<^sub>u (\<B>\<^sub>i\<^sub>l_update u s) = \<B>\<^sub>u s"
   "\<B>\<^sub>u (\<B>\<^sub>i\<^sub>u_update (upd x (i,c)) s) = (\<B>\<^sub>u s) (x \<mapsto> c)"
   "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>l_update (upd x (i,c)) s) = (\<B>\<^sub>l s) (x \<mapsto> c)"
@@ -2185,52 +2184,52 @@ proof
   then show "\<T> (assert_bound a s) = \<T> s"
     by (cases a, cases "snd a") (auto simp add: Let_def update_tableau_id tableau_valuated_def)
 next
-  fix s::"('i,'a) state" and ia and as 
-  assume *: "\<not> \<U> s" "\<triangle> (\<T> s)" "\<nabla> s" and **: "\<U> (assert_bound ia s)"  
-    and index: "index_valid as s" 
+  fix s::"('i,'a) state" and ia and as
+  assume *: "\<not> \<U> s" "\<triangle> (\<T> s)" "\<nabla> s" and **: "\<U> (assert_bound ia s)"
+    and index: "index_valid as s"
   obtain i a where ia: "ia = (i,a)" by force
-  let ?modelU = "\<lambda> lt UB UI s v x c i. UB s x = Some c \<longrightarrow> UI s x = i \<longrightarrow> i \<in> set (the (\<U>\<^sub>c s)) \<longrightarrow> (lt (v x) c \<or> v x = c)" 
+  let ?modelU = "\<lambda> lt UB UI s v x c i. UB s x = Some c \<longrightarrow> UI s x = i \<longrightarrow> i \<in> set (the (\<U>\<^sub>c s)) \<longrightarrow> (lt (v x) c \<or> v x = c)"
   let ?modelL = "\<lambda> lt LB LI s v x c i. LB s x = Some c \<longrightarrow> LI s x = i \<longrightarrow> i \<in> set (the (\<U>\<^sub>c s)) \<longrightarrow> (lt c (v x) \<or> c = v x)"
-  let ?P' = "\<lambda> lt UBI LBI UB LB UBI_upd UI LI LE GE s. 
-    \<U> s \<longrightarrow> set (the (\<U>\<^sub>c s)) \<subseteq> indices_state s \<and> \<not> (\<exists>v. (v \<Turnstile>\<^sub>t \<T> s 
-      \<and> (\<forall> x c i. ?modelU lt UB UI s v x c i) 
+  let ?P' = "\<lambda> lt UBI LBI UB LB UBI_upd UI LI LE GE s.
+    \<U> s \<longrightarrow> set (the (\<U>\<^sub>c s)) \<subseteq> indices_state s \<and> \<not> (\<exists>v. (v \<Turnstile>\<^sub>t \<T> s
+      \<and> (\<forall> x c i. ?modelU lt UB UI s v x c i)
       \<and> (\<forall> x c i. ?modelL lt LB LI s v x c i)))"
   have "\<U> (assert_bound ia s) \<longrightarrow> unsat_state_core (assert_bound ia s)" (is "?P (assert_bound ia s)") unfolding ia
   proof (rule assert_bound_cases[of _ _ ?P'])
     fix s'
     have id: "((x :: 'a) < y \<or> x = y) \<longleftrightarrow> x \<le> y" "((x :: 'a) > y \<or> x = y) \<longleftrightarrow> x \<ge> y" for x y by auto
-    show "?P s' = ?P' (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l undefined \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'" 
+    show "?P s' = ?P' (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l undefined \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'"
       "?P s' = ?P' (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u undefined \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
-      unfolding satisfies_state_def satisfies_bounds_index.simps satisfies_bounds.simps 
+      unfolding satisfies_state_def satisfies_bounds_index.simps satisfies_bounds.simps
         in_bounds.simps unsat_state_core_def satisfies_state_index.simps
-      unfolding bound_compare''_defs id  
+      unfolding bound_compare''_defs id
       by auto
   next
     fix c::'a and x::nat and dir
     assume "\<lhd>\<^sub>l\<^sub>b (lt dir) c (LB dir s x)" and dir: "dir = Positive \<or> dir = Negative"
-    then obtain d where some: "LB dir s x = Some d" and lt: "lt dir c d" 
+    then obtain d where some: "LB dir s x = Some d" and lt: "lt dir c d"
       by (auto simp: bound_compare'_defs split: option.splits)
-    from index[unfolded index_valid_def, rule_format, of x _ d] 
-      some dir obtain j where ind: "LI dir s x = j" "look (LBI dir s) x = Some (j,d)" and ge: "(j, GE dir x d) \<in> as" 
+    from index[unfolded index_valid_def, rule_format, of x _ d]
+      some dir obtain j where ind: "LI dir s x = j" "look (LBI dir s) x = Some (j,d)" and ge: "(j, GE dir x d) \<in> as"
       by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
-    let ?s = "set_unsat [i, ((LI dir) s x)] (update\<B>\<I> (UBI_upd dir) i x c s)" 
+    let ?s = "set_unsat [i, ((LI dir) s x)] (update\<B>\<I> (UBI_upd dir) i x c s)"
     show "?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir) ?s"
     proof (intro conjI impI; clarify)
       fix v
-      assume vU: "\<forall> x c i. ?modelU (lt dir) (UB dir) (UI dir) ?s v x c i" 
-      assume vL: "\<forall> x c i. ?modelL (lt dir) (LB dir) (LI dir) ?s v x c i" 
+      assume vU: "\<forall> x c i. ?modelU (lt dir) (UB dir) (UI dir) ?s v x c i"
+      assume vL: "\<forall> x c i. ?modelL (lt dir) (LB dir) (LI dir) ?s v x c i"
       from dir have "UB dir ?s x = Some c" "UI dir ?s x = i" by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
       from vU[rule_format, OF this] have vx_le_c: "lt dir (v x) c \<or> v x = c" by auto
       from dir ind some have *: "LB dir ?s x = Some d" "LI dir ?s x = j" by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
       have d_le_vx: "lt dir d (v x) \<or> d = v x" by (intro vL[rule_format, OF *], insert some ind, auto)
-      from dir d_le_vx vx_le_c lt 
+      from dir d_le_vx vx_le_c lt
       show False by auto
     qed (insert dir ind ge lt some, force simp: indices_state_def split: if_splits)
   next
     fix c::'a and x::nat and dir
     assume **: "dir = Positive \<or> dir = Negative" "a = LE dir x c" "x \<notin> lvars (\<T> s)" "lt dir c (\<langle>\<V> s\<rangle> x)" "\<not> \<unrhd>\<^sub>u\<^sub>b (lt dir) c (UB dir s x)" "\<not> \<lhd>\<^sub>l\<^sub>b (lt dir) c (LB dir s x)"
-    let ?s = "update\<B>\<I> (UBI_upd dir) i x c s" 
-    show "?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir) 
+    let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"
+    show "?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)
       (update x c ?s)"
       using * **
       by (auto simp add: update_unsat_id tableau_valuated_def)
@@ -2247,7 +2246,7 @@ next
     show ?thesis unfolding ia
     proof (rule assert_bound_cases[of _ _ ?P])
       fix c x and dir :: "('i,'a) Direction"
-      let ?s' = "update\<B>\<I> (UBI_upd dir) i x c s" 
+      let ?s' = "update\<B>\<I> (UBI_upd dir) i x c s"
       assume "x \<notin> lvars (\<T> s)" "(lt dir) c (\<langle>\<V> s\<rangle> x)"
         "dir = Positive \<or> dir = Negative"
       then show "\<langle>\<V> (update x c ?s')\<rangle> \<Turnstile>\<^sub>t \<T> (update x c ?s')"
@@ -2259,7 +2258,7 @@ next
   moreover
   have "\<not> \<U> (assert_bound ia s) \<longrightarrow> \<langle>\<V> (assert_bound ia s)\<rangle> \<Turnstile>\<^sub>b \<B> (assert_bound ia s) \<parallel> - lvars (\<T> (assert_bound ia s))" (is "?P (assert_bound ia s)")
   proof-
-    let ?P' = "\<lambda> lt UBI LBI UB LB UB_upd UI LI LE GE s. 
+    let ?P' = "\<lambda> lt UBI LBI UB LB UB_upd UI LI LE GE s.
       \<not> \<U> s \<longrightarrow> (\<forall>x\<in>- lvars (\<T> s). \<unrhd>\<^sub>l\<^sub>b lt (\<langle>\<V> s\<rangle> x) (LB s x) \<and> \<unlhd>\<^sub>u\<^sub>b lt (\<langle>\<V> s\<rangle> x) (UB s x))"
     let ?P'' = "\<lambda> dir. ?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)"
 
@@ -2268,7 +2267,7 @@ next
       unfolding satisfies_bounds_set.simps in_bounds.simps bound_compare_defs
       by (auto split: option.split)
 
-    show ?thesis unfolding ia 
+    show ?thesis unfolding ia
     proof (rule assert_bound_cases[of _ _ ?P'])
       fix dir :: "('i,'a) Direction"
       assume "dir = Positive \<or> dir = Negative"
@@ -2293,7 +2292,7 @@ next
       then show "?P'' dir ?s'"
         using \<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s\<close>
         by (auto simp add: satisfies_bounds_set.simps curr_val_satisfies_no_lhs_def
-            simp: boundsl_def boundsu_def indexl_def indexu_def) 
+            simp: boundsl_def boundsu_def indexl_def indexu_def)
           (auto simp add: bound_compare_defs)
     next
       fix c x and dir :: "('i,'a) Direction"
@@ -2320,16 +2319,16 @@ next
           then show ?thesis
             using \<open>x \<notin> lvars (\<T> s)\<close> \<open>y \<in> - lvars (\<T> ?s')\<close>
             using \<open>dir = Positive \<or> dir = Negative\<close> *
-            by (auto simp add: update_valuation_nonlhs update_tableau_id update_bounds_id  bound_compare''_defs satisfies_bounds_set.simps curr_val_satisfies_no_lhs_def map2fun_def 
-                tableau_valuated_def bounds_updates) 
+            by (auto simp add: update_valuation_nonlhs update_tableau_id update_bounds_id  bound_compare''_defs satisfies_bounds_set.simps curr_val_satisfies_no_lhs_def map2fun_def
+                tableau_valuated_def bounds_updates)
         qed
       qed
     qed (auto simp add: x xx)
-  qed 
+  qed
   moreover
   have "\<not> \<U> (assert_bound ia s) \<longrightarrow> \<diamond> (assert_bound ia s)" (is "?P (assert_bound ia s)")
   proof-
-    let ?P' = "\<lambda> lt UBI LBI UB LB UBI_upd UI LI LE GE s. 
+    let ?P' = "\<lambda> lt UBI LBI UB LB UBI_upd UI LI LE GE s.
       \<not> \<U> s \<longrightarrow>
       (\<forall>x. if LB s x = None \<or> UB s x = None then True
            else lt (the (LB s x)) (the (UB s x)) \<or> (the (LB s x) = the (UB s x)))"
@@ -2340,7 +2339,7 @@ next
       unfolding bounds_consistent_def
       by auto
 
-    show ?thesis unfolding ia 
+    show ?thesis unfolding ia
     proof (rule assert_bound_cases[of _ _ ?P'])
       fix dir :: "('i,'a) Direction"
       assume "dir = Positive \<or> dir = Negative"
@@ -2365,7 +2364,7 @@ next
       then have "?P'' dir ?s'"
         using \<open>\<diamond> s\<close>
         unfolding bounds_consistent_def
-        by (auto split: if_splits simp: bounds_updates) 
+        by (auto split: if_splits simp: bounds_updates)
           (force simp add: bound_compare'_defs, erule_tac x=xa in allE, simp)+
       then show "?P'' dir ?s'" "?P'' dir ?s'"
         by simp_all
@@ -2379,15 +2378,15 @@ next
     unfolding curr_val_satisfies_no_lhs_def
     by simp
 next
-  fix s :: "('i,'a) state" and ats and ia :: "('i,'a) i_atom" 
+  fix s :: "('i,'a) state" and ats and ia :: "('i,'a) i_atom"
   assume "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<triangle> (\<T> s)" "\<nabla> s"
   obtain i a where ia: "ia = (i,a)" by force
-  { 
+  {
     fix ats
     let ?P' = "\<lambda> lt UBI LBI UB LB UB_upd UI LI LE GE s'. ats \<doteq> \<B> s \<longrightarrow> (ats \<union> {a}) \<doteq> \<B> s'"
     let ?P'' = "\<lambda> dir. ?P' (lt dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)"
     have "ats \<doteq> \<B> s \<longrightarrow> (ats \<union> {a}) \<doteq> \<B> (assert_bound ia s)" (is "?P (assert_bound ia s)")
-      unfolding ia 
+      unfolding ia
     proof (rule assert_bound_cases[of _ _ ?P'])
       fix x c and dir :: "('i,'a) Direction"
       assume "dir = Positive \<or> dir = Negative" "a = LE dir x c" "\<unrhd>\<^sub>u\<^sub>b (lt dir) c (UB dir s x)"
@@ -2396,12 +2395,12 @@ next
         by auto (erule_tac x=x in allE, force simp add: bound_compare_defs)+
     next
       fix x c and dir :: "('i,'a) Direction"
-      let ?s' = "set_unsat [i, ((LI dir) s x)] (update\<B>\<I> (UBI_upd dir) i x c s)" 
+      let ?s' = "set_unsat [i, ((LI dir) s x)] (update\<B>\<I> (UBI_upd dir) i x c s)"
 
       assume "dir = Positive \<or> dir = Negative" "a = LE dir x c" "\<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c (UB dir s x))"
       then show "?P ?s'" unfolding set_unsat_bounds_id
         using atoms_equiv_bounds_extend[of dir c s x ats i]
-        by auto 
+        by auto
     next
       fix x c and dir :: "('i,'a) Direction"
       let ?s' = "update\<B>\<I> (UBI_upd dir) i x c s"
@@ -2413,13 +2412,13 @@ next
         by simp_all
     next
       fix x c and dir :: "('i,'a) Direction"
-      let ?s = "update\<B>\<I> (UBI_upd dir) i x c s" 
+      let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"
       let ?s' = "update x c ?s"
       assume *: "dir = Positive \<or> dir = Negative" "a = LE dir x c" "\<not> (\<unrhd>\<^sub>u\<^sub>b (lt dir) c (UB dir s x))" "x \<notin> lvars (\<T> s)"
-      then have "\<triangle> (\<T> ?s)" "\<nabla> ?s" "x \<notin> lvars (\<T> ?s)" 
-        using \<open>\<triangle> (\<T> s)\<close> \<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s\<close> \<open>\<nabla> s\<close> 
+      then have "\<triangle> (\<T> ?s)" "\<nabla> ?s" "x \<notin> lvars (\<T> ?s)"
+        using \<open>\<triangle> (\<T> s)\<close> \<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s\<close> \<open>\<nabla> s\<close>
         by (auto simp: tableau_valuated_def)
-      from update_bounds_id[OF this, of c] 
+      from update_bounds_id[OF this, of c]
       have "\<B>\<^sub>i ?s' = \<B>\<^sub>i ?s" by blast
       then have id: "\<B> ?s' = \<B> ?s" unfolding boundsl_def boundsu_def by auto
       show "?P ?s'" unfolding id \<open>a = LE dir x c\<close>
@@ -2428,11 +2427,11 @@ next
   }
   then show "flat ats \<doteq> \<B> s \<Longrightarrow> flat (ats \<union> {ia}) \<doteq> \<B> (assert_bound ia s)" unfolding ia by auto
 next
-  fix s :: "('i,'a) state" and ats and ia :: "('i,'a) i_atom" 
+  fix s :: "('i,'a) state" and ats and ia :: "('i,'a) i_atom"
   obtain i a where ia: "ia = (i,a)" by force
   assume "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<triangle> (\<T> s)" "\<nabla> s"
-  have *: "\<And> dir x c s. dir = Positive \<or> dir = Negative \<Longrightarrow> 
-     \<nabla> (update\<B>\<I> (UBI_upd dir) i x c s) = \<nabla> s" 
+  have *: "\<And> dir x c s. dir = Positive \<or> dir = Negative \<Longrightarrow>
+     \<nabla> (update\<B>\<I> (UBI_upd dir) i x c s) = \<nabla> s"
     "\<And> s y I . \<nabla> (set_unsat I s) = \<nabla> s"
     by (auto simp add: tableau_valuated_def)
 
@@ -2453,7 +2452,7 @@ next
     next
       fix x c and dir :: "('i,'a) Direction"
       assume *: "x \<notin> lvars (\<T> s)" "dir = Positive \<or> dir = Negative"
-      let ?s = "update\<B>\<I> (UBI_upd dir) i x c s" 
+      let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"
       let ?s' = "update x c ?s"
       from * show "\<nabla> ?s'"
         using \<open>\<triangle> (\<T> s)\<close> \<open>\<nabla> s\<close>
@@ -2462,82 +2461,82 @@ next
     qed (insert \<open>\<nabla> s\<close> *(1), auto)
   qed
 next
-  fix s :: "('i,'a) state" and as and ia :: "('i,'a) i_atom" 
+  fix s :: "('i,'a) state" and as and ia :: "('i,'a) i_atom"
   obtain i a where ia: "ia = (i,a)" by force
   assume *: "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<triangle> (\<T> s)" "\<nabla> s"
     and valid: "index_valid as s"
-  have id: "\<And> dir x c s. dir = Positive \<or> dir = Negative \<Longrightarrow> 
-     \<nabla> (update\<B>\<I> (UBI_upd dir) i x c s) = \<nabla> s" 
+  have id: "\<And> dir x c s. dir = Positive \<or> dir = Negative \<Longrightarrow>
+     \<nabla> (update\<B>\<I> (UBI_upd dir) i x c s) = \<nabla> s"
     "\<And> s y I. \<nabla> (set_unsat I s) = \<nabla> s"
     by (auto simp add: tableau_valuated_def)
-  let ?I = "insert (i,a) as" 
-  define I where "I = ?I" 
+  let ?I = "insert (i,a) as"
+  define I where "I = ?I"
   from index_valid_mono[OF _ valid] have valid: "index_valid I s" unfolding I_def by auto
   have I: "(i,a) \<in> I" unfolding I_def by auto
-  let ?P = "\<lambda> s. index_valid I s" 
-  let ?P' = "\<lambda> (lt :: 'a \<Rightarrow> 'a \<Rightarrow> bool) 
-    (UBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index) (LBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index) 
-    (UB :: ('i,'a) state \<Rightarrow> 'a bounds) (LB :: ('i,'a) state \<Rightarrow> 'a bounds) 
-    (UBI_upd :: (('i,'a) bounds_index \<Rightarrow> ('i,'a) bounds_index) \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state) 
+  let ?P = "\<lambda> s. index_valid I s"
+  let ?P' = "\<lambda> (lt :: 'a \<Rightarrow> 'a \<Rightarrow> bool)
+    (UBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index) (LBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index)
+    (UB :: ('i,'a) state \<Rightarrow> 'a bounds) (LB :: ('i,'a) state \<Rightarrow> 'a bounds)
+    (UBI_upd :: (('i,'a) bounds_index \<Rightarrow> ('i,'a) bounds_index) \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state)
     (UI :: ('i,'a) state \<Rightarrow> 'i bound_index) (LI :: ('i,'a) state \<Rightarrow> 'i bound_index)
-    LE GE s'. 
+    LE GE s'.
     (\<forall> x c i. look (UBI s') x = Some (i,c) \<longrightarrow> (i,LE (x :: var) c) \<in> I) \<and>
     (\<forall> x c i. look (LBI s') x = Some (i,c) \<longrightarrow> (i,GE (x :: nat) c) \<in> I)"
-  define P where "P = ?P'" 
-  let ?P'' = "\<lambda> (dir :: ('i,'a) Direction). 
+  define P where "P = ?P'"
+  let ?P'' = "\<lambda> (dir :: ('i,'a) Direction).
     P (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)"
   have x: "\<And> s'. ?P s' = P (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'"
     and xx: "\<And> s'. ?P s' = P (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
     unfolding satisfies_bounds_set.simps in_bounds.simps bound_compare_defs index_valid_def P_def
-    by (auto split: option.split simp: indexl_def indexu_def boundsl_def boundsu_def) 
+    by (auto split: option.split simp: indexl_def indexu_def boundsl_def boundsu_def)
   from valid have P'': "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s" for dir
     using x[of s] xx[of s] by auto
   have UTrue: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s \<Longrightarrow> ?P'' dir (set_unsat I s)" for dir s I
     unfolding P_def by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
-  have updateIB: "a = LE dir x c \<Longrightarrow> dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s \<Longrightarrow> ?P'' dir 
+  have updateIB: "a = LE dir x c \<Longrightarrow> dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s \<Longrightarrow> ?P'' dir
     (update\<B>\<I> (UBI_upd dir) i x c s)" for dir x c s
     unfolding P_def using I by (auto split: if_splits simp: simp: boundsl_def boundsu_def indexl_def indexu_def)
   show "index_valid (insert ia as) (assert_bound ia s)" unfolding ia I_def[symmetric]
   proof ((rule assert_bound_cases[of _ _ P]; (intro UTrue x xx updateIB P'')?))
-    fix x c and dir :: "('i,'a) Direction" 
-    assume **: "dir = Positive \<or> dir = Negative" 
-      "a = LE dir x c" 
-      "x \<notin> lvars (\<T> s)" 
-    let ?s = "(update\<B>\<I> (UBI_upd dir) i x c s)" 
-    define s' where "s' = ?s" 
+    fix x c and dir :: "('i,'a) Direction"
+    assume **: "dir = Positive \<or> dir = Negative"
+      "a = LE dir x c"
+      "x \<notin> lvars (\<T> s)"
+    let ?s = "(update\<B>\<I> (UBI_upd dir) i x c s)"
+    define s' where "s' = ?s"
     have 1: "\<triangle> (\<T> ?s)" using * ** by auto
     have 2: "\<nabla> ?s" using id(1) ** * \<open>\<nabla> s\<close> by auto
     have 3: "x \<notin> lvars (\<T> ?s)" using id(1) ** * \<open>\<nabla> s\<close> by auto
     have "?P'' dir ?s" using ** by (intro updateIB P'') auto
     with update_id[of ?s x c, OF 1 2 3, unfolded Let_def]  **(1)
     show "P (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)
-        (update x c (update\<B>\<I> (UBI_upd dir) i x c s))" 
+        (update x c (update\<B>\<I> (UBI_upd dir) i x c s))"
       unfolding P_def s'_def[symmetric] by auto
   qed auto
 next
-  fix s and ia :: "('i,'a) i_atom" and ats :: "('i,'a) i_atom set" 
+  fix s and ia :: "('i,'a) i_atom" and ats :: "('i,'a) i_atom set"
   assume *: "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s" and ats: "ats \<Turnstile>\<^sub>i \<B>\<I> s"
   obtain i a where ia: "ia = (i,a)" by force
-  have id: "\<And> dir x c s. dir = Positive \<or> dir = Negative \<Longrightarrow> 
-     \<nabla> (update\<B>\<I> (UBI_upd dir) i x c s) = \<nabla> s" 
+  have id: "\<And> dir x c s. dir = Positive \<or> dir = Negative \<Longrightarrow>
+     \<nabla> (update\<B>\<I> (UBI_upd dir) i x c s) = \<nabla> s"
     "\<And> s I. \<nabla> (set_unsat I s) = \<nabla> s"
     by (auto simp add: tableau_valuated_def)
   have idlt: "(c < (a :: 'a) \<or> c = a) = (c \<le> a)"
     "(a < c \<or> c = a) = (c \<ge> a)" for a c by auto
   define A where "A = insert (i,a) ats"
-  let ?P = "\<lambda> (s :: ('i,'a) state). A \<Turnstile>\<^sub>i \<B>\<I> s" 
-  let ?Q = "\<lambda> bs (lt :: 'a \<Rightarrow> 'a \<Rightarrow> bool) 
-    (UBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index) (LBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index) 
-    (UB :: ('i,'a) state \<Rightarrow> 'a bounds) (LB :: ('i,'a) state \<Rightarrow> 'a bounds) 
-    (UBI_upd :: (('i,'a) bounds_index \<Rightarrow> ('i,'a) bounds_index) \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state) 
-    UI LI 
+  let ?P = "\<lambda> (s :: ('i,'a) state). A \<Turnstile>\<^sub>i \<B>\<I> s"
+  let ?Q = "\<lambda> bs (lt :: 'a \<Rightarrow> 'a \<Rightarrow> bool)
+    (UBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index) (LBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index)
+    (UB :: ('i,'a) state \<Rightarrow> 'a bounds) (LB :: ('i,'a) state \<Rightarrow> 'a bounds)
+    (UBI_upd :: (('i,'a) bounds_index \<Rightarrow> ('i,'a) bounds_index) \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state)
+    UI LI
     (LE :: nat \<Rightarrow> 'a \<Rightarrow> 'a atom) (GE :: nat \<Rightarrow> 'a \<Rightarrow> 'a atom) s'.
        (\<forall> I v. (I :: 'i set,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s bs \<longrightarrow>
        ((\<forall> x c. LB s' x = Some c \<longrightarrow> LI s' x \<in> I \<longrightarrow> lt c (v x) \<or> c = v x)
-      \<and> (\<forall> x c. UB s' x = Some c \<longrightarrow> UI s' x \<in> I \<longrightarrow> lt (v x) c \<or> v x = c)))" 
-  define Q where "Q = ?Q" 
-  let ?P' = "Q A" 
-  have equiv: 
+      \<and> (\<forall> x c. UB s' x = Some c \<longrightarrow> UI s' x \<in> I \<longrightarrow> lt (v x) c \<or> v x = c)))"
+  define Q where "Q = ?Q"
+  let ?P' = "Q A"
+  have equiv:
     "bs \<Turnstile>\<^sub>i \<B>\<I> s' \<longleftrightarrow> Q bs (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'"
     "bs \<Turnstile>\<^sub>i \<B>\<I> s' \<longleftrightarrow> Q bs (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
     for bs s'
@@ -2549,47 +2548,47 @@ next
     and xx: "\<And> s'. ?P s' = ?P' (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
     using equiv by blast+
   from ats equiv[of ats s]
-  have Q_ats: 
-    "Q ats (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s" 
-    "Q ats (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s" 
+  have Q_ats:
+    "Q ats (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s"
+    "Q ats (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s"
     by auto
-  let ?P'' = "\<lambda> (dir :: ('i,'a) Direction). ?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)" 
+  let ?P'' = "\<lambda> (dir :: ('i,'a) Direction). ?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)"
   have P_upd: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir (set_unsat I s) = ?P'' dir s" for s I dir
     unfolding Q_def
-    by (intro iff_exI arg_cong2[of _ _ _ _ "(\<and>)"] refl iff_allI arg_cong2[of _ _ _ _ "(=)"] 
+    by (intro iff_exI arg_cong2[of _ _ _ _ "(\<and>)"] refl iff_allI arg_cong2[of _ _ _ _ "(=)"]
         arg_cong2[of _ _ _ _ "(\<longrightarrow>)"], auto simp: boundsl_def boundsu_def indexl_def indexu_def)
   have P_upd: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s \<Longrightarrow> ?P'' dir (set_unsat I s)" for s I dir
     using P_upd[of dir] by blast
   have ats_sub: "ats \<subseteq> A" unfolding A_def by auto
   {
     fix x c and dir :: "('i,'a) Direction"
-    assume dir: "dir = Positive \<or> dir = Negative" 
-      and a: "a = LE dir x c" 
-    from Q_ats dir 
+    assume dir: "dir = Positive \<or> dir = Negative"
+      and a: "a = LE dir x c"
+    from Q_ats dir
     have Q_ats: "Q ats (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir) s"
       by auto
     have "?P'' dir (update\<B>\<I> (UBI_upd dir) i x c s)"
       unfolding Q_def
     proof (intro allI impI conjI)
       fix I v y d
-      assume IvA: "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s A"        
+      assume IvA: "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s A"
       from i_satisfies_atom_set_mono[OF ats_sub this]
       have "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s ats" by auto
       from Q_ats[unfolded Q_def, rule_format, OF this]
-      have s_bnds: 
+      have s_bnds:
         "LB dir s x = Some c \<Longrightarrow> LI dir s x \<in> I \<Longrightarrow> lt dir c (v x) \<or> c = v x"
         "UB dir s x = Some c \<Longrightarrow> UI dir s x \<in> I \<Longrightarrow> lt dir (v x) c \<or> v x = c" for x c by auto
-      from IvA[unfolded A_def, unfolded i_satisfies_atom_set.simps satisfies_atom_set_def, simplified] 
+      from IvA[unfolded A_def, unfolded i_satisfies_atom_set.simps satisfies_atom_set_def, simplified]
       have va: "i \<in> I \<Longrightarrow> v \<Turnstile>\<^sub>a a" by auto
-      with a dir have vc: "i \<in> I \<Longrightarrow> lt dir (v x) c \<or> v x = c" 
+      with a dir have vc: "i \<in> I \<Longrightarrow> lt dir (v x) c \<or> v x = c"
         by auto
-      let ?s = "(update\<B>\<I> (UBI_upd dir) i x c s)" 
-      show "LB dir ?s y = Some d \<Longrightarrow> LI dir ?s y \<in> I \<Longrightarrow> lt dir d (v y) \<or> d = v y" 
+      let ?s = "(update\<B>\<I> (UBI_upd dir) i x c s)"
+      show "LB dir ?s y = Some d \<Longrightarrow> LI dir ?s y \<in> I \<Longrightarrow> lt dir d (v y) \<or> d = v y"
         "UB dir ?s y = Some d \<Longrightarrow> UI dir ?s y \<in> I \<Longrightarrow> lt dir (v y) d \<or> v y = d"
       proof (atomize(full), goal_cases)
         case 1
-        consider (main) "y = x" "UI dir ?s x = i" | 
-          (easy1) "x \<noteq> y" | (easy2) "x = y" "UI dir ?s y \<noteq> i" 
+        consider (main) "y = x" "UI dir ?s x = i" |
+          (easy1) "x \<noteq> y" | (easy2) "x = y" "UI dir ?s y \<noteq> i"
           by blast
         then show ?case
         proof cases
@@ -2608,44 +2607,44 @@ next
   } note main = this
   have Ps: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s" for dir
     using Q_ats unfolding Q_def using i_satisfies_atom_set_mono[OF ats_sub] by fastforce
-  have "?P (assert_bound (i,a) s)" 
+  have "?P (assert_bound (i,a) s)"
   proof ((rule assert_bound_cases[of _ _ ?P']; (intro x xx P_upd main Ps)?))
     fix c x and dir :: "('i,'a) Direction"
-    assume **: "dir = Positive \<or> dir = Negative" 
-      "a = LE dir x c" 
-      "x \<notin> lvars (\<T> s)" 
-    let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"     
-    define s' where "s' = ?s" 
+    assume **: "dir = Positive \<or> dir = Negative"
+      "a = LE dir x c"
+      "x \<notin> lvars (\<T> s)"
+    let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"
+    define s' where "s' = ?s"
     from main[OF **(1-2)] have P: "?P'' dir s'" unfolding s'_def .
     have 1: "\<triangle> (\<T> ?s)" using * ** by auto
     have 2: "\<nabla> ?s" using id(1) ** * \<open>\<nabla> s\<close> by auto
     have 3: "x \<notin> lvars (\<T> ?s)" using id(1) ** * \<open>\<nabla> s\<close> by auto
     have "\<triangle> (\<T> s')" "\<nabla> s'" "x \<notin> lvars (\<T> s')" using 1 2 3 unfolding s'_def by auto
     from update_bounds_id[OF this, of c] **(1)
-    have "?P'' dir (update x c s') = ?P'' dir s'" 
+    have "?P'' dir (update x c s') = ?P'' dir s'"
       unfolding Q_def
       by (intro iff_allI arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] arg_cong2[of _ _ _ _ "(\<and>)"] refl, auto)
-    with P 
+    with P
     show "?P'' dir (update x c ?s)" unfolding s'_def by blast
   qed auto
   then show "insert ia ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound ia s)" unfolding ia A_def by blast
 qed
 
 
-locale EqForLVar = 
+locale EqForLVar =
   fixes eq_idx_for_lvar :: "tableau \<Rightarrow> var \<Rightarrow> nat"
   assumes eq_idx_for_lvar:
     "\<lbrakk>x \<in> lvars t\<rbrakk> \<Longrightarrow> eq_idx_for_lvar t x < length t \<and> lhs (t ! eq_idx_for_lvar t x) = x"
 begin
 definition eq_for_lvar :: "tableau \<Rightarrow> var \<Rightarrow> eq" where
   "eq_for_lvar t v \<equiv> t ! (eq_idx_for_lvar t v)"
-lemma eq_for_lvar: 
+lemma eq_for_lvar:
   "\<lbrakk>x \<in> lvars t\<rbrakk> \<Longrightarrow> eq_for_lvar t x \<in> set t \<and> lhs (eq_for_lvar t x) = x"
   unfolding eq_for_lvar_def
   using eq_idx_for_lvar
   by auto
 
-abbreviation rvars_of_lvar where 
+abbreviation rvars_of_lvar where
   "rvars_of_lvar t x \<equiv> rvars_eq (eq_for_lvar t x)"
 
 lemma rvars_of_lvar_rvars:
@@ -2678,7 +2677,7 @@ definition update :: "var \<Rightarrow> 'a \<Rightarrow> ('i,'a) state \<Rightar
   "update x c s \<equiv> \<V>_update (upd x c (foldl (update_eq (\<V> s) x c) (\<V> s) (\<T> s))) s"
 
 lemma update_no_set_none:
-  shows "look (\<V> s) y \<noteq> None \<Longrightarrow> 
+  shows "look (\<V> s) y \<noteq> None \<Longrightarrow>
          look (foldl (update_eq (\<V> s) x v) (\<V> s) t) y \<noteq> None"
   by (induct t rule: rev_induct, auto simp: lookup_update')
 
@@ -2688,9 +2687,9 @@ lemma update_no_left:
   using assms
   by (induct t rule: rev_induct) (auto simp add: lvars_def lookup_update')
 
-lemma update_left: 
+lemma update_left:
   assumes "y \<in> lvars t"
-  shows "\<exists> eq \<in> set t. lhs eq = y \<and> 
+  shows "\<exists> eq \<in> set t. lhs eq = y \<and>
      look (foldl (update_eq (\<V> s) x v) (\<V> s) t) y = Some (rhs_eq_val (\<V> s) x v eq)"
   using assms
   by (induct t rule: rev_induct) (auto simp add: lvars_def lookup_update')
@@ -2772,21 +2771,21 @@ locale Pivot = EqForLVar + fixes pivot::"var \<Rightarrow> var \<Rightarrow> ('i
   assumes
     \<comment> \<open>Valuation, bounds, and the unsatisfiability flag are not changed.\<close>
 
-pivot_id:  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+pivot_id:  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       let s' = pivot x\<^sub>i x\<^sub>j s in \<V> s' = \<V> s \<and> \<B>\<^sub>i s' = \<B>\<^sub>i s \<and> \<U> s' = \<U> s \<and> \<U>\<^sub>c s' = \<U>\<^sub>c s" and
 
 \<comment> \<open>The tableau remains equivalent to the previous one and normalized.\<close>
 
-pivot_tableau:  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+pivot_tableau:  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       let s' = pivot x\<^sub>i x\<^sub>j s in  ((v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> s') \<and> \<triangle> (\<T> s') " and
 
 \<comment> \<open>@{text "x\<^sub>i"} and @{text "x\<^sub>j"} are swapped, while the other variables do not change sides.\<close>
 
 pivot_vars':   "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> let s' = pivot x\<^sub>i x\<^sub>j s in
-   rvars(\<T> s') = rvars(\<T> s)-{x\<^sub>j}\<union>{x\<^sub>i}  \<and>  lvars(\<T> s') = lvars(\<T> s)-{x\<^sub>i}\<union>{x\<^sub>j}" 
+   rvars(\<T> s') = rvars(\<T> s)-{x\<^sub>j}\<union>{x\<^sub>i}  \<and>  lvars(\<T> s') = lvars(\<T> s)-{x\<^sub>i}\<union>{x\<^sub>j}"
 
 begin
-lemma pivot_bounds_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+lemma pivot_bounds_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       \<B>\<^sub>i (pivot x\<^sub>i x\<^sub>j s) = \<B>\<^sub>i s"
   using pivot_id
   by (simp add: Let_def)
@@ -2808,7 +2807,7 @@ lemma pivot_unsat_core_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars
   using pivot_id
   by (simp add: Let_def)
 
-lemma pivot_tableau_equiv: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+lemma pivot_tableau_equiv: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       (v::'a valuation) \<Turnstile>\<^sub>t \<T> s = v \<Turnstile>\<^sub>t \<T> (pivot x\<^sub>i x\<^sub>j s)"
   using pivot_tableau
   by (simp add: Let_def)
@@ -2831,7 +2830,7 @@ lemma pivot_vars:
   using rvars_of_lvar_rvars[of x\<^sub>i "\<T> s"]
   by auto
 
-lemma 
+lemma
   pivot_tableau_valuated: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i; \<nabla> s\<rbrakk> \<Longrightarrow> \<nabla> (pivot x\<^sub>i x\<^sub>j s)"
   using pivot_valuation_id pivot_vars
   by (auto simp add: tableau_valuated_def)
@@ -2851,34 +2850,34 @@ easily shown that the @{text pivot_and_update} definition above
 satisfies this specification.\<close>
 
 
-locale PivotAndUpdate = EqForLVar + 
+locale PivotAndUpdate = EqForLVar +
   fixes pivot_and_update :: "var \<Rightarrow> var \<Rightarrow> 'a::lrv \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
-  assumes  pivotandupdate_unsat_id:   "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+  assumes  pivotandupdate_unsat_id:   "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       \<U> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<U> s"
-  assumes pivotandupdate_unsat_core_id: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
-      \<U>\<^sub>c (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<U>\<^sub>c s" 
-  assumes  pivotandupdate_bounds_id:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+  assumes pivotandupdate_unsat_core_id: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      \<U>\<^sub>c (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<U>\<^sub>c s"
+  assumes  pivotandupdate_bounds_id:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       \<B>\<^sub>i (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<B>\<^sub>i s"
-  assumes  pivotandupdate_tableau_normalized:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+  assumes  pivotandupdate_tableau_normalized:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       \<triangle> (\<T> (pivot_and_update x\<^sub>i x\<^sub>j c s))"
-  assumes  pivotandupdate_tableau_equiv:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+  assumes  pivotandupdate_tableau_equiv:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       (v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> (pivot_and_update x\<^sub>i x\<^sub>j c s)"
-  assumes pivotandupdate_satisfies_tableau:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+  assumes pivotandupdate_satisfies_tableau:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s \<longrightarrow> \<langle>\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)\<rangle> \<Turnstile>\<^sub>t \<T> s"
-  assumes  pivotandupdate_rvars:   "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+  assumes  pivotandupdate_rvars:   "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       rvars (\<T> (pivot_and_update x\<^sub>i x\<^sub>j c s)) = rvars (\<T> s) - {x\<^sub>j} \<union> {x\<^sub>i}"
-  assumes  pivotandupdate_lvars:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+  assumes  pivotandupdate_lvars:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       lvars (\<T> (pivot_and_update x\<^sub>i x\<^sub>j c s)) = lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j}"
-  assumes pivotandupdate_valuation_nonlhs:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+  assumes pivotandupdate_valuation_nonlhs:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
       x \<notin> lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j} \<longrightarrow> look (\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)) x = (if x = x\<^sub>i then Some c else look (\<V> s) x)"
-  assumes pivotandupdate_tableau_valuated:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> 
+  assumes pivotandupdate_tableau_valuated:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
  \<nabla> (pivot_and_update x\<^sub>i x\<^sub>j c s)"
 begin
 
 lemma pivotandupdate_bounds_id':  assumes "\<triangle> (\<T> s)" "\<nabla> s" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
   shows "\<B>\<I> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<B>\<I> s"
     "\<B> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<B> s"
-    "\<I> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<I> s" 
+    "\<I> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<I> s"
   using pivotandupdate_bounds_id[OF assms]
   by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
 
@@ -2891,16 +2890,16 @@ lemma  pivotandupdate_valuation_other_nolhs: "\<lbrakk>\<triangle> (\<T> s); \<n
   using pivotandupdate_valuation_nonlhs[of s x\<^sub>i x\<^sub>j x c]
   by auto
 
-lemma pivotandupdate_nolhs: 
+lemma pivotandupdate_nolhs:
   "\<lbrakk> \<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i;
-     \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<B>\<^sub>l s x\<^sub>i = Some c \<or> \<B>\<^sub>u s x\<^sub>i = Some c\<rbrakk> \<Longrightarrow> 
+     \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<B>\<^sub>l s x\<^sub>i = Some c \<or> \<B>\<^sub>u s x\<^sub>i = Some c\<rbrakk> \<Longrightarrow>
      \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s (pivot_and_update x\<^sub>i x\<^sub>j c s)"
   using pivotandupdate_satisfies_tableau[of s x\<^sub>i x\<^sub>j c]
   using pivotandupdate_tableau_equiv[of s x\<^sub>i x\<^sub>j _ c]
   using pivotandupdate_valuation_xi[of s x\<^sub>i x\<^sub>j c]
   using pivotandupdate_valuation_other_nolhs[of s x\<^sub>i x\<^sub>j _ c]
   using pivotandupdate_lvars[of s x\<^sub>i x\<^sub>j c]
-  by (auto simp add: curr_val_satisfies_no_lhs_def satisfies_bounds.simps satisfies_bounds_set.simps 
+  by (auto simp add: curr_val_satisfies_no_lhs_def satisfies_bounds.simps satisfies_bounds_set.simps
       bounds_consistent_geq_lb bounds_consistent_leq_ub map2fun_def pivotandupdate_bounds_id')
 
 lemma pivotandupdate_bounds_consistent:
@@ -2919,7 +2918,7 @@ begin
 definition  pivot_and_update :: "var \<Rightarrow> var \<Rightarrow> 'a \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state" where [simp]:
   "pivot_and_update x\<^sub>i x\<^sub>j c s \<equiv> update x\<^sub>i c (pivot x\<^sub>i x\<^sub>j s)"
 
-lemma pivot_update_precond: 
+lemma pivot_update_precond:
   assumes "\<triangle> (\<T> s)" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
   shows "\<triangle> (\<T> (pivot x\<^sub>i x\<^sub>j s))" "x\<^sub>i \<notin> lvars (\<T> (pivot x\<^sub>i x\<^sub>j s))"
 proof-
@@ -2927,7 +2926,7 @@ proof-
     using rvars_of_lvar_rvars[of x\<^sub>i "\<T> s"]
     by (auto simp add: normalized_tableau_def)
   then show "\<triangle> (\<T> (pivot x\<^sub>i x\<^sub>j s))" "x\<^sub>i \<notin> lvars (\<T> (pivot x\<^sub>i x\<^sub>j s))"
-    using assms 
+    using assms
     using pivot_tableau_normalized[of s x\<^sub>i x\<^sub>j]
     using pivot_lvars[of s x\<^sub>i x\<^sub>j]
     by auto
@@ -2938,19 +2937,19 @@ end
 
 sublocale PivotUpdate < PivotAndUpdate eq_idx_for_lvar pivot_and_update
   using pivot_update_precond
-  using update_unsat_id pivot_unsat_id pivot_unsat_core_id update_bounds_id pivot_bounds_id 
-    update_tableau_id pivot_tableau_normalized pivot_tableau_equiv update_satisfies_tableau 
-    pivot_valuation_id pivot_lvars pivot_rvars  update_valuation_nonlhs update_valuation_nonlhs 
+  using update_unsat_id pivot_unsat_id pivot_unsat_core_id update_bounds_id pivot_bounds_id
+    update_tableau_id pivot_tableau_normalized pivot_tableau_equiv update_satisfies_tableau
+    pivot_valuation_id pivot_lvars pivot_rvars  update_valuation_nonlhs update_valuation_nonlhs
     pivot_tableau_valuated update_tableau_valuated update_unsat_core_id
   by (unfold_locales, auto)
 
 
 text \<open>Pivoting the tableau can be reduced to pivoting single equations,
-  and substituting variable by polynomials. These operations are specified 
+  and substituting variable by polynomials. These operations are specified
   by:\<close>
 
-locale PivotEq =  
-  fixes pivot_eq::"eq \<Rightarrow> var \<Rightarrow> eq" 
+locale PivotEq =
+  fixes pivot_eq::"eq \<Rightarrow> var \<Rightarrow> eq"
   assumes
     \<comment> \<open>Lhs var of @{text eq} and @{text x\<^sub>j} are swapped,
      while the other variables do not change sides.\<close>
@@ -2983,8 +2982,8 @@ abbreviation doublesub (" _ \<subseteq>s _ \<subseteq>s _" [50,51,51] 50) where
   "doublesub a b c \<equiv> a \<subseteq> b \<and> b \<subseteq> c"
 
 
-locale SubstVar =  
-  fixes subst_var::"var \<Rightarrow> linear_poly \<Rightarrow> linear_poly \<Rightarrow> linear_poly" 
+locale SubstVar =
+  fixes subst_var::"var \<Rightarrow> linear_poly \<Rightarrow> linear_poly \<Rightarrow> linear_poly"
   assumes
     \<comment> \<open>Effect of @{text "subst_var x\<^sub>j lp' lp"} on @{text lp} variables.\<close>
 
@@ -3036,7 +3035,7 @@ begin
 definition pivot_tableau' :: "var \<Rightarrow> var \<Rightarrow> tableau \<Rightarrow> tableau" where
   "pivot_tableau' x\<^sub>i x\<^sub>j t \<equiv>
     let x\<^sub>i_idx = eq_idx_for_lvar t x\<^sub>i; eq = t ! x\<^sub>i_idx; eq' = pivot_eq eq x\<^sub>j in
-    map (\<lambda> idx. if idx = x\<^sub>i_idx then 
+    map (\<lambda> idx. if idx = x\<^sub>i_idx then
                     eq'
                 else
                     subst_var_eq x\<^sub>j (rhs eq') (t ! idx)
@@ -3054,7 +3053,7 @@ definition pivot_tableau :: "var \<Rightarrow> var \<Rightarrow> tableau \<Right
 definition pivot :: "var \<Rightarrow> var \<Rightarrow> ('i,'a::lrv) state \<Rightarrow> ('i,'a) state" where
   "pivot x\<^sub>i x\<^sub>j s \<equiv> \<T>_update (pivot_tableau x\<^sub>i x\<^sub>j (\<T> s)) s"
 
-lemma pivot_tableau'pivot_tableau:  
+lemma pivot_tableau'pivot_tableau:
   assumes "\<triangle> t" "x\<^sub>i \<in> lvars t"
   shows "pivot_tableau' x\<^sub>i x\<^sub>j t = pivot_tableau x\<^sub>i x\<^sub>j t"
 proof-
@@ -3088,10 +3087,10 @@ proof-
     by (auto simp add: map_reindex)
 qed
 
-lemma pivot'pivot: fixes s :: "('i,'a::lrv)state" 
+lemma pivot'pivot: fixes s :: "('i,'a::lrv)state"
   assumes "\<triangle> (\<T> s)" "x\<^sub>i \<in> lvars (\<T> s)"
   shows "pivot' x\<^sub>i x\<^sub>j s = pivot x\<^sub>i x\<^sub>j s"
-  using pivot_tableau'pivot_tableau[OF assms] 
+  using pivot_tableau'pivot_tableau[OF assms]
   unfolding pivot_def pivot'_def by auto
 end
 
@@ -3144,7 +3143,7 @@ proof
     by auto
 
   have "x\<^sub>i \<noteq> x\<^sub>j"
-    using \<open>x\<^sub>j \<in> rvars_eq ?eq\<close>  \<open>x\<^sub>i \<notin> rvars_eq ?eq\<close> 
+    using \<open>x\<^sub>j \<in> rvars_eq ?eq\<close>  \<open>x\<^sub>i \<notin> rvars_eq ?eq\<close>
     by auto
 
   have "?eq' = (x\<^sub>j, rhs ?eq')"
@@ -3152,13 +3151,13 @@ proof
     using \<open>x\<^sub>j \<in> rvars_eq (eq_for_lvar (\<T> s) x\<^sub>i)\<close> \<open>lhs (?t ! ?idx) = x\<^sub>i\<close> \<open>x\<^sub>i \<notin> rvars_eq ?eq\<close>
     by (auto simp add: eq_for_lvar_def) (cases "?eq'", simp)+
 
-  let ?I1 = "[0..<?idx]" 
+  let ?I1 = "[0..<?idx]"
   let ?I2 = "[?idx + 1..<length ?t]"
   have "[0..<length ?t] = ?I1 @ [?idx] @ ?I2"
     using \<open>?idx < length ?t\<close>
     by (rule interval_3split)
-  then have map_lhs_pivot: 
-    "map lhs (\<T> (pivot' x\<^sub>i x\<^sub>j s)) = 
+  then have map_lhs_pivot:
+    "map lhs (\<T> (pivot' x\<^sub>i x\<^sub>j s)) =
      map (\<lambda>idx. lhs (?t ! idx)) ?I1 @ [x\<^sub>j] @ map (\<lambda>idx. lhs (?t ! idx)) ?I2"
     using \<open>x\<^sub>j \<in> rvars_eq (eq_for_lvar (\<T> s) x\<^sub>i)\<close> \<open>lhs (?t ! ?idx) = x\<^sub>i\<close> \<open>x\<^sub>i \<notin> rvars_eq ?eq\<close>
     by (auto simp add: Let_def subst_var_eq_def eq_for_lvar_def lhs_pivot_eq pivot'_def pivot_tableau'_def)
@@ -3166,7 +3165,7 @@ proof
   have lvars_pivot: "lvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) =
         lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j}"
   proof-
-    have "lvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) =  
+    have "lvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) =
           {x\<^sub>j} \<union> (\<lambda>idx. lhs (?t ! idx)) ` ({0..<length?t} - {?idx})"
       using \<open>?idx < length ?t\<close> \<open>?eq' = (x\<^sub>j, rhs ?eq')\<close>
       by (cases ?eq', auto simp add: Let_def pivot'_def pivot_tableau'_def lvars_def subst_var_eq_def)+
@@ -3176,7 +3175,7 @@ proof
     also have "... = {x\<^sub>j} \<union> (set (map lhs ?t) - {x\<^sub>i})"
       using \<open>lhs (?t ! ?idx) = x\<^sub>i\<close>
       by (auto simp add: in_set_conv_nth rev_image_eqI) (auto simp add: image_def)
-    finally show "lvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) = 
+    finally show "lvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) =
       lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j}"
       by (simp add: lvars_def)
   qed
@@ -3191,7 +3190,7 @@ proof
       by simp
 
     let ?S1 = "rvars_eq ?eq'"
-    let ?S2 = "\<Union>idx\<in>({0..<length ?t} - {?idx}). 
+    let ?S2 = "\<Union>idx\<in>({0..<length ?t} - {?idx}).
                   rvars_eq (subst_var_eq x\<^sub>j (rhs ?eq') (?t ! idx))"
 
     have "rvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) = ?S1 \<union> ?S2"
@@ -3212,7 +3211,7 @@ proof
         proof-
           have "?S2 \<subseteq> (\<Union>idx\<in>{0..<length ?t}. (rvars_eq (?t ! idx) - {x\<^sub>j}) \<union> rvars_eq ?eq')"
             apply (rule UN_mono)
-            using rvars_eq_subst_var_eq 
+            using rvars_eq_subst_var_eq
             by auto
           also have "... \<subseteq> rvars_eq ?eq' \<union> (\<Union>idx\<in>{0..<length ?t}. rvars_eq (?t ! idx) - {x\<^sub>j})"
             by auto
@@ -3241,7 +3240,7 @@ proof
             by auto
         next
           case False
-          let ?S2'  = "\<Union>idx\<in>({0..<length ?t} - {?idx}). 
+          let ?S2'  = "\<Union>idx\<in>({0..<length ?t} - {?idx}).
                         (rvars_eq (?t ! idx) - {x\<^sub>j}) - rvars_eq ?eq'"
           have "x \<in> ?S2'"
             using False \<open>x \<in> ?rhs\<close>
@@ -3301,7 +3300,7 @@ proof
         using \<open>x\<^sub>j \<in> rvars_eq ?eq\<close> \<open>x\<^sub>i \<in> lvars ?t\<close>
         by (simp add: equiv_pivot_eq eq_idx_for_lvar)
       moreover
-      { 
+      {
         fix idx
         assume "idx < length ?t" "idx \<noteq> ?idx"
 
@@ -3381,11 +3380,11 @@ choosing these variables auxiliary functions @{text
 \<close>
 
 locale MinLVarNotInBounds = fixes min_lvar_not_in_bounds::"('i,'a::lrv) state \<Rightarrow> var option"
-  assumes 
+  assumes
 
 min_lvar_not_in_bounds_None: "min_lvar_not_in_bounds s = None \<longrightarrow> (\<forall>x\<in>lvars (\<T> s). in_bounds x \<langle>\<V> s\<rangle> (\<B> s))" and
 
-min_lvar_not_in_bounds_Some': "min_lvar_not_in_bounds s = Some x\<^sub>i \<longrightarrow> x\<^sub>i\<in>lvars (\<T> s) \<and> \<not>in_bounds x\<^sub>i \<langle>\<V> s\<rangle> (\<B> s) 
+min_lvar_not_in_bounds_Some': "min_lvar_not_in_bounds s = Some x\<^sub>i \<longrightarrow> x\<^sub>i\<in>lvars (\<T> s) \<and> \<not>in_bounds x\<^sub>i \<langle>\<V> s\<rangle> (\<B> s)
     \<and> (\<forall>x\<in>lvars (\<T> s). x < x\<^sub>i \<longrightarrow> in_bounds x \<langle>\<V> s\<rangle> (\<B> s))"
 
 begin
@@ -3411,16 +3410,16 @@ end
 
 
 abbreviation reasable_var where
-  "reasable_var dir x eq s \<equiv> 
+  "reasable_var dir x eq s \<equiv>
    (coeff (rhs eq) x > 0 \<and> \<lhd>\<^sub>u\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x) (UB dir s x)) \<or>
    (coeff (rhs eq) x < 0 \<and> \<rhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x) (LB dir s x))"
 
-locale MinRVarsEq = 
+locale MinRVarsEq =
   fixes min_rvar_incdec_eq :: "('i,'a) Direction \<Rightarrow> ('i,'a::lrv) state \<Rightarrow> eq \<Rightarrow> 'i list + var"
   assumes min_rvar_incdec_eq_None:
-    "min_rvar_incdec_eq dir s eq = Inl is \<Longrightarrow> 
-      (\<forall> x \<in> rvars_eq eq. \<not> reasable_var dir x eq s) \<and> 
-      (LI dir s (lhs eq) \<in> set is) \<and> 
+    "min_rvar_incdec_eq dir s eq = Inl is \<Longrightarrow>
+      (\<forall> x \<in> rvars_eq eq. \<not> reasable_var dir x eq s) \<and>
+      (LI dir s (lhs eq) \<in> set is) \<and>
       (\<forall> x \<in> rvars_eq eq. coeff (rhs eq) x < 0 \<longrightarrow> LI dir s x \<in> set is) \<and>
       (\<forall> x \<in> rvars_eq eq. coeff (rhs eq) x > 0 \<longrightarrow> UI dir s x \<in> set is) \<and>
       ((dir = Positive \<or> dir = Negative) \<longrightarrow> LI dir s (lhs eq) \<in> indices_state s \<longrightarrow> set is \<subseteq> indices_state s)"
@@ -3429,14 +3428,14 @@ locale MinRVarsEq =
   assumes min_rvar_incdec_eq_Some_incdec:
     "min_rvar_incdec_eq dir s eq = Inr x\<^sub>j \<Longrightarrow> reasable_var dir x\<^sub>j eq s"
   assumes min_rvar_incdec_eq_Some_min:
-    "min_rvar_incdec_eq dir s eq = Inr x\<^sub>j \<Longrightarrow> 
+    "min_rvar_incdec_eq dir s eq = Inr x\<^sub>j \<Longrightarrow>
     (\<forall> x \<in> rvars_eq eq. x < x\<^sub>j \<longrightarrow> \<not> reasable_var dir x eq s)"
 begin
 lemma min_rvar_incdec_eq_None':
   assumes *: "dir = Positive \<or> dir = Negative"
-    and min: "min_rvar_incdec_eq dir s eq = Inl is" 
-    and sub: "I = set is" 
-    and Iv: "(I,v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" 
+    and min: "min_rvar_incdec_eq dir s eq = Inl is"
+    and sub: "I = set is"
+    and Iv: "(I,v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s"
   shows "le (lt dir) ((rhs eq) \<lbrace>v\<rbrace>) ((rhs eq) \<lbrace>\<langle>\<V> s\<rangle>\<rbrace>)"
 proof -
   have "\<forall> x \<in> rvars_eq eq. \<not> reasable_var dir x eq s"
@@ -3456,7 +3455,7 @@ proof -
       by (cases "UB dir s x") (auto simp add: bound_compare_defs)
     moreover
     from min_rvar_incdec_eq_None[OF min] x sub have "UI dir s x \<in> I" by auto
-    from Iv * this     
+    from Iv * this
     have "\<unlhd>\<^sub>u\<^sub>b (lt dir) (v x) (UB dir s x)"
       unfolding satisfies_bounds_index.simps
       by (cases "UB dir s x", auto simp: indexl_def indexu_def boundsl_def boundsu_def bound_compare'_defs)
@@ -3480,7 +3479,7 @@ proof -
       by (cases "LB dir s x") (auto simp add: bound_compare_defs)
     moreover
     from min_rvar_incdec_eq_None[OF min] x sub have "LI dir s x \<in> I" by auto
-    from Iv * this     
+    from Iv * this
     have "\<unrhd>\<^sub>l\<^sub>b (lt dir) (v x) (LB dir s x)"
       unfolding satisfies_bounds_index.simps
       by (cases "LB dir s x", auto simp: indexl_def indexu_def boundsl_def boundsu_def bound_compare'_defs)
@@ -3512,7 +3511,7 @@ end
 
 
 locale MinRVars = EqForLVar + MinRVarsEq min_rvar_incdec_eq
-  for min_rvar_incdec_eq :: "('i, 'a :: lrv) Direction \<Rightarrow> _" 
+  for min_rvar_incdec_eq :: "('i, 'a :: lrv) Direction \<Rightarrow> _"
 begin
 abbreviation min_rvar_incdec :: "('i,'a) Direction \<Rightarrow> ('i,'a) state \<Rightarrow> var \<Rightarrow> 'i list + var" where
   "min_rvar_incdec dir s x\<^sub>i \<equiv> min_rvar_incdec_eq dir s (eq_for_lvar (\<T> s) x\<^sub>i)"
@@ -3521,11 +3520,11 @@ end
 
 locale MinVars = MinLVarNotInBounds min_lvar_not_in_bounds + MinRVars eq_idx_for_lvar min_rvar_incdec_eq
   for min_lvar_not_in_bounds :: "('i,'a::lrv) state \<Rightarrow> _" and
-    eq_idx_for_lvar and 
-    min_rvar_incdec_eq :: "('i, 'a :: lrv) Direction \<Rightarrow> _" 
+    eq_idx_for_lvar and
+    min_rvar_incdec_eq :: "('i, 'a :: lrv) Direction \<Rightarrow> _"
 
-locale PivotUpdateMinVars = 
-  PivotAndUpdate eq_idx_for_lvar pivot_and_update + 
+locale PivotUpdateMinVars =
+  PivotAndUpdate eq_idx_for_lvar pivot_and_update +
   MinVars min_lvar_not_in_bounds eq_idx_for_lvar min_rvar_incdec_eq for
   eq_idx_for_lvar :: "tableau \<Rightarrow> var \<Rightarrow> nat" and
   min_lvar_not_in_bounds :: "('i,'a::lrv) state \<Rightarrow> var option" and
@@ -3535,10 +3534,10 @@ begin
 
 
 definition check' where
-  "check' dir x\<^sub>i s \<equiv> 
+  "check' dir x\<^sub>i s \<equiv>
      let l\<^sub>i = the (LB dir s x\<^sub>i);
-         x\<^sub>j' = min_rvar_incdec dir s x\<^sub>i 
-     in case x\<^sub>j' of 
+         x\<^sub>j' = min_rvar_incdec dir s x\<^sub>i
+     in case x\<^sub>j' of
            Inl I \<Rightarrow> set_unsat I s
          | Inr x\<^sub>j \<Rightarrow> pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s"
 
@@ -3546,7 +3545,7 @@ lemma check'_cases:
   assumes "\<And> I. \<lbrakk>min_rvar_incdec dir s x\<^sub>i = Inl I; check' dir x\<^sub>i s = set_unsat I s\<rbrakk> \<Longrightarrow> P (set_unsat I s)"
   assumes "\<And> x\<^sub>j l\<^sub>i. \<lbrakk>min_rvar_incdec dir s x\<^sub>i = Inr x\<^sub>j;
            l\<^sub>i = the (LB dir s x\<^sub>i);
-           check' dir x\<^sub>i s = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s\<rbrakk> \<Longrightarrow> 
+           check' dir x\<^sub>i s = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s\<rbrakk> \<Longrightarrow>
         P (pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s)"
   shows "P (check' dir x\<^sub>i s)"
   using assms
@@ -3554,13 +3553,13 @@ lemma check'_cases:
   by (cases "min_rvar_incdec dir s x\<^sub>i", auto)
 
 partial_function (tailrec) check where
-  "check s = 
+  "check s =
     (if \<U> s then s
-     else let x\<^sub>i' = min_lvar_not_in_bounds s 
-          in case x\<^sub>i' of 
+     else let x\<^sub>i' = min_lvar_not_in_bounds s
+          in case x\<^sub>i' of
                None \<Rightarrow> s
              | Some x\<^sub>i \<Rightarrow> let dir = if \<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i then Positive
-                                    else Negative 
+                                    else Negative
                           in check (check' dir x\<^sub>i s))"
 declare check.simps[code]
 
@@ -3578,7 +3577,7 @@ The definition of @{text check} can be given by:
 
 @{text[display]
 "check s \<equiv> if \<U> s then s
-            else let x\<^sub>i' = min_lvar_not_in_bounds s in 
+            else let x\<^sub>i' = min_lvar_not_in_bounds s in
                  case x\<^sub>i' of  None \<Rightarrow> s
                            | Some x\<^sub>i \<Rightarrow> if \<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i then check (check_inc x\<^sub>i s)
                                            else check (check_dec x\<^sub>i s)"
@@ -3598,7 +3597,7 @@ on the proof outline given in \cite{simplex-rad}. It is very
 technically involved, but conceptually uninteresting so we do not
 discuss it in more details.\<close>
 
-lemma pivotandupdate_check_precond: 
+lemma pivotandupdate_check_precond:
   assumes
     "dir = (if \<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i then Positive else Negative)"
     "min_lvar_not_in_bounds s = Some x\<^sub>i"
@@ -3627,15 +3626,15 @@ qed
 (* -------------------------------------------------------------------------- *)
 
 abbreviation gt_state' where
-  "gt_state' dir s s' x\<^sub>i x\<^sub>j l\<^sub>i \<equiv> 
-  min_lvar_not_in_bounds s = Some x\<^sub>i \<and> 
+  "gt_state' dir s s' x\<^sub>i x\<^sub>j l\<^sub>i \<equiv>
+  min_lvar_not_in_bounds s = Some x\<^sub>i \<and>
   l\<^sub>i = the (LB dir s x\<^sub>i) \<and>
   min_rvar_incdec dir s x\<^sub>i = Inr x\<^sub>j \<and>
   s' = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s"
 
 definition gt_state :: "('i,'a) state \<Rightarrow> ('i,'a) state \<Rightarrow> bool" (infixl "\<succ>\<^sub>x" 100) where
   "s \<succ>\<^sub>x s' \<equiv>
-   \<exists> x\<^sub>i x\<^sub>j l\<^sub>i. 
+   \<exists> x\<^sub>i x\<^sub>j l\<^sub>i.
      let dir = if \<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i then Positive else Negative in
      gt_state' dir s s' x\<^sub>i x\<^sub>j l\<^sub>i"
 
@@ -3664,7 +3663,7 @@ proof-
     where *:
       "\<triangle> (\<T> s)" "\<nabla> s"
       "min_lvar_not_in_bounds s = Some x\<^sub>i"
-      "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j" 
+      "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j"
       "s' = pivot_and_update x\<^sub>i x\<^sub>j c s"
     unfolding gt_state_def
     by (auto split: if_splits)
@@ -3699,7 +3698,7 @@ qed
 
 lemma succ_vars_id:
   assumes "s \<succ> s'"
-  shows "lvars (\<T> s) \<union> rvars (\<T> s) = 
+  shows "lvars (\<T> s) \<union> rvars (\<T> s) =
          lvars (\<T> s') \<union> rvars (\<T> s')"
   using assms
   by (rule succ_vars) auto
@@ -3713,7 +3712,7 @@ proof-
     where *:
       "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s"
       "min_lvar_not_in_bounds s = Some x\<^sub>i"
-      "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j" 
+      "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j"
       "s' = pivot_and_update x\<^sub>i x\<^sub>j c s"
     unfolding gt_state_def
     by (auto split: if_splits)
@@ -3738,7 +3737,7 @@ proof-
     where *:
       "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s"
       "min_lvar_not_in_bounds s = Some x\<^sub>i"
-      "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j" 
+      "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j"
       "s' = pivot_and_update x\<^sub>i x\<^sub>j c s"
     unfolding gt_state_def
     by (auto split: if_splits)
@@ -3754,7 +3753,7 @@ proof-
 qed
 
 lemma succ_min_lvar_not_in_bounds:
-  assumes "s \<succ> s'" 
+  assumes "s \<succ> s'"
     "xr \<in> lvars (\<T> s)" "xr \<in> rvars (\<T> s')"
   shows "\<not> in_bounds xr (\<langle>\<V> s\<rangle>) (\<B> s)"
     "\<forall> x \<in> lvars (\<T> s). x < xr \<longrightarrow> in_bounds x (\<langle>\<V> s\<rangle>) (\<B> s)"
@@ -3763,7 +3762,7 @@ proof-
     where *:
       "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s"
       "min_lvar_not_in_bounds s = Some x\<^sub>i"
-      "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j" 
+      "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j"
       "s' = pivot_and_update x\<^sub>i x\<^sub>j c s"
     unfolding gt_state_def
     by (auto split: if_splits)
@@ -3782,24 +3781,24 @@ proof-
 qed
 
 lemma succ_min_rvar:
-  assumes "s \<succ> s'" 
+  assumes "s \<succ> s'"
     "xs \<in> lvars (\<T> s)" "xs \<in> rvars (\<T> s')"
     "xr \<in> rvars (\<T> s)" "xr \<in> lvars (\<T> s')"
     "eq = eq_for_lvar (\<T> s) xs" and
     dir: "dir = Positive \<or> dir = Negative"
-  shows 
-    "\<not> \<unrhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> xs) (LB dir s xs) \<longrightarrow> 
+  shows
+    "\<not> \<unrhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> xs) (LB dir s xs) \<longrightarrow>
              reasable_var dir xr eq s \<and> (\<forall> x \<in> rvars_eq eq. x < xr \<longrightarrow> \<not> reasable_var dir x eq s)"
 proof-
   from assms(1) obtain x\<^sub>i x\<^sub>j c
-    where"\<triangle> (\<T> s) \<and> \<nabla> s \<and> \<diamond> s \<and> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" 
+    where"\<triangle> (\<T> s) \<and> \<nabla> s \<and> \<diamond> s \<and> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s"
       "gt_state' (if \<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i then Positive else Negative) s s' x\<^sub>i x\<^sub>j c"
     by (auto simp add: gt_state_def Let_def)
   then have
     "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s"
     "min_lvar_not_in_bounds s = Some x\<^sub>i"
     "s' = pivot_and_update x\<^sub>i x\<^sub>j c s" and
-    *: "(\<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i \<and> min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j) \<or> 
+    *: "(\<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i \<and> min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j) \<or>
         (\<not> \<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i \<and> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j)"
     by (auto split: if_splits)
 
@@ -3811,7 +3810,7 @@ proof-
     using \<open>xs \<in> lvars (\<T> s)\<close> \<open>xs \<in> rvars (\<T> s')\<close>
     using pivotandupdate_lvars pivotandupdate_rvars
     by (auto simp add: normalized_tableau_def)
-  show "\<not> (\<unrhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> xs) (LB dir s xs)) \<longrightarrow> 
+  show "\<not> (\<unrhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> xs) (LB dir s xs)) \<longrightarrow>
             reasable_var dir xr eq s \<and> (\<forall> x \<in> rvars_eq eq. x < xr \<longrightarrow> \<not> reasable_var dir x eq s)"
   proof
     assume "\<not> \<unrhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> xs) (LB dir s xs)"
@@ -3836,22 +3835,22 @@ proof-
 qed
 
 lemma succ_set_on_bound:
-  assumes 
+  assumes
     "s \<succ> s'" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>i \<in> rvars (\<T> s')" and
     dir: "dir = Positive \<or> dir = Negative"
-  shows 
+  shows
     "\<not> \<unrhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i) \<longrightarrow> \<langle>\<V> s'\<rangle> x\<^sub>i = the (LB dir s x\<^sub>i)"
     "\<langle>\<V> s'\<rangle> x\<^sub>i = the (\<B>\<^sub>l s x\<^sub>i) \<or> \<langle>\<V> s'\<rangle> x\<^sub>i = the (\<B>\<^sub>u s x\<^sub>i)"
 proof-
   from assms(1) obtain x\<^sub>i' x\<^sub>j c
-    where"\<triangle> (\<T> s) \<and> \<nabla> s \<and> \<diamond> s \<and> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" 
+    where"\<triangle> (\<T> s) \<and> \<nabla> s \<and> \<diamond> s \<and> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s"
       "gt_state' (if \<langle>\<V> s\<rangle> x\<^sub>i' <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i' then Positive else Negative) s s' x\<^sub>i' x\<^sub>j c"
     by (auto simp add: gt_state_def Let_def)
   then have
     "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s"
     "min_lvar_not_in_bounds s = Some x\<^sub>i'"
     "s' = pivot_and_update x\<^sub>i' x\<^sub>j c s" and
-    *: "(\<langle>\<V> s\<rangle> x\<^sub>i' <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i' \<and> c = the (\<B>\<^sub>l s x\<^sub>i') \<and> min_rvar_incdec Positive s x\<^sub>i' = Inr x\<^sub>j) \<or> 
+    *: "(\<langle>\<V> s\<rangle> x\<^sub>i' <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i' \<and> c = the (\<B>\<^sub>l s x\<^sub>i') \<and> min_rvar_incdec Positive s x\<^sub>i' = Inr x\<^sub>j) \<or>
         (\<not> \<langle>\<V> s\<rangle> x\<^sub>i' <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i' \<and> c = the (\<B>\<^sub>u s x\<^sub>i') \<and> min_rvar_incdec Negative s x\<^sub>i' = Inr x\<^sub>j)"
     by (auto split: if_splits)
   then have "x\<^sub>i = x\<^sub>i'" "x\<^sub>i' \<in> lvars (\<T> s)"
@@ -3936,7 +3935,7 @@ proof-
 qed
 
 lemma succ_no_vars_valuation:
-  assumes 
+  assumes
     "s \<succ> s'" "x \<notin> tvars (\<T> s')"
   shows "look (\<V> s') x = look (\<V> s) x"
 proof-
@@ -3944,7 +3943,7 @@ proof-
   obtain x\<^sub>i x\<^sub>j b where
     "\<triangle> (\<T> s)" "\<nabla> s"
     "min_lvar_not_in_bounds s = Some x\<^sub>i"
-    "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j" 
+    "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j"
     "b = the (\<B>\<^sub>l s x\<^sub>i) \<or> b = the (\<B>\<^sub>u s x\<^sub>i)"
     "s' = pivot_and_update x\<^sub>i x\<^sub>j b s"
     unfolding gt_state_def
@@ -3975,13 +3974,13 @@ proof-
   obtain x\<^sub>i x\<^sub>j b where
     "\<triangle> (\<T> s)" "\<nabla> s"
     "min_lvar_not_in_bounds s = Some x\<^sub>i"
-    "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j" 
+    "min_rvar_incdec Positive s x\<^sub>i = Inr x\<^sub>j \<or> min_rvar_incdec Negative s x\<^sub>i = Inr x\<^sub>j"
     "b = the (\<B>\<^sub>l s x\<^sub>i) \<or> b = the (\<B>\<^sub>u s x\<^sub>i)"
     "s' = pivot_and_update x\<^sub>i x\<^sub>j b s"
     unfolding gt_state_def
     by (auto simp add: Let_def split: if_splits)
   then have
-    "x\<^sub>i \<in> lvars (\<T> s)" 
+    "x\<^sub>i \<in> lvars (\<T> s)"
     "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
     using min_lvar_not_in_bounds_lvars[of s x\<^sub>i]
     using min_rvar_incdec_eq_Some_rvars[of Positive s "eq_for_lvar (\<T> s) x\<^sub>i" x\<^sub>j]
@@ -3994,7 +3993,7 @@ proof-
     by auto
 qed
 
-lemma succ_tableau_valuated: 
+lemma succ_tableau_valuated:
   assumes "s \<succ> s'" "\<nabla> s"
   shows "\<nabla> s'"
   using succ_inv(2) assms by blast
@@ -4033,7 +4032,7 @@ next
     by simp
 qed
 
-lemma succ_chain_bounds_id: 
+lemma succ_chain_bounds_id:
   assumes "succ_chain l" "i \<le> j" "j < length l"
   shows "\<B>\<^sub>i (l ! i) = \<B>\<^sub>i (l ! j)"
   using assms
@@ -4044,9 +4043,9 @@ proof (rule succ_chain_induct)
     by (rule succ_inv(4))
 qed simp_all
 
-lemma succ_chain_vars_id': 
+lemma succ_chain_vars_id':
   assumes "succ_chain l" "i \<le> j" "j < length l"
-  shows "lvars (\<T> (l ! i)) \<union> rvars (\<T> (l ! i)) = 
+  shows "lvars (\<T> (l ! i)) \<union> rvars (\<T> (l ! i)) =
          lvars (\<T> (l ! j)) \<union> rvars (\<T> (l ! j))"
   using assms
 proof (rule succ_chain_induct)
@@ -4056,9 +4055,9 @@ proof (rule succ_chain_induct)
     by (rule succ_vars_id)
 qed simp_all
 
-lemma succ_chain_vars_id: 
+lemma succ_chain_vars_id:
   assumes "succ_chain l" "i < length l" "j < length l"
-  shows "lvars (\<T> (l ! i)) \<union> rvars (\<T> (l ! i)) = 
+  shows "lvars (\<T> (l ! i)) \<union> rvars (\<T> (l ! i)) =
          lvars (\<T> (l ! j)) \<union> rvars (\<T> (l ! j))"
 proof (cases "i \<le> j")
   case True
@@ -4137,10 +4136,10 @@ next
 qed
 
 lemma succ_chain_rvar_valuation:
-  assumes "succ_chain l" "i \<le> j" "j < length l" 
-  shows "\<forall>x\<in>rvars (\<T> (l ! j)). 
-  \<langle>\<V> (l ! j)\<rangle> x = \<langle>\<V> (l ! i)\<rangle> x \<or> 
-  \<langle>\<V> (l ! j)\<rangle> x = the (\<B>\<^sub>l (l ! i) x) \<or> 
+  assumes "succ_chain l" "i \<le> j" "j < length l"
+  shows "\<forall>x\<in>rvars (\<T> (l ! j)).
+  \<langle>\<V> (l ! j)\<rangle> x = \<langle>\<V> (l ! i)\<rangle> x \<or>
+  \<langle>\<V> (l ! j)\<rangle> x = the (\<B>\<^sub>l (l ! i) x) \<or>
   \<langle>\<V> (l ! j)\<rangle> x = the (\<B>\<^sub>u (l ! i) x)" (is "?P i j")
   using assms
 proof (induct "j - i" arbitrary: j)
@@ -4161,12 +4160,12 @@ next
     unfolding rel_chain_def
     by (erule_tac x="j - 1" in allE) simp
 
-  then have 
+  then have
     jj: "?P (j - 1) j"
     using succ_rvar_valuation
     by auto
 
-  obtain x\<^sub>i x\<^sub>j where 
+  obtain x\<^sub>i x\<^sub>j where
     vars: "x\<^sub>i \<in> lvars (\<T> (l ! (j - 1)))" "x\<^sub>j \<in> rvars (\<T> (l ! (j - 1)))"
     "rvars (\<T> (l ! j)) = rvars (\<T> (l ! (j - 1))) - {x\<^sub>j} \<union> {x\<^sub>i}"
     using \<open>l ! (j - 1) \<succ> (l ! j)\<close>
@@ -4187,7 +4186,7 @@ next
       using vars
       by auto
     then show "\<langle>\<V> (l ! j)\<rangle> x = \<langle>\<V> (l ! i)\<rangle> x \<or>
-          \<langle>\<V> (l ! j)\<rangle> x = the (\<B>\<^sub>l (l ! i) x) \<or> 
+          \<langle>\<V> (l ! j)\<rangle> x = the (\<B>\<^sub>l (l ! i) x) \<or>
           \<langle>\<V> (l ! j)\<rangle> x = the (\<B>\<^sub>u (l ! i) x)"
     proof
       assume "x \<noteq> x\<^sub>j \<and> x \<in> rvars (\<T> (l ! (j - 1)))"
@@ -4207,7 +4206,7 @@ qed
 
 lemma succ_chain_valuation_satisfies:
   assumes "succ_chain l"  "i \<le> j" "j < length l"
-  shows "\<langle>\<V> (l ! i)\<rangle> \<Turnstile>\<^sub>t \<T> (l ! i) \<longrightarrow> \<langle>\<V> (l ! j)\<rangle> \<Turnstile>\<^sub>t \<T> (l ! j)" 
+  shows "\<langle>\<V> (l ! i)\<rangle> \<Turnstile>\<^sub>t \<T> (l ! i) \<longrightarrow> \<langle>\<V> (l ! j)\<rangle> \<Turnstile>\<^sub>t \<T> (l ! j)"
   using assms
 proof (rule succ_chain_induct)
   fix i
@@ -4232,14 +4231,14 @@ qed simp_all
 abbreviation swap_lr where
   "swap_lr l i x \<equiv> i + 1 < length l \<and> x \<in> lvars (\<T> (l ! i)) \<and> x \<in> rvars (\<T> (l ! (i + 1)))"
 
-abbreviation swap_rl where 
+abbreviation swap_rl where
   "swap_rl l i x \<equiv> i + 1 < length l \<and> x \<in> rvars (\<T> (l ! i)) \<and> x \<in> lvars (\<T> (l ! (i + 1)))"
 
 abbreviation always_r where
   "always_r l i j x \<equiv> \<forall> k. i \<le> k \<and> k \<le> j \<longrightarrow> x \<in> rvars (\<T> (l ! k))"
 
 lemma succ_chain_always_r_valuation_id:
-  assumes "succ_chain l" "i \<le> j" "j < length l" 
+  assumes "succ_chain l" "i \<le> j" "j < length l"
   shows "always_r l i j x \<longrightarrow> \<langle>\<V> (l ! i)\<rangle> x = \<langle>\<V> (l ! j)\<rangle> x" (is "?P i j")
   using assms
 proof (rule succ_chain_induct)
@@ -4442,9 +4441,9 @@ proof-
 qed
 
 abbreviation check_valuation  where
-  "check_valuation (v::'a valuation) v0 bl0 bu0 t0 V \<equiv> 
-     \<exists> t. tvars t = V \<and> \<triangle> t \<and> (\<forall> v::'a valuation. v \<Turnstile>\<^sub>t t = v \<Turnstile>\<^sub>t t0) \<and> v \<Turnstile>\<^sub>t t \<and> 
-     (\<forall> x \<in> rvars t. v x = v0 x \<or> v x = bl0 x \<or> v x = bu0 x) \<and> 
+  "check_valuation (v::'a valuation) v0 bl0 bu0 t0 V \<equiv>
+     \<exists> t. tvars t = V \<and> \<triangle> t \<and> (\<forall> v::'a valuation. v \<Turnstile>\<^sub>t t = v \<Turnstile>\<^sub>t t0) \<and> v \<Turnstile>\<^sub>t t \<and>
+     (\<forall> x \<in> rvars t. v x = v0 x \<or> v x = bl0 x \<or> v x = bu0 x) \<and>
      (\<forall> x. x \<notin> V \<longrightarrow> v x = v0 x)"
 
 lemma finite_valuations:
@@ -4455,7 +4454,7 @@ proof-
   let ?Vt = "\<lambda> t. {v::'a valuation. v \<Turnstile>\<^sub>t t \<and> (\<forall> x \<in> rvars t. v x = v0 x \<or> v x = bl0 x \<or> v x = bu0 x) \<and> (\<forall> x. x \<notin> V \<longrightarrow> v x = v0 x)}"
 
   have "finite {L. L \<subseteq> V}"
-    using \<open>finite V\<close> 
+    using \<open>finite V\<close>
     by auto
   have "\<forall> L. L \<subseteq> V \<longrightarrow> finite (?Al L)"
     using finite_tableaus_aux
@@ -4477,7 +4476,7 @@ proof-
               (\<lambda>x. if x \<in> rvars t then v2 x else (0 :: 'a))" (is "?f1 = ?f2")
       have "\<forall>x\<in>rvars t. v1 x = v2 x"
       proof
-        fix x 
+        fix x
         assume "x \<in> rvars t"
         then show "v1 x = v2 x"
           using \<open>?f1 = ?f2\<close> fun_cong[of ?f1 ?f2 x]
@@ -4573,11 +4572,11 @@ proof-
   proof-
     let ?P = "\<lambda> v. check_valuation v (\<langle>\<V> s\<rangle>) (\<lambda> x. the (\<B>\<^sub>l s x)) (\<lambda> x. the (\<B>\<^sub>u s x)) (\<T> s) (tvars (\<T> s))"
     let ?P' = "\<lambda> v::(var, 'a) mapping.
-         \<exists> t. tvars t = tvars (\<T> s) \<and> \<triangle> t \<and> (\<forall> v::'a valuation. v \<Turnstile>\<^sub>t t = v \<Turnstile>\<^sub>t \<T> s) \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and> 
-    (\<forall> x \<in> rvars t. \<langle>v\<rangle> x = \<langle>\<V> s\<rangle> x \<or> 
-                       \<langle>v\<rangle> x = the (\<B>\<^sub>l s x) \<or> 
-                       \<langle>v\<rangle> x = the (\<B>\<^sub>u s x)) \<and> 
-    (\<forall> x. x \<notin> tvars (\<T> s) \<longrightarrow> look v x = look (\<V> s) x) \<and> 
+         \<exists> t. tvars t = tvars (\<T> s) \<and> \<triangle> t \<and> (\<forall> v::'a valuation. v \<Turnstile>\<^sub>t t = v \<Turnstile>\<^sub>t \<T> s) \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and>
+    (\<forall> x \<in> rvars t. \<langle>v\<rangle> x = \<langle>\<V> s\<rangle> x \<or>
+                       \<langle>v\<rangle> x = the (\<B>\<^sub>l s x) \<or>
+                       \<langle>v\<rangle> x = the (\<B>\<^sub>u s x)) \<and>
+    (\<forall> x. x \<notin> tvars (\<T> s) \<longrightarrow> look v x = look (\<V> s) x) \<and>
     (\<forall> x. x \<in> tvars (\<T> s) \<longrightarrow> look v x \<noteq> None)"
 
     have "finite (tvars (\<T> s))"
@@ -4694,11 +4693,11 @@ proof -
   then show ?thesis by blast
 qed
 
-lemma state_eqI: 
-  "\<B>\<^sub>i\<^sub>l s = \<B>\<^sub>i\<^sub>l s' \<Longrightarrow> \<B>\<^sub>i\<^sub>u s = \<B>\<^sub>i\<^sub>u s' \<Longrightarrow> 
+lemma state_eqI:
+  "\<B>\<^sub>i\<^sub>l s = \<B>\<^sub>i\<^sub>l s' \<Longrightarrow> \<B>\<^sub>i\<^sub>u s = \<B>\<^sub>i\<^sub>u s' \<Longrightarrow>
    \<T> s = \<T> s' \<Longrightarrow> \<V> s = \<V> s' \<Longrightarrow>
    \<U> s = \<U> s' \<Longrightarrow> \<U>\<^sub>c s = \<U>\<^sub>c s' \<Longrightarrow>
-   s = s'" 
+   s = s'"
   by (cases s, cases s', auto)
 
 lemma finite_accessible_states:
@@ -4748,7 +4747,7 @@ proof (rule acyclicI, rule allI)
     then have "\<triangle> (\<T> s)"
       by simp
 
-    let ?enter_rvars = 
+    let ?enter_rvars =
       "{x. \<exists> sl. swap_lr l sl x}"
 
     have "finite ?enter_rvars"
@@ -4784,7 +4783,7 @@ proof (rule acyclicI, rule allI)
         using \<open>finite ?enter_rvars\<close>
         .
     qed
-    then obtain xr sl where 
+    then obtain xr sl where
       "xr = ?xr" "swap_lr l sl xr"
       by auto
     then have "sl + 1 < length l"
@@ -4817,7 +4816,7 @@ proof (rule acyclicI, rule allI)
 
     obtain l' where
       "hd l' = l ! (sl + 1)" "last l' = l ! sl" "length l' = length l - 1"  "succ_chain l'" and
-      l'_l:   "\<forall> i. i + 1 < length l' \<longrightarrow> 
+      l'_l:   "\<forall> i. i + 1 < length l' \<longrightarrow>
      (\<exists> j. j + 1 < length l \<and> l' ! i = l ! j \<and> l' ! (i + 1) = l ! (j + 1))"
       using \<open>length l > 2\<close> \<open>sl + 1 < length l\<close> \<open>hd l = s\<close> \<open>last l = s\<close> \<open>succ_chain l\<close>
       using reorder_cyclic_list[of l s sl]
@@ -4873,7 +4872,7 @@ proof (rule acyclicI, rule allI)
               using True Suc(3) Suc(4)
               by auto
             moreover
-            have "(l' ! (k - 1)) \<succ> (l' ! k)" 
+            have "(l' ! (k - 1)) \<succ> (l' ! k)"
               using \<open>succ_chain l'\<close>
               using Suc(3) True
               by (simp add: rel_chain_def)
@@ -4895,7 +4894,7 @@ proof (rule acyclicI, rule allI)
       using \<open>sp + 1 < length l'\<close> \<open>succ_chain l'\<close>
       unfolding rel_chain_def
       by simp
-    then obtain xs xr' :: var where 
+    then obtain xs xr' :: var where
       "xs \<in> lvars (\<T> (l' ! sp))"
       "xr \<in> rvars (\<T> (l' ! sp))"
       "swap_lr l' sp xs"
@@ -4906,7 +4905,7 @@ proof (rule acyclicI, rule allI)
       using \<open>(l' ! sp) \<succ> (l' ! (sp+1))\<close>
       by (auto simp add: normalized_tableau_def)
 
-    obtain sp' where 
+    obtain sp' where
       "l' ! sp = l ! sp'" "l' ! (sp + 1) = l ! (sp' + 1)"
       "sp' + 1 < length l"
       using \<open>sp + 1 < length l'\<close> l'_l
@@ -4944,14 +4943,14 @@ proof (rule acyclicI, rule allI)
         using succ_chain_bounds_id
         by auto
       then have "\<B>\<^sub>i (last l') = \<B>\<^sub>i (l' ! sp)"
-        using \<open>l' \<noteq> []\<close> 
+        using \<open>l' \<noteq> []\<close>
         by (simp add: last_conv_nth)
       then show ?thesis
         using \<open>last l' = l ! sl\<close>
         by simp
     qed
 
-    have diff_satified: "\<langle>?bl\<rangle> xs - \<langle>?bp\<rangle> xs = ((rhs ?eq) \<lbrace> \<langle>?bl\<rangle> \<rbrace>) - ((rhs ?eq) \<lbrace> \<langle>?bp\<rangle> \<rbrace>)" 
+    have diff_satified: "\<langle>?bl\<rangle> xs - \<langle>?bp\<rangle> xs = ((rhs ?eq) \<lbrace> \<langle>?bl\<rangle> \<rbrace>) - ((rhs ?eq) \<lbrace> \<langle>?bp\<rangle> \<rbrace>)"
     proof-
       have "\<langle>?bp\<rangle> \<Turnstile>\<^sub>e ?eq"
         using \<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s ?sp\<close>
@@ -4977,12 +4976,12 @@ proof (rule acyclicI, rule allI)
       qed
       moreover
       have "lhs ?eq = xs"
-        using \<open>xs \<in> lvars (\<T> (l' ! sp))\<close> 
+        using \<open>xs \<in> lvars (\<T> (l' ! sp))\<close>
         using eq_for_lvar
         by simp
       ultimately
       show ?thesis
-        unfolding satisfies_eq_def 
+        unfolding satisfies_eq_def
         by auto
     qed
 
@@ -5183,8 +5182,8 @@ proof (rule acyclicI, rule allI)
         using \<open>\<lhd>\<^sub>l\<^sub>b (lt dir2) (\<langle>?bp\<rangle> xs) (LB dir2 ?sp xs)\<close>
         by (cases "LB dir2 ?sp xs")  (auto simp add: bound_compare_defs)
 
-      have *: "\<forall> x \<in> rvars_eq ?eq. x < xr \<longrightarrow> 
-        ((coeff (rhs ?eq) x > 0 \<longrightarrow> \<unrhd>\<^sub>u\<^sub>b (lt dir2) (\<langle>?bp\<rangle> x) (UB dir2 ?sp x)) \<and> 
+      have *: "\<forall> x \<in> rvars_eq ?eq. x < xr \<longrightarrow>
+        ((coeff (rhs ?eq) x > 0 \<longrightarrow> \<unrhd>\<^sub>u\<^sub>b (lt dir2) (\<langle>?bp\<rangle> x) (UB dir2 ?sp x)) \<and>
          (coeff (rhs ?eq) x < 0 \<longrightarrow> \<unlhd>\<^sub>l\<^sub>b (lt dir2) (\<langle>?bp\<rangle> x) (LB dir2 ?sp x)))"
       proof (safe)
         fix x
@@ -5222,12 +5221,12 @@ proof (rule acyclicI, rule allI)
 
       have "le (lt dir2) ((rhs ?eq) \<lbrace> \<langle>?bl\<rangle> \<rbrace> - (rhs ?eq) \<lbrace> \<langle>?bp\<rangle> \<rbrace>) 0"
       proof-
-        have "\<forall> x \<in> rvars_eq ?eq. (0 < coeff (rhs ?eq) x \<longrightarrow> le (lt dir2) 0 (\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x)) \<and> 
+        have "\<forall> x \<in> rvars_eq ?eq. (0 < coeff (rhs ?eq) x \<longrightarrow> le (lt dir2) 0 (\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x)) \<and>
                     (coeff (rhs ?eq) x < 0 \<longrightarrow> le (lt dir2) (\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x) 0)"
         proof
           fix x
           assume "x \<in> rvars_eq ?eq"
-          show "(0 < coeff (rhs ?eq) x \<longrightarrow> le (lt dir2) 0 (\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x)) \<and> 
+          show "(0 < coeff (rhs ?eq) x \<longrightarrow> le (lt dir2) 0 (\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x)) \<and>
                 (coeff (rhs ?eq) x < 0 \<longrightarrow> le (lt dir2) (\<langle>?bp\<rangle> x - \<langle>?bl\<rangle> x) 0)"
           proof (cases "x < xr")
             case True
@@ -5302,7 +5301,7 @@ proof (rule acyclicI, rule allI)
                 using \<open>\<langle>?bp\<rangle> xr = the (LB dir1 ?sl xr)\<close>
                 using \<open>\<B>\<^sub>i ?sp = \<B>\<^sub>i ?sl\<close>[THEN sym] dir1
                 using \<open>LB dir1 ?sl xr \<noteq> None\<close> dir1 dir2
-                by (auto split: if_splits simp add: bound_compare_defs 
+                by (auto split: if_splits simp add: bound_compare_defs
                     indexl_def indexu_def boundsl_def boundsu_def)
               moreover
               have "dir1 = Positive \<or> dir1 = Negative" "dir2 = Positive \<or> dir2 = Negative"
@@ -5364,11 +5363,11 @@ lemma check_unsat_terminates:
   by (rule check_dom.intros) (auto simp add: assms)
 
 lemma check_sat_terminates'_aux:
-  assumes 
+  assumes
     dir: "dir = (if \<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i then Positive else Negative)" and
     *: "\<And> s'. \<lbrakk>s \<succ> s'; \<nabla> s'; \<triangle> (\<T> s'); \<diamond> s'; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s' \<rbrakk> \<Longrightarrow> check_dom s'" and
     "\<nabla> s" "\<triangle> (\<T> s)" "\<diamond> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s"
-    "\<not> \<U> s" "min_lvar_not_in_bounds s = Some x\<^sub>i" 
+    "\<not> \<U> s" "min_lvar_not_in_bounds s = Some x\<^sub>i"
     "\<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i)"
   shows "check_dom
             (case min_rvar_incdec dir s x\<^sub>i of Inl I \<Rightarrow> set_unsat I s
@@ -5397,7 +5396,7 @@ next
       unfolding gt_state_def
       using \<open>\<triangle> (\<T> s)\<close> \<open>\<diamond> s\<close> \<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s\<close> \<open>\<nabla> s\<close>
       using \<open>min_lvar_not_in_bounds s = Some x\<^sub>i\<close> \<open>\<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i)\<close>
-        Inr dir 
+        Inr dir
       by (intro conjI pivotandupdate_bounds_id pivotandupdate_unsat_core_id,
           auto intro!: xj xi)
   qed
@@ -5411,7 +5410,7 @@ lemma check_sat_terminates':
 proof (induct s rule: wf_induct[of "{(y, x). s\<^sub>0 \<succ>\<^sup>* x \<and> x \<succ> y}"])
   show "wf {(y, x). s\<^sub>0 \<succ>\<^sup>* x \<and> x \<succ> y}"
   proof (rule finite_acyclic_wf)
-    let ?A = "{(s', s). s\<^sub>0 \<succ>\<^sup>* s \<and> s \<succ> s'}" 
+    let ?A = "{(s', s). s\<^sub>0 \<succ>\<^sup>* s \<and> s \<succ> s'}"
     let ?B = "{s. s\<^sub>0 \<succ>\<^sup>* s}"
     have "?A \<subseteq> ?B \<times> ?B"
     proof
@@ -5441,7 +5440,7 @@ proof (induct s rule: wf_induct[of "{(y, x). s\<^sub>0 \<succ>\<^sup>* x \<and> 
   qed
 next
   fix s
-  assume "\<forall> s'. (s', s) \<in> {(y, x). s\<^sub>0 \<succ>\<^sup>* x \<and> x \<succ> y} \<longrightarrow> \<nabla> s' \<longrightarrow> \<triangle> (\<T> s') \<longrightarrow> \<diamond> s' \<longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s' \<longrightarrow> s\<^sub>0 \<succ>\<^sup>* s' \<longrightarrow> check_dom s'" 
+  assume "\<forall> s'. (s', s) \<in> {(y, x). s\<^sub>0 \<succ>\<^sup>* x \<and> x \<succ> y} \<longrightarrow> \<nabla> s' \<longrightarrow> \<triangle> (\<T> s') \<longrightarrow> \<diamond> s' \<longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s' \<longrightarrow> s\<^sub>0 \<succ>\<^sup>* s' \<longrightarrow> check_dom s'"
     "\<nabla> s" "\<triangle> (\<T> s)" "\<diamond> s" " \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "s\<^sub>0 \<succ>\<^sup>* s"
   then have *: "\<And> s'. \<lbrakk>s \<succ> s'; \<nabla> s'; \<triangle> (\<T> s'); \<diamond> s'; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s' \<rbrakk> \<Longrightarrow> check_dom s'"
     using rtrancl_into_trancl1[of s\<^sub>0 s succ_rel]
@@ -5494,19 +5493,19 @@ lemma check_sat_terminates:
 lemma check_cases:
   assumes "\<U> s \<Longrightarrow> P s"
   assumes "\<lbrakk>\<not> \<U> s; min_lvar_not_in_bounds s = None\<rbrakk> \<Longrightarrow> P s"
-  assumes "\<And> x\<^sub>i dir I. 
+  assumes "\<And> x\<^sub>i dir I.
     \<lbrakk>dir = Positive \<or> dir = Negative;
      \<not> \<U> s; min_lvar_not_in_bounds s = Some x\<^sub>i;
      \<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i);
-     min_rvar_incdec dir s x\<^sub>i = Inl I\<rbrakk> \<Longrightarrow> 
+     min_rvar_incdec dir s x\<^sub>i = Inl I\<rbrakk> \<Longrightarrow>
         P (set_unsat I s)"
-  assumes "\<And> x\<^sub>i x\<^sub>j l\<^sub>i dir. 
+  assumes "\<And> x\<^sub>i x\<^sub>j l\<^sub>i dir.
     \<lbrakk>dir = (if \<langle>\<V> s\<rangle> x\<^sub>i <\<^sub>l\<^sub>b \<B>\<^sub>l s x\<^sub>i then Positive else Negative);
      \<not> \<U> s; min_lvar_not_in_bounds s = Some x\<^sub>i;
-     \<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i); 
+     \<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i);
      min_rvar_incdec dir s x\<^sub>i = Inr x\<^sub>j;
      l\<^sub>i = the (LB dir s x\<^sub>i);
-     check' dir x\<^sub>i s = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s\<rbrakk> \<Longrightarrow> 
+     check' dir x\<^sub>i s = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s\<rbrakk> \<Longrightarrow>
         P (check (pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s))"
   assumes "\<triangle> (\<T> s)" "\<diamond> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s"
   shows "P (check s)"
@@ -5559,8 +5558,8 @@ lemma check_induct:
   assumes **:
     "\<And> s. \<U> s \<Longrightarrow> P s s"
     "\<And> s. \<lbrakk>\<not> \<U> s; min_lvar_not_in_bounds s = None\<rbrakk> \<Longrightarrow> P s s"
-    "\<And> s x\<^sub>i dir I. \<lbrakk>dir = Positive \<or> dir = Negative; \<not> \<U> s; min_lvar_not_in_bounds s = Some x\<^sub>i; 
-      \<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i); min_rvar_incdec dir s x\<^sub>i = Inl I\<rbrakk> 
+    "\<And> s x\<^sub>i dir I. \<lbrakk>dir = Positive \<or> dir = Negative; \<not> \<U> s; min_lvar_not_in_bounds s = Some x\<^sub>i;
+      \<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i); min_rvar_incdec dir s x\<^sub>i = Inl I\<rbrakk>
      \<Longrightarrow> P s (set_unsat I s)"
   assumes step': "\<And> s x\<^sub>i x\<^sub>j l\<^sub>i. \<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_eq (eq_for_lvar (\<T> s) x\<^sub>i)\<rbrakk> \<Longrightarrow> P s (pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s)"
   assumes trans': "\<And> si sj sk. \<lbrakk>P si sj; P sj sk\<rbrakk> \<Longrightarrow> P si sk"
@@ -5591,7 +5590,7 @@ proof-
         using step(2)[of x\<^sub>i] step(4)[of x\<^sub>i] \<open>\<triangle> (\<T> s')\<close> \<open>\<nabla> s'\<close>
         by auto
       then show "P s' (check (pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s'))"
-        using \<open>?s' = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s'\<close> \<open>\<triangle> (\<T> s')\<close> \<open>\<nabla> s'\<close> 
+        using \<open>?s' = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s'\<close> \<open>\<triangle> (\<T> s')\<close> \<open>\<nabla> s'\<close>
         using \<open>min_lvar_not_in_bounds s' = Some x\<^sub>i\<close> \<open>min_rvar_incdec dir s' x\<^sub>i = Inr x\<^sub>j\<close>
         using step'[of s' x\<^sub>i x\<^sub>j l\<^sub>i]
         using trans'[of s' ?s' "check ?s'"]
@@ -5603,8 +5602,8 @@ qed
 lemma check_induct':
   fixes s :: "('i,'a) state"
   assumes "\<nabla> s" "\<triangle> (\<T> s)" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<diamond> s"
-  assumes "\<And> s x\<^sub>i dir I. \<lbrakk>dir = Positive \<or> dir = Negative; \<not> \<U> s; min_lvar_not_in_bounds s = Some x\<^sub>i; 
-  \<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i); min_rvar_incdec dir s x\<^sub>i = Inl I; P s\<rbrakk> 
+  assumes "\<And> s x\<^sub>i dir I. \<lbrakk>dir = Positive \<or> dir = Negative; \<not> \<U> s; min_lvar_not_in_bounds s = Some x\<^sub>i;
+  \<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i); min_rvar_incdec dir s x\<^sub>i = Inl I; P s\<rbrakk>
     \<Longrightarrow> P (set_unsat I s)"
   assumes "\<And> s x\<^sub>i x\<^sub>j l\<^sub>i. \<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_eq (eq_for_lvar (\<T> s) x\<^sub>i); P s\<rbrakk> \<Longrightarrow> P (pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s)"
   assumes "P s"
@@ -5620,12 +5619,12 @@ qed
 lemma check_induct'':
   fixes s :: "('i,'a) state"
   assumes *: "\<nabla> s" "\<triangle> (\<T> s)" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<diamond> s"
-  assumes **: 
+  assumes **:
     "\<U> s \<Longrightarrow> P s"
     "\<And> s. \<lbrakk>\<nabla> s; \<triangle> (\<T> s); \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<not> \<U> s; min_lvar_not_in_bounds s = None\<rbrakk> \<Longrightarrow> P s"
-    "\<And> s x\<^sub>i dir I. \<lbrakk>dir = Positive \<or> dir = Negative; \<nabla> s; \<triangle> (\<T> s); \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s;  \<not> \<U> s; 
-    min_lvar_not_in_bounds s = Some x\<^sub>i; \<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i); 
-    min_rvar_incdec dir s x\<^sub>i = Inl I\<rbrakk> 
+    "\<And> s x\<^sub>i dir I. \<lbrakk>dir = Positive \<or> dir = Negative; \<nabla> s; \<triangle> (\<T> s); \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s;  \<not> \<U> s;
+    min_lvar_not_in_bounds s = Some x\<^sub>i; \<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x\<^sub>i) (LB dir s x\<^sub>i);
+    min_rvar_incdec dir s x\<^sub>i = Inl I\<rbrakk>
       \<Longrightarrow> P (set_unsat I s)"
   shows "P (check s)"
 proof (cases "\<U> s")
@@ -5653,7 +5652,7 @@ next
       then have "\<nabla> ?s'" "\<triangle> (\<T> ?s')" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s ?s'" "\<diamond> ?s'" "\<not> \<U> ?s'"
         using \<open>\<nabla> s'\<close> \<open>\<triangle> (\<T> s')\<close> \<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s'\<close> \<open>\<diamond> s'\<close>
         using \<open>?s' = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s'\<close>
-        using pivotandupdate_check_precond[of dir s' x\<^sub>i x\<^sub>j l\<^sub>i] 
+        using pivotandupdate_check_precond[of dir s' x\<^sub>i x\<^sub>j l\<^sub>i]
         using pivotandupdate_unsat_id[of s' x\<^sub>i x\<^sub>j l\<^sub>i]
         by (auto simp add: min_lvar_not_in_bounds_lvars  min_rvar_incdec_eq_Some_rvars)
       ultimately
@@ -5661,7 +5660,7 @@ next
         using step(2)[of x\<^sub>i] step(4)[of x\<^sub>i] \<open>\<triangle> (\<T> s')\<close> \<open>\<nabla> s'\<close>
         by auto
       then show "P (check (pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s'))"
-        using \<open>?s' = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s'\<close> 
+        using \<open>?s' = pivot_and_update x\<^sub>i x\<^sub>j l\<^sub>i s'\<close>
         by simp
     qed (simp_all add: \<open>\<nabla> s'\<close> \<open>\<triangle> (\<T> s')\<close> \<open>\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s'\<close> \<open>\<diamond> s'\<close> \<open>\<not> \<U> s'\<close> ** )
   qed
@@ -5688,7 +5687,7 @@ next
   moreover
   have "\<nabla> (check s)"
   proof (rule check_induct', simp_all add: * pivotandupdate_tableau_valuated)
-    fix s I 
+    fix s I
     show "\<nabla> s \<Longrightarrow> \<nabla> (set_unsat I s)"
       by (simp add: tableau_valuated_def)
   qed
@@ -5720,11 +5719,11 @@ next
   have "\<U> (check s) \<longrightarrow> unsat_state_core (check s)" (is "?P (check s)")
   proof (rule check_induct'')
     fix s' :: "('i,'a) state" and x\<^sub>i dir I
-    assume nolhs: "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s'" 
-      and min_rvar: "min_rvar_incdec dir s' x\<^sub>i = Inl I" 
-      and sat: "\<not> \<U> s'" 
-      and min_lvar: "min_lvar_not_in_bounds s' = Some x\<^sub>i" 
-      and dir: "dir = Positive \<or> dir = Negative" 
+    assume nolhs: "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s'"
+      and min_rvar: "min_rvar_incdec dir s' x\<^sub>i = Inl I"
+      and sat: "\<not> \<U> s'"
+      and min_lvar: "min_lvar_not_in_bounds s' = Some x\<^sub>i"
+      and dir: "dir = Positive \<or> dir = Negative"
       and lt: "\<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s'\<rangle> x\<^sub>i) (LB dir s' x\<^sub>i)"
 
     have unsat_core: "set (the (\<U>\<^sub>c (set_unsat I s'))) = set I"
@@ -5733,7 +5732,7 @@ next
     obtain l\<^sub>i where LB_Some: "LB dir s' x\<^sub>i = Some l\<^sub>i" and lt: "lt dir (\<langle>\<V> s'\<rangle> x\<^sub>i) l\<^sub>i"
       using lt by (cases "LB dir s' x\<^sub>i") (auto simp add: bound_compare_defs)
 
-    from LB_Some dir obtain i where LBI: "look (LBI dir s') x\<^sub>i = Some (i,l\<^sub>i)" and LI: "LI dir s' x\<^sub>i = i" 
+    from LB_Some dir obtain i where LBI: "look (LBI dir s') x\<^sub>i = Some (i,l\<^sub>i)" and LI: "LI dir s' x\<^sub>i = i"
       by (auto simp: simp: indexl_def indexu_def boundsl_def boundsu_def)
 
     from min_rvar_incdec_eq_None[OF min_rvar] dir
@@ -5742,9 +5741,9 @@ next
     note this(2) also have id: "lhs (eq_for_lvar (\<T> s') x\<^sub>i) = x\<^sub>i"
       by (simp add: EqForLVar.eq_for_lvar EqForLVar_axioms min_lvar min_lvar_not_in_bounds_lvars)
     finally have iI: "i \<in> set I" unfolding LI .
-    have "LI dir s' x\<^sub>i \<in> indices_state s'" using LBI LI 
+    have "LI dir s' x\<^sub>i \<in> indices_state s'" using LBI LI
       unfolding indices_state_def using dir by force
-    from Is'[unfolded id, OF this] 
+    from Is'[unfolded id, OF this]
     have Is': "set I \<subseteq> indices_state s'" .
 
     let ?eq = "eq_for_lvar (\<T> s') x\<^sub>i"
@@ -5755,24 +5754,24 @@ next
     then have *: "?eq \<in> set (\<T> s')" "lhs ?eq = x\<^sub>i"
       by (auto simp add: eq_for_lvar)
 
-    have Is': "set I \<subseteq> indices_state (set_unsat I s')" 
+    have Is': "set I \<subseteq> indices_state (set_unsat I s')"
       using Is' * unfolding indices_state_def by auto
 
     show "\<U> (set_unsat I s') \<longrightarrow> unsat_state_core (set_unsat I s')"
       unfolding unsat_state_core_def unsat_core
     proof (intro impI conjI Is', clarify)
       fix v
-      assume "(set I, v) \<Turnstile>\<^sub>i\<^sub>s set_unsat I s'" 
-      then have Iv: "(set I, v) \<Turnstile>\<^sub>i\<^sub>s s'" 
+      assume "(set I, v) \<Turnstile>\<^sub>i\<^sub>s set_unsat I s'"
+      then have Iv: "(set I, v) \<Turnstile>\<^sub>i\<^sub>s s'"
         unfolding satisfies_state_index.simps
         by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
-      from Iv have vt: "v \<Turnstile>\<^sub>t \<T> s'" and Iv: "(set I, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s'" 
+      from Iv have vt: "v \<Turnstile>\<^sub>t \<T> s'" and Iv: "(set I, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s'"
         unfolding satisfies_state_index.simps by auto
 
       have lt_le_eq: "\<And> x y :: 'a. (x < y) \<longleftrightarrow> (x \<le> y \<and> x \<noteq> y)" by auto
-      from Iv dir 
-      have lb: "\<And> x i c l. look (LBI dir s') x = Some (i,l) \<Longrightarrow> i \<in> set I \<Longrightarrow> le (lt dir) l (v x)" 
-        unfolding satisfies_bounds_index.simps 
+      from Iv dir
+      have lb: "\<And> x i c l. look (LBI dir s') x = Some (i,l) \<Longrightarrow> i \<in> set I \<Longrightarrow> le (lt dir) l (v x)"
+        unfolding satisfies_bounds_index.simps
         by (auto simp: lt_le_eq indexl_def indexu_def boundsl_def boundsu_def)
 
       from lb[OF LBI iI] have li_x: "le (lt dir) l\<^sub>i (v x\<^sub>i)" .
@@ -5844,12 +5843,12 @@ one). Similarly, @{text "check_inc"} and @{text "check_dec"} are
 replaced by a new function @{text "check_incdec"} parametrized by a
 @{text "Direction"}. All lemmas, previously repeated for each
 symmetric instance, were replaced by a more abstract one, again
-parametrized by a @{text "Direction"} parameter. 
+parametrized by a @{text "Direction"} parameter.
 \vspace{-3mm}
-\<close> 
+\<close>
 
 (*-------------------------------------------------------------------------- *)
-subsection\<open>Concrete implementation\<close> 
+subsection\<open>Concrete implementation\<close>
   (*-------------------------------------------------------------------------- *)
 
 (* -------------------------------------------------------------------------- *)
@@ -5859,13 +5858,13 @@ subsection\<open>Concrete implementation\<close>
 text\<open>It is easy to give a concrete implementation of the initial
 state constructor, which satisfies the specification of the @{term
 Init} locale.  For example:\<close>
-definition init_state :: "_ \<Rightarrow> ('i,'a :: zero)state" where 
+definition init_state :: "_ \<Rightarrow> ('i,'a :: zero)state" where
   "init_state t = State t Mapping.empty Mapping.empty (Mapping.tabulate (vars_list t) (\<lambda> v. 0)) False None"
 
 interpretation Init "init_state :: _ \<Rightarrow> ('i,'a :: lrv)state"
 proof
   fix t
-  let ?init = "init_state t :: ('i,'a)state" 
+  let ?init = "init_state t :: ('i,'a)state"
   show "\<langle>\<V> ?init\<rangle> \<Turnstile>\<^sub>t t"
     unfolding satisfies_tableau_def satisfies_eq_def
   proof (safe)
@@ -5910,7 +5909,7 @@ definition min_lvar_not_in_bounds :: "('i,'a::{linorder,zero}) state \<Rightarro
   "min_lvar_not_in_bounds s \<equiv>
       min_satisfying  (\<lambda> x. \<not> in_bounds x (\<langle>\<V> s\<rangle>) (\<B> s)) (map lhs (\<T> s))"
 
-interpretation MinLVarNotInBounds "min_lvar_not_in_bounds :: ('i,'a::lrv) state \<Rightarrow> _" 
+interpretation MinLVarNotInBounds "min_lvar_not_in_bounds :: ('i,'a::lrv) state \<Rightarrow> _"
 proof
   fix s::"('i,'a) state"
   show "min_lvar_not_in_bounds s = None \<longrightarrow>
@@ -5920,8 +5919,8 @@ proof
     by blast
 next
   fix s x\<^sub>i
-  show "min_lvar_not_in_bounds s = Some x\<^sub>i \<longrightarrow> x\<^sub>i \<in> lvars (\<T> s) \<and> 
-                                              \<not> in_bounds x\<^sub>i \<langle>\<V> s\<rangle> (\<B> s) \<and> 
+  show "min_lvar_not_in_bounds s = Some x\<^sub>i \<longrightarrow> x\<^sub>i \<in> lvars (\<T> s) \<and>
+                                              \<not> in_bounds x\<^sub>i \<langle>\<V> s\<rangle> (\<B> s) \<and>
                                               (\<forall>x\<in>lvars (\<T> s). x < x\<^sub>i \<longrightarrow> in_bounds x \<langle>\<V> s\<rangle> (\<B> s))"
     unfolding min_lvar_not_in_bounds_def lvars_def
     using min_satisfying_Some
@@ -5930,8 +5929,8 @@ qed
 
 \<comment> \<open>all variables in vs have either a positive or a negative coefficient, so no equal-zero test required.\<close>
 definition unsat_indices :: "('i,'a :: linorder) Direction \<Rightarrow> ('i,'a) state \<Rightarrow> var list \<Rightarrow> eq \<Rightarrow> 'i list" where
-  "unsat_indices dir s vs eq = (let r = rhs eq; li = LI dir s; ui = UI dir s in 
-       remdups (li (lhs eq) # map (\<lambda> x. if coeff r x < 0 then li x else ui x) vs))" 
+  "unsat_indices dir s vs eq = (let r = rhs eq; li = LI dir s; ui = UI dir s in
+       remdups (li (lhs eq) # map (\<lambda> x. if coeff r x < 0 then li x else ui x) vs))"
 
 definition min_rvar_incdec_eq :: "('i,'a) Direction \<Rightarrow> ('i,'a::lrv) state \<Rightarrow> eq \<Rightarrow> 'i list + var" where
   "min_rvar_incdec_eq dir s eq = (let rvars = Abstract_Linear_Poly.vars_list (rhs eq)
@@ -5939,50 +5938,50 @@ definition min_rvar_incdec_eq :: "('i,'a) Direction \<Rightarrow> ('i,'a::lrv) s
          None \<Rightarrow> Inl (unsat_indices dir s rvars eq)
       | Some x\<^sub>j \<Rightarrow> Inr x\<^sub>j)"
 
-interpretation MinRVarsEq "min_rvar_incdec_eq :: ('i,'a :: lrv) Direction \<Rightarrow> _" 
+interpretation MinRVarsEq "min_rvar_incdec_eq :: ('i,'a :: lrv) Direction \<Rightarrow> _"
 proof
-  fix s eq "is" and dir :: "('i,'a) Direction" 
-  let ?min = "min_satisfying (\<lambda> x. reasable_var dir x eq s) (Abstract_Linear_Poly.vars_list (rhs eq))" 
-  let ?vars = "Abstract_Linear_Poly.vars_list (rhs eq)" 
+  fix s eq "is" and dir :: "('i,'a) Direction"
+  let ?min = "min_satisfying (\<lambda> x. reasable_var dir x eq s) (Abstract_Linear_Poly.vars_list (rhs eq))"
+  let ?vars = "Abstract_Linear_Poly.vars_list (rhs eq)"
   {
-    assume "min_rvar_incdec_eq dir s eq = Inl is" 
+    assume "min_rvar_incdec_eq dir s eq = Inl is"
     from this[unfolded min_rvar_incdec_eq_def Let_def, simplified]
     have "?min = None" and I: "set is = set (unsat_indices dir s ?vars eq)" by (cases ?min, auto)+
-    from this min_satisfying_None set_vars_list 
+    from this min_satisfying_None set_vars_list
     have 1: "\<And> x. x \<in> rvars_eq eq \<Longrightarrow> \<not> reasable_var dir x eq s" by blast
     {
       fix i
-      assume "i \<in> set is" and dir: "dir = Positive \<or> dir = Negative" and lhs_eq: "LI dir s (lhs eq) \<in> indices_state s" 
+      assume "i \<in> set is" and dir: "dir = Positive \<or> dir = Negative" and lhs_eq: "LI dir s (lhs eq) \<in> indices_state s"
       from this[unfolded I unsat_indices_def Let_def]
-      consider (lhs) "i = LI dir s (lhs eq)" 
-        | (LI_rhs) x where "i = LI dir s x" "x \<in> rvars_eq eq" "coeff (rhs eq) x < 0" 
-        | (UI_rhs) x where "i = UI dir s x" "x \<in> rvars_eq eq" "coeff (rhs eq) x \<ge> 0" 
+      consider (lhs) "i = LI dir s (lhs eq)"
+        | (LI_rhs) x where "i = LI dir s x" "x \<in> rvars_eq eq" "coeff (rhs eq) x < 0"
+        | (UI_rhs) x where "i = UI dir s x" "x \<in> rvars_eq eq" "coeff (rhs eq) x \<ge> 0"
         by (auto split: if_splits simp: set_vars_list)
-      then have "i \<in> indices_state s" 
+      then have "i \<in> indices_state s"
       proof cases
         case lhs
         show ?thesis unfolding lhs using lhs_eq by auto
       next
         case LI_rhs
-        from 1[OF LI_rhs(2)] LI_rhs(3) 
+        from 1[OF LI_rhs(2)] LI_rhs(3)
         have "\<not> (\<rhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x) (LB dir s x))" by auto
         then show ?thesis unfolding LI_rhs(1) unfolding indices_state_def using dir
-          by (auto simp: bound_compare'_defs boundsl_def boundsu_def indexl_def indexu_def 
-              split: option.splits intro!: exI[of _ x]) auto         
+          by (auto simp: bound_compare'_defs boundsl_def boundsu_def indexl_def indexu_def
+              split: option.splits intro!: exI[of _ x]) auto
       next
         case UI_rhs
-        from UI_rhs(2) have "coeff (rhs eq) x \<noteq> 0" 
-          by (simp add: coeff_zero) 
+        from UI_rhs(2) have "coeff (rhs eq) x \<noteq> 0"
+          by (simp add: coeff_zero)
         with UI_rhs(3) have "0 < coeff (rhs eq) x" by auto
         from 1[OF UI_rhs(2)] this have "\<not> (\<lhd>\<^sub>u\<^sub>b (lt dir) (\<langle>\<V> s\<rangle> x) (UB dir s x))" by auto
         then show ?thesis unfolding UI_rhs(1) unfolding indices_state_def using dir
-          by (auto simp: bound_compare'_defs boundsl_def boundsu_def indexl_def indexu_def 
-              split: option.splits intro!: exI[of _ x]) auto         
+          by (auto simp: bound_compare'_defs boundsl_def boundsu_def indexl_def indexu_def
+              split: option.splits intro!: exI[of _ x]) auto
       qed
-    }  
-    then have 2: "dir = Positive \<or> dir = Negative \<Longrightarrow> LI dir s (lhs eq) \<in> indices_state s \<Longrightarrow> 
+    }
+    then have 2: "dir = Positive \<or> dir = Negative \<Longrightarrow> LI dir s (lhs eq) \<in> indices_state s \<Longrightarrow>
       set is \<subseteq> indices_state s" by auto
-    show " 
+    show "
     (\<forall> x \<in> rvars_eq eq. \<not> reasable_var dir x eq s) \<and> LI dir s (lhs eq) \<in> set is \<and>
        (\<forall>x\<in>rvars_eq eq. coeff (rhs eq) x < 0 \<longrightarrow> LI dir s x \<in> set is) \<and>
        (\<forall>x\<in>rvars_eq eq. 0 < coeff (rhs eq) x \<longrightarrow> UI dir s x \<in> set is) \<and>
@@ -5993,7 +5992,7 @@ proof
   assume "min_rvar_incdec_eq dir s eq = Inr x\<^sub>j"
   from this[unfolded min_rvar_incdec_eq_def Let_def]
   have "?min = Some x\<^sub>j" by (cases ?min, auto)
-  then show "x\<^sub>j \<in> rvars_eq eq" "reasable_var dir x\<^sub>j eq s" 
+  then show "x\<^sub>j \<in> rvars_eq eq" "reasable_var dir x\<^sub>j eq s"
     "(\<forall> x' \<in> rvars_eq eq. x' < x\<^sub>j \<longrightarrow> \<not> reasable_var dir x' eq s)"
     using min_satisfying_Some set_vars_list by blast+
 qed
@@ -6004,14 +6003,14 @@ qed
 
 primrec eq_idx_for_lvar_aux :: "tableau \<Rightarrow> var \<Rightarrow> nat \<Rightarrow> nat" where
   "eq_idx_for_lvar_aux [] x i = i"
-| "eq_idx_for_lvar_aux (eq # t) x i = 
+| "eq_idx_for_lvar_aux (eq # t) x i =
      (if lhs eq = x then i else eq_idx_for_lvar_aux t x (i+1))"
 
 definition eq_idx_for_lvar where
   "eq_idx_for_lvar t x \<equiv> eq_idx_for_lvar_aux t x 0"
 
 lemma eq_idx_for_lvar_aux:
-  assumes "x \<in> lvars t" 
+  assumes "x \<in> lvars t"
   shows "let idx = eq_idx_for_lvar_aux t x i in
             i \<le> idx \<and> idx < i + length t \<and> lhs (t ! (idx - i)) = x"
   using assms
@@ -6026,7 +6025,7 @@ next
     by (cases "x = lhs eq") (auto simp add: Let_def lvars_def nth_Cons')
 qed
 
-global_interpretation EqForLVarDefault: EqForLVar eq_idx_for_lvar 
+global_interpretation EqForLVarDefault: EqForLVar eq_idx_for_lvar
   defines eq_for_lvar_code = EqForLVarDefault.eq_for_lvar
 proof (unfold_locales)
   fix x t
@@ -6055,7 +6054,7 @@ lemma pivot_eq_satisfies_eq:
   by (simp add: coeff_def vars_def Let_def pivot_eq_def satisfies_eq_def)
     (auto simp add: rational_vector.scale_right_diff_distrib valuate_add valuate_minus valuate_uminus valuate_scaleRat valuate_Var)
 
-lemma pivot_eq_rvars: 
+lemma pivot_eq_rvars:
   assumes "x \<in> vars (rhs (pivot_eq e v))" "x \<noteq> lhs e" "coeff (rhs e) v \<noteq> 0" "v \<noteq> lhs e"
   shows "x \<in> vars (rhs e)"
 proof-
@@ -6149,7 +6148,7 @@ definition subst_var:: "var \<Rightarrow> linear_poly \<Rightarrow> linear_poly 
 
 definition "subst_var_eq_code = SubstVar.subst_var_eq subst_var"
 
-global_interpretation SubstVar subst_var rewrites  
+global_interpretation SubstVar subst_var rewrites
   "SubstVar.subst_var_eq subst_var = subst_var_eq_code"
 proof (unfold_locales)
   fix x\<^sub>j lp' lp
@@ -6222,28 +6221,28 @@ definition rhs_eq_val where
   "rhs_eq_val v x\<^sub>i c e \<equiv> let x\<^sub>j = lhs e; a\<^sub>i\<^sub>j = coeff (rhs e) x\<^sub>i in
       \<langle>v\<rangle> x\<^sub>j + a\<^sub>i\<^sub>j *R (c - \<langle>v\<rangle> x\<^sub>i)"
 
-definition "update_code = RhsEqVal.update rhs_eq_val" 
-definition "assert_bound'_code = Update.assert_bound' update_code" 
-definition "assert_bound_code = Update.assert_bound update_code" 
+definition "update_code = RhsEqVal.update rhs_eq_val"
+definition "assert_bound'_code = Update.assert_bound' update_code"
+definition "assert_bound_code = Update.assert_bound update_code"
 
-global_interpretation RhsEqValDefault': RhsEqVal rhs_eq_val 
+global_interpretation RhsEqValDefault': RhsEqVal rhs_eq_val
   rewrites
     "RhsEqVal.update rhs_eq_val = update_code" and
     "Update.assert_bound update_code = assert_bound_code" and
     "Update.assert_bound' update_code = assert_bound'_code"
 proof unfold_locales
   fix v x c e
-  assume "\<langle>v\<rangle> \<Turnstile>\<^sub>e e" 
+  assume "\<langle>v\<rangle> \<Turnstile>\<^sub>e e"
   then show "rhs_eq_val v x c e = rhs e \<lbrace> \<langle>v\<rangle>(x := c) \<rbrace>"
     unfolding rhs_eq_val_def Let_def
     using valuate_update_x[of "rhs e" x "\<langle>v\<rangle>" "\<langle>v\<rangle>(x := c)"]
     by (auto simp add: satisfies_eq_def)
 qed (auto simp: update_code_def assert_bound'_code_def assert_bound_code_def)
 
-definition "pivot_code = Pivot'.pivot eq_idx_for_lvar pivot_eq subst_var" 
+definition "pivot_code = Pivot'.pivot eq_idx_for_lvar pivot_eq subst_var"
 definition "pivot_tableau_code = Pivot'.pivot_tableau eq_idx_for_lvar pivot_eq subst_var"
 
-global_interpretation Pivot'Default: Pivot' eq_idx_for_lvar pivot_eq subst_var 
+global_interpretation Pivot'Default: Pivot' eq_idx_for_lvar pivot_eq subst_var
   rewrites
     "Pivot'.pivot eq_idx_for_lvar pivot_eq subst_var = pivot_code" and
     "Pivot'.pivot_tableau eq_idx_for_lvar pivot_eq subst_var = pivot_tableau_code" and
@@ -6252,17 +6251,17 @@ global_interpretation Pivot'Default: Pivot' eq_idx_for_lvar pivot_eq subst_var
 
 definition "pivot_and_update_code = PivotUpdate.pivot_and_update pivot_code update_code"
 
-global_interpretation PivotUpdateDefault: PivotUpdate eq_idx_for_lvar pivot_code update_code 
+global_interpretation PivotUpdateDefault: PivotUpdate eq_idx_for_lvar pivot_code update_code
   rewrites
     "PivotUpdate.pivot_and_update pivot_code update_code = pivot_and_update_code"
   by (unfold_locales, auto simp: pivot_and_update_code_def)
 
-definition "check_code = PivotUpdateMinVars.check eq_idx_for_lvar min_lvar_not_in_bounds min_rvar_incdec_eq pivot_and_update_code" 
+definition "check_code = PivotUpdateMinVars.check eq_idx_for_lvar min_lvar_not_in_bounds min_rvar_incdec_eq pivot_and_update_code"
 definition "check'_code = PivotUpdateMinVars.check' eq_idx_for_lvar min_rvar_incdec_eq pivot_and_update_code"
 
-global_interpretation PivotUpdateMinVarsDefault: PivotUpdateMinVars eq_idx_for_lvar min_lvar_not_in_bounds min_rvar_incdec_eq pivot_and_update_code 
+global_interpretation PivotUpdateMinVarsDefault: PivotUpdateMinVars eq_idx_for_lvar min_lvar_not_in_bounds min_rvar_incdec_eq pivot_and_update_code
   rewrites
-    "PivotUpdateMinVars.check eq_idx_for_lvar min_lvar_not_in_bounds min_rvar_incdec_eq pivot_and_update_code = check_code" and 
+    "PivotUpdateMinVars.check eq_idx_for_lvar min_lvar_not_in_bounds min_rvar_incdec_eq pivot_and_update_code = check_code" and
     "PivotUpdateMinVars.check' eq_idx_for_lvar min_rvar_incdec_eq pivot_and_update_code = check'_code"
   by (unfold_locales) (simp_all add: check_code_def check'_code_def)
 
@@ -6277,7 +6276,7 @@ definition "assert_bound_loop_code = AssertAllState''.assert_bound_loop assert_b
 definition "assert_all_state_code = AssertAllState''.assert_all_state init_state assert_bound_code check_code"
 definition "assert_all_code = AssertAllState.assert_all assert_all_state_code"
 
-global_interpretation AssertAllStateDefault: AssertAllState'' init_state assert_bound_code check_code 
+global_interpretation AssertAllStateDefault: AssertAllState'' init_state assert_bound_code check_code
   rewrites
     "AssertAllState''.assert_bound_loop assert_bound_code = assert_bound_loop_code" and
     "AssertAllState''.assert_all_state init_state assert_bound_code check_code = assert_all_state_code" and
@@ -6324,7 +6323,7 @@ fun
                          v' = FirstFreshVariable s';
                          t' = Tableau s';
                          a' = Atoms s';
-                         m' = Poly_Mapping s' in 
+                         m' = Poly_Mapping s' in
                          if is_monom_h then IState v' t'
                            ((i,qdelta_constraint_to_atom h v') # a') m'
                          else (case m' p of Some v \<Rightarrow>
@@ -6354,12 +6353,12 @@ lemma rvars_eq_linear_poly_to_eq [simp]:
   "rvars_eq (linear_poly_to_eq h v) = vars h"
   by simp
 
-lemma fresh_var_monoinc: 
+lemma fresh_var_monoinc:
   "FirstFreshVariable (preprocess' cs start) \<ge> start"
   by (induct cs) (auto simp add: Let_def split: option.splits)
 
 abbreviation vars_constraints where
-  "vars_constraints cs \<equiv> \<Union> set (map vars (map poly cs))" 
+  "vars_constraints cs \<equiv> \<Union> set (map vars (map poly cs))"
 
 lemma start_fresh_variable_fresh:
   "\<forall> var \<in> vars_constraints (flat_list cs). var < start_fresh_variable cs"
@@ -6376,7 +6375,7 @@ lemma lvars_tableau_ge_start:
 
 lemma first_fresh_variable_not_in_lvars:
   "\<forall>var \<in> lvars (Tableau (preprocess' cs start)). FirstFreshVariable (preprocess' cs start) > var"
-  by (induct cs start rule: preprocess'.induct) (auto simp add: Let_def lvars_def split: option.splits) 
+  by (induct cs start rule: preprocess'.induct) (auto simp add: Let_def lvars_def split: option.splits)
 
 lemma sat_atom_sat_eq_sat_constraint_non_monom:
   assumes "v \<Turnstile>\<^sub>a qdelta_constraint_to_atom h var" "v \<Turnstile>\<^sub>e linear_poly_to_eq (poly h) var" "\<not> is_monom (poly h)"
@@ -6418,23 +6417,23 @@ next
 qed
 
 lemma preprocess'_Tableau_Poly_Mapping_None: "(Poly_Mapping (preprocess' cs start)) p = None
-  \<Longrightarrow> linear_poly_to_eq p v \<notin> set (Tableau (preprocess' cs start))" 
+  \<Longrightarrow> linear_poly_to_eq p v \<notin> set (Tableau (preprocess' cs start))"
   by (induct cs start rule: preprocess'.induct, auto simp: Let_def split: option.splits if_splits)
 
 lemma preprocess'_Tableau_Poly_Mapping_Some: "(Poly_Mapping (preprocess' cs start)) p = Some v
-  \<Longrightarrow> linear_poly_to_eq p v \<in> set (Tableau (preprocess' cs start))" 
+  \<Longrightarrow> linear_poly_to_eq p v \<in> set (Tableau (preprocess' cs start))"
   by (induct cs start rule: preprocess'.induct, auto simp: Let_def split: option.splits if_splits)
 
 lemma preprocess'_Tableau_Poly_Mapping_Some': "(Poly_Mapping (preprocess' cs start)) p = Some v
-  \<Longrightarrow> \<exists> h. poly h = p \<and> \<not> is_monom (poly h) \<and> qdelta_constraint_to_atom h v \<in> flat (set (Atoms (preprocess' cs start)))" 
+  \<Longrightarrow> \<exists> h. poly h = p \<and> \<not> is_monom (poly h) \<and> qdelta_constraint_to_atom h v \<in> flat (set (Atoms (preprocess' cs start)))"
   by (induct cs start rule: preprocess'.induct, auto simp: Let_def split: option.splits if_splits)
 
 lemma i_preprocess'_sat:
   assumes "(I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set (Atoms (preprocess' s start))" "v \<Turnstile>\<^sub>t Tableau (preprocess' s start)"
   shows "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set s"
   using assms
-  by (induct s start rule: preprocess'.induct) 
-    (auto simp add: Let_def satisfies_atom_set_def satisfies_tableau_def qdelta_constraint_to_atom_monom 
+  by (induct s start rule: preprocess'.induct)
+    (auto simp add: Let_def satisfies_atom_set_def satisfies_tableau_def qdelta_constraint_to_atom_monom
       sat_atom_sat_eq_sat_constraint_non_monom
       split: if_splits option.splits dest!: preprocess'_Tableau_Poly_Mapping_Some)
 
@@ -6457,7 +6456,7 @@ lemma atom_var_first:
 proof(induct cs arbitrary: a)
   case (Cons hh t a)
   obtain i h where hh: "hh = (i,h)" by force
-  let ?s = "preprocess' t start" 
+  let ?s = "preprocess' t start"
   show ?case
   proof(cases "a \<in> flat (set (Atoms ?s))")
     case True
@@ -6471,24 +6470,24 @@ proof(induct cs arbitrary: a)
       by auto
     then show ?thesis
     proof cases
-      case monom      
+      case monom
       from Cons(3) monom_var_in_vars hh monom
       have "monom_var (poly h) < start" by auto
       moreover from False have "a = qdelta_constraint_to_atom h (FirstFreshVariable (preprocess' t start))"
         using Cons(2) hh monom by (auto simp: Let_def)
-      ultimately show ?thesis      
-        using fresh_var_monoinc[of start t] hh monom 
-        by (cases a; cases h) (auto simp add: Let_def ) 
+      ultimately show ?thesis
+        using fresh_var_monoinc[of start t] hh monom
+        by (cases a; cases h) (auto simp add: Let_def )
     next
       case normal
       have "a = qdelta_constraint_to_atom h (FirstFreshVariable (preprocess' t start))"
         using False normal Cons(2) hh by (auto simp: Let_def)
-      then show ?thesis using hh normal 
+      then show ?thesis using hh normal
         by (cases a; cases h) (auto simp add: Let_def )
     next
       case (old var)
       from preprocess'_Tableau_Poly_Mapping_Some'[OF old(2)]
-      obtain h' where "poly h' = poly h" "qdelta_constraint_to_atom h' var \<in> flat (set (Atoms ?s))" 
+      obtain h' where "poly h' = poly h" "qdelta_constraint_to_atom h' var \<in> flat (set (Atoms ?s))"
         by blast
       from Cons(1)[OF this(2)] Cons(3) this(1) old(1)
       have var: "var < FirstFreshVariable ?s" by (cases h', auto)
@@ -6509,8 +6508,8 @@ lemma satisfies_tableau_satisfies_tableau:
 
 lemma preprocess'_unsat:
   assumes "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set s" "vars_constraints (flat_list s) \<subseteq> V" "\<forall>var \<in> V. var < start"
-  shows "\<exists>v'. (\<forall>var \<in> V. v var = v' var) 
-    \<and> v' \<Turnstile>\<^sub>a\<^sub>s restrict_to I (set (Atoms (preprocess' s start))) 
+  shows "\<exists>v'. (\<forall>var \<in> V. v var = v' var)
+    \<and> v' \<Turnstile>\<^sub>a\<^sub>s restrict_to I (set (Atoms (preprocess' s start)))
     \<and> v' \<Turnstile>\<^sub>t Tableau (preprocess' s start)"
   using assms
 proof(induct s)
@@ -6521,35 +6520,35 @@ next
   case (Cons hh t)
   obtain i h where hh: "hh = (i,h)" by force
   from Cons hh obtain v' where
-    var: "(\<forall>var\<in>V. v var = v' var)" 
-    and v'_as: "v' \<Turnstile>\<^sub>a\<^sub>s restrict_to I (set (Atoms (preprocess' t start)))" 
+    var: "(\<forall>var\<in>V. v var = v' var)"
+    and v'_as: "v' \<Turnstile>\<^sub>a\<^sub>s restrict_to I (set (Atoms (preprocess' t start)))"
     and v'_t: "v' \<Turnstile>\<^sub>t Tableau (preprocess' t start)"
-    and vars_h: "vars_constraints [h] \<subseteq> V" 
+    and vars_h: "vars_constraints [h] \<subseteq> V"
     by auto
-  from Cons(2)[unfolded hh] 
+  from Cons(2)[unfolded hh]
   have i: "i \<in> I \<Longrightarrow> v \<Turnstile>\<^sub>n\<^sub>s h" by auto
   have "\<forall> var \<in> vars (poly h). v var = v' var"
     using \<open>(\<forall>var\<in>V. v var = v' var)\<close> Cons(3) hh
     by auto
   then have vh_v'h: "v \<Turnstile>\<^sub>n\<^sub>s h \<longleftrightarrow> v' \<Turnstile>\<^sub>n\<^sub>s h"
-    by (rule sat_constraint_valuation) 
-  show ?case 
+    by (rule sat_constraint_valuation)
+  show ?case
   proof(cases "is_monom (poly h)")
     case True
     then have id: "is_monom (poly h) = True" by simp
     show ?thesis
       unfolding hh preprocess'.simps Let_def id if_True istate.simps istate.sel
     proof (intro exI[of _ v'] conjI v'_t var satisifies_atom_restrict_to_Cons[OF v'_as])
-      assume "i \<in> I" 
+      assume "i \<in> I"
       from i[OF this] var vh_v'h
-      show "v' \<Turnstile>\<^sub>a qdelta_constraint_to_atom h (FirstFreshVariable (preprocess' t start))" 
+      show "v' \<Turnstile>\<^sub>a qdelta_constraint_to_atom h (FirstFreshVariable (preprocess' t start))"
         unfolding qdelta_constraint_to_atom_monom[OF True] by auto
     qed
   next
     case False
     then have id: "is_monom (poly h) = False" by simp
-    let ?s = "preprocess' t start" 
-    let ?look = "(Poly_Mapping ?s) (poly h)" 
+    let ?s = "preprocess' t start"
+    let ?look = "(Poly_Mapping ?s) (poly h)"
     show ?thesis
     proof (cases ?look)
       case None
@@ -6564,12 +6563,12 @@ next
           using Cons(4)
           by auto
         {
-          assume "i \<in> I" 
+          assume "i \<in> I"
           from vh_v'h i[OF this] False
           show "?v' \<Turnstile>\<^sub>a qdelta_constraint_to_atom h (FirstFreshVariable (preprocess' t start))"
             by (cases h, auto)
         }
-        let ?atoms = "restrict_to I (set (Atoms (preprocess' t start)))" 
+        let ?atoms = "restrict_to I (set (Atoms (preprocess' t start)))"
         show "?v' \<Turnstile>\<^sub>a\<^sub>s ?atoms"
           unfolding satisfies_atom_set_def
         proof
@@ -6579,7 +6578,7 @@ next
             using \<open>v' \<Turnstile>\<^sub>a\<^sub>s ?atoms\<close> hh by (force simp add: satisfies_atom_set_def)
           then show "?v' \<Turnstile>\<^sub>a a"
             using \<open>a \<in> ?atoms\<close> atom_var_first[of a t start]
-            using Cons(3) Cons(4) 
+            using Cons(3) Cons(4)
             by (cases a) auto
         qed
         show "?v' \<Turnstile>\<^sub>e linear_poly_to_eq (poly h) (FirstFreshVariable (preprocess' t start))"
@@ -6597,16 +6596,16 @@ next
           using \<open>v' \<Turnstile>\<^sub>t Tableau (preprocess' t start)\<close>
           using satisfies_tableau_satisfies_tableau[of v' "Tableau (preprocess' t start)" ?v']
           by auto
-      qed 
+      qed
     next
       case (Some var)
       from preprocess'_Tableau_Poly_Mapping_Some[OF Some]
       have "linear_poly_to_eq (poly h) var \<in> set (Tableau ?s)" by auto
-      with v'_t[unfolded satisfies_tableau_def] 
+      with v'_t[unfolded satisfies_tableau_def]
       have v'_h_var: "v' \<Turnstile>\<^sub>e linear_poly_to_eq (poly h) var" by auto
       show ?thesis unfolding preprocess'.simps hh Let_def id if_False istate.simps istate.sel Some option.simps
       proof (intro exI[of _ v'] conjI var v'_t satisifies_atom_restrict_to_Cons satisfies_tableau_Cons v'_as)
-        assume "i \<in> I"         
+        assume "i \<in> I"
         from vh_v'h i[OF this] False v'_h_var
         show "v' \<Turnstile>\<^sub>a qdelta_constraint_to_atom h var"
           by (cases h, auto simp: satisfies_eq_iff)
@@ -6620,108 +6619,108 @@ lemma lvars_distinct:
   using first_fresh_variable_not_in_lvars[where ?'a = 'a]
   by (induct cs, auto simp add: Let_def lvars_def) (force split: option.splits)
 
-text \<open>Improved preprocessing: Deletion. An equation x = p can be deleted from the tableau, 
+text \<open>Improved preprocessing: Deletion. An equation x = p can be deleted from the tableau,
   if x does not occur in the atoms.\<close>
 
-lemma delete_lhs_var: assumes norm: "\<triangle> t" and t: "t = t1 @ (x,p) # t2" 
-  and t': "t' = t1 @ t2" 
-  and tv: "tv = (\<lambda> v. upd x (p \<lbrace> \<langle>v\<rangle> \<rbrace>) v)" 
+lemma delete_lhs_var: assumes norm: "\<triangle> t" and t: "t = t1 @ (x,p) # t2"
+  and t': "t' = t1 @ t2"
+  and tv: "tv = (\<lambda> v. upd x (p \<lbrace> \<langle>v\<rangle> \<rbrace>) v)"
   and x_as: "x \<notin> atom_var ` snd ` set as"
 shows "\<triangle> t'" \<comment> \<open>new tableau is normalized\<close>
   "\<langle>w\<rangle> \<Turnstile>\<^sub>t t' \<Longrightarrow> \<langle>tv w\<rangle> \<Turnstile>\<^sub>t t" \<comment> \<open>solution of new tableau is translated to solution of old tableau\<close>
-  "(I, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> (I, \<langle>tv w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" \<comment> \<open>solution translation also works for bounds\<close> 
+  "(I, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> (I, \<langle>tv w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" \<comment> \<open>solution translation also works for bounds\<close>
   "v \<Turnstile>\<^sub>t t \<Longrightarrow> v \<Turnstile>\<^sub>t t'" \<comment> \<open>solution of old tableau is also solution for new tableau\<close>
 proof -
   have tv: "\<langle>tv w\<rangle> = \<langle>w\<rangle> (x := p \<lbrace> \<langle>w\<rangle> \<rbrace>)" unfolding tv map2fun_def' by auto
-  from norm 
+  from norm
   show "\<triangle> t'" unfolding t t' normalized_tableau_def by (auto simp: lvars_def rvars_def)
   show "v \<Turnstile>\<^sub>t t \<Longrightarrow> v \<Turnstile>\<^sub>t t'" unfolding t t' satisfies_tableau_def by auto
-  from norm have dist: "distinct (map lhs t)" "lvars t \<inter> rvars t = {}" 
+  from norm have dist: "distinct (map lhs t)" "lvars t \<inter> rvars t = {}"
     unfolding normalized_tableau_def by auto
   from x_as have x_as: "x \<notin> atom_var ` snd ` (set as \<inter> I \<times> UNIV)" by auto
   have "(I, \<langle>tv w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<longleftrightarrow> (I, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" unfolding i_satisfies_atom_set.simps
       satisfies_atom_set_def
   proof (intro ball_cong[OF refl])
     fix a
-    assume "a \<in> snd ` (set as \<inter> I \<times> UNIV)" 
-    with x_as have "x \<noteq> atom_var a" by auto 
+    assume "a \<in> snd ` (set as \<inter> I \<times> UNIV)"
+    with x_as have "x \<noteq> atom_var a" by auto
     then show "\<langle>tv w\<rangle> \<Turnstile>\<^sub>a a = \<langle>w\<rangle> \<Turnstile>\<^sub>a a" unfolding tv
       by (cases a, auto)
   qed
   then show "(I, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> (I, \<langle>tv w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by blast
-  assume w: "\<langle>w\<rangle> \<Turnstile>\<^sub>t t'" 
-  from dist(2)[unfolded t] have xp: "x \<notin> vars p" 
+  assume w: "\<langle>w\<rangle> \<Turnstile>\<^sub>t t'"
+  from dist(2)[unfolded t] have xp: "x \<notin> vars p"
     unfolding lvars_def rvars_def by auto
   {
     fix eq
-    assume mem: "eq \<in> set t1 \<union> set t2" 
+    assume mem: "eq \<in> set t1 \<union> set t2"
     then have "eq \<in> set t'" unfolding t' by auto
     with w have w: "\<langle>w\<rangle> \<Turnstile>\<^sub>e eq" unfolding satisfies_tableau_def by auto
     obtain y q where eq: "eq = (y,q)" by force
     from mem[unfolded eq] dist(1)[unfolded t] have xy: "x \<noteq> y" by force
-    from mem[unfolded eq] dist(2)[unfolded t] have xq: "x \<notin> vars q" 
+    from mem[unfolded eq] dist(2)[unfolded t] have xq: "x \<notin> vars q"
       unfolding lvars_def rvars_def by auto
-    from w have "\<langle>tv w\<rangle> \<Turnstile>\<^sub>e eq" unfolding tv eq satisfies_eq_iff using xy xq 
-      by (auto intro!: valuate_depend) 
+    from w have "\<langle>tv w\<rangle> \<Turnstile>\<^sub>e eq" unfolding tv eq satisfies_eq_iff using xy xq
+      by (auto intro!: valuate_depend)
   }
   moreover
   have "\<langle>tv w\<rangle> \<Turnstile>\<^sub>e (x,p)" unfolding satisfies_eq_iff tv using xp
-    by (auto intro!: valuate_depend) 
+    by (auto intro!: valuate_depend)
   ultimately
   show "\<langle>tv w\<rangle> \<Turnstile>\<^sub>t t" unfolding t satisfies_tableau_def by auto
-qed  
+qed
 
 definition pivot_tableau_eq :: "tableau \<Rightarrow> eq \<Rightarrow> tableau \<Rightarrow> var \<Rightarrow> tableau \<times> eq \<times> tableau" where
   "pivot_tableau_eq t1 eq t2 x \<equiv> let eq' = pivot_eq eq x; m = map (\<lambda> e. subst_var_eq x (rhs eq') e) in
     (m t1, eq', m t2)"
 
-lemma pivot_tableau_eq: assumes t: "t = t1 @ eq # t2" "t' = t1' @ eq' # t2'" 
-  and x: "x \<in> rvars_eq eq" and norm: "\<triangle> t" and pte: "pivot_tableau_eq t1 eq t2 x = (t1',eq',t2')" 
+lemma pivot_tableau_eq: assumes t: "t = t1 @ eq # t2" "t' = t1' @ eq' # t2'"
+  and x: "x \<in> rvars_eq eq" and norm: "\<triangle> t" and pte: "pivot_tableau_eq t1 eq t2 x = (t1',eq',t2')"
 shows "\<triangle> t'" "lhs eq' = x" "(v :: 'a :: lrv valuation) \<Turnstile>\<^sub>t t' \<longleftrightarrow> v \<Turnstile>\<^sub>t t"
 proof -
   let ?s = "\<lambda> t. State t undefined undefined undefined undefined undefined"
-  let ?y = "lhs eq" 
+  let ?y = "lhs eq"
   have yl: "?y \<in> lvars t" unfolding t lvars_def by auto
-  from norm have eq_t12: "?y \<notin> lhs ` (set t1 \<union> set t2)" 
+  from norm have eq_t12: "?y \<notin> lhs ` (set t1 \<union> set t2)"
     unfolding normalized_tableau_def t lvars_def by auto
   have eq: "eq_for_lvar_code t ?y = eq"
-    by (metis (mono_tags, lifting) EqForLVarDefault.eq_for_lvar Un_insert_right eq_t12 
+    by (metis (mono_tags, lifting) EqForLVarDefault.eq_for_lvar Un_insert_right eq_t12
         image_iff insert_iff list.set(2) set_append t(1) yl)
   have *: "(?y, b) \<in> set t1 \<Longrightarrow> ?y \<in> lhs ` (set t1)" for b t1
     by (metis image_eqI lhs.simps)
-  have pivot: "pivot_tableau_code ?y x t = t'" 
+  have pivot: "pivot_tableau_code ?y x t = t'"
     unfolding Pivot'Default.pivot_tableau_def Let_def eq using pte[symmetric]
     unfolding t pivot_tableau_eq_def Let_def using eq_t12 by (auto dest!: *)
-  note thms = Pivot'Default.pivot_vars' Pivot'Default.pivot_tableau 
-  note thms = thms[unfolded Pivot'Default.pivot_def, of "?s t", simplified, 
+  note thms = Pivot'Default.pivot_vars' Pivot'Default.pivot_tableau
+  note thms = thms[unfolded Pivot'Default.pivot_def, of "?s t", simplified,
       OF norm yl, unfolded eq, OF x, unfolded pivot]
   from thms(1) thms(2)[of v] show "\<triangle> t'" "v \<Turnstile>\<^sub>t t' \<longleftrightarrow> v \<Turnstile>\<^sub>t t" by auto
-  show "lhs eq' = x" using pte[symmetric] 
+  show "lhs eq' = x" using pte[symmetric]
     unfolding t pivot_tableau_eq_def Let_def pivot_eq_def by auto
 qed
 
 function preprocess_opt :: "var set \<Rightarrow> tableau \<Rightarrow> tableau \<Rightarrow> tableau \<times> ((var,'a :: lrv)mapping \<Rightarrow> (var,'a)mapping)" where
-  "preprocess_opt X t1 [] = (t1,id)" 
-| "preprocess_opt X t1 ((x,p) # t2) = (if x \<notin> X then 
+  "preprocess_opt X t1 [] = (t1,id)"
+| "preprocess_opt X t1 ((x,p) # t2) = (if x \<notin> X then
     case preprocess_opt X t1 t2 of (t,tv) \<Rightarrow> (t, (\<lambda> v. upd x (p \<lbrace> \<langle>v\<rangle> \<rbrace>) v) o tv)
-    else case find (\<lambda> x. x \<notin> X) (Abstract_Linear_Poly.vars_list p) of 
+    else case find (\<lambda> x. x \<notin> X) (Abstract_Linear_Poly.vars_list p) of
      None \<Rightarrow> preprocess_opt X ((x,p) # t1) t2
-   | Some y \<Rightarrow> case pivot_tableau_eq t1 (x,p) t2 y of 
-      (tt1,(z,q),tt2) \<Rightarrow> case preprocess_opt X tt1 tt2 of (t,tv) \<Rightarrow> (t, (\<lambda> v. upd z (q \<lbrace> \<langle>v\<rangle> \<rbrace>) v) o tv))" 
+   | Some y \<Rightarrow> case pivot_tableau_eq t1 (x,p) t2 y of
+      (tt1,(z,q),tt2) \<Rightarrow> case preprocess_opt X tt1 tt2 of (t,tv) \<Rightarrow> (t, (\<lambda> v. upd z (q \<lbrace> \<langle>v\<rangle> \<rbrace>) v) o tv))"
   by pat_completeness auto
 
 termination by (relation "measure (\<lambda> (X,t1,t2). length t2)", auto simp: pivot_tableau_eq_def Let_def)
 
-lemma preprocess_opt: assumes "X = atom_var ` snd ` set as" 
-  "preprocess_opt X t1 t2 = (t',tv)" "\<triangle> t" "t = rev t1 @ t2" 
-shows "\<triangle> t'" 
-  "(\<langle>w\<rangle> :: 'a :: lrv valuation) \<Turnstile>\<^sub>t t' \<Longrightarrow> \<langle>tv w\<rangle> \<Turnstile>\<^sub>t t" 
-  "(I, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> (I, \<langle>tv w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
+lemma preprocess_opt: assumes "X = atom_var ` snd ` set as"
+  "preprocess_opt X t1 t2 = (t',tv)" "\<triangle> t" "t = rev t1 @ t2"
+shows "\<triangle> t'"
+  "(\<langle>w\<rangle> :: 'a :: lrv valuation) \<Turnstile>\<^sub>t t' \<Longrightarrow> \<langle>tv w\<rangle> \<Turnstile>\<^sub>t t"
+  "(I, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> (I, \<langle>tv w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
   "v \<Turnstile>\<^sub>t t \<Longrightarrow> (v :: 'a valuation) \<Turnstile>\<^sub>t t'"
   using assms
 proof (atomize(full), induct X t1 t2 arbitrary: t tv w rule: preprocess_opt.induct)
   case (1 X t1 t tv)
-  then show ?case by (auto simp: normalized_tableau_def lvars_def rvars_def satisfies_tableau_def 
+  then show ?case by (auto simp: normalized_tableau_def lvars_def rvars_def satisfies_tableau_def
         simp flip: rev_map)
 next
   case (2 X t1 x p t2 t tv w)
@@ -6734,11 +6733,11 @@ next
   proof (cases "x \<in> X")
     case False
     with res obtain tv' where res: "preprocess_opt X t1 t2 = (t', tv')" and
-      tv: "tv = (\<lambda>v. Mapping.update x (p \<lbrace> \<langle>v\<rangle> \<rbrace>) v) o tv'" 
+      tv: "tv = (\<lambda>v. Mapping.update x (p \<lbrace> \<langle>v\<rangle> \<rbrace>) v) o tv'"
       by (auto split: prod.splits)
     note delete = delete_lhs_var[OF norm t refl refl False[unfolded X]]
     note IH = IH(1)[OF False X res delete(1) refl]
-    from delete(2)[of "tv' w"] delete(3)[of I "tv' w"] delete(4)[of v] IH[of w] 
+    from delete(2)[of "tv' w"] delete(3)[of I "tv' w"] delete(4)[of v] IH[of w]
     show ?thesis unfolding tv o_def
       by auto
   next
@@ -6754,12 +6753,12 @@ next
       show ?thesis .
     next
       case (Some z)
-      from Some[unfolded find_Some_iff] have zX: "z \<notin> X" and "z \<in> set (Abstract_Linear_Poly.vars_list p)" 
+      from Some[unfolded find_Some_iff] have zX: "z \<notin> X" and "z \<in> set (Abstract_Linear_Poly.vars_list p)"
         unfolding set_conv_nth by auto
       then have z: "z \<in> rvars_eq (x, p)" by (simp add: set_vars_list)
-      obtain tt1 z' q tt2 where pte: "pivot_tableau_eq t1 (x, p) t2 z = (tt1,(z',q),tt2)" 
+      obtain tt1 z' q tt2 where pte: "pivot_tableau_eq t1 (x, p) t2 z = (tt1,(z',q),tt2)"
         by (cases "pivot_tableau_eq t1 (x, p) t2 z", auto)
-      then have pte_rev: "pivot_tableau_eq (rev t1) (x, p) t2 z = (rev tt1,(z',q),tt2)" 
+      then have pte_rev: "pivot_tableau_eq (rev t1) (x, p) t2 z = (rev tt1,(z',q),tt2)"
         unfolding pivot_tableau_eq_def Let_def by (auto simp: rev_map)
       note eq = pivot_tableau_eq[OF t refl z norm pte_rev]
       then have z': "z' = z" by auto
@@ -6769,7 +6768,7 @@ next
       note delete = delete_lhs_var[OF eq(1) refl refl refl zX[unfolded X]]
       from res[unfolded preprocess_opt.simps Some option.simps pte] True
       obtain tv' where res: "preprocess_opt X tt1 tt2 = (t', tv')" and
-        tv: "tv = (\<lambda>v. Mapping.update z (q \<lbrace> \<langle>v\<rangle> \<rbrace>) v) o tv'" 
+        tv: "tv = (\<lambda>v. Mapping.update z (q \<lbrace> \<langle>v\<rangle> \<rbrace>) v) o tv'"
         by (auto split: prod.splits)
       note IH = IH(2)[OF Some, unfolded pte, OF refl refl refl X res delete(1) refl]
       from IH[of w] delete(2)[of "tv' w"] delete(3)[of I "tv' w"] delete(4)[of v] show ?thesis
@@ -6778,23 +6777,23 @@ next
   qed
 qed
 
-definition "preprocess_part_2 as t = preprocess_opt (atom_var ` snd ` set as) [] t" 
+definition "preprocess_part_2 as t = preprocess_opt (atom_var ` snd ` set as) [] t"
 
-lemma preprocess_part_2: assumes "preprocess_part_2 as t = (t',tv)" "\<triangle> t"  
-  shows "\<triangle> t'" 
-    "(\<langle>w\<rangle> :: 'a :: lrv valuation) \<Turnstile>\<^sub>t t' \<Longrightarrow> \<langle>tv w\<rangle> \<Turnstile>\<^sub>t t" 
-    "(I, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> (I, \<langle>tv w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
+lemma preprocess_part_2: assumes "preprocess_part_2 as t = (t',tv)" "\<triangle> t"
+  shows "\<triangle> t'"
+    "(\<langle>w\<rangle> :: 'a :: lrv valuation) \<Turnstile>\<^sub>t t' \<Longrightarrow> \<langle>tv w\<rangle> \<Turnstile>\<^sub>t t"
+    "(I, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> (I, \<langle>tv w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
     "v \<Turnstile>\<^sub>t t \<Longrightarrow> (v :: 'a valuation) \<Turnstile>\<^sub>t t'"
   using preprocess_opt[OF refl assms(1)[unfolded preprocess_part_2_def] assms(2)] by auto
 
 definition preprocess :: "_ \<Rightarrow> _ \<times> _ \<times> (_ \<Rightarrow> (var,QDelta)mapping)" where
-  "preprocess l = (case preprocess_part_1 l of (t,as) \<Rightarrow> case preprocess_part_2 as t of (t,tv) \<Rightarrow> (t,as,tv))" 
+  "preprocess l = (case preprocess_part_1 l of (t,as) \<Rightarrow> case preprocess_part_2 as t of (t,tv) \<Rightarrow> (t,as,tv))"
 
 interpretation PreprocessDefault: Preprocess preprocess
 proof
-  fix cs trans_v t' as v I 
-  assume id: "preprocess cs = (t',as,trans_v)" 
-  then obtain t where part1: "preprocess_part_1 cs = (t,as)" 
+  fix cs trans_v t' as v I
+  assume id: "preprocess cs = (t',as,trans_v)"
+  then obtain t where part1: "preprocess_part_1 cs = (t,as)"
     unfolding preprocess_def by (auto split: prod.splits)
   from id[unfolded preprocess_def part1 split]
   have part_2: "preprocess_part_2 as t = (t',trans_v)" by (auto split: prod.splits)
@@ -6809,12 +6808,12 @@ proof
   have unsat: "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" for v using part1 i_preprocess'_sat[of I]
     by (auto simp add: preprocess_part_1_def Let_def)
   with part_2(2,3) show "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t' \<Longrightarrow> (I,\<langle>trans_v v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" by auto
-  from part1[unfolded preprocess_part_1_def Let_def] obtain var where 
+  from part1[unfolded preprocess_part_1_def Let_def] obtain var where
     as: "as = Atoms (preprocess' cs var)" by auto
-  show "fst ` set cs = fst ` set as" unfolding as 
+  show "fst ` set cs = fst ` set as" unfolding as
     by (induct cs var rule: preprocess'.induct, auto simp: Let_def split: option.splits)
   fix v
-  assume "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" 
+  assume "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs"
   from preprocess'_unsat[OF this _  start_fresh_variable_fresh, of cs]
   have "\<exists>v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t"
     using part1
@@ -6823,7 +6822,7 @@ proof
     using part_2(4) by auto
 qed
 
-global_interpretation Solve_exec_ns'Default: Solve_exec_ns' preprocess assert_all_code 
+global_interpretation Solve_exec_ns'Default: Solve_exec_ns' preprocess assert_all_code
   defines solve_exec_ns_code = Solve_exec_ns'Default.solve_exec_ns
   by unfold_locales
 
@@ -6833,7 +6832,7 @@ global_interpretation Solve_exec_ns'Default: Solve_exec_ns' preprocess assert_al
 
 primrec
   constraint_to_qdelta_constraint:: "constraint \<Rightarrow> QDelta ns_constraint list" where
-  "constraint_to_qdelta_constraint (LT l r) = [LEQ_ns l (QDelta.QDelta r (-1))]" 
+  "constraint_to_qdelta_constraint (LT l r) = [LEQ_ns l (QDelta.QDelta r (-1))]"
 | "constraint_to_qdelta_constraint (GT l r) = [GEQ_ns l (QDelta.QDelta r 1)]"
 | "constraint_to_qdelta_constraint (LEQ l r) = [LEQ_ns l (QDelta.QDelta r 0)]"
 | "constraint_to_qdelta_constraint (GEQ l r) = [GEQ_ns l (QDelta.QDelta r 0)]"
@@ -6842,11 +6841,11 @@ primrec
 | "constraint_to_qdelta_constraint (GTPP l1 l2) = [GEQ_ns (l1 - l2) (QDelta.QDelta 0 1)]"
 | "constraint_to_qdelta_constraint (LEQPP l1 l2) = [LEQ_ns (l1 - l2) 0]"
 | "constraint_to_qdelta_constraint (GEQPP l1 l2) = [GEQ_ns (l1 - l2) 0]"
-| "constraint_to_qdelta_constraint (EQPP l1 l2) = [LEQ_ns (l1 - l2) 0, GEQ_ns (l1 - l2) 0]" 
+| "constraint_to_qdelta_constraint (EQPP l1 l2) = [LEQ_ns (l1 - l2) 0, GEQ_ns (l1 - l2) 0]"
 
 primrec
   i_constraint_to_qdelta_constraint:: "'i i_constraint \<Rightarrow> ('i,QDelta) i_ns_constraint list" where
-  "i_constraint_to_qdelta_constraint (i,c) = map (Pair i) (constraint_to_qdelta_constraint c)" 
+  "i_constraint_to_qdelta_constraint (i,c) = map (Pair i) (constraint_to_qdelta_constraint c)"
 
 definition
   to_ns :: "'i i_constraint list \<Rightarrow> ('i,QDelta) i_ns_constraint list" where
@@ -6867,31 +6866,31 @@ abbreviation vars_list_constraints where
 
 definition
   from_ns ::"(var, QDelta) mapping \<Rightarrow> QDelta ns_constraint list \<Rightarrow> (var, rat) mapping" where
-  "from_ns vl cs \<equiv> let \<delta> = \<delta>0_val_min cs \<langle>vl\<rangle> in 
+  "from_ns vl cs \<equiv> let \<delta> = \<delta>0_val_min cs \<langle>vl\<rangle> in
       Mapping.tabulate (vars_list_constraints cs) (\<lambda> var. val (\<langle>vl\<rangle> var) \<delta>)"
 
-global_interpretation SolveExec'Default: SolveExec' to_ns from_ns solve_exec_ns_code 
+global_interpretation SolveExec'Default: SolveExec' to_ns from_ns solve_exec_ns_code
   defines solve_exec_code = SolveExec'Default.solve_exec
     and solve_code = SolveExec'Default.solve
-proof unfold_locales 
+proof unfold_locales
   fix ics :: "'i i_constraint list" and v' and I
-  let ?to_ns = "to_ns ics" 
-  let ?flat = "set ?to_ns" 
+  let ?to_ns = "to_ns ics"
+  let ?flat = "set ?to_ns"
   assume sat: "(I,\<langle>v'\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s ?flat"
-  define cs where "cs = map snd (filter (\<lambda> ic. fst ic \<in> I) ics)" 
-  define to_ns' where to_ns: "to_ns' = (\<lambda> l. concat (map constraint_to_qdelta_constraint l))" 
+  define cs where "cs = map snd (filter (\<lambda> ic. fst ic \<in> I) ics)"
+  define to_ns' where to_ns: "to_ns' = (\<lambda> l. concat (map constraint_to_qdelta_constraint l))"
   show "(I,\<langle>from_ns v' (flat_list ?to_ns)\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics"  unfolding i_satisfies_cs.simps
   proof
     let ?listf = "map (\<lambda>C. case C of (LEQ_ns l r) \<Rightarrow> (l\<lbrace>\<langle>v'\<rangle>\<rbrace>, r)
                                   | (GEQ_ns l r) \<Rightarrow> (r, l\<lbrace>\<langle>v'\<rangle>\<rbrace>)
                      )"
-    let ?to_ns = "\<lambda> ics. to_ns' (map snd (filter (\<lambda>ic. fst ic \<in> I) ics))" 
+    let ?to_ns = "\<lambda> ics. to_ns' (map snd (filter (\<lambda>ic. fst ic \<in> I) ics))"
     let ?list = "?listf (to_ns' cs)"              (* index-filtered list *)
     let ?f_list = "flat_list (to_ns ics)"
     let ?flist = "?listf ?f_list" (* full list *)
     obtain i_list where i_list: "?list = i_list" by force
     obtain f_list where f_list: "?flist = f_list" by force
-    have if_list: "set i_list \<subseteq> set f_list" unfolding 
+    have if_list: "set i_list \<subseteq> set f_list" unfolding
         i_list[symmetric] f_list[symmetric] to_ns_def to_ns set_map set_concat cs_def
       by (intro image_mono, force)
     have "\<And> qd1 qd2. (qd1, qd2) \<in> set ?list \<Longrightarrow> qd1 \<le> qd2"
@@ -6905,10 +6904,10 @@ proof unfold_locales
         then show ?case
           by (simp add: to_ns)
       next
-        case (Cons h t) 
+        case (Cons h t)
         obtain i c where h: "h = (i,c)" by force
-        from Cons(2) consider (ic) "(qd1,qd2) \<in> set (?listf (?to_ns [(i,c)]))" 
-          | (t) "(qd1,qd2) \<in> set (?listf (?to_ns t))" 
+        from Cons(2) consider (ic) "(qd1,qd2) \<in> set (?listf (?to_ns [(i,c)]))"
+          | (t) "(qd1,qd2) \<in> set (?listf (?to_ns t))"
           unfolding to_ns h set_map set_concat by fastforce
         then show ?case
         proof cases
@@ -6919,7 +6918,7 @@ proof unfold_locales
           note ic = ic[unfolded to_ns, simplified]
           from ic have i: "(i \<in> I) = True" by (cases "i \<in> I", auto)
           note ic = ic[unfolded i if_True, simplified]
-          from Cons(3)[unfolded h] i have "\<langle>v'\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s set (to_ns' [c])"  
+          from Cons(3)[unfolded h] i have "\<langle>v'\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s set (to_ns' [c])"
             unfolding i_satisfies_ns_constraints.simps unfolding to_ns to_ns_def by force
           with ic show ?thesis by (induct c) (auto simp add: to_ns)
         qed
@@ -6930,8 +6929,8 @@ proof unfold_locales
       by (simp add: delta_gt_zero delta_min[of i_list])
     have "\<delta>_min ?flist \<le> \<delta>_min ?list" unfolding f_list i_list
       by (rule delta_min_mono[OF if_list])
-    from l1[OF delta_gt_zero this] 
-    have l1: "\<forall>qd1 qd2. (qd1, qd2) \<in> set ?list \<longrightarrow> val qd1 (\<delta>_min f_list) \<le> val qd2 (\<delta>_min f_list)" 
+    from l1[OF delta_gt_zero this]
+    have l1: "\<forall>qd1 qd2. (qd1, qd2) \<in> set ?list \<longrightarrow> val qd1 (\<delta>_min f_list) \<le> val qd2 (\<delta>_min f_list)"
       unfolding f_list .
     have "\<delta>0_val_min (flat_list (to_ns ics)) \<langle>v'\<rangle> = \<delta>_min f_list" unfolding f_list[symmetric]
     proof(induct ics)
@@ -6946,9 +6945,9 @@ proof unfold_locales
     then have l2: "from_ns v' ?f_list = Mapping.tabulate (vars_list_constraints ?f_list) (\<lambda> var. val (\<langle>v'\<rangle> var) (\<delta>_min f_list))"
       by (auto simp add: from_ns_def)
     fix c
-    assume "c \<in> restrict_to I (set ics)" 
-    then obtain i where i: "i \<in> I" and mem: "(i,c) \<in> set ics" by auto 
-    from mem show "\<langle>from_ns v' ?f_list\<rangle> \<Turnstile>\<^sub>c c" 
+    assume "c \<in> restrict_to I (set ics)"
+    then obtain i where i: "i \<in> I" and mem: "(i,c) \<in> set ics" by auto
+    from mem show "\<langle>from_ns v' ?f_list\<rangle> \<Turnstile>\<^sub>c c"
     proof (induct c)
       case (LT lll rrr)
       then have "(lll\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta rrr (-1))) \<in> set ?list" using i unfolding cs_def
@@ -6957,7 +6956,7 @@ proof unfold_locales
         using l1
         by simp
       moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -6981,7 +6980,7 @@ proof unfold_locales
         using l1
         by simp
       moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -7006,7 +7005,7 @@ proof unfold_locales
         using l1
         by simp
       moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -7030,7 +7029,7 @@ proof unfold_locales
         using l1
         by simp
       moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -7056,7 +7055,7 @@ proof unfold_locales
         using l1
         by simp_all
       moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -7081,7 +7080,7 @@ proof unfold_locales
         using l1
         by simp
       moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -7106,7 +7105,7 @@ proof unfold_locales
         using l1
         by simp
       moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -7131,7 +7130,7 @@ proof unfold_locales
         using l1
         by simp
       moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -7156,7 +7155,7 @@ proof unfold_locales
         using l1
         by simp
       moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -7183,7 +7182,7 @@ proof unfold_locales
         using l1
         by simp_all
       moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> = 
+      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
             (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
       proof (rule valuate_depend, rule)
         fix x
@@ -7200,7 +7199,7 @@ proof unfold_locales
         by (auto simp add: valuate_rat_valuate)
       then show ?case
         by (simp add: val_def valuate_minus)
-    qed 
+    qed
   qed
 next
   fix cs I mode
@@ -7212,13 +7211,13 @@ next
   assume unsat: "unsat_core_ns mode I (set (to_ns cs))"
   note unsat = unsat[unfolded unsat_core_ns_def indices]
   hence indices: "mode \<longrightarrow> I \<subseteq> fst ` set cs" by auto
-  show "unsat_core mode I (set cs)" 
+  show "unsat_core mode I (set cs)"
     unfolding unsat_core_def
   proof (intro conjI indices, clarify)
     fix v
     assume v: "(I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs"
     let ?v = "\<lambda>var. QDelta.QDelta (v var) 0"
-    have "(I,?v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s (set (to_ns cs))" using v 
+    have "(I,?v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s (set (to_ns cs))" using v
     proof(induct cs)
       case (Cons ic cs)
       obtain i c where ic: "ic = (i,c)" by force
@@ -7227,9 +7226,9 @@ next
       {
         fix jn
         assume i: "i \<in> I" and "jn \<in> set (to_ns [(i,c)])"
-        then have "jn \<in> set (i_constraint_to_qdelta_constraint (i,c))" 
+        then have "jn \<in> set (i_constraint_to_qdelta_constraint (i,c))"
           unfolding to_ns_def by auto
-        then obtain n where n: "n \<in> set (constraint_to_qdelta_constraint c)" 
+        then obtain n where n: "n \<in> set (constraint_to_qdelta_constraint c)"
           and jn: "jn = (i,n)" by force
         from c[OF i] have c: "v \<Turnstile>\<^sub>c c" by force
         from c n jn have "?v \<Turnstile>\<^sub>n\<^sub>s snd jn"
@@ -7239,9 +7238,9 @@ next
       show ?case unfolding i_satisfies_ns_constraints.simps
       proof (intro ballI)
         fix x
-        assume "x \<in> snd ` (set (to_ns (ic # cs)) \<inter> I \<times> UNIV)" 
-        then consider (1) "x \<in> snd ` (set (to_ns cs) \<inter> I \<times> UNIV)" 
-          | (2) "x \<in> snd ` (set (to_ns [(i,c)]) \<inter> I \<times> UNIV)" 
+        assume "x \<in> snd ` (set (to_ns (ic # cs)) \<inter> I \<times> UNIV)"
+        then consider (1) "x \<in> snd ` (set (to_ns cs) \<inter> I \<times> UNIV)"
+          | (2) "x \<in> snd ` (set (to_ns [(i,c)]) \<inter> I \<times> UNIV)"
           unfolding ic to_ns_def by auto
         then show "?v \<Turnstile>\<^sub>n\<^sub>s x"
         proof cases
@@ -7249,7 +7248,7 @@ next
           then show ?thesis using IH by auto
         next
           case 2
-          then obtain jn where x: "snd jn = x" and "jn \<in> set (to_ns [(i,c)]) \<inter> I \<times> UNIV" 
+          then obtain jn where x: "snd jn = x" and "jn \<in> set (to_ns [(i,c)]) \<inter> I \<times> UNIV"
             by auto
           with main[of jn] show ?thesis unfolding to_ns_def by auto
         qed
@@ -7261,7 +7260,7 @@ qed
 
 (* cleanup *)
 
-hide_const (open) le lt LE GE LB UB LI UI LBI UBI UBI_upd 
+hide_const (open) le lt LE GE LB UB LI UI LBI UBI UBI_upd
   inv zero Var add flat flat_list restrict_to look upd
 
 
@@ -7275,17 +7274,17 @@ text \<open>Simplex version with indexed constraints as input\<close>
 definition simplex_index :: "'i i_constraint list \<Rightarrow> 'i list + (var, rat) mapping" where
   "simplex_index = solve_exec_code"
 
-lemma simplex_index: 
+lemma simplex_index:
   "simplex_index cs = Unsat I \<Longrightarrow> set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" \<comment> \<open>unsat core\<close>
   "simplex_index cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s (snd ` set cs)" \<comment> \<open>satisfying assingment\<close>
 proof (unfold simplex_index_def)
-  assume "solve_exec_code cs = Unsat I" 
+  assume "solve_exec_code cs = Unsat I"
   from SolveExec'Default.simplex_unsat0[OF this]
   have core: "unsat_core True (set I) (set cs)" by auto
-  then show "set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" 
+  then show "set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
     unfolding unsat_core_def by auto
 next
-  assume "solve_exec_code cs = Sat v" 
+  assume "solve_exec_code cs = Sat v"
   from SolveExec'Default.simplex_sat0[OF this]
   show "\<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s (snd ` set cs)" .
 qed
@@ -7294,23 +7293,23 @@ text \<open>Simplex version where indices will be created\<close>
 
 definition simplex where "simplex cs = simplex_index (zip [0..<length cs] cs)"
 
-lemma simplex: 
+lemma simplex:
   "simplex cs = Unsat I \<Longrightarrow> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s set cs)" \<comment> \<open>unsat of original constraints\<close>
   "simplex cs = Unsat I \<Longrightarrow> set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})" \<comment> \<open>unsat core\<close>
   "simplex cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s set cs"  \<comment> \<open>satisfying assingment\<close>
 proof (unfold simplex_def)
-  let ?cs = "zip [0..<length cs] cs" 
-  assume "simplex_index ?cs = Unsat I" 
+  let ?cs = "zip [0..<length cs] cs"
+  assume "simplex_index ?cs = Unsat I"
   from simplex_index(1)[OF this]
-  have index: "set I \<subseteq> {0 ..< length cs}" and 
+  have index: "set I \<subseteq> {0 ..< length cs}" and
     "\<nexists>v. v \<Turnstile>\<^sub>c\<^sub>s (snd ` (set ?cs \<inter> set I \<times> UNIV))" by (auto simp flip: set_map)
   note unsat = unsat_mono[OF this(2)]
   show "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s set cs)"
-    by (rule unsat, auto simp: set_zip) 
-  show "set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})" 
+    by (rule unsat, auto simp: set_zip)
+  show "set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})"
     by (intro conjI[OF index], rule unsat, auto simp: set_zip)
 next
-  assume "simplex_index (zip [0..<length cs] cs) = Sat v" 
+  assume "simplex_index (zip [0..<length cs] cs) = Sat v"
   from simplex_index(2)[OF this]
   show "\<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s set cs" by (auto simp flip: set_map)
 qed
@@ -7323,13 +7322,13 @@ lemma "case simplex [LTPP (lp_monom 2 1) (lp_monom 3 2 - lp_monom 3 0), GT (lp_m
 
 text \<open>check unsat core\<close>
 
-lemma 
+lemma
   "case simplex_index [
-    (1 :: int, LT (lp_monom 1 1) 4), 
+    (1 :: int, LT (lp_monom 1 1) 4),
     (2, GTPP (lp_monom 2 1) (lp_monom 1 2)),
-    (3, EQPP (lp_monom 1 1) (lp_monom 2 2)), 
-    (4, GT (lp_monom 2 2) 5), 
-    (5, GT (lp_monom 3 0) 7)] 
+    (3, EQPP (lp_monom 1 1) (lp_monom 2 2)),
+    (4, GT (lp_monom 2 2) 5),
+    (5, GT (lp_monom 3 0) 7)]
     of Sat _ \<Rightarrow> False | Unsat I \<Rightarrow> set I = {1,3,4}" \<comment> \<open>Constraints 1,3,4 are unsat core\<close>
-  by eval 
+  by eval
 end
