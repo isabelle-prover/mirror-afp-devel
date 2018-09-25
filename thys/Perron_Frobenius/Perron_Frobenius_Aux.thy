@@ -420,12 +420,12 @@ lemma norm1_ge_norm: "norm1 v \<ge> norm v" unfolding norm1_def norm_vec_def
 text \<open>The following continuity lemmas have been proven with hints from Fabian Immler.\<close>
 
 lemma tendsto_matrix_vector_mult[tendsto_intros]:
-  "(( *v) (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A *v v) (at v within S)"
+  "((*v) (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A *v v) (at v within S)"
   unfolding matrix_vector_mult_def[abs_def]
   by (auto intro!: tendsto_intros)
 
 lemma tendsto_matrix_matrix_mult[tendsto_intros]:
-  "(( ** ) (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A ** B) (at B within S)"
+  "((**) (A :: 'a :: real_normed_algebra_1 ^ 'n ^ 'k) \<longlongrightarrow> A ** B) (at B within S)"
   unfolding matrix_matrix_mult_def[abs_def]
   by (auto intro!: tendsto_intros)
 

@@ -1207,7 +1207,7 @@ context
       for any type they shall be used with. By default, they are only 
       registered for @{typ int} and @{typ nat}.\<close>
   notes [sepref_import_param] = IdI[of "PR_CONST (2::'a)"]
-  notes [sepref_import_param] = IdI[of "( * )::'a\<Rightarrow>_", folded fun_rel_id_simp]
+  notes [sepref_import_param] = IdI[of "(*)::'a\<Rightarrow>_", folded fun_rel_id_simp]
 begin
 
 sepref_definition mtx_dup_diag_f1 is "uncurry (RETURN oo (mtx_dup_diag_f::_\<Rightarrow>'a\<Rightarrow>_))" :: "(prod_assn nat_assn nat_assn)\<^sup>k*\<^sub>aid_assn\<^sup>k \<rightarrow>\<^sub>a id_assn"

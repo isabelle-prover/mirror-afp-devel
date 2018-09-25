@@ -62,7 +62,7 @@ proof -
 qed
 
 lift_definition st_mat_times_st_vec :: "'i :: finite st_mat \<Rightarrow> 'i st_vec \<Rightarrow> 'i st_vec" 
-  (infixl "*st" 70) is "( *v)" 
+  (infixl "*st" 70) is "(*v)" 
   using right_stoch_mat_mult_stoch_vec non_neg_mat_mult_non_neg_vec by auto
 
 lift_definition to_st_vec :: "real ^ 'i \<Rightarrow> 'i st_vec" is 

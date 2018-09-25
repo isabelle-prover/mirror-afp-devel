@@ -405,7 +405,7 @@ proof -
             apply (rule eventually_sequentiallyI[of "Suc ji"])
             unfolding prod_pow[symmetric] prod.distrib[symmetric] mult.assoc[symmetric]
             unfolding prod_pow mult.assoc
-            by (rule arg_cong2[of _ _ _ _ "( * )"], rule prod.cong, auto simp: ring_distribs, 
+            by (rule arg_cong2[of _ _ _ _ "(*)"], rule prod.cong, auto simp: ring_distribs, 
               insert small, subst power_diff, auto simp: divide_inverse)
           have 0: "0 = (\<Prod>ia = 0..<ji. (1 - of_nat ia * 0) / of_nat (ji - ia)) * (0 * ?laji)" by simp
           show "?f \<longlonglongrightarrow> 0" unfolding tendsto_cong[OF fg]

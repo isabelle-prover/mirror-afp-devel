@@ -1393,7 +1393,7 @@ proof -
                   - (a ^ Suc n / of_nat (Suc n)) + (a ^ n / 2 + sum (\<lambda>n. ?f (2 * n)) {1..Suc n})"
     by simp
 
-  also have "sum (\<lambda>n. ?f (2 * n)) {1..Suc n} = sum ?f (( * ) 2 ` {1..Suc n})"
+  also have "sum (\<lambda>n. ?f (2 * n)) {1..Suc n} = sum ?f ((*) 2 ` {1..Suc n})"
     by (intro sum.reindex_bij_witness[of _ "\<lambda>i. i div 2" "\<lambda>i. 2*i"]) auto
   also have "\<dots> = (\<Sum>i=2..2*n+2. ?f i)"
   proof (intro sum.mono_neutral_left ballI, goal_cases)
@@ -1575,7 +1575,7 @@ proof -
                     of_real (exp ((n+a) * s)))"
     unfolding set_lebesgue_integral_def
   proof (subst integral_distr)
-    show "( * ) (real n + a) \<in> lebesgue \<rightarrow>\<^sub>M lebesgue"
+    show "(*) (real n + a) \<in> lebesgue \<rightarrow>\<^sub>M lebesgue"
       using lebesgue_measurable_scaling[of "real n + a", where ?'a = real]
       unfolding real_scaleR_def .
   next

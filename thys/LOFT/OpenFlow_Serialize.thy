@@ -10,7 +10,7 @@ definition "serialization_test_entry \<equiv> OFEntry 7 {EtherDst 0x1, IPv4Dst (
 
 
 
-value "(map ((<<) (1::48 word) \<circ> ( * ) 8) \<circ> rev) [0..<6]"
+value "(map ((<<) (1::48 word) \<circ> (*) 8) \<circ> rev) [0..<6]"
 
 definition "serialize_mac (m::48 word) \<equiv> (intersperse (CHR '':'') \<circ> map (hex_string_of_word 1 \<circ> (\<lambda>h. (m >> h * 8) && 0xff)) \<circ> rev) [0..<6]"
 lemma "serialize_mac 0xdeadbeefcafe = ''de:ad:be:ef:ca:fe''" by eval

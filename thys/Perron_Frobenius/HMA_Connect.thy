@@ -317,7 +317,7 @@ lemma dim_col_transfer_rule:
   "HMA_M A (A' :: 'a ^ 'nc ^ 'nr) \<Longrightarrow> (=) (dim_col A) (CARD('nc))"
   unfolding HMA_M_def by auto
 
-lemma HMA_M_mult [transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) (( * )) (( ** ))"
+lemma HMA_M_mult [transfer_rule]: "(HMA_M ===> HMA_M ===> HMA_M) ((*)) ((**))"
 proof -
   {
     fix A B :: "'a :: semiring_1 mat" and A' :: "'a ^ 'n  ^ 'nr" and B' :: "'a ^ 'nc ^ 'n"
@@ -331,12 +331,12 @@ proof -
 qed
       
 
-lemma HMA_V_smult [transfer_rule]: "((=) ===> HMA_V ===> HMA_V) (\<cdot>\<^sub>v) (( *s))"
+lemma HMA_V_smult [transfer_rule]: "((=) ===> HMA_V ===> HMA_V) (\<cdot>\<^sub>v) ((*s))"
   unfolding smult_vec_def 
   unfolding rel_fun_def HMA_V_def from_hma\<^sub>v_def
   by auto
 
-lemma HMA_M_mult_vec [transfer_rule]: "(HMA_M ===> HMA_V ===> HMA_V) (( *\<^sub>v)) (( *v))"
+lemma HMA_M_mult_vec [transfer_rule]: "(HMA_M ===> HMA_V ===> HMA_V) ((*\<^sub>v)) ((*v))"
 proof -
   {
     fix A :: "'a :: semiring_1 mat" and v :: "'a Matrix.vec"

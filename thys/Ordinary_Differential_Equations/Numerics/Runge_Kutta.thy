@@ -84,7 +84,7 @@ lemma
   assumes nonneg: "\<And>x. x \<in> cbox a b \<Longrightarrow> f x \<ge> 0"
   assumes convex: "convex G"
   assumes bounded: "bounded G"
-  shows "infdist P (( *\<^sub>R) I ` G) = 0"
+  shows "infdist P ((*\<^sub>R) I ` G) = 0"
 proof (rule dense_eq0_I, cases)
   fix e'::real assume e0: "0 < e'"
   assume "G \<noteq> {}"
@@ -148,7 +148,7 @@ proof (rule dense_eq0_I, cases)
   ultimately
   have "dist P (I *\<^sub>R y) \<le> e + norm y * e"
     by (rule dist_triangle_le[OF add_mono])
-  with _ have "infdist P (( *\<^sub>R) I ` G) \<le> e + norm y * e"
+  with _ have "infdist P ((*\<^sub>R) I ` G) \<le> e + norm y * e"
     using y(1)
     by (intro infdist_le2) auto
   also have "norm y * e < bnd * e"
@@ -159,7 +159,7 @@ proof (rule dense_eq0_I, cases)
     by (auto simp: e_def min_def divide_simps)
   also have "e \<le> e' / 2" by (simp add: e_def)
   also have "e' / 2 + e' / 2 = e'" by simp
-  finally show "\<bar>infdist P (( *\<^sub>R) I ` G)\<bar> \<le> e'"
+  finally show "\<bar>infdist P ((*\<^sub>R) I ` G)\<bar> \<le> e'"
     by (auto simp: infdist_nonneg)
 qed (simp add: infdist_def)
 
@@ -173,9 +173,9 @@ lemma
   assumes closed: "closed G"
   assumes convex: "convex G"
   assumes nonempty: "cbox a b \<noteq> {}"
-  shows "P \<in> ( *\<^sub>R) I ` G"
+  shows "P \<in> (*\<^sub>R) I ` G"
 proof -
-  let ?IG = "( *\<^sub>R) I ` G"
+  let ?IG = "(*\<^sub>R) I ` G"
   from bounded closed have "bounded ?IG" "closed ?IG"
     by (simp_all add: bounded_scaling closed_scaling)
   have "G \<noteq> {}" using nonempty G by auto
@@ -192,7 +192,7 @@ lemma
   assumes nonneg: "\<And>x. x \<in> cbox a b \<Longrightarrow> f x \<ge> 0"
   assumes bounded: "bounded (g ` cbox a b)"
   assumes nonempty: "cbox a b \<noteq> {}"
-  shows "P \<in> ( *\<^sub>R) I ` closure (convex hull (g ` cbox a b))"
+  shows "P \<in> (*\<^sub>R) I ` closure (convex hull (g ` cbox a b))"
 proof -
   have "x \<in> cbox a b \<Longrightarrow> g x \<in> closure (convex hull g ` cbox a b)" for x
     by (meson closure_subset hull_subset imageI subsetCE)
@@ -531,7 +531,7 @@ next
     by (simp add: eval_nat_numeral diff_def)
 
   define F' where "F' \<equiv> (\<lambda>y. (2 / h\<^sup>2) *\<^sub>R (y - discrete_evolution (euler_increment f) (t + h) t (x t))) ` R"
-  have "x (t + h) - (x t + h *\<^sub>R f t (x t)) \<in> ( *\<^sub>R) (h\<^sup>2 / 2) ` F'"
+  have "x (t + h) - (x t + h *\<^sub>R f t (x t)) \<in> (*\<^sub>R) (h\<^sup>2 / 2) ` F'"
     apply (rule integral_by_parts_in_bounded_closed_convex_set[OF integral taylor[unfolded interval_cbox]])
     subgoal using R \<open>h \<noteq> 0\<close> \<open>0 \<le> h\<close> subset by (force simp: F'_def)
     by (auto intro!: bounded_scaleR_image bounded_minus_image closed_injective_image_subspace bcc \<open>0 \<le> h\<close>
@@ -837,7 +837,7 @@ next
     using line_in
     by auto
   have 1: "x (t + h) - x t - h *\<^sub>R f (t, x t) - (h\<^sup>2 / 2) *\<^sub>R f' (t, x t) $ (1, f (t, x t))
-    \<in> ( *\<^sub>R) (1 / 3) `
+    \<in> (*\<^sub>R) (1 / 3) `
    closure
     (convex hull
      (\<lambda>xa. (h ^ 3 / 2) *\<^sub>R
@@ -860,7 +860,7 @@ next
          simp: image_constant[of 0])
   have 2: "discrete_evolution (rk2_increment p (\<lambda>t x. f (t, x))) (t + h) t (x t) -
       x t - h *\<^sub>R f (t, x t) - (h\<^sup>2 / 2) *\<^sub>R f' (t, x t) $ (1, f (t, x t)) \<in>
-    ( *\<^sub>R) (1 / 2) ` closure (convex hull
+    (*\<^sub>R) (1 / 2) ` closure (convex hull
        (\<lambda>s. (h ^ 3 * p / 2) *\<^sub>R
              f''
               (t + s * (h * p),
@@ -876,7 +876,7 @@ next
     {a - b|a b.
    a \<in>
    closure
-    (convex hull ( *\<^sub>R) (1/3) `
+    (convex hull (*\<^sub>R) (1/3) `
      (\<lambda>xa. (h ^ 3 / 2) *\<^sub>R
             (f'' (h * xa + t, x (h * xa + t)) $
              (1,
@@ -890,7 +890,7 @@ next
                f (h * xa + t,
                   x (h * xa + t)))))) `
      cbox 0 1) \<and>
-   b \<in> closure (convex hull ( *\<^sub>R) (1 / 2) `
+   b \<in> closure (convex hull (*\<^sub>R) (1 / 2) `
        (\<lambda>s. (h ^ 3 * p / 2) *\<^sub>R
              f''
               (t + s * (h * p),
@@ -909,7 +909,7 @@ next
   have "closure
     (convex hull
      {xa - y |xa y.
-      xa \<in> ( *\<^sub>R) (1 / 3) `
+      xa \<in> (*\<^sub>R) (1 / 3) `
             (\<lambda>xa. (h ^ 3 / 2) *\<^sub>R
                    (f'' (h * xa + t, x (h * xa + t)) $
                     (1, f (h * xa + t, x (h * xa + t))) $
@@ -918,7 +918,7 @@ next
                     (0, f' (h * xa + t, x (h * xa + t)) $
                         (1, f (h * xa + t, x (h * xa + t)))))) `
             cbox 0 1 \<and>
-      y \<in> ( *\<^sub>R) (1 / 2) `
+      y \<in> (*\<^sub>R) (1 / 2) `
            (\<lambda>s. (h ^ 3 * p / 2) *\<^sub>R
                  f'' (t + s * (h * p), x t + (s * (h * p)) *\<^sub>R f (t, x t)) $
                  (1, f (t, x t)) $
@@ -1033,7 +1033,7 @@ proof
   qed (auto intro!: less_imp_le[OF \<open>0 < h\<close>] bounded_plus_image bounded_scaleR_image bounded_cbox
     closed_scaling convex_scaling convex_box simp: image_constant_conv closed_translation_iff)
   then have "x (t + h) - discrete_evolution (euler_increment f) (t + h) t (x t) \<in>
-      ( *\<^sub>R) (h\<^sup>2 / 2) ` cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)"
+      (*\<^sub>R) (h\<^sup>2 / 2) ` cbox (- (B' * (B + 1)) *\<^sub>R One) ((B' * (B + 1)) *\<^sub>R One)"
     by auto
   also have "\<dots> = cbox (- ((h\<^sup>2 / 2) * (B' * (B + 1))) *\<^sub>R One) (((h\<^sup>2 / 2) * (B' * (B + 1))) *\<^sub>R One)"
     using f_bound_nonneg f'_bound_nonneg

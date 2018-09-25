@@ -69,7 +69,7 @@ code_printing constant "(+) :: double \<Rightarrow> double \<Rightarrow> double"
   (SML) "Real.+ ((_), (_))" and (OCaml) "Pervasives.( +. )"
 declare plus_double_def[code del]
 
-code_printing constant "( * ) :: double \<Rightarrow> double \<Rightarrow> double" \<rightharpoonup>
+code_printing constant "(*) :: double \<Rightarrow> double \<Rightarrow> double" \<rightharpoonup>
   (SML) "Real.* ((_), (_))" and (OCaml) "Pervasives.( *. )"
 declare times_double_def [code del]
 

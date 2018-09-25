@@ -506,7 +506,7 @@ proof -
         unfolding signof_permutation_insert[OF p, unfolded n, OF a a] by simp
       show "g (permutation_insert a a p) a = signof p * (\<Prod>i = 0..<?n. ?B $$ (i, p i))" 
         unfolding g_def sign
-      proof (rule arg_cong[of _ _ "( * ) (signof p)"])
+      proof (rule arg_cong[of _ _ "(*) (signof p)"])
         have "(\<Prod>i\<in>{0..<n} - {a}. Sum $$ (i, ?p i)) = 
            prod (($$) Sum) ((\<lambda>x. (x, ?p x)) ` ({0..<n} - {a}))"
           unfolding prod.reindex[OF inj_on_convol_ident, of _ ?p] o_def ..

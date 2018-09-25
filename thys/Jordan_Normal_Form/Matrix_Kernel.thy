@@ -112,7 +112,7 @@ sublocale Ker: vectorspace class_ring VK
     and [simp]: "zero VK = 0\<^sub>v nc"
     and [simp]: "module.smult VK = (\<cdot>\<^sub>v)"
     and "carrier class_ring = UNIV"
-    and "monoid.mult class_ring = ( * )"
+    and "monoid.mult class_ring = (*)"
     and "add class_ring = (+)"
     and "one class_ring = 1"
     and "zero class_ring = 0"
@@ -497,10 +497,10 @@ lemma mat_kernel_mult_right_gen_set: assumes A: "A \<in> carrier_mat nr nc"
   and C: "C \<in> carrier_mat nc nc"
   and inv: "B * C = 1\<^sub>m nc"
   and gen_set: "kernel.gen_set nc (A * B) gen" and gen: "gen \<subseteq> mat_kernel (A * B)"
-  shows "kernel.gen_set nc A ((( *\<^sub>v) B) ` gen)" "( *\<^sub>v) B ` gen \<subseteq> mat_kernel A" "card ((( *\<^sub>v) B) ` gen) = card gen"
+  shows "kernel.gen_set nc A (((*\<^sub>v) B) ` gen)" "(*\<^sub>v) B ` gen \<subseteq> mat_kernel A" "card (((*\<^sub>v) B) ` gen) = card gen"
 proof -
   let ?AB = "A * B"
-  let ?gen = "(( *\<^sub>v) B) ` gen"
+  let ?gen = "((*\<^sub>v) B) ` gen"
   from A B have AB: "A * B \<in> carrier_mat nr nc" by auto
   from B have dimB: "dim_row B = nc" by auto
   from inv B C have CB: "C * B = 1\<^sub>m nc" by (metis mat_mult_left_right_inverse)
@@ -532,7 +532,7 @@ proof -
         assoc_mult_mat_vec[symmetric, OF C B v'] CB
       by auto
   } note inj = this
-  hence inj_gen: "inj_on (( *\<^sub>v) B) gen" unfolding inj_on_def by auto
+  hence inj_gen: "inj_on ((*\<^sub>v) B) gen" unfolding inj_on_def by auto
   show "card ?gen = card gen" using inj_gen by (rule card_image)
   {
     fix v
@@ -547,7 +547,7 @@ proof -
     with gen_set have "?Cv \<in> AB.span gen" by auto
     from this[unfolded AB.Ker.span_def] obtain a gen' where 
       Cv: "?Cv = AB.lincomb a gen'" and sub: "gen' \<subseteq> gen" and fin: "finite gen'" by auto
-    let ?gen' = "(( *\<^sub>v) B) ` gen'"
+    let ?gen' = "((*\<^sub>v) B) ` gen'"
     from sub gen have gen': "gen' \<subseteq> mat_kernel ?AB" by auto
     have lin1: "AB.lincomb a gen' \<in> carrier_vec nc"
       using AB.Ker.lincomb_closed[OF gen', of a]
@@ -569,14 +569,14 @@ proof -
       fix i
       assume i: "i < nc"
       with dimB have ii: "i < dim_row B" by auto
-      from sub inj have inj: "inj_on (( *\<^sub>v) B) gen'" unfolding inj_on_def by auto
+      from sub inj have inj: "inj_on ((*\<^sub>v) B) gen'" unfolding inj_on_def by auto
       {
         fix v
         assume "v \<in> gen'"
         with gen'nc have v: "v \<in> carrier_vec nc" by auto
         hence "a' (B *\<^sub>v v) = a v" unfolding a'_def assoc_mult_mat_vec[symmetric, OF C B v] CB by auto
       } note a' = this
-      have "A.Ker.lincomb a' ?gen' $ i = (\<Sum>v\<in>( *\<^sub>v) B ` gen'. a' v * v $ i)"
+      have "A.Ker.lincomb a' ?gen' $ i = (\<Sum>v\<in>(*\<^sub>v) B ` gen'. a' v * v $ i)"
         unfolding A.lincomb_index[OF i genn']  by simp
       also have "\<dots> = (\<Sum>v\<in>gen'. a v * ((B *\<^sub>v v) $ i))"
         by (rule sum.reindex_cong[OF inj refl], auto simp: a')
@@ -597,7 +597,7 @@ proof -
       unfolding A.Ker.span_def by (auto simp: class_field_def intro!: exI[of _ a'] exI[of _ ?gen'])
   }
   hence other_dir: "A.Ker.span ?gen \<supseteq> mat_kernel A" by fastforce
-  from one_dir other_dir show "kernel.gen_set nc A ((( *\<^sub>v) B) ` gen)" by auto
+  from one_dir other_dir show "kernel.gen_set nc A (((*\<^sub>v) B) ` gen)" by auto
 qed
 
 lemma mat_kernel_mult_right_basis: assumes A: "A \<in> carrier_mat nr nc"
@@ -606,11 +606,11 @@ lemma mat_kernel_mult_right_basis: assumes A: "A \<in> carrier_mat nr nc"
   and inv: "B * C = 1\<^sub>m nc"
   and fin: "finite gen"
   and basis: "kernel.basis nc (A * B) gen"
-  shows "kernel.basis nc A ((( *\<^sub>v) B) ` gen)" 
-  "card ((( *\<^sub>v) B) ` gen) = card gen"
+  shows "kernel.basis nc A (((*\<^sub>v) B) ` gen)" 
+  "card (((*\<^sub>v) B) ` gen) = card gen"
 proof -
   let ?AB = "A * B"
-  let ?gen = "(( *\<^sub>v) B) ` gen"
+  let ?gen = "((*\<^sub>v) B) ` gen"
   from A B have AB: "?AB \<in> carrier_mat nr nc" by auto
   from B have dimB: "dim_row B = nc" by auto
   from inv B C have CB: "C * B = 1\<^sub>m nc" by (metis mat_mult_left_right_inverse)
@@ -627,7 +627,7 @@ proof -
   have ABC: "A * B * C = A" using A B C inv by simp
   from kernel_basis_exists[OF A] obtain bas where finb: "finite bas" and bas: "A.basis bas" by auto
   from bas have bas': "A.gen_set bas" "bas \<subseteq> mat_kernel A" unfolding A.Ker.basis_def by auto
-  let ?bas = "( *\<^sub>v) C ` bas"
+  let ?bas = "(*\<^sub>v) C ` bas"
   from mat_kernel_mult_right_gen_set[OF AB C B CB, unfolded ABC, OF bas']
   have bas': "?bas \<subseteq> mat_kernel ?AB" "AB.Ker.span ?bas = mat_kernel ?AB" "card ?bas = card bas" by auto
   from finb bas have cardb: "A.dim = card bas" by (rule A.Ker.dim_basis)
@@ -652,7 +652,7 @@ proof -
   interpret A: kernel nr nc A
     by (unfold_locales, rule A)
   from kernel_basis_exists[OF AB] obtain bas where finb: "finite bas" and bas: "AB.basis bas" by auto
-  let ?bas = "(( *\<^sub>v) B) ` bas"
+  let ?bas = "((*\<^sub>v) B) ` bas"
   from mat_kernel_mult_right_basis[OF A B C BC finb bas] finb
   have bas': "A.basis ?bas" and finb': "finite ?bas" and card: "card ?bas = card bas" by auto
   show "AB.dim = A.dim" unfolding A.Ker.dim_basis[OF finb' bas'] AB.Ker.dim_basis[OF finb bas] card ..

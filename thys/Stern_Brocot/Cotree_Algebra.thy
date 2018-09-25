@@ -53,7 +53,7 @@ instance ..
 end
 
 instantiation tree :: (times) times begin
-definition [applicative_unfold]: "times x y = pure ( * ) \<diamondop> x \<diamondop> (y :: 'a tree)"
+definition [applicative_unfold]: "times x y = pure (*) \<diamondop> x \<diamondop> (y :: 'a tree)"
 instance ..
 end
 

@@ -18,7 +18,7 @@ lemma charpoly_of_real: "charpoly (map_matrix complex_of_real A) = map_poly of_r
 
 context includes lifting_syntax
 begin
-lemma HMA_M_smult[transfer_rule]: "((=) ===> HMA_M ===> HMA_M) (\<cdot>\<^sub>m) (( *k))" 
+lemma HMA_M_smult[transfer_rule]: "((=) ===> HMA_M ===> HMA_M) (\<cdot>\<^sub>m) ((*k))" 
   unfolding smult_mat_def 
   unfolding rel_fun_def HMA_M_def from_hma\<^sub>m_def
   by (auto simp: matrix_scalar_mult_def)
@@ -35,7 +35,7 @@ lemma smult_eigen_vector: fixes a :: "'a :: field"
   shows "eigen_vector (a *k A) v (a * x)" 
 proof -
   from assms[unfolded eigen_vector_def] have v: "v \<noteq> 0" and id: "A *v v = x *s v" by auto
-  from arg_cong[OF id, of "( *s) a"] have id: "(a *k A) *v v = (a * x) *s v" 
+  from arg_cong[OF id, of "(*s) a"] have id: "(a *k A) *v v = (a * x) *s v" 
     unfolding scalar_matrix_vector_assoc by simp
   thus "eigen_vector (a *k A) v (a * x)" using v unfolding eigen_vector_def by auto
 qed
@@ -1090,9 +1090,9 @@ lemma maximal_eigen_value_roots_of_unity_rotation:
     "k \<le> CARD('n)"
     "\<exists> f. charpoly A = (monom 1 k - [:sr^k:]) * f 
        \<and> (\<forall> x. poly (map_poly c f) x = 0 \<longrightarrow> cmod x < sr)"
-    "M = ( * ) (c sr) ` (\<lambda> i. (cis (of_nat i * 2 * pi / k))) ` {0 ..< k}"
-    "M = ( * ) (c sr) ` { x :: complex. x ^ k = 1}"
-    "( * ) (cis (2 * pi / k)) ` Spectrum cA = Spectrum cA"
+    "M = (*) (c sr) ` (\<lambda> i. (cis (of_nat i * 2 * pi / k))) ` {0 ..< k}"
+    "M = (*) (c sr) ` { x :: complex. x ^ k = 1}"
+    "(*) (cis (2 * pi / k)) ` Spectrum cA = Spectrum cA"
   unfolding kM
 proof -
   let ?M = "card M" 
@@ -1119,7 +1119,7 @@ proof -
     and card: "?M = ?k"
     and sorted: "sorted a" 
     unfolding s_def a_def by auto
-  have map_s: "map (( * ) (c sr)) (map cis a) = s" unfolding map_map o_def a_def
+  have map_s: "map ((*) (c sr)) (map cis a) = s" unfolding map_map o_def a_def
   proof (rule map_idI)
     fix x
     assume "x \<in> set s" 
@@ -1237,12 +1237,12 @@ proof -
   show cM: "?M \<noteq> 0" unfolding card using k by auto
   let ?f = "(\<lambda> i. cis (of_nat i * 2 * pi / ?M))" 
   note M_list
-  also have "set ?list = ( * ) (c sr) ` (\<lambda> i. cis (of_nat i * Min)) ` {0 ..< ?k}" 
+  also have "set ?list = (*) (c sr) ` (\<lambda> i. cis (of_nat i * Min)) ` {0 ..< ?k}" 
     unfolding set_map image_image 
     by (rule image_cong, insert sr_pos, auto simp: rcis_mult rcis_def)
-  finally show M_cis: "M = ( * ) (c sr) ` ?f ` {0 ..< ?M}" 
+  finally show M_cis: "M = (*) (c sr) ` ?f ` {0 ..< ?M}" 
     unfolding card Min by (simp add: mult.assoc)
-  thus M_pow: "M = ( * ) (c sr) ` { x :: complex. x ^ ?M = 1}" using roots_of_unity[OF cM] by simp
+  thus M_pow: "M = (*) (c sr) ` { x :: complex. x ^ ?M = 1}" using roots_of_unity[OF cM] by simp
   let ?rphi = "rcis sr (2 * pi / ?M)" 
   let ?phi = "cis (2 * pi / ?M)" 
   from Min_M[unfolded Min] 
@@ -1255,7 +1255,7 @@ proof -
   define phi where "phi = ?phi" 
   have phi: "phi \<noteq> 0" unfolding phi_def by auto
   note max = maximal_eigen_value_rotation[OF ev cm, unfolded id phi_def[symmetric]]
-  have "(( * ) phi) ` Spectrum cA = Spectrum cA" (is "?L = ?R")
+  have "((*) phi) ` Spectrum cA = Spectrum cA" (is "?L = ?R")
   proof -
     {
       fix x
@@ -1265,7 +1265,7 @@ proof -
         assume "x \<in> ?R" 
         hence "eigen_value cA x" unfolding Spectrum_def by auto
         from this[folded max(2)[of x]] have "x / phi \<in> ?R" unfolding Spectrum_def by auto      
-        from imageI[OF this, of "( * ) phi"]
+        from imageI[OF this, of "(*) phi"]
         have "x \<in> ?L" using phi by auto
       }
       note this *
@@ -1273,7 +1273,7 @@ proof -
     thus ?thesis by blast
   qed
   from this[unfolded phi_def]
-  show "( * ) (cis (2 * pi / real (card M))) ` Spectrum cA = Spectrum cA" .
+  show "(*) (cis (2 * pi / real (card M))) ` Spectrum cA = Spectrum cA" .
   let ?p = "monom 1 k - [:sr^k:]" 
   let ?cp = "monom 1 k - [:(c sr)^k:]" 
   let ?one = "1 :: complex" 
