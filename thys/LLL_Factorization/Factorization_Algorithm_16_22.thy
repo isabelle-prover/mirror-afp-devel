@@ -713,7 +713,7 @@ proof (rule ccontr)
     by (subst (asm) degree_mult_eq, insert g g0, force, force) simp
   from degree0_coeffs[OF this] g g0
   obtain d where p: "q = [:d:]" and d: "d \<noteq> 0" by fastforce
-  from arg_cong[OF factor, of "( * ) q"] 
+  from arg_cong[OF factor, of "(*) q"] 
   have "q * factor = h * g"
     by (subst g, auto simp: ac_simps)
   hence "smult d factor = h * g" unfolding p h by auto

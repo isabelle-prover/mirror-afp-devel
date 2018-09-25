@@ -171,7 +171,7 @@ proof -
   qed
 qed
 
-lemma karatsuba_mult_poly_code_unfold[code_unfold]: "( * ) = karatsuba_mult_poly" 
+lemma karatsuba_mult_poly_code_unfold[code_unfold]: "(*) = karatsuba_mult_poly" 
   by (intro ext, unfold karatsuba_mult_poly, auto)
 
 text \<open>The following declaration will resolve a race-conflict between @{thm karatsuba_mult_poly_code_unfold}

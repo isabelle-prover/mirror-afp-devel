@@ -57,7 +57,7 @@ lemma (in comm_semiring_1) coprime_0 [simp]:
 
 
 (* TODO: move or...? *)
-lemma dvd_rewrites: "dvd.dvd (( * )) = (dvd)" by (unfold dvd.dvd_def dvd_def, rule)
+lemma dvd_rewrites: "dvd.dvd ((*)) = (dvd)" by (unfold dvd.dvd_def dvd_def, rule)
 
 
 subsection {* Interfacing UFD properties *}
@@ -166,7 +166,7 @@ subsubsection {* Connecting to HOL/Divisibility *}
 
 context comm_semiring_1 begin
 
-  abbreviation "mk_monoid \<equiv> \<lparr>carrier = UNIV - {0}, mult = ( * ), one = 1\<rparr>"
+  abbreviation "mk_monoid \<equiv> \<lparr>carrier = UNIV - {0}, mult = (*), one = 1\<rparr>"
 
   lemma carrier_0[simp]: "x \<in> carrier mk_monoid \<longleftrightarrow> x \<noteq> 0" by auto
 
@@ -179,7 +179,7 @@ context comm_semiring_1 begin
 
   lemma factors: "factors fs y \<longleftrightarrow> prod_list fs = y \<and> Ball (set fs) irred"
   proof -
-    have "prod_list fs = foldr ( * ) fs 1" by (induct fs, auto)
+    have "prod_list fs = foldr (*) fs 1" by (induct fs, auto)
     thus ?thesis unfolding factors_def by auto
   qed
 
@@ -313,7 +313,7 @@ end
 
 lemma (in idom) factorial_monoid_imp_ufd:
   assumes "factorial_monoid (mk_monoid :: 'a monoid)"
-  shows "class.ufd (( * ) :: 'a \<Rightarrow> _) 1 (+) 0 (-) uminus"
+  shows "class.ufd ((*) :: 'a \<Rightarrow> _) 1 (+) 0 (-) uminus"
 proof (unfold_locales)
   interpret factorial_monoid "mk_monoid :: 'a monoid" by (fact assms)
   {
@@ -845,7 +845,7 @@ end
 
 subclass (in ring_gcd) idom_gcd by (unfold_locales, auto)
 
-lemma coprime_rewrites: "comm_monoid_mult.coprime (( * )) 1 = coprime"
+lemma coprime_rewrites: "comm_monoid_mult.coprime ((*)) 1 = coprime"
   apply (intro ext)
   apply (subst comm_monoid_mult.coprime_def')
   apply (unfold_locales)
@@ -857,13 +857,13 @@ locale gcd_condition =
   fixes ty :: "'a :: idom itself"
   assumes gcd_exists: "\<And>a b :: 'a. \<exists>x. is_gcd x a b"
 begin
-  sublocale idom_gcd "( * )" "1 :: 'a" "(+)" 0 "(-)" uminus some_gcd 
-    rewrites "dvd.dvd (( * )) = (dvd)"
-        and "comm_monoid_mult.coprime (( * ) ) 1 = Unique_Factorization.coprime"
+  sublocale idom_gcd "(*)" "1 :: 'a" "(+)" 0 "(-)" uminus some_gcd 
+    rewrites "dvd.dvd ((*)) = (dvd)"
+        and "comm_monoid_mult.coprime ((*) ) 1 = Unique_Factorization.coprime"
   proof-
     have "is_gcd (some_gcd a b) a b" for a b :: 'a by (intro is_gcd_some_gcdI gcd_exists)
     from this[unfolded is_gcd_def]
-    show "class.idom_gcd ( * ) (1 :: 'a) (+) 0 (-) uminus some_gcd" by (unfold_locales, auto simp: dvd_rewrites)
+    show "class.idom_gcd (*) (1 :: 'a) (+) 0 (-) uminus some_gcd" by (unfold_locales, auto simp: dvd_rewrites)
   qed (simp_all add: dvd_rewrites coprime_rewrites)
 end
 

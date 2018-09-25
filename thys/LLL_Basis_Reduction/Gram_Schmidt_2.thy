@@ -2158,7 +2158,7 @@ proof -
       by (subst det_mult[OF Fs], insert Fs, auto)
     also have "\<dots> = gso.Gramian_determinant ?us n" 
       unfolding gso.Gramian_matrix_def gso.Gramian_determinant_def Let_def A_Fs[symmetric]
-      by (rule arg_cong[of _ _ det], rule arg_cong2[of _ _ _ _ "( * )"], insert A, auto)
+      by (rule arg_cong[of _ _ det], rule arg_cong2[of _ _ _ _ "(*)"], insert A, auto)
     also have "\<dots> = (\<Prod>j \<in> set [0 ..< n]. \<parallel>?vs ! j\<parallel>\<^sup>2)"
       by (subst gso.Gramian_determinant) (auto intro!: prod.cong)
     also have "\<dots> = prod_list (map (\<lambda> i. sq_norm (?vs ! i)) [0 ..< n])"

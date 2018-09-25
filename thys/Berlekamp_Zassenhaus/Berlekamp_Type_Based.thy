@@ -1716,13 +1716,13 @@ qed
 (* Also polynomials over a field as a vector space in HOL-Algebra.*)
 
 definition "poly_abelian_monoid
-  = \<lparr>carrier = UNIV::'a mod_ring poly set, monoid.mult = (( * )), one = 1, zero = 0, add = (+), module.smult = smult\<rparr>"
+  = \<lparr>carrier = UNIV::'a mod_ring poly set, monoid.mult = ((*)), one = 1, zero = 0, add = (+), module.smult = smult\<rparr>"
 
 interpretation vector_space_poly: vectorspace class_ring poly_abelian_monoid
   rewrites [simp]: "\<zero>\<^bsub>poly_abelian_monoid\<^esub> = 0"
        and [simp]: "\<one>\<^bsub>poly_abelian_monoid\<^esub> = 1"
        and [simp]: "(\<oplus>\<^bsub>poly_abelian_monoid\<^esub>) = (+)"
-       and [simp]: "(\<otimes>\<^bsub>poly_abelian_monoid\<^esub>) = (( * ))"
+       and [simp]: "(\<otimes>\<^bsub>poly_abelian_monoid\<^esub>) = (*)"
        and [simp]: "carrier poly_abelian_monoid = UNIV"
        and [simp]: "(\<odot>\<^bsub>poly_abelian_monoid\<^esub>) = smult"
   apply unfold_locales

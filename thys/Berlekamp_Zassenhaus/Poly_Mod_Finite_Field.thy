@@ -169,7 +169,7 @@ proof (intro rel_funI, goal_cases)
   finally show ?case .
 qed
 
-lemma times_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> MP_Rel) (( * )) (( * ))"
+lemma times_MP_Rel[transfer_rule]: "(MP_Rel ===> MP_Rel ===> MP_Rel) ((*)) ((*))"
   unfolding MP_Rel_def
 proof (intro rel_funI, goal_cases)
   case (1 x f y g)
@@ -251,7 +251,7 @@ qed
 lemma prod_mset_MP_Rel[transfer_rule]: "(rel_mset MP_Rel ===> MP_Rel) prod_mset prod_mset"
 proof (intro rel_funI, goal_cases)
   case (1 xs ys)
-  have "(MP_Rel ===> MP_Rel ===> MP_Rel) (( * )) (( * ))" "MP_Rel 1 1" by transfer_prover+
+  have "(MP_Rel ===> MP_Rel ===> MP_Rel) ((*)) ((*))" "MP_Rel 1 1" by transfer_prover+
   from 1 this show ?case
   proof (induct xs ys rule: rel_mset_induct)
     case (add R x xs y ys)

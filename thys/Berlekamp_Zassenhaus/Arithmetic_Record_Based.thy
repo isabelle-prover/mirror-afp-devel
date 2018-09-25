@@ -96,7 +96,7 @@ locale ring_ops = arith_ops ops for ops :: "'i arith_ops_record" +
   and plus[transfer_rule]: "(R ===> R ===> R) plus (+)"
   and minus[transfer_rule]: "(R ===> R ===> R) minus (-)"
   and uminus[transfer_rule]: "(R ===> R) uminus Groups.uminus"
-  and times[transfer_rule]: "(R ===> R ===> R) times (( * ))"
+  and times[transfer_rule]: "(R ===> R ===> R) times ((*))"
   and eq[transfer_rule]: "(R ===> R ===> (=)) (=) (=)"
   and DPR[transfer_domain_rule]: "Domainp R = DP" 
 begin

@@ -290,7 +290,7 @@ proof -
 qed
 
 (* multiplication *)
-lemma mod_ring_mult[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) (mult_p p) (( * ))"
+lemma mod_ring_mult[transfer_rule]: "(mod_ring_rel ===> mod_ring_rel ===> mod_ring_rel) (mult_p p) ((*))"
 proof -
   {
     fix x y :: "'a mod_ring"
@@ -660,7 +660,7 @@ lemma mod_ring_plus32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32)
 lemma mod_ring_minus32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (minus_p32 pp) (-)"
   using urel32_minus mod_ring_minus unfolding mod_ring_rel32_def rel_fun_def by blast
 
-lemma mod_ring_mult32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (mult_p32 pp) (( * ))"
+lemma mod_ring_mult32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> mod_ring_rel32) (mult_p32 pp) ((*))"
   using urel32_mult mod_ring_mult unfolding mod_ring_rel32_def rel_fun_def by blast
 
 lemma mod_ring_eq32: "(mod_ring_rel32 ===> mod_ring_rel32 ===> (=)) (=) (=)" 
@@ -1072,7 +1072,7 @@ lemma mod_ring_plus64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64)
 lemma mod_ring_minus64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (minus_p64 pp) (-)"
   using urel64_minus mod_ring_minus unfolding mod_ring_rel64_def rel_fun_def by blast
 
-lemma mod_ring_mult64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (mult_p64 pp) (( * ))"
+lemma mod_ring_mult64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> mod_ring_rel64) (mult_p64 pp) ((*))"
   using urel64_mult mod_ring_mult unfolding mod_ring_rel64_def rel_fun_def by blast
 
 lemma mod_ring_eq64: "(mod_ring_rel64 ===> mod_ring_rel64 ===> (=)) (=) (=)" 
@@ -1480,7 +1480,7 @@ lemma mod_ring_plus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ==
 lemma mod_ring_minus_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (minus_p_integer pp) (-)"
   using urel_integer_minus mod_ring_minus unfolding mod_ring_rel_integer_def rel_fun_def by blast
 
-lemma mod_ring_mult_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (mult_p_integer pp) (( * ))"
+lemma mod_ring_mult_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> mod_ring_rel_integer) (mult_p_integer pp) ((*))"
   using urel_integer_mult mod_ring_mult unfolding mod_ring_rel_integer_def rel_fun_def by blast
 
 lemma mod_ring_eq_integer: "(mod_ring_rel_integer ===> mod_ring_rel_integer ===> (=)) (=) (=)" 

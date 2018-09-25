@@ -77,8 +77,8 @@ definition gcd_ff_list :: "'a::ufd fract list \<Rightarrow> 'a fract \<Rightarro
 
 lemma gcd_ff_list_exists: "\<exists> g. gcd_ff_list (X :: 'a::ufd fract list) g"
 proof -
-  interpret some_gcd: idom_gcd "( * )" "1 :: 'a" "(+)" 0 "(-)" uminus some_gcd
-    rewrites "dvd.dvd (( * )) = (dvd)" by (unfold_locales, auto simp: dvd_rewrites)
+  interpret some_gcd: idom_gcd "(*)" "1 :: 'a" "(+)" 0 "(-)" uminus some_gcd
+    rewrites "dvd.dvd ((*)) = (dvd)" by (unfold_locales, auto simp: dvd_rewrites)
   from ff_list_pairs[of X] obtain xs where X: "X = map (\<lambda> (x,y). Fraction_Field.Fract x y) xs"
     and xs: "0 \<notin> snd ` set xs" by auto
   define r where "r \<equiv> prod_list (map snd xs)"
@@ -192,9 +192,9 @@ lemma eq_dff_cancel_right[simp]: "x * y =dff x * z \<longleftrightarrow> x = 0 \
 lemma eq_dff_mult_right_trans[trans]: "x =dff y * z \<Longrightarrow> z =dff u \<Longrightarrow> x =dff y * u"
   using eq_dff_trans by force
 
-lemma some_gcd_ff_list_smult: "a \<noteq> 0 \<Longrightarrow> some_gcd_ff_list (map (( * ) a) xs) =dff a * some_gcd_ff_list xs"
+lemma some_gcd_ff_list_smult: "a \<noteq> 0 \<Longrightarrow> some_gcd_ff_list (map ((*) a) xs) =dff a * some_gcd_ff_list xs"
 proof 
-  let ?g = "some_gcd_ff_list (map (( * ) a) xs)"
+  let ?g = "some_gcd_ff_list (map ((*) a) xs)"
   show "divides_ff (a * some_gcd_ff_list xs) ?g"
     by (rule some_gcd_ff_list_greatest, insert some_gcd_ff_list_divides[of _ xs], auto simp: divides_ff_def)
   assume a: "a \<noteq> 0"
@@ -246,7 +246,7 @@ lemma content_ff_eq_dff_nonzero: "content_ff p =dff x \<Longrightarrow> x \<note
 lemma content_ff_smult: "content_ff (smult (a::'a::ufd fract) p) =dff a * content_ff p"
 proof (cases "a = 0")
   case False note a = this
-  have id: "coeffs (smult a p) = map (( * ) a) (coeffs p)"
+  have id: "coeffs (smult a p) = map ((*) a) (coeffs p)"
     unfolding coeffs_smult using a by (simp add: Polynomial.coeffs_smult)
   show ?thesis unfolding content_ff_def id using some_gcd_ff_list_smult[OF a] .
 qed simp

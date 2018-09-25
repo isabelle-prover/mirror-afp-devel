@@ -2258,7 +2258,7 @@ proof -
     show "converges_to
         (\<lambda>i. bnd ((tighten_poly_bounds_binary p1 p2 ^^ i)
         ((l1,r1,sgn (ipoly p1 r1)),(l2,r2, sgn (ipoly p2 r2))))) (?x * ?y)"
-    proof (intro tighten_poly_bounds_binary[where f = "( * )" and I = "\<lambda> l. l > 0"]
+    proof (intro tighten_poly_bounds_binary[where f = "(*)" and I = "\<lambda> l. l > 0"]
       basic l1_pos l2_pos, goal_cases)
       case (1 L1 R1 L2 R2 L R)
       hence "L = L1 * L2" "R = R1 * R2" unfolding bnd_def by auto

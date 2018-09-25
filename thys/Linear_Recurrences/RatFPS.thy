@@ -98,7 +98,7 @@ lift_definition minus_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow>
   by (simp only: diff_conv_add_uminus, rule coeff_0_add_fract_nonzero)
      (simp_all add: quot_of_fract_uminus Let_def case_prod_unfold)
 
-lift_definition times_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is "( * )"
+lift_definition times_ratfps :: "'a ratfps \<Rightarrow> 'a ratfps \<Rightarrow> 'a ratfps" is "(*)"
   by (simp add: quot_of_fract_mult Let_def case_prod_unfold coeff_0_mult
     constant_term_denominator_nonzero_imp_constant_term_denominator_div_gcd_nonzero)
  

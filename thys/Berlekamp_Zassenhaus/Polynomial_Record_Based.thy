@@ -515,7 +515,7 @@ proof (induct n arbitrary: x1 y1 x2 y2 m rule: less_induct)
 qed
   
 
-lemma poly_rel_times[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (times_poly_i ops) (( * ))"  
+lemma poly_rel_times[transfer_rule]: "(poly_rel ===> poly_rel ===> poly_rel) (times_poly_i ops) ((*))"  
 proof (intro rel_funI)
   fix x1 y1 x2 y2
   assume x12[transfer_rule]: "poly_rel x1 x2" and y12 [transfer_rule]: "poly_rel y1 y2"
@@ -614,7 +614,7 @@ proof (induct N arbitrary: x X y Y z Z)
      (divmod_poly_one_main_i ops (cCons_i ops (hd y) x)
        (tl (if hd y = zero then y else minus_poly_rev_list_i ops y (map (times (hd y)) z))) z n)
      (divmod_poly_one_main_list (cCons (hd Y) X)
-       (tl (if hd Y = 0 then Y else minus_poly_rev_list Y (map (( * ) (hd Y)) Z))) Z n))"
+       (tl (if hd Y = 0 then Y else minus_poly_rev_list Y (map ((*) (hd Y)) Z))) Z n))"
      by (simp add: Let_def)
   show ?case unfolding id
   proof (rule Suc(1), goal_cases)
@@ -637,7 +637,7 @@ proof (induct N arbitrary: x X y Y)
      (mod_poly_one_main_i ops
        (tl (if hd y = zero then y else minus_poly_rev_list_i ops y (map (times (hd y)) z))) z n)
      (mod_poly_one_main_list 
-       (tl (if hd Y = 0 then Y else minus_poly_rev_list Y (map (( * ) (hd Y)) Z))) Z n))"
+       (tl (if hd Y = 0 then Y else minus_poly_rev_list Y (map ((*) (hd Y)) Z))) Z n))"
      by (simp add: Let_def)
   show ?case unfolding id
   proof (rule Suc(1), goal_cases)
@@ -755,7 +755,7 @@ proof (intro rel_funI, goal_cases)
       (divmod_poly_one_main_i ops [] (rev x) (rev (map (times (inverse yl)) y))
         (1 + length x - length y))
       (divmod_poly_one_main_list [] (rev (coeffs X))
-                (rev (map (( * ) (Fields.inverse Yl)) (coeffs Y)))
+                (rev (map ((*) (Fields.inverse Yl)) (coeffs Y)))
                 (1 + length (coeffs X) - length (coeffs Y)))"
     proof (rule divmod_poly_one_main_i, goal_cases)
       case 5
@@ -794,7 +794,7 @@ proof (intro rel_funI, goal_cases)
       (mod_poly_one_main_i ops (rev x) (rev (map (times (inverse yl)) y))
         (1 + length x - length y))
       (mod_poly_one_main_list (rev (coeffs X))
-                (rev (map (( * ) (Fields.inverse Yl)) (coeffs Y)))
+                (rev (map ((*) (Fields.inverse Yl)) (coeffs Y)))
                 (1 + length (coeffs X) - length (coeffs Y)))"
     proof (rule mod_poly_one_main_i, goal_cases)
       case 4
