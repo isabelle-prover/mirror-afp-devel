@@ -154,7 +154,7 @@ primrec faceListAt :: "graph \<Rightarrow> face list list" where
   "faceListAt (Graph fs n f h) = f"
 
 definition facesAt :: "graph \<Rightarrow> vertex \<Rightarrow> face list" where
- "facesAt g v \<equiv> (*if v \<in> set(vertices g) then*) faceListAt g ! v (*else []*)"
+ "facesAt g v \<equiv> \<^cancel>\<open>if v \<in> set(vertices g) then\<close> faceListAt g ! v \<^cancel>\<open>else []\<close>"
 
 primrec heights :: "graph \<Rightarrow> nat list" where
   "heights (Graph fs n f h) = h"
