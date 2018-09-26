@@ -13,7 +13,7 @@
 section \<open>Big Sum over Finite Sets in Abelian Semigroups\<close>
 
 theory Semigroups_Big
-  imports HOL.Power
+  imports Main
 begin
 
 text {*
@@ -519,6 +519,8 @@ end
 
 
 subsection \<open>Generalized summation over a set\<close>
+
+no_notation Sum ("\<Sum>_" [1000] 999)
 
 class ab_semigroup_add_0 = zero + ab_semigroup_add +
   assumes zero_neutral [simp]: "x + y + 0 = x + y"
