@@ -9,7 +9,40 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>20 Sep 2018 00:00:00 +0000</pubDate>
+    <pubDate>25 Sep 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Symmetric Polynomials</title>
+              <link>https://www.isa-afp.org/entries/Symmetric_Polynomials.html</link>
+       <guid>https://www.isa-afp.org/entries/Symmetric_Polynomials.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>25 Sep 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;A symmetric polynomial is a polynomial in variables
+&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,&lt;em&gt;X&lt;/em&gt;&lt;sub&gt;n&lt;/sub&gt;
+that does not discriminate between its variables, i.&amp;thinsp;e. it
+is invariant under any permutation of them. These polynomials are
+important in the study of the relationship between the coefficients of
+a univariate polynomial and its roots in its algebraic
+closure.&lt;/p&gt; &lt;p&gt;This article provides a definition of
+symmetric polynomials and the elementary symmetric polynomials
+e&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,e&lt;sub&gt;n&lt;/sub&gt; and
+proofs of their basic properties, including three notable
+ones:&lt;/p&gt; &lt;ul&gt; &lt;li&gt; Vieta&#39;s formula, which
+gives an explicit expression for the &lt;em&gt;k&lt;/em&gt;-th
+coefficient of a univariate monic polynomial in terms of its roots
+&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;n&lt;/sub&gt;,
+namely
+&lt;em&gt;c&lt;/em&gt;&lt;sub&gt;&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt; = (-1)&lt;sup&gt;&lt;em&gt;n&lt;/em&gt;-&lt;em&gt;k&lt;/em&gt;&lt;/sup&gt;&amp;thinsp;e&lt;sub&gt;&lt;em&gt;n&lt;/em&gt;-&lt;em&gt;k&lt;/em&gt;&lt;/sub&gt;(&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;1&lt;/sub&gt;,&amp;hellip;,&lt;em&gt;x&lt;/em&gt;&lt;sub&gt;n&lt;/sub&gt;).&lt;/li&gt;
+&lt;li&gt;Second, the Fundamental Theorem of Symmetric Polynomials,
+which states that any symmetric polynomial is itself a uniquely
+determined polynomial combination of the elementary symmetric
+polynomials.&lt;/li&gt; &lt;li&gt;Third, as a corollary of the
+previous two, that given a polynomial over some ring
+&lt;em&gt;R&lt;/em&gt;, any symmetric polynomial combination of its
+roots is also in &lt;em&gt;R&lt;/em&gt; even when the roots are not.
+&lt;/ul&gt; &lt;p&gt; Both the symmetry property itself and the
+witness for the Fundamental Theorem are executable. &lt;/p&gt;</description>
+    </item>
     <item>
        <title>Signature-Based Gröbner Basis Algorithms</title>
               <link>https://www.isa-afp.org/entries/Signature_Groebner.html</link>
@@ -561,25 +594,6 @@ is modeled as an instance of the singleton pattern and the blackboard
 pattern is modeled as an instance of the publisher subscriber pattern.
 In general, this entry provides the first steps towards an overall
 theory of architectural design patterns.</description>
-    </item>
-    <item>
-       <title>Hoare Logics for Time Bounds</title>
-              <link>https://www.isa-afp.org/entries/Hoare_Time.html</link>
-       <guid>https://www.isa-afp.org/entries/Hoare_Time.html</guid>
-       <dc:creator> Maximilian P. L. Haslbeck, Tobias Nipkow       </dc:creator>
-       <pubDate>26 Feb 2018 00:00:00 +0000</pubDate>
-       <description>
-We study three different Hoare logics for reasoning about time bounds
-of imperative programs and formalize them in Isabelle/HOL: a classical
-Hoare like logic due to Nielson, a logic with potentials due to
-Carbonneaux &lt;i&gt;et al.&lt;/i&gt; and a &lt;i&gt;separation
-logic&lt;/i&gt; following work by Atkey, Chaguérand and Pottier.
-These logics are formally shown to be sound and complete. Verification
-condition generators are developed and are shown sound and complete
-too.  We also consider variants of the systems where we abstract from
-multiplicative constants in the running time bounds, thus supporting a
-big-O style of reasoning.  Finally we compare the expressive power of
-the three systems.</description>
     </item>
   </channel>
 </rss>

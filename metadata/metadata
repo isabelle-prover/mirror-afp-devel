@@ -6741,6 +6741,39 @@ abstract =
   <em>p</em> &equiv; <em>h</em> (mod
   <em>n</em>).</p>
 
+[Symmetric_Polynomials]
+title = Symmetric Polynomials
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Algebra
+date = 2018-09-25
+notify = eberlm@in.tum.de
+abstract =
+  <p>A symmetric polynomial is a polynomial in variables
+  <em>X</em><sub>1</sub>,&hellip;,<em>X</em><sub>n</sub>
+  that does not discriminate between its variables, i.&thinsp;e. it
+  is invariant under any permutation of them. These polynomials are
+  important in the study of the relationship between the coefficients of
+  a univariate polynomial and its roots in its algebraic
+  closure.</p> <p>This article provides a definition of
+  symmetric polynomials and the elementary symmetric polynomials
+  e<sub>1</sub>,&hellip;,e<sub>n</sub> and
+  proofs of their basic properties, including three notable
+  ones:</p> <ul> <li> Vieta's formula, which
+  gives an explicit expression for the <em>k</em>-th
+  coefficient of a univariate monic polynomial in terms of its roots
+  <em>x</em><sub>1</sub>,&hellip;,<em>x</em><sub>n</sub>,
+  namely
+  <em>c</em><sub><em>k</em></sub> = (-1)<sup><em>n</em>-<em>k</em></sup>&thinsp;e<sub><em>n</em>-<em>k</em></sub>(<em>x</em><sub>1</sub>,&hellip;,<em>x</em><sub>n</sub>).</li>
+  <li>Second, the Fundamental Theorem of Symmetric Polynomials,
+  which states that any symmetric polynomial is itself a uniquely
+  determined polynomial combination of the elementary symmetric
+  polynomials.</li> <li>Third, as a corollary of the
+  previous two, that given a polynomial over some ring
+  <em>R</em>, any symmetric polynomial combination of its
+  roots is also in <em>R</em> even when the roots are not.
+  </ul> <p> Both the symmetry property itself and the
+  witness for the Fundamental Theorem are executable. </p>
+
 [Taylor_Models]
 title = Taylor Models
 author = Christoph Traut<>, Fabian Immler <http://www21.in.tum.de/~immler>
@@ -7127,7 +7160,7 @@ author = Bertram Felgenhauer<>
 topic = Logic
 date = 2018-08-14
 notify = int-e@gmx.de
-abstract = 
+abstract =
   <p> We formalize undecidablity results for Minsky machines. To
   this end, we also formalize recursive inseparability.
   </p><p> We start by proving that Minsky machines can
@@ -7171,7 +7204,7 @@ author = Filip Marić <mailto:filip@matf.bg.ac.rs>, Mirko Spasić <mailto:mirko@
 topic = Computer Science/Algorithms
 date = 2018-08-24
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We present an Isabelle/HOL formalization and total correctness proof
   for the incremental version of the Simplex algorithm which is used in
   most state-of-the-art SMT solvers. It supports extraction of
@@ -7181,14 +7214,14 @@ abstract =
   going through a number of refinement steps, and ending up in a fully
   executable functional implementation. Symmetries present in the
   algorithm are handled with special care.
-  
+
 [Budan_Fourier]
 title = The Budan-Fourier Theorem and Counting Real Roots with Multiplicity
 author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
 topic = Mathematics/Analysis
 date = 2018-09-02
 notify = wl302@cam.ac.uk, liwenda1990@hotmail.com
-abstract = 
+abstract =
   This entry is mainly about counting and approximating real roots (of a
   polynomial) with multiplicity. We have first formalised the
   Budan-Fourier theorem: given a polynomial with real coefficients, we
@@ -7204,14 +7237,14 @@ abstract =
   Compared to the Budan-Fourier theorem, our extended Sturm's
   theorem always counts roots exactly but may suffer from greater
   computational cost.
-  
+
 [Quaternions]
 title = Quaternions
 author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Algebra, Mathematics/Geometry
 date = 2018-09-05
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   This theory is inspired by the HOL Light development of quaternions,
   but follows its own route. Quaternions are developed coinductively, as
   in the existing formalisation of the complex numbers. Quaternions are
@@ -7228,7 +7261,7 @@ author = Angeliki Koutsoukou-Argyraki <http://www.cl.cam.ac.uk/~ak2110/>
 topic = Mathematics/Algebra, Mathematics/Geometry
 date = 2018-09-14
 notify = ak2110@cam.ac.uk
-abstract = 
+abstract =
   We develop the basic theory of Octonions, including various identities
   and properties of the octonions and of the octonionic product, a
   description of 7D isometries and representations of orthogonal
@@ -7244,7 +7277,7 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 topic = Mathematics/Algebra
 date = 2018-09-15
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We develop algebras for aggregation and minimisation for weight
   matrices and for edge weights in graphs. We verify the correctness of
   Prim's and Kruskal's minimum spanning tree algorithms based
@@ -7257,7 +7290,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>, Lawrence C. Paulson <ht
 topic = Mathematics/Number Theory
 date = 2018-09-19
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This article provides a short proof of the Prime Number
   Theorem in several equivalent forms, most notably
   &pi;(<em>x</em>) ~ <em>x</em>/ln
@@ -7300,7 +7333,7 @@ author = Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
 topic = Mathematics/Algebra, Computer Science/Algorithms
 date = 2018-09-20
 notify = alexander.maletzky@risc.jku.at
-abstract = 
+abstract =
   <p>This article formalizes signature-based algorithms for computing
   Gr&ouml;bner bases. Such algorithms are, in general, superior to
   other algorithms in terms of efficiency, and have not been formalized
