@@ -592,8 +592,7 @@ begin
           thus ?thesis by (metis FC.arr_char 2 f less_one linorder_neqE_nat)
         qed
         moreover have "\<And>p. length p = 1 \<longleftrightarrow> (\<exists>x. p = [x])"
-          by (metis One_nat_def add.left_neutral length_0_conv length_tl list.sel(3) list.size(4)
-                    splice.elims)
+          by(auto simp: length_Suc_conv)
         ultimately have "\<exists>x. x \<in> Arr \<and> FC.Path f = [x]"
           by (metis FC.G.path_def FC.arr_char f FC.mkArr_def less_or_eq_imp_le nth_Cons_0
                     zero_less_one)

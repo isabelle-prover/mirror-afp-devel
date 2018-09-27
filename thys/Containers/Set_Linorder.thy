@@ -342,7 +342,7 @@ by(auto simp add: intro: Min_eqI)
 lemma set_less_aux_code:
   "\<lbrakk> sorted xs; distinct xs; sorted ys; distinct ys \<rbrakk>
   \<Longrightarrow> set xs \<sqsubset>' set ys \<longleftrightarrow> ord.lexordp (>) xs ys"
-apply(induct xs ys rule: splice.induct)
+apply(induct xs ys rule: list_induct2')
 apply(simp_all add: empty_set_less_aux_finite_iff sorted_Cons_Min set_less_aux_rec neq_Nil_conv)
 apply(auto simp add: cong: conj_cong)
 done

@@ -1210,8 +1210,7 @@ proof (rule ccontr)
                     by (metis Suc_eq_plus1_left gen_length_code(1) gen_length_def list.sel(1) 
                       last_ConsL length_Suc_conv neq_Nil_conv)
                   hence "tl ps\<noteq>[]" using `length ps=l+1` 
-                    by (metis add_diff_cancel_right' length_splice length_tl add.commute 
-                      splice_Nil2)
+                    by(auto simp: length_Suc_conv)
                   ultimately have "adj_path (hd ps) (tl ps @ [last x])"
                     using  adj_path_app[OF `adj_path (hd ps) (tl ps)`,of "last x"]  
                       `adjacent (last ps) (last x)`  
