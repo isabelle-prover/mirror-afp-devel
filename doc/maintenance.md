@@ -4,7 +4,7 @@ Maintaining an Entry in the AFP
 To maintain an entry, you must have write access to the mercurial
 repository of the archive at Bitbucket. To get access, [sign up at
 Bitbucket](https://bitbucket.org), and ask one of the
-[editors](http://isa-afp.org/about.shtml#editors) to add you to
+[editors](http://isa-afp.org/about.html#editors) to add you to
 the AFP project.
 
 **Setup:**
