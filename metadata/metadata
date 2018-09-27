@@ -702,7 +702,7 @@ abstract =
 
 [MFMC_Countable]
 title = A Formal Proof of the Max-Flow Min-Cut Theorem for Countable Networks
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
 date = 2016-05-09
 topic = Mathematics/Graph Theory
 abstract =
@@ -1002,7 +1002,7 @@ notify = g.struth@sheffield.ac.uk
 
 [ConcurrentGC]
 title = Relaxing Safely: Verified On-the-Fly Garbage Collection for x86-TSO
-author = Peter Gammie <http://peteg.org>, Tony Hosking <https://www.cs.purdue.edu/homes/hosking/>, Kai Engelhardt <http://www.cse.unsw.edu.au/~kaie/>
+author = Peter Gammie <http://peteg.org>, Tony Hosking <https://www.cs.purdue.edu/homes/hosking/>, Kai Engelhardt <>
 date = 2015-04-13
 topic = Computer Science/Algorithms/Concurrent
 abstract =
@@ -1229,7 +1229,7 @@ abstract =
 
 [Roy_Floyd_Warshall]
 title = Transitive closure according to Roy-Floyd-Warshall
-author = Makarius Wenzel <https://www.lri.fr/~wenzel>
+author = Makarius Wenzel <>
 date = 2014-05-23
 topic = Computer Science/Algorithms
 abstract = This formulation of the Roy-Floyd-Warshall algorithm for the
@@ -1843,7 +1843,7 @@ abstract =
 	of interpretations as formal words).
 	<p>
 	The WS1S instance is described in the draft paper <a
-	href="http://www21.in.tum.de/~traytel/papers/ws1s_derivatives/index.html">A
+	href="https://people.inf.ethz.ch/trayteld/papers/csl15-ws1s_derivatives/index.html">A
 	Coalgebraic Decision Procedure for WS1S</a> by the author.
 notify = traytel@in.tum.de
 
@@ -1963,7 +1963,7 @@ notify = peter.lammich@uni-muenster.de, nipkow@in.tum.de
 
 [Depth-First-Search]
 title = Depth First Search
-author = Toshiaki Nishihara <>, Yasuhiko Minamide <http://www.score.is.tsukuba.ac.jp/~minamide/>
+author = Toshiaki Nishihara <>, Yasuhiko Minamide <>
 date = 2004-06-24
 topic = Computer Science/Algorithms
 abstract = Depth-first search of a graph is formalized with recdef. It is shown that it visits all of the reachable nodes from a given list of nodes. Executable ML code of depth-first search is obtained using the code generation feature of Isabelle/HOL.
@@ -1971,7 +1971,7 @@ notify = lp15@cam.ac.uk, krauss@in.tum.de
 
 [FFT]
 title = Fast Fourier Transform
-author = Clemens Ballarin <http://www4.in.tum.de/~ballarin/>
+author = Clemens Ballarin <http://www21.in.tum.de/~ballarin/>
 date = 2005-10-12
 topic = Computer Science/Algorithms
 abstract = We formalise a functional implementation of the FFT algorithm over the complex numbers, and its inverse. Both are shown equivalent to the usual definitions of these operations through Vandermonde matrices. They are also shown to be inverse to each other, more precisely, that composition of the inverse and the transformation yield the identity up to a scalar.
@@ -2082,7 +2082,7 @@ notify = rene.thiemann@uibk.ac.at
 
 [MuchAdoAboutTwo]
 title = Much Ado About Two
-author = Sascha Böhme <http://www4.in.tum.de/~boehmes/>
+author = Sascha Böhme <http://www21.in.tum.de/~boehmes/>
 date = 2007-11-06
 topic = Computer Science/Algorithms
 abstract = This article is an Isabelle formalisation of a paper with the same title. In a similar way as Knuth's 0-1-principle for sorting algorithms, that paper develops a 0-1-2-principle for parallel prefix computations.
@@ -2427,7 +2427,7 @@ notify = peter.lammich@uni-muenster.de
 
 [Trie]
 title = Trie
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, Tobias Nipkow <http://www21.in.tum.de/~nipkow>
 date = 2015-03-30
 topic = Computer Science/Data Structures
 abstract =
@@ -2440,7 +2440,7 @@ notify = nipkow@in.tum.de
 
 [FinFun]
 title = Code Generation for Functions as Data
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
 date = 2009-05-06
 topic = Computer Science/Data Structures
 abstract = FinFuns are total functions that are constant except for a finite set of points, i.e. a generalisation of finite maps. They are formalised as a new type in Isabelle/HOL such that the code generator can handle equality tests and quantification on FinFuns. On the code output level, FinFuns are explicitly represented by constant functions and pointwise updates, similarly to associative lists. Inside the logic, they behave like ordinary functions with extensionality. Via the update/constant pattern, a recursion combinator and an induction rule for FinFuns allow for defining and reasoning about operators on FinFun that are also executable.
@@ -2460,7 +2460,7 @@ notify = nipkow@in.tum.de
 [Collections]
 title = Collections Framework
 author = Peter Lammich <http://www21.in.tum.de/~lammich>
-contributors = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Thomas Tuerk <>
+contributors = Andreas Lochbihler <http://www.andreas-lochbihler.de>, Thomas Tuerk <>
 date = 2009-11-25
 topic = Computer Science/Data Structures
 abstract = This development provides an efficient, extensible, machine checked collections framework. The library adopts the concepts of interface, implementation and generic algorithm from object-oriented programming and implements them in Isabelle/HOL. The framework features the use of data refinement techniques to refine an abstract specification (using high-level concepts like sets) to a more concrete implementation (using collection datastructures, like red-black-trees). The code-generator of Isabelle/HOL can be used to generate efficient code.
@@ -2486,7 +2486,7 @@ notify = lammich@in.tum.de
 
 [Containers]
 title = Light-weight Containers
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
 contributors = René Thiemann <mailto:rene.thiemann@uibk.ac.at>
 date = 2013-04-15
 topic = Computer Science/Data Structures
@@ -2569,7 +2569,7 @@ notify = nipkow@in.tum.de
 [List-Infinite]
 title = Infinite Lists
 date = 2011-02-23
-author = David Trachtenherz <http://www4.in.tum.de/~trachten>
+author = David Trachtenherz <>
 topic = Computer Science/Data Structures
 abstract = We introduce a theory of infinite lists in HOL formalized as functions over naturals (folder ListInf, theories ListInf and ListInf_Prefix). It also provides additional results for finite lists (theory ListInf/List2), natural numbers (folder CommonArith, esp. division/modulo, naturals with infinity), sets (folder CommonSet, esp. cutting/truncating sets, traversing sets of naturals).
 notify = nipkow@in.tum.de
@@ -2653,7 +2653,7 @@ notify = rene.thiemann@uibk.ac.at
 [Coinductive]
 title = Coinductive
 topic = Computer Science/Functional Programming
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
 contributors = Johannes Hölzl <mailto:hoelzl@in.tum.de>
 date = 2010-02-12
 abstract = This article collects formalisations of general-purpose coinductive data types and sets. Currently, it contains coinductive natural numbers, coinductive lists, i.e. lazy lists or streams, infinite streams, coinductive terminated lists, coinductive resumptions, a library of operations on coinductive lists, and a version of König's lemma as an application for coinductive lists.<br>The initial theory was contributed by Paulson and Wenzel. Extensions and other coinductive formalisations of general interest are welcome.
@@ -2749,7 +2749,7 @@ notify = kleing@cse.unsw.edu.au, nipkow@in.tum.de
 
 [JinjaThreads]
 title = Jinja with Threads
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
 date = 2007-12-03
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We extend the Jinja source code semantics by Klein and Nipkow with Java-style arrays and threads. Concurrency is captured in a generic framework semantics for adding concurrency through interleaving to a sequential semantics, which features dynamic thread creation, inter-thread communication via shared memory, lock synchronisation and joins. Also, threads can suspend themselves and be notified by others. We instantiate the framework with the adapted versions of both Jinja source and byte code and show type safety for the multithreaded case. Equally, the compiler from source to byte code is extended, for which we prove weak bisimilarity between the source code small step semantics and the defensive Jinja virtual machine. On top of this, we formalise the JMM and show the DRF guarantee and consistency. For description of the different parts, see Lochbihler's papers at FOOL 2008, ESOP 2010, ITP 2011, and ESOP 2012.
@@ -2815,7 +2815,7 @@ notify = nipkow@in.tum.de
 
 [AutoFocus-Stream]
 title = AutoFocus Stream Processing for Single-Clocking and Multi-Clocking Semantics
-author = David Trachtenherz <http://www4.in.tum.de/~trachten>
+author = David Trachtenherz <>
 date = 2011-02-23
 topic = Computer Science/Programming Languages/Language Definitions
 abstract = We formalize the AutoFocus Semantics (a time-synchronous subset of the Focus formalism) as stream processing functions on finite and infinite message streams represented as finite/infinite lists. The formalization comprises both the conventional single-clocking semantics (uniform global clock for all components and communications channels) and its extension to multi-clocking semantics (internal execution clocking of a component may be a multiple of the external communication clocking). The semantics is defined by generic stream processing functions making it suitable for simulation/code generation in Isabelle/HOL. Furthermore, a number of AutoFocus semantics properties are formalized using definitions from the IntervalLogic theories.
@@ -3145,7 +3145,7 @@ abstract =
 
 [Kleene_Algebra]
 title = Kleene Algebra
-author = Alasdair Armstrong <http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
+author = Alasdair Armstrong <>, Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>, Tjark Weber <http://user.it.uu.se/~tjawe125/>
 date = 2013-01-15
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
@@ -3175,7 +3175,7 @@ notify = g.struth@sheffield.ac.uk, tjark.weber@it.uu.se
 
 [KAT_and_DRA]
 title = Kleene Algebra with Tests and Demonic Refinement Algebras
-author = Alasdair Armstrong <http://www.dcs.shef.ac.uk/~alasdair>, Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
+author = Alasdair Armstrong <>, Victor B. F. Gomes <http://www.dcs.shef.ac.uk/~victor>, Georg Struth <http://www.dcs.shef.ac.uk/~georg>
 date = 2014-01-23
 topic = Computer Science/Programming Languages/Logics, Computer Science/Automata and Formal Languages, Mathematics/Algebra
 abstract =
@@ -3227,7 +3227,7 @@ notify = simon.foster@york.ac.uk, g.struth@sheffield.ac.uk
 
 [BytecodeLogicJmlTypes]
 title = A Bytecode Logic for JML and Types
-author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
+author = Lennart Beringer <>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
 date = 2008-12-12
 topic = Computer Science/Programming Languages/Logics
 abstract = This document contains the Isabelle/HOL sources underlying the paper <i>A bytecode logic for JML and types</i> by Beringer and Hofmann, updated to Isabelle 2008. We present a program logic for a subset of sequential Java bytecode that is suitable for representing both, features found in high-level specification language JML as well as interpretations of high-level type systems. To this end, we introduce a fine-grained collection of assertions, including strong invariants, local annotations and VDM-reminiscent partial-correctness specifications. Thanks to a goal-oriented structure and interpretation of judgements, verification may proceed without recourse to an additional control flow analysis. The suitability for interpreting intensional type systems is illustrated by the proof-carrying-code style encoding of a type system for a first-order functional language which guarantees a constant upper bound on the number of objects allocated throughout an execution, be the execution terminating or non-terminating. Like the published paper, the formal development is restricted to a comparatively small subset of the JVML, lacking (among other features) exceptions, arrays, virtual methods, and static fields. This shortcoming has been overcome meanwhile, as our paper has formed the basis of the Mobius base logic, a program logic for the full sequential fragment of the JVML. Indeed, the present formalisation formed the basis of a subsequent formalisation of the Mobius base logic in the proof assistant Coq, which includes a proof of soundness with respect to the Bicolano operational semantics by Pichardie.
@@ -3271,7 +3271,7 @@ notify = viorel.preoteasa@aalto.fi
 
 [SIFPL]
 title = Secure information flow and program logics
-author = Lennart Beringer <http://www.tcs.informatik.uni-muenchen.de/~beringer>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
+author = Lennart Beringer <>, Martin Hofmann <http://www.tcs.informatik.uni-muenchen.de/~mhofmann>
 date = 2008-11-10
 topic = Computer Science/Programming Languages/Logics, Computer Science/Security
 abstract = We present interpretations of type systems for secure information flow in Hoare logic, complementing previous encodings in relational program logics. We first treat the imperative language IMP, extended by a simple procedure call mechanism. For this language we consider base-line non-interference in the style of Volpano et al. and the flow-sensitive type system by Hunt and Sands. In both cases, we show how typing derivations may be used to automatically generate proofs in the program logic that certify the absence of illicit flows. We then add instructions for object creation and manipulation, and derive appropriate proof rules for base-line non-interference. As a consequence of our work, standard verification technology may be used for verifying that a concrete program satisfies the non-interference property.<br><br>The present proof development represents an update of the formalisation underlying our paper [CSF 2007] and is intended to resolve any ambiguities that may be present in the paper.
@@ -3508,7 +3508,7 @@ notify = berghofe@in.tum.de
 
 [SequentInvertibility]
 title = Invertibility in Sequent Calculi
-author = Peter Chapman <http://www.cs.st-andrews.ac.uk/~pc>
+author = Peter Chapman <>
 date = 2009-08-28
 topic = Logic
 license = LGPL
@@ -3525,7 +3525,7 @@ notify = nipkow@in.tum.de
 
 [Nat-Interval-Logic]
 title = Interval Temporal Logic on Natural Numbers
-author = David Trachtenherz <http://www4.in.tum.de/~trachten>
+author = David Trachtenherz <>
 date = 2011-02-23
 topic = Logic
 abstract = We introduce a theory of temporal logic operators using sets of natural numbers as time domain, formalized in a shallow embedding manner. The theory comprises special natural intervals (theory IL_Interval: open and closed intervals, continuous and modulo intervals, interval traversing results), operators for shifting intervals to left/right on the number axis as well as expanding/contracting intervals by constant factors (theory IL_IntervalOperators.thy), and ultimately definitions and results for unary and binary temporal operators on arbitrary natural sets (theory IL_TemporalOperators).
@@ -3764,7 +3764,7 @@ notify = immler@in.tum.de, hoelzl@in.tum.de
 
 [Polynomials]
 title = Executable Multivariate Polynomials
-author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>, Fabian Immler <http://www21.in.tum.de/~immler>, Florian Haftmann <http://isabelle.in.tum.de/~haftmann>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexander Bentkamp <mailto:bentkamp@gmail.com>
+author = Christian Sternagel <http://cl-informatik.uibk.ac.at/~griff>, René Thiemann <http://cl-informatik.uibk.ac.at/~thiemann>, Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>, Fabian Immler <http://www21.in.tum.de/~immler>, Florian Haftmann <http://isabelle.in.tum.de/~haftmann>, Andreas Lochbihler <http://www.andreas-lochbihler.de>, Alexander Bentkamp <mailto:bentkamp@gmail.com>
 date = 2010-08-10
 topic = Mathematics/Analysis, Mathematics/Algebra, Computer Science/Algorithms
 license = LGPL
@@ -3853,7 +3853,7 @@ notify = hoelzl@in.tum.de
 [Probabilistic_System_Zoo]
 title = A Zoo of Probabilistic Systems
 author = Johannes Hölzl <http://in.tum.de/~hoelzl>,
-	Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>,
+	Andreas Lochbihler <http://www.andreas-lochbihler.de>,
 	Dmitriy Traytel <http://www21.in.tum.de/~traytel>
 date = 2015-05-27
 topic = Computer Science/Automata and Formal Languages
@@ -4022,7 +4022,7 @@ notify = rene.neumann@in.tum.de, lammich@in.tum.de
 
 [Fermat3_4]
 title = Fermat's Last Theorem for Exponents 3 and 4 and the Parametrisation of Pythagorean Triples
-author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>
+author = Roelof Oosterhuis <>
 date = 2007-08-12
 topic = Mathematics/Number Theory
 abstract = This document presents the mechanised proofs of<ul><li>Fermat's Last Theorem for exponents 3 and 4 and</li><li>the parametrisation of Pythagorean Triples.</li></ul>
@@ -4038,7 +4038,7 @@ notify = nipkow@in.tum.de
 
 [SumSquares]
 title = Sums of Two and Four Squares
-author = Roelof Oosterhuis <http://www.roelofoosterhuis.nl/>
+author = Roelof Oosterhuis <>
 date = 2007-08-12
 topic = Mathematics/Number Theory
 abstract = This document presents the mechanised proofs of the following results:<ul><li>any prime number of the form 4m+1 can be written as the sum of two squares;</li><li>any natural number can be written as the sum of four squares</li></ul>
@@ -4136,7 +4136,7 @@ notify = nipkow@in.tum.de
 
 [Vickrey_Clarke_Groves]
 title = VCG - Combinatorial Vickrey-Clarke-Groves Auctions
-author = Marco B. Caminati <http://caminati.co.nr>, Manfred Kerber <http://www.cs.bham.ac.uk/~mmk>, Christoph Lange<mailto:math.semantic.web@gmail.com>, Colin Rowat<mailto:c.rowat@bham.ac.uk>
+author = Marco B. Caminati <>, Manfred Kerber <http://www.cs.bham.ac.uk/~mmk>, Christoph Lange<mailto:math.semantic.web@gmail.com>, Colin Rowat<mailto:c.rowat@bham.ac.uk>
 date = 2015-04-30
 topic = Mathematics/Economics
 abstract =
@@ -4409,7 +4409,7 @@ notify = lcp@cl.cam.ac.uk
 
 [Ribbon_Proofs]
 title = Ribbon Proofs
-author = John Wickerson <http://www.pes.tu-berlin.de/menue/ueber_uns/team/john_wickerson/>
+author = John Wickerson <>
 date = 2013-01-19
 topic = Computer Science/Programming Languages/Logics
 abstract = This document concerns the theory of ribbon proofs: a diagrammatic proof system, based on separation logic, for verifying program correctness. We include the syntax, proof rules, and soundness results for two alternative formalisations of ribbon proofs. <p> Compared to traditional proof outlines, ribbon proofs emphasise the structure of a proof, so are intelligible and pedagogical. Because they contain less redundancy than proof outlines, and allow each proof step to be checked locally, they may be more scalable. Where proof outlines are cumbersome to modify, ribbon proofs can be visually manoeuvred to yield proofs of variant programs.
@@ -4469,7 +4469,7 @@ extra-history =
 
 [Native_Word]
 title = Native Word
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
 contributors = Peter Lammich <http://www21.in.tum.de/~lammich>
 date = 2013-09-17
 topic = Computer Science/Data Structures
@@ -4689,7 +4689,7 @@ notify = brucker@spamfence.net, tuong@users.gforge.inria.fr, wolff@lri.fr
 
 [Relation_Algebra]
 title = Relation Algebra
-author = Alasdair Armstrong <http://staffwww.dcs.shef.ac.uk/people/A.Armstrong/>,
+author = Alasdair Armstrong <>,
 	Simon Foster <mailto:simon.foster@york.ac.uk>,
 	Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>,
 	Tjark Weber <http://user.it.uu.se/~tjawe125/>
@@ -5049,7 +5049,7 @@ notify = lp15@cam.ac.uk
 
 [Stream_Fusion_Code]
 title = Stream Fusion in HOL with Code Generation
-author = Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>, Alexandra Maximova <mailto:amaximov@student.ethz.ch>
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, Alexandra Maximova <mailto:amaximov@student.ethz.ch>
 date = 2014-10-10
 topic = Computer Science/Functional Programming
 abstract = Stream Fusion is a system for removing intermediate list data structures from functional programs, in particular Haskell. This entry adapts stream fusion to Isabelle/HOL and its code generator. We define stream types for finite and possibly infinite lists and stream versions for most of the fusible list functions in the theories List and Coinductive_List, and prove them correct with respect to the conversion functions between lists and streams. The Stream Fusion transformation itself is implemented as a simproc in the preprocessor of the code generator. [Brian Huffman's <a href="http://isa-afp.org/entries/Stream-Fusion.html">AFP entry</a> formalises stream fusion in HOLCF for the domain of lazy lists to prove the GHC compiler rewrite rules correct. In contrast, this work enables Isabelle's code generator to perform stream fusion itself. To that end, it covers both finite and coinductive lists from the HOL library and the Coinductive entry. The fusible list functions require specification and proof principles different from Huffman's.]
@@ -5249,7 +5249,7 @@ notify = mail@andreas-lochbihler.de
 
 [Stern_Brocot]
 title = The Stern-Brocot Tree
-author = Peter Gammie <http://peteg.org>, Andreas Lochbihler <http://www.infsec.ethz.ch/people/andreloc>
+author = Peter Gammie <http://peteg.org>, Andreas Lochbihler <http://www.andreas-lochbihler.de>
 date = 2015-12-22
 topic = Mathematics/Number Theory
 abstract = The Stern-Brocot tree contains all rational numbers exactly once and in their lowest terms.  We formalise the Stern-Brocot tree as a coinductive tree using recursive and iterative specifications, which we have proven equivalent, and show that it indeed contains all the numbers as stated.  Following Hinze, we prove that the Stern-Brocot tree can be linearised looplessly into Stern's diatonic sequence (also known as Dijkstra's fusc function) and that it is a permutation of the Bird tree.
@@ -5609,7 +5609,7 @@ notify = m.stannett@sheffield.ac.uk
 
 [Groebner_Bases]
 title = Gröbner Bases Theory
-author = Fabian Immler <http://www21.in.tum.de/~immler>, Alexander Maletzky <http://www.risc.jku.at/home/amaletzk>
+author = Fabian Immler <http://www21.in.tum.de/~immler>, Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
 date = 2016-05-02
 topic = Mathematics/Algebra, Computer Science/Algorithms
 abstract =
@@ -6027,7 +6027,7 @@ abstract =
 
 [Allen_Calculus]
 title = Allen's Interval Calculus
-author = Fadoua Ghourabi <http://www.i-eos.org/fadoua>
+author = Fadoua Ghourabi <>
 notify = fadouaghourabi@gmail.com
 date = 2016-09-29
 topic = Logic, Mathematics/Algebra
@@ -7181,7 +7181,7 @@ author = Filip Marić <mailto:filip@matf.bg.ac.rs>, Mirko Spasić <mailto:mirko@
 topic = Computer Science/Algorithms
 date = 2018-08-24
 notify = rene.thiemann@uibk.ac.at
-abstract = 
+abstract =
   We present an Isabelle/HOL formalization and total correctness proof
   for the incremental version of the Simplex algorithm which is used in
   most state-of-the-art SMT solvers. It supports extraction of
@@ -7191,14 +7191,14 @@ abstract =
   going through a number of refinement steps, and ending up in a fully
   executable functional implementation. Symmetries present in the
   algorithm are handled with special care.
-  
+
 [Budan_Fourier]
 title = The Budan-Fourier Theorem and Counting Real Roots with Multiplicity
 author = Wenda Li <https://www.cl.cam.ac.uk/~wl302/>
 topic = Mathematics/Analysis
 date = 2018-09-02
 notify = wl302@cam.ac.uk, liwenda1990@hotmail.com
-abstract = 
+abstract =
   This entry is mainly about counting and approximating real roots (of a
   polynomial) with multiplicity. We have first formalised the
   Budan-Fourier theorem: given a polynomial with real coefficients, we
@@ -7214,14 +7214,14 @@ abstract =
   Compared to the Budan-Fourier theorem, our extended Sturm's
   theorem always counts roots exactly but may suffer from greater
   computational cost.
-  
+
 [Quaternions]
 title = Quaternions
 author = Lawrence C. Paulson <https://www.cl.cam.ac.uk/~lp15/>
 topic = Mathematics/Algebra, Mathematics/Geometry
 date = 2018-09-05
 notify = lp15@cam.ac.uk
-abstract = 
+abstract =
   This theory is inspired by the HOL Light development of quaternions,
   but follows its own route. Quaternions are developed coinductively, as
   in the existing formalisation of the complex numbers. Quaternions are
@@ -7238,7 +7238,7 @@ author = Angeliki Koutsoukou-Argyraki <http://www.cl.cam.ac.uk/~ak2110/>
 topic = Mathematics/Algebra, Mathematics/Geometry
 date = 2018-09-14
 notify = ak2110@cam.ac.uk
-abstract = 
+abstract =
   We develop the basic theory of Octonions, including various identities
   and properties of the octonions and of the octonionic product, a
   description of 7D isometries and representations of orthogonal
@@ -7254,7 +7254,7 @@ author = Walter Guttmann <http://www.cosc.canterbury.ac.nz/walter.guttmann/>
 topic = Mathematics/Algebra
 date = 2018-09-15
 notify = walter.guttmann@canterbury.ac.nz
-abstract = 
+abstract =
   We develop algebras for aggregation and minimisation for weight
   matrices and for edge weights in graphs. We verify the correctness of
   Prim's and Kruskal's minimum spanning tree algorithms based
@@ -7267,7 +7267,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>, Lawrence C. Paulson <ht
 topic = Mathematics/Number Theory
 date = 2018-09-19
 notify = eberlm@in.tum.de
-abstract = 
+abstract =
   <p>This article provides a short proof of the Prime Number
   Theorem in several equivalent forms, most notably
   &pi;(<em>x</em>) ~ <em>x</em>/ln
@@ -7310,7 +7310,7 @@ author = Alexander Maletzky <https://risc.jku.at/m/alexander-maletzky/>
 topic = Mathematics/Algebra, Computer Science/Algorithms
 date = 2018-09-20
 notify = alexander.maletzky@risc.jku.at
-abstract = 
+abstract =
   <p>This article formalizes signature-based algorithms for computing
   Gr&ouml;bner bases. Such algorithms are, in general, superior to
   other algorithms in terms of efficiency, and have not been formalized
