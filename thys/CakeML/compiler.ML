@@ -73,8 +73,8 @@ fun compile_c_file source =
       output
   end
 
-fun compile_ffi () =
-  compile_c_file (basis_ffi ())
+val compile_ffi =
+  compile_c_file o basis_ffi
 
 fun link sources =
   let

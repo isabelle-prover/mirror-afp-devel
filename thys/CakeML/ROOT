@@ -18,7 +18,7 @@ session CakeML (AFP) = LEM +
     Show
   theories
     "doc/Doc_Generated"
-  theories
+
     "generated/CakeML/Ast"
     "generated/CakeML/AstAuxiliary"
     "generated/CakeML/BigSmallInvariants"
@@ -35,9 +35,9 @@ session CakeML (AFP) = LEM +
     "generated/CakeML/Tokens"
     "generated/CakeML/TypeSystem"
     "generated/CakeML/TypeSystemAuxiliary"
-  theories
+
     "doc/Doc_Proofs"
-  theories
+
     Semantic_Extras
     Evaluate_Termination
     Evaluate_Clock
@@ -51,11 +51,16 @@ session CakeML (AFP) = LEM +
     Matching
     CakeML_Code
     CakeML_Quickcheck
-  theories [condition = "ISABELLE_CAKEML_HOME,ISABELLE_CC"]
     CakeML_Compiler
-  theories
+
     "doc/Doc_Ported"
-  theories
+
     Semantics
+
+  theories [condition = "ISABELLE_CAKEML_HOME,ISABELLE_CC", document = false]
+    "Tests/Compiler_Test"
+  theories [condition = "ISABELLE_GHC", document = false]
+    "Tests/Code_Test_Haskell"
+
   document_files
     "root.tex"
