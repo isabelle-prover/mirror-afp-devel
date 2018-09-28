@@ -5,6 +5,25 @@
 \usepackage[only,bigsqcap]{stmaryrd}
 \usepackage{wasysym}
 \usepackage{booktabs}
+\usepackage{authblk}
+\usepackage[inline]{enumitem}
+\usepackage{amsthm}
+\usepackage{mathptmx}
+\usepackage{tikz}
+\usetikzlibrary{%
+  arrows,%
+  arrows.meta,%
+  calc,%
+  chains,%
+  patterns,%
+  decorations.pathreplacing,%
+  fit,%
+  intersections,%
+  positioning,%
+  shapes.multipart,%
+  svg.path,%
+}
+
 
 % this should be the last package used
 \usepackage{pdfsetup}
@@ -12,6 +31,11 @@
 % urls in roman style, theory text in math-similar italics
 \urlstyle{rm}
 \isabellestyle{it}
+
+\newcommand{\CryptHOL}{CryptHOL}
+%
+\theoremstyle{definition}
+\newtheorem*{definition}{Definition}
 
 \begin{document}
 

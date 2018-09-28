@@ -96,6 +96,9 @@ lemma bij_betw_generator_carrier:
   "bij_betw (\<lambda>n :: nat. \<^bold>g [^] n) {..<order G} (carrier G)"
 by(simp add: bij_betw_def inj_on_generator carrier_conv_generator)
 
+lemma order_gt_0: "order G > 0"
+  using order_gt_0_iff_finite by(simp add: finite_carrier)
+
 end
 
 lemma (in monoid) order_in_range_Suc: "order G \<in> range Suc \<longleftrightarrow> finite (carrier G)"
