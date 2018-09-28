@@ -202,6 +202,11 @@ abstract =
   reused in other proofs. Thanks to CryptHOL's integration with
   Isabelle's parametricity infrastructure, many simple hops are easily
   justified using the theory of representation independence.</p>
+extra-history =
+	Change history:
+	[2018-09-28]:
+	added the CryptHOL tutorial for game-based cryptography
+	(revision 489a395764ae)
 
 [CryptHOL]
 title = CryptHOL
