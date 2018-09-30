@@ -42,7 +42,7 @@ lemma in_list_interval_lengthD: "x \<in> list_interval a b \<Longrightarrow> len
 definition "varvec_fas' D C = ((map Var [0..<D]) @
       concat (map (\<lambda>b.
         (map (\<lambda>i. (Num (C i)) +
-          Var (D + D * D) * (mvmult_fa D D (map Var [D..<D + D * D]) (map Num (replicate D 0[i:=1])) ! b)) [0..<D])) [0..<D]))"
+          Var (D + D * D) * (mvmult_fa D D (map Var [D..<D + D * D]) (map Num ((replicate D 0)[i:=1])) ! b)) [0..<D])) [0..<D]))"
 
 definition "varvec_fas D C = ((map Var [0..<D]) @
       concat (map (\<lambda>i. (map (\<lambda>j. (Num (C i)) + Var (D + D * D) * Var (D + D * i + j)) [0..<D])) [0..<D]))"
@@ -1464,7 +1464,7 @@ lemma list_of_eucl_matrix:
       concat_map_map_index matrix_inner_Basis_list)
 
 lemma axis_eq_eucl_of_list:
-  "(axis i 1::'n::enum rvec) = eucl_of_list (replicate CARD('n) 0[index enum_class.enum i := 1])"
+  "(axis i 1::'n::enum rvec) = eucl_of_list ((replicate CARD('n) 0)[index enum_class.enum i := 1])"
   apply (auto intro!: euclidean_eqI[where 'a="'n rvec"]
       simp: eucl_of_list_inner nth_list_update )
    apply (auto simp: index_Basis_list_axis1[symmetric])
@@ -1597,8 +1597,8 @@ fun ysec2:: "real \<times> real \<Rightarrow> real \<Rightarrow> (real list \<ti
 fun ysec2':: "real \<times> real \<Rightarrow> real \<Rightarrow> (real list \<times> real list) \<times> real list sctn"
   where "ysec2' (x0, x1) y = (([x0, y], [x1, y]), Sctn [0, -1] (-y))"
 
-definition "code_sctn N n c = Sctn (replicate (nat_of_integer N) (0::real)[nat_of_integer n := 1]) c"
-definition "code_sctn' N n c = Sctn (replicate (nat_of_integer N) (0::real)[nat_of_integer n := -1]) (-c)"
+definition "code_sctn N n c = Sctn ((replicate (nat_of_integer N) (0::real))[nat_of_integer n := 1]) c"
+definition "code_sctn' N n c = Sctn ((replicate (nat_of_integer N) (0::real))[nat_of_integer n := -1]) (-c)"
 
 definition "lrat i j = real_of_float (lapprox_rat 30 (int_of_integer i) (int_of_integer j))"
 definition "urat i j = real_of_float (lapprox_rat 30 (int_of_integer i) (int_of_integer j))"
@@ -2116,7 +2116,7 @@ lemma approx_subset_listI:
   done
 
 
-definition "unit_list D n = replicate D 0[n:=1]"
+definition "unit_list D n = (replicate D 0)[n:=1]"
 
 definition "mirror_sctn (sctn::real list sctn) = Sctn (map uminus (normal sctn)) (- pstn sctn)"
 definition "mirrored_sctn b (sctn::real list sctn) = (if b then mirror_sctn sctn else sctn)"
