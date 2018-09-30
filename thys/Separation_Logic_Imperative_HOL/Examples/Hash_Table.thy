@@ -351,13 +351,13 @@ lemma ht_size_update1:
   shows "ht_size (l[i := fst (ls_update k v (l!i))]) n"
 proof -
   have "(map length (l[i := fst (ls_update k v (l ! i))]))
-    = map length l[i := length (fst (ls_update k v (l ! i)))]"
+    = (map length l)[i := length (fst (ls_update k v (l ! i)))]"
     by (simp add: map_update) also
   from sum_list_update[of i "map length l", simplified, OF i,
     of "length (fst (ls_update k v (l ! i)))"]
     ls_update_length_snd_True[OF snd]
   have
-    "sum_list (map length l[i := length (fst (ls_update k v (l ! i)))])
+    "sum_list ((map length l)[i := length (fst (ls_update k v (l ! i)))])
     = sum_list (map length l)" by simp
   finally show ?thesis using assms by (simp add: ht_size_def assms)
 qed
@@ -369,13 +369,13 @@ lemma ht_size_update2:
   shows "ht_size (l[i := fst (ls_update k v (l!i))]) (Suc n)"
 proof -
   have "(map length (l[i := fst (ls_update k v (l ! i))]))
-    = map length l[i := length (fst (ls_update k v (l ! i)))]"
+    = (map length l)[i := length (fst (ls_update k v (l ! i)))]"
     by (simp add: map_update) also
   from sum_list_update[of i "map length l", simplified, OF i,
     of "length (fst (ls_update k v (l ! i)))"]
     ls_update_length_snd_False[OF snd]
   have
-    "sum_list (map length l[i := length (fst (ls_update k v (l ! i)))])
+    "sum_list ((map length l)[i := length (fst (ls_update k v (l ! i)))])
     = Suc (sum_list (map length l))" by simp
   finally show ?thesis using assms by (simp add: ht_size_def assms)
 qed
@@ -575,12 +575,12 @@ lemma ht_size_delete1:
   shows "ht_size (l[i := fst (ls_delete k (l!i))]) (n - 1)"
 proof -
   have "(map length (l[i := fst (ls_delete k (l ! i))]))
-    = map length l[i := length (fst (ls_delete k (l ! i)))]"
+    = (map length l)[i := length (fst (ls_delete k (l ! i)))]"
     by (simp add: map_update) also
   from sum_list_update[of i "map length l", simplified, OF i,
     of "length (fst (ls_delete k (l ! i)))"]
     ls_delete_length_snd_True[OF snd] snd
-  have "sum_list (map length l[i := length (fst (ls_delete k (l ! i)))])
+  have "sum_list ((map length l)[i := length (fst (ls_delete k (l ! i)))])
     = sum_list (map length l) - 1"
     by (cases "length (l ! i)") (simp_all add: ls_delete_snd_set)
   finally show ?thesis using assms by (simp add: ht_size_def assms)
@@ -593,12 +593,12 @@ lemma ht_size_delete2:
   shows "ht_size (l[i := fst (ls_delete k (l!i))]) n"
 proof -
   have "(map length (l[i := fst (ls_delete k (l ! i))]))
-    = map length l[i := length (fst (ls_delete k (l ! i)))]"
+    = (map length l)[i := length (fst (ls_delete k (l ! i)))]"
     by (simp add: map_update) also
   from sum_list_update[of i "map length l", simplified, OF i,
     of "length (fst (ls_delete k (l ! i)))"]
     ls_delete_length_snd_False[OF snd]
-  have "sum_list (map length l[i := length (fst (ls_delete k (l ! i)))])
+  have "sum_list ((map length l)[i := length (fst (ls_delete k (l ! i)))])
     = sum_list (map length l)" by simp
   finally show ?thesis using assms by (simp add: ht_size_def assms)
 qed

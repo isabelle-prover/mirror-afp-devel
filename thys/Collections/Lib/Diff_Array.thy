@@ -283,10 +283,10 @@ proof(cases a)
            Array (map (\<lambda>(k, v). f k v) (zip [0..<length xs] xs) @ drop (length xs) a)" by(rule snoc)
     also note array_set.simps
     also have "(map (\<lambda>(k, v). f k v) (zip [0..<length xs] xs) @ drop (length xs) a) [length xs := f (length xs) x] =
-              map (\<lambda>(k, v). f k v) (zip [0..<length xs] xs) @ (drop (length xs) a[0 := f (length xs) x])"
+              (map (\<lambda>(k, v). f k v) (zip [0..<length xs] xs) @ (drop (length xs) a) [0 := f (length xs) x])"
       by(simp add: list_update_append)
     also from `length (xs @ [x]) \<le> length a`
-    have "drop (length xs) a[0 := f (length xs) x] =
+    have "(drop (length xs) a)[0 := f (length xs) x] =
           f (length xs) x # drop (Suc (length xs)) a"
       by(simp add: upd_conv_take_nth_drop)
     also have "map (\<lambda>(k, v). f k v) (zip [0..<length xs] xs) @ f (length xs) x # drop (Suc (length xs)) a =
@@ -304,7 +304,7 @@ lemma array_foldl_new_array:
   by(simp add: new_array_def array_foldl_def)
 
 lemma array_list_of_set[simp]:
-  "list_of_array (array_set a i x) = list_of_array a [i := x]"
+  "list_of_array (array_set a i x) = (list_of_array a) [i := x]"
   by (cases a) simp
 
 lemma array_length_list: "array_length a = length (list_of_array a)"

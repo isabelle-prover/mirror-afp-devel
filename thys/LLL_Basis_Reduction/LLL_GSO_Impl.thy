@@ -208,7 +208,7 @@ next
     have nth_id: "[0..<m] ! i = i" using i by auto
     note res = res[unfolded False map_id id if_False]
     have fi: "fi' = fs'' ! i" unfolding fs''[symmetric] fi'_def using inv(6) i by auto
-    have repr_id: "(map (fgn fs) [0..<m] [i := (fs'' ! i, gso fs'' i, \<parallel>gso fs'' i\<parallel>\<^sup>2)])
+    have repr_id: "((map (fgn fs) [0..<m]) [i := (fs'' ! i, gso fs'' i, \<parallel>gso fs'' i\<parallel>\<^sup>2)])
       = (map (fgn fs'') [0..<m])" (is "?xs = ?ys")
     proof (rule nth_equalityI, force)
       fix j

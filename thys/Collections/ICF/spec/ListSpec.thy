@@ -211,7 +211,7 @@ locale list_set = list +
   constrains \<alpha> :: "'s \<Rightarrow> 'x list"
   fixes set :: "'s \<Rightarrow> nat \<Rightarrow> 'x \<Rightarrow> 's"
   assumes set_correct:
-    "\<lbrakk>invar s; i<length (\<alpha> s)\<rbrakk> \<Longrightarrow> \<alpha> (set s i x) = \<alpha> s [i := x]"
+    "\<lbrakk>invar s; i<length (\<alpha> s)\<rbrakk> \<Longrightarrow> \<alpha> (set s i x) = (\<alpha> s) [i := x]"
     "\<lbrakk>invar s; i<length (\<alpha> s)\<rbrakk> \<Longrightarrow> invar (set s i x)"
 
 record ('a,'s) list_ops = 

@@ -434,7 +434,7 @@ proof induct
   show ?case
   proof (cases "d \<noteq> d'")
     case True
-    have "child p dir d'[d := X] = child (p[d := X]) dir d'"
+    have "(child p dir d')[d := X] = child (p[d := X]) dir d'"
       unfolding child_def and ix_def and lv_def
       unfolding list_update_swap[OF `d \<noteq> d'`] and nth_list_update_neq[OF `d \<noteq> d'`] ..
     thus ?thesis using Child by auto

@@ -1197,7 +1197,7 @@ lemma list_of_eucl_coord_update:
   assumes [simp]: "i \<in> Basis"
   assumes [simp]: "\<And>n. n \<in> set xs \<Longrightarrow> n < length vs"
   shows "list_updates xs (list_of_eucl (x + (p - x \<bullet> i) *\<^sub>R i::'a)) vs =
-   list_updates xs (list_of_eucl x) vs[xs ! index Basis_list i := p]"
+   (list_updates xs (list_of_eucl x) vs)[xs ! index Basis_list i := p]"
   apply (auto intro!: nth_equalityI simp: list_updates_nth nth_list_update)
    apply (simp add: algebra_simps inner_Basis index_nth_id)
   apply (auto simp add: algebra_simps inner_Basis index_nth_id)

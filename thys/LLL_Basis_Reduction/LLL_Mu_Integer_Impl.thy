@@ -342,7 +342,7 @@ next
       by (rule nth_equalityI, force, simp, subst updates(1), insert j i, auto
         simp: nth_rev)
     have repr_id:
-      "map ((!) fs) [0..<m][i := (fs'' ! i)] = map ((!) fs'') [0..<m]" (is "?xs = ?ys")
+      "(map ((!) fs) [0..<m])[i := (fs'' ! i)] = map ((!) fs'') [0..<m]" (is "?xs = ?ys")
     proof (rule nth_equalityI, force)
       fix j
       assume "j < length ?xs"
@@ -454,7 +454,7 @@ proof -
   note list_repr = to_list_repr[OF impl inv state]
   from dec_i[OF update_im1[OF update_i[OF list_repr(1)]], unfolded length_map, OF ii i0 i0]
   have
-    "list_repr (i - 1) (dec_i (update_im1 (update_i f (fs'' ! i)) (fs'' ! (i - 1)))) (map ((!) fs) [0..<m][i := (fs'' ! i),
+    "list_repr (i - 1) (dec_i (update_im1 (update_i f (fs'' ! i)) (fs'' ! (i - 1)))) ((map ((!) fs) [0..<m])[i := (fs'' ! i),
        i - 1 := (fs'' ! (i - 1))])" (is "list_repr _ ?fr ?xs") .
   also have "?xs = map ((!) fs'') [0..<m]" unfolding fs''[symmetric]
     by (intro nth_equalityI, insert i i0 len, auto simp: nth_append, rename_tac ii, case_tac "ii \<in> {i-1,i}", auto)

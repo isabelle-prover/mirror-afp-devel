@@ -1,7 +1,7 @@
 section \<open> Grid Points \<close>
 
 theory Grid_Point
-imports "HOL-Probability.Probability"
+imports "HOL-Analysis.Analysis"
 begin
 
 type_synonym grid_point = "(nat \<times> int) list"
