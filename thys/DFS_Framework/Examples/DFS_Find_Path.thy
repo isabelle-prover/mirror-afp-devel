@@ -533,7 +533,7 @@ interpretation fp0_impl:
 
 locale fp0_restr = fb_graph
 begin
-  sublocale fp0 "graph_restrict G R" 
+  sublocale fp0?: fp0 "graph_restrict G R" 
     apply (rule fp0I)
     apply (rule fb_graph_restrict)
     done
