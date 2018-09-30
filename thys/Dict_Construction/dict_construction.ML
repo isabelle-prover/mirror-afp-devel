@@ -373,7 +373,12 @@ fun add_instantiation (class, tyco) term cert =
   let
     fun upd phi =
       map_definitions
-        (Symreltab.update_new ((class, tyco), (Morphism.term phi term, Morphism.thm phi cert))) I
+        (fn tab =>
+          if Symreltab.defined tab (class, tyco) then
+            error ("Duplicate instantiation " ^ quote tyco ^ " :: " ^ quote class)
+          else
+            tab
+            |> Symreltab.update ((class, tyco), (Morphism.term phi term, Morphism.thm phi cert))) I
   in
     Local_Theory.declaration {pervasive = false, syntax = false} upd
   end
@@ -382,8 +387,14 @@ fun add_constant name name' (cert, info) lthy =
   let
     val qname = Local_Theory.full_name lthy (Binding.name name')
     fun upd phi =
-      map_definitions I (Symtab.update_new (name,
-        (qname, (Option.map (Morphism.thm phi) cert, morph_const_info phi info))))
+      map_definitions I
+        (fn tab =>
+          if Symtab.defined tab name then
+            error ("Duplicate constant " ^ quote name)
+          else
+            tab
+            |> Symtab.update (name,
+                (qname, (Option.map (Morphism.thm phi) cert, morph_const_info phi info))))
   in
     Local_Theory.declaration {pervasive = false, syntax = false} upd lthy
     |> Local_Theory.note ((Binding.empty, @{attributes [dict_construction_specs]}), #simps info)
