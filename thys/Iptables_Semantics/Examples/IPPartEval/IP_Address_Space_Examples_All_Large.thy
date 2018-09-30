@@ -38,7 +38,7 @@ begin
   (Iface ''eth1.1020'', [(ipv4addr_of_dotdecimal (192,48,107,2), 24)]),
   (Iface ''eth1.1023'', [(ipv4addr_of_dotdecimal (188,95,236,2), 22)]),
   (Iface ''eth1.1025'', [(ipv4addr_of_dotdecimal (185,86,232,2), 22)]),
-  (Iface ''eth1.1024'', everything_but_my_ips) \<comment> \<open>transfer net\<close>)]"
+  (Iface ''eth1.1024'', everything_but_my_ips) \<comment> \<open>transfer net\<close>]"
 
   lemma "ipassmt_sanity_nowildcards (map_of ipassmt)" by eval
 
