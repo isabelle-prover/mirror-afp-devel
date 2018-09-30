@@ -149,7 +149,7 @@ lemma distinct_mapI: "distinct (map f l) \<Longrightarrow> distinct l"
   by (induct l) auto
     
 lemma map_distinct_upd_conv: 
-  "\<lbrakk>i<length l; distinct l\<rbrakk> \<Longrightarrow> map f l [i := x] = map (f(l!i := x)) l"
+  "\<lbrakk>i<length l; distinct l\<rbrakk> \<Longrightarrow> (map f l)[i := x] = map (f(l!i := x)) l"
   \<comment> \<open>Updating a mapped distinct list is equal to updating the 
     mapping function\<close>
   by (auto simp: nth_eq_iff_index_eq intro: nth_equalityI)
@@ -1173,7 +1173,7 @@ lemma hd_butlast:
 by (induct xs) simp_all
 
 lemma butlast_upd_last_eq[simp]: "length l \<ge> 2 \<Longrightarrow>
-  butlast l [ length l - 2 := x ] = take (length l - 2) l @ [x]"
+  (butlast l) [ length l - 2 := x ] = take (length l - 2) l @ [x]"
   apply (case_tac l rule: rev_cases)
   apply simp
   apply simp
@@ -1918,7 +1918,7 @@ subsubsection {* Take and Drop *}
     apply simp_all
     done
 
-  lemma take_update_last: "length list>n \<Longrightarrow> take (Suc n) list [n:=x] = take n list @ [x]"
+  lemma take_update_last: "length list>n \<Longrightarrow> (take (Suc n) list) [n:=x] = take n list @ [x]"
     by (induct list arbitrary: n)
        (auto split: nat.split)
 
@@ -2072,7 +2072,7 @@ lemma butlast_upt: "butlast [m..<n] = [m..<n - 1]"
   apply simp
   done*)
 
-lemma butlast_update': "butlast l [i:=x] = butlast (l[i:=x])"
+lemma butlast_update': "(butlast l) [i:=x] = butlast (l[i:=x])"
   by (metis butlast_conv_take butlast_list_update length_butlast take_update)
 
 

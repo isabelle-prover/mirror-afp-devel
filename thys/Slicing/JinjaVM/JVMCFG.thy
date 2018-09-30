@@ -399,7 +399,7 @@ lemma locss_purge':
   by (fold fun_upd_def, simp only: locss_purge)
 
 lemma locs_pullout [simp]:
-  "locs b (loc(n := e)) = locs b loc [n := e]"
+  "locs b (loc(n := e)) = (locs b loc) [n := e]"
 proof (induct b)
   case 0
   thus ?case by simp
@@ -410,11 +410,11 @@ next
 qed
 
 lemma locs_pullout' [simp]:
-  "locs b (\<lambda>a. if a = n then e else loc (c, a)) = locs b (\<lambda>a. loc (c, a)) [n := e]"
+  "locs b (\<lambda>a. if a = n then e else loc (c, a)) = (locs b (\<lambda>a. loc (c, a))) [n := e]"
   by (fold fun_upd_def) simp
 
 lemma stks_pullout:
-  "n < b \<Longrightarrow> stks b (stk(n := e)) = stks b stk [b - Suc n := e]"
+  "n < b \<Longrightarrow> stks b (stk(n := e)) = (stks b stk) [b - Suc n := e]"
 proof (induct b)
   case 0
   thus ?case by simp

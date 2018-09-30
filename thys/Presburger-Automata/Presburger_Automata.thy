@@ -2281,21 +2281,21 @@ subsection {* Transforming DFAs to NFAs *}
 
 definition
   nfa_of_dfa :: "dfa \<Rightarrow> nfa" where
-  "nfa_of_dfa = (\<lambda>(bdd,as). (map (bdd_map (\<lambda>q. replicate (length bdd) False[q:=True])) bdd, as))"
+  "nfa_of_dfa = (\<lambda>(bdd,as). (map (bdd_map (\<lambda>q. (replicate (length bdd) False)[q:=True])) bdd, as))"
 
 lemma dfa2wf_nfa:
   assumes "wf_dfa M n"
   shows "wf_nfa (nfa_of_dfa M) n"
 proof -
-  have "\<And>a. dfa_is_node M a \<Longrightarrow> nfa_is_node (nfa_of_dfa M) (replicate (length (fst M)) False[a:=True])"
+  have "\<And>a. dfa_is_node M a \<Longrightarrow> nfa_is_node (nfa_of_dfa M) ((replicate (length (fst M)) False)[a:=True])"
     by (simp add: dfa_is_node_def nfa_is_node_def nfa_of_dfa_def split_beta)
-  hence "\<And>bdd. bdd_all (dfa_is_node M) bdd \<Longrightarrow> bdd_all (nfa_is_node (nfa_of_dfa M)) (bdd_map (\<lambda>q. replicate (length (fst M)) False[q:=True]) bdd)"
+  hence "\<And>bdd. bdd_all (dfa_is_node M) bdd \<Longrightarrow> bdd_all (nfa_is_node (nfa_of_dfa M)) (bdd_map (\<lambda>q. (replicate (length (fst M)) False)[q:=True]) bdd)"
     by (simp add: bdd_all_bdd_map)
   with assms have "list_all (bdd_all (nfa_is_node (nfa_of_dfa M))) (fst (nfa_of_dfa M))" by (simp add: list_all_iff split_beta nfa_of_dfa_def wf_dfa_def)
   with assms show ?thesis by (simp add: wf_nfa_def wf_dfa_def nfa_of_dfa_def split_beta list_all_iff bddh_bdd_map)
 qed
 
-lemma replicate_upd_inj: "\<lbrakk>q < n; replicate n False[q:=True] = replicate n False[p:=True]\<rbrakk> \<Longrightarrow> (q = p)" (is "\<lbrakk>_ ;?lhs = ?rhs\<rbrakk> \<Longrightarrow>  _")
+lemma replicate_upd_inj: "\<lbrakk>q < n; (replicate n False)[q:=True] = (replicate n False)[p:=True]\<rbrakk> \<Longrightarrow> (q = p)" (is "\<lbrakk>_ ;?lhs = ?rhs\<rbrakk> \<Longrightarrow>  _")
 proof -
   assume q: "q < n" and r: "?lhs = ?rhs"
   { assume "p \<noteq> q"
@@ -2309,10 +2309,10 @@ qed
 lemma nfa_of_dfa_reach':
   assumes V: "wf_dfa M l"
   and X: "list_all (is_alph l) bss"
-  and N: "n1 = replicate (length (fst M)) False[q:=True]"
+  and N: "n1 = (replicate (length (fst M)) False)[q:=True]"
   and Q: "dfa_is_node M q"
   and R: "nfa_reach (nfa_of_dfa M) n1 bss n2"
-  shows "\<exists>p. dfa_reach M q bss p \<and> n2 = replicate (length (fst M)) False[p:=True]"
+  shows "\<exists>p. dfa_reach M q bss p \<and> n2 = (replicate (length (fst M)) False)[p:=True]"
 proof -
   from R V X N Q show ?thesis proof induct
     case Nil
@@ -2322,8 +2322,8 @@ proof -
     case (snoc j bss bs)
     hence N1: "nfa_is_node (nfa_of_dfa M) n1" by (simp add: nfa_is_node_def nfa_of_dfa_def split_beta)
     from snoc have V2: "wf_nfa (nfa_of_dfa M) l" by (simp add: dfa2wf_nfa)
-    from snoc have "\<exists>p. dfa_reach M q bss p \<and> j = replicate (length (fst M)) False[p := True]" by simp
-    then obtain p where PR: "dfa_reach M q bss p" and J: "j = replicate (length (fst M)) False[p:=True]" by blast
+    from snoc have "\<exists>p. dfa_reach M q bss p \<and> j = (replicate (length (fst M)) False)[p := True]" by simp
+    then obtain p where PR: "dfa_reach M q bss p" and J: "j = (replicate (length (fst M)) False)[p:=True]" by blast
     hence JL: "nfa_is_node (nfa_of_dfa M) j" by (simp add: nfa_is_node_def nfa_of_dfa_def split_beta)
     from snoc PR have PL: "dfa_is_node M p" by (simp add: dfa_reach_is_node)
     with snoc JL have PL': "p < length j" by (simp add: nfa_is_node_def dfa_is_node_def nfa_of_dfa_def split_beta)
@@ -2333,10 +2333,10 @@ proof -
     from V2 JL snoc have "nfa_is_node (nfa_of_dfa M) (nfa_trans (nfa_of_dfa M) j bs)" by (simp add: nfa_trans_is_node)
     hence L: "length (nfa_trans (nfa_of_dfa M) j bs) = length (fst M)" by (simp add: nfa_is_node_def nfa_of_dfa_def split_beta)
 
-    have "nfa_trans (nfa_of_dfa M) j bs = replicate (length (fst M)) False[m := True]" (is "?lhs = ?rhs")
+    have "nfa_trans (nfa_of_dfa M) j bs = (replicate (length (fst M)) False)[m := True]" (is "?lhs = ?rhs")
     proof (simp add: list_eq_iff_nth_eq L, intro strip)
       fix i assume H: "i < length (fst M)"
-      show "nfa_trans (nfa_of_dfa M) j bs ! i = replicate (length (fst M)) False[m := True] ! i" (is "?lhs = ?rhs")
+      show "nfa_trans (nfa_of_dfa M) j bs ! i = (replicate (length (fst M)) False)[m := True] ! i" (is "?lhs = ?rhs")
       proof
         assume lhs: "?lhs"
         from V2 snoc have "wf_nfa (nfa_of_dfa M) (length bs)" by (simp add: is_alph_def) moreover
@@ -2346,7 +2346,7 @@ proof -
         ultimately have "\<exists>x < length j. j ! x \<and> bdd_lookup (fst (nfa_of_dfa M) ! x) bs ! i" by (simp add: bdd_lookup_subsetbdd)
         then obtain x where xl: "x < length j" and xj: "j ! x" and xs: "bdd_lookup (fst (nfa_of_dfa M) ! x) bs ! i" by blast
         with snoc J PL' have "x = p" by (cases "p = x") simp+
-        with xs PL snoc(3,4) m_def show "replicate (length (fst M)) False[m := True] ! i"
+        with xs PL snoc(3,4) m_def show "(replicate (length (fst M)) False)[m := True] ! i"
           by (simp add: nfa_of_dfa_def split_beta dfa_trans_def dfa_is_node_def wf_dfa_def is_alph_def bdd_map_bdd_lookup list_all_iff)
       next
         assume rhs: "?rhs"
@@ -2368,14 +2368,14 @@ qed
 lemma nfa_of_dfa_reach:
   assumes V: "wf_dfa M l"
   and X: "list_all (is_alph l) bss"
-  and N1: "n1 = replicate (length (fst M)) False[q:=True]"
-  and N2: "n2 = replicate (length (fst M)) False[p:=True]"
+  and N1: "n1 = (replicate (length (fst M)) False)[q:=True]"
+  and N2: "n2 = (replicate (length (fst M)) False)[p:=True]"
   and Q: "dfa_is_node M q"
   shows "nfa_reach (nfa_of_dfa M) n1 bss n2 = dfa_reach M q bss p"
 proof
   assume "nfa_reach (nfa_of_dfa M) n1 bss n2"
-  with assms have "\<exists>p. dfa_reach M q bss p \<and> n2 = replicate (length (fst M)) False[p := True]" by (simp add: nfa_of_dfa_reach')
-  then obtain p' where R: "dfa_reach M q bss p'" and N2': "n2 = replicate (length (fst M)) False[p' := True]" by blast
+  with assms have "\<exists>p. dfa_reach M q bss p \<and> n2 = (replicate (length (fst M)) False)[p := True]" by (simp add: nfa_of_dfa_reach')
+  then obtain p' where R: "dfa_reach M q bss p'" and N2': "n2 = (replicate (length (fst M)) False)[p' := True]" by blast
   from V R Q X have "dfa_is_node M p'" by (simp add: dfa_reach_is_node)
   with N2 N2' have "p' = p" by (simp add: dfa_is_node_def replicate_upd_inj)
   with R show "dfa_reach M q bss p" by simp
@@ -2383,8 +2383,8 @@ next
   assume H: "dfa_reach M q bss p"
   define n2' where "n2' = nfa_steps (nfa_of_dfa M) n1 bss"
   hence R': "nfa_reach (nfa_of_dfa M) n1 bss n2'" by (simp add: reach_def)
-  with assms have "\<exists>p. dfa_reach M q bss p \<and> n2' = replicate (length (fst M)) False[p := True]" by (simp add: nfa_of_dfa_reach')
-  then obtain p' where R: "dfa_reach M q bss p'" and N2': "n2' = replicate (length (fst M)) False[p' := True]" by blast
+  with assms have "\<exists>p. dfa_reach M q bss p \<and> n2' = (replicate (length (fst M)) False)[p := True]" by (simp add: nfa_of_dfa_reach')
+  then obtain p' where R: "dfa_reach M q bss p'" and N2': "n2' = (replicate (length (fst M)) False)[p' := True]" by blast
   with H have "p = p'" by (simp add: reach_inj)
   with N2' N2 have "n2 = n2'" by simp
   with R' show "nfa_reach (nfa_of_dfa M) n1 bss n2" by simp
@@ -2393,14 +2393,14 @@ qed
 lemma nfa_accepting_replicate:
   assumes "q < length (fst N)"
   and "length (snd N) = length (fst N)"
-  shows "nfa_accepting N (replicate (length (fst N)) False[q:=True]) = snd N ! q"
+  shows "nfa_accepting N ((replicate (length (fst N)) False)[q:=True]) = snd N ! q"
 proof -
-  from assms have "set_of_bv (replicate (length (fst N)) False[q:=True]) = {q}"
+  from assms have "set_of_bv ((replicate (length (fst N)) False)[q:=True]) = {q}"
   proof (auto simp: set_of_bv_def)
-    fix x assume "x < length (fst N)" and "replicate (length (fst N)) False[q := True] ! x"
+    fix x assume "x < length (fst N)" and "(replicate (length (fst N)) False)[q := True] ! x"
     with assms show "x = q" by (cases "x = q") simp+
   qed
-  hence "nfa_accepting N (replicate (length (fst N)) False[q:=True]) = (set_of_bv (snd N) \<inter> {q} \<noteq> {})"
+  hence "nfa_accepting N ((replicate (length (fst N)) False)[q:=True]) = (set_of_bv (snd N) \<inter> {q} \<noteq> {})"
     by (simp add: nfa_accepting_set_of_bv)
   also have "\<dots> = (q \<in> set_of_bv (snd N))" by auto
   also from assms have "\<dots> = snd N ! q" by (auto simp: set_of_bv_def)
@@ -2413,16 +2413,16 @@ lemma nfa_of_dfa_accepts:
   shows "nfa_accepts (nfa_of_dfa A) bss = dfa_accepts A bss"
 proof -
   from V have Q: "dfa_is_node A 0" by (simp add: dfa_startnode_is_node)
-  have S: "nfa_startnode (nfa_of_dfa A) = replicate (length (fst A)) False[0:= True]" by (simp add: nfa_startnode_def nfa_of_dfa_def split_beta)
+  have S: "nfa_startnode (nfa_of_dfa A) = (replicate (length (fst A)) False)[0:= True]" by (simp add: nfa_startnode_def nfa_of_dfa_def split_beta)
   define p where "p = dfa_steps A 0 bss"
-  define n2 where "n2 = replicate (length (fst A)) False[p := True]"
+  define n2 where "n2 = (replicate (length (fst A)) False)[p := True]"
   from p_def have PR: "dfa_reach A 0 bss p" by (simp add: reach_def)
   with p_def n2_def Q S X V have "nfa_reach (nfa_of_dfa A) (nfa_startnode (nfa_of_dfa A)) bss n2" by (simp add: nfa_of_dfa_reach)
   hence N2: "n2 = nfa_steps (nfa_of_dfa A) (nfa_startnode (nfa_of_dfa A)) bss" by (simp add: reach_def)
   from PR Q X V have "dfa_is_node A p" by (simp add: dfa_reach_is_node)
   hence "p < length (fst (nfa_of_dfa A))" by (simp add: dfa_is_node_def nfa_of_dfa_def split_beta) moreover
   from dfa2wf_nfa[OF V] have "length (snd (nfa_of_dfa A)) = length (fst (nfa_of_dfa A))" by (auto simp add: wf_nfa_def) moreover
-  from n2_def have "n2 = replicate (length (fst (nfa_of_dfa A))) False[p := True]" by (simp add: nfa_of_dfa_def split_beta)
+  from n2_def have "n2 = (replicate (length (fst (nfa_of_dfa A))) False)[p := True]" by (simp add: nfa_of_dfa_def split_beta)
   ultimately have "nfa_accepting (nfa_of_dfa A) n2 = snd (nfa_of_dfa A) ! p" by (simp add: nfa_accepting_replicate)
   with N2 p_def show ?thesis by (simp add: accepts_def accepts_def dfa_accepting_def nfa_of_dfa_def split_beta)
 qed
