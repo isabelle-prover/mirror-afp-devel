@@ -722,7 +722,7 @@ proof -
       and tse: "?f ?x = (\<Sum>m<?n. ?diff m ?c / fact m * (?x - ?c) ^ m) + ?diff ?n s / fact ?n * (?x - ?c) ^ ?n"
       by blast
 
-    have "interpret_floatarith f (map real_of_float xs[0 := x]) -
+    have "interpret_floatarith f ((map real_of_float xs)[0 := x]) -
     Ipoly (map2 (-) [x] [xs!0]) (fst (tmf_polys z)) =
     (\<Sum>m<?n. ?diff m ?c / fact m * (?x - ?c) ^ m) + ?diff ?n s / fact ?n * (?x - ?c) ^ ?n -
     (\<Sum>m\<le>?n. (x - xs!0) ^ m * mid (z ! m))"

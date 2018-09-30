@@ -2241,7 +2241,7 @@ lemma wd_step_wdD:
 
 definition "ode_e' = (ode_e @
   mmult_fa D D D (concat (map (\<lambda>j. map (\<lambda>i.
-      (FDERIV_floatarith (ode_e ! j) [0..<D] (replicate D 0[i := 1]))) [0..<D]) [0..<D]))
+      (FDERIV_floatarith (ode_e ! j) [0..<D] ((replicate D 0)[i := 1]))) [0..<D]) [0..<D]))
     (map Var [D..<D + D*D]))"
 
 end
@@ -2380,7 +2380,7 @@ proof -
   have "eucl_of_list
             (interpret_floatariths
               (mmult_fa D D D
-       (concat (map (\<lambda>j. map (\<lambda>i. FDERIV_floatarith (ode_e ! j) [0..<D] (replicate D 0[i := 1])) [0..<D]) [0..<D]))
+       (concat (map (\<lambda>j. map (\<lambda>i. FDERIV_floatarith (ode_e ! j) [0..<D] ((replicate D 0)[i := 1])) [0..<D]) [0..<D]))
        (map floatarith.Var [D..<D + D * D])) (list_of_eucl x)) =
     matrix (blinfun_apply (ode_d 0 (fst x) 0)) ** snd x"
     unfolding matrix_eq

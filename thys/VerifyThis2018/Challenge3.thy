@@ -1127,17 +1127,17 @@ subsection \<open>Refinement 3: Using an Array\<close>text_raw \<open>\label{sec
       by (auto simp: invar4_def)
       
     have [simp]: 
-      "replicate N False \<noteq> replicate N False[c := True]"  
-      "replicate N False[c := True] \<noteq> replicate N False"  
+      "replicate N False \<noteq> (replicate N False)[c := True]"  
+      "(replicate N False)[c := True] \<noteq> replicate N False"  
       apply (auto simp: list_eq_iff_nth_eq nth_list_update) 
       using \<open>c < N\<close> by blast+
     
     have [simp]:
-      "replicate N False[c := True] ! d \<longleftrightarrow> d=c" if "d<N" for d
+      "(replicate N False)[c := True] ! d \<longleftrightarrow> d=c" if "d<N" for d
       using that
       by (auto simp: list_eq_iff_nth_eq nth_list_update) 
       
-    have [simp]: "replicate N False[tk := False] = replicate N False" for tk
+    have [simp]: "(replicate N False)[tk := False] = replicate N False" for tk
       by (auto simp: list_eq_iff_nth_eq nth_list_update') 
       
     from SIM CS have "\<exists>bs'. blstep t bs bs' \<and> sim_rel2 bs' cs'"
