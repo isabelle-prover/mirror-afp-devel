@@ -9,7 +9,21 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>25 Sep 2018 00:00:00 +0000</pubDate>
+    <pubDate>28 Sep 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>The Transcendence of π</title>
+              <link>https://www.isa-afp.org/entries/Pi_Transcendental.html</link>
+       <guid>https://www.isa-afp.org/entries/Pi_Transcendental.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>28 Sep 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This entry shows the transcendence of &amp;pi; based on the
+classic proof using the fundamental theorem of symmetric polynomials
+first given by von Lindemann in 1882, but the formalisation mostly
+follows the version by Niven. The proof reuses much of the machinery
+developed in the AFP entry on the transcendence of
+&lt;em&gt;e&lt;/em&gt;.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Symmetric Polynomials</title>
               <link>https://www.isa-afp.org/entries/Symmetric_Polynomials.html</link>
@@ -572,28 +586,6 @@ of the CakeML semantics that has been exported from the Lem
 specifications to Isabelle. Additionally, there are some hand-written
 theory files that adapt the exported code to Isabelle and port proofs
 from the HOL4 formalization, e.g. termination and equivalence proofs.</description>
-    </item>
-    <item>
-       <title>A Theory of Architectural Design Patterns</title>
-              <link>https://www.isa-afp.org/entries/Architectural_Design_Patterns.html</link>
-       <guid>https://www.isa-afp.org/entries/Architectural_Design_Patterns.html</guid>
-       <dc:creator> Diego Marmsoler       </dc:creator>
-       <pubDate>01 Mar 2018 00:00:00 +0000</pubDate>
-       <description>
-The following document formalizes and verifies several architectural
-design patterns. Each pattern specification is formalized in terms of
-a locale where the locale assumptions correspond to the assumptions
-which a pattern poses on an architecture. Thus, pattern specifications
-may build on top of each other by interpreting the corresponding
-locale. A pattern is verified using the framework provided by the AFP
-entry Dynamic Architectures. Currently, the document consists of
-formalizations of 4 different patterns: the singleton, the publisher
-subscriber, the blackboard pattern, and the blockchain pattern.
-Thereby, the publisher component of the publisher subscriber pattern
-is modeled as an instance of the singleton pattern and the blackboard
-pattern is modeled as an instance of the publisher subscriber pattern.
-In general, this entry provides the first steps towards an overall
-theory of architectural design patterns.</description>
     </item>
   </channel>
 </rss>

@@ -415,6 +415,20 @@ abstract =
   leading to a contradiction.</p> <p>This kind of approach can be found in
   many different sources; this formalisation mostly follows a <a  href="http://planetmath.org/proofoflindemannweierstrasstheoremandthateandpiaretranscendental">PlanetMath article</a> by Roger Lipsett.</p>
 
+[Pi_Transcendental]
+title = The Transcendence of π
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Mathematics/Number Theory
+date = 2018-09-28
+notify = eberlm@in.tum.de
+abstract =
+  <p>This entry shows the transcendence of &pi; based on the
+  classic proof using the fundamental theorem of symmetric polynomials
+  first given by von Lindemann in 1882, but the formalisation mostly
+  follows the version by Niven. The proof reuses much of the machinery
+  developed in the AFP entry on the transcendence of
+  <em>e</em>.</p>
+
 [DFS_Framework]
 title = A Framework for Verifying Depth-First Search Algorithms
 author = Peter Lammich <http://www21.in.tum.de/~lammich>, René Neumann <mailto:neumannr@in.tum.de>
