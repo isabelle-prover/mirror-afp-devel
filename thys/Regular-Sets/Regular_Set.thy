@@ -303,20 +303,20 @@ lemma Deriv_code [code]:
 subsection \<open>Shuffle product\<close>
 
 definition Shuffle (infixr "\<parallel>" 80) where
-  "Shuffle A B = \<Union>{shuffle xs ys | xs ys. xs \<in> A \<and> ys \<in> B}"
+  "Shuffle A B = \<Union>{shuffles xs ys | xs ys. xs \<in> A \<and> ys \<in> B}"
 
 lemma Deriv_Shuffle[simp]:
   "Deriv a (A \<parallel> B) = Deriv a A \<parallel> B \<union> A \<parallel> Deriv a B"
-  unfolding Shuffle_def Deriv_def by (fastforce simp: Cons_in_shuffle_iff neq_Nil_conv)
+  unfolding Shuffle_def Deriv_def by (fastforce simp: Cons_in_shuffles_iff neq_Nil_conv)
 
 lemma shuffle_subset_lists:
   assumes "A \<subseteq> lists S" "B \<subseteq> lists S"
   shows "A \<parallel> B \<subseteq> lists S"
 unfolding Shuffle_def proof safe
   fix x and zs xs ys :: "'a list"
-  assume zs: "zs \<in> shuffle xs ys" "x \<in> set zs" and "xs \<in> A" "ys \<in> B"
+  assume zs: "zs \<in> shuffles xs ys" "x \<in> set zs" and "xs \<in> A" "ys \<in> B"
   with assms have "xs \<in> lists S" "ys \<in> lists S" by auto
-  with zs show "x \<in> S" by (induct xs ys arbitrary: zs rule: shuffle.induct) auto
+  with zs show "x \<in> S" by (induct xs ys arbitrary: zs rule: shuffles.induct) auto
 qed
 
 lemma Nil_in_Shuffle[simp]: "[] \<in> A \<parallel> B \<longleftrightarrow> [] \<in> A \<and> [] \<in> B"
