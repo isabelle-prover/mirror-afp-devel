@@ -1510,14 +1510,14 @@ lemma interpret_floatariths_matrix_of_degrees:
    0, 0, 0]"
   by (auto simp: matrix_of_degrees\<^sub>e_def Let_def inverse_eq_divide)
 
-definition "num_options p m N a projs print_fun =
+definition "num_options p sstep m N a projs print_fun =
   \<lparr>
     precision = p,
     reduce = correct_girard (p) (m) (N),
     adaptive_atol = FloatR 1 (- a),
     adaptive_rtol = FloatR 1 (- a),
     method_id = 2,
-    start_stepsize  = FloatR 1 (- 5),
+    start_stepsize  = FloatR 1 (- sstep),
     iterations = 40,
     halve_stepsizes = 40,
     widening_mod = 10,
@@ -1540,9 +1540,9 @@ definition "num_options p m N a projs print_fun =
         | None \<Rightarrow> ())
   \<rparr>"
 
-definition "num_options_c1 p m N a projs dcolors print_fun =
+definition "num_options_c1 p sstep m N a projs dcolors print_fun =
   (let
-    no = num_options p m N a (map (\<lambda>(x, y, c, ds). (x, y, c)) projs) print_fun;
+    no = num_options p sstep m N a (map (\<lambda>(x, y, c, ds). (x, y, c)) projs) print_fun;
     D = length dcolors
   in no
     \<lparr>printing_fun:=
@@ -1556,8 +1556,8 @@ definition "num_options_c1 p m N a projs dcolors print_fun =
       )
     \<rparr>)"
 
-definition "num_options_code p m N a projs print_fun =
-  num_options (nat_of_integer p) (nat_of_integer m) (nat_of_integer N)
+definition "num_options_code p sstep m N a projs print_fun =
+  num_options (nat_of_integer p) (int_of_integer sstep) (nat_of_integer m) (nat_of_integer N)
     (int_of_integer a) (map (\<lambda>(i, j, k). (nat_of_integer i, nat_of_integer j, k)) projs) print_fun"
 
 definition "ro s n M g0 g1 inter_step =
@@ -2738,14 +2738,14 @@ fun eucl_subset_approx_tac ctxt p = subset_approx_preconds_tac ctxt p @{thm eucl
 fun approx_subset_eucl_tac ctxt p = subset_approx_preconds_tac ctxt p @{thm approx_subset_euclI}
 fun approx_subset_list_tac ctxt p = subset_approx_preconds_tac ctxt p @{thm approx_subset_listI}
 
-fun integral_bnds_tac d p m N atol filename ctxt i =
+fun integral_bnds_tac_gen sstep d p m N atol filename ctxt i =
   let
     val insts =
        ([((("'i", 0), @{sort "{enum}"}), mk_numeralT (d + 1) |> Thm.ctyp_of ctxt)],
         [((("optns", 0), @{typ "string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow>(real aform) numeric_options)"}),
            HOLogic.mk_prod
              (using_master_directory_term ctxt filename,
-              (@{term num_options} $ mk_nat p $ mk_nat m $ mk_nat N $ mk_int atol $
+              (@{term num_options} $ mk_nat p $ mk_int sstep $ mk_nat m $ mk_nat N $ mk_int atol $
               @{term "[(0::nat, 1::nat, ''0x000000'')]"}))
           |> Thm.cterm_of ctxt)])
   in
@@ -2765,6 +2765,7 @@ fun integral_bnds_tac d p m N atol filename ctxt i =
     THEN print_tac ctxt ""
     THEN ode_numerics_tac ctxt i
   end
+val integral_bnds_tac= integral_bnds_tac_gen 5
 \<close>
 
 lemma abs_minus_leI: "\<bar>x - x'\<bar> \<le> e" if "x \<in> {x' - e .. x' + e}" for x e::real
@@ -2820,34 +2821,34 @@ fun mk_nat_list ds = HOLogic.mk_list @{typ "nat"} (map mk_nat ds)
 fun mk_proj_c1 (m, n, s, ds) = HOLogic.mk_tuple [mk_nat m, mk_nat n, HOLogic.mk_string s, mk_nat_list ds]
 fun mk_projs_c1 projs = HOLogic.mk_list @{typ "nat \<times> nat \<times> string \<times> nat list"} (map mk_proj_c1 projs)
 
-fun TAG_optns_thm p m N atol projs filename ctxt =
+fun TAG_optns_thm p sstep m N atol projs filename ctxt =
   Thm.instantiate ([],
           [((("optns", 0), @{typ "string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow>(real aform) numeric_options)"}),
            HOLogic.mk_prod
              (using_master_directory_term ctxt filename,
-             @{term num_options} $ mk_nat p $ mk_nat m $ mk_nat N $ mk_int atol $ mk_projs projs)
+             @{term num_options} $ mk_nat p $ mk_int sstep $ mk_nat m $ mk_nat N $ mk_int atol $ mk_projs projs)
           |> Thm.cterm_of ctxt)]) @{thm TAG_optnsI}
 
-fun TAG_optns_c1_thm p m N atol projs ds filename ctxt =
+fun TAG_optns_c1_thm p sstep m N atol projs ds filename ctxt =
   Thm.instantiate ([],
           [((("optns", 0), @{typ "string \<times> ((String.literal \<Rightarrow> unit) \<Rightarrow>(real aform) numeric_options)"}),
            HOLogic.mk_prod
              (using_master_directory_term ctxt filename,
-             @{term num_options_c1} $ mk_nat p $ mk_nat m $ mk_nat N $ mk_int atol $ mk_projs_c1 projs $
+             @{term num_options_c1} $ mk_nat p $ mk_int sstep $ mk_nat m $ mk_nat N $ mk_int atol $ mk_projs_c1 projs $
               mk_string_list ds)
           |> Thm.cterm_of ctxt)]) @{thm TAG_optnsI}
 
 fun get_tracing_tac ctxt = if Config.get ctxt cfg_trace then print_tac ctxt else K all_tac
 fun get_tracing_tac' ctxt = fn s => K (get_tracing_tac ctxt s)
 
-fun ode_bnds_tac ode_def p m N atol projs filename ctxt =
+fun ode_bnds_tac_gen sstep ode_def p m N atol projs filename ctxt =
   let
     val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
     val tracing_tac' = get_tracing_tac' ctxt
   in tracing_tac' "solves_one_step_ivl_thms"
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
     THEN' tracing_tac' "resolved solves_one_step_ivl_thms"
-    THEN' resolve_tac ctxt [TAG_optns_thm p m N atol projs filename ctxt]
+    THEN' resolve_tac ctxt [TAG_optns_thm p sstep m N atol projs filename ctxt]
     THEN' SOLVED' (real_subset_approx_tac ctxt p)
     THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
     THEN' SOLVED' (DIM_tac ctxt)
@@ -2862,14 +2863,16 @@ fun ode_bnds_tac ode_def p m N atol projs filename ctxt =
     THEN' ode_numerics_tac ctxt
   end
 
-fun ode'_bnds_tac ode_def p m N atol projs ds filename ctxt =
+val ode_bnds_tac = ode_bnds_tac_gen 5
+
+fun ode'_bnds_tac_gen sstep ode_def p m N atol projs ds filename ctxt =
   let
     val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
     val tracing_tac' = get_tracing_tac' ctxt
   in tracing_tac' "solves_one_step_ivl_thms"
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
     THEN' tracing_tac' "resolved solves_one_step_ivl_thms"
-    THEN' resolve_tac ctxt [TAG_optns_c1_thm p m N atol projs ds filename ctxt]
+    THEN' resolve_tac ctxt [TAG_optns_c1_thm p sstep m N atol projs ds filename ctxt]
     THEN' SOLVED' (real_subset_approx_tac ctxt p)
     THEN' SOLVED' (eucl_subset_approx_tac ctxt p)
     THEN' SOLVED' (DIM_tac ctxt)
@@ -2888,14 +2891,16 @@ fun ode'_bnds_tac ode_def p m N atol projs ds filename ctxt =
     THEN' ode_numerics_tac ctxt
   end
 
-fun poincare_bnds_tac ode_def p m N atol projs filename ctxt =
+val ode'_bnds_tac = ode'_bnds_tac_gen 5
+
+fun poincare_bnds_tac_gen sstep ode_def p m N atol projs filename ctxt =
   let
     val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
     val tracing_tac' = get_tracing_tac' ctxt
   in  tracing_tac' "solves_one_step_ivl_thms"
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
     THEN' tracing_tac' "resolved solves_one_step_ivl_thms"
-    THEN' resolve_tac ctxt [TAG_optns_thm p m N atol projs filename ctxt]
+    THEN' resolve_tac ctxt [TAG_optns_thm p sstep m N atol projs filename ctxt]
     THEN' tracing_tac' "poincare_tac_theorems"
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
@@ -2921,7 +2926,7 @@ fun poincare_bnds_tac ode_def p m N atol projs filename ctxt =
     THEN' tracing_tac' "ode_numerics_tac"
     THEN' ode_numerics_tac ctxt
   end
-
+val poincare_bnds_tac = poincare_bnds_tac_gen 5
 \<close>
 
 abbreviation "point_ivl a \<equiv> {a .. a}"
@@ -3035,12 +3040,12 @@ proof (rule ballI)
 qed
 
 ML \<open>
-fun poincare'_bnds_tac ode_def p m N atol projs filename ctxt =
+fun poincare'_bnds_tac_gen sstep ode_def p m N atol projs filename ctxt =
   let
     val ctxt = Context.proof_map (Named_Theorems.add_thm @{named_theorems DIM_simps} ode_def) ctxt
   in
          resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems solves_one_step_ivl_thms})
-    THEN' resolve_tac ctxt [TAG_optns_thm p m N atol projs filename ctxt]
+    THEN' resolve_tac ctxt [TAG_optns_thm p sstep m N atol projs filename ctxt]
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
     THEN' resolve_tac ctxt (Named_Theorems.get ctxt @{named_theorems poincare_tac_theorems})
     THEN' SOLVED' (DIM_tac ctxt)
@@ -3066,6 +3071,7 @@ fun poincare'_bnds_tac ode_def p m N atol projs filename ctxt =
       (empty_simpset ctxt addsimps [ode_def]))
     THEN' ode_numerics_tac ctxt
   end
+val poincare'_bnds_tac = poincare'_bnds_tac_gen 5
 \<close>
 
 lemma (in auto_ll_on_open) Poincare_Banach_fixed_pointI:

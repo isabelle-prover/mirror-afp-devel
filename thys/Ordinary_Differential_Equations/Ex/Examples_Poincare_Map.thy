@@ -285,4 +285,51 @@ lemma
 
 end
 
+
+subsection \<open>Controller 2D\<close>
+
+text \<open>An example from @{cite "barriertubes"}\<close>
+
+experiment begin
+
+schematic_goal c2d:
+  "[X!0 * X!1 + (X!1)^3 + 2, (X!0)\<^sup>2 + 2 * (X!0) - 3 * X!1] = interpret_floatariths ?fas X"
+  unfolding power2_eq_square power3_eq_cube
+  by (reify_floatariths)
+
+concrete_definition c2d uses c2d
+
+interpretation c2d: ode_interpretation true_form UNIV c2d "\<lambda>(x, y). (x*y + y^3 + 2, x\<^sup>2 + 2 * x - 3 * y)::real*real"
+  "n::2" for n
+  by standard
+    (auto intro!: local_lipschitz_c1_euclideanI ext
+      simp: split_beta' aform.ode_def c2d_def power2_eq_square aform.Csafe_def aform.safe_def true_form_def
+        isFDERIV_def less_Suc_eq_0_disj Basis_list_prod_def Basis_list_real_def eval_nat_numeral
+        inverse_eq_divide eucl_of_list_prod)
+
+abbreviation "options \<equiv> ro 2 10 7 2 2 2"
+
+lemma c2d_pi_1: "c2d.guards_invar DIM(real \<times> real)
+  [([ysec2 (-200, 0) 0], options), ([xsec2 0 (0, 100)], options), ([xsec2 75 (0, 100)], options),
+    ([xsec2 150 (0, 300)], options), ([xsec2 250 (0, 300)], options)]"
+  by (auto simp: c2d.guards_invar_def)
+
+lemma c2d_poincare_section_rep[poincare_tac_theorems]:
+  "{(300::real, 0::real)..(300, 300)} = {eucl_of_list [300, 0]..eucl_of_list [300, 300]}"
+  by (auto simp: eucl_of_list_prod)
+
+lemma c2d_ro: "TAG_reach_optns options" by simp
+
+lemma c2d_start: "TAG_sctn False" by simp
+
+lemma
+  notes [poincare_tac_theorems] = c2d_ro c2d_start c2d_pi_1
+  shows "\<forall>x\<in>{(29.9, -38) .. (30.1, -36)}.
+  c2d.returns_to   {(300, 0) .. (300, 300)} x \<and>
+  c2d.poincare_map_from_outside {(300, 0) .. (300, 300)} x \<in> {(300, 70) .. (300, 80)}"
+  using [[ode_numerics_trace]]
+  by (tactic \<open>poincare_bnds_tac_gen 20 @{thm c2d_def} 30 20 7 10 [(0, 1, "0x000000")] "-" (* "out_p1_vdp_0.out" *)  @{context} 1\<close>)
+
+end
+
 end
