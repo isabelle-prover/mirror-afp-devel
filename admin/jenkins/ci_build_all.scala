@@ -6,7 +6,6 @@ object profile extends isabelle.CI_Profile
   import org.apache.commons.configuration2._
 
   override def clean = false
-  override def numa = true
 
   val afp = Path.explode("$AFP_BASE")
   val afp_thys = afp + Path.explode("thys")
@@ -180,8 +179,6 @@ object profile extends isabelle.CI_Profile
   val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
   def can_send_mails = System.getProperties().containsKey("mail.smtp.host")
 
-  override def threads = 8
-  override def jobs = 8
   def include = List(afp_thys)
   def select = Nil
 
