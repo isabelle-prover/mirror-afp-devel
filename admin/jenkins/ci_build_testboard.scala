@@ -70,8 +70,8 @@ object profile extends isabelle.CI_Profile
 
   val report_file = Path.explode("$ISABELLE_HOME/report.html").file
 
-  def threads = 4
-  def jobs = 10
+  override def threads = 4
+  override def jobs = 10
   def include = List(afp_thys)
   def select = Nil
 

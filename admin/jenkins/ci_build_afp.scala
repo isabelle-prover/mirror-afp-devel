@@ -16,8 +16,8 @@ object profile extends isabelle.CI_Profile
   val deps_file = Path.explode("$ISABELLE_HOME/dependencies.json").file
   def can_send_mails = System.getProperties().containsKey("mail.smtp.host")
 
-  def threads = 2
-  def jobs = 8
+  override def threads = 2
+  override def jobs = 8
   def include = List(afp_thys)
   def select = Nil
 
