@@ -6,8 +6,8 @@ object profile extends isabelle.CI_Profile
   val afp = Path.explode("$ISABELLE_HOME/afp")
   val afp_thys = afp + Path.explode("thys")
 
-  def threads = 8
-  def jobs = 1
+  override def threads = 8
+  override def jobs = 1
   def include = List(afp_thys)
   def select = Nil
 
