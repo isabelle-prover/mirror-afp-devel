@@ -7,7 +7,7 @@ session Budan_Fourier (AFP) = "HOL-Computational_Algebra" +
   theories
     Budan_Fourier
     Sturm_Multiple_Roots
-    A_B_Roots_Test
+    Descartes_Roots_Test
   document_files
     "root.tex"
     "root.bib"
