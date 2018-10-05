@@ -3879,7 +3879,7 @@ author = Manuel Eberl <https://www21.in.tum.de/~eberlm>, Johannes Hölzl <http:/
 date = 2014-10-09
 topic = Mathematics/Probability Theory, Computer Science/Programming Languages/Compiling
 abstract =
-	<a href="http://dx.doi.org/10.1007/978-3-642-36742-7_35">Bhat et al. [TACAS 2013]</a> developed an inductive compiler that computes
+	<a href="https://doi.org/10.1007/978-3-642-36742-7_35">Bhat et al. [TACAS 2013]</a> developed an inductive compiler that computes
 	density functions for probability spaces described by programs in a
 	probabilistic functional language. In this work, we implement such a
 	compiler for a modified version of this language within the theorem prover
@@ -5381,7 +5381,7 @@ abstract =
 	<p>
 	We define a functional variant of the static single assignment (SSA)
 	form construction algorithm described by <a
-	href="http://dx.doi.org/10.1007/978-3-642-37051-9_6">Braun et al.</a>,
+	href="https://doi.org/10.1007/978-3-642-37051-9_6">Braun et al.</a>,
 	which combines simplicity and efficiency. The definition is based on a
 	general, abstract control flow graph representation using Isabelle locales.
 	</p>
@@ -5395,12 +5395,12 @@ abstract =
 	<p>
 	Furthermore, we use a generic instantiation based on typedefs in order
 	to extract OCaml code and replace the unverified SSA construction
-	algorithm of the <a href="http://dx.doi.org/10.1145/2579080">CompCertSSA
+	algorithm of the <a href="https://doi.org/10.1145/2579080">CompCertSSA
 	project</a> with it.
 	</p>
 	<p>
 	A more detailed description of the verified SSA construction can be found
-	in the paper <a href="http://dx.doi.org/10.1145/2892208.2892211">Verified
+	in the paper <a href="https://doi.org/10.1145/2892208.2892211">Verified
 	Construction of Static Single Assignment Form</a>, CC 2016.
 	</p>
 notify = denis.lohner@kit.edu
@@ -5416,7 +5416,7 @@ abstract =
   href="https://www.isa-afp.org/entries/Formal_SSA.html">"Verified
   Construction of Static Single Assignment Form"</a>. In
   their work, the authors have shown that <a
-  href="http://dx.doi.org/10.1007/978-3-642-37051-9_6">Braun
+  href="https://doi.org/10.1007/978-3-642-37051-9_6">Braun
   et al.'s static single assignment (SSA) construction
   algorithm</a> produces minimal SSA form for input programs with
   a reducible control flow graph (CFG). However Braun et al. also
@@ -5427,7 +5427,7 @@ abstract =
   <p>As the extension of Braun et al.'s algorithm
   aims for removing so-called redundant strongly connected components of
   phi functions, we show that this suffices to guarantee minimality
-  according to <a href="http://dx.doi.org/10.1145/115372.115320">Cytron et
+  according to <a href="https://doi.org/10.1145/115372.115320">Cytron et
   al.</a>.</p>
 
 [PropResPI]
@@ -6178,7 +6178,7 @@ date = 2016-11-23
 topic = Computer Science/Programming Languages/Static Analysis
 abstract =
   This is the Isabelle formalization of the material decribed in the
-  eponymous <a href="http://dx.doi.org/10.1007/978-3-642-32347-8_9">ITP 2012 paper</a>.
+  eponymous <a href="https://doi.org/10.1007/978-3-642-32347-8_9">ITP 2012 paper</a>.
   It develops a generic abstract interpreter for a
   while-language, including widening and narrowing. The collecting
   semantics and the abstract interpreter operate on annotated commands:
@@ -6188,7 +6188,7 @@ abstract =
   precision. This is motivated by the inclusion of the material in a
   theorem prover based course on semantics. A similar (but more
   polished) development is covered in the book
-  <a href="http://dx.doi.org/10.1007/978-3-319-10542-0">Concrete Semantics</a>.
+  <a href="https://doi.org/10.1007/978-3-319-10542-0">Concrete Semantics</a>.
 
 [Complx]
 title = COMPLX: A Verification Framework for Concurrent Imperative Programs
