@@ -3,10 +3,10 @@
 
 text_raw \<open>%
 \clearpage
-\addcontentsline{toc}{section}{A tutorial introduction to \CryptHOL{}}%
+\addcontentsline{toc}{section}{A Tutorial Introduction to \CryptHOL{}}%
 \begin{center}
   \normalfont
-  {\huge A tutorial introduction to \CryptHOL{}}
+  {\huge A Tutorial Introduction to \CryptHOL{}}
   \\[1em]
   \large
   Andreas Lochbihler
@@ -26,7 +26,7 @@ text_raw \<open>%
   This tutorial demonstrates how cryptographic security notions, constructions, and game-based security proofs
   can be formalized using the \CryptHOL{} framework.
   As a running example, we formalize a variant of the hash-based ElGamal encryption scheme and its IND-CPA security in the random oracle model.
-  This tutorial assumes familiarity with Isabelle/HOL basics and standard cryptographic terminology.
+  This tutorial assumes basic familiarity with Isabelle/HOL and standard cryptographic terminology.
 \end{abstract}
 \<close>
 section \<open>Introduction\<close>
@@ -50,7 +50,7 @@ This illustrates how the following aspects of a cryptographic security proof are
 \item Cryptographic schemes, both generic (the concept of an encryption scheme) and a particular instance (the hashed Elgamal scheme in \S\ref{section:hashed-elgamal-scheme})
 \item Security statements (concrete and asymptotic, \S\ref{section:security:concrete} and \S\ref{section:security:asymptotic})
 \item Reductions (from IND-CPA to CDH for hashed Elgamal in \S\ref{section:reduction})
-\item Different kinds of proof steps (\S\S\ref{section:ghop-first}--\ref{section:combining:hops}):
+\item Different kinds of proof steps (\S\ref{section:ghop-first}--\ref{section:combining:hops}):
   \begin{itemize}
   \item Using intermediate games
   \item Defining failure events and applying indistinguishability-up-to lemmas
@@ -58,15 +58,15 @@ This illustrates how the following aspects of a cryptographic security proof are
   \end{itemize}
 \end{itemize}
 
-This tutorial assumes that the reader knows the basics of Isabelle/HOL and game-based cryptography and wants to get hands-on with \CryptHOL{}.
+This tutorial assumes that the reader knows the basics of Isabelle/HOL and game-based cryptography and wants to get hands-on experience with \CryptHOL{}.
 The semantics behind CryptHOL's embedding in higher-order logic and its soundness are not discussed;
 we refer the reader to the scientific articles for that~\cite{Basin2017, Lochbihler2016}.
 Shoup's tutorial~\cite{Shoup2004IACR} provides a good introduction to game-based proofs.
 The following Isabelle features are frequently used in \CryptHOL{} formalizations; the tutorials are available from the Documentation panel in Isabelle/jEdit.
 \begin{itemize}
-\item Function definitions (tutorials @{doc "prog-prove"} and @{doc "functions"},~\cite{Krauss2009})
-\item Locales (tutorial @{doc locales},~\cite{Ballarin2014})
-\item The Transfer package~\cite{Huffman2013}
+\item Function definitions (tutorials @{doc "prog-prove"} and @{doc "functions"},~\cite{Krauss2009}) for games and reductions
+\item Locales (tutorial @{doc locales},~\cite{Ballarin2014}) to modularize the formalization
+\item The Transfer package~\cite{Huffman2013} for automating parametricity and representation independence proofs
 \end{itemize}
 
 This document is generated from a corresponding Isabelle theory file available online~\cite{Lochbihler2017b}.%
@@ -84,6 +84,13 @@ In particular, a Ctrl-click on a formal entity (function, constant, theorem name
 We split the tutorial into a series of recipes for common formalization tasks. In each section, we cover
 a familiar cryptography concept and show how it is formalized in \CryptHOL{}. Simultaneously, we explain
 the Isabelle/HOL and functional programming topics that are essential for formalizing game-based proofs. 
+*}
+
+subsection {* Getting started *}
+
+text {* 
+\CryptHOL{} is available as part of the Archive of Formal Proofs~\cite{Lochbihler2017a}.
+Cryptography formalizations based on \CryptHOL{} are arranged in Isabelle theory files that import the relevant libraries.
 *}
 
 subsection {* Getting started *}
@@ -127,11 +134,11 @@ This section demonstrates how the following cryptographic concepts are modelled 
 subsection {* Security notions without oracles: the CDH assumption \label{section:lcdh} *}
 
 text {*
-In game-based cryptography, a security property is specified using a game between a challenger and an adversary.
+In game-based cryptography, a security property is specified using a game between a benign challenger and an adversary.
 The probability of an adversary to win the game against the challenger is called its advantage.
-A cryptographic construction satisfies a security property if the advantage for any ``feasible'' adversary is ''negligible''.
+A cryptographic construction satisfies a security property if the advantage for any ``feasible'' adversary is ``negligible''.
 A typical security proof reduces the security of a construction to the assumed security of its building blocks.
-In a concrete security proof, it is therefore not necessary to formally define ``feasibility'' and ''negligibility'', 
+In a concrete security proof, where the security parameter is implicit, it is therefore not necessary to formally define ``feasibility'' and ''negligibility'', 
 as the security statement establishes a concrete relation between the advantages of specific adversaries.%
 \footnote{%
   The cryptographic literature sometimes abstracts over the adversary and 
@@ -168,10 +175,11 @@ the following \textbf{LCDH game} against a challenger:
 
 The scheme for LCDH uses only a cyclic group.
 To make the LCDH formalisation reusable, we formalize the LCDH game for an arbitrary cyclic group @{term "\<G>"} using Isabelle's module system based on locales.
-The locale @{text "list_cdh"} fixes @{term "\<G>"} as a finite cyclic group that has elements of type @{typ "'grp"}.
+The locale @{text "list_cdh"} fixes @{term "\<G>"} to be a finite cyclic group that has elements of type @{typ "'grp"} and comes with a generator @{term "\<^bold>g\<^bsub>\<G>\<^esub>"}.
 Basic facts about finite groups are formalized in the \CryptHOL{} theory @{theory CryptHOL.Cyclic_Group}.%
 \footnote{%
   The syntax directive @{theory_text "structure"} tells Isabelle that all group operations in the context of the locale refer to the group @{term "\<G>"} unless stated otherwise.
+  For example, @{term "\<^bold>g\<^bsub>\<G>\<^esub>"} can be written as @{text "\<^bold>g"} inside the locale.
 
   Isabelle automatically adds the locale parameters and the assumptions on them to all definitions and lemmas inside that locale.
   Of course, we could have made the group @{term "\<G>"} an explicit argument of all functions ourselves, 
@@ -185,8 +193,10 @@ begin
 
 text {*
 The LCDH game does not need oracles.
-The adversary is therefore just a probabilistic function from two group elements to a set of guesses, which are group elements again.
+The adversary is therefore just a probabilistic function from two group elements to a set of guesses, which are again group elements.
 In \CryptHOL{}, the probabilistic nature is expressed by the adversary returning a discrete subprobability distribution over sets of guesses, as expressed by the type constructor @{text "spmf"}.
+(Subprobability distributions are like probability distributions except that the whole probability mass may be less than 1, i.e., some probability may be ``lost''.
+A subprobability distribution is called lossless, written @{term lossless_spmf}, if its probability mass is 1.)
 We define the following abbreviation as a shorthand for the type of LCDH adversaries.%
 \footnote{%
   Actually, the type of group elements has already been fixed in the locale @{locale list_cdh} to the type variable @{typ "'grp"}.
@@ -203,7 +213,7 @@ The LCDH game itself is expressed as a function from the adversary @{term "\<A>"
 \begin{itemize}
 \item The @{text do} notation desugars to monadic sequencing in the monad of subprobabilities~\cite{Wadler1989}.
   Intuitively, every line @{text "x \<leftarrow> p;"} samples an element @{term x} from the distribution @{term p}.
-  The sampling is independent unless the distribution @{term p} depends on previously sampled variables.
+  The sampling is independent, unless the distribution @{term p} depends on previously sampled variables.
   At the end of the block, the @{term "return_spmf DUMMY"} returns whether the adversary has won the game.
 \item @{term "sample_uniform n"} denotes the uniform distribution over the set @{text "{0, ..., n - 1}"}.
 \item @{term "order \<G>"} denotes the order of @{term "\<G>"} and @{term [source] "([^]) :: 'grp \<Rightarrow> nat \<Rightarrow> 'grp"} is the group exponentiation operator.
@@ -227,8 +237,8 @@ definition game :: "'grp adversary \<Rightarrow> bool spmf" where
 
 text {*
 
-The advantage of the adversary is equivalent to its probability of winning the LCDH game,
-which is measured using the @{term "spmf"} function. *}
+The advantage of the adversary is equivalent to its probability of winning the LCDH game.
+The function @{term [source] "spmf :: 'a spmf \<Rightarrow> 'a \<Rightarrow> real"} returns the probability of an elementary event under a given subprobability distribution. *}
 
 definition advantage :: "'grp adversary \<Rightarrow> real"
   where "advantage \<A> = spmf (game \<A>) True"
@@ -328,13 +338,13 @@ subsection {* Cryptographic concepts: public-key encryption \label{section:pk-en
 
 text {*
 A cryptographic concept consists of a set of operations and their functional behaviour.
-We have already seen two very simple examples:
+We have already seen two simple examples:
 the cyclic group in \S\ref{section:lcdh} and the random oracle in \S\ref{section:random-oracle}.
 We have formalized both of them as locales; we have not modelled their functional behavior as this is not needed for the proof.
 In this section, we now present a more realistic example: public-key encryption with oracle access.
 
 A public-key encryption scheme consists of three algorithms: key generation, encryption, and decryption.
-They are all probabilistic and, in the most general case, they may access an oracle jointly with the adversary.
+They are all probabilistic and, in the most general case, they may access an oracle jointly with the adversary, e.g., a random oracle modelling a hash function.
 As before, the operations are modelled as parameters of a locale, @{text "ind_cpa_pk"}.
 
 \begin{itemize}
@@ -355,7 +365,7 @@ begin
 
 text {* 
 The three actual operations are generative probabilistic values (GPV) of type @{typ [source] "(_, 'query, 'response) gpv"}.
-A GPV is a probabilistic algorithm that has not yet been connected to its oracles.
+A GPV is a probabilistic algorithm that has not yet been connected to its oracles; see the theoretical paper @{cite Basin2017} for details.
 The interface to the oracle is abstracted in the two type parameters @{typ 'query} for queries and @{typ 'response} for responses.
 As before, we omit the specification of the functional behavior, namely that decrypting an encryption with a key pair returns the plaintext.
 *}
@@ -368,7 +378,7 @@ For encryption schemes, an indistinguishability notion of security~\cite{Goldwas
 We now formalize the notion indistinguishability under chosen plaintext attacks (IND-CPA) for public-key encryption schemes.
 Goldwasser et al.~\cite{Goldwasser1984} showed that IND-CPA is equivalent to semantic security.
 
-\begin{definition}[IND-CPA]
+\begin{definition}[IND-CPA @{cite Shoup2004IACR}]
 Let @{term key_gen}, @{term encrypt} and @{term decrypt} denote a public-key encryption scheme.
 The IND-CPA game is a two-stage game between the \emph{adversary} and a \emph{challenger}:
 \begin{description}
@@ -392,7 +402,7 @@ Let @{term "P\<^sub>w\<^sub>i\<^sub>n"} denote the winning probability.
 His advantage is @{term "\<bar>P\<^sub>w\<^sub>i\<^sub>n - 1/2\<bar> :: real"}
 \end{definition}
 
-Like for the encryption scheme, we will define the game such that the challenger and the adversary have access to a shared oracle, but the oracle is still unspecified.
+Like with the encryption scheme, we will define the game such that the challenger and the adversary have access to a shared oracle, but the oracle is still unspecified.
 Consequently, the corresponding \CryptHOL{} game is a GPV, like the operations of the abstract encryption scheme.
 When we specialize the definitions in the next section to the hashed Elgamal scheme, the GPV will be connected to the random oracle.
 
@@ -412,7 +422,7 @@ First, this game differs from the simpler LCDH game in that it works with GPVs i
 Therefore, probability distributions like coin flips @{term coin_spmf} must be lifted from SPMFs to GPVs using the coercion @{term lift_spmf}.
 Second, the assertion @{term "assert_gpv (valid_plains m\<^sub>0 m\<^sub>1)"} ensures that the pair of messages is valid.
 Third, the construct @{term "TRY DUMMY ELSE DUMMY :: (_, _, _) gpv"} catches a violated assertion.
-In that case, the adversary's advantage drops to 0 because the result of the game is a coin flip.
+In that case, the adversary's advantage drops to 0 because the result of the game is a coin flip, as we are in the @{text ELSE} branch.
 *}
 
 fun game :: "('pubkey, 'plain, 'cipher, 'query, 'response, 'state) adversary
@@ -522,6 +532,7 @@ We next translate the three algorithms into \CryptHOL{} definitions.
 The definitions are straightforward except for the hashing.
 Since we analyze the security in the random oracle model, 
 an application of the hash function $H$ is modelled as a query to the random oracle using the GPV @{term hash}.
+Here, @{term "Pause x Done"} calls the oracle with query @{term x} and returns the oracle's response.
 Furthermore, we define the plaintext validity predicate to check the length of the adversary's messages produced by the adversary.
 *}
 
@@ -563,7 +574,7 @@ This specializes all definition and theorems in the locale @{locale ind_cpa_pk} 
 sublocale ind_cpa: ind_cpa_pk "(lift_spmf key_gen)" encrypt decrypt valid_plains .
 
 text {*
-Figure~\ref{fig:2} visualizes the instantiation.
+Figure~\ref{fig:2} illustrates the instantiation.
 In comparison to Fig.~\ref{fig:1}, the boxes for the key generation and the encryption algorithm have been instantiated with the hashed Elgamal definitions from this section.
 We nevertheless draw the boxes to indicate that the definitions of these algorithms has not yet been inlined in the game definition.
 The thick grey border around the key generation algorithm denotes the @{term lift_spmf} operator, which embeds the probabilistic @{term key_gen} without oracle access into the type of GPVs with oracle access.
@@ -597,7 +608,7 @@ The reduction transforms every IND-CPA adversary @{term "\<A>"} into a LCDH adve
 using @{term "\<A>"} as a black box.
 In more detail, it simulates an execution of the IND-CPA game including the random oracle.
 At the end of the game, the reduction outputs the set of queries that the adversary has sent to the random oracle.
-In detail, the reduction works as follows given a two part IND-CPA adversary @{term "\<A> = (\<A>\<^sub>1, \<A>\<^sub>2)"}
+The reduction works as follows given a two part IND-CPA adversary @{term "\<A> = (\<A>\<^sub>1, \<A>\<^sub>2)"}
 (Figure~\ref{fig:3} visualizes the reduction as the dotted box):
 \begin{enumerate}
 \item It receives two group elements @{term "\<alpha>"} and @{term "\<beta>"} from the LCDH challenger.
@@ -785,7 +796,7 @@ To capture the change, we define the correspondence relation @{term cr} on the s
 (As we are in the process of adding this state, this state is irrelevant and @{term cr} is therefore always true.
 We nevertheless have to make an explicit definition such that Isabelle does not automatically beta-reduce terms, which would confuse @{method transfer}.) 
 We then prove that it relates the initial states and that @{term cr} is a bisimulation relation
-for the two oracle transformers.
+for the two oracle transformers; see @{cite Basin2017} for details.
 The bisimulation proof itself is automated, too: A bit of term rewriting (@{command "unfolding"}) 
 makes the two oracle transformers structurally identical except for the state update function.
 Having proved that the state update function @{term "\<lambda>_ \<sigma>. \<sigma>"} is a correct replacement for
@@ -873,7 +884,12 @@ text {*
 We also want to inline the key generation and encryption algorithms,
 push the @{term "TRY DUMMY ELSE DUMMY :: (_, _, _) gpv"} towards the assertion (which is possible because the adversary is lossless by assumption),
 and rearrange the samplings a bit.
-The latter is automated using @{text monad_normalisation}~\cite{Schneider2017}.
+The latter is automated using @{text monad_normalisation}~\cite{Schneider2017}.%
+\footnote{%
+  The tool @{text monad_normalisation} augments Isabelle's simplifier with a normalization procedure for commutative monads based on higher-order ordered rewriting.
+  It can also commute across control structures like @{text "if"} and @{text "case"}.
+  Although it is not complete as a decision procedure (as the normal forms are not unique), it usually works in practice.
+}
 *}
 have game\<^sub>0: "run_gpv ro.oracle game\<^sub>0 ro.initial = do {
   x \<leftarrow> sample_uniform (order \<G>);
@@ -910,6 +926,7 @@ As always in Isabelle, some intuition and knowledge about the library of lemmas 
 \item The other theorems @{thm [source] bind_map_spmf}, @{thm [source] assert_spmf_def},
   @{thm [source] split_def}, @{thm [source] o_def}, and @{thm [source] if_distribs}
   take care of all the boilerplate code that makes all these transformations type-correct.
+  These theorems often have to be used together.
 \end{itemize}
 
 Note that the state of the oracle @{term oracle'} is changed between @{term "\<A>\<^sub>1"} and @{term "\<A>\<^sub>2"}.
@@ -922,7 +939,7 @@ text{*\input{fig-5}*}
 subsection {* Capturing a failure event *}
 
 text {*
-Suppose that two games behave the same except when a so-called failure event occurs.
+Suppose that two games behave the same except when a so-called failure event occurs @{cite Shoup2004IACR}.
 Then the chance of an adversary distinguishing the two games is bounded by the probability of the failure event.
 In other words, the simulation of the reduction is allowed to break if the failure event occurs.
 In the running example, such an argument is a key step to derive the bound on the adversary's advantage.
@@ -958,7 +975,7 @@ where "game\<^sub>1 x y = do {
 }" for x y
 
 text {*
-It is easy to prove that @{term game\<^sub>0} combined with the random oracle is a projection of @{term game\<^sub>1} with the sampling added:
+It is easy to prove that @{term game\<^sub>0} combined with the random oracle is a projection of @{term game\<^sub>1} with the sampling added, as formalized in @{text game\<^sub>0_game\<^sub>1}.
 *}
 let ?sample = "\<lambda>f :: nat \<Rightarrow> nat \<Rightarrow> _ spmf. do {
    x \<leftarrow> sample_uniform (order \<G>);
@@ -971,10 +988,13 @@ have game\<^sub>0_game\<^sub>1:
 subsection {* Game hop based on a failure event *}
 
 text {*
-A game hop based on a failure event changes one game into another such that they behave identical unless the failure event occurs.
+A game hop based on a failure event changes one game into another such that they behave identically unless the failure event occurs.
 The @{thm [source] "fundamental_lemma"} bounds the absolute difference between the two games by the probability of the failure event.
 In the running example, we would like to avoid querying the random oracle when encrypting the chosen message.
-The next game @{term game\<^sub>2} is identical except that the call to the random oracle @{term ro.oracle} is replaced with sampling a random bitstring.
+The next game @{term game\<^sub>2} is identical except that the call to the random oracle @{term ro.oracle} is replaced with sampling a random bitstring.%
+\footnote{%
+  In Shoup's terminology @{cite Shoup2004IACR}, such a step makes (a gnome sitting inside) the random oracle forgetting the query.
+}
 *}
 define game\<^sub>2 :: "nat \<Rightarrow> nat \<Rightarrow> (bool \<times> bool) spmf"
 where "game\<^sub>2 x y = do {
@@ -1122,10 +1142,10 @@ let ?f = "\<lambda>b m\<^sub>1 m\<^sub>2. map_spmf (\<lambda>h. (if b then m\<^s
 have game\<^sub>2_game\<^sub>3: "game\<^sub>2 x y = game\<^sub>3 ?f x y" for x y
   by(simp add: game\<^sub>2_def game\<^sub>3_def Let_def bind_map_spmf xor_list_commute o_def)
 text {*
-The @{thm [source] one_time_pad} lemma now allows us to remove the exclusive or with the chosen message,
+CryptHOL's @{thm [source] one_time_pad} lemma now allows us to remove the exclusive or with the chosen message,
 because the resulting distributions are the same.
 The proof is slightly non-trivial because the one-time-pad lemma holds
-only if the xor'ed bitstrings have the right length.
+only if the xor'ed bitstrings have the right length, which the assertion @{term valid_plains} ensures.
 The congruence rules @{thm [source] try_spmf_cong bind_spmf_cong[OF refl] if_cong[OF refl]}
 extract this information from the program of the game.
 *}
@@ -1224,7 +1244,7 @@ section {* Asymptotic security \label{section:asymptotic} *}
 text {*
 An asymptotic security statement can be easily derived from a concrete security theorem.
 This is done in two steps:
-First, we have to introduce a security parameter @{term \<eta>} to everything.
+First, we have to introduce a security parameter @{term \<eta>} into the definitions and assumptions.
 Only then can we state asymptotic security.
 The proof is easy given the concrete security theorem.
 *}
@@ -1237,6 +1257,7 @@ To that end, we define copies of all locales where their parameters now take the
 We illustrate it for the locale @{locale ind_cpa_pk}.
 
 The @{command sublocale} command brings all the definitions and theorems of the original @{locale ind_cpa_pk} into the copy and adds the security parameter where necessary.
+The type @{typ security} is a synonym for @{typ nat}.
 *}
 locale ind_cpa_pk' = 
   fixes key_gen :: "security \<Rightarrow> ('pubkey \<times> 'privkey, 'query, 'response) gpv" 
