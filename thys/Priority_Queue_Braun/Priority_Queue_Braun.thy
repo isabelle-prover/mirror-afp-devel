@@ -5,6 +5,7 @@ imports
   "HOL-Library.Tree_Multiset"
   "HOL-Library.Pattern_Aliases"
   "HOL-Data_Structures.Priority_Queue_Specs"
+  "HOL-Data_Structures.Braun_Tree"
 begin
 
 subsection "Introduction"
@@ -17,12 +18,8 @@ size(r)+1$), to implement flexible arrays. Paulson \cite{Paulson}
 implemented priority queues via Braun trees. This theory verifies
 Paulsons's implementation, including the logarithmic bounds.  *}
 
-
-subsection {* Braun predicate *}
-
-fun braun :: "'a tree \<Rightarrow> bool" where
-"braun Leaf = True" |
-"braun (Node l x r) = (size r \<le> size l \<and> size l \<le> size r + 1 \<and> braun l \<and> braun r)"
+text \<open>Direct proof of logarithmic height. Also follows from the fact that Braun
+trees are balanced (proved in the base theory).\<close>
 
 lemma height_size_braun: "braun t \<Longrightarrow> 2 ^ (height t) \<le> 2 * size t + 1"
 proof(induction t)
