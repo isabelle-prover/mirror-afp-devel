@@ -425,7 +425,7 @@ begin
         have "Fun (t' \<cdot> t) = t'ot.map"
           using assms(1) seq_char comp_simp t'ot.natural_transformation_axioms by simp
         thus ?thesis
-          using assms(2) t'ot.map_simp_2 t'.preserves_comp_2 by auto
+          using assms(2) t'ot.map_simp_2 t'.preserves_comp_2 B.comp_assoc by auto
       qed
     qed
 

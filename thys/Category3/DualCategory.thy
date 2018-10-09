@@ -16,7 +16,7 @@ begin
     eliminate notions defined for the dual category in favor of the corresponding
     notions on the original category.  This makes it easy to use the dual of
     a category in the same context as the category itself, without having to
-    worry about whether an arrow belows to the category or its dual.
+    worry about whether an arrow belongs to the category or its dual.
   *}
     
   locale dual_category =
@@ -55,9 +55,8 @@ begin
     interpretation category comp
       using C.has_domain_iff_arr C.has_codomain_iff_arr domains_char codomains_char null_char
             comp_def C.match_4 C.ext arr_def C.comp_assoc
-      apply (unfold_locales, simp_all)
-      using C.match_2 apply (metis C.ext C.not_arr_null)
-      using C.match_1 by metis
+      apply (unfold_locales, auto)
+      using C.match_2 by metis
 
     lemma is_category:
     shows "category comp" ..

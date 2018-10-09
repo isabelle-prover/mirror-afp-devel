@@ -174,7 +174,8 @@ begin
       show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> seq (h \<cdot> g) f"
         using comp_def null_char seq_char by (elim seqE C1.seqE C2.seqE, simp)
       show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
-        using comp_def null_char seq_char by (elim seqE C1.seqE C2.seqE, simp)
+        using comp_def null_char seq_char C1.comp_assoc C2.comp_assoc comp_assoc
+        by (elim seqE C1.seqE C2.seqE, simp)
     qed
 
   end

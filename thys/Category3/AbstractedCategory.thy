@@ -138,7 +138,7 @@ begin
         using comp_def arr_char rep_abs domain_closed
         by (metis (full_types) C.compatible_iff_seq C.domains_comp)
       show "seq g f \<Longrightarrow> seq h g \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
-        using comp_def arr_char rep_abs domain_closed C.seqI' C.seqE by fastforce
+        using comp_def rep_abs domain_closed C.comp_assoc by fastforce
     qed
 
   end

@@ -75,16 +75,13 @@ begin
     assumes "A.seq f' f"
     shows "\<tau> (f' \<cdot>\<^sub>A f) = G f' \<cdot>\<^sub>B \<tau> f"
       using assms
-      by (metis A.seqE A.arr_dom_iff_arr A.dom_comp B.arr_dom_iff_arr
-          B.comp_assoc F.preserves_arr G.preserves_arr G.preserves_comp is_natural_1
-          preserves_dom)
+      by (metis A.seqE A.dom_comp B.comp_assoc G.preserves_comp is_natural_1)
 
     lemma preserves_comp_2:
     assumes "A.seq f' f"
     shows "\<tau> (f' \<cdot>\<^sub>A f) = \<tau> f' \<cdot>\<^sub>B F f"
       using assms
-      by (metis A.arr_cod_iff_arr A.cod_comp B.comp_assoc F.preserves_arr F.preserves_comp
-          is_natural_2 preserves_reflects_arr)
+      by (metis A.arr_cod_iff_arr A.cod_comp B.comp_assoc F.preserves_comp is_natural_2)
 
     text{*
       A natural transformation that also happens to be a functor is equal to
@@ -173,13 +170,12 @@ begin
     shows "natural_transformation A B F G map"
       using map_def is_natural
       apply (unfold_locales, simp_all)
-         apply (metis A.ide_dom B.dom_comp B.in_homE B.seqI
-                      G.preserves_arr G.preserves_dom maps_ide_in_hom B.arrI)
+         apply (metis A.ide_dom B.dom_comp B.seqI
+                      G.preserves_arr G.preserves_dom B.in_homE maps_ide_in_hom)
         apply (metis A.ide_dom B.arrI B.cod_comp B.in_homE B.seqI
                      G.preserves_arr G.preserves_cod G.preserves_dom maps_ide_in_hom)
        apply (metis A.ide_dom B.comp_arr_dom B.in_homE maps_ide_in_hom)
-      using A.arr_dom_iff_arr A.arr_cod_iff_arr
-      by (metis A.ide_cod B.comp_arr_dom B.in_homE maps_ide_in_hom)
+      by (metis B.comp_assoc A.comp_cod_arr F.preserves_comp)
 
   end
 
@@ -329,15 +325,13 @@ begin
     assumes "A.arr f"
     shows "map f = \<tau> f \<cdot>\<^sub>B \<sigma> (A.dom f)"
       using assms
-      by (metis B.comp_assoc \<sigma>.is_natural_2 \<sigma>.naturality \<sigma>.preserves_reflects_arr
-          \<tau>.is_natural_1 \<tau>.naturality \<tau>.preserves_reflects_arr map_simp_1)
+      by (metis B.comp_assoc \<sigma>.is_natural_2 \<sigma>.naturality \<tau>.is_natural_1 \<tau>.naturality map_simp_1)
 
     lemma is_natural_transformation:
     shows "natural_transformation A B F H map"
-      using map_def map_simp_1 map_simp_2 map_seq
+      using map_def map_simp_1 map_simp_2 map_seq B.comp_assoc
       apply (unfold_locales, simp_all)
-      by (metis A.arr_dom_iff_arr A.cod_dom B.comp_assoc \<tau>.is_natural_1 \<tau>.preserves_reflects_arr
-          map_seq)
+      by (metis B.comp_assoc \<tau>.is_natural_1)
 
   end
 
@@ -412,7 +406,8 @@ begin
     show ?thesis
       using \<rho>\<sigma>_\<tau>.is_natural_transformation \<rho>_\<sigma>\<tau>.natural_transformation_axioms
       apply (intro eqI, simp_all)
-      using \<rho>\<sigma>.map_simp_ide \<rho>\<sigma>_\<tau>.map_simp_ide \<rho>_\<sigma>\<tau>.map_simp_ide \<sigma>\<tau>.map_simp_ide by force
+      using \<rho>\<sigma>.map_simp_ide \<rho>\<sigma>_\<tau>.map_simp_ide \<rho>_\<sigma>\<tau>.map_simp_ide \<sigma>\<tau>.map_simp_ide B.comp_assoc
+      by force
   qed
 
   section "Natural Isomorphisms"
@@ -499,10 +494,10 @@ begin
               using a a' f' \<phi>.naturality [of f'] by force
             ultimately show ?thesis
               using a a' f' \<phi>.components_are_iso \<phi>.B.invert_side_of_triangle(2)
-              by (metis \<phi>.B.comp_assoc \<phi>.B.match_3 \<phi>.B.seqE)
+              by (metis \<phi>.B.comp_assoc)
           qed
           also have "... = (\<phi> a \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a)) \<cdot>\<^sub>B g \<cdot>\<^sub>B \<phi> a' \<cdot>\<^sub>B \<phi>.B.inv (\<phi> a')"
-            using a a' g \<phi>.components_are_iso by auto
+            using \<phi>.B.comp_assoc by auto
           also have "... = g"
             using a a' g \<phi>.B.comp_arr_dom \<phi>.B.comp_cod_arr \<phi>.B.comp_arr_inv \<phi>.B.comp_inv_arr
                   \<phi>.B.inv_is_inverse

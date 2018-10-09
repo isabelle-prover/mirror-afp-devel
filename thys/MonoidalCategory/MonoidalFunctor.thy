@@ -270,11 +270,10 @@ $$\xymatrix{
         qed
         also have "... = (D.inv \<psi> \<otimes>\<^sub>D F a) \<cdot>\<^sub>D (\<iota>\<^sub>1 \<otimes>\<^sub>D F a) \<cdot>\<^sub>D D.inv \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a] \<cdot>\<^sub>D
                          (\<psi> \<otimes>\<^sub>D \<psi> \<otimes>\<^sub>D F a)"
-          using assms \<psi>_char(1-2) \<iota>\<^sub>1_in_hom D.C\<^sub>1.lunit_char(2) by (elim D.in_homE, auto)
+          using assms \<psi>_char(1-2) D.C\<^sub>1.lunit_char(2) D.comp_assoc by auto
         also have "... = ((D.inv \<psi> \<otimes>\<^sub>D F a) \<cdot>\<^sub>D (\<iota>\<^sub>1 \<otimes>\<^sub>D F a) \<cdot>\<^sub>D ((\<psi> \<otimes>\<^sub>D \<psi>) \<otimes>\<^sub>D F a)) \<cdot>\<^sub>D
                          D.inv \<a>\<^sub>D[\<I>\<^sub>D, \<I>\<^sub>D, F a]"
-          using assms \<psi>_char(1-2) \<iota>\<^sub>1_in_hom D.assoc'_naturality [of \<psi> \<psi> "F a"]
-          by (elim D.in_homE, auto)
+          using assms \<psi>_char(1-2) D.assoc'_naturality [of \<psi> \<psi> "F a"] D.comp_assoc by auto
         also have "... = (\<iota>\<^sub>D \<otimes>\<^sub>D F a) \<cdot>\<^sub>D D.inv \<a>\<^sub>D[\<I>\<^sub>D, \<I>\<^sub>D, F a]"
         proof -
           have "(D.inv \<psi> \<otimes>\<^sub>D F a) \<cdot>\<^sub>D (\<iota>\<^sub>1 \<otimes>\<^sub>D F a) \<cdot>\<^sub>D ((\<psi> \<otimes>\<^sub>D \<psi>) \<otimes>\<^sub>D F a) = \<iota>\<^sub>D \<otimes>\<^sub>D F a"
@@ -355,7 +354,7 @@ $$\xymatrix{
                       (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C) \<otimes>\<^sub>D F a)) \<cdot>\<^sub>D D.inv \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a]"
             using assms \<phi>_in_hom D.invert_side_of_triangle(2) by simp
           thus ?thesis
-            using assms \<phi>_in_hom by simp
+            using D.comp_assoc by simp
         qed
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D
                          (D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D F (\<iota>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D
@@ -383,7 +382,7 @@ $$\xymatrix{
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D
                          D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D (F (\<iota>\<^sub>C \<otimes>\<^sub>C a) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C \<otimes>\<^sub>C \<I>\<^sub>C, a)) \<cdot>\<^sub>D
                          (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C) \<otimes>\<^sub>D F a) \<cdot>\<^sub>D D.inv \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a]"
-          using assms C.\<iota>_in_hom preserves_iso by auto
+          using D.comp_assoc by auto
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D
                          D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D (\<phi> (\<I>\<^sub>C, a) \<cdot>\<^sub>D (F \<iota>\<^sub>C \<otimes>\<^sub>D F a)) \<cdot>\<^sub>D
                          (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C) \<otimes>\<^sub>D F a) \<cdot>\<^sub>D D.inv \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a]"
@@ -392,7 +391,7 @@ $$\xymatrix{
                          D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a) \<cdot>\<^sub>D
                          ((F \<iota>\<^sub>C \<otimes>\<^sub>D F a) \<cdot>\<^sub>D (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C) \<otimes>\<^sub>D F a)) \<cdot>\<^sub>D
                          D.inv \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a]"
-          using assms C.\<iota>_in_hom by auto
+          using D.comp_assoc by auto
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D
                          D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a) \<cdot>\<^sub>D (\<iota>\<^sub>1 \<otimes>\<^sub>D F a) \<cdot>\<^sub>D
                          D.inv \<a>\<^sub>D[F \<I>\<^sub>C, F \<I>\<^sub>C, F a]"
@@ -411,16 +410,14 @@ $$\xymatrix{
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D
                          (D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)) \<cdot>\<^sub>D
                          (F \<I>\<^sub>C \<otimes>\<^sub>D \<l>\<^sub>1[F a])"
-          using assms \<phi>_in_hom \<phi>.components_are_iso preserves_iso
-                D.comp_arr_dom [of "F \<I>\<^sub>C \<otimes>\<^sub>D \<l>\<^sub>1[F a]"]
-          by auto
+          using assms D.comp_arr_dom [of "F \<I>\<^sub>C \<otimes>\<^sub>D \<l>\<^sub>1[F a]"] D.comp_assoc by auto
         also have "... = (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D (F \<I>\<^sub>C \<otimes>\<^sub>D \<l>\<^sub>1[F a])"
         proof -
           have "D.inv (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a])
                    = D.inv (D.inv (\<phi> (\<I>\<^sub>C, a)) \<cdot>\<^sub>D F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a]) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a))"
             using assms \<phi>.naturality [of "(\<I>\<^sub>C, \<l>\<^sub>C[a])"] D.invert_side_of_triangle(1) by simp
           also have "... = D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)"
-            using assms D.inv_comp D.iso_inv_iso \<phi>_in_hom D.inv_is_inverse D.isos_compose
+            using assms D.inv_comp D.iso_inv_iso D.inv_is_inverse D.isos_compose D.comp_assoc
             by simp
           finally have "D.inv (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a])
                           = D.inv (\<phi> (\<I>\<^sub>C, \<I>\<^sub>C \<otimes>\<^sub>C a)) \<cdot>\<^sub>D D.inv (F (\<I>\<^sub>C \<otimes>\<^sub>C \<l>\<^sub>C[a])) \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)"
@@ -428,7 +425,7 @@ $$\xymatrix{
           thus ?thesis by argo
         qed
         also have "... = ((F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a]) \<cdot>\<^sub>D D.inv (F \<I>\<^sub>C \<otimes>\<^sub>D F \<l>\<^sub>C[a])) \<cdot>\<^sub>D (F \<I>\<^sub>C \<otimes>\<^sub>D \<l>\<^sub>1[F a])"
-          using assms D.tensor_preserves_iso by simp
+          using assms D.tensor_preserves_iso D.comp_assoc by simp
         also have "... = F \<I>\<^sub>C \<otimes>\<^sub>D \<l>\<^sub>1[F a]"
           using assms D.tensor_preserves_iso D.comp_arr_inv D.inv_is_inverse D.comp_cod_arr
                 D.interchange
@@ -466,7 +463,7 @@ $$\xymatrix{
               D.invert_side_of_triangle(2) [of "F \<l>\<^sub>C[a] \<cdot>\<^sub>D \<phi> (\<I>\<^sub>C, a)" "\<l>\<^sub>D[F a]" "D.inv (\<psi> \<otimes>\<^sub>D F a)"]
         by simp
       thus ?thesis
-        using assms \<psi>_char(1) \<phi>_in_hom by auto
+        using assms \<psi>_char(1) D.comp_assoc by auto
     qed
 
     text {*
@@ -505,7 +502,7 @@ $$\xymatrix{
         moreover have
              "F \<a>\<^sub>C[c, b, a] \<cdot>\<^sub>D \<phi> (c \<otimes>\<^sub>C b, a) \<cdot>\<^sub>D (\<phi> (c, b) \<otimes>\<^sub>D F a) =
               (\<phi> (c, b \<otimes>\<^sub>C a) \<cdot>\<^sub>D (F c \<otimes>\<^sub>D \<phi> (b, a))) \<cdot>\<^sub>D \<a>\<^sub>D[F c, F b, F a]"
-          using a b c assoc_coherence by simp
+          using a b c assoc_coherence D.comp_assoc by simp
         moreover have "D.iso (F \<a>\<^sub>C[c,b,a])"
           using a b c by simp
         moreover have "D.iso \<a>\<^sub>D[F c, F b, F a]"
@@ -517,7 +514,7 @@ $$\xymatrix{
       qed
       thus "F (C.assoc' c b a) \<cdot>\<^sub>D \<phi> (c, b \<otimes>\<^sub>C a) \<cdot>\<^sub>D (F c \<otimes>\<^sub>D \<phi> (b, a)) =
             \<phi> (c \<otimes>\<^sub>C b, a) \<cdot>\<^sub>D (\<phi> (c, b) \<otimes>\<^sub>D F a) \<cdot>\<^sub>D \<a>\<^sub>D\<^sup>-\<^sup>1[F c, F b, F a]"
-        using a b c \<phi>_in_hom by simp
+        using D.comp_assoc by simp
     qed
 
     lemma induces_monoidal_functor_between_opposites:

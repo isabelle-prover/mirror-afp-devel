@@ -222,8 +222,8 @@ begin
     The associativity condition involves four ``matching conditions''
     (@{text "match_1"}, @{text "match_2"}, @{text "match_3"}, and @{text "match_4"})
     which constrain the domain of definition of the composition, and a fifth condition
-    (@{text "comp_assoc"}) which states that the results of the two ways of composing
-    three elements are equal.  In the presence of the @{text "comp_assoc"} axiom
+    (@{text "comp_assoc'"}) which states that the results of the two ways of composing
+    three elements are equal.  In the presence of the @{text "comp_assoc'"} axiom
     @{text "match_4"} can be derived from @{text "match_3"} and vice versa.
   *}
 
@@ -233,13 +233,35 @@ begin
   and match_1: "\<lbrakk> seq h g; seq (h \<cdot> g) f \<rbrakk> \<Longrightarrow> seq g f"
   and match_2: "\<lbrakk> seq h (g \<cdot> f); seq g f \<rbrakk> \<Longrightarrow> seq h g"
   and match_3: "\<lbrakk> seq g f; seq h g \<rbrakk> \<Longrightarrow> seq (h \<cdot> g) f"
-  and comp_assoc [simp]: "\<lbrakk> seq g f; seq h g \<rbrakk> \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
+  and comp_assoc': "\<lbrakk> seq g f; seq h g \<rbrakk> \<Longrightarrow> (h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
   begin
+
+    text{*
+      Associativity of composition holds unconditionally.  This was not the case in
+      previous, weaker versions of this theory, and I did not notice this for some
+      time after updating to the current axioms.  It is obviously an advantage that
+      no additional hypotheses have to be verified in order to apply associativity,
+      but a disadvantage is that this fact is now ``too readily applicable,''
+      so that if it is made a default simplification it tends to get in the way of
+      applying other simplifications that we would also like to be able to apply automatically.
+      So, it now seems best not to make this fact a default simplification, but rather
+      to invoke it explicitly where it is required.
+    *}
+
+    lemma comp_assoc:
+    shows "(h \<cdot> g) \<cdot> f = h \<cdot> g \<cdot> f"
+    proof -
+      have "seq g f \<and> seq h g \<Longrightarrow> ?thesis"
+        using comp_assoc' by simp
+      moreover have "\<not> (seq g f \<and> seq h g) \<Longrightarrow> ?thesis"
+        using ext by (metis comp_null match_1 match_2)
+      ultimately show ?thesis by blast
+    qed
 
     lemma match_4:
     assumes "seq g f" and "seq h g"
     shows "seq h (g \<cdot> f)"
-      using assms match_3 by auto
+      using assms match_3 comp_assoc by auto
 
     lemma domains_comp:
     assumes "seq g f"
@@ -826,7 +848,7 @@ begin
 
     theorem is_classical_category:
     shows "classical_category ide arr dom cod dom C"
-      using seqI' comp_arr_dom comp_cod_arr by (unfold_locales, auto)
+      using comp_arr_dom comp_cod_arr comp_assoc by (unfold_locales, auto)
 
     interpretation CC: classical_category ide arr dom cod dom C
       using is_classical_category by auto

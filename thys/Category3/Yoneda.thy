@@ -243,7 +243,7 @@ begin
                         C.cod (fst gf') \<rightarrow> C.dom (snd gf')\<guillemotright>"
                 using x seq by auto
               thus ?thesis
-                using seq \<psi>_\<phi> by (elim C.in_homE C.seqE, auto)
+                using seq \<psi>_\<phi> C.comp_assoc by auto
             qed
             also have "... = (\<phi> (CopxC.cod gf') \<circ> (\<lambda>h. snd gf' \<cdot> h \<cdot> fst gf') \<circ> \<psi> (CopxC.dom gf') \<circ>
                               (\<phi> (CopxC.dom gf') \<circ> (\<lambda>h. snd gf \<cdot> h \<cdot> fst gf) \<circ> \<psi> (CopxC.dom gf)))

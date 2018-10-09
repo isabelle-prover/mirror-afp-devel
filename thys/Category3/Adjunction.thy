@@ -900,11 +900,12 @@ begin
       show "\<psi> x (\<phi> y f) = f"
       proof -
         have "\<psi> x (\<phi> y f) = (\<epsilon> x \<cdot>\<^sub>C F (G f)) \<cdot>\<^sub>C F (\<eta> y)"
-          using y f \<phi>_def \<psi>_def by auto
-        also have "... = f \<cdot>\<^sub>C \<epsilon> (F y) \<cdot>\<^sub>C F (\<eta> y)"
+          using y f \<phi>_def \<psi>_def C.comp_assoc by auto
+        also have "... = (f \<cdot>\<^sub>C \<epsilon> (F y)) \<cdot>\<^sub>C F (\<eta> y)"
           using y f \<epsilon>.naturality by auto
         also have "... = f"
-          using y f \<epsilon>FoF\<eta>.map_simp_2 triangle_F C.comp_arr_dom D.ide_in_hom by fastforce
+          using y f \<epsilon>FoF\<eta>.map_simp_2 triangle_F C.comp_arr_dom D.ide_in_hom C.comp_assoc
+          by fastforce
         finally show ?thesis by auto
       qed
       next
@@ -914,7 +915,7 @@ begin
       show "\<phi> y (\<psi> x g) = g"
       proof -
         have "\<phi> y (\<psi> x g) = (G (\<epsilon> x) \<cdot>\<^sub>D \<eta> (G x)) \<cdot>\<^sub>D g"
-          using g x \<phi>_def \<psi>_def \<eta>.naturality [of g] by auto
+          using g x \<phi>_def \<psi>_def \<eta>.naturality [of g] D.comp_assoc by auto
         also have "... = g"
           using x g triangle_G D.comp_ide_arr G\<epsilon>o\<eta>G.map_simp_ide by auto
         finally show ?thesis by auto
@@ -923,7 +924,7 @@ begin
       fix f :: 'c and g :: 'd and h :: 'c and x :: 'c and x' :: 'c and y :: 'd and y' :: 'd
       assume f: "\<guillemotleft>f : x \<rightarrow>\<^sub>C x'\<guillemotright>" and g: "\<guillemotleft>g : y' \<rightarrow>\<^sub>D y\<guillemotright>" and h: "\<guillemotleft>h : F y \<rightarrow>\<^sub>C x\<guillemotright>"
       show "\<phi> y' (f \<cdot>\<^sub>C h \<cdot>\<^sub>C F g) = G f \<cdot>\<^sub>D \<phi> y h \<cdot>\<^sub>D g"
-        using \<phi>_def f g h \<eta>.naturality by fastforce
+        using \<phi>_def f g h \<eta>.naturality D.comp_assoc by fastforce
     qed
 
     theorem induces_meta_adjunction:
@@ -1052,11 +1053,11 @@ begin
           moreover have "(f' \<cdot>\<^sub>C f) \<cdot>\<^sub>C \<epsilon>o ?x = \<epsilon>o ?x'' \<cdot>\<^sub>C F (G f' \<cdot>\<^sub>D G f)"
           proof -
             have "(f' \<cdot>\<^sub>C f) \<cdot>\<^sub>C \<epsilon>o ?x = f' \<cdot>\<^sub>C f \<cdot>\<^sub>C \<epsilon>o ?x"
-              using ff' x\<epsilon>.arrow by force
+              using C.comp_assoc by force
             also have "... = (f' \<cdot>\<^sub>C \<epsilon>o ?x') \<cdot>\<^sub>C F (G f)"
-              using ff' Gf x'\<epsilon>.arrow by fastforce
+              using Gf C.comp_assoc by fastforce
             also have "... = \<epsilon>o ?x'' \<cdot>\<^sub>C F (G f' \<cdot>\<^sub>D G f)"
-              using Gf Gf' x''\<epsilon>.arrow by fastforce
+              using Gf Gf' C.comp_assoc by fastforce
             finally show ?thesis by auto
           qed
           ultimately show ?thesis using x''\<epsilon>.is_coext_def by auto
@@ -1126,13 +1127,13 @@ begin
       have "f \<cdot>\<^sub>C \<psi> x h \<cdot>\<^sub>C F g = f \<cdot>\<^sub>C (\<epsilon>.map x \<cdot>\<^sub>C F h) \<cdot>\<^sub>C F g"
         unfolding \<psi>_def by auto
       also have "... = (f \<cdot>\<^sub>C \<epsilon>.map x) \<cdot>\<^sub>C F h \<cdot>\<^sub>C F g"
-        using f g h \<epsilon>.preserves_hom [of x x x] by fastforce
+        using C.comp_assoc by fastforce
       also have "... = (f \<cdot>\<^sub>C \<epsilon>.map x) \<cdot>\<^sub>C F (h \<cdot>\<^sub>D g)"
         using g h by fastforce
       also have "... = (\<epsilon>.map x' \<cdot>\<^sub>C F (G f)) \<cdot>\<^sub>C F (h \<cdot>\<^sub>D g)"
         using f \<epsilon>.naturality by auto
       also have "... = \<epsilon>.map x' \<cdot>\<^sub>C F ((G f \<cdot>\<^sub>D h) \<cdot>\<^sub>D g)"
-        using f g h \<epsilon>.preserves_hom [of x' x' x'] by fastforce
+        using f g h C.comp_assoc by fastforce
       also have "... = \<psi> x' ((G f \<cdot>\<^sub>D h) \<cdot>\<^sub>D g)"
         unfolding \<psi>_def by auto
       finally show ?thesis by auto
@@ -1209,9 +1210,8 @@ begin
 
     theorem induces_meta_adjunction:
     shows "meta_adjunction C D F G \<phi> \<psi>"
-      using \<phi>_in_hom \<psi>_in_hom \<phi>_\<psi> \<psi>_\<phi> \<phi>_natural G.preserves_dom
-      apply (unfold_locales, simp_all)
-      by (metis D.seqE D.comp_assoc D.ext D.match_1 D.match_2)
+      using \<phi>_in_hom \<psi>_in_hom \<phi>_\<psi> \<psi>_\<phi> \<phi>_natural D.comp_assoc
+      by (unfold_locales, simp_all)
 
   end
 
@@ -1323,12 +1323,11 @@ begin
           moreover have "\<eta>o ?y'' \<cdot>\<^sub>D g' \<cdot>\<^sub>D g = G (F g' \<cdot>\<^sub>C F g) \<cdot>\<^sub>D \<eta>o ?y"
           proof -
             have "\<eta>o ?y'' \<cdot>\<^sub>D g' \<cdot>\<^sub>D g = (G (F g') \<cdot>\<^sub>D \<eta>o ?y') \<cdot>\<^sub>D g"
-              using Fg' g g' y''\<eta>.arrow
-              by (metis D.seqE D.seqI D.comp_assoc D.in_homE)
+              using Fg' g g' y''\<eta>.arrow by (metis D.comp_assoc)
             also have "... =  G (F g') \<cdot>\<^sub>D \<eta>o ?y' \<cdot>\<^sub>D g"
-              using g y'\<eta>.arrow Fg' y'\<eta>.arrow by fastforce
+              using D.comp_assoc by fastforce
             also have "... = G (F g' \<cdot>\<^sub>C F g) \<cdot>\<^sub>D \<eta>o ?y"
-              using Fg Fg' y\<eta>.arrow by fastforce
+              using Fg Fg' D.comp_assoc by fastforce
             finally show ?thesis by auto
           qed
           ultimately show ?thesis using y\<eta>.is_ext_def by auto
@@ -1397,13 +1396,13 @@ begin
       have "(G f \<cdot>\<^sub>D \<phi> y h) \<cdot>\<^sub>D g = (G f \<cdot>\<^sub>D G h \<cdot>\<^sub>D \<eta>.map y) \<cdot>\<^sub>D g"
         unfolding \<phi>_def by auto
       also have "... = (G f \<cdot>\<^sub>D G h) \<cdot>\<^sub>D \<eta>.map y \<cdot>\<^sub>D g"
-        using f g h \<eta>.preserves_hom [of y y y] by fastforce
+        using D.comp_assoc by fastforce
       also have "... = G (f \<cdot>\<^sub>C h) \<cdot>\<^sub>D G (F g) \<cdot>\<^sub>D \<eta>.map y'"
         using f g h \<eta>.naturality by fastforce
       also have "... = (G (f \<cdot>\<^sub>C h) \<cdot>\<^sub>D G (F g)) \<cdot>\<^sub>D \<eta>.map y'"
-        using f g h \<eta>.preserves_hom [of y' y' y'] by fastforce
+        using D.comp_assoc by fastforce
       also have "... = G (f \<cdot>\<^sub>C h \<cdot>\<^sub>C F g) \<cdot>\<^sub>D \<eta>.map y'"
-        using f g h \<eta>.preserves_hom [of y' y' y'] C.arrI by fastforce
+        using f g h D.comp_assoc by fastforce
       also have "... = \<phi> y' (f \<cdot>\<^sub>C h \<cdot>\<^sub>C F g)"
         unfolding \<phi>_def by auto
       finally show ?thesis by auto
@@ -1467,9 +1466,8 @@ begin
 
     theorem induces_meta_adjunction:
     shows "meta_adjunction C D F G \<phi> \<psi>"
-      using \<phi>_in_hom \<psi>_in_hom \<phi>_\<psi> \<psi>_\<phi> \<phi>_natural preserves_arr preserves_dom
-      apply (unfold_locales, auto)
-      by (metis D.seqE D.comp_assoc D.ext D.match_1 D.match_2)
+      using \<phi>_in_hom \<psi>_in_hom \<phi>_\<psi> \<psi>_\<phi> \<phi>_natural D.comp_assoc
+      by (unfold_locales, auto)
 
   end
 
@@ -2933,11 +2931,11 @@ begin
         let ?x' = "Adj.C.cod f"
         have "(G' (Adj.\<epsilon> (Adj.C.cod f)) \<cdot>\<^sub>D Adj'.\<eta> (G (Adj.C.cod f))) \<cdot>\<^sub>D G f =
               G' (Adj.\<epsilon> (Adj.C.cod f) \<cdot>\<^sub>C F (G f)) \<cdot>\<^sub>D Adj'.\<eta> (G (Adj.C.dom f))"
-          using f Adj'.\<eta>.naturality [of "G f"] by simp
+          using f Adj'.\<eta>.naturality [of "G f"] Adj.D.comp_assoc by simp
         also have "... = G' (f \<cdot>\<^sub>C Adj.\<epsilon> (Adj.C.dom f)) \<cdot>\<^sub>D Adj'.\<eta> (G (Adj.C.dom f))"
           using f Adj.\<epsilon>.naturality by simp
         also have "... = G' f \<cdot>\<^sub>D G' (Adj.\<epsilon> (Adj.C.dom f)) \<cdot>\<^sub>D Adj'.\<eta> (G (Adj.C.dom f))"
-          using f by simp
+          using f Adj.D.comp_assoc by simp
         finally show "(G' (Adj.\<epsilon> (Adj.C.cod f)) \<cdot>\<^sub>D Adj'.\<eta> (G (Adj.C.cod f))) \<cdot>\<^sub>D G f =
                       G' f \<cdot>\<^sub>D G' (Adj.\<epsilon> (Adj.C.dom f)) \<cdot>\<^sub>D Adj'.\<eta> (G (Adj.C.dom f))"
           by auto
@@ -2978,14 +2976,14 @@ $$\xymatrix{
               have "\<tau>.map a \<cdot>\<^sub>D \<phi> (G' a) (Adj'.\<epsilon> a) =
                     G' (Adj.\<epsilon> a) \<cdot>\<^sub>D (Adj'.\<eta> (G a) \<cdot>\<^sub>D G (Adj'.\<epsilon> a)) \<cdot>\<^sub>D Adj.\<eta> (G' a)"
                 using a \<tau>.map_simp_ide Adj.\<phi>_in_terms_of_\<eta> Adj'.\<phi>_in_terms_of_\<eta>
-                      Adj'.\<epsilon>.preserves_hom [of a a a] Adj.C.ide_in_hom
+                      Adj'.\<epsilon>.preserves_hom [of a a a] Adj.C.ide_in_hom Adj.D.comp_assoc
                 by auto
               also have "... = G' (Adj.\<epsilon> a) \<cdot>\<^sub>D (G' (F (G (Adj'.\<epsilon> a))) \<cdot>\<^sub>D Adj'.\<eta> (G (F (G' a)))) \<cdot>\<^sub>D
                                Adj.\<eta> (G' a)"
                 using a Adj'.\<eta>.naturality [of "G (Adj'.\<epsilon> a)"] by auto
               also have "... = (G' (Adj.\<epsilon> a) \<cdot>\<^sub>D G' (F (G (Adj'.\<epsilon> a)))) \<cdot>\<^sub>D G' (F (Adj.\<eta> (G' a))) \<cdot>\<^sub>D
                                Adj'.\<eta> (G' a)"
-                using a Adj'.\<eta>.naturality [of "Adj.\<eta> (G' a)"] by auto
+                using a Adj'.\<eta>.naturality [of "Adj.\<eta> (G' a)"] Adj.D.comp_assoc by auto
               also have
                   "... = G' (Adj'.\<epsilon> a) \<cdot>\<^sub>D (G' (Adj.\<epsilon> (F (G' a))) \<cdot>\<^sub>D G' (F (Adj.\<eta> (G' a)))) \<cdot>\<^sub>D
                          Adj'.\<eta> (G' a)"
@@ -2997,7 +2995,7 @@ $$\xymatrix{
                     using a Adj.\<epsilon>.naturality [of "Adj'.\<epsilon> a"] by auto
                   thus ?thesis using a by force
                 qed
-                thus ?thesis using a by auto
+                thus ?thesis using Adj.D.comp_assoc by auto
               qed
               also have "... = G' (Adj'.\<epsilon> a) \<cdot>\<^sub>D Adj'.\<eta> (G' a)"
               proof -
@@ -3026,7 +3024,7 @@ $$\xymatrix{
               have "\<phi> (G' a) (Adj'.\<epsilon> a) \<cdot>\<^sub>D \<tau>.map a =
                     G (Adj'.\<epsilon> a) \<cdot>\<^sub>D (Adj.\<eta> (G' a) \<cdot>\<^sub>D G' (Adj.\<epsilon> a)) \<cdot>\<^sub>D Adj'.\<eta> (G a)"
                 using a \<tau>.map_simp_ide Adj.\<phi>_in_terms_of_\<eta> Adj'.\<epsilon>.preserves_hom [of a a a]
-                      Adj.C.ide_in_hom
+                      Adj.C.ide_in_hom Adj.D.comp_assoc
                 by auto
               also have
                 "... = G (Adj'.\<epsilon> a) \<cdot>\<^sub>D (G (F (G' (Adj.\<epsilon> a))) \<cdot>\<^sub>D Adj.\<eta> (G' (F (G a)))) \<cdot>\<^sub>D
@@ -3035,7 +3033,7 @@ $$\xymatrix{
               also have
                 "... = (G (Adj'.\<epsilon> a) \<cdot>\<^sub>D G (F (G' (Adj.\<epsilon> a)))) \<cdot>\<^sub>D G (F (Adj'.\<eta> (G a))) \<cdot>\<^sub>D
                        Adj.\<eta> (G a)"
-                using a Adj.\<eta>.naturality [of "Adj'.\<eta> (G a)"] by auto
+                using a Adj.\<eta>.naturality [of "Adj'.\<eta> (G a)"] Adj.D.comp_assoc by auto
               also have
                 "... = G (Adj.\<epsilon> a) \<cdot>\<^sub>D (G (Adj'.\<epsilon> (F (G a))) \<cdot>\<^sub>D G (F (Adj'.\<eta> (G a)))) \<cdot>\<^sub>D
                        Adj.\<eta> (G a)"
@@ -3046,7 +3044,7 @@ $$\xymatrix{
                     using a Adj'.\<epsilon>.naturality [of "Adj.\<epsilon> a"] by auto
                   thus ?thesis using a by force
                 qed
-                thus ?thesis using a by auto
+                thus ?thesis using Adj.D.comp_assoc by auto
               qed
               also have "... = G (Adj.\<epsilon> a) \<cdot>\<^sub>D Adj.\<eta> (G a)"
               proof -

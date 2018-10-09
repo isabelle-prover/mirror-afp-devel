@@ -465,12 +465,12 @@ begin
       proof -
         have "\<I> \<otimes> \<l>[cod f] \<cdot> (\<I> \<otimes> f) = ((\<iota> \<otimes> cod f) \<cdot> ((\<I> \<otimes> \<I>) \<otimes> f)) \<cdot> inv \<a>[\<I>, \<I>, dom f]"
           using assms interchange [of \<I> \<I> "\<I> \<otimes> f" "\<l>[cod f]"] lunit_char(2) \<iota>_in_hom unity_def
-                \<alpha>'.naturality [of "(\<I>, \<I>, f)"]
+                \<alpha>'.naturality [of "(\<I>, \<I>, f)"] comp_assoc
           by auto
         also have "... = ((\<I> \<otimes> f) \<cdot> (\<iota> \<otimes> dom f)) \<cdot> inv \<a>[\<I>, \<I>, dom f]"
           using assms interchange comp_arr_dom comp_cod_arr \<iota>_in_hom by auto
         also have "... = (\<I> \<otimes> f) \<cdot> (\<I> \<otimes> \<l>[dom f])"
-          using assms \<iota>_in_hom lunit_char(2) by auto
+          using assms \<iota>_in_hom lunit_char(2) comp_assoc by auto
         also have "... = \<I> \<otimes> f \<cdot> \<l>[dom f]"
           using assms interchange by simp
         finally show ?thesis by blast
@@ -488,16 +488,17 @@ begin
       moreover have "\<r>[cod f] \<cdot> (f \<otimes> \<I>) \<otimes> \<I> = f \<cdot> \<r>[dom f] \<otimes> \<I>"
       proof -
         have "\<r>[cod f] \<cdot> (f \<otimes> \<I>) \<otimes> \<I> = (cod f \<otimes> \<iota>) \<cdot> \<a>[cod f, \<I>, \<I>] \<cdot> ((f \<otimes> \<I>) \<otimes> \<I>)"
-          using assms interchange [of \<I> \<I> "\<I> \<otimes> f" "\<r>[cod f]"]  runit_char(2) \<iota>_in_hom unity_def
+          using assms interchange [of \<I> \<I> "\<I> \<otimes> f" "\<r>[cod f]"] runit_char(2) \<iota>_in_hom unity_def
+                comp_assoc
           by auto
         also have "... = (cod f \<otimes> \<iota>) \<cdot> (f \<otimes> \<I> \<otimes> \<I>) \<cdot>  \<a>[dom f, \<I>, \<I>]"
           using assms \<alpha>.naturality [of "(f, \<I>, \<I>)"] by auto
         also have "... = ((cod f \<otimes> \<iota>) \<cdot> (f \<otimes> \<I> \<otimes> \<I>)) \<cdot> \<a>[dom f, \<I>, \<I>]"
-          using assms \<iota>_in_hom by force
+          using comp_assoc by simp
         also have "... = ((f \<otimes> \<I>) \<cdot> (dom f \<otimes> \<iota>)) \<cdot> \<a>[dom f, \<I>, \<I>]"
           using assms \<iota>_in_hom interchange comp_arr_dom comp_cod_arr by auto
         also have "... = (f \<otimes> \<I>) \<cdot> (\<r>[dom f] \<otimes> \<I>)"
-          using assms \<iota>_in_hom runit_char by auto
+          using assms runit_char comp_assoc by auto
         also have "... = f \<cdot> \<r>[dom f] \<otimes> \<I>"
           using assms interchange by simp
         finally show ?thesis by blast
@@ -764,13 +765,15 @@ $$\xymatrix{
         proof -
           have "((a \<otimes> \<l>[\<I> \<otimes> b]) \<cdot> \<a>[a, \<I>, \<I> \<otimes> b]) \<cdot> \<a>[a \<otimes> \<I>, \<I>, b] =
                 ((a \<otimes> \<l>[\<I> \<otimes> b]) \<cdot> (a \<otimes> \<a>[\<I>, \<I>, b])) \<cdot> \<a>[a, \<I> \<otimes> \<I>, b] \<cdot> (\<a>[a, \<I>, \<I>] \<otimes> b)"
-            using assms pentagon by auto
-          also have "... = (a \<otimes> (\<I> \<otimes> \<l>[b]) \<cdot> \<a>[\<I>, \<I>, b]) \<cdot> \<a>[a, \<I> \<otimes> \<I>, b] \<cdot> (\<a>[a, \<I>, \<I>] \<otimes> b)"
+            using assms pentagon comp_assoc by auto
+          also have "... = (a \<otimes> ((\<I> \<otimes> \<l>[b]) \<cdot> \<a>[\<I>, \<I>, b])) \<cdot> \<a>[a, \<I> \<otimes> \<I>, b] \<cdot> (\<a>[a, \<I>, \<I>] \<otimes> b)"
             using assms interchange lunit_commutes_with_L by simp
+          also have "... = ((a \<otimes> (\<iota> \<otimes> b)) \<cdot> \<a>[a, \<I> \<otimes> \<I>, b]) \<cdot> (\<a>[a, \<I>, \<I>] \<otimes> b)"
+            using assms lunit_char \<iota>_in_hom comp_arr_dom comp_assoc by auto
           also have "... = (\<a>[a, \<I>, b] \<cdot> ((a \<otimes> \<iota>) \<otimes> b)) \<cdot> (\<a>[a, \<I>, \<I>] \<otimes> b)"
-            using assms \<iota>_in_hom lunit_char comp_arr_dom assoc_naturality [of a \<iota> b] by auto
+            using assms \<iota>_in_hom assoc_naturality [of a \<iota> b] by fastforce
           also have "... = \<a>[a, \<I>, b] \<cdot> ((\<r>[a] \<otimes> \<I>) \<otimes> b)"
-            using assms \<iota>_in_hom interchange runit_char(2) by auto
+            using assms \<iota>_in_hom interchange runit_char(2) comp_assoc by auto
           also have "... = (\<r>[a] \<otimes> \<I> \<otimes> b) \<cdot> \<a>[a \<otimes> \<I>, \<I>, b]"
             using assms assoc_naturality [of "\<r>[a]" \<I> b] by simp
           finally show ?thesis by blast
@@ -798,7 +801,7 @@ $$\xymatrix{
         proof -
           have "(a \<otimes> \<I> \<otimes> \<l>[b]) \<cdot> \<a>[a, \<I>, \<I> \<otimes> b] \<cdot> ((a \<otimes> \<I>) \<otimes> \<l>\<^sup>-\<^sup>1[b])
                   = ((a \<otimes> \<I> \<otimes> \<l>[b]) \<cdot> (a \<otimes> \<I> \<otimes> \<l>\<^sup>-\<^sup>1[b])) \<cdot> \<a>[a, \<I>, b]"
-            using assms assoc_naturality [of a \<I> "\<l>\<^sup>-\<^sup>1[b]"] by simp
+            using assms assoc_naturality [of a \<I> "\<l>\<^sup>-\<^sup>1[b]"] comp_assoc by simp
           also have "... = \<a>[a, \<I>, b]"
             using assms inv_is_inverse interchange comp_cod_arr by simp
           finally show ?thesis by auto
@@ -809,9 +812,9 @@ $$\xymatrix{
       qed
       also have "... = (a \<otimes> \<l>[b]) \<cdot> (a \<otimes> \<l>[\<I> \<otimes> b]) \<cdot> ((a \<otimes> \<I> \<otimes> \<l>\<^sup>-\<^sup>1[b]) \<cdot> (a \<otimes> \<I> \<otimes> \<l>[b])) \<cdot>
                        \<a>[a, \<I>, \<I> \<otimes> b] \<cdot> ((a \<otimes> \<I>) \<otimes> \<l>\<^sup>-\<^sup>1[b])"
-        using assms by auto
+        using assms comp_assoc by auto
       also have "... = (a \<otimes> \<l>[b]) \<cdot> ((a \<otimes> \<l>[\<I> \<otimes> b]) \<cdot> \<a>[a, \<I>, \<I> \<otimes> b]) \<cdot> ((a \<otimes> \<I>) \<otimes> \<l>\<^sup>-\<^sup>1[b])"
-        using assms interchange comp_cod_arr by auto
+        using assms interchange comp_cod_arr comp_assoc by auto
       also have "... = \<r>[a] \<otimes> b"
         using assms * interchange runit_char(1) comp_arr_dom comp_cod_arr by auto
       finally show ?thesis by blast
@@ -850,15 +853,15 @@ $$\xymatrix{
       *}
       have "((a \<otimes> \<l>[b \<otimes> c]) \<cdot> (a \<otimes> \<a>[\<I>, b, c])) \<cdot> (\<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c)) =
             ((a \<otimes> \<l>[b \<otimes> c]) \<cdot> \<a>[a, \<I>, b \<otimes> c]) \<cdot> \<a>[a \<otimes> \<I>, b, c]"
-        using assms pentagon by simp
+        using assms pentagon comp_assoc by simp
       also have "... = (\<r>[a] \<otimes> (b \<otimes> c)) \<cdot> \<a>[a \<otimes> \<I>, b, c]"
         using assms triangle by auto
       also have "... = \<a>[a, b, c] \<cdot> ((\<r>[a] \<otimes> b) \<otimes> c)"
         using assms assoc_naturality [of "\<r>[a]" b c] by auto
       also have "... = (\<a>[a, b, c] \<cdot> ((a \<otimes> \<l>[b]) \<otimes> c)) \<cdot> (\<a>[a, \<I>, b] \<otimes> c)"
-        using assms triangle interchange by auto
+        using assms triangle interchange comp_assoc by auto
       also have "... = (a \<otimes> (\<l>[b] \<otimes> c)) \<cdot> (\<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c))"
-        using assms assoc_naturality [of a "\<l>[b]" c] by auto
+        using assms assoc_naturality [of a "\<l>[b]" c] comp_assoc by auto
       finally have 1: "((a \<otimes> \<l>[b \<otimes> c]) \<cdot> (a \<otimes> \<a>[\<I>, b, c])) \<cdot> \<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c)
                         = (a \<otimes> (\<l>[b] \<otimes> c)) \<cdot> \<a>[a, \<I> \<otimes> b, c] \<cdot> (\<a>[a, \<I>, b] \<otimes> c)"
         by blast
@@ -946,16 +949,16 @@ $$\xymatrix{
               invert_side_of_triangle(1)
         by force
       also have "... = \<a>\<^sup>-\<^sup>1[a, b, c] \<cdot> (a \<otimes> b \<otimes> \<l>[c]) \<cdot> \<a>[a, b, \<I> \<otimes> c] \<cdot> \<a>[a \<otimes> b, \<I>, c]"
-        using assms by force
+        using comp_assoc by force
       also have "... = \<a>\<^sup>-\<^sup>1[a, b, c] \<cdot> ((a \<otimes> (\<r>[b] \<otimes> c)) \<cdot> (a \<otimes> \<a>\<^sup>-\<^sup>1[b, \<I>, c])) \<cdot>
                        \<a>[a, b, \<I> \<otimes> c] \<cdot> \<a>[a \<otimes> b, \<I>, c]"
         using assms triangle [of b c] interchange invert_side_of_triangle(2) by force
       also have "... = (((a \<otimes> \<r>[b]) \<otimes> c) \<cdot> \<a>\<^sup>-\<^sup>1[a, b \<otimes> \<I>, c]) \<cdot> (a \<otimes> \<a>\<^sup>-\<^sup>1[b, \<I>, c]) \<cdot>
                        \<a>[a, b, \<I> \<otimes> c] \<cdot> \<a>[a \<otimes> b, \<I>, c]"
-        using assms assoc'_naturality [of a "\<r>[b]" c] by simp
+        using assms assoc'_naturality [of a "\<r>[b]" c] comp_assoc by force
       also have "... = ((a \<otimes> \<r>[b]) \<otimes> c) \<cdot> \<a>\<^sup>-\<^sup>1[a, b \<otimes> \<I>, c] \<cdot> (a \<otimes> \<a>\<^sup>-\<^sup>1[b, \<I>, c]) \<cdot>
                        \<a>[a, b, \<I> \<otimes> c] \<cdot> \<a>[a \<otimes> b, \<I>, c]"
-        using assms by simp
+        using comp_assoc by simp
       also have "... = ((a \<otimes> \<r>[b]) \<otimes> c) \<cdot> (\<a>[a, b, \<I>] \<otimes> c)"
         using assms pentagon invert_side_of_triangle(1)
               invert_side_of_triangle(1)
@@ -981,7 +984,7 @@ $$\xymatrix{
     lemma runit_tensor':
     assumes "ide a" and "ide b"
     shows "\<r>[a \<otimes> b] \<cdot> \<a>\<^sup>-\<^sup>1[a, b, \<I>] = a \<otimes> \<r>[b]"
-      using assms runit_tensor invert_side_of_triangle by simp
+      using assms runit_tensor invert_side_of_triangle by force
 
     text {*
       Sometimes inverted forms of the triangle and pentagon axioms are useful.
@@ -994,7 +997,7 @@ $$\xymatrix{
       have "(\<r>[a] \<otimes> b) \<cdot> \<a>\<^sup>-\<^sup>1[a, \<I>, b] = ((a \<otimes> \<l>[b]) \<cdot> \<a>[a, \<I>, b]) \<cdot> \<a>\<^sup>-\<^sup>1[a, \<I>, b]"
           using assms triangle by auto
       also have "... = (a \<otimes> \<l>[b])"
-        using assms comp_arr_dom by force
+        using assms comp_arr_dom comp_assoc by auto
       finally show ?thesis by auto
     qed
 
@@ -1027,7 +1030,7 @@ $$\xymatrix{
       moreover have "\<r>[\<I>] \<otimes> \<I> = (\<I> \<otimes> \<l>[\<I>]) \<cdot> \<a>[\<I>, \<I>, \<I>]"
         using triangle [of \<I> \<I>] by simp
       moreover have "\<iota> \<otimes> \<I> = (\<I> \<otimes> \<l>[\<I>]) \<cdot> \<a>[\<I>, \<I>, \<I>]"
-        using lunit_char comp_arr_dom \<iota>_in_hom by auto
+        using lunit_char comp_arr_dom \<iota>_in_hom comp_assoc by auto
       ultimately have "\<l>[\<I>] \<otimes> \<I> = \<iota> \<otimes> \<I> \<and> \<r>[\<I>] \<otimes> \<I> = \<iota> \<otimes> \<I>"
         by argo
       moreover have "par \<l>[\<I>] \<iota> \<and> par \<r>[\<I>] \<iota>"
@@ -1057,11 +1060,11 @@ $$\xymatrix{
           using assms \<iota>_in_hom \<iota>_is_iso inv_is_inverse comp_inv_arr comp_cod_arr [of "f \<otimes> f"]
           by force
         also have "... = (inv \<iota> \<cdot> f) \<cdot> \<iota>"
-          using assms \<iota>_in_hom \<iota>_is_iso inv_is_inverse by force
+          using assms \<iota>_is_iso inv_is_inverse comp_assoc by force
         also have "... = ((f \<otimes> \<I>) \<cdot> inv \<iota>) \<cdot> \<iota>"
           using assms unitor_coincidence runit'_naturality [of f] by auto
         also have "... = (f \<otimes> \<I>) \<cdot> (inv \<iota> \<cdot> \<iota>)"
-          using assms \<iota>_in_hom \<iota>_is_iso by force
+          using comp_assoc by force
         also have "... = f \<otimes> \<I>"
           using assms \<iota>_in_hom \<iota>_is_iso inv_is_inverse comp_inv_arr
                 comp_arr_dom [of "f \<otimes> \<I>" "\<I> \<otimes> \<I>"]
@@ -1165,11 +1168,11 @@ $$\xymatrix{
           also have "... = \<iota> \<cdot> (\<r>\<^sub>1[\<I> \<otimes> \<I>] \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>\<^sub>1]) \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
             using C\<^sub>1.runit_tensor' by auto
           also have "... = (\<iota> \<cdot> \<r>\<^sub>1[\<I> \<otimes> \<I>]) \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>\<^sub>1] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
-            using \<iota>_in_hom by auto
+            using comp_assoc by auto
           also have "... = (\<r>\<^sub>1[\<I>] \<cdot> (\<iota> \<otimes> \<I>\<^sub>1)) \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>\<^sub>1] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
             using C\<^sub>1.runit_naturality [of \<iota>] \<iota>_in_hom by fastforce
           also have "... = \<r>\<^sub>1[\<I>] \<cdot> ((\<iota> \<otimes> \<I>\<^sub>1) \<cdot> \<a>\<^sup>-\<^sup>1[\<I>, \<I>, \<I>\<^sub>1]) \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
-            using \<iota>_in_hom by fastforce
+            using comp_assoc by auto
           also have "... = \<r>\<^sub>1[\<I>] \<cdot> (\<I> \<otimes> \<l>[\<I>\<^sub>1]) \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<I> \<otimes> \<I>\<^sub>1)"
             using lunit_tensor lunit_commutes_with_L unitor_coincidence by simp
           also have "... = \<r>\<^sub>1[\<I>] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<l>[\<I>\<^sub>1])"
@@ -1218,11 +1221,11 @@ $$\xymatrix{
         also have "... = \<l>[\<I>\<^sub>1] \<cdot> ((\<I> \<otimes> \<iota>\<^sub>1) \<cdot> \<a>[\<I>, \<I>\<^sub>1, \<I>\<^sub>1]) \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
           using C\<^sub>1.runit_tensor C\<^sub>1.unitor_coincidence C\<^sub>1.runit_commutes_with_R by simp
         also have "... = (\<l>[\<I>\<^sub>1] \<cdot> (\<I> \<otimes> \<iota>\<^sub>1)) \<cdot> \<a>[\<I>, \<I>\<^sub>1, \<I>\<^sub>1] \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
-          using C\<^sub>1.\<iota>_in_hom by fastforce
+          using comp_assoc by fastforce
         also have "... = (\<iota>\<^sub>1 \<cdot> \<l>[\<I>\<^sub>1 \<otimes> \<I>\<^sub>1]) \<cdot> \<a>[\<I>, \<I>\<^sub>1, \<I>\<^sub>1] \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
           using lunit_naturality [of \<iota>\<^sub>1] C\<^sub>1.\<iota>_in_hom lunit_commutes_with_L by fastforce
         also have "... = \<iota>\<^sub>1 \<cdot> (\<l>[\<I>\<^sub>1 \<otimes> \<I>\<^sub>1] \<cdot> \<a>[\<I>, \<I>\<^sub>1, \<I>\<^sub>1]) \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
-          using C\<^sub>1.\<iota>_in_hom by force
+          using comp_assoc by force
         also have "... = \<iota>\<^sub>1 \<cdot> (\<l>[\<I>\<^sub>1] \<otimes> \<I>\<^sub>1) \<cdot> ((\<I> \<otimes> \<I>\<^sub>1) \<otimes> \<l>[\<I>\<^sub>1])"
           using lunit_tensor' by auto
         also have "... = \<iota>\<^sub>1 \<cdot> (\<l>[\<I>\<^sub>1] \<otimes> \<l>[\<I>\<^sub>1])"
@@ -1255,11 +1258,11 @@ $$\xymatrix{
 }$$
         *}
         have "i \<cdot> \<iota> = \<l>[\<I>\<^sub>1] \<cdot> inv \<r>\<^sub>1[\<I>] \<cdot> \<iota>"
-          using \<iota>_in_hom i_def by auto
+          using i_def comp_assoc by auto
         also have "... = (\<l>[\<I>\<^sub>1] \<cdot> (\<r>\<^sub>1[\<I>] \<otimes> \<l>[\<I>\<^sub>1])) \<cdot> (inv \<r>\<^sub>1[\<I>] \<otimes> inv \<r>\<^sub>1[\<I>])"
-          using 1 by simp
+          using 1 comp_assoc by simp
         also have "... = \<iota>\<^sub>1 \<cdot> (\<l>[\<I>\<^sub>1] \<otimes> \<l>[\<I>\<^sub>1]) \<cdot> (inv \<r>\<^sub>1[\<I>] \<otimes> inv \<r>\<^sub>1[\<I>])"
-          using 2 C\<^sub>1.\<iota>_in_hom by fastforce
+          using 2 comp_assoc by fastforce
         also have "... = \<iota>\<^sub>1 \<cdot> (i \<otimes> i)"
           using interchange i_def by simp
         finally show ?thesis by blast
@@ -1279,14 +1282,14 @@ $$\xymatrix{
       show "(inv i \<cdot> f) \<cdot> \<iota> = \<iota> \<cdot> (inv i \<cdot> f \<otimes> inv i \<cdot> f)"
       proof -
         have "(inv i \<cdot> f) \<cdot> \<iota> = (inv i \<cdot> \<iota>\<^sub>1) \<cdot> (f \<otimes> f)"
-          using assms iso_i \<iota>_in_hom C\<^sub>1.\<iota>_in_hom by (elim in_homE, auto)
+          using assms iso_i comp_assoc by auto
         also have "... = (\<iota> \<cdot> (inv i \<otimes> inv i)) \<cdot> (f \<otimes> f)"
           using assms iso_i invert_opposite_sides_of_square
                 inv_tensor \<iota>_in_hom C\<^sub>1.\<iota>_in_hom tensor_in_hom tensor_preserves_iso
                 inv_in_hom i_maps_\<iota>_to_\<iota>\<^sub>1 unity_def seqI'
           by metis
         also have "... = \<iota> \<cdot> (inv i \<cdot> f \<otimes> inv i \<cdot> f)"
-          using assms 1 iso_i \<iota>_in_hom interchange by fastforce
+          using assms 1 iso_i interchange comp_assoc by fastforce
         finally show ?thesis by blast
       qed
     qed
@@ -1698,7 +1701,8 @@ $$\xymatrix{
                 = ((\<I> \<otimes> \<l>[a]) \<cdot> \<a>[\<I>, \<I>, a]) \<cdot> MC.assoc' MC.unity MC.unity a"
         using assms triangle by simp
       also have "... = \<I> \<otimes> \<l>[a]"
-        using assms MC.assoc_inv comp_arr_inv \<I>_agreement iso_assoc comp_arr_dom by auto
+        using assms MC.assoc_inv comp_arr_inv \<I>_agreement iso_assoc comp_arr_dom comp_assoc
+        by auto
       finally have "\<I> \<otimes> \<l>[a] = (\<r>[\<I>] \<otimes> a) \<cdot> MC.assoc' MC.unity MC.unity a" by argo
       thus "\<I> \<otimes> \<l>[a] = (\<iota> \<otimes> a) \<cdot> MC.assoc' MC.unity MC.unity a"
         using unitor_coincidence\<^sub>E\<^sub>M\<^sub>C by auto
@@ -1846,7 +1850,7 @@ $$\xymatrix{
     interpret R: equivalence_functor C C "\<lambda>f. T (f, C.cod \<iota>)"
       using C.L.equivalence_functor_axioms by simp
     show "monoidal_category C T \<alpha> \<iota>"
-      using C.\<iota>_in_hom C.\<iota>_is_iso C.unity_def C.pentagon'
+      using C.\<iota>_in_hom C.\<iota>_is_iso C.unity_def C.pentagon' C.comp_assoc
       by (unfold_locales, auto)
   qed
 
@@ -2573,7 +2577,7 @@ $$\xymatrix{
         assume 1: "\<^bold>\<langle>C.dom f\<^bold>\<rangle> = Cod u"
         assume 2: "Dom u = Cod v"
         show "(\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> u) \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> v = \<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> (u \<^bold>\<lfloor>\<^bold>\<cdot>\<^bold>\<rfloor> v)"
-          using u v f 1 2 by (cases u, simp_all; cases v, simp_all)
+          using C.comp_assoc by (cases u, simp_all; cases v, simp_all)
         next
         fix u v w x
         assume I1: "\<And>u v. \<lbrakk> Diag w; Diag u; Diag v; Dom w = Cod u; Dom u = Cod v \<rbrakk> \<Longrightarrow>
@@ -3299,12 +3303,12 @@ $$\xymatrix{
     lemma comp_permute:
     assumes "f \<cdot> g = k \<cdot> l" and "seq f g" and "seq g h"
     shows "f \<cdot> g \<cdot> h = k \<cdot> l \<cdot> h"
-      using assms by (metis dom_comp comp_assoc seqE seqI)
+      using assms by (metis comp_assoc)
 
     lemma comp_reduce:
     assumes "f \<cdot> g = k" and "seq f g" and "seq g h"
     shows "f \<cdot> g \<cdot> h = k \<cdot> h"
-      using assms by auto
+      using assms comp_assoc by auto
 
   end
 
@@ -3719,8 +3723,7 @@ $$\xymatrix{
       have "inv \<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom t\<^bold>\<down>\<rbrace> = inv \<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> \<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> \<lbrace>t\<rbrace>"
         using 1 by simp
       also have "... = (inv \<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> \<lbrace>Cod t\<^bold>\<down>\<rbrace>) \<cdot> \<lbrace>t\<rbrace>"
-        using assms red_in_Hom inv_in_hom Arr_implies_Ide_Cod Can_red iso_eval_Can eval_in_hom
-        by simp
+        using comp_assoc by simp
       also have "... = \<lbrace>t\<rbrace>"
         using assms 1 red_in_Hom inv_in_hom Arr_implies_Ide_Cod Can_red iso_eval_Can
               comp_cod_arr Ide_in_Hom inv_is_inverse
@@ -3730,9 +3733,7 @@ $$\xymatrix{
       assume 1: "\<lbrace>t\<rbrace> = inv \<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom t\<^bold>\<down>\<rbrace>"
       hence "\<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> \<lbrace>t\<rbrace> = \<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> inv \<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom t\<^bold>\<down>\<rbrace>" by simp
       also have "... = (\<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> inv \<lbrace>Cod t\<^bold>\<down>\<rbrace>) \<cdot> \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom t\<^bold>\<down>\<rbrace>"
-        using assms red_in_Hom inv_in_hom Arr_implies_Ide_Cod Can_red iso_eval_Can
-              Diagonalize_in_Hom Arr_implies_Ide_Dom
-        by simp
+        using comp_assoc by simp
       also have "... = \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom t\<^bold>\<down>\<rbrace>"
         using assms 1 red_in_Hom Arr_implies_Ide_Cod Can_red iso_eval_Can inv_is_inverse
               Diagonalize_in_Hom comp_arr_inv comp_cod_arr Arr_implies_Ide_Dom Diagonalize_in_Hom
@@ -3765,9 +3766,9 @@ $$\xymatrix{
                 Inv_preserves_Can(3) canonical_factorization comp_inv_arr iso_eval_Can iso_is_arr
           by auto
         also have "... = inv \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>Cod t\<^bold>\<down>\<rbrace> \<cdot> \<lbrace>t\<rbrace>) \<cdot> inv \<lbrace>t\<rbrace>"
-          using t red_in_Hom eval_Inv_Can coh by auto
+          using t eval_Inv_Can coh comp_assoc by auto
         also have "... = \<lbrace>\<^bold>\<lfloor>Inv t\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom (Inv t)\<^bold>\<down>\<rbrace>"
-          using t Diagonalize_Inv eval_Inv_Can comp_arr_inv red_in_Hom comp_arr_dom
+          using t Diagonalize_Inv eval_Inv_Can comp_arr_inv red_in_Hom comp_arr_dom comp_assoc
           by auto
         finally show "coherent (Inv t)" by blast
       qed
@@ -3857,15 +3858,14 @@ $$\xymatrix{
              = (\<lbrace>a \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c)\<rbrace> \<cdot> (\<lbrace>a\<rbrace> \<otimes> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot> \<a>[\<lbrace>a\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
     proof -
       have "b = \<^bold>\<I> \<Longrightarrow> ?thesis"
-        using assms TensorDiag_preserves_Diag TensorDiag_preserves_Ide
-              Diag_implies_Arr not_is_Tensor_TensorDiagE eval_red2_Diag_Unity
-              red2_in_Hom ide_eval_Ide triangle comp_cod_arr
+        using assms not_is_Tensor_TensorDiagE eval_red2_Diag_Unity triangle
+              comp_cod_arr comp_assoc
         by simp
         text {* The triangle is used! *}
       moreover have "c = \<^bold>\<I> \<Longrightarrow> ?thesis"
         using assms TensorDiag_preserves_Diag TensorDiag_preserves_Ide
-              Diag_implies_Arr not_is_Tensor_TensorDiagE preserves_ide eval_red2_Diag_Unity
-              red2_in_Hom runit_tensor runit_naturality [of "\<lbrace>a \<^bold>\<Down> b\<rbrace>"]
+              not_is_Tensor_TensorDiagE eval_red2_Diag_Unity
+              red2_in_Hom runit_tensor runit_naturality [of "\<lbrace>a \<^bold>\<Down> b\<rbrace>"] comp_assoc
         by simp
       moreover have "\<lbrakk> b \<noteq> \<^bold>\<I>; c \<noteq> \<^bold>\<I> \<rbrakk> \<Longrightarrow> ?thesis"
       proof -
@@ -3890,9 +3890,13 @@ $$\xymatrix{
           proof -
             show "\<lbrace>b \<^bold>\<Down> c\<rbrace> \<cdot> (\<lbrace>b\<rbrace> \<cdot> \<l>[\<lbrace>b\<rbrace>] \<otimes> \<lbrace>c\<rbrace>)
                     = ((\<lbrace>b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace> \<cdot> \<l>[\<lbrace>b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>]) \<cdot> (\<I> \<otimes> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot> \<a>[\<I>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
-              using b c red2_in_Hom TensorDiag_in_Hom lunit_naturality [of "\<lbrace>b \<^bold>\<Down> c\<rbrace>"]
-                    lunit_tensor TensorDiag_preserves_Ide comp_arr_dom comp_cod_arr
-              by simp
+            proof -
+              have "\<lbrace>b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace> \<cdot> (\<l>[\<lbrace>b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>] \<cdot> (\<I> \<otimes> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot> \<a>[\<I>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>] =
+                    \<lbrace>b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace> \<cdot> (\<lbrace>b \<^bold>\<Down> c\<rbrace> \<cdot> \<l>[\<lbrace>b\<rbrace> \<otimes> \<lbrace>c\<rbrace>])  \<cdot> \<a>[\<I>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
+                using b c red2_in_Hom lunit_naturality [of "\<lbrace>b \<^bold>\<Down> c\<rbrace>"] by simp
+              thus ?thesis
+                using b c red2_in_Hom lunit_tensor comp_arr_dom comp_cod_arr comp_assoc by simp
+            qed
             show "\<And>f. C.ide f \<and> C.arr f \<Longrightarrow>
                        \<lbrace>(\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<otimes> b) \<^bold>\<Down> c\<rbrace> \<cdot> (\<lbrace>\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<Down> b\<rbrace> \<otimes> \<lbrace>c\<rbrace>)
                          = (\<lbrace>\<^bold>\<langle>f\<^bold>\<rangle> \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c)\<rbrace> \<cdot> (V f \<otimes> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot> \<a>[V f, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
@@ -3997,8 +4001,8 @@ $$\xymatrix{
               qed
               also have "... = (\<lbrace>d\<rbrace> \<otimes> \<lbrace>(e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b) \<^bold>\<Down> c\<rbrace>) \<cdot> \<a>[\<lbrace>d\<rbrace>, \<lbrace>e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b\<rbrace>, \<lbrace>c\<rbrace>] \<cdot>
                                ((\<lbrace>d\<rbrace> \<otimes> \<lbrace>e \<^bold>\<Down> b\<rbrace>) \<otimes> \<lbrace>c\<rbrace>) \<cdot> (\<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>] \<otimes> \<lbrace>c\<rbrace>)"
-                using b c d e TensorDiag_in_Hom red2_in_Hom TensorDiag_preserves_Ide
-                      TensorDiag_preserves_Diag interchange comp_cod_arr
+                using b c d e red2_in_Hom TensorDiag_preserves_Ide
+                      TensorDiag_preserves_Diag interchange comp_cod_arr comp_assoc
                 by simp
               also have "... = (\<lbrace>d\<rbrace> \<otimes> \<lbrace>(e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b) \<^bold>\<Down> c\<rbrace>) \<cdot> (\<lbrace>d\<rbrace> \<otimes> (\<lbrace>e \<^bold>\<Down> b\<rbrace> \<otimes> \<lbrace>c\<rbrace>)) \<cdot>
                                \<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace> \<otimes> \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>] \<cdot> (\<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>] \<otimes> \<lbrace>c\<rbrace>)"
@@ -4032,9 +4036,9 @@ $$\xymatrix{
               also have "... = (((\<lbrace>d\<rbrace> \<otimes> \<lbrace>e \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>) \<cdot> (\<lbrace>d\<rbrace> \<otimes> \<lbrace>e \<^bold>\<Down> b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>) \<cdot>
                                  \<a>[\<lbrace>d\<rbrace>, \<lbrace>e\<rbrace>, \<lbrace>b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c\<rbrace>]) \<cdot> ((\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>) \<otimes> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot>
                                \<a>[\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
-                using b c d e 1 TensorDiag_in_Hom red2_in_Hom TensorDiag_preserves_Ide
+                using b c d e 1 red2_in_Hom TensorDiag_preserves_Ide
                       TensorDiag_preserves_Diag assoc_naturality [of "\<lbrace>d\<rbrace>" "\<lbrace>e\<rbrace>" "\<lbrace>b \<^bold>\<Down> c\<rbrace>"]
-                      comp_cod_arr
+                      comp_cod_arr comp_assoc
                 by simp
               also have "... = (\<lbrace>(d \<^bold>\<otimes> e) \<^bold>\<Down> (b \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> c)\<rbrace> \<cdot> ((\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>) \<otimes> \<lbrace>b \<^bold>\<Down> c\<rbrace>)) \<cdot>
                                \<a>[\<lbrace>d\<rbrace> \<otimes> \<lbrace>e\<rbrace>, \<lbrace>b\<rbrace>, \<lbrace>c\<rbrace>]"
@@ -4096,18 +4100,18 @@ $$\xymatrix{
         by simp
       also have "... = ((\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> (\<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>c\<^bold>\<rfloor>)\<rbrace> \<cdot> (\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor>\<rbrace> \<otimes> \<lbrace>\<^bold>\<lfloor>b\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>)) \<cdot>
                         \<a>[\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor>\<rbrace>, \<lbrace>\<^bold>\<lfloor>b\<^bold>\<rfloor>\<rbrace>, \<lbrace>\<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>]) \<cdot> ((\<lbrace>a\<^bold>\<down>\<rbrace> \<otimes> \<lbrace>b\<^bold>\<down>\<rbrace>) \<otimes> \<lbrace>c\<^bold>\<down>\<rbrace>)"
-        using a b c red_in_Hom red2_in_Hom Diagonalize_in_Hom Diag_Diagonalize
-               Diagonalize_preserves_Ide Ide_in_Hom TensorDiag_preserves_Diag Ide_implies_Arr
-               TensorDiag_preserves_Ide assoc_naturality [of "\<lbrace>a\<^bold>\<down>\<rbrace>" "\<lbrace>b\<^bold>\<down>\<rbrace>" "\<lbrace>c\<^bold>\<down>\<rbrace>"]
+        using a b c red_in_Hom Diag_Diagonalize TensorDiag_preserves_Diag
+               assoc_naturality [of "\<lbrace>a\<^bold>\<down>\<rbrace>" "\<lbrace>b\<^bold>\<down>\<rbrace>" "\<lbrace>c\<^bold>\<down>\<rbrace>"] comp_assoc
          by simp
       also have "... = (\<lbrace>(\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>b\<^bold>\<rfloor>) \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>b\<^bold>\<rfloor>\<rbrace> \<otimes> \<lbrace>\<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace>)) \<cdot>
                        ((\<lbrace>a\<^bold>\<down>\<rbrace> \<otimes> \<lbrace>b\<^bold>\<down>\<rbrace>) \<otimes> \<lbrace>c\<^bold>\<down>\<rbrace>)"
         using a b c Diag_Diagonalize Diagonalize_preserves_Ide coherence_key_fact by simp
       also have "... = \<lbrace>\<^bold>\<lfloor>\<^bold>\<a>\<^bold>[a, b, c\<^bold>]\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom \<^bold>\<a>\<^bold>[a, b, c\<^bold>]\<^bold>\<down>\<rbrace>"
-        using a b c red_in_Hom red2_in_Hom Diagonalize_in_Hom TensorDiag_preserves_Diag
+        using a b c red_in_Hom red2_in_Hom TensorDiag_preserves_Diag
               Diagonalize_preserves_Ide TensorDiag_preserves_Ide Diag_Diagonalize interchange
-              Ide_in_Hom eval_red_Tensor TensorDiag_assoc comp_cod_arr [of "\<lbrace>c\<^bold>\<down>\<rbrace>"]
+              eval_red_Tensor TensorDiag_assoc comp_cod_arr [of "\<lbrace>c\<^bold>\<down>\<rbrace>"]
               comp_cod_arr [of "\<lbrace>(\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>b\<^bold>\<rfloor>) \<^bold>\<Down> \<^bold>\<lfloor>c\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>\<^bold>\<lfloor>a\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>b\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>a\<^bold>\<down>\<rbrace> \<otimes> \<lbrace>b\<^bold>\<down>\<rbrace>) \<otimes> \<lbrace>c\<^bold>\<down>\<rbrace>)"]
+              comp_assoc
         by simp
       finally show ?thesis by blast
     qed
@@ -4252,7 +4256,7 @@ $$\xymatrix{
           also have
             "... = (\<lbrace>v\<rbrace> \<otimes> \<lbrace>w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> u\<rbrace> \<cdot> \<lbrace>Dom w \<^bold>\<Down> Dom u\<rbrace>) \<cdot> \<a>[\<lbrace>Dom v\<rbrace>, \<lbrace>Dom w\<rbrace>, \<lbrace>Dom u\<rbrace>]"
             using u v w I2 red2_in_Hom TensorDiag_in_Hom interchange comp_reduce
-                  assoc_naturality [of "\<lbrace>v\<rbrace>" "\<lbrace>w\<rbrace>" "\<lbrace>u\<rbrace>"] comp_cod_arr
+                  assoc_naturality [of "\<lbrace>v\<rbrace>" "\<lbrace>w\<rbrace>" "\<lbrace>u\<rbrace>"] comp_cod_arr comp_assoc
             by simp
           also have "... = (\<lbrace>v\<rbrace> \<otimes> \<lbrace>w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> u\<rbrace>) \<cdot> (\<lbrace>Dom v\<rbrace> \<otimes> \<lbrace>Dom w \<^bold>\<Down> Dom u\<rbrace>) \<cdot>
                            \<a>[\<lbrace>Dom v\<rbrace>, \<lbrace>Dom w\<rbrace>, \<lbrace>Dom u\<rbrace>]"
@@ -4272,26 +4276,7 @@ $$\xymatrix{
               using u v w comp_arr_dom TensorDiag_in_Hom TensorDiag_preserves_Diag by simp
             also have "... = \<lbrace>v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> u\<rbrace> \<cdot> \<lbrace>Dom v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom u\<rbrace> \<cdot>
                             (\<lbrace>Dom v\<rbrace> \<otimes> \<lbrace>Dom w \<^bold>\<Down> Dom u\<rbrace>) \<cdot> \<a>[\<lbrace>Dom v\<rbrace>, \<lbrace>Dom w\<rbrace>, \<lbrace>Dom u\<rbrace>]"
-            proof (intro comp_assoc)
-              have 2:
-                "in_hom \<lbrace>Dom v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom u\<rbrace> \<lbrace>Dom v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom u\<rbrace>
-                        \<lbrace>Dom v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom u\<rbrace>"
-              proof -
-                have "Ide (Dom v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom u)"
-                  using v w u TensorDiag_in_Hom TensorDiag_preserves_Diag
-                        TensorDiag_preserves_Ide
-                  by auto
-                thus ?thesis using Ide_in_Hom by auto
-              qed
-              show "seq \<lbrace>v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> u\<rbrace> \<lbrace>Dom v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom u\<rbrace>"
-                using v w u 2 TensorDiag_in_Hom TensorDiag_preserves_Diag
-                by (intro seqI', auto)
-              show "seq \<lbrace>Dom v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom w \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> Dom u\<rbrace>
-                        ((\<lbrace>Dom v\<rbrace> \<otimes> \<lbrace>Dom w \<^bold>\<Down> Dom u\<rbrace>) \<cdot> \<a>[\<lbrace>Dom v\<rbrace>, \<lbrace>Dom w\<rbrace>, \<lbrace>Dom u\<rbrace>])"
-                using v w u D 2 TensorDiag_Diag red2_in_Hom TensorDiag_in_Hom
-                      TensorDiag_preserves_Diag
-                by (intro seqI', auto)
-            qed
+              using comp_assoc by simp
             finally show ?thesis by blast
           qed
           also have "... = \<lbrace>(v \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> w) \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> u\<rbrace> \<cdot> \<lbrace>(Dom v \<^bold>\<otimes> Dom w) \<^bold>\<Down> Dom u\<rbrace>"
@@ -4344,18 +4329,17 @@ $$\xymatrix{
               = (\<lbrace>\<^bold>\<lfloor>Cod t\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Cod u\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>Cod t\<^bold>\<down>\<rbrace> \<otimes> \<lbrace>Cod u\<^bold>\<down>\<rbrace>)) \<cdot> (\<lbrace>t\<rbrace> \<otimes> \<lbrace>u\<rbrace>)"
         using t u eval_red_Tensor by simp
       also have "... = \<lbrace>\<^bold>\<lfloor>Cod t\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Cod u\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>Cod t\<^bold>\<down>\<rbrace> \<otimes> \<lbrace>Cod u\<^bold>\<down>\<rbrace>) \<cdot> (\<lbrace>t\<rbrace> \<otimes> \<lbrace>u\<rbrace>)"
-        using t u red_in_Hom red2_in_Hom Diagonalize_in_Hom Diag_Diagonalize by simp
+        using comp_assoc by simp
       also have "... = \<lbrace>\<^bold>\<lfloor>Cod t\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Cod u\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<otimes> \<lbrace>\<^bold>\<lfloor>u\<^bold>\<rfloor>\<rbrace>) \<cdot> (\<lbrace>Dom t\<^bold>\<down>\<rbrace> \<otimes> \<lbrace>Dom u\<^bold>\<down>\<rbrace>)"
         using assms t u Diagonalize_in_Hom red_in_Hom interchange by simp
       also have "... = (\<lbrace>\<^bold>\<lfloor>Cod t\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Cod u\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor>\<rbrace> \<otimes> \<lbrace>\<^bold>\<lfloor>u\<^bold>\<rfloor>\<rbrace>)) \<cdot> (\<lbrace>Dom t\<^bold>\<down>\<rbrace> \<otimes> \<lbrace>Dom u\<^bold>\<down>\<rbrace>)"
-        using t u red_in_Hom red2_in_Hom Diagonalize_in_Hom Diag_Diagonalize by simp
+        using comp_assoc by simp
       also have "... = (\<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>u\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>\<^bold>\<lfloor>Dom t\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Dom u\<^bold>\<rfloor>\<rbrace>) \<cdot> (\<lbrace>Dom t\<^bold>\<down>\<rbrace> \<otimes> \<lbrace>Dom u\<^bold>\<down>\<rbrace>)"
         using assms t u Diag_Diagonalize Diagonalize_in_Hom
               eval_red2_naturality [of "Diagonalize t" "Diagonalize u"]
         by simp
       also have "... = \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>u\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>\<^bold>\<lfloor>Dom t\<^bold>\<rfloor> \<^bold>\<Down> \<^bold>\<lfloor>Dom u\<^bold>\<rfloor>\<rbrace> \<cdot> (\<lbrace>Dom t\<^bold>\<down>\<rbrace> \<otimes> \<lbrace>Dom u\<^bold>\<down>\<rbrace>)"
-        using t u TensorDiag_in_Hom red2_in_Hom Diagonalize_in_Hom Diag_Diagonalize red_in_Hom
-        by simp
+        using comp_assoc by simp
       also have "... = \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>u\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>(Dom t \<^bold>\<otimes> Dom u)\<^bold>\<down>\<rbrace>"
         using t u eval_red_Tensor by simp
       finally have "\<lbrace>Cod (t \<^bold>\<otimes> u)\<^bold>\<down>\<rbrace> \<cdot> (\<lbrace>t\<rbrace> \<otimes> \<lbrace>u\<rbrace>) = \<lbrace>\<^bold>\<lfloor>t\<^bold>\<rfloor> \<^bold>\<lfloor>\<^bold>\<otimes>\<^bold>\<rfloor> \<^bold>\<lfloor>u\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>(Dom t \<^bold>\<otimes> Dom u)\<^bold>\<down>\<rbrace>"
@@ -4385,10 +4369,10 @@ $$\xymatrix{
           using assms t red_in_Hom by (intro seqI, auto)
         moreover have "seq \<lbrace>t\<rbrace> \<lbrace>u\<rbrace>"
           using assms t u by auto
-        ultimately show ?thesis by auto
+        ultimately show ?thesis using comp_assoc by auto
       qed
       also have "... = \<lbrace>\<^bold>\<lfloor>t \<^bold>\<cdot> u\<^bold>\<rfloor>\<rbrace> \<cdot> \<lbrace>Dom (t \<^bold>\<cdot> u)\<^bold>\<down>\<rbrace>"
-        using t u assms red_in_Hom Diag_Diagonalize
+        using t u assms red_in_Hom Diag_Diagonalize comp_assoc
         by (simp add: Diag_implies_Arr eval_CompDiag)
       finally show "coherent (t \<^bold>\<cdot> u)" by blast
     qed

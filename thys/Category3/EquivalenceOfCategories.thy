@@ -42,11 +42,11 @@ begin
         using assms C.inv_is_inverse by auto
       have "\<epsilon> (C.cod f) \<cdot>\<^sub>C F (G f) \<cdot>\<^sub>C C.inv (\<epsilon> (C.dom f)) =
             (\<epsilon> (C.cod f) \<cdot>\<^sub>C F (G f)) \<cdot>\<^sub>C C.inv (\<epsilon> (C.dom f))"
-        using assms by force
+        using C.comp_assoc by force
       also have 1: "... = (f \<cdot>\<^sub>C \<epsilon> (C.dom f)) \<cdot>\<^sub>C C.inv (\<epsilon> (C.dom f))"
         using assms \<epsilon>.naturality by simp
       also have 2: "... = f"
-        using assms \<epsilon>_dom C.comp_arr_inv C.comp_arr_dom by force
+        using assms \<epsilon>_dom C.comp_arr_inv C.comp_arr_dom C.comp_assoc by force
       finally show "\<epsilon> (C.cod f) \<cdot>\<^sub>C F (G f) \<cdot>\<^sub>C C.inv (\<epsilon> (C.dom f)) = f" by blast
       show "C.inv (\<epsilon> (C.cod f)) \<cdot>\<^sub>C f \<cdot>\<^sub>C \<epsilon> (C.dom f) = F (G f)"
         using assms 1 2 \<epsilon>_dom \<epsilon>_cod C.invert_side_of_triangle C.isoI C.iso_inv_iso
@@ -137,7 +137,7 @@ begin
             have "F (G ?f) = C.inv (\<epsilon> a') \<cdot>\<^sub>C ?f \<cdot>\<^sub>C \<epsilon> a"
               using f C_arr_expansion(2) [of "?f"] by auto
             also have "... = (C.inv (\<epsilon> a') \<cdot>\<^sub>C \<epsilon> a') \<cdot>\<^sub>C F g \<cdot>\<^sub>C C.inv (\<epsilon> a) \<cdot>\<^sub>C \<epsilon> a"
-              using a a' f g by fastforce
+              using a a' f g C.comp_assoc by fastforce
             also have "... = F g"
               using a a' g \<epsilon>a \<epsilon>a' C.comp_inv_arr C.comp_arr_dom C.comp_cod_arr by auto
             finally show ?thesis by blast
@@ -463,8 +463,7 @@ begin
                   have "?e \<cdot>\<^sub>C F ?g = ?e \<cdot>\<^sub>C C.inv ?e \<cdot>\<^sub>C f"
                     using g by simp
                   also have "... = (?e \<cdot>\<^sub>C C.inv ?e) \<cdot>\<^sub>C f"
-                    using e f C.inv_in_hom
-                    by (metis (no_types, lifting) C.comp_assoc C.in_homE C.seqI)
+                    using e f C.inv_in_hom by (metis C.comp_assoc)
                   also have "... = f"
                   proof -
                     have "?e \<cdot>\<^sub>C C.inv ?e = y"
@@ -532,7 +531,7 @@ begin
                 using a 1 \<epsilon>.preserves_hom [of a a a] by fastforce
               moreover have "C.seq (F ?g) (C.inv \<phi>)"
                 using a 1 \<phi> C.inv_in_hom [of \<phi> "F b" a] by blast
-              ultimately show ?thesis by auto
+              ultimately show ?thesis using C.comp_assoc by auto
             qed
             finally have "\<exists>f. C.ide (\<epsilon> a \<cdot>\<^sub>C f)"
               using a by metis
@@ -561,7 +560,7 @@ begin
                 proof -
                   have "C.seq f \<phi>" using par \<phi> by auto
                   moreover have "C.seq (\<epsilon> a) f" using ff' by blast
-                  ultimately show ?thesis by auto
+                  ultimately show ?thesis using C.comp_assoc by auto
                 qed
                 also have "... = (\<epsilon> a \<cdot>\<^sub>C f') \<cdot>\<^sub>C \<phi>"
                   using ff' by argo
@@ -569,7 +568,7 @@ begin
                 proof -
                   have "C.seq f' \<phi>" using par \<phi> by auto
                   moreover have "C.seq (\<epsilon> a) f'" using ff' by blast
-                  ultimately show ?thesis by auto
+                  ultimately show ?thesis using C.comp_assoc by auto
                 qed
                 finally show ?thesis by blast
               qed

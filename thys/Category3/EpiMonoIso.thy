@@ -88,8 +88,8 @@ begin
      assumes "seq g f" and "inverse_arrows f f'" and "inverse_arrows g g'"
      shows "inverse_arrows (g \<cdot> f) (f' \<cdot> g')"
        using assms apply (elim inverse_arrowsE, intro inverse_arrowsI)
-        apply (metis seqE seqI comp_arr_dom ide_compE comp_assoc)
-       by (metis seqE seqI comp_arr_dom ide_compE comp_assoc)
+        apply (metis seqE comp_arr_dom ide_compE comp_assoc)
+       by (metis seqE comp_arr_dom ide_compE comp_assoc)
 
      definition "section"
      where "section f \<equiv> \<exists>g. ide (g \<cdot> f)"
@@ -173,7 +173,7 @@ begin
        have "inj_on (\<lambda>f. (m' \<cdot> m) \<cdot> f) {f. seq (m' \<cdot> m) f}"
          unfolding inj_on_def
          using assms
-         by (metis CollectD seqI seqE dom_comp monoE comp_assoc)
+         by (metis CollectD seqE monoE comp_assoc)
        thus ?thesis using assms(3) mono_def by force
      qed           
 
@@ -184,7 +184,7 @@ begin
        have "inj_on (\<lambda>g. g \<cdot> (e' \<cdot> e)) {g. seq g (e' \<cdot> e)}"
          unfolding inj_on_def
          using assms
-         by (metis CollectD seqI seqE cod_comp epiE comp_assoc)
+         by (metis CollectD seqI seqE cod_comp epiE comp_assoc')
        thus ?thesis using assms(3) epi_def by force
      qed           
 
@@ -442,7 +442,7 @@ begin
     lemma invert_opposite_sides_of_square:
     assumes "seq f g" and "f \<cdot> g = h \<cdot> k"
     shows "\<lbrakk> iso f; iso k \<rbrakk> \<Longrightarrow> seq g (inv k) \<and> seq (inv f) h \<and> g \<cdot> inv k = inv f \<cdot> h"
-      by (metis assms invert_side_of_triangle comp_assoc match_2)
+      by (metis assms invert_side_of_triangle comp_assoc)
 
   end
 

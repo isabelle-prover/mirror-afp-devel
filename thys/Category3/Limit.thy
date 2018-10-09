@@ -357,10 +357,9 @@ begin
           using assms B.value_is_ide \<chi>.is_natural_1 \<chi>.is_natural_2
           apply (unfold_locales, auto)
           using \<chi>.is_natural_1
-           apply (metis C.seqI C.comp_assoc J.arr_dom_iff_arr \<chi>.A.map_simp
-                        \<chi>.preserves_dom \<chi>.preserves_reflects_arr)
+           apply (metis C.comp_assoc)
           using \<chi>.is_natural_2 C.comp_arr_dom
-          by (metis J.arr_cod_iff_arr J.cod_cod)
+          by (metis J.arr_cod_iff_arr J.cod_cod C.comp_assoc)
         thus "(\<lambda>j. if J.arr j then \<chi> j \<cdot> f else C.null) \<in> cones (C.dom f)" by auto
       qed
     qed
@@ -411,7 +410,7 @@ begin
               fix j
               assume j: "J.arr j"
               show "(\<chi> j \<cdot> f) \<cdot> g = \<chi> j \<cdot> f \<cdot> g"
-                using assms \<chi> j by auto
+                using assms C.comp_assoc by simp
             qed
             thus ?thesis by auto
           qed
@@ -460,11 +459,7 @@ begin
         also have "... = (\<tau> j \<cdot> \<chi> (D.J.dom j)) \<cdot> f"
           using j \<tau>o\<chi>.map_simp_2 by simp
         also have "... = \<tau> j \<cdot> \<chi> (D.J.dom j) \<cdot> f"
-        proof -
-          have "D.C.seq (\<chi> (D.J.dom j)) f"
-            using j f by (intro D.C.seqI, auto)
-          thus ?thesis using j by simp
-        qed
+          using D.C.comp_assoc by simp
         also have "... = \<tau>o\<chi>f.map j"
           using j f \<chi>.cone_axioms \<tau>o\<chi>f.map_simp_2 by auto
         finally show "D'.cones_map f \<tau>o\<chi>.map j = \<tau>o\<chi>f.map j" by auto
@@ -2237,14 +2232,14 @@ begin
           show "E j \<cdot>\<^sub>C ?\<chi>' (J.dom j) = ?\<chi>' j"
           proof -
             have "E j \<cdot>\<^sub>C ?\<chi>' (J.dom j) = (E j \<cdot>\<^sub>C Adj.\<epsilon> (E (J.dom j))) \<cdot>\<^sub>C F (\<kappa> (J.dom j))"
-              using j by simp
+              using j C.comp_assoc by simp
             also have "... = Adj.\<epsilon> (E (J.cod j)) \<cdot>\<^sub>C F (\<kappa> j)"
             proof -
               have "(E j \<cdot>\<^sub>C Adj.\<epsilon> (E (J.dom j))) \<cdot>\<^sub>C F (\<kappa> (J.dom j))
                        = (Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C Adj.FG.map (E j)) \<cdot>\<^sub>C F (\<kappa> (J.dom j))"
                 using j Adj.\<epsilon>.naturality [of "E j"] by fastforce
               also have "... = Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C Adj.FG.map (E j) \<cdot>\<^sub>C F (\<kappa> (J.dom j))"
-                using j by simp
+                using C.comp_assoc by simp
               also have "... = Adj.\<epsilon> (E (J.cod j)) \<cdot>\<^sub>C F (\<kappa> j)"
               proof -
                 have "Adj.FG.map (E j) \<cdot>\<^sub>C F (\<kappa> (J.dom j)) = F (GE.map j \<cdot>\<^sub>D \<kappa> (J.dom j))"
@@ -2297,9 +2292,7 @@ begin
             have "GE.cones_map ?g ?G\<chi> j = G (\<chi> j) \<cdot>\<^sub>D ?g"
               using j 1 G\<chi>.cone_axioms mem_Collect_eq restrict_apply by auto
             also have "... = G (\<chi> j \<cdot>\<^sub>C f) \<cdot>\<^sub>D Adj.\<eta> b"
-              using j f \<kappa>.ide_apex Fb.value_is_ide Adj.\<eta>.preserves_hom [of b b b]
-                    \<chi>.preserves_hom [of j "J.dom j" "J.cod j"]
-              by fastforce
+              using j f \<chi>.preserves_hom [of j "J.dom j" "J.cod j"] D.comp_assoc by fastforce
             also have "... = G (E.cones_map f \<chi> j) \<cdot>\<^sub>D Adj.\<eta> b"
             proof -
               have "\<chi> j \<cdot>\<^sub>C f = Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C F (\<kappa> j)"
@@ -2316,7 +2309,7 @@ begin
                 using f mem_Collect_eq restrict_apply Adj.F.is_extensional by simp
             qed
             also have "... = (G (Adj.\<epsilon> (C.cod (E j))) \<cdot>\<^sub>D Adj.\<eta> (D.cod (GE.map j))) \<cdot>\<^sub>D \<kappa> j"
-              using j f \<kappa>.ide_apex Adj.\<eta>.naturality [of "\<kappa> j"] by auto
+              using j f Adj.\<eta>.naturality [of "\<kappa> j"] D.comp_assoc by auto
             also have "... = D.cod (\<kappa> j) \<cdot>\<^sub>D \<kappa> j"
               using j Adj.\<eta>\<epsilon>.triangle_G Adj.\<epsilon>_in_terms_of_\<psi> Adj.\<epsilon>o_def
                       Adj.\<eta>_in_terms_of_\<phi> Adj.\<eta>o_def Adj.unit_counit_G
@@ -2353,11 +2346,11 @@ begin
               have "E.cones_map (\<psi> a g') \<chi> j = \<chi> j \<cdot>\<^sub>C \<psi> a g'"
                 using 1 \<chi>.cone_axioms \<chi>.is_extensional by auto
               also have "... = (\<chi> j \<cdot>\<^sub>C Adj.\<epsilon> a) \<cdot>\<^sub>C F g'"
-                using j a g' Adj.\<psi>_in_terms_of_\<epsilon> by force
+                using j a g' Adj.\<psi>_in_terms_of_\<epsilon> C.comp_assoc by force
               also have "... = (Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C F (G (\<chi> j))) \<cdot>\<^sub>C F g'"
                 using j a g' Adj.\<epsilon>.naturality [of "\<chi> j"] by simp
               also have "... = Adj.\<epsilon> (C.cod (E j)) \<cdot>\<^sub>C F (\<kappa> j)"
-                using j a g' G\<chi>.cone_axioms by auto
+                using j a g' G\<chi>.cone_axioms C.comp_assoc by auto
               finally show "E.cones_map (\<psi> a g') \<chi> j = ?\<chi>' j" by (simp add: j)
             qed
             ultimately show "E.cones_map (\<psi> a g') \<chi> j = ?\<chi>' j" by auto
@@ -3152,15 +3145,11 @@ begin
               have "?\<chi> j \<cdot> h = \<Delta>a.cones_map ?f \<pi>a j \<cdot> h"
                 using j f_map by fastforce
               also have "... = \<pi>a j \<cdot> ?f \<cdot> h"
-                using j f_in_hom h \<pi>a \<pi>a.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide \<pi>a.cone_\<chi>
-                      mem_Collect_eq not_arr_null restrict_apply
-                by (elim in_homE, auto)
+                using j f_in_hom \<Delta>a.map_def \<pi>a.cone_\<chi> comp_assoc by auto
               also have "... = \<pi>a j \<cdot> ?g \<cdot> h"
                 using j E by simp
               also have "... = \<Delta>a.cones_map ?g \<pi>a j \<cdot> h"
-                using j g_in_hom h \<pi>a \<pi>a.cone_axioms \<Delta>a.map_def \<Delta>a.preserves_ide \<pi>a.cone_\<chi>
-                      mem_Collect_eq not_arr_null restrict_apply
-                by (elim in_homE, auto)
+                using j g_in_hom \<Delta>a.map_def \<pi>a.cone_\<chi> comp_assoc by auto
               also have "... = ?\<chi>' j \<cdot> h"
                 using j g_map by force
               finally show "?\<chi> j \<cdot> h = ?\<chi>' j \<cdot> h" by auto
@@ -3175,7 +3164,7 @@ begin
               fix j
               assume j: "j \<in> Collect J.arr"
               have "\<pi>a j \<cdot> ?f \<cdot> h = (\<pi>a j \<cdot> ?f) \<cdot> h"
-                using j f_in_hom h \<pi>a by force
+                using comp_assoc by simp
               also have "... = ?\<chi> j \<cdot> h"
               proof -
                 have "\<pi>a j \<cdot> ?f = \<Delta>a.cones_map ?f \<pi>a j"
@@ -3191,7 +3180,7 @@ begin
                 thus ?thesis using g_map by simp
               qed
               also have "... = \<pi>a j \<cdot> ?g \<cdot> h"
-                using j g_in_hom h \<pi>a by force
+                using comp_assoc by simp
               finally show "\<pi>a j \<cdot> ?f \<cdot> h = \<pi>a j \<cdot> ?g \<cdot> h"
                 by auto
             qed
@@ -3237,7 +3226,7 @@ begin
             assume e: "\<guillemotleft>e : dom e \<rightarrow> \<Pi>o\<guillemotright>"
             assume j: "J.arr j"
             show "?\<chi>' j \<cdot> e = D j \<cdot> \<pi>o (J.dom j) \<cdot> e"
-              using j e \<pi>o_in_hom [of "J.dom j"] D.preserves_hom by fastforce
+              using j comp_assoc by fastforce
           qed
           show "\<And>e. \<guillemotleft>e : dom e \<rightarrow> \<Pi>o\<guillemotright> \<Longrightarrow>
                    ?f \<cdot> e = ?g \<cdot> e \<longleftrightarrow>
@@ -3338,7 +3327,7 @@ begin
             also have 3: "... = \<pi>o (J.cod j) \<cdot> ?e"
               using j e 1 comp_cod_arr by (elim in_homE, auto)
             also have "... = D j \<cdot> \<pi>o (J.dom j) \<cdot> ?e"
-              using j e ee 2 3 \<tau>.naturality \<tau>.A.map_simp \<tau>.ide_apex by auto
+              using j e ee 2 3 \<tau>.naturality \<tau>.A.map_simp \<tau>.ide_apex comp_cod_arr by auto
             finally show "(D (J.cod j) \<cdot> \<pi>o (J.cod j) \<cdot> ?e) \<cdot> dom ?e = D j \<cdot> \<pi>o (J.dom j) \<cdot> ?e"
               by auto
           qed
@@ -3390,10 +3379,8 @@ begin
                   using j e_in_hom \<pi>o_in_hom [of "J.dom j"] by auto
                 have "D.cones_map ?h ?\<mu> j = ?\<mu> j \<cdot> ?h"
                   using h_in_hom j \<mu>.cone_axioms by auto
-                also have "... = (D j \<cdot> \<pi>o (J.dom j) \<cdot> e) \<cdot> ?h"
-                  using j by simp
                 also have "... = D j \<cdot> (\<pi>o (J.dom j) \<cdot> e) \<cdot> ?h"
-                  using j 1 e_in_hom h_in_hom \<pi>o_in_hom [of "J.dom j"] by fastforce
+                  using j comp_assoc by simp
                 also have "... = D j \<cdot> \<tau> (J.dom j)"
                 proof -
                   have "(\<pi>o (J.dom j) \<cdot> e) \<cdot> ?h = \<tau> (J.dom j)"
@@ -3434,9 +3421,9 @@ begin
                   moreover have "?f \<cdot> e \<cdot> h' = ?g \<cdot> e \<cdot> h'"
                   proof -
                     have "?f \<cdot> e \<cdot> h' = (?f \<cdot> e) \<cdot> h'"
-                      using e_in_hom f_in_hom g_in_hom h'_in_hom by force
+                      using comp_assoc by auto
                     also have "... = ?g \<cdot> e \<cdot> h'"
-                      using EQU.equalizes e_in_hom f_in_hom g_in_hom h'_in_hom seqI' by auto
+                      using EQU.equalizes comp_assoc by auto
                     finally show ?thesis by auto
                   qed
                   moreover have "\<Delta>o.cones_map (e \<cdot> h') \<pi>o = \<Delta>o.mkCone \<tau>"
@@ -3453,7 +3440,7 @@ begin
                       have "\<Delta>o.cones_map (e \<cdot> h') \<pi>o j = \<pi>o j \<cdot> e \<cdot> h'"
                         using 2 j \<pi>o.cone_axioms by auto
                       also have "... = (\<pi>o j \<cdot> e) \<cdot> h'"
-                        using j e_in_hom h'_in_hom \<pi>o by (elim in_homE, auto)
+                        using comp_assoc by auto
                       also have "... = \<Delta>o.mkCone ?\<mu> j \<cdot> h'"
                         using j e_in_hom \<pi>o_in_hom comp_ide_arr [of "D j" "\<pi>o j \<cdot> e"]
                         by fastforce
@@ -3619,7 +3606,7 @@ begin
                 interpret \<chi>: cone J S D S.unity "\<phi> (f \<cdot> y)"
                   using 1 by simp
                 have "(D j \<cdot> ?\<chi> f (J.dom j)) \<cdot> y = D j \<cdot> ?\<chi> f (J.dom j) \<cdot> y"
-                  using 0 par1 y by (elim S.in_homE, auto)
+                  using S.comp_assoc by simp
                 also have "... = D j \<cdot> \<phi> (f \<cdot> y) (J.dom j)"
                   using f y \<chi> \<chi>.is_extensional by simp
                 also have "... = \<phi> (f \<cdot> y) j" using j by auto
@@ -3788,7 +3775,7 @@ begin
                       also have "... = ?\<chi> a j \<cdot> f' \<cdot> y'"
                         using 1 3 \<chi> [of a] a f' y' j by fastforce
                       also have "... = (?\<chi> a j \<cdot> f') \<cdot> y'"
-                        using 3 a f' y' j by (elim S.in_homE, auto)
+                        using S.comp_assoc by simp
                       also have "... = cones_map f' (?\<chi> a) j \<cdot> y'"
                         using f' y' j \<chi>a.cone_axioms by auto
                       also have "... = \<chi>' j \<cdot> y'"
@@ -5237,8 +5224,7 @@ $$\xymatrix{
                 also have "... = (at a D j \<cdot>\<^sub>B at (A.dom a) \<chi> j) \<cdot>\<^sub>B ?f_dom_a"
                   using j Dao\<chi>_dom_a.map_simp_ide by simp
                 also have "... = at a D j \<cdot>\<^sub>B at (A.dom a) \<chi> j \<cdot>\<^sub>B ?f_dom_a"
-                  using j Da.preserves_hom \<chi>_dom_a.preserves_hom f_dom_a
-                  by (elim B.in_homE J.in_homE, auto)
+                  using B.comp_assoc by simp
                 also have "... = at a D j \<cdot>\<^sub>B D_dom_a.cones_map ?f_dom_a (at (A.dom a) \<chi>) j"
                   using j \<chi>_dom_a.cone_axioms f_dom_a
                   by (elim B.in_homE, auto)

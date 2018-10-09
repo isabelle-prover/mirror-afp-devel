@@ -289,10 +289,8 @@ begin
             by (metis arrI in_homE mem_Collect_eq)
           have 4: "?img' (dom f) t \<in> hom unity (dom f)"
             using assms t inv_into_into [of t img "hom unity (dom f)"] set_def by simp
-          have "(img o S (g \<cdot> f) o ?img' (dom (g \<cdot> f))) t = img ((g \<cdot> f) \<cdot> ?img' (dom f) t)"
-            using assms dom_comp by simp
-          also have "... = img (g \<cdot> f \<cdot> ?img' (dom f) t)"
-            using assms 4 by fastforce
+          have "(img o S (g \<cdot> f) o ?img' (dom (g \<cdot> f))) t = img (g \<cdot> f \<cdot> ?img' (dom f) t)"
+            using assms dom_comp comp_assoc by simp
           also have "... = img (g \<cdot> ?img' (dom g) (Fun f t))"
             using assms t 3 Fun_def set_def comp_arr_point by auto
           also have "... = Fun g (Fun f t)"
