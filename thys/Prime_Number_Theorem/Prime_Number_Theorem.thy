@@ -845,7 +845,7 @@ qed
 
 text \<open>
   Finally, we show that $p_n \sim n \ln n$, where $p_n$ denotes the $n$-th prime number. We again
-  follow a proof by Apostol, first showing the intermediate result $\ln \pi(x) \sim x$:
+  follow a proof by Apostol, first showing the intermediate result $\ln \pi(x) \sim \ln x$:
 \<close>
 lemma ln_\<pi>_asymptotics: "(\<lambda>x. ln (\<pi> x)) \<sim>[at_top] ln"
 proof -

@@ -182,8 +182,7 @@ theorem Newman_Ingham:
   assumes coeff_bound:   "fds_nth F \<in> O(\<lambda>_. 1)"
   assumes f_analytic:    "f analytic_on {s. Re s \<ge> 1}"
   assumes F_conv_f:      "\<And>s. Re s > 1 \<Longrightarrow> eval_fds F s = f s"
-  assumes conv_abscissa: "conv_abscissa F \<le> 1"
-  assumes w: "Re w \<ge> 1"
+  assumes w:             "Re w \<ge> 1"
   shows   "fds_converges F w" and "eval_fds F w = f w"
 proof -
   \<comment> \<open>We get a bound on our coefficients and call it \<open>C\<close>.\<close>
@@ -335,11 +334,15 @@ proof -
 
       have rem_altdef: "rem z = eval_fds (fds_remainder N F) z" if "Re z > 1" for z
       proof -
+      have abscissa: "abs_conv_abscissa F \<le> 1"
+        using assms by (intro bounded_coeffs_imp_abs_conv_abscissa_le_1)
+                       (simp_all add: natfun_bigo_iff_Bseq)
         from assms and that have "f z = eval_fds F z" by auto
         also have "F = fds_truncate N F + fds_remainder N F" 
           by (rule fds_truncate_plus_remainder [symmetric])
         also from that have "eval_fds \<dots> z = S z + eval_fds (fds_remainder N F) z" unfolding S_def
-          by (subst eval_fds_add) (auto intro: fds_converges[OF le_less_trans[OF conv_abscissa]])
+          by (subst eval_fds_add) (auto intro!: fds_abs_converges_imp_converges 
+                                                fds_abs_converges[OF le_less_trans[OF abscissa]])
         finally show ?thesis by (simp add: rem_def)
       qed
 
