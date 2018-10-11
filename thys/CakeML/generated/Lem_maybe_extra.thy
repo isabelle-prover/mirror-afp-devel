@@ -12,13 +12,13 @@ begin
 
  
 
-(*open import Basic_classes Maybe Assert_extra*)
+\<comment> \<open>\<open>open import Basic_classes Maybe Assert_extra\<close>\<close>
 
-(* ----------------------- *)
-(* fromJust                *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> fromJust                \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val fromJust : forall 'a. maybe 'a -> 'a*)
-(*let fromJust op=  match op with | Just v -> v | Nothing -> failwith fromJust of Nothing end*)
+\<comment> \<open>\<open>val fromJust : forall 'a. maybe 'a -> 'a\<close>\<close>
+\<comment> \<open>\<open>let fromJust op=  match op with | Just v -> v | Nothing -> failwith "fromJust of Nothing" end\<close>\<close>
 
 end

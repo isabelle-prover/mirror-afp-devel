@@ -8,44 +8,44 @@ imports
 
 begin 
 
-(******************************************************************************)
-(* Basic Type Classes                                                         *)
-(******************************************************************************)
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
+\<comment> \<open>\<open> Basic Type Classes                                                         \<close>\<close>
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
 
-(*open import Bool*) 
+\<comment> \<open>\<open>open import Bool\<close>\<close> 
 
-(*open import {coq} `Coq.Strings.Ascii`*)
-(*open import {hol} `ternaryComparisonsTheory`*)
+\<comment> \<open>\<open>open import {coq} `Coq.Strings.Ascii`\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `ternaryComparisonsTheory`\<close>\<close>
 
-(* ========================================================================== *)
-(* Equality                                                                   *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Equality                                                                   \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* Lem`s default equality (=) is defined by the following type-class Eq.
+\<comment> \<open>\<open> Lem`s default equality (=) is defined by the following type-class Eq.
    This typeclass should define equality on an abstract datatype 'a. It should
    always coincide with the default equality of Coq, HOL and Isabelle.
    For OCaml, it might be different, since abstract datatypes like sets
-   might have fancy equalities. *)
+   might have fancy equalities. \<close>\<close>
 
-(*class ( Eq 'a ) 
+\<comment> \<open>\<open>class ( Eq 'a ) 
   val = [isEqual] : 'a -> 'a -> bool
   val <> [isInequal] : 'a -> 'a -> bool
-end*)
+end\<close>\<close>
 
 
-(* (=) should for all instances be an equivalence relation 
+\<comment> \<open>\<open> (=) should for all instances be an equivalence relation 
    The isEquivalence predicate of relations could be used here.
-   However, this would lead to a cyclic dependency. *)
+   However, this would lead to a cyclic dependency. \<close>\<close>
 
-(* TODO: add later, once lemmata can be assigned to classes 
+\<comment> \<open>\<open> TODO: add later, once lemmata can be assigned to classes 
 lemma eq_equiv: ((forall x. (x = x)) &&
                  (forall x y. (x = y) <-> (y = x)) &&
                  (forall x y z. ((x = y) && (y = z)) --> (x = z)))
-*)
+\<close>\<close>
 
-(* Structural equality *)
+\<comment> \<open>\<open> Structural equality \<close>\<close>
 
-(* Sometimes, it is also handy to be able to use structural equality.
+\<comment> \<open>\<open> Sometimes, it is also handy to be able to use structural equality.
    This equality is mapped to the build-in equality of backends. This equality
    differs significantly for each backend. For example, OCaml can`t check equality
    of function types, whereas HOL can.  When using structural equality, one should 
@@ -54,18 +54,18 @@ lemma eq_equiv: ((forall x. (x = x)) &&
 
    A lengthy name for structural equality is used to discourage its direct use.
    It also ensures that users realise it is unsafe (e.g. OCaml can`t check two functions
-   for equality *)
-(*val unsafe_structural_equality : forall 'a. 'a -> 'a -> bool*)
+   for equality \<close>\<close>
+\<comment> \<open>\<open>val unsafe_structural_equality : forall 'a. 'a -> 'a -> bool\<close>\<close>
 
-(*val unsafe_structural_inequality : forall 'a. 'a -> 'a -> bool*)
-(*let unsafe_structural_inequality x y=  not (unsafe_structural_equality x y)*)
+\<comment> \<open>\<open>val unsafe_structural_inequality : forall 'a. 'a -> 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let unsafe_structural_inequality x y=  not (unsafe_structural_equality x y)\<close>\<close>
 
 
-(* ========================================================================== *)
-(* Orderings                                                                  *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Orderings                                                                  \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* The type-class Ord represents total orders (also called linear orders) *)
+\<comment> \<open>\<open> The type-class Ord represents total orders (also called linear orders) \<close>\<close>
 datatype ordering = LT | EQ | GT
 
 fun orderingIsLess  :: " ordering \<Rightarrow> bool "        where 
@@ -88,7 +88,7 @@ definition ordering_cases  :: " ordering \<Rightarrow> 'a \<Rightarrow> 'a \<Rig
 
 
 
-(*val orderingEqual : ordering -> ordering -> bool*)
+\<comment> \<open>\<open>val orderingEqual : ordering -> ordering -> bool\<close>\<close>
 
 record 'a Ord_class= 
  
@@ -105,17 +105,17 @@ record 'a Ord_class=
 
 
 
-(* Ocaml provides default, polymorphic compare functions. Let's use them
+\<comment> \<open>\<open> Ocaml provides default, polymorphic compare functions. Let's use them
    as the default. However, because used perhaps in a typeclass they must be 
    defined for all targets. So, explicitly declare them as undefined for
    all other targets. If explictly declare undefined, the type-checker won't complain and
    an error will only be raised when trying to actually output the function for a certain
-   target. *)
-(*val defaultCompare   : forall 'a. 'a -> 'a -> ordering*)
-(*val defaultLess      : forall 'a. 'a -> 'a -> bool*)
-(*val defaultLessEq    : forall 'a. 'a -> 'a -> bool*)
-(*val defaultGreater   : forall 'a. 'a -> 'a -> bool*)
-(*val defaultGreaterEq : forall 'a. 'a -> 'a -> bool*) 
+   target. \<close>\<close>
+\<comment> \<open>\<open>val defaultCompare   : forall 'a. 'a -> 'a -> ordering\<close>\<close>
+\<comment> \<open>\<open>val defaultLess      : forall 'a. 'a -> 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val defaultLessEq    : forall 'a. 'a -> 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val defaultGreater   : forall 'a. 'a -> 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val defaultGreaterEq : forall 'a. 'a -> 'a -> bool\<close>\<close> 
 
 
 definition genericCompare  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow>('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> ordering "  where 
@@ -129,8 +129,8 @@ definition genericCompare  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightar
 
 
 
-(*
-(* compare should really be a total order *)
+\<comment> \<open>\<open>
+\<open> compare should really be a total order \<close>
 lemma ord_OK_1: (
   (forall x y. (compare x y = EQ) <-> (compare y x = EQ)) &&
   (forall x y. (compare x y = LT) <-> (compare y x = GT)))
@@ -139,10 +139,10 @@ lemma ord_OK_2: (
   (forall x y z. (x <= y) && (y <= z) --> (x <= z)) &&
   (forall x y. (x <= y) || (y <= x))
 )
-*)
+\<close>\<close>
 
-(* let's derive a compare function from the Ord type-class *)
-(*val ordCompare : forall 'a. Eq 'a, Ord 'a => 'a -> 'a -> ordering*)
+\<comment> \<open>\<open> let's derive a compare function from the Ord type-class \<close>\<close>
+\<comment> \<open>\<open>val ordCompare : forall 'a. Eq 'a, Ord 'a => 'a -> 'a -> ordering\<close>\<close>
 definition ordCompare  :: " 'a Ord_class \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> ordering "  where 
      " ordCompare dict_Basic_classes_Ord_a x y = (
   if ((isLess_method   dict_Basic_classes_Ord_a) x y) then LT else
@@ -157,13 +157,13 @@ record 'a OrdMaxMin_class=
 
 
 
-(*val minByLessEqual : forall 'a. ('a -> 'a -> bool) -> 'a -> 'a -> 'a*)
+\<comment> \<open>\<open>val minByLessEqual : forall 'a. ('a -> 'a -> bool) -> 'a -> 'a -> 'a\<close>\<close>
 
-(*val maxByLessEqual : forall 'a. ('a -> 'a -> bool) -> 'a -> 'a -> 'a*)
+\<comment> \<open>\<open>val maxByLessEqual : forall 'a. ('a -> 'a -> bool) -> 'a -> 'a -> 'a\<close>\<close>
 
-(*val defaultMax : forall 'a. Ord 'a => 'a -> 'a -> 'a*)
+\<comment> \<open>\<open>val defaultMax : forall 'a. Ord 'a => 'a -> 'a -> 'a\<close>\<close>
 
-(*val defaultMin : forall 'a. Ord 'a => 'a -> 'a -> 'a*)
+\<comment> \<open>\<open>val defaultMin : forall 'a. Ord 'a => 'a -> 'a -> 'a\<close>\<close>
 
 definition instance_Basic_classes_OrdMaxMin_var_dict  :: " 'a Ord_class \<Rightarrow> 'a OrdMaxMin_class "  where 
      " instance_Basic_classes_OrdMaxMin_var_dict dict_Basic_classes_Ord_a = ((|
@@ -176,20 +176,20 @@ definition instance_Basic_classes_OrdMaxMin_var_dict  :: " 'a Ord_class \<Righta
 
 
 
-(* ========================================================================== *)
-(* SetTypes                                                                   *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> SetTypes                                                                   \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* Set implementations use often an order on the elements. This allows the OCaml implementation
+\<comment> \<open>\<open> Set implementations use often an order on the elements. This allows the OCaml implementation
    to use trees for implementing them. At least, one needs to be able to check equality on sets.
    One could use the Ord type-class for sets. However, defining a special typeclass is cleaner
    and allows more flexibility. One can make e.g. sure, that this type-class is ignored for
    backends like HOL or Isabelle, which don't need it. Moreover, one is not forced to also instantiate
-   the functions <, <= ... *)
+   the functions "<", "<=" ... \<close>\<close>
 
-(*class ( SetType 'a ) 
+\<comment> \<open>\<open>class ( SetType 'a ) 
   val {ocaml;coq} setElemCompare : 'a -> 'a -> ordering
-end*)
+end\<close>\<close>
 
 fun boolCompare  :: " bool \<Rightarrow> bool \<Rightarrow> ordering "  where 
      " boolCompare True True = ( EQ )"
@@ -198,20 +198,20 @@ fun boolCompare  :: " bool \<Rightarrow> bool \<Rightarrow> ordering "  where
 |" boolCompare False False = ( EQ )"
 
 
-(* strings *)
+\<comment> \<open>\<open> strings \<close>\<close>
 
-(*val charEqual : char -> char -> bool*)
+\<comment> \<open>\<open>val charEqual : char -> char -> bool\<close>\<close>
 
-(*val stringEquality : string -> string -> bool*)
+\<comment> \<open>\<open>val stringEquality : string -> string -> bool\<close>\<close>
 
-(* pairs *)
+\<comment> \<open>\<open> pairs \<close>\<close>
 
-(*val pairEqual : forall 'a 'b. Eq 'a, Eq 'b => ('a * 'b) -> ('a * 'b) -> bool*)
-(*let pairEqual (a1, b1) (a2, b2)=  (a1 = a2) && (b1 = b2)*)
+\<comment> \<open>\<open>val pairEqual : forall 'a 'b. Eq 'a, Eq 'b => ('a * 'b) -> ('a * 'b) -> bool\<close>\<close>
+\<comment> \<open>\<open>let pairEqual (a1, b1) (a2, b2)=  (a1 = a2) && (b1 = b2)\<close>\<close>
 
-(*val pairEqualBy : forall 'a 'b. ('a -> 'a -> bool) -> ('b -> 'b -> bool) -> ('a * 'b) -> ('a * 'b) -> bool*)
+\<comment> \<open>\<open>val pairEqualBy : forall 'a 'b. ('a -> 'a -> bool) -> ('b -> 'b -> bool) -> ('a * 'b) -> ('a * 'b) -> bool\<close>\<close>
 
-(*val pairCompare : forall 'a 'b. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('a * 'b) -> ('a * 'b) -> ordering*)
+\<comment> \<open>\<open>val pairCompare : forall 'a 'b. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('a * 'b) -> ('a * 'b) -> ordering\<close>\<close>
 fun pairCompare  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<Rightarrow>('b \<Rightarrow> 'b \<Rightarrow> ordering)\<Rightarrow> 'a*'b \<Rightarrow> 'a*'b \<Rightarrow> ordering "  where 
      " pairCompare cmpa cmpb (a1, b1) (a2, b2) = (
   (case  cmpa a1 a2 of
@@ -259,12 +259,12 @@ definition instance_Basic_classes_Ord_tup2_dict  :: " 'a Ord_class \<Rightarrow>
 
 
 
-(* triples *)
+\<comment> \<open>\<open> triples \<close>\<close>
 
-(*val tripleEqual : forall 'a 'b 'c. Eq 'a, Eq 'b, Eq 'c => ('a * 'b * 'c) -> ('a * 'b * 'c) -> bool*)
-(*let tripleEqual (x1, x2, x3) (y1, y2, y3)=  ((Instance_Basic_classes_Eq_tup2.=) (x1, (x2, x3)) (y1, (y2, y3)))*)
+\<comment> \<open>\<open>val tripleEqual : forall 'a 'b 'c. Eq 'a, Eq 'b, Eq 'c => ('a * 'b * 'c) -> ('a * 'b * 'c) -> bool\<close>\<close>
+\<comment> \<open>\<open>let tripleEqual (x1, x2, x3) (y1, y2, y3)=  ((Instance_Basic_classes_Eq_tup2.=) (x1, (x2, x3)) (y1, (y2, y3)))\<close>\<close>
 
-(*val tripleCompare : forall 'a 'b 'c. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('c -> 'c -> ordering) -> ('a * 'b * 'c) -> ('a * 'b * 'c) -> ordering*)
+\<comment> \<open>\<open>val tripleCompare : forall 'a 'b 'c. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('c -> 'c -> ordering) -> ('a * 'b * 'c) -> ('a * 'b * 'c) -> ordering\<close>\<close>
 fun tripleCompare  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<Rightarrow>('b \<Rightarrow> 'b \<Rightarrow> ordering)\<Rightarrow>('c \<Rightarrow> 'c \<Rightarrow> ordering)\<Rightarrow> 'a*'b*'c \<Rightarrow> 'a*'b*'c \<Rightarrow> ordering "  where 
      " tripleCompare cmpa cmpb cmpc (a1, b1, c1) (a2, b2, c2) = (
   pairCompare cmpa (pairCompare cmpb cmpc) (a1, (b1, c1)) (a2, (b2, c2)))"
@@ -313,13 +313,13 @@ definition instance_Basic_classes_Ord_tup3_dict  :: " 'a Ord_class \<Rightarrow>
      dict_Basic_classes_Ord_a) |) )"
 
 
-(* quadruples *)
+\<comment> \<open>\<open> quadruples \<close>\<close>
 
-(*val quadrupleEqual : forall 'a 'b 'c 'd. Eq 'a, Eq 'b, Eq 'c, Eq 'd => ('a * 'b * 'c * 'd) -> ('a * 'b * 'c * 'd) -> bool*)
-(*let quadrupleEqual (x1, x2, x3, x4) (y1, y2, y3, y4)=  ((Instance_Basic_classes_Eq_tup2.=) (x1, (x2, (x3, x4))) (y1, (y2, (y3, y4))))*)
+\<comment> \<open>\<open>val quadrupleEqual : forall 'a 'b 'c 'd. Eq 'a, Eq 'b, Eq 'c, Eq 'd => ('a * 'b * 'c * 'd) -> ('a * 'b * 'c * 'd) -> bool\<close>\<close>
+\<comment> \<open>\<open>let quadrupleEqual (x1, x2, x3, x4) (y1, y2, y3, y4)=  ((Instance_Basic_classes_Eq_tup2.=) (x1, (x2, (x3, x4))) (y1, (y2, (y3, y4))))\<close>\<close>
 
-(*val quadrupleCompare : forall 'a 'b 'c 'd. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('c -> 'c -> ordering) ->
-                                              ('d -> 'd -> ordering) -> ('a * 'b * 'c * 'd) -> ('a * 'b * 'c * 'd) -> ordering*)
+\<comment> \<open>\<open>val quadrupleCompare : forall 'a 'b 'c 'd. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('c -> 'c -> ordering) ->
+                                              ('d -> 'd -> ordering) -> ('a * 'b * 'c * 'd) -> ('a * 'b * 'c * 'd) -> ordering\<close>\<close>
 fun quadrupleCompare  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<Rightarrow>('b \<Rightarrow> 'b \<Rightarrow> ordering)\<Rightarrow>('c \<Rightarrow> 'c \<Rightarrow> ordering)\<Rightarrow>('d \<Rightarrow> 'd \<Rightarrow> ordering)\<Rightarrow> 'a*'b*'c*'d \<Rightarrow> 'a*'b*'c*'d \<Rightarrow> ordering "  where 
      " quadrupleCompare cmpa cmpb cmpc cmpd (a1, b1, c1, d1) (a2, b2, c2, d2) = (
   pairCompare cmpa (pairCompare cmpb (pairCompare cmpc cmpd)) (a1, (b1, (c1, d1))) (a2, (b2, (c2, d2))))"
@@ -370,13 +370,13 @@ definition instance_Basic_classes_Ord_tup4_dict  :: " 'a Ord_class \<Rightarrow>
      dict_Basic_classes_Ord_b dict_Basic_classes_Ord_a) |) )"
 
 
-(* quintuples *)
+\<comment> \<open>\<open> quintuples \<close>\<close>
 
-(*val quintupleEqual : forall 'a 'b 'c 'd 'e. Eq 'a, Eq 'b, Eq 'c, Eq 'd, Eq 'e => ('a * 'b * 'c * 'd * 'e) -> ('a * 'b * 'c * 'd * 'e) -> bool*)
-(*let quintupleEqual (x1, x2, x3, x4, x5) (y1, y2, y3, y4, y5)=  ((Instance_Basic_classes_Eq_tup2.=) (x1, (x2, (x3, (x4, x5)))) (y1, (y2, (y3, (y4, y5)))))*)
+\<comment> \<open>\<open>val quintupleEqual : forall 'a 'b 'c 'd 'e. Eq 'a, Eq 'b, Eq 'c, Eq 'd, Eq 'e => ('a * 'b * 'c * 'd * 'e) -> ('a * 'b * 'c * 'd * 'e) -> bool\<close>\<close>
+\<comment> \<open>\<open>let quintupleEqual (x1, x2, x3, x4, x5) (y1, y2, y3, y4, y5)=  ((Instance_Basic_classes_Eq_tup2.=) (x1, (x2, (x3, (x4, x5)))) (y1, (y2, (y3, (y4, y5)))))\<close>\<close>
 
-(*val quintupleCompare : forall 'a 'b 'c 'd 'e. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('c -> 'c -> ordering) ->
-                                              ('d -> 'd -> ordering) -> ('e -> 'e -> ordering) -> ('a * 'b * 'c * 'd * 'e) -> ('a * 'b * 'c * 'd * 'e) -> ordering*)
+\<comment> \<open>\<open>val quintupleCompare : forall 'a 'b 'c 'd 'e. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('c -> 'c -> ordering) ->
+                                              ('d -> 'd -> ordering) -> ('e -> 'e -> ordering) -> ('a * 'b * 'c * 'd * 'e) -> ('a * 'b * 'c * 'd * 'e) -> ordering\<close>\<close>
 fun quintupleCompare  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<Rightarrow>('b \<Rightarrow> 'b \<Rightarrow> ordering)\<Rightarrow>('c \<Rightarrow> 'c \<Rightarrow> ordering)\<Rightarrow>('d \<Rightarrow> 'd \<Rightarrow> ordering)\<Rightarrow>('e \<Rightarrow> 'e \<Rightarrow> ordering)\<Rightarrow> 'a*'b*'c*'d*'e \<Rightarrow> 'a*'b*'c*'d*'e \<Rightarrow> ordering "  where 
      " quintupleCompare cmpa cmpb cmpc cmpd cmpe (a1, b1, c1, d1, e1) (a2, b2, c2, d2, e2) = (
   pairCompare cmpa (pairCompare cmpb (pairCompare cmpc (pairCompare cmpd cmpe))) (a1, (b1, (c1, (d1, e1)))) (a2, (b2, (c2, (d2, e2)))))"
@@ -433,14 +433,14 @@ definition instance_Basic_classes_Ord_tup5_dict  :: " 'a Ord_class \<Rightarrow>
      dict_Basic_classes_Ord_a) |) )"
 
 
-(* sextuples *)
+\<comment> \<open>\<open> sextuples \<close>\<close>
 
-(*val sextupleEqual : forall 'a 'b 'c 'd 'e 'f. Eq 'a, Eq 'b, Eq 'c, Eq 'd, Eq 'e, Eq 'f => ('a * 'b * 'c * 'd * 'e * 'f) -> ('a * 'b * 'c * 'd * 'e * 'f) -> bool*)
-(*let sextupleEqual (x1, x2, x3, x4, x5, x6) (y1, y2, y3, y4, y5, y6)=  ((Instance_Basic_classes_Eq_tup2.=) (x1, (x2, (x3, (x4, (x5, x6))))) (y1, (y2, (y3, (y4, (y5, y6))))))*)
+\<comment> \<open>\<open>val sextupleEqual : forall 'a 'b 'c 'd 'e 'f. Eq 'a, Eq 'b, Eq 'c, Eq 'd, Eq 'e, Eq 'f => ('a * 'b * 'c * 'd * 'e * 'f) -> ('a * 'b * 'c * 'd * 'e * 'f) -> bool\<close>\<close>
+\<comment> \<open>\<open>let sextupleEqual (x1, x2, x3, x4, x5, x6) (y1, y2, y3, y4, y5, y6)=  ((Instance_Basic_classes_Eq_tup2.=) (x1, (x2, (x3, (x4, (x5, x6))))) (y1, (y2, (y3, (y4, (y5, y6))))))\<close>\<close>
 
-(*val sextupleCompare : forall 'a 'b 'c 'd 'e 'f. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('c -> 'c -> ordering) ->
+\<comment> \<open>\<open>val sextupleCompare : forall 'a 'b 'c 'd 'e 'f. ('a -> 'a -> ordering) -> ('b -> 'b -> ordering) -> ('c -> 'c -> ordering) ->
                                               ('d -> 'd -> ordering) -> ('e -> 'e -> ordering) -> ('f -> 'f -> ordering) ->
-                                              ('a * 'b * 'c * 'd * 'e * 'f) -> ('a * 'b * 'c * 'd * 'e * 'f) -> ordering*)
+                                              ('a * 'b * 'c * 'd * 'e * 'f) -> ('a * 'b * 'c * 'd * 'e * 'f) -> ordering\<close>\<close>
 fun sextupleCompare  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<Rightarrow>('b \<Rightarrow> 'b \<Rightarrow> ordering)\<Rightarrow>('c \<Rightarrow> 'c \<Rightarrow> ordering)\<Rightarrow>('d \<Rightarrow> 'd \<Rightarrow> ordering)\<Rightarrow>('e \<Rightarrow> 'e \<Rightarrow> ordering)\<Rightarrow>('f \<Rightarrow> 'f \<Rightarrow> ordering)\<Rightarrow> 'a*'b*'c*'d*'e*'f \<Rightarrow> 'a*'b*'c*'d*'e*'f \<Rightarrow> ordering "  where 
      " sextupleCompare cmpa cmpb cmpc cmpd cmpe cmpf (a1, b1, c1, d1, e1, f1) (a2, b2, c2, d2, e2, f2) = (
   pairCompare cmpa (pairCompare cmpb (pairCompare cmpc (pairCompare cmpd (pairCompare cmpe cmpf)))) (a1, (b1, (c1, (d1, (e1, f1))))) (a2, (b2, (c2, (d2, (e2, f2))))))"

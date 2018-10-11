@@ -14,16 +14,16 @@ imports
 
 begin 
 
-(*open import Pervasives_extra*)
-(*open import Lib*)
-(*open import Ast*)
-(*open import Namespace*)
-(*open import SemanticPrimitives*)
-(*open import Ffi*)
+\<comment> \<open>\<open>open import Pervasives_extra\<close>\<close>
+\<comment> \<open>\<open>open import Lib\<close>\<close>
+\<comment> \<open>\<open>open import Ast\<close>\<close>
+\<comment> \<open>\<open>open import Namespace\<close>\<close>
+\<comment> \<open>\<open>open import SemanticPrimitives\<close>\<close>
+\<comment> \<open>\<open>open import Ffi\<close>\<close>
 
-(* The semantics is defined here using fix_clock so that HOL4 generates
+\<comment> \<open>\<open> The semantics is defined here using fix_clock so that HOL4 generates
  * provable termination conditions. However, after termination is proved, we
- * clean up the definition (in HOL4) to remove occurrences of fix_clock. *)
+ * clean up the definition (in HOL4) to remove occurrences of fix_clock. \<close>\<close>
 
 fun fix_clock  :: " 'a state \<Rightarrow> 'b state*'c \<Rightarrow> 'b state*'c "  where 
      " fix_clock s (s',res) = (
@@ -35,8 +35,8 @@ definition dec_clock  :: " 'a state \<Rightarrow> 'a state "  where
      " dec_clock s = ( ( s (| clock := ((clock   s) -( 1 :: nat)) |)))"
 
 
-(* list_result is equivalent to map_result (v. [v]) I, where map_result is
- * defined in evalPropsTheory *)
+\<comment> \<open>\<open> list_result is equivalent to map_result (\v. [v]) I, where map_result is
+ * defined in evalPropsTheory \<close>\<close>
 fun 
 list_result  :: "('a,'b)result \<Rightarrow>(('a list),'b)result "  where 
      "
@@ -45,8 +45,8 @@ list_result (Rval v2) = ( Rval [v2])"
 list_result (Rerr e) = ( Rerr e )"
 
 
-(*val evaluate : forall 'ffi. state 'ffi -> sem_env v -> list exp -> state 'ffi * result (list v) v*)
-(*val evaluate_match : forall 'ffi. state 'ffi -> sem_env v -> v -> list (pat * exp) -> v -> state 'ffi * result (list v) v*)
+\<comment> \<open>\<open>val evaluate : forall 'ffi. state 'ffi -> sem_env v -> list exp -> state 'ffi * result (list v) v\<close>\<close>
+\<comment> \<open>\<open>val evaluate_match : forall 'ffi. state 'ffi -> sem_env v -> v -> list (pat * exp) -> v -> state 'ffi * result (list v) v\<close>\<close>
 function (sequential,domintros) 
 fun_evaluate_match  :: " 'ffi state \<Rightarrow>(v)sem_env \<Rightarrow> v \<Rightarrow>(pat*exp0)list \<Rightarrow> v \<Rightarrow> 'ffi state*(((v)list),(v))result "  
                    and
@@ -178,8 +178,8 @@ fun_evaluate_match st env v2 ((p,e)# pes) err_v  = (
 by pat_completeness auto
 
 
-(*val evaluate_decs :
-  forall 'ffi. list modN -> state 'ffi -> sem_env v -> list dec -> state 'ffi * result (sem_env v) v*)
+\<comment> \<open>\<open>val evaluate_decs :
+  forall 'ffi. list modN -> state 'ffi -> sem_env v -> list dec -> state 'ffi * result (sem_env v) v\<close>\<close>
 fun 
 fun_evaluate_decs  :: "(string)list \<Rightarrow> 'ffi state \<Rightarrow>(v)sem_env \<Rightarrow>(dec)list \<Rightarrow> 'ffi state*(((v)sem_env),(v))result "  where 
      "
@@ -245,8 +245,8 @@ definition envLift  :: " string \<Rightarrow> 'a sem_env \<Rightarrow> 'a sem_en
   (| v = (nsLift mn(v   env)), c = (nsLift mn(c   env)) |) )"
 
 
-(*val evaluate_tops :
-  forall 'ffi. state 'ffi -> sem_env v -> list top -> state 'ffi *  result (sem_env v) v*)
+\<comment> \<open>\<open>val evaluate_tops :
+  forall 'ffi. state 'ffi -> sem_env v -> list top -> state 'ffi *  result (sem_env v) v\<close>\<close>
 fun 
 evaluate_tops  :: " 'ffi state \<Rightarrow>(v)sem_env \<Rightarrow>(top0)list \<Rightarrow> 'ffi state*(((v)sem_env),(v))result "  where 
      "
@@ -278,7 +278,7 @@ evaluate_tops st env [Tmod mn specs ds] = (
     (st, Rerr (Rabort Rtype_error)))"
 
 
-(*val evaluate_prog : forall 'ffi. state 'ffi -> sem_env v -> prog -> state 'ffi * result (sem_env v) v*)
+\<comment> \<open>\<open>val evaluate_prog : forall 'ffi. state 'ffi -> sem_env v -> prog -> state 'ffi * result (sem_env v) v\<close>\<close>
 definition
 fun_evaluate_prog  :: " 'ffi state \<Rightarrow>(v)sem_env \<Rightarrow>(top0)list \<Rightarrow> 'ffi state*(((v)sem_env),(v))result "  where 
      "

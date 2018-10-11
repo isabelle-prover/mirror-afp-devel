@@ -9,31 +9,31 @@ imports
 begin 
 
 
-(*open import {ocaml} `Xstring`*)
-(*open import {hol} `stringTheory` `lemTheory`*)
-(*open import {coq} `Coq.Strings.Ascii` `Coq.Strings.String`*)
-(*open import {isabelle} `$LIB_DIR/Lem`*)
+\<comment> \<open>\<open>open import {ocaml} `Xstring`\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `stringTheory` `lemTheory`\<close>\<close>
+\<comment> \<open>\<open>open import {coq} `Coq.Strings.Ascii` `Coq.Strings.String`\<close>\<close>
+\<comment> \<open>\<open>open import {isabelle} `$LIB_DIR/Lem`\<close>\<close>
 
-(* ------------------------------------ *)
-(* failing with a proper error message  *)
-(* ------------------------------------ *)
+\<comment> \<open>\<open> ------------------------------------ \<close>\<close>
+\<comment> \<open>\<open> failing with a proper error message  \<close>\<close>
+\<comment> \<open>\<open> ------------------------------------ \<close>\<close>
 
-(*val failwith: forall 'a. string -> 'a*)
+\<comment> \<open>\<open>val failwith: forall 'a. string -> 'a\<close>\<close>
 
-(* ------------------------------------ *)
-(* failing without an error message     *)
-(* ------------------------------------ *)
+\<comment> \<open>\<open> ------------------------------------ \<close>\<close>
+\<comment> \<open>\<open> failing without an error message     \<close>\<close>
+\<comment> \<open>\<open> ------------------------------------ \<close>\<close>
 
-(*val fail : forall 'a. 'a*)
+\<comment> \<open>\<open>val fail : forall 'a. 'a\<close>\<close>
 definition fail  :: " 'a "  where 
      " fail = ( failwith (''fail''))"
 
 
-(* ------------------------------------- *)
-(* assertions                            *)
-(* ------------------------------------- *)
+\<comment> \<open>\<open> ------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> assertions                            \<close>\<close>
+\<comment> \<open>\<open> ------------------------------------- \<close>\<close>
 
-(*val ensure : bool -> string -> unit*)
+\<comment> \<open>\<open>val ensure : bool -> string -> unit\<close>\<close>
 definition ensure  :: " bool \<Rightarrow> string \<Rightarrow> unit "  where 
      " ensure test msg = (
   if test then

@@ -12,12 +12,12 @@ imports
 
 begin 
 
-(*open import Pervasives*)
-(*open import Lib*)
-(*open import Namespace*)
-(*open import FpSem*)
+\<comment> \<open>\<open>open import Pervasives\<close>\<close>
+\<comment> \<open>\<open>open import Lib\<close>\<close>
+\<comment> \<open>\<open>open import Namespace\<close>\<close>
+\<comment> \<open>\<open>open import FpSem\<close>\<close>
 
-(* Literal constants *)
+\<comment> \<open>\<open> Literal constants \<close>\<close>
 datatype lit =
     IntLit " int "
   | Char " char "
@@ -25,96 +25,96 @@ datatype lit =
   | Word8 " 8 word "
   | Word64 " 64 word "
 
-(* Built-in binary operations *)
+\<comment> \<open>\<open> Built-in binary operations \<close>\<close>
 datatype opn = Plus | Minus | Times | Divide | Modulo
 datatype opb = Lt | Gt | Leq | Geq
 datatype opw = Andw | Orw | Xor | Add | Sub
 datatype shift = Lsl | Lsr | Asr | Ror
 
-(* Module names *)
+\<comment> \<open>\<open> Module names \<close>\<close>
 type_synonym modN =" string "
 
-(* Variable names *)
+\<comment> \<open>\<open> Variable names \<close>\<close>
 type_synonym varN =" string "
 
-(* Constructor names (from datatype definitions) *)
+\<comment> \<open>\<open> Constructor names (from datatype definitions) \<close>\<close>
 type_synonym conN =" string "
 
-(* Type names *)
+\<comment> \<open>\<open> Type names \<close>\<close>
 type_synonym typeN =" string "
 
-(* Type variable names *)
+\<comment> \<open>\<open> Type variable names \<close>\<close>
 type_synonym tvarN =" string "
 
 datatype word_size = W8 | W64
 
 datatype op0 =
-  (* Operations on integers *)
+  \<comment> \<open>\<open> Operations on integers \<close>\<close>
     Opn " opn "
   | Opb " opb "
-  (* Operations on words *)
+  \<comment> \<open>\<open> Operations on words \<close>\<close>
   | Opw " word_size " " opw "
   | Shift " word_size " " shift " " nat "
   | Equality
-  (* FP operations *)
+  \<comment> \<open>\<open> FP operations \<close>\<close>
   | FP_cmp " fp_cmp_op "
   | FP_uop " fp_uop_op "
   | FP_bop " fp_bop_op "
-  (* Function application *)
+  \<comment> \<open>\<open> Function application \<close>\<close>
   | Opapp
-  (* Reference operations *)
+  \<comment> \<open>\<open> Reference operations \<close>\<close>
   | Opassign
   | Opref
   | Opderef
-  (* Word8Array operations *)
+  \<comment> \<open>\<open> Word8Array operations \<close>\<close>
   | Aw8alloc
   | Aw8sub
   | Aw8length
   | Aw8update
-  (* Word/integer conversions *)
+  \<comment> \<open>\<open> Word/integer conversions \<close>\<close>
   | WordFromInt " word_size "
   | WordToInt " word_size "
-  (* string/bytearray conversions *)
+  \<comment> \<open>\<open> string/bytearray conversions \<close>\<close>
   | CopyStrStr
   | CopyStrAw8
   | CopyAw8Str
   | CopyAw8Aw8
-  (* Char operations *)
+  \<comment> \<open>\<open> Char operations \<close>\<close>
   | Ord
   | Chr
   | Chopb " opb "
-  (* String operations *)
+  \<comment> \<open>\<open> String operations \<close>\<close>
   | Implode
   | Strsub
   | Strlen
   | Strcat
-  (* Vector operations *)
+  \<comment> \<open>\<open> Vector operations \<close>\<close>
   | VfromList
   | Vsub
   | Vlength
-  (* Array operations *)
+  \<comment> \<open>\<open> Array operations \<close>\<close>
   | Aalloc
   | AallocEmpty
   | Asub
   | Alength
   | Aupdate
-  (* Configure the GC *)
+  \<comment> \<open>\<open> Configure the GC \<close>\<close>
   | ConfigGC
-  (* Call a given foreign function *)
+  \<comment> \<open>\<open> Call a given foreign function \<close>\<close>
   | FFI " string "
 
-(* Logical operations *)
+\<comment> \<open>\<open> Logical operations \<close>\<close>
 datatype lop =
     And
   | Or
 
-(* Type constructors.
+\<comment> \<open>\<open> Type constructors.
  * 0-ary type applications represent unparameterised types (e.g., num or string)
- *)
+ \<close>\<close>
 datatype tctor =
-  (* User defined types *)
+  \<comment> \<open>\<open> User defined types \<close>\<close>
     TC_name " (modN, typeN) id0 "
-  (* Built-in types *)
+  \<comment> \<open>\<open> Built-in types \<close>\<close>
   | TC_int
   | TC_char
   | TC_string
@@ -128,16 +128,16 @@ datatype tctor =
   | TC_vector
   | TC_array
 
-(* Types *)
+\<comment> \<open>\<open> Types \<close>\<close>
 datatype t =
-  (* Type variables that the user writes down ('a, 'b, etc.) *)
+  \<comment> \<open>\<open> Type variables that the user writes down ('a, 'b, etc.) \<close>\<close>
     Tvar " tvarN "
-  (* deBruijn indexed type variables.
-     The type system uses these internally. *)
+  \<comment> \<open>\<open> deBruijn indexed type variables.
+     The type system uses these internally. \<close>\<close>
   | Tvar_db " nat "
   | Tapp " t list " " tctor "
 
-(* Some abbreviations *)
+\<comment> \<open>\<open> Some abbreviations \<close>\<close>
 definition Tint  :: " t "  where 
      " Tint = ( Tapp [] TC_int )"
 
@@ -173,71 +173,71 @@ definition Texn  :: " t "  where
      " Texn = ( Tapp [] TC_exn )"
 
 
-(* Patterns *)
+\<comment> \<open>\<open> Patterns \<close>\<close>
 datatype pat =
     Pany
   | Pvar " varN "
   | Plit " lit "
-  (* Constructor applications.
-     A Nothing constructor indicates a tuple pattern. *)
+  \<comment> \<open>\<open> Constructor applications.
+     A Nothing constructor indicates a tuple pattern. \<close>\<close>
   | Pcon "  ( (modN, conN)id0)option " " pat list "
   | Pref " pat "
   | Ptannot " pat " " t "
 
-(* Expressions *)
+\<comment> \<open>\<open> Expressions \<close>\<close>
 datatype exp0 =
     Raise " exp0 "
   | Handle " exp0 " " (pat * exp0) list "
   | Lit " lit "
-  (* Constructor application.
-     A Nothing constructor indicates a tuple pattern. *)
+  \<comment> \<open>\<open> Constructor application.
+     A Nothing constructor indicates a tuple pattern. \<close>\<close>
   | Con "  ( (modN, conN)id0)option " " exp0 list "
   | Var " (modN, varN) id0 "
   | Fun " varN " " exp0 "
-  (* Application of a primitive operator to arguments.
-     Includes function application. *)
+  \<comment> \<open>\<open> Application of a primitive operator to arguments.
+     Includes function application. \<close>\<close>
   | App " op0 " " exp0 list "
-  (* Logical operations (and, or) *)
+  \<comment> \<open>\<open> Logical operations (and, or) \<close>\<close>
   | Log " lop " " exp0 " " exp0 "
   | If " exp0 " " exp0 " " exp0 "
-  (* Pattern matching *)
+  \<comment> \<open>\<open> Pattern matching \<close>\<close>
   | Mat " exp0 " " (pat * exp0) list "
-  (* A let expression
+  \<comment> \<open>\<open> A let expression
      A Nothing value for the binding indicates that this is a
-     sequencing expression, that is: (e1; e2). *)
+     sequencing expression, that is: (e1; e2). \<close>\<close>
   | Let "  varN option " " exp0 " " exp0 "
-  (* Local definition of (potentially) mutually recursive
+  \<comment> \<open>\<open> Local definition of (potentially) mutually recursive
      functions.
      The first varN is the function's name, and the second varN
-     is its parameter. *)
+     is its parameter. \<close>\<close>
   | Letrec " (varN * varN * exp0) list " " exp0 "
   | Tannot " exp0 " " t "
-  (* Location annotated expressions, not expected in source programs *)
+  \<comment> \<open>\<open> Location annotated expressions, not expected in source programs \<close>\<close>
   | Lannot " exp0 " " locs "
 
 type_synonym type_def =" ( tvarN list * typeN * (conN * t list) list) list "
 
-(* Declarations *)
+\<comment> \<open>\<open> Declarations \<close>\<close>
 datatype dec =
-  (* Top-level bindings
-   * The pattern allows several names to be bound at once *)
+  \<comment> \<open>\<open> Top-level bindings
+   * The pattern allows several names to be bound at once \<close>\<close>
     Dlet " locs " " pat " " exp0 "
-  (* Mutually recursive function definition *)
+  \<comment> \<open>\<open> Mutually recursive function definition \<close>\<close>
   | Dletrec " locs " " (varN * varN * exp0) list "
-  (* Type definition
+  \<comment> \<open>\<open> Type definition
      Defines several data types, each of which has several
      named variants, which can in turn have several arguments.
-   *)
+   \<close>\<close>
   | Dtype " locs " " type_def "
-  (* Type abbreviations *)
+  \<comment> \<open>\<open> Type abbreviations \<close>\<close>
   | Dtabbrev " locs " " tvarN list " " typeN " " t "
-  (* New exceptions *)
+  \<comment> \<open>\<open> New exceptions \<close>\<close>
   | Dexn " locs " " conN " " t list "
 
 type_synonym decs =" dec list "
 
-(* Specifications
-   For giving the signature of a module *)
+\<comment> \<open>\<open> Specifications
+   For giving the signature of a module \<close>\<close>
 datatype spec =
     Sval " varN " " t "
   | Stype " type_def "
@@ -253,8 +253,8 @@ datatype top0 =
 
 type_synonym prog =" top0 list "
 
-(* Accumulates the bindings of a pattern *)
-(*val pat_bindings : pat -> list varN -> list varN*)
+\<comment> \<open>\<open> Accumulates the bindings of a pattern \<close>\<close>
+\<comment> \<open>\<open>val pat_bindings : pat -> list varN -> list varN\<close>\<close>
 function (sequential,domintros) 
 pats_bindings  :: "(pat)list \<Rightarrow>(string)list \<Rightarrow>(string)list "  
                    and

@@ -16,19 +16,19 @@ begin
 
 
 
-(*open import Bool Basic_classes Maybe List Num*)
+\<comment> \<open>\<open>open import Bool Basic_classes Maybe List Num\<close>\<close>
 
-(*open import {isabelle} `HOL-Library.Permutation`*)
-(*open import {coq} `Coq.Lists.List`*)
-(*open import {hol} `sortingTheory` `permLib`*)
-(*open import {isabelle} `$LIB_DIR/Lem`*)
+\<comment> \<open>\<open>open import {isabelle} `HOL-Library.Permutation`\<close>\<close>
+\<comment> \<open>\<open>open import {coq} `Coq.Lists.List`\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `sortingTheory` `permLib`\<close>\<close>
+\<comment> \<open>\<open>open import {isabelle} `$LIB_DIR/Lem`\<close>\<close>
 
-(* ------------------------- *)
-(* permutations              *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> permutations              \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val isPermutation : forall 'a. Eq 'a => list 'a -> list 'a -> bool*)
-(*val isPermutationBy : forall 'a. ('a -> 'a -> bool) -> list 'a -> list 'a -> bool*)
+\<comment> \<open>\<open>val isPermutation : forall 'a. Eq 'a => list 'a -> list 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val isPermutationBy : forall 'a. ('a -> 'a -> bool) -> list 'a -> list 'a -> bool\<close>\<close>
 
 fun  isPermutationBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool "  where 
      " isPermutationBy eq ([]) l2 = ( (l2 = []))"
@@ -42,61 +42,61 @@ fun  isPermutationBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 
 
 
 
-(* ------------------------- *)
-(* isSorted                  *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> isSorted                  \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(* isSortedBy R l 
+\<comment> \<open>\<open> isSortedBy R l 
    checks, whether the list l is sorted by ordering R. 
    R should represent an order, i.e. it should be transitive.
-   Different backends defined isSorted slightly differently. However,
+   Different backends defined "isSorted" slightly differently. However,
    the definitions coincide for transitive R. Therefore there is the
    following restriction:
 
    WARNING: Use isSorted and isSortedBy only with transitive relations!
-*)
+\<close>\<close>
 
-(*val isSorted : forall 'a. Ord 'a => list 'a -> bool*)
-(*val isSortedBy : forall 'a. ('a -> 'a -> bool) -> list 'a -> bool*)
+\<comment> \<open>\<open>val isSorted : forall 'a. Ord 'a => list 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val isSortedBy : forall 'a. ('a -> 'a -> bool) -> list 'a -> bool\<close>\<close>
 
-(* DPM: rejigged the definition with a nested match to get past Coq's termination checker. *)
-(*let rec isSortedBy cmp l=  match l with
+\<comment> \<open>\<open> DPM: rejigged the definition with a nested match to get past Coq's termination checker. \<close>\<close>
+\<comment> \<open>\<open>let rec isSortedBy cmp l=  match l with
   | [] -> true
   | x1 :: xs ->
     match xs with
       | [] -> true
       | x2 :: _ -> (cmp x1 x2 && isSortedBy cmp xs)
     end
-end*)
+end\<close>\<close>
 
 
-(* ----------------------- *)
-(* insertion sort          *)
-(* ----------------------- *) 
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> insertion sort          \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close> 
 
-(*val insert : forall 'a. Ord 'a => 'a -> list 'a -> list 'a*)
-(*val insertBy : forall 'a. ('a -> 'a -> bool) -> 'a -> list 'a -> list 'a*)
+\<comment> \<open>\<open>val insert : forall 'a. Ord 'a => 'a -> list 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>val insertBy : forall 'a. ('a -> 'a -> bool) -> 'a -> list 'a -> list 'a\<close>\<close>
 
-(*val insertSort: forall 'a. Ord 'a => list 'a -> list 'a*)
-(*val insertSortBy: forall 'a. ('a -> 'a -> bool) -> list 'a -> list 'a*)
+\<comment> \<open>\<open>val insertSort: forall 'a. Ord 'a => list 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>val insertSortBy: forall 'a. ('a -> 'a -> bool) -> list 'a -> list 'a\<close>\<close>
 
-(*let rec insertBy cmp e l=  match l with
+\<comment> \<open>\<open>let rec insertBy cmp e l=  match l with
   | [] -> [e]
   | x :: xs -> if cmp x e then x :: (insertBy cmp e xs) else (e :: x :: xs)
-end*)
+end\<close>\<close>
 
-(*let insertSortBy cmp l=  List.foldl (fun l e -> insertBy cmp e l) [] l*)
+\<comment> \<open>\<open>let insertSortBy cmp l=  List.foldl (fun l e -> insertBy cmp e l) [] l\<close>\<close>
 
 
-(* ----------------------- *)
-(* general sorting         *)
-(* ----------------------- *) 
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> general sorting         \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close> 
 
-(*val sort: forall 'a. Ord 'a => list 'a -> list 'a*)
-(*val sortBy: forall 'a. ('a -> 'a -> bool) -> list 'a -> list 'a*)
-(*val sortByOrd: forall 'a. ('a -> 'a -> ordering) -> list 'a -> list 'a*)
+\<comment> \<open>\<open>val sort: forall 'a. Ord 'a => list 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>val sortBy: forall 'a. ('a -> 'a -> bool) -> list 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>val sortByOrd: forall 'a. ('a -> 'a -> ordering) -> list 'a -> list 'a\<close>\<close>
 
-(*val predicate_of_ord : forall 'a. ('a -> 'a -> ordering) -> 'a -> 'a -> bool*)
+\<comment> \<open>\<open>val predicate_of_ord : forall 'a. ('a -> 'a -> ordering) -> 'a -> 'a -> bool\<close>\<close>
 definition predicate_of_ord  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool "  where 
      " predicate_of_ord f x y = (
   (case  f x y of

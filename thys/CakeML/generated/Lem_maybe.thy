@@ -12,19 +12,19 @@ begin
 
  
 
-(*open import Bool Basic_classes Function*)
+\<comment> \<open>\<open>open import Bool Basic_classes Function\<close>\<close>
 
-(* ========================================================================== *)
-(* Basic stuff                                                                *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Basic stuff                                                                \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(*type maybe 'a = 
+\<comment> \<open>\<open>type maybe 'a = 
   | Nothing
-  | Just of 'a*)
+  | Just of 'a\<close>\<close>
 
 
-(*val maybeEqual : forall 'a. Eq 'a => maybe 'a -> maybe 'a -> bool*)
-(*val maybeEqualBy : forall 'a. ('a -> 'a -> bool) -> maybe 'a -> maybe 'a -> bool*)
+\<comment> \<open>\<open>val maybeEqual : forall 'a. Eq 'a => maybe 'a -> maybe 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val maybeEqualBy : forall 'a. ('a -> 'a -> bool) -> maybe 'a -> maybe 'a -> bool\<close>\<close>
 
 fun maybeEqualBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a option \<Rightarrow> 'a option \<Rightarrow> bool "  where 
      " maybeEqualBy eq None None = ( True )"
@@ -60,54 +60,54 @@ definition instance_Basic_classes_Ord_Maybe_maybe_dict  :: " 'a Ord_class \<Righ
   (compare_method   dict_Basic_classes_Ord_a) m1 m2) in (r = GT) \<or> (r = EQ)))))|) )"
 
 
-(* ----------------------- *)
-(* maybe                   *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> maybe                   \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val maybe : forall 'a 'b. 'b -> ('a -> 'b) -> maybe 'a -> 'b*)
-(*let maybe d f mb=  match mb with 
+\<comment> \<open>\<open>val maybe : forall 'a 'b. 'b -> ('a -> 'b) -> maybe 'a -> 'b\<close>\<close>
+\<comment> \<open>\<open>let maybe d f mb=  match mb with 
   | Just a -> f a
   | Nothing -> d
-end*)
+end\<close>\<close>
 
-(* ----------------------- *)
-(* isJust / isNothing      *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> isJust / isNothing      \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isJust : forall 'a. maybe 'a -> bool*)
-(*let isJust mb=  match mb with 
+\<comment> \<open>\<open>val isJust : forall 'a. maybe 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let isJust mb=  match mb with 
   | Just _ -> true
   | Nothing -> false
-end*)
+end\<close>\<close>
 
-(*val isNothing : forall 'a. maybe 'a -> bool*)
-(*let isNothing mb=  match mb with 
+\<comment> \<open>\<open>val isNothing : forall 'a. maybe 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let isNothing mb=  match mb with 
   | Just _ -> false
   | Nothing -> true
-end*)
+end\<close>\<close>
 
-(* ----------------------- *)
-(* fromMaybe               *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> fromMaybe               \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val fromMaybe : forall 'a. 'a -> maybe 'a -> 'a*)
-(*let fromMaybe d mb=  match mb with
+\<comment> \<open>\<open>val fromMaybe : forall 'a. 'a -> maybe 'a -> 'a\<close>\<close>
+\<comment> \<open>\<open>let fromMaybe d mb=  match mb with
    | Just v  -> v
    | Nothing -> d
-end*)
+end\<close>\<close>
 
-(* ----------------------- *)
-(* map                     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> map                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val map : forall 'a 'b. ('a -> 'b) -> maybe 'a -> maybe 'b*) 
-(*let map f=  maybe Nothing (fun v -> Just (f v))*)
+\<comment> \<open>\<open>val map : forall 'a 'b. ('a -> 'b) -> maybe 'a -> maybe 'b\<close>\<close> 
+\<comment> \<open>\<open>let map f=  maybe Nothing (fun v -> Just (f v))\<close>\<close>
 
 
-(* ----------------------- *)
-(* bind                    *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> bind                    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val bind : forall 'a 'b. maybe 'a -> ('a -> maybe 'b) -> maybe 'b*) 
-(*let bind mb f=  maybe Nothing f mb*)
+\<comment> \<open>\<open>val bind : forall 'a 'b. maybe 'a -> ('a -> maybe 'b) -> maybe 'b\<close>\<close> 
+\<comment> \<open>\<open>let bind mb f=  maybe Nothing f mb\<close>\<close>
 end

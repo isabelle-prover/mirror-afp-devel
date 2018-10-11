@@ -9,8 +9,8 @@ imports
 
 begin 
 
-(*open import Pervasives_extra*)
-(* Tokens for Standard ML.  NB, not all of them are used in CakeML *)
+\<comment> \<open>\<open>open import Pervasives_extra\<close>\<close>
+\<comment> \<open>\<open> Tokens for Standard ML.  NB, not all of them are used in CakeML \<close>\<close>
 datatype token =
   WhitespaceT " nat " | NewlineT | LexErrorT
 | HashT | LparT | RparT | StarT | CommaT | ArrowT | DotsT | ColonT | SealT

@@ -15,22 +15,22 @@ imports
 
 begin 
 
-(*open import Pervasives_extra*)
-(*open import Lib*)
-(*open import Namespace*)
-(*open import Ast*)
-(*open import SemanticPrimitives*)
-(*open import Ffi*)
+\<comment> \<open>\<open>open import Pervasives_extra\<close>\<close>
+\<comment> \<open>\<open>open import Lib\<close>\<close>
+\<comment> \<open>\<open>open import Namespace\<close>\<close>
+\<comment> \<open>\<open>open import Ast\<close>\<close>
+\<comment> \<open>\<open>open import SemanticPrimitives\<close>\<close>
+\<comment> \<open>\<open>open import Ffi\<close>\<close>
 
-(* To get the definition of expression divergence to use in defining definition
- * divergence *)
-(*open import SmallStep*)
+\<comment> \<open>\<open> To get the definition of expression divergence to use in defining definition
+ * divergence \<close>\<close>
+\<comment> \<open>\<open>open import SmallStep\<close>\<close>
 
-(* ------------------------ Big step semantics -------------------------- *)
+\<comment> \<open>\<open> ------------------------ Big step semantics -------------------------- \<close>\<close>
 
-(* If the first argument is true, the big step semantics counts down how many
+\<comment> \<open>\<open> If the first argument is true, the big step semantics counts down how many
    functions applications have happened, and raises an exception when the counter
-   runs out. *)
+   runs out. \<close>\<close>
 
 inductive
 evaluate_match  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow> v \<Rightarrow>(pat*exp0)list \<Rightarrow> v \<Rightarrow> 'ffi state*((v),(v))result \<Rightarrow> bool "  
@@ -360,8 +360,8 @@ evaluate_match ck env s v1 ((p,e)# pes) err_v (s, Rerr (Rabort Rtype_error))"
 ==>
 evaluate_match ck env s v1 ((p,e)# pes) err_v (s, Rerr (Rabort Rtype_error))"
 
-(* The set tid_or_exn part of the state tracks all of the types and exceptions
- * that have been declared *)
+\<comment> \<open>\<open> The set tid_or_exn part of the state tracks all of the types and exceptions
+ * that have been declared \<close>\<close>
 inductive
 evaluate_dec  :: " bool \<Rightarrow>(modN)list \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow> dec \<Rightarrow> 'ffi state*(((v)sem_env),(v))result \<Rightarrow> bool "  where
 
@@ -553,8 +553,8 @@ evaluate_top ck env s1 top0 (s2, Rerr err)
 evaluate_prog ck env s1 (top0 # tops) (s2, Rerr err)"
 
 
-(*val evaluate_whole_prog : forall 'ffi. Eq 'ffi => bool -> sem_env v -> state 'ffi -> prog ->
-          state 'ffi * result (sem_env v) v -> bool*)
+\<comment> \<open>\<open>val evaluate_whole_prog : forall 'ffi. Eq 'ffi => bool -> sem_env v -> state 'ffi -> prog ->
+          state 'ffi * result (sem_env v) v -> bool\<close>\<close>
 fun evaluate_whole_prog  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow>(top0)list \<Rightarrow> 'ffi state*(((v)sem_env),(v))result \<Rightarrow> bool "  where 
      " evaluate_whole_prog ck env s1 tops (s2, res) = (
   if no_dup_mods tops(defined_mods   s1) \<and> no_dup_top_types tops(defined_types   s1) then
@@ -563,7 +563,7 @@ fun evaluate_whole_prog  :: " bool \<Rightarrow>(v)sem_env \<Rightarrow> 'ffi st
     (s1 = s2) \<and> (res = Rerr (Rabort Rtype_error)))"
 
 
-(*val dec_diverges : forall 'ffi. sem_env v -> state 'ffi -> dec -> bool*)
+\<comment> \<open>\<open>val dec_diverges : forall 'ffi. sem_env v -> state 'ffi -> dec -> bool\<close>\<close>
 fun dec_diverges  :: "(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow> dec \<Rightarrow> bool "  where 
      " dec_diverges env st (Dlet locs p e) = ( Lem_list.allDistinct (pat_bindings p []) \<and> e_diverges env ((refs   st),(ffi   st)) e )"
 |" dec_diverges env st (Dletrec locs funs) = ( False )"

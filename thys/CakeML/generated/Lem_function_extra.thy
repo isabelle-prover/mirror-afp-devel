@@ -15,15 +15,15 @@ begin
 
 
 
-(*open import Maybe Bool Basic_classes Num Function*)
+\<comment> \<open>\<open>open import Maybe Bool Basic_classes Num Function\<close>\<close>
 
-(*open import {hol} `lemTheory`*)
-(*open import {isabelle} `$LIB_DIR/Lem`*)
+\<comment> \<open>\<open>open import {hol} `lemTheory`\<close>\<close>
+\<comment> \<open>\<open>open import {isabelle} `$LIB_DIR/Lem`\<close>\<close>
 
-(* ----------------------- *)
-(* getting a unique value  *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> getting a unique value  \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val THE : forall 'a. ('a -> bool) -> maybe 'a*)
+\<comment> \<open>\<open>val THE : forall 'a. ('a -> bool) -> maybe 'a\<close>\<close>
 
 end

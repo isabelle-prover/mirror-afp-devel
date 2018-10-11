@@ -4,8 +4,8 @@
 
 # Repository versions
 
-LEM_REPOSITORY="https://github.com/rems-project/lem"
-LEM_COMMIT="d82f8c7911e4c07e8fe4fd6f7685866537ad6d38" # master
+LEM_REPOSITORY="https://github.com/larsrh/lem"
+LEM_COMMIT="dc631b9f1b2ed62ebffa0e18ce8339d4d2eac2c3" # larsrh-3
 CAKEML_REPOSITORY="https://github.com/larsrh/cakeml"
 CAKEML_COMMIT="e901686d9e88e8606aca20e9145bc54aefcc772c" # v2.0 tag + backports
 

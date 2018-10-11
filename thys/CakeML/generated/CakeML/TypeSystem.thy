@@ -13,16 +13,16 @@ imports
 
 begin 
 
-(*open import Pervasives_extra*)
-(*open import Lib*)
-(*open import Ast*)
-(*open import Namespace*)
-(*open import SemanticPrimitives*)
+\<comment> \<open>\<open>open import Pervasives_extra\<close>\<close>
+\<comment> \<open>\<open>open import Lib\<close>\<close>
+\<comment> \<open>\<open>open import Ast\<close>\<close>
+\<comment> \<open>\<open>open import Namespace\<close>\<close>
+\<comment> \<open>\<open>open import SemanticPrimitives\<close>\<close>
 
-(* Check that the free type variables are in the given list. Every deBruijn
+\<comment> \<open>\<open> Check that the free type variables are in the given list. Every deBruijn
  * variable must be smaller than the first argument. So if it is 0, no deBruijn
- * indices are permitted. *)
-(*val check_freevars : nat -> list tvarN -> t -> bool*)
+ * indices are permitted. \<close>\<close>
+\<comment> \<open>\<open>val check_freevars : nat -> list tvarN -> t -> bool\<close>\<close>
 function (sequential,domintros) 
 check_freevars  :: " nat \<Rightarrow>(string)list \<Rightarrow> t \<Rightarrow> bool "  where 
      "
@@ -36,8 +36,8 @@ check_freevars dbmax tvs (Tvar_db n) = ( n < dbmax )"
 by pat_completeness auto
 
 
-(* Simultaneous substitution of types for type variables in a type *)
-(*val type_subst : Map.map tvarN t -> t -> t*)
+\<comment> \<open>\<open> Simultaneous substitution of types for type variables in a type \<close>\<close>
+\<comment> \<open>\<open>val type_subst : Map.map tvarN t -> t -> t\<close>\<close>
 function (sequential,domintros) 
 type_subst  :: "((string),(t))Map.map \<Rightarrow> t \<Rightarrow> t "  where 
      "
@@ -54,9 +54,9 @@ type_subst s (Tvar_db n) = ( Tvar_db n )"
 by pat_completeness auto
 
 
-(* Increment the deBruijn indices in a type by n levels, skipping all levels
- * less than skip. *)
-(*val deBruijn_inc : nat -> nat -> t -> t*)
+\<comment> \<open>\<open> Increment the deBruijn indices in a type by n levels, skipping all levels
+ * less than skip. \<close>\<close>
+\<comment> \<open>\<open>val deBruijn_inc : nat -> nat -> t -> t\<close>\<close>
 function (sequential,domintros) 
 deBruijn_inc  :: " nat \<Rightarrow> nat \<Rightarrow> t \<Rightarrow> t "  where 
      "
@@ -72,8 +72,8 @@ deBruijn_inc skip n (Tapp ts tn) = ( Tapp (List.map (deBruijn_inc skip n) ts) tn
 by pat_completeness auto
 
 
-(* skip the lowest given indices and replace the next (LENGTH ts) with the given types and reduce all the higher ones *)
-(*val deBruijn_subst : nat -> list t -> t -> t*)
+\<comment> \<open>\<open> skip the lowest given indices and replace the next (LENGTH ts) with the given types and reduce all the higher ones \<close>\<close>
+\<comment> \<open>\<open>val deBruijn_subst : nat -> list t -> t -> t\<close>\<close>
 function (sequential,domintros) 
 deBruijn_subst  :: " nat \<Rightarrow>(t)list \<Rightarrow> t \<Rightarrow> t "  where 
      "
@@ -92,26 +92,26 @@ deBruijn_subst skip ts (Tapp ts' tn) = (
 by pat_completeness auto
 
 
-(* Type environments *)
+\<comment> \<open>\<open> Type environments \<close>\<close>
 datatype tenv_val_exp =
     Empty
-  (* Binds several de Bruijn type variables *)
+  \<comment> \<open>\<open> Binds several de Bruijn type variables \<close>\<close>
   | Bind_tvar " nat " " tenv_val_exp "
-  (* The number is how many de Bruijn type variables the typescheme binds *)
+  \<comment> \<open>\<open> The number is how many de Bruijn type variables the typescheme binds \<close>\<close>
   | Bind_name " varN " " nat " " t " " tenv_val_exp "
 
-(*val bind_tvar : nat -> tenv_val_exp -> tenv_val_exp*)
+\<comment> \<open>\<open>val bind_tvar : nat -> tenv_val_exp -> tenv_val_exp\<close>\<close>
 definition bind_tvar  :: " nat \<Rightarrow> tenv_val_exp \<Rightarrow> tenv_val_exp "  where 
      " bind_tvar tvs tenvE = ( if tvs =( 0 :: nat) then tenvE else Bind_tvar tvs tenvE )"
 
 
-(*val opt_bind_name : maybe varN -> nat -> t -> tenv_val_exp -> tenv_val_exp*)
+\<comment> \<open>\<open>val opt_bind_name : maybe varN -> nat -> t -> tenv_val_exp -> tenv_val_exp\<close>\<close>
 fun opt_bind_name  :: "(string)option \<Rightarrow> nat \<Rightarrow> t \<Rightarrow> tenv_val_exp \<Rightarrow> tenv_val_exp "  where 
      " opt_bind_name None tvs t1 tenvE = ( tenvE )"
 |" opt_bind_name (Some n') tvs t1 tenvE = ( Bind_name n' tvs t1 tenvE )"
 
 
-(*val tveLookup : varN -> nat -> tenv_val_exp -> maybe (nat * t)*)
+\<comment> \<open>\<open>val tveLookup : varN -> nat -> tenv_val_exp -> maybe (nat * t)\<close>\<close>
 fun 
 tveLookup  :: " string \<Rightarrow> nat \<Rightarrow> tenv_val_exp \<Rightarrow>(nat*t)option "  where 
      "
@@ -140,7 +140,7 @@ datatype_record type_env =
    
 
 
-(*val extend_dec_tenv : type_env -> type_env -> type_env*)
+\<comment> \<open>\<open>val extend_dec_tenv : type_env -> type_env -> type_env\<close>\<close>
 definition extend_dec_tenv  :: " type_env \<Rightarrow> type_env \<Rightarrow> type_env "  where 
      " extend_dec_tenv tenv' tenv = (
   (| v0 = (nsAppend(v0   tenv')(v0   tenv)),
@@ -148,13 +148,13 @@ definition extend_dec_tenv  :: " type_env \<Rightarrow> type_env \<Rightarrow> t
      t = (nsAppend(t   tenv')(t   tenv)) |) )"
 
 
-(*val lookup_varE : id modN varN -> tenv_val_exp -> maybe (nat * t)*)
+\<comment> \<open>\<open>val lookup_varE : id modN varN -> tenv_val_exp -> maybe (nat * t)\<close>\<close>
 fun lookup_varE  :: "((string),(string))id0 \<Rightarrow> tenv_val_exp \<Rightarrow>(nat*t)option "  where 
      " lookup_varE (Short x) tenvE = ( tveLookup x(( 0 :: nat)) tenvE )"
 |" lookup_varE _ tenvE = ( None )"
 
 
-(*val lookup_var : id modN varN -> tenv_val_exp -> type_env -> maybe (nat * t)*)
+\<comment> \<open>\<open>val lookup_var : id modN varN -> tenv_val_exp -> type_env -> maybe (nat * t)\<close>\<close>
 definition lookup_var  :: "((modN),(varN))id0 \<Rightarrow> tenv_val_exp \<Rightarrow> type_env \<Rightarrow>(nat*t)option "  where 
      " lookup_var id1 tenvE tenv = (
   (case  lookup_varE id1 tenvE of
@@ -163,7 +163,7 @@ definition lookup_var  :: "((modN),(varN))id0 \<Rightarrow> tenv_val_exp \<Right
   ))"
 
 
-(*val num_tvs : tenv_val_exp -> nat*)
+\<comment> \<open>\<open>val num_tvs : tenv_val_exp -> nat\<close>\<close>
 fun 
 num_tvs  :: " tenv_val_exp \<Rightarrow> nat "  where 
      "
@@ -174,7 +174,7 @@ num_tvs (Bind_tvar tvs tenvE) = ( tvs + num_tvs tenvE )"
 num_tvs (Bind_name n tvs t1 tenvE) = ( num_tvs tenvE )"
 
 
-(*val bind_var_list : nat -> list (varN * t) -> tenv_val_exp -> tenv_val_exp*)
+\<comment> \<open>\<open>val bind_var_list : nat -> list (varN * t) -> tenv_val_exp -> tenv_val_exp\<close>\<close>
 fun 
 bind_var_list  :: " nat \<Rightarrow>(string*t)list \<Rightarrow> tenv_val_exp \<Rightarrow> tenv_val_exp "  where 
      "
@@ -184,21 +184,21 @@ bind_var_list tvs ((n,t1)# binds) tenvE = (
   Bind_name n tvs t1 (bind_var_list tvs binds tenvE))"
 
 
-(* A pattern matches values of a certain type and extends the type environment
+\<comment> \<open>\<open> A pattern matches values of a certain type and extends the type environment
  * with the pattern's binders. The number is the maximum deBruijn type variable
- * allowed. *)
-(*val type_p : nat -> type_env -> pat -> t -> list (varN * t) -> bool*)
+ * allowed. \<close>\<close>
+\<comment> \<open>\<open>val type_p : nat -> type_env -> pat -> t -> list (varN * t) -> bool\<close>\<close>
 
-(* An expression has a type *)
-(*val type_e : type_env -> tenv_val_exp -> exp -> t -> bool*)
+\<comment> \<open>\<open> An expression has a type \<close>\<close>
+\<comment> \<open>\<open>val type_e : type_env -> tenv_val_exp -> exp -> t -> bool\<close>\<close>
 
-(* A list of expressions has a list of types *)
-(*val type_es : type_env -> tenv_val_exp -> list exp -> list t -> bool*)
+\<comment> \<open>\<open> A list of expressions has a list of types \<close>\<close>
+\<comment> \<open>\<open>val type_es : type_env -> tenv_val_exp -> list exp -> list t -> bool\<close>\<close>
 
-(* Type a mutually recursive bundle of functions.  Unlike pattern typing, the
+\<comment> \<open>\<open> Type a mutually recursive bundle of functions.  Unlike pattern typing, the
  * resulting environment does not extend the input environment, but just
- * represents the functions *)
-(*val type_funs : type_env -> tenv_val_exp -> list (varN * varN * exp) -> list (varN * t) -> bool*)
+ * represents the functions \<close>\<close>
+\<comment> \<open>\<open>val type_funs : type_env -> tenv_val_exp -> list (varN * varN * exp) -> list (varN * t) -> bool\<close>\<close>
 
 datatype_record decls =
   
@@ -209,12 +209,12 @@ datatype_record decls =
      defined_exns ::" ( (modN, conN)id0) set " 
 
 
-(*val empty_decls : decls*)
+\<comment> \<open>\<open>val empty_decls : decls\<close>\<close>
 definition empty_decls  :: " decls "  where 
      " empty_decls = ( (| defined_mods0 = ({}), defined_types0 = ({}), defined_exns = ({})|) )"
 
 
-(*val union_decls : decls -> decls -> decls*)
+\<comment> \<open>\<open>val union_decls : decls -> decls -> decls\<close>\<close>
 definition union_decls  :: " decls \<Rightarrow> decls \<Rightarrow> decls "  where 
      " union_decls d1 d2 = (
   (| defined_mods0 = ((defined_mods0   d1) \<union>(defined_mods0   d2)),
@@ -222,24 +222,24 @@ definition union_decls  :: " decls \<Rightarrow> decls \<Rightarrow> decls "  wh
      defined_exns = ((defined_exns   d1) \<union>(defined_exns   d2)) |) )"
 
 
-(* Check a declaration and update the top-level environments
+\<comment> \<open>\<open> Check a declaration and update the top-level environments
  * The arguments are in order:
  * - the module that the declaration is in
  * - the set of all modules, and types, and exceptions that have been previously declared
  * - the type environment
  * - the declaration
  * - the set of all modules, and types, and exceptions that are declared here
- * - the environment of new stuff declared here *)
+ * - the environment of new stuff declared here \<close>\<close>
 
-(*val type_d : bool -> list modN -> decls -> type_env -> dec -> decls -> type_env -> bool*)
+\<comment> \<open>\<open>val type_d : bool -> list modN -> decls -> type_env -> dec -> decls -> type_env -> bool\<close>\<close>
 
-(*val type_ds : bool -> list modN -> decls -> type_env -> list dec -> decls -> type_env -> bool*)
-(*val check_signature : list modN -> tenv_abbrev -> decls -> type_env -> maybe specs -> decls -> type_env -> bool*)
-(*val type_specs : list modN -> tenv_abbrev -> specs -> decls -> type_env -> bool*)
-(*val type_prog : bool -> decls -> type_env -> list top -> decls -> type_env -> bool*)
+\<comment> \<open>\<open>val type_ds : bool -> list modN -> decls -> type_env -> list dec -> decls -> type_env -> bool\<close>\<close>
+\<comment> \<open>\<open>val check_signature : list modN -> tenv_abbrev -> decls -> type_env -> maybe specs -> decls -> type_env -> bool\<close>\<close>
+\<comment> \<open>\<open>val type_specs : list modN -> tenv_abbrev -> specs -> decls -> type_env -> bool\<close>\<close>
+\<comment> \<open>\<open>val type_prog : bool -> decls -> type_env -> list top -> decls -> type_env -> bool\<close>\<close>
 
-(* Check that the operator can have type (t1 -> ... -> tn -> t) *)
-(*val type_op : op -> list t -> t -> bool*)
+\<comment> \<open>\<open> Check that the operator can have type (t1 -> ... -> tn -> t) \<close>\<close>
+\<comment> \<open>\<open>val type_op : op -> list t -> t -> bool\<close>\<close>
 fun type_op  :: " op0 \<Rightarrow>(t)list \<Rightarrow> t \<Rightarrow> bool "  where 
      " type_op (Opn o0) ts t1 = ( 
   (case (o0,ts) of
@@ -685,7 +685,7 @@ fun type_op  :: " op0 \<Rightarrow>(t)list \<Rightarrow> t \<Rightarrow> bool " 
   ) )"
 
 
-(*val check_type_names : tenv_abbrev -> t -> bool*)
+\<comment> \<open>\<open>val check_type_names : tenv_abbrev -> t -> bool\<close>\<close>
 function (sequential,domintros) 
 check_type_names  :: "((string),(string),((string)list*t))namespace \<Rightarrow> t \<Rightarrow> bool "  where 
      "
@@ -708,8 +708,8 @@ check_type_names tenvT (Tvar_db n) = (
 by pat_completeness auto
 
 
-(* Substitution of type names for the type they abbreviate *)
-(*val type_name_subst : tenv_abbrev -> t -> t*)
+\<comment> \<open>\<open> Substitution of type names for the type they abbreviate \<close>\<close>
+\<comment> \<open>\<open>val type_name_subst : tenv_abbrev -> t -> t\<close>\<close>
 function (sequential,domintros) 
 type_name_subst  :: "((string),(string),((string)list*t))namespace \<Rightarrow> t \<Rightarrow> t "  where 
      "
@@ -730,11 +730,11 @@ type_name_subst tenvT (Tvar_db n) = ( Tvar_db n )"
 by pat_completeness auto
 
 
-(* Check that a type definition defines no already defined types or duplicate
+\<comment> \<open>\<open> Check that a type definition defines no already defined types or duplicate
  * constructors, and that the free type variables of each constructor argument
  * type are included in the type's type parameters. Also check that all of the
- * types mentioned are in scope. *)
-(*val check_ctor_tenv : tenv_abbrev -> list (list tvarN * typeN * list (conN * list t)) -> bool*)
+ * types mentioned are in scope. \<close>\<close>
+\<comment> \<open>\<open>val check_ctor_tenv : tenv_abbrev -> list (list tvarN * typeN * list (conN * list t)) -> bool\<close>\<close>
 definition check_ctor_tenv  :: "((modN),(typeN),((tvarN)list*t))namespace \<Rightarrow>((tvarN)list*typeN*(conN*(t)list)list)list \<Rightarrow> bool "  where 
      " check_ctor_tenv tenvT tds = (
   check_dup_ctors tds \<and>
@@ -755,7 +755,7 @@ definition check_ctor_tenv  :: "((modN),(typeN),((tvarN)list*t))namespace \<Righ
   (case  x of (_,tn,_) => tn )) tds)))"
 
 
-(*val build_ctor_tenv : list modN -> tenv_abbrev -> list (list tvarN * typeN * list (conN * list t)) -> tenv_ctor*)
+\<comment> \<open>\<open>val build_ctor_tenv : list modN -> tenv_abbrev -> list (list tvarN * typeN * list (conN * list t)) -> tenv_ctor\<close>\<close>
 definition build_ctor_tenv  :: "(string)list \<Rightarrow>((modN),(typeN),((tvarN)list*t))namespace \<Rightarrow>((tvarN)list*string*(string*(t)list)list)list \<Rightarrow>((string),(string),((tvarN)list*(t)list*tid_or_exn))namespace "  where 
      " build_ctor_tenv mn tenvT tds = (
   alist_to_ns
@@ -774,16 +774,16 @@ definition build_ctor_tenv  :: "(string)list \<Rightarrow>((modN),(typeN),((tvar
            tds))))"
 
 
-(* Check that an exception definition defines no already defined (or duplicate)
- * constructors, and that the arguments have no free type variables. *)
-(*val check_exn_tenv : list modN -> conN -> list t -> bool*)
+\<comment> \<open>\<open> Check that an exception definition defines no already defined (or duplicate)
+ * constructors, and that the arguments have no free type variables. \<close>\<close>
+\<comment> \<open>\<open>val check_exn_tenv : list modN -> conN -> list t -> bool\<close>\<close>
 definition check_exn_tenv  :: "(modN)list \<Rightarrow> string \<Rightarrow>(t)list \<Rightarrow> bool "  where 
      " check_exn_tenv mn cn ts = (
   ((\<forall> x \<in> (set ts).  (check_freevars(( 0 :: nat)) []) x)))"
 
 
-(* For the value restriction on let-based polymorphism *)
-(*val is_value : exp -> bool*)
+\<comment> \<open>\<open> For the value restriction on let-based polymorphism \<close>\<close>
+\<comment> \<open>\<open>val is_value : exp -> bool\<close>\<close>
 function (sequential,domintros) 
 is_value  :: " exp0 \<Rightarrow> bool "  where 
      "
@@ -803,7 +803,7 @@ is_value _ = ( False )"
 by pat_completeness auto
 
 
-(*val tid_exn_to_tc : tid_or_exn -> tctor*)
+\<comment> \<open>\<open>val tid_exn_to_tc : tid_or_exn -> tctor\<close>\<close>
 fun tid_exn_to_tc  :: " tid_or_exn \<Rightarrow> tctor "  where 
      " tid_exn_to_tc (TypeId tid) = ( TC_name tid )"
 |" tid_exn_to_tc (TypeExn _) = ( TC_exn )"
@@ -1033,7 +1033,7 @@ type_e tenv tenvE (Mat e pes) t2 "
 
 |
 
-(*
+\<comment> \<open>\<open>
 let_poly : forall tenv tenvE n e1 e2 t1 t2 tvs.
 is_value e1 &&
 type_e tenv (bind_tvar tvs tenvE) e1 t1 &&
@@ -1042,7 +1042,7 @@ type_e tenv (opt_bind_name n tvs t1 tenvE) e2 t2
 type_e tenv tenvE (Let n e1 e2) t2
 
 and
-*)
+\<close>\<close>
 
 "let_mono" : " \<And> tenv tenvE n e1 e2 t1 t2.
 type_e tenv tenvE e1 t1 \<and>
@@ -1050,7 +1050,7 @@ type_e tenv (opt_bind_name n(( 0 :: nat)) t1 tenvE) e2 t2
 ==>
 type_e tenv tenvE (Let n e1 e2) t2 "
 
-(*
+\<comment> \<open>\<open>
 and
 
 letrec : forall tenv tenvE funs e t tenv' tvs.
@@ -1058,7 +1058,7 @@ type_funs tenv (bind_var_list 0 tenv' (bind_tvar tvs tenvE)) funs tenv' &&
 type_e tenv (bind_var_list tvs tenv' tenvE) e t
 ==>
 type_e tenv tenvE (Letrec funs e) t
-*)
+\<close>\<close>
 
 |
 
@@ -1114,14 +1114,14 @@ check_freevars (num_tvs tenvE) [] (Tfn t1 t2) \<and>
 ==>
 type_funs tenv tenvE ((fn, n, e)# funs) ((fn, Tfn t1 t2)# bindings)"
 
-(*val tenv_add_tvs : nat -> alist varN t -> alist varN (nat * t)*)
+\<comment> \<open>\<open>val tenv_add_tvs : nat -> alist varN t -> alist varN (nat * t)\<close>\<close>
 definition tenv_add_tvs  :: " nat \<Rightarrow>(string*t)list \<Rightarrow>(string*(nat*t))list "  where 
      " tenv_add_tvs tvs bindings = (
   List.map ( \<lambda>x .  
   (case  x of (n,t1) => (n,(tvs,t1)) )) bindings )"
 
 
-(*val type_pe_determ : type_env -> tenv_val_exp -> pat -> exp -> bool*)
+\<comment> \<open>\<open>val type_pe_determ : type_env -> tenv_val_exp -> pat -> exp -> bool\<close>\<close>
 definition type_pe_determ  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow> pat \<Rightarrow> exp0 \<Rightarrow> bool "  where 
      " type_pe_determ tenv tenvE p e = ((
   \<forall> t1. 
@@ -1134,7 +1134,7 @@ definition type_pe_determ  :: " type_env \<Rightarrow> tenv_val_exp \<Rightarrow
     (tenv1 = tenv2)))"
 
 
-(*val tscheme_inst : (nat * t) -> (nat * t) -> bool*)
+\<comment> \<open>\<open>val tscheme_inst : (nat * t) -> (nat * t) -> bool\<close>\<close>
 fun tscheme_inst  :: " nat*t \<Rightarrow> nat*t \<Rightarrow> bool "  where 
      " tscheme_inst (tvs_spec, t_spec) (tvs_impl, t_impl) = ((
   \<exists> subst. 
@@ -1164,10 +1164,10 @@ type_d extra_checks mn decls tenv (Dlet locs p e)
 |
 
 "dlet_mono" : " \<And> extra_checks mn tenv p e t0 bindings decls locs.
-\<comment> \<open>The following line makes sure that when the value restriction prohibits\<close>
-\<comment> \<open>generalisation, a type error is given rather than picking an arbitrary\<close>
-\<comment> \<open>instantiation. However, we should only do the check when the \<open>extra_checks\<close>\<close>
-\<comment> \<open>argument tells us to.\<close>
+\<comment> \<open>\<open> The following line makes sure that when the value restriction prohibits
+   generalisation, a type error is given rather than picking an arbitrary
+   instantiation. However, we should only do the check when the extra_checks
+   argument tells us to. \<close>\<close>
 (extra_checks \<longrightarrow> (\<not> (is_value e) \<and> type_pe_determ tenv Empty p e)) \<and>
 (Lem_list.allDistinct (pat_bindings p []) \<and>
 (type_p(( 0 :: nat)) tenv p t0 bindings \<and>
@@ -1328,7 +1328,7 @@ type_specs mn tenvT (Stype_opq tvs tn # specs)
   (union_decls decls (| defined_mods0 = ({}), defined_types0 = ({mk_id mn tn}), defined_exns = ({}) |))
   (extend_dec_tenv tenv (| v0 = nsEmpty, c0 = nsEmpty, t = tenvT' |))"
 
-(*val weak_decls : decls -> decls -> bool*)
+\<comment> \<open>\<open>val weak_decls : decls -> decls -> bool\<close>\<close>
 definition weak_decls  :: " decls \<Rightarrow> decls \<Rightarrow> bool "  where 
      " weak_decls decls_impl decls_spec = (
   ((defined_mods0   decls_impl) =(defined_mods0   decls_spec)) \<and>
@@ -1336,21 +1336,21 @@ definition weak_decls  :: " decls \<Rightarrow> decls \<Rightarrow> bool "  wher
   ((defined_exns   decls_spec) \<subseteq>(defined_exns   decls_impl))))"
 
 
-(*val weak_tenvT : id modN typeN -> (list tvarN * t) -> (list tvarN * t) -> bool*)
+\<comment> \<open>\<open>val weak_tenvT : id modN typeN -> (list tvarN * t) -> (list tvarN * t) -> bool\<close>\<close>
 fun weak_tenvT  :: "((modN),(typeN))id0 \<Rightarrow>(string)list*t \<Rightarrow>(string)list*t \<Rightarrow> bool "  where 
      " weak_tenvT n (tvs_spec, t_spec) (tvs_impl, t_impl) = (
   (
-  \<comment> \<open>For simplicity, we reject matches that differ only by renaming of bound type variables.\<close> tvs_spec = tvs_impl) \<and>
+  \<comment> \<open>\<open> For simplicity, we reject matches that differ only by renaming of bound type variables \<close>\<close>tvs_spec = tvs_impl) \<and>
   ((t_spec = t_impl) \<or>
    (
-   \<comment> \<open>The specified type is opaque.\<close> t_spec = Tapp (List.map Tvar tvs_spec) (TC_name n))))"
+   \<comment> \<open>\<open> The specified type is opaque \<close>\<close>t_spec = Tapp (List.map Tvar tvs_spec) (TC_name n))))"
 
 
 definition tscheme_inst2  :: " 'a \<Rightarrow> nat*t \<Rightarrow> nat*t \<Rightarrow> bool "  where 
      " tscheme_inst2 _ ts1 ts2 = ( tscheme_inst ts1 ts2 )"
 
 
-(*val weak_tenv : type_env -> type_env -> bool*)
+\<comment> \<open>\<open>val weak_tenv : type_env -> type_env -> bool\<close>\<close>
 definition weak_tenv  :: " type_env \<Rightarrow> type_env \<Rightarrow> bool "  where 
      " weak_tenv tenv_impl tenv_spec = (
   nsSub tscheme_inst2(v0   tenv_spec)(v0   tenv_impl) \<and>

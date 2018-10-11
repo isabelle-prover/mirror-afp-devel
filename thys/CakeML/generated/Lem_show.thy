@@ -13,9 +13,9 @@ begin
 
 
 
-(*open import String Maybe Num Basic_classes*)
+\<comment> \<open>\<open>open import String Maybe Num Basic_classes\<close>\<close>
 
-(*open import {hol} `lemTheory`*)
+\<comment> \<open>\<open>open import {hol} `lemTheory`\<close>\<close>
 
 record 'a Show_class=
 
@@ -29,7 +29,7 @@ definition instance_Show_Show_string_dict  :: "(string)Show_class "  where
   show_method = (\<lambda> s. ([(CHR 0x27)]) @ (s @ ([(CHR 0x27)])))|) )"
 
 
-(*val stringFromMaybe : forall 'a. ('a -> string) -> maybe 'a -> string*)
+\<comment> \<open>\<open>val stringFromMaybe : forall 'a. ('a -> string) -> maybe 'a -> string\<close>\<close>
 fun stringFromMaybe  :: "('a \<Rightarrow> string)\<Rightarrow> 'a option \<Rightarrow> string "  where 
      " stringFromMaybe showX (Some x) = ( (''Just ('') @ (showX x @ ('')'')))"
 |" stringFromMaybe showX None = ( (''Nothing''))"
@@ -42,7 +42,7 @@ definition instance_Show_Show_Maybe_maybe_dict  :: " 'a Show_class \<Rightarrow>
   (show_method   dict_Show_Show_a) x_opt)|) )"
 
 
-(*val stringFromListAux : forall 'a. ('a -> string) -> list 'a -> string*)
+\<comment> \<open>\<open>val stringFromListAux : forall 'a. ('a -> string) -> list 'a -> string\<close>\<close>
 function (sequential,domintros)  stringFromListAux  :: "('a \<Rightarrow> string)\<Rightarrow> 'a list \<Rightarrow> string "  where 
      " stringFromListAux showX ([]) = ( (''''))"
 |" stringFromListAux showX (x # xs') = (
@@ -53,7 +53,7 @@ function (sequential,domintros)  stringFromListAux  :: "('a \<Rightarrow> string
 by pat_completeness auto
 
 
-(*val stringFromList : forall 'a. ('a -> string) -> list 'a -> string*)
+\<comment> \<open>\<open>val stringFromList : forall 'a. ('a -> string) -> list 'a -> string\<close>\<close>
 definition stringFromList  :: "('a \<Rightarrow> string)\<Rightarrow> 'a list \<Rightarrow> string "  where 
      " stringFromList showX xs = (
   (''['') @ (stringFromListAux showX xs @ ('']'')))"
@@ -66,7 +66,7 @@ definition instance_Show_Show_list_dict  :: " 'a Show_class \<Rightarrow>('a lis
   (show_method   dict_Show_Show_a) xs)|) )"
 
 
-(*val stringFromPair : forall 'a 'b. ('a -> string) -> ('b -> string) -> ('a * 'b) -> string*)
+\<comment> \<open>\<open>val stringFromPair : forall 'a 'b. ('a -> string) -> ('b -> string) -> ('a * 'b) -> string\<close>\<close>
 fun stringFromPair  :: "('a \<Rightarrow> string)\<Rightarrow>('b \<Rightarrow> string)\<Rightarrow> 'a*'b \<Rightarrow> string "  where 
      " stringFromPair showX showY (x,y) = (
   (''('') @ (showX x @ (('', '') @ (showY y @ ('')'')))))"

@@ -9,67 +9,67 @@ begin
 
  
 
-(* The type bool is hard-coded, so are true and false *)
+\<comment> \<open>\<open> The type bool is hard-coded, so are true and false \<close>\<close>
 
-(* ----------------------- *)
-(* not                     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> not                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val not : bool -> bool*)
-(*let not b=  match b with
+\<comment> \<open>\<open>val not : bool -> bool\<close>\<close>
+\<comment> \<open>\<open>let not b=  match b with
   | true -> false
   | false -> true
-end*)
+end\<close>\<close>
 
-(* ----------------------- *)
-(* and                     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> and                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val && [and] : bool -> bool -> bool*)
-(*let && b1 b2=  match (b1, b2) with
+\<comment> \<open>\<open>val && [and] : bool -> bool -> bool\<close>\<close>
+\<comment> \<open>\<open>let && b1 b2=  match (b1, b2) with
   | (true, true) -> true
   | _ -> false
-end*)
+end\<close>\<close>
 
 
-(* ----------------------- *)
-(* or                      *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> or                      \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val || [or] : bool -> bool -> bool*)
-(*let || b1 b2=  match (b1, b2) with
+\<comment> \<open>\<open>val || [or] : bool -> bool -> bool\<close>\<close>
+\<comment> \<open>\<open>let || b1 b2=  match (b1, b2) with
   | (false, false) -> false
   | _ -> true
-end*)
+end\<close>\<close>
 
 
-(* ----------------------- *)
-(* implication             *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> implication             \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val --> [imp] : bool -> bool -> bool*)
-(*let --> b1 b2=  match (b1, b2) with
+\<comment> \<open>\<open>val --> [imp] : bool -> bool -> bool\<close>\<close>
+\<comment> \<open>\<open>let --> b1 b2=  match (b1, b2) with
   | (true, false) -> false
   | _ -> true
-end*)
+end\<close>\<close>
 
 
-(* ----------------------- *)
-(* equivalence             *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> equivalence             \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val <-> [equiv] : bool -> bool -> bool*)
-(*let <-> b1 b2=  match (b1, b2) with
+\<comment> \<open>\<open>val <-> [equiv] : bool -> bool -> bool\<close>\<close>
+\<comment> \<open>\<open>let <-> b1 b2=  match (b1, b2) with
   | (true, true) -> true
   | (false, false) -> true
   | _ -> false
-end*)
+end\<close>\<close>
 
 
-(* ----------------------- *)
-(* xor                     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> xor                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val xor : bool -> bool -> bool*)
+\<comment> \<open>\<open>val xor : bool -> bool -> bool\<close>\<close>
 
 end

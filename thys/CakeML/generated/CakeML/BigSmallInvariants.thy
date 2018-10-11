@@ -15,15 +15,15 @@ imports
 
 begin 
 
-(*open import Pervasives*)
-(*open import Lib*)
-(*open import Namespace*)
-(*open import Ast*)
-(*open import SemanticPrimitives*)
-(*open import SmallStep*)
-(*open import BigStep*)
+\<comment> \<open>\<open>open import Pervasives\<close>\<close>
+\<comment> \<open>\<open>open import Lib\<close>\<close>
+\<comment> \<open>\<open>open import Namespace\<close>\<close>
+\<comment> \<open>\<open>open import Ast\<close>\<close>
+\<comment> \<open>\<open>open import SemanticPrimitives\<close>\<close>
+\<comment> \<open>\<open>open import SmallStep\<close>\<close>
+\<comment> \<open>\<open>open import BigStep\<close>\<close>
 
-(* ------ Auxiliary relations for proving big/small step equivalence ------ *)
+\<comment> \<open>\<open> ------ Auxiliary relations for proving big/small step equivalence ------ \<close>\<close>
 
 inductive
 evaluate_ctxt  :: "(v)sem_env \<Rightarrow> 'ffi state \<Rightarrow> ctxt_frame \<Rightarrow> v \<Rightarrow> 'ffi state*((v),(v))result \<Rightarrow> bool "  where

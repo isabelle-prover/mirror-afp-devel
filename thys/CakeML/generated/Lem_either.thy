@@ -13,21 +13,21 @@ begin
 
  
 
-(*open import Bool Basic_classes List Tuple*)
-(*open import {hol} `sumTheory`*)
-(*open import {ocaml} `Either`*)
+\<comment> \<open>\<open>open import Bool Basic_classes List Tuple\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `sumTheory`\<close>\<close>
+\<comment> \<open>\<open>open import {ocaml} `Either`\<close>\<close>
 
-(*type either 'a 'b
+\<comment> \<open>\<open>type either 'a 'b
   = Left  of 'a
-  | Right of 'b*)
+  | Right of 'b\<close>\<close>
 
 
-(* -------------------------------------------------------------------------- *)
-(* Equality.                                                                  *)
-(* -------------------------------------------------------------------------- *)
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Equality.                                                                  \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
 
-(*val eitherEqual : forall 'a 'b. Eq 'a, Eq 'b => (either 'a 'b) -> (either 'a 'b) -> bool*)
-(*val eitherEqualBy : forall 'a 'b. ('a -> 'a -> bool) -> ('b -> 'b -> bool) -> (either 'a 'b) -> (either 'a 'b) -> bool*)
+\<comment> \<open>\<open>val eitherEqual : forall 'a 'b. Eq 'a, Eq 'b => (either 'a 'b) -> (either 'a 'b) -> bool\<close>\<close>
+\<comment> \<open>\<open>val eitherEqualBy : forall 'a 'b. ('a -> 'a -> bool) -> ('b -> 'b -> bool) -> (either 'a 'b) -> (either 'a 'b) -> bool\<close>\<close>
 
 definition eitherEqualBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow>('b \<Rightarrow> 'b \<Rightarrow> bool)\<Rightarrow>('a,'b)sum \<Rightarrow>('a,'b)sum \<Rightarrow> bool "  where 
      " eitherEqualBy eql eqr (left:: ('a, 'b) sum) (right:: ('a, 'b) sum) = (
@@ -37,7 +37,7 @@ definition eitherEqualBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarr
     | _ => False
   ))"
 
-(*let eitherEqual=  eitherEqualBy (=) (=)*)
+\<comment> \<open>\<open>let eitherEqual=  eitherEqualBy (=) (=)\<close>\<close>
 
 fun either_setElemCompare  :: "('d \<Rightarrow> 'b \<Rightarrow> ordering)\<Rightarrow>('c \<Rightarrow> 'a \<Rightarrow> ordering)\<Rightarrow>('d,'c)sum \<Rightarrow>('b,'a)sum \<Rightarrow> ordering "  where 
      " either_setElemCompare cmpa cmpb (Inl x') (Inl y') = ( cmpa x' y' )"
@@ -47,24 +47,24 @@ fun either_setElemCompare  :: "('d \<Rightarrow> 'b \<Rightarrow> ordering)\<Rig
 
                            
 
-(* -------------------------------------------------------------------------- *)
-(* Utility functions.                                                         *)
-(* -------------------------------------------------------------------------- *)
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Utility functions.                                                         \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
 
-(*val isLeft : forall 'a 'b. either 'a 'b -> bool*)
+\<comment> \<open>\<open>val isLeft : forall 'a 'b. either 'a 'b -> bool\<close>\<close>
 
-(*val isRight : forall 'a 'b. either 'a 'b -> bool*)
+\<comment> \<open>\<open>val isRight : forall 'a 'b. either 'a 'b -> bool\<close>\<close>
 
 
-(*val either : forall 'a 'b 'c. ('a -> 'c) -> ('b -> 'c) -> either 'a 'b -> 'c*)
-(*let either fa fb x=  match x with
+\<comment> \<open>\<open>val either : forall 'a 'b 'c. ('a -> 'c) -> ('b -> 'c) -> either 'a 'b -> 'c\<close>\<close>
+\<comment> \<open>\<open>let either fa fb x=  match x with
   | Left a -> fa a
   | Right b -> fb b
-end*)
+end\<close>\<close>
 
 
-(*val partitionEither : forall 'a 'b. list (either 'a 'b) -> (list 'a * list 'b)*)
-(*let rec partitionEither l=  match l with
+\<comment> \<open>\<open>val partitionEither : forall 'a 'b. list (either 'a 'b) -> (list 'a * list 'b)\<close>\<close>
+\<comment> \<open>\<open>let rec partitionEither l=  match l with
   | [] -> ([], [])
   | x :: xs -> begin
       let (ll, rl) = partitionEither xs in
@@ -73,13 +73,13 @@ end*)
         | Right r -> (ll, r::rl)
       end
     end
-end*)
+end\<close>\<close>
 
 
-(*val lefts : forall 'a 'b. list (either 'a 'b) -> list 'a*)
+\<comment> \<open>\<open>val lefts : forall 'a 'b. list (either 'a 'b) -> list 'a\<close>\<close>
 
 
-(*val rights : forall 'a 'b. list (either 'a 'b) -> list 'b*)
+\<comment> \<open>\<open>val rights : forall 'a 'b. list (either 'a 'b) -> list 'b\<close>\<close>
 
 
 end

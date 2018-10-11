@@ -16,51 +16,51 @@ begin
 
  
 
-(*open import Bool Maybe Basic_classes Function Tuple Num*)
+\<comment> \<open>\<open>open import Bool Maybe Basic_classes Function Tuple Num\<close>\<close>
 
-(*open import {coq} `Coq.Lists.List`*)
-(*open import {isabelle} `$LIB_DIR/Lem`*)
-(*open import {hol} `lemTheory` `listTheory` `rich_listTheory` `sortingTheory`*)
+\<comment> \<open>\<open>open import {coq} `Coq.Lists.List`\<close>\<close>
+\<comment> \<open>\<open>open import {isabelle} `$LIB_DIR/Lem`\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `lemTheory` `listTheory` `rich_listTheory` `sortingTheory`\<close>\<close>
 
-(* ========================================================================== *)
-(* Basic list functions                                                       *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Basic list functions                                                       \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* The type of lists as well as list literals like [], [1;2], ... are hardcoded. 
-   Thus, we can directly dive into derived definitions. *)
-
-
-(* ----------------------- *)
-(* cons                    *)
-(* ----------------------- *)
-
-(*val :: : forall 'a. 'a -> list 'a -> list 'a*)
+\<comment> \<open>\<open> The type of lists as well as list literals like [], [1;2], ... are hardcoded. 
+   Thus, we can directly dive into derived definitions. \<close>\<close>
 
 
-(* ----------------------- *)
-(* Emptyness check         *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> cons                    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val null : forall 'a. list 'a -> bool*)
-(*let null l=  match l with [] -> true | _ -> false end*)
+\<comment> \<open>\<open>val :: : forall 'a. 'a -> list 'a -> list 'a\<close>\<close>
 
-(* ----------------------- *)
-(* Length                  *)
-(* ----------------------- *)
 
-(*val length : forall 'a. list 'a -> nat*)
-(*let rec length l=
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Emptyness check         \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val null : forall 'a. list 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let null l=  match l with [] -> true | _ -> false end\<close>\<close>
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Length                  \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val length : forall 'a. list 'a -> nat\<close>\<close>
+\<comment> \<open>\<open>let rec length l=
    match l with
     | [] -> 0
     | x :: xs -> (Instance_Num_NumAdd_nat.+) (length xs) 1
-  end*)
+  end\<close>\<close>
 
-(* ----------------------- *)
-(* Equality                *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Equality                \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val listEqual : forall 'a. Eq 'a => list 'a -> list 'a -> bool*)
-(*val listEqualBy : forall 'a. ('a -> 'a -> bool) -> list 'a -> list 'a -> bool*)
+\<comment> \<open>\<open>val listEqual : forall 'a. Eq 'a => list 'a -> list 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val listEqualBy : forall 'a. ('a -> 'a -> bool) -> list 'a -> list 'a -> bool\<close>\<close>
 
 fun  listEqualBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool "  where 
      " listEqualBy eq ([]) ([]) = ( True )"
@@ -70,12 +70,12 @@ fun  listEqualBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a l
 
 
 
-(* ----------------------- *)
-(* compare                 *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> compare                 \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val lexicographicCompare : forall 'a. Ord 'a => list 'a -> list 'a -> ordering*)
-(*val lexicographicCompareBy : forall 'a. ('a -> 'a -> ordering) -> list 'a -> list 'a -> ordering*)
+\<comment> \<open>\<open>val lexicographicCompare : forall 'a. Ord 'a => list 'a -> list 'a -> ordering\<close>\<close>
+\<comment> \<open>\<open>val lexicographicCompareBy : forall 'a. ('a -> 'a -> ordering) -> list 'a -> list 'a -> ordering\<close>\<close>
 
 fun  lexicographicCompareBy  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> ordering "  where 
      " lexicographicCompareBy cmp ([]) ([]) = ( EQ )"
@@ -90,8 +90,8 @@ fun  lexicographicCompareBy  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<R
     ))"
 
 
-(*val lexicographicLess : forall 'a. Ord 'a => list 'a -> list 'a -> bool*)
-(*val lexicographicLessBy : forall 'a. ('a -> 'a -> bool) -> ('a -> 'a -> bool) -> list 'a -> list 'a -> bool*)
+\<comment> \<open>\<open>val lexicographicLess : forall 'a. Ord 'a => list 'a -> list 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val lexicographicLessBy : forall 'a. ('a -> 'a -> bool) -> ('a -> 'a -> bool) -> list 'a -> list 'a -> bool\<close>\<close>
 fun  lexicographicLessBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow>('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool "  where 
      " lexicographicLessBy less1 less_eq1 ([]) ([]) = ( False )"
 |" lexicographicLessBy less1 less_eq1 ([]) (_ # _) = ( True )"
@@ -99,8 +99,8 @@ fun  lexicographicLessBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarr
 |" lexicographicLessBy less1 less_eq1 (x # xs) (y # ys) = ( ((less1 x y) \<or> ((less_eq1 x y) \<and> (lexicographicLessBy less1 less_eq1 xs ys))))"
 
 
-(*val lexicographicLessEq : forall 'a. Ord 'a => list 'a -> list 'a -> bool*)
-(*val lexicographicLessEqBy : forall 'a. ('a -> 'a -> bool) -> ('a -> 'a -> bool) -> list 'a -> list 'a -> bool*)
+\<comment> \<open>\<open>val lexicographicLessEq : forall 'a. Ord 'a => list 'a -> list 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val lexicographicLessEqBy : forall 'a. ('a -> 'a -> bool) -> ('a -> 'a -> bool) -> list 'a -> list 'a -> bool\<close>\<close>
 fun  lexicographicLessEqBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow>('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> bool "  where 
      " lexicographicLessEqBy less1 less_eq1 ([]) ([]) = ( True )"
 |" lexicographicLessEqBy less1 less_eq1 ([]) (_ # _) = ( True )"
@@ -129,56 +129,56 @@ definition instance_Basic_classes_Ord_list_dict  :: " 'a Ord_class \<Rightarrow>
 
 
 
-(* ----------------------- *)
-(* Append                  *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Append                  \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val ++ : forall 'a. list 'a -> list 'a -> list 'a*) (* originally append *)
-(*let rec ++ xs ys=  match xs with
+\<comment> \<open>\<open>val ++ : forall 'a. list 'a -> list 'a -> list 'a\<close>\<close> \<comment> \<open>\<open> originally append \<close>\<close>
+\<comment> \<open>\<open>let rec ++ xs ys=  match xs with
                      | [] -> ys
                      | x :: xs' -> x :: (xs' ++ ys)
-                   end*)
+                   end\<close>\<close>
 
-(* ----------------------- *)
-(* snoc                    *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> snoc                    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val snoc : forall 'a. 'a -> list 'a -> list 'a*)
-(*let snoc e l=  l ++ [e]*)
+\<comment> \<open>\<open>val snoc : forall 'a. 'a -> list 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>let snoc e l=  l ++ [e]\<close>\<close>
 
 
-(* ----------------------- *)
-(* Reverse                 *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Reverse                 \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(* First lets define the function [reverse_append], which is
+\<comment> \<open>\<open> First lets define the function [reverse_append], which is
    closely related to reverse. [reverse_append l1 l2] appends the list [l2] to the reverse of [l1].
    This can be implemented more efficienctly than appending and is
-   used to implement reverse. *)
+   used to implement reverse. \<close>\<close>
 
-(*val reverseAppend : forall 'a. list 'a -> list 'a -> list 'a*) (* originally named rev_append *)
-(*let rec reverseAppend l1 l2=  match l1 with 
+\<comment> \<open>\<open>val reverseAppend : forall 'a. list 'a -> list 'a -> list 'a\<close>\<close> \<comment> \<open>\<open> originally named rev_append \<close>\<close>
+\<comment> \<open>\<open>let rec reverseAppend l1 l2=  match l1 with 
                                 | [] -> l2
                                 | x :: xs -> reverseAppend xs (x :: l2)
-                               end*)
+                               end\<close>\<close>
 
-(* Reversing a list *)
-(*val reverse : forall 'a. list 'a -> list 'a*) (* originally named rev *)
-(*let reverse l=  reverseAppend l []*)
+\<comment> \<open>\<open> Reversing a list \<close>\<close>
+\<comment> \<open>\<open>val reverse : forall 'a. list 'a -> list 'a\<close>\<close> \<comment> \<open>\<open> originally named rev \<close>\<close>
+\<comment> \<open>\<open>let reverse l=  reverseAppend l []\<close>\<close>
 
-(* ----------------------- *)
-(* Map                     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Map                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val map_tr : forall 'a 'b. list 'b -> ('a -> 'b) -> list 'a -> list 'b*)
+\<comment> \<open>\<open>val map_tr : forall 'a 'b. list 'b -> ('a -> 'b) -> list 'a -> list 'b\<close>\<close>
 function (sequential,domintros)  map_tr  :: " 'b list \<Rightarrow>('a \<Rightarrow> 'b)\<Rightarrow> 'a list \<Rightarrow> 'b list "  where 
      " map_tr rev_acc f ([]) = ( List.rev rev_acc )"
 |" map_tr rev_acc f (x # xs) = ( map_tr ((f x) # rev_acc) f xs )" 
 by pat_completeness auto
 
 
-(* taken from: https://blogs.janestreet.com/optimizing-list-map/ *)
-(*val count_map : forall 'a 'b. ('a -> 'b) -> list 'a -> nat -> list 'b*)
+\<comment> \<open>\<open> taken from: https://blogs.janestreet.com/optimizing-list-map/ \<close>\<close>
+\<comment> \<open>\<open>val count_map : forall 'a 'b. ('a -> 'b) -> list 'a -> nat -> list 'b\<close>\<close>
 function (sequential,domintros)  count_map  :: "('a \<Rightarrow> 'b)\<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> 'b list "  where 
      " count_map f ([]) ctr = ( [])"
 |" count_map f (hd1 # tl1) ctr = ( f hd1 # 
@@ -187,82 +187,82 @@ function (sequential,domintros)  count_map  :: "('a \<Rightarrow> 'b)\<Rightarro
 by pat_completeness auto
 
  
-(*val map : forall 'a 'b. ('a -> 'b) -> list 'a -> list 'b*)
-(*let map f l=  count_map f l 0*)
+\<comment> \<open>\<open>val map : forall 'a 'b. ('a -> 'b) -> list 'a -> list 'b\<close>\<close>
+\<comment> \<open>\<open>let map f l=  count_map f l 0\<close>\<close>
 
-(* ----------------------- *)
-(* Reverse Map             *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Reverse Map             \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val reverseMap : forall 'a 'b. ('a -> 'b) -> list 'a -> list 'b*)
+\<comment> \<open>\<open>val reverseMap : forall 'a 'b. ('a -> 'b) -> list 'a -> list 'b\<close>\<close>
 
 
-(* ========================================================================== *)
-(* Folding                                                                    *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Folding                                                                    \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ----------------------- *)
-(* fold left               *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> fold left               \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val foldl : forall 'a 'b. ('a -> 'b -> 'a) -> 'a -> list 'b -> 'a*) (* originally foldl *)
+\<comment> \<open>\<open>val foldl : forall 'a 'b. ('a -> 'b -> 'a) -> 'a -> list 'b -> 'a\<close>\<close> \<comment> \<open>\<open> originally foldl \<close>\<close>
 
-(*let rec foldl f b l=  match l with
+\<comment> \<open>\<open>let rec foldl f b l=  match l with
   | []      -> b
   | x :: xs -> foldl f (f b x) xs
-end*)
+end\<close>\<close>
 
 
-(* ----------------------- *)
-(* fold right              *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> fold right              \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val foldr : forall 'a 'b. ('a -> 'b -> 'b) -> 'b -> list 'a -> 'b*) (* originally foldr with different argument order *)
-(*let rec foldr f b l=  match l with
+\<comment> \<open>\<open>val foldr : forall 'a 'b. ('a -> 'b -> 'b) -> 'b -> list 'a -> 'b\<close>\<close> \<comment> \<open>\<open> originally foldr with different argument order \<close>\<close>
+\<comment> \<open>\<open>let rec foldr f b l=  match l with
   | []      -> b
   | x :: xs -> f x (foldr f b xs)
-end*)
+end\<close>\<close>
 
 
-(* ----------------------- *)
-(* concatenating lists     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> concatenating lists     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val concat : forall 'a. list (list 'a) -> list 'a*) (* before also called flatten *)
-(*let concat=  foldr (++) []*)
-
-
-(* -------------------------- *)
-(* concatenating with mapping *)
-(* -------------------------- *)
-
-(*val concatMap : forall 'a 'b. ('a -> list 'b) -> list 'a -> list 'b*)
+\<comment> \<open>\<open>val concat : forall 'a. list (list 'a) -> list 'a\<close>\<close> \<comment> \<open>\<open> before also called "flatten" \<close>\<close>
+\<comment> \<open>\<open>let concat=  foldr (++) []\<close>\<close>
 
 
-(* ------------------------- *)
-(* universal qualification   *)
-(* ------------------------- *)
+\<comment> \<open>\<open> -------------------------- \<close>\<close>
+\<comment> \<open>\<open> concatenating with mapping \<close>\<close>
+\<comment> \<open>\<open> -------------------------- \<close>\<close>
 
-(*val all : forall 'a. ('a -> bool) -> list 'a -> bool*) (* originally for_all *)
-(*let all P l=  foldl (fun r e -> P e && r) true l*)
-
+\<comment> \<open>\<open>val concatMap : forall 'a 'b. ('a -> list 'b) -> list 'a -> list 'b\<close>\<close>
 
 
-(* ------------------------- *)
-(* existential qualification *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> universal qualification   \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val any : forall 'a. ('a -> bool) -> list 'a -> bool*) (* originally exist *)
-(*let any P l=  foldl (fun r e -> P e || r) false l*)
+\<comment> \<open>\<open>val all : forall 'a. ('a -> bool) -> list 'a -> bool\<close>\<close> \<comment> \<open>\<open> originally for_all \<close>\<close>
+\<comment> \<open>\<open>let all P l=  foldl (fun r e -> P e && r) true l\<close>\<close>
 
 
-(* ------------------------- *)
-(* dest_init                 *)
-(* ------------------------- *)
 
-(* get the initial part and the last element of the list in a safe way *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> existential qualification \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val dest_init : forall 'a. list 'a -> maybe (list 'a * 'a)*) 
+\<comment> \<open>\<open>val any : forall 'a. ('a -> bool) -> list 'a -> bool\<close>\<close> \<comment> \<open>\<open> originally exist \<close>\<close>
+\<comment> \<open>\<open>let any P l=  foldl (fun r e -> P e || r) false l\<close>\<close>
+
+
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> dest_init                 \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+
+\<comment> \<open>\<open> get the initial part and the last element of the list in a safe way \<close>\<close>
+
+\<comment> \<open>\<open>val dest_init : forall 'a. list 'a -> maybe (list 'a * 'a)\<close>\<close> 
 
 fun  dest_init_aux  :: " 'a list \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list*'a "  where 
      " dest_init_aux rev_init last_elem_seen ([]) = ( (List.rev rev_init, last_elem_seen))"
@@ -275,104 +275,104 @@ fun dest_init  :: " 'a list \<Rightarrow>('a list*'a)option "  where
 
 
 
-(* ========================================================================== *)
-(* Indexing lists                                                             *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Indexing lists                                                             \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ------------------------- *)
-(* index / nth with maybe   *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> index / nth with maybe   \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val index : forall 'a. list 'a -> nat -> maybe 'a*)
+\<comment> \<open>\<open>val index : forall 'a. list 'a -> nat -> maybe 'a\<close>\<close>
 
-(*let rec index l n=  match l with 
+\<comment> \<open>\<open>let rec index l n=  match l with 
   | []      -> Nothing
   | x :: xs -> if (Instance_Basic_classes_Eq_nat.=) n 0 then Just x else index xs ((Instance_Num_NumMinus_nat.-)n 1)
-end*)
+end\<close>\<close>
 
-(* ------------------------- *)
-(* findIndices               *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> findIndices               \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(* [findIndices P l] returns the indices of all elements of list [l] that satisfy predicate [P]. 
-   Counting starts with 0, the result list is sorted ascendingly *)
-(*val findIndices : forall 'a. ('a -> bool) -> list 'a -> list nat*)
+\<comment> \<open>\<open> [findIndices P l] returns the indices of all elements of list [l] that satisfy predicate [P]. 
+   Counting starts with 0, the result list is sorted ascendingly \<close>\<close>
+\<comment> \<open>\<open>val findIndices : forall 'a. ('a -> bool) -> list 'a -> list nat\<close>\<close>
 
 fun  findIndices_aux  :: " nat \<Rightarrow>('a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow>(nat)list "  where 
      " findIndices_aux (i::nat) P ([]) = ( [])"
 |" findIndices_aux (i::nat) P (x # xs) = ( if P x then i # findIndices_aux (i +( 1 :: nat)) P xs else findIndices_aux (i +( 1 :: nat)) P xs )"
 
-(*let findIndices P l=  findIndices_aux 0 P l*)
+\<comment> \<open>\<open>let findIndices P l=  findIndices_aux 0 P l\<close>\<close>
 
 
 
-(* ------------------------- *)
-(* findIndex                 *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> findIndex                 \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(* findIndex returns the first index of a list that satisfies a given predicate. *)
-(*val findIndex : forall 'a. ('a -> bool) -> list 'a -> maybe nat*)
-(*let findIndex P l=  match findIndices P l with
+\<comment> \<open>\<open> findIndex returns the first index of a list that satisfies a given predicate. \<close>\<close>
+\<comment> \<open>\<open>val findIndex : forall 'a. ('a -> bool) -> list 'a -> maybe nat\<close>\<close>
+\<comment> \<open>\<open>let findIndex P l=  match findIndices P l with
   | [] -> Nothing
   | x :: _ -> Just x
-end*)
+end\<close>\<close>
 
-(* ------------------------- *)
-(* elemIndices               *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> elemIndices               \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val elemIndices : forall 'a. Eq 'a => 'a -> list 'a -> list nat*)
+\<comment> \<open>\<open>val elemIndices : forall 'a. Eq 'a => 'a -> list 'a -> list nat\<close>\<close>
 
-(* ------------------------- *)
-(* elemIndex                 *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> elemIndex                 \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val elemIndex : forall 'a. Eq 'a => 'a -> list 'a -> maybe nat*)
-
-
-(* ========================================================================== *)
-(* Creating lists                                                             *)
-(* ========================================================================== *)
-
-(* ------------------------- *)
-(* genlist                   *)
-(* ------------------------- *)
-
-(* [genlist f n] generates the list [f 0; f 1; ... (f (n-1))] *)
-(*val genlist : forall 'a. (nat -> 'a) -> nat -> list 'a*)
+\<comment> \<open>\<open>val elemIndex : forall 'a. Eq 'a => 'a -> list 'a -> maybe nat\<close>\<close>
 
 
-(*let rec genlist f n=
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Creating lists                                                             \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> genlist                   \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+
+\<comment> \<open>\<open> [genlist f n] generates the list [f 0; f 1; ... (f (n-1))] \<close>\<close>
+\<comment> \<open>\<open>val genlist : forall 'a. (nat -> 'a) -> nat -> list 'a\<close>\<close>
+
+
+\<comment> \<open>\<open>let rec genlist f n=
    match n with
     | 0 -> []
     | n' + 1 -> snoc (f n') (genlist f n')
-  end*)
+  end\<close>\<close>
 
 
-(* ------------------------- *)
-(* replicate                 *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> replicate                 \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val replicate : forall 'a. nat -> 'a -> list 'a*)
-(*let rec replicate n x=
+\<comment> \<open>\<open>val replicate : forall 'a. nat -> 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>let rec replicate n x=
    match n with
     | 0 -> []
     | n' + 1 -> x :: replicate n' x
-  end*)
+  end\<close>\<close>
 
 
-(* ========================================================================== *)
-(* Sublists                                                                   *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Sublists                                                                   \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ------------------------- *)
-(* splitAt                   *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> splitAt                   \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(* [splitAt n xs] returns a tuple (xs1, xs2), with append xs1 xs2 = xs and 
-   length xs1 = n. If there are not enough elements 
-   in [xs], the original list and the empty one are returned. *)
-(*val splitAtAcc : forall 'a. list 'a -> nat -> list 'a -> (list 'a * list 'a)*)
+\<comment> \<open>\<open> [splitAt n xs] returns a tuple (xs1, xs2), with "append xs1 xs2 = xs" and 
+   "length xs1 = n". If there are not enough elements 
+   in [xs], the original list and the empty one are returned. \<close>\<close>
+\<comment> \<open>\<open>val splitAtAcc : forall 'a. list 'a -> nat -> list 'a -> (list 'a * list 'a)\<close>\<close>
 function (sequential,domintros)  splitAtAcc  :: " 'a list \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> 'a list*'a list "  where 
      " splitAtAcc revAcc n l = ( 
   (case  l of
@@ -382,32 +382,32 @@ function (sequential,domintros)  splitAtAcc  :: " 'a list \<Rightarrow> nat \<Ri
 by pat_completeness auto
 
 
-(*val splitAt : forall 'a. nat -> list 'a -> (list 'a * list 'a)*)
-(*let rec splitAt n l= 
-    splitAtAcc [] n l*)
+\<comment> \<open>\<open>val splitAt : forall 'a. nat -> list 'a -> (list 'a * list 'a)\<close>\<close>
+\<comment> \<open>\<open>let rec splitAt n l= 
+    splitAtAcc [] n l\<close>\<close>
 
 
-(* ------------------------- *)
-(* take                      *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> take                      \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(* take n xs returns the prefix of xs of length n, or xs itself if n > length xs *)
-(*val take : forall 'a. nat -> list 'a -> list 'a*)
-(*let take n l=  fst (splitAt n l)*)
+\<comment> \<open>\<open> take n xs returns the prefix of xs of length n, or xs itself if n > length xs \<close>\<close>
+\<comment> \<open>\<open>val take : forall 'a. nat -> list 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>let take n l=  fst (splitAt n l)\<close>\<close>
 
-(* ------------------------- *)
-(* drop                      *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> drop                      \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(* [drop n xs] drops the first [n] elements of [xs]. It returns the empty list, if [n] > [length xs]. *)
-(*val drop : forall 'a. nat -> list 'a -> list 'a*)
-(*let drop n l=  snd (splitAt n l)*)
+\<comment> \<open>\<open> [drop n xs] drops the first [n] elements of [xs]. It returns the empty list, if [n] > [length xs]. \<close>\<close>
+\<comment> \<open>\<open>val drop : forall 'a. nat -> list 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>let drop n l=  snd (splitAt n l)\<close>\<close>
 
-(* ------------------------------------ *)
-(* splitWhile, takeWhile, and dropWhile *)
-(* ------------------------------------ *)
+\<comment> \<open>\<open> ------------------------------------ \<close>\<close>
+\<comment> \<open>\<open> splitWhile, takeWhile, and dropWhile \<close>\<close>
+\<comment> \<open>\<open> ------------------------------------ \<close>\<close>
 
-(*val splitWhile_tr : forall 'a. ('a -> bool) -> list 'a -> list 'a -> (list 'a * list 'a)*)
+\<comment> \<open>\<open>val splitWhile_tr : forall 'a. ('a -> bool) -> list 'a -> list 'a -> (list 'a * list 'a)\<close>\<close>
 fun  splitWhile_tr  :: "('a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list*'a list "  where 
      " splitWhile_tr p ([]) acc1 = (
     (List.rev acc1, []))"
@@ -418,55 +418,55 @@ fun  splitWhile_tr  :: "('a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarro
       (List.rev acc1, (x # xs)))"
 
 
-(*val splitWhile : forall 'a. ('a -> bool) -> list 'a -> (list 'a * list 'a)*)
+\<comment> \<open>\<open>val splitWhile : forall 'a. ('a -> bool) -> list 'a -> (list 'a * list 'a)\<close>\<close>
 definition splitWhile  :: "('a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow> 'a list*'a list "  where 
      " splitWhile p xs = ( splitWhile_tr p xs [])"
 
 
-(* [takeWhile p xs] takes the first elements of [xs] that satisfy [p]. *)
-(*val takeWhile : forall 'a. ('a -> bool) -> list 'a -> list 'a*)
+\<comment> \<open>\<open> [takeWhile p xs] takes the first elements of [xs] that satisfy [p]. \<close>\<close>
+\<comment> \<open>\<open>val takeWhile : forall 'a. ('a -> bool) -> list 'a -> list 'a\<close>\<close>
 definition takeWhile  :: "('a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow> 'a list "  where 
      " takeWhile p l = ( fst (splitWhile p l))"
 
 
-(* [dropWhile p xs] drops the first elements of [xs] that satisfy [p]. *)
-(*val dropWhile : forall 'a. ('a -> bool) -> list 'a -> list 'a*)
+\<comment> \<open>\<open> [dropWhile p xs] drops the first elements of [xs] that satisfy [p]. \<close>\<close>
+\<comment> \<open>\<open>val dropWhile : forall 'a. ('a -> bool) -> list 'a -> list 'a\<close>\<close>
 definition dropWhile  :: "('a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow> 'a list "  where 
      " dropWhile p l = ( snd (splitWhile p l))"
 
 
-(* ------------------------- *)
-(* isPrefixOf                *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> isPrefixOf                \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val isPrefixOf : forall 'a. Eq 'a => list 'a -> list 'a -> bool*)
+\<comment> \<open>\<open>val isPrefixOf : forall 'a. Eq 'a => list 'a -> list 'a -> bool\<close>\<close>
 fun  isPrefixOf  :: " 'a list \<Rightarrow> 'a list \<Rightarrow> bool "  where 
      " isPrefixOf ([]) _ = ( True )"
 |" isPrefixOf (_ # _) ([]) = ( False )"
 |" isPrefixOf (x # xs) (y # ys) = ( (x = y) \<and> isPrefixOf xs ys )"
 
 
-(* ------------------------- *)
-(* update                    *)
-(* ------------------------- *)
-(*val update : forall 'a. list 'a -> nat -> 'a -> list 'a*)
-(*let rec update l n e= 
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> update                    \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open>val update : forall 'a. list 'a -> nat -> 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>let rec update l n e= 
    match l with
     | []      -> []
     | x :: xs -> if (Instance_Basic_classes_Eq_nat.=) n 0 then e :: xs else x :: (update xs ((Instance_Num_NumMinus_nat.-) n 1) e)
-end*)
+end\<close>\<close>
 
 
 
-(* ========================================================================== *)
-(* Searching lists                                                            *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Searching lists                                                            \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ------------------------- *)
-(* Membership test           *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> Membership test           \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(* The membership test, one of the basic list functions, is actually tricky for
+\<comment> \<open>\<open> The membership test, one of the basic list functions, is actually tricky for
    Lem, because it is tricky, which equality to use. From Lem`s point of 
    perspective, we want to use the equality provided by the equality type - class.
    This allows for example to check whether a set is in a list of sets.
@@ -481,117 +481,117 @@ end*)
 
    For now, we ignore this problem and just demand, that all instances of
    the equality type class do the right thing for the theorem prover backends.   
-*)
+\<close>\<close>
 
-(*val elem : forall 'a. Eq 'a => 'a -> list 'a -> bool*)
-(*val elemBy : forall 'a. ('a -> 'a -> bool) -> 'a -> list 'a -> bool*)
+\<comment> \<open>\<open>val elem : forall 'a. Eq 'a => 'a -> list 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>val elemBy : forall 'a. ('a -> 'a -> bool) -> 'a -> list 'a -> bool\<close>\<close>
 
 definition elemBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> bool "  where 
      " elemBy eq e l = ( ((\<exists> x \<in> (set l).  (eq e) x)))"
 
-(*let elem=  elemBy (=)*)
+\<comment> \<open>\<open>let elem=  elemBy (=)\<close>\<close>
 
-(* ------------------------- *)
-(* Find                      *)
-(* ------------------------- *)
-(*val find : forall 'a. ('a -> bool) -> list 'a -> maybe 'a*) (* previously not of maybe type *)
-(*let rec find P l=  match l with 
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> Find                      \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open>val find : forall 'a. ('a -> bool) -> list 'a -> maybe 'a\<close>\<close> \<comment> \<open>\<open> previously not of maybe type \<close>\<close>
+\<comment> \<open>\<open>let rec find P l=  match l with 
   | []      -> Nothing
   | x :: xs -> if P x then Just x else find P xs
-end*)
+end\<close>\<close>
 
 
-(* ----------------------------- *)
-(* Lookup in an associative list *)
-(* ----------------------------- *)
-(*val lookup   : forall 'a 'b. Eq 'a              => 'a -> list ('a * 'b) -> maybe 'b*)
-(*val lookupBy : forall 'a 'b. ('a -> 'a -> bool) -> 'a -> list ('a * 'b) -> maybe 'b*)
+\<comment> \<open>\<open> ----------------------------- \<close>\<close>
+\<comment> \<open>\<open> Lookup in an associative list \<close>\<close>
+\<comment> \<open>\<open> ----------------------------- \<close>\<close>
+\<comment> \<open>\<open>val lookup   : forall 'a 'b. Eq 'a              => 'a -> list ('a * 'b) -> maybe 'b\<close>\<close>
+\<comment> \<open>\<open>val lookupBy : forall 'a 'b. ('a -> 'a -> bool) -> 'a -> list ('a * 'b) -> maybe 'b\<close>\<close>
 
-(* DPM: eta-expansion for Coq backend type-inference. *)
+\<comment> \<open>\<open> DPM: eta-expansion for Coq backend type-inference. \<close>\<close>
 definition lookupBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a \<Rightarrow>('a*'b)list \<Rightarrow> 'b option "  where 
      " lookupBy eq k m = ( map_option (\<lambda> x .  snd x) (List.find ( \<lambda>x .  
   (case  x of (k', _) => eq k k' )) m))"
 
 
-(* ------------------------- *)
-(* filter                    *)
-(* ------------------------- *)
-(*val filter : forall 'a. ('a -> bool) -> list 'a -> list 'a*)
-(*let rec filter P l=  match l with
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> filter                    \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open>val filter : forall 'a. ('a -> bool) -> list 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>let rec filter P l=  match l with
                        | [] -> []
                        | x :: xs -> if (P x) then x :: (filter P xs) else filter P xs
-                     end*)
+                     end\<close>\<close>
 
 
-(* ------------------------- *)
-(* partition                 *)
-(* ------------------------- *)
-(*val partition : forall 'a. ('a -> bool) -> list 'a -> list 'a * list 'a*)
-(*let partition P l=  (filter P l, filter (fun x -> not (P x)) l)*)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> partition                 \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open>val partition : forall 'a. ('a -> bool) -> list 'a -> list 'a * list 'a\<close>\<close>
+\<comment> \<open>\<open>let partition P l=  (filter P l, filter (fun x -> not (P x)) l)\<close>\<close>
 
-(*val reversePartition : forall 'a. ('a -> bool) -> list 'a -> list 'a * list 'a*)
+\<comment> \<open>\<open>val reversePartition : forall 'a. ('a -> bool) -> list 'a -> list 'a * list 'a\<close>\<close>
 definition reversePartition  :: "('a \<Rightarrow> bool)\<Rightarrow> 'a list \<Rightarrow> 'a list*'a list "  where 
      " reversePartition P l = ( List.partition P (List.rev l))"
 
 
 
-(* ------------------------- *)
-(* delete first element      *)
-(* with certain property     *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> delete first element      \<close>\<close>
+\<comment> \<open>\<open> with certain property     \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val deleteFirst : forall 'a. ('a -> bool) -> list 'a -> maybe (list 'a)*) 
-(*let rec deleteFirst P l=  match l with
+\<comment> \<open>\<open>val deleteFirst : forall 'a. ('a -> bool) -> list 'a -> maybe (list 'a)\<close>\<close> 
+\<comment> \<open>\<open>let rec deleteFirst P l=  match l with
                             | [] -> Nothing
                             | x :: xs -> if (P x) then Just xs else Maybe.map (fun xs' -> x :: xs') (deleteFirst P xs)
-                          end*)
+                          end\<close>\<close>
 
 
-(*val delete : forall 'a. Eq 'a => 'a -> list 'a -> list 'a*)
-(*val deleteBy : forall 'a. ('a -> 'a -> bool) -> 'a -> list 'a -> list 'a*)
+\<comment> \<open>\<open>val delete : forall 'a. Eq 'a => 'a -> list 'a -> list 'a\<close>\<close>
+\<comment> \<open>\<open>val deleteBy : forall 'a. ('a -> 'a -> bool) -> 'a -> list 'a -> list 'a\<close>\<close>
 
 definition deleteBy  :: "('a \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> 'a list "  where 
      " deleteBy eq x l = ( case_option l id (delete_first (eq x) l))"
 
 
 
-(* ========================================================================== *)
-(* Zipping and unzipping lists                                                *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Zipping and unzipping lists                                                \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ------------------------- *)
-(* zip                       *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> zip                       \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(* zip takes two lists and returns a list of corresponding pairs. If one input list is short, excess elements of the longer list are discarded. *)
-(*val zip : forall 'a 'b. list 'a -> list 'b -> list ('a * 'b)*) (* before combine *)
-(*let rec zip l1 l2=  match (l1, l2) with
+\<comment> \<open>\<open> zip takes two lists and returns a list of corresponding pairs. If one input list is short, excess elements of the longer list are discarded. \<close>\<close>
+\<comment> \<open>\<open>val zip : forall 'a 'b. list 'a -> list 'b -> list ('a * 'b)\<close>\<close> \<comment> \<open>\<open> before combine \<close>\<close>
+\<comment> \<open>\<open>let rec zip l1 l2=  match (l1, l2) with
   | (x :: xs, y :: ys) -> (x, y) :: zip xs ys
   | _ -> []
-end*)
+end\<close>\<close>
 
-(* ------------------------- *)
-(* unzip                     *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> unzip                     \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val unzip: forall 'a 'b. list ('a * 'b) -> (list 'a * list 'b)*)
-(*let rec unzip l=  match l with
+\<comment> \<open>\<open>val unzip: forall 'a 'b. list ('a * 'b) -> (list 'a * list 'b)\<close>\<close>
+\<comment> \<open>\<open>let rec unzip l=  match l with
   | [] -> ([], [])
   | (x, y) :: xys -> let (xs, ys) = unzip xys in (x :: xs, y :: ys)
-end*)
+end\<close>\<close>
 
-(* ------------------------- *)
-(* distinct elements         *)
-(* ------------------------- *)
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
+\<comment> \<open>\<open> distinct elements         \<close>\<close>
+\<comment> \<open>\<open> ------------------------- \<close>\<close>
 
-(*val allDistinct : forall 'a. Eq 'a => list 'a -> bool*)
+\<comment> \<open>\<open>val allDistinct : forall 'a. Eq 'a => list 'a -> bool\<close>\<close>
 fun  allDistinct  :: " 'a list \<Rightarrow> bool "  where 
      " allDistinct ([]) = ( True )"
 |" allDistinct (x # l') = ( \<not> (Set.member x (set l')) \<and> allDistinct l' )"
 
 
-(* some more useful functions *)
-(*val mapMaybe : forall 'a 'b. ('a -> maybe 'b) -> list 'a -> list 'b*)
+\<comment> \<open>\<open> some more useful functions \<close>\<close>
+\<comment> \<open>\<open>val mapMaybe : forall 'a 'b. ('a -> maybe 'b) -> list 'a -> list 'b\<close>\<close>
 function (sequential,domintros)  mapMaybe  :: "('a \<Rightarrow> 'b option)\<Rightarrow> 'a list \<Rightarrow> 'b list "  where 
      " mapMaybe f ([]) = ( [])"
 |" mapMaybe f (x # xs) = (
@@ -602,7 +602,7 @@ function (sequential,domintros)  mapMaybe  :: "('a \<Rightarrow> 'b option)\<Rig
 by pat_completeness auto
 
 
-(*val mapi : forall 'a 'b. (nat -> 'a -> 'b) -> list 'a -> list 'b*)
+\<comment> \<open>\<open>val mapi : forall 'a 'b. (nat -> 'a -> 'b) -> list 'a -> list 'b\<close>\<close>
 function (sequential,domintros)  mapiAux  :: "(nat \<Rightarrow> 'b \<Rightarrow> 'a)\<Rightarrow> nat \<Rightarrow> 'b list \<Rightarrow> 'a list "  where 
      " mapiAux f (n :: nat) ([]) = ( [])"
 |" mapiAux f (n :: nat) (x # xs) = ( (f n x) # mapiAux f (n +( 1 :: nat)) xs )" 
@@ -612,19 +612,19 @@ definition mapi  :: "(nat \<Rightarrow> 'a \<Rightarrow> 'b)\<Rightarrow> 'a lis
      " mapi f l = ( mapiAux f(( 0 :: nat)) l )"
 
 
-(*val deletes: forall 'a. Eq 'a => list 'a -> list 'a -> list 'a*)
+\<comment> \<open>\<open>val deletes: forall 'a. Eq 'a => list 'a -> list 'a -> list 'a\<close>\<close>
 definition deletes  :: " 'a list \<Rightarrow> 'a list \<Rightarrow> 'a list "  where 
      " deletes xs ys = (
   List.foldl ((\<lambda> x y. remove1 y x)) xs ys )"
 
 
-(* ========================================================================== *)
-(* Comments (not clean yet, please ignore the rest of the file)               *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Comments (not clean yet, please ignore the rest of the file)               \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ----------------------- *)
-(* skipped from Haskell Lib*)
-(* ----------------------- 
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> skipped from Haskell Lib\<close>\<close>
+\<comment> \<open>\<open> ----------------------- 
 
 intersperse :: a -> [a] -> [a]
 intercalate :: [a] -> [[a]] -> [a]
@@ -703,7 +703,7 @@ unwords :: [String] -> StringSource
 nub :: Eq a => [a] -> [a]Source
 delete :: Eq a => a -> [a] -> [a]Source
 
-() :: Eq a => [a] -> [a] -> [a]Source
+(\\) :: Eq a => [a] -> [a] -> [a]Source
 union :: Eq a => [a] -> [a] -> [a]Source
 intersect :: Eq a => [a] -> [a] -> [a]Source
 sort :: Ord a => [a] -> [a]Source
@@ -728,12 +728,12 @@ genericIndex :: Integral a => [b] -> a -> bSource
 genericReplicate :: Integral i => i -> a -> [a]Source
 
 
-*)
+\<close>\<close>
 
 
-(* ----------------------- *)
-(* skipped from Lem Lib    *)
-(* ----------------------- 
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> skipped from Lem Lib    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- 
 
 
 val for_all2 : forall 'a 'b. ('a -> 'b -> bool) -> list 'a -> list 'b -> bool
@@ -744,7 +744,7 @@ val fold_left2 : forall 'a 'b 'c. ('a -> 'b -> 'c -> 'a) -> 'a -> list 'b -> lis
 val fold_right2 : forall 'a 'b 'c. ('a -> 'b -> 'c -> 'c) -> list 'a -> list 'b -> 'c -> 'c
 
 
-(* now maybe result and called lookup *)
+\<open> now maybe result and called lookup \<close>
 val assoc : forall 'a 'b. 'a -> list ('a * 'b) -> 'b
 let inline {ocaml} assoc = Ocaml.List.assoc
 
@@ -761,9 +761,9 @@ val merge : forall 'a. ('a -> 'a -> num) -> list 'a -> list 'a -> list 'a
 val intersect : forall 'a. list 'a -> list 'a -> list 'a
 
 
-*)
+\<close>\<close>
 
-(*val     catMaybes : forall 'a. list (maybe 'a) -> list 'a*)
+\<comment> \<open>\<open>val     catMaybes : forall 'a. list (maybe 'a) -> list 'a\<close>\<close>
 function (sequential,domintros)  catMaybes  :: "('a option)list \<Rightarrow> 'a list "  where 
      " catMaybes ([]) = (
         [])"

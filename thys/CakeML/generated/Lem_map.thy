@@ -17,141 +17,141 @@ begin
 
 
 
-(*open import Bool Basic_classes Function Maybe List Tuple Set Num*)
-(*open import {hol} `finite_mapTheory` `finite_mapLib`*)
+\<comment> \<open>\<open>open import Bool Basic_classes Function Maybe List Tuple Set Num\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `finite_mapTheory` `finite_mapLib`\<close>\<close>
 
-(*type map 'k 'v*)
-
-
-
-(* -------------------------------------------------------------------------- *)
-(* Map equality.                                                              *)
-(* -------------------------------------------------------------------------- *)
-
-(*val mapEqual : forall 'k 'v. Eq 'k, Eq 'v => map 'k 'v -> map 'k 'v -> bool*)
-(*val mapEqualBy : forall 'k 'v. ('k -> 'k -> bool) -> ('v -> 'v -> bool) -> map 'k 'v -> map 'k 'v -> bool*)
+\<comment> \<open>\<open>type map 'k 'v\<close>\<close>
 
 
-(* -------------------------------------------------------------------------- *)
-(* Map type class                                                             *)
-(* -------------------------------------------------------------------------- *)
 
-(*class ( MapKeyType 'a )
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Map equality.                                                              \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val mapEqual : forall 'k 'v. Eq 'k, Eq 'v => map 'k 'v -> map 'k 'v -> bool\<close>\<close>
+\<comment> \<open>\<open>val mapEqualBy : forall 'k 'v. ('k -> 'k -> bool) -> ('v -> 'v -> bool) -> map 'k 'v -> map 'k 'v -> bool\<close>\<close>
+
+
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Map type class                                                             \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+
+\<comment> \<open>\<open>class ( MapKeyType 'a )
   val {ocaml;coq} mapKeyCompare : 'a -> 'a -> ordering
-end*)
+end\<close>\<close>
 
-(* -------------------------------------------------------------------------- *)
-(* Empty maps                                                                 *)
-(* -------------------------------------------------------------------------- *)
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Empty maps                                                                 \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
 
-(*val empty : forall 'k 'v. MapKeyType 'k => map 'k 'v*)
-(*val emptyBy : forall 'k 'v. ('k -> 'k -> ordering) -> map 'k 'v*)
-
-
-(* -------------------------------------------------------------------------- *)
-(* Insertion                                                                  *)
-(* -------------------------------------------------------------------------- *)
-
-(*val insert    : forall 'k 'v. MapKeyType 'k => 'k -> 'v -> map 'k 'v -> map 'k 'v*)
+\<comment> \<open>\<open>val empty : forall 'k 'v. MapKeyType 'k => map 'k 'v\<close>\<close>
+\<comment> \<open>\<open>val emptyBy : forall 'k 'v. ('k -> 'k -> ordering) -> map 'k 'v\<close>\<close>
 
 
-(* -------------------------------------------------------------------------- *)
-(* Singleton                                                                  *)
-(* -------------------------------------------------------------------------- *)
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Insertion                                                                  \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
 
-(*val singleton : forall 'k 'v. MapKeyType 'k => 'k -> 'v -> map 'k 'v*)
-
-
-
-(* -------------------------------------------------------------------------- *)
-(* Emptyness check                                                            *)
-(* -------------------------------------------------------------------------- *)
-
-(*val null  : forall 'k 'v. MapKeyType 'k, Eq 'k, Eq 'v => map 'k 'v -> bool*)
+\<comment> \<open>\<open>val insert    : forall 'k 'v. MapKeyType 'k => 'k -> 'v -> map 'k 'v -> map 'k 'v\<close>\<close>
 
 
-(* -------------------------------------------------------------------------- *)
-(* lookup                                                                     *)
-(* -------------------------------------------------------------------------- *)
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Singleton                                                                  \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
 
-(*val lookupBy : forall 'k 'v. ('k -> 'k -> ordering) -> 'k -> map 'k 'v -> maybe 'v*)
-
-(*val lookup          : forall 'k 'v. MapKeyType 'k => 'k -> map 'k 'v -> maybe 'v*)
-
-(* -------------------------------------------------------------------------- *)
-(* findWithDefault                                                            *)
-(* -------------------------------------------------------------------------- *)
-
-(*val findWithDefault : forall 'k 'v. MapKeyType 'k => 'k -> 'v -> map 'k 'v -> 'v*)
-
-(* -------------------------------------------------------------------------- *)
-(* from lists                                                                 *)
-(* -------------------------------------------------------------------------- *)
-
-(*val fromList  : forall 'k 'v. MapKeyType 'k => list ('k * 'v) -> map 'k 'v*)
-(*let fromList l=  foldl (fun m (k,v) -> insert k v m) empty l*)
+\<comment> \<open>\<open>val singleton : forall 'k 'v. MapKeyType 'k => 'k -> 'v -> map 'k 'v\<close>\<close>
 
 
-(* -------------------------------------------------------------------------- *)
-(* to sets / domain / range                                                   *)
-(* -------------------------------------------------------------------------- *)
 
-(*val toSet : forall 'k 'v. MapKeyType 'k, SetType 'k, SetType 'v => map 'k 'v -> set ('k * 'v)*) 
-(*val toSetBy : forall 'k 'v. (('k * 'v) -> ('k * 'v) -> ordering) -> map 'k 'v -> set ('k * 'v)*)
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Emptyness check                                                            \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
 
-
-(*val domainBy : forall 'k 'v. ('k -> 'k -> ordering) -> map 'k 'v -> set 'k*)
-(*val domain : forall 'k 'v. MapKeyType 'k, SetType 'k => map 'k 'v -> set 'k*)
+\<comment> \<open>\<open>val null  : forall 'k 'v. MapKeyType 'k, Eq 'k, Eq 'v => map 'k 'v -> bool\<close>\<close>
 
 
-(*val range : forall 'k 'v. MapKeyType 'k, SetType 'v => map 'k 'v -> set 'v*)
-(*val rangeBy : forall 'k 'v. ('v -> 'v -> ordering) -> map 'k 'v -> set 'v*)
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> lookup                                                                     \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val lookupBy : forall 'k 'v. ('k -> 'k -> ordering) -> 'k -> map 'k 'v -> maybe 'v\<close>\<close>
+
+\<comment> \<open>\<open>val lookup          : forall 'k 'v. MapKeyType 'k => 'k -> map 'k 'v -> maybe 'v\<close>\<close>
+
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> findWithDefault                                                            \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val findWithDefault : forall 'k 'v. MapKeyType 'k => 'k -> 'v -> map 'k 'v -> 'v\<close>\<close>
+
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> from lists                                                                 \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val fromList  : forall 'k 'v. MapKeyType 'k => list ('k * 'v) -> map 'k 'v\<close>\<close>
+\<comment> \<open>\<open>let fromList l=  foldl (fun m (k,v) -> insert k v m) empty l\<close>\<close>
 
 
-(* -------------------------------------------------------------------------- *)
-(* member                                                                     *)
-(* -------------------------------------------------------------------------- *)
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> to sets / domain / range                                                   \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
 
-(*val member          : forall 'k 'v. MapKeyType 'k, SetType 'k, Eq 'k => 'k -> map 'k 'v -> bool*)
-
-(*val notMember       : forall 'k 'v. MapKeyType 'k, SetType 'k, Eq 'k => 'k -> map 'k 'v -> bool*)
-
-(* -------------------------------------------------------------------------- *)
-(* Quantification                                                             *)
-(* -------------------------------------------------------------------------- *)
-
-(*val any : forall 'k 'v. MapKeyType 'k, Eq 'v => ('k -> 'v -> bool) -> map 'k 'v -> bool*) 
-(*val all : forall 'k 'v. MapKeyType 'k, Eq 'v => ('k -> 'v -> bool) -> map 'k 'v -> bool*) 
-
-(*let all P m=  (forall k v. (P k v && ((Instance_Basic_classes_Eq_Maybe_maybe.=) (lookup k m) (Just v))))*)
+\<comment> \<open>\<open>val toSet : forall 'k 'v. MapKeyType 'k, SetType 'k, SetType 'v => map 'k 'v -> set ('k * 'v)\<close>\<close> 
+\<comment> \<open>\<open>val toSetBy : forall 'k 'v. (('k * 'v) -> ('k * 'v) -> ordering) -> map 'k 'v -> set ('k * 'v)\<close>\<close>
 
 
-(* -------------------------------------------------------------------------- *)
-(* Set-like operations.                                                       *)
-(* -------------------------------------------------------------------------- *)
-(*val deleteBy         : forall 'k 'v. ('k -> 'k -> ordering) -> 'k -> map 'k 'v -> map 'k 'v*)
-(*val delete           : forall 'k 'v. MapKeyType 'k => 'k -> map 'k 'v -> map 'k 'v*)
-(*val deleteSwap      : forall 'k 'v. MapKeyType 'k => map 'k 'v -> 'k -> map 'k 'v*)
-
-(*val union          : forall 'k 'v. MapKeyType 'k => map 'k 'v -> map 'k 'v -> map 'k 'v*)
-
-(*val unions           : forall 'k 'v. MapKeyType 'k => list (map 'k 'v) -> map 'k 'v*)
+\<comment> \<open>\<open>val domainBy : forall 'k 'v. ('k -> 'k -> ordering) -> map 'k 'v -> set 'k\<close>\<close>
+\<comment> \<open>\<open>val domain : forall 'k 'v. MapKeyType 'k, SetType 'k => map 'k 'v -> set 'k\<close>\<close>
 
 
-(* -------------------------------------------------------------------------- *)
-(* Maps (in the functor sense).                                               *)
-(* -------------------------------------------------------------------------- *)
+\<comment> \<open>\<open>val range : forall 'k 'v. MapKeyType 'k, SetType 'v => map 'k 'v -> set 'v\<close>\<close>
+\<comment> \<open>\<open>val rangeBy : forall 'k 'v. ('v -> 'v -> ordering) -> map 'k 'v -> set 'v\<close>\<close>
 
-(*val map             : forall 'k 'v 'w. MapKeyType 'k => ('v -> 'w) -> map 'k 'v -> map 'k 'w*)
 
-(*val mapi : forall 'k 'v 'w. MapKeyType 'k => ('k -> 'v -> 'w) -> map 'k 'v -> map 'k 'w*)
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> member                                                                     \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
 
-(* -------------------------------------------------------------------------- *)
-(* Cardinality                                                                *)
-(* -------------------------------------------------------------------------- *)
-(*val size  : forall 'k 'v. MapKeyType 'k, SetType 'k => map 'k 'v -> nat*)
+\<comment> \<open>\<open>val member          : forall 'k 'v. MapKeyType 'k, SetType 'k, Eq 'k => 'k -> map 'k 'v -> bool\<close>\<close>
 
-(* instance of SetType *)
+\<comment> \<open>\<open>val notMember       : forall 'k 'v. MapKeyType 'k, SetType 'k, Eq 'k => 'k -> map 'k 'v -> bool\<close>\<close>
+
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Quantification                                                             \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val any : forall 'k 'v. MapKeyType 'k, Eq 'v => ('k -> 'v -> bool) -> map 'k 'v -> bool\<close>\<close> 
+\<comment> \<open>\<open>val all : forall 'k 'v. MapKeyType 'k, Eq 'v => ('k -> 'v -> bool) -> map 'k 'v -> bool\<close>\<close> 
+
+\<comment> \<open>\<open>let all P m=  (forall k v. (P k v && ((Instance_Basic_classes_Eq_Maybe_maybe.=) (lookup k m) (Just v))))\<close>\<close>
+
+
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Set-like operations.                                                       \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open>val deleteBy         : forall 'k 'v. ('k -> 'k -> ordering) -> 'k -> map 'k 'v -> map 'k 'v\<close>\<close>
+\<comment> \<open>\<open>val delete           : forall 'k 'v. MapKeyType 'k => 'k -> map 'k 'v -> map 'k 'v\<close>\<close>
+\<comment> \<open>\<open>val deleteSwap      : forall 'k 'v. MapKeyType 'k => map 'k 'v -> 'k -> map 'k 'v\<close>\<close>
+
+\<comment> \<open>\<open>val union          : forall 'k 'v. MapKeyType 'k => map 'k 'v -> map 'k 'v -> map 'k 'v\<close>\<close>
+
+\<comment> \<open>\<open>val unions           : forall 'k 'v. MapKeyType 'k => list (map 'k 'v) -> map 'k 'v\<close>\<close>
+
+
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Maps (in the functor sense).                                               \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val map             : forall 'k 'v 'w. MapKeyType 'k => ('v -> 'w) -> map 'k 'v -> map 'k 'w\<close>\<close>
+
+\<comment> \<open>\<open>val mapi : forall 'k 'v 'w. MapKeyType 'k => ('k -> 'v -> 'w) -> map 'k 'v -> map 'k 'w\<close>\<close>
+
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> Cardinality                                                                \<close>\<close>
+\<comment> \<open>\<open> -------------------------------------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open>val size  : forall 'k 'v. MapKeyType 'k, SetType 'k => map 'k 'v -> nat\<close>\<close>
+
+\<comment> \<open>\<open> instance of SetType \<close>\<close>
 definition map_setElemCompare  :: "(('d*'c)set \<Rightarrow>('b*'a)set \<Rightarrow> 'e)\<Rightarrow>('d,'c)Map.map \<Rightarrow>('b,'a)Map.map \<Rightarrow> 'e "  where 
      " map_setElemCompare cmp x y = (
   cmp (map_to_set x) (map_to_set y))"

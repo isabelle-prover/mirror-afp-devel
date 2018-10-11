@@ -15,15 +15,15 @@ imports
 
 begin 
 
-(*open import Pervasives*)
-(*open import Ast*)
-(*open import SemanticPrimitives*)
-(*open import Ffi*)
-(*open import Namespace*)
-(*open import Lib*)
-(*open import Evaluate*)
+\<comment> \<open>\<open>open import Pervasives\<close>\<close>
+\<comment> \<open>\<open>open import Ast\<close>\<close>
+\<comment> \<open>\<open>open import SemanticPrimitives\<close>\<close>
+\<comment> \<open>\<open>open import Ffi\<close>\<close>
+\<comment> \<open>\<open>open import Namespace\<close>\<close>
+\<comment> \<open>\<open>open import Lib\<close>\<close>
+\<comment> \<open>\<open>open import Evaluate\<close>\<close>
 
-(*val prim_types_program : prog*)
+\<comment> \<open>\<open>val prim_types_program : prog\<close>\<close>
 definition prim_types_program  :: "(top0)list "  where 
      " prim_types_program = (
   [Tdec  (Dexn ((| row = 0, col = 0, offset = 0 |), (| row = 0, col = 0, offset = 0 |)) (''Bind'') []),
@@ -35,8 +35,8 @@ definition prim_types_program  :: "(top0)list "  where
    Tdec (Dtype ((| row = 0, col = 0, offset = 0 |), (| row = 0, col = 0, offset = 0 |)) [([([(CHR 0x27), (CHR ''a'')])], (''option''), [((''NONE''), []),((''SOME''), [Tvar ([(CHR 0x27), (CHR ''a'')])]) ])]) ])"
 
 
-(*val add_to_sem_env :
-  forall 'ffi. Eq 'ffi => (state 'ffi * sem_env v) -> prog -> maybe (state 'ffi * sem_env v)*)
+\<comment> \<open>\<open>val add_to_sem_env :
+  forall 'ffi. Eq 'ffi => (state 'ffi * sem_env v) -> prog -> maybe (state 'ffi * sem_env v)\<close>\<close>
 fun add_to_sem_env  :: " 'ffi state*(v)sem_env \<Rightarrow>(top0)list \<Rightarrow>('ffi state*(v)sem_env)option "  where 
      " add_to_sem_env (st, env) prog = (
   (case  fun_evaluate_prog st env prog of
@@ -45,7 +45,7 @@ fun add_to_sem_env  :: " 'ffi state*(v)sem_env \<Rightarrow>(top0)list \<Rightar
   ))"
 
 
-(*val prim_sem_env : forall 'ffi. Eq 'ffi => ffi_state 'ffi -> maybe (state 'ffi * sem_env v)*)
+\<comment> \<open>\<open>val prim_sem_env : forall 'ffi. Eq 'ffi => ffi_state 'ffi -> maybe (state 'ffi * sem_env v)\<close>\<close>
 definition prim_sem_env  :: " 'ffi ffi_state \<Rightarrow>('ffi state*(v)sem_env)option "  where 
      " prim_sem_env ffi1 = (
   add_to_sem_env

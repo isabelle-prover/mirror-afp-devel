@@ -24,8 +24,8 @@ begin
 
  
 
-(*include import Basic_classes Bool Tuple Maybe Either Function Num Map Set List String Word Show*)
+\<comment> \<open>\<open>include import Basic_classes Bool Tuple Maybe Either Function Num Map Set List String Word Show\<close>\<close>
 
-(*import Sorting Relation*)
+\<comment> \<open>\<open>import Sorting Relation\<close>\<close>
 
 end

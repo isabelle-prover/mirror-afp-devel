@@ -9,63 +9,63 @@ imports
 
 begin 
 
-(******************************************************************************)
-(* A library for common operations on functions                               *)
-(******************************************************************************)
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
+\<comment> \<open>\<open> A library for common operations on functions                               \<close>\<close>
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
 
-(*open import Bool Basic_classes*)
+\<comment> \<open>\<open>open import Bool Basic_classes\<close>\<close>
 
-(*open import {coq} `Program.Basics`*)
+\<comment> \<open>\<open>open import {coq} `Program.Basics`\<close>\<close>
 
-(* ----------------------- *)
-(* identity function       *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> identity function       \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val id : forall 'a. 'a -> 'a*)
-(*let id x=  x*)
-
-
-(* ----------------------- *)
-(* constant function       *)
-(* ----------------------- *)
-
-(*val const : forall 'a 'b. 'a -> 'b -> 'a*)
+\<comment> \<open>\<open>val id : forall 'a. 'a -> 'a\<close>\<close>
+\<comment> \<open>\<open>let id x=  x\<close>\<close>
 
 
-(* ----------------------- *)
-(* function composition    *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> constant function       \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val comb : forall 'a 'b 'c. ('b -> 'c) -> ('a -> 'b) -> ('a -> 'c)*)
-(*let comb f g=  (fun x -> f (g x))*)
-
-
-(* ----------------------- *)
-(* function application    *)
-(* ----------------------- *)
-
-(*val $ [apply] : forall 'a 'b. ('a -> 'b) -> ('a -> 'b)*)
-(*let $ f=  (fun x -> f x)*)
-
-(*val $> [rev_apply] : forall 'a 'b. 'a -> ('a -> 'b) -> 'b*)
-(*let $> x f=  f x*)
-
-(* ----------------------- *)
-(* flipping argument order *)
-(* ----------------------- *)
-
-(*val flip : forall 'a 'b 'c. ('a -> 'b -> 'c) -> ('b -> 'a -> 'c)*)
-(*let flip f=  (fun x y -> f y x)*)
+\<comment> \<open>\<open>val const : forall 'a 'b. 'a -> 'b -> 'a\<close>\<close>
 
 
-(* currying / uncurrying *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> function composition    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val curry : forall 'a 'b 'c. (('a * 'b) -> 'c) -> 'a -> 'b -> 'c*)
+\<comment> \<open>\<open>val comb : forall 'a 'b 'c. ('b -> 'c) -> ('a -> 'b) -> ('a -> 'c)\<close>\<close>
+\<comment> \<open>\<open>let comb f g=  (fun x -> f (g x))\<close>\<close>
+
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> function application    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val $ [apply] : forall 'a 'b. ('a -> 'b) -> ('a -> 'b)\<close>\<close>
+\<comment> \<open>\<open>let $ f=  (fun x -> f x)\<close>\<close>
+
+\<comment> \<open>\<open>val $> [rev_apply] : forall 'a 'b. 'a -> ('a -> 'b) -> 'b\<close>\<close>
+\<comment> \<open>\<open>let $> x f=  f x\<close>\<close>
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> flipping argument order \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val flip : forall 'a 'b 'c. ('a -> 'b -> 'c) -> ('b -> 'a -> 'c)\<close>\<close>
+\<comment> \<open>\<open>let flip f=  (fun x y -> f y x)\<close>\<close>
+
+
+\<comment> \<open>\<open> currying / uncurrying \<close>\<close>
+
+\<comment> \<open>\<open>val curry : forall 'a 'b 'c. (('a * 'b) -> 'c) -> 'a -> 'b -> 'c\<close>\<close>
 definition curry  :: "('a*'b \<Rightarrow> 'c)\<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c "  where 
      " curry f = ( (\<lambda> a b .  f (a, b)))"
 
 
-(*val uncurry : forall 'a 'b 'c. ('a -> 'b -> 'c) -> ('a * 'b -> 'c)*)
+\<comment> \<open>\<open>val uncurry : forall 'a 'b 'c. ('a -> 'b -> 'c) -> ('a * 'b -> 'c)\<close>\<close>
 fun uncurry  :: "('a \<Rightarrow> 'b \<Rightarrow> 'c)\<Rightarrow> 'a*'b \<Rightarrow> 'c "  where 
      " uncurry f (a,b) = ( f a b )"
 

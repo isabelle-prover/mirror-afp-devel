@@ -12,57 +12,57 @@ begin
 
 
 
-(*open import Bool Basic_classes List*)
-(*open import {ocaml} `Xstring`*)
-(*open import {hol} `lemTheory` `stringTheory`*)
-(*open import {coq} `Coq.Strings.Ascii` `Coq.Strings.String`*)
+\<comment> \<open>\<open>open import Bool Basic_classes List\<close>\<close>
+\<comment> \<open>\<open>open import {ocaml} `Xstring`\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `lemTheory` `stringTheory`\<close>\<close>
+\<comment> \<open>\<open>open import {coq} `Coq.Strings.Ascii` `Coq.Strings.String`\<close>\<close>
 
-(* ------------------------------------------- *)
-(* translations between strings and char lists *)
-(* ------------------------------------------- *)
+\<comment> \<open>\<open> ------------------------------------------- \<close>\<close>
+\<comment> \<open>\<open> translations between strings and char lists \<close>\<close>
+\<comment> \<open>\<open> ------------------------------------------- \<close>\<close>
 
-(*val toCharList : string -> list char*)
+\<comment> \<open>\<open>val toCharList : string -> list char\<close>\<close>
 
-(*val toString : list char -> string*)
-
-
-(* ----------------------- *)
-(* generating strings      *)
-(* ----------------------- *)
-
-(*val makeString : nat -> char -> string*)
-(*let makeString len c=  toString (replicate len c)*)
-
-(* ----------------------- *)
-(* length                  *)
-(* ----------------------- *)
-
-(*val stringLength : string -> nat*)
-
-(* ----------------------- *)
-(* string concatenation    *)
-(* ----------------------- *)
-
-(*val ^ [stringAppend] : string -> string -> string*)
+\<comment> \<open>\<open>val toString : list char -> string\<close>\<close>
 
 
-(* ----------------------------*)
-(* setting up pattern matching *)
-(* --------------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> generating strings      \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val string_case : forall 'a. string -> 'a -> (char -> string -> 'a) -> 'a*)
+\<comment> \<open>\<open>val makeString : nat -> char -> string\<close>\<close>
+\<comment> \<open>\<open>let makeString len c=  toString (replicate len c)\<close>\<close>
 
-(*let string_case s c_empty c_cons=
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> length                  \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val stringLength : string -> nat\<close>\<close>
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> string concatenation    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val ^ [stringAppend] : string -> string -> string\<close>\<close>
+
+
+\<comment> \<open>\<open> ----------------------------\<close>\<close>
+\<comment> \<open>\<open> setting up pattern matching \<close>\<close>
+\<comment> \<open>\<open> --------------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val string_case : forall 'a. string -> 'a -> (char -> string -> 'a) -> 'a\<close>\<close>
+
+\<comment> \<open>\<open>let string_case s c_empty c_cons=
    match (toCharList s) with
     | [] -> c_empty
     | c :: cs -> c_cons c (toString cs)
-  end*)
+  end\<close>\<close>
 
-(*val empty_string : string*)
+\<comment> \<open>\<open>val empty_string : string\<close>\<close>
 
-(*val cons_string : char -> string -> string*)
+\<comment> \<open>\<open>val cons_string : char -> string -> string\<close>\<close>
 
-(*val concat : string -> list string -> string*)
+\<comment> \<open>\<open>val concat : string -> list string -> string\<close>\<close>
 function (sequential,domintros)  concat  :: " string \<Rightarrow>(string)list \<Rightarrow> string "  where 
      " concat sep ([]) = ( (''''))"
 |" concat sep (s # ss') = (

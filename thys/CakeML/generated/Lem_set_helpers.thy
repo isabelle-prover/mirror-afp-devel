@@ -12,39 +12,39 @@ imports
 
 begin 
 
-(******************************************************************************)
-(* Helper functions for sets                                                  *)
-(******************************************************************************)
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
+\<comment> \<open>\<open> Helper functions for sets                                                  \<close>\<close>
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
 
-(* Usually there is a something.lem file containing the main definitions and a 
+\<comment> \<open>\<open> Usually there is a something.lem file containing the main definitions and a 
    something_extra.lem one containing functions that might cause problems for
    some backends or are just seldomly used.
 
    For sets the situation is different. folding is not well defined, since it
    is only sensibly defined for finite sets and the traversal 
-   order is underspecified. *) 
+   order is underspecified. \<close>\<close> 
 
-(* ========================================================================== *)
-(* Header                                                                     *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Header                                                                     \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(*open import Bool Basic_classes Maybe Function Num*) 
+\<comment> \<open>\<open>open import Bool Basic_classes Maybe Function Num\<close>\<close> 
 
-(*open import {coq} `Coq.Lists.List`*)
+\<comment> \<open>\<open>open import {coq} `Coq.Lists.List`\<close>\<close>
 
-(* ------------------------ *)
-(* fold                     *)
-(* ------------------------ *)
+\<comment> \<open>\<open> ------------------------ \<close>\<close>
+\<comment> \<open>\<open> fold                     \<close>\<close>
+\<comment> \<open>\<open> ------------------------ \<close>\<close>
 
-(* fold is suspicious, because if given a function, for which
+\<comment> \<open>\<open> fold is suspicious, because if given a function, for which
    the order, in which the arguments are given, matters, its
    results are undefined. On the other hand, it is very handy to
    define other - non suspicious functions. 
 
    Moreover, fold is central for OCaml, since it is used to
-   compile set comprehensions *)
+   compile set comprehensions \<close>\<close>
 
-(*val fold : forall 'a 'b. ('a -> 'b -> 'b) -> set 'a -> 'b -> 'b*)
+\<comment> \<open>\<open>val fold : forall 'a 'b. ('a -> 'b -> 'b) -> set 'a -> 'b -> 'b\<close>\<close>
 
 
 end

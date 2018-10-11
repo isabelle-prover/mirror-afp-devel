@@ -13,20 +13,20 @@ begin
 
 
 
-(*open import Bool Basic_classes*)
-(*open import {isabelle} `HOL-Word.Word` `Complex_Main`*)
-(*open import {hol} `integerTheory` `intReduce` `wordsTheory` `wordsLib` `ratTheory` `realTheory` `intrealTheory` `transcTheory`*)
-(*open import {coq} `Coq.Numbers.BinNums` `Coq.ZArith.BinInt` `Coq.ZArith.Zpower` `Coq.ZArith.Zdiv` `Coq.ZArith.Zmax` `Coq.Numbers.Natural.Peano.NPeano` `Coq.QArith.Qabs` `Coq.QArith.Qminmax` `Coq.QArith.Qround` `Coq.Reals.ROrderedType` `Coq.Reals.Rbase` `Coq.Reals.Rfunctions`*) 
+\<comment> \<open>\<open>open import Bool Basic_classes\<close>\<close>
+\<comment> \<open>\<open>open import {isabelle} `HOL-Word.Word` `Complex_Main`\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `integerTheory` `intReduce` `wordsTheory` `wordsLib` `ratTheory` `realTheory` `intrealTheory` `transcTheory`\<close>\<close>
+\<comment> \<open>\<open>open import {coq} `Coq.Numbers.BinNums` `Coq.ZArith.BinInt` `Coq.ZArith.Zpower` `Coq.ZArith.Zdiv` `Coq.ZArith.Zmax` `Coq.Numbers.Natural.Peano.NPeano` `Coq.QArith.Qabs` `Coq.QArith.Qminmax` `Coq.QArith.Qround` `Coq.Reals.ROrderedType` `Coq.Reals.Rbase` `Coq.Reals.Rfunctions`\<close>\<close> 
 
-(*class inline ( Numeral 'a ) 
+\<comment> \<open>\<open>class inline ( Numeral 'a ) 
   val fromNumeral : numeral -> 'a 
-end*)
+end\<close>\<close>
 
-(* ========================================================================== *)
-(* Syntactic type-classes for common operations                               *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Syntactic type-classes for common operations                               \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* Typeclasses can be used as a mean to overload constants like +, -, etc *)
+\<comment> \<open>\<open> Typeclasses can be used as a mean to overload constants like "+", "-", etc \<close>\<close>
 
 record 'a NumNegate_class= 
  
@@ -96,93 +96,93 @@ record 'a NumPred_class=
  
 
 
-(* ----------------------- *)
-(* natural                 *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> natural                 \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(* unbounded size natural numbers *)
-(*type natural*)
-
-
-(* ----------------------- *)
-(* int                     *)
-(* ----------------------- *)
-
-(* bounded size integers with uncertain length *)
-
-(*type int*)
+\<comment> \<open>\<open> unbounded size natural numbers \<close>\<close>
+\<comment> \<open>\<open>type natural\<close>\<close>
 
 
-(* ----------------------- *)
-(* integer                 *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> int                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(* unbounded size integers *)
+\<comment> \<open>\<open> bounded size integers with uncertain length \<close>\<close>
 
-(*type integer*)
-
-(* ----------------------- *)
-(* bint                    *)
-(* ----------------------- *)
-
-(* TODO the bounded ints are only partially implemented, use with care. *)
-
-(* 32 bit integers *)
-(*type int32*) 
-
-(* 64 bit integers *)
-(*type int64*) 
+\<comment> \<open>\<open>type int\<close>\<close>
 
 
-(* ----------------------- *)
-(* rational                *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> integer                 \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(* unbounded size and precision rational numbers *)
+\<comment> \<open>\<open> unbounded size integers \<close>\<close>
 
-(*type rational*) (* ???: better type for this in HOL? *)
+\<comment> \<open>\<open>type integer\<close>\<close>
 
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> bint                    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(* ----------------------- *)
-(* real                    *)
-(* ----------------------- *)
+\<comment> \<open>\<open> TODO the bounded ints are only partially implemented, use with care. \<close>\<close>
 
-(* real numbers *)
-(* Note that for OCaml, this is mapped to floats with 64 bits. *)
+\<comment> \<open>\<open> 32 bit integers \<close>\<close>
+\<comment> \<open>\<open>type int32\<close>\<close> 
 
-(*type real*) (* ???: better type for this in HOL? *)
-
-
-(* ----------------------- *)
-(* double                  *)
-(* ----------------------- *)
-
-(* double precision floating point (64 bits) *)
-
-(*type float64*) (* ???: better type for this in HOL? *)
-
-(*type float32*) (* ???: better type for this in HOL? *)
+\<comment> \<open>\<open> 64 bit integers \<close>\<close>
+\<comment> \<open>\<open>type int64\<close>\<close> 
 
 
-(* ========================================================================== *)
-(* Binding the standard operations for the number types                       *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> rational                \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open> unbounded size and precision rational numbers \<close>\<close>
+
+\<comment> \<open>\<open>type rational\<close>\<close> \<comment> \<open>\<open> ???: better type for this in HOL? \<close>\<close>
 
 
-(* ----------------------- *)
-(* nat                     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> real                    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val natFromNumeral : numeral -> nat*)
+\<comment> \<open>\<open> real numbers \<close>\<close>
+\<comment> \<open>\<open> Note that for OCaml, this is mapped to floats with 64 bits. \<close>\<close>
 
-(*val natEq : nat -> nat -> bool*)
+\<comment> \<open>\<open>type real\<close>\<close> \<comment> \<open>\<open> ???: better type for this in HOL? \<close>\<close>
 
-(*val natLess : nat -> nat -> bool*)
-(*val natLessEqual : nat -> nat -> bool*)
-(*val natGreater : nat -> nat -> bool*)
-(*val natGreaterEqual : nat -> nat -> bool*)
 
-(*val natCompare : nat -> nat -> ordering*)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> double                  \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open> double precision floating point (64 bits) \<close>\<close>
+
+\<comment> \<open>\<open>type float64\<close>\<close> \<comment> \<open>\<open> ???: better type for this in HOL? \<close>\<close>
+
+\<comment> \<open>\<open>type float32\<close>\<close> \<comment> \<open>\<open> ???: better type for this in HOL? \<close>\<close>
+
+
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Binding the standard operations for the number types                       \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> nat                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val natFromNumeral : numeral -> nat\<close>\<close>
+
+\<comment> \<open>\<open>val natEq : nat -> nat -> bool\<close>\<close>
+
+\<comment> \<open>\<open>val natLess : nat -> nat -> bool\<close>\<close>
+\<comment> \<open>\<open>val natLessEqual : nat -> nat -> bool\<close>\<close>
+\<comment> \<open>\<open>val natGreater : nat -> nat -> bool\<close>\<close>
+\<comment> \<open>\<open>val natGreaterEqual : nat -> nat -> bool\<close>\<close>
+
+\<comment> \<open>\<open>val natCompare : nat -> nat -> ordering\<close>\<close>
 
 definition instance_Basic_classes_Ord_nat_dict  :: "(nat)Ord_class "  where 
      " instance_Basic_classes_Ord_nat_dict = ((|
@@ -198,7 +198,7 @@ definition instance_Basic_classes_Ord_nat_dict  :: "(nat)Ord_class "  where
   isGreaterEqual_method = (\<ge>)|) )"
 
 
-(*val natAdd : nat -> nat -> nat*)
+\<comment> \<open>\<open>val natAdd : nat -> nat -> nat\<close>\<close>
 
 definition instance_Num_NumAdd_nat_dict  :: "(nat)NumAdd_class "  where 
      " instance_Num_NumAdd_nat_dict = ((|
@@ -206,7 +206,7 @@ definition instance_Num_NumAdd_nat_dict  :: "(nat)NumAdd_class "  where
   numAdd_method = (+)|) )"
 
 
-(*val natMinus : nat -> nat -> nat*)
+\<comment> \<open>\<open>val natMinus : nat -> nat -> nat\<close>\<close>
 
 definition instance_Num_NumMinus_nat_dict  :: "(nat)NumMinus_class "  where 
      " instance_Num_NumMinus_nat_dict = ((|
@@ -214,22 +214,22 @@ definition instance_Num_NumMinus_nat_dict  :: "(nat)NumMinus_class "  where
   numMinus_method = (-)|) )"
 
 
-(*val natSucc : nat -> nat*)
-(*let natSucc n=  (Instance_Num_NumAdd_nat.+) n 1*)
+\<comment> \<open>\<open>val natSucc : nat -> nat\<close>\<close>
+\<comment> \<open>\<open>let natSucc n=  (Instance_Num_NumAdd_nat.+) n 1\<close>\<close>
 definition instance_Num_NumSucc_nat_dict  :: "(nat)NumSucc_class "  where 
      " instance_Num_NumSucc_nat_dict = ((|
 
   succ_method = Suc |) )"
 
 
-(*val natPred : nat -> nat*)
+\<comment> \<open>\<open>val natPred : nat -> nat\<close>\<close>
 definition instance_Num_NumPred_nat_dict  :: "(nat)NumPred_class "  where 
      " instance_Num_NumPred_nat_dict = ((|
 
   pred_method = (\<lambda> n. n -( 1 :: nat))|) )"
 
 
-(*val natMult : nat -> nat -> nat*)
+\<comment> \<open>\<open>val natMult : nat -> nat -> nat\<close>\<close>
 
 definition instance_Num_NumMult_nat_dict  :: "(nat)NumMult_class "  where 
      " instance_Num_NumMult_nat_dict = ((|
@@ -237,7 +237,7 @@ definition instance_Num_NumMult_nat_dict  :: "(nat)NumMult_class "  where
   numMult_method = (*)|) )"
 
 
-(*val natDiv : nat -> nat -> nat*)
+\<comment> \<open>\<open>val natDiv : nat -> nat -> nat\<close>\<close>
 
 definition instance_Num_NumIntegerDivision_nat_dict  :: "(nat)NumIntegerDivision_class "  where 
      " instance_Num_NumIntegerDivision_nat_dict = ((|
@@ -251,7 +251,7 @@ definition instance_Num_NumDivision_nat_dict  :: "(nat)NumDivision_class "  wher
   numDivision_method = (div)|) )"
 
 
-(*val natMod : nat -> nat -> nat*)
+\<comment> \<open>\<open>val natMod : nat -> nat -> nat\<close>\<close>
 
 definition instance_Num_NumRemainder_nat_dict  :: "(nat)NumRemainder_class "  where 
      " instance_Num_NumRemainder_nat_dict = ((|
@@ -260,11 +260,11 @@ definition instance_Num_NumRemainder_nat_dict  :: "(nat)NumRemainder_class "  wh
 
 
 
-(*val gen_pow_aux : forall 'a. ('a -> 'a -> 'a) -> 'a -> 'a -> nat -> 'a*)
+\<comment> \<open>\<open>val gen_pow_aux : forall 'a. ('a -> 'a -> 'a) -> 'a -> 'a -> nat -> 'a\<close>\<close>
 fun  gen_pow_aux  :: "('a \<Rightarrow> 'a \<Rightarrow> 'a)\<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a "  where 
      " gen_pow_aux (mul :: 'a \<Rightarrow> 'a \<Rightarrow> 'a) (a :: 'a) (b :: 'a) (e :: nat) = (
    (case  e of
-       0 => a \<comment> \<open>cannot happen, call discipline guarentees \<open>e >= 1\<close>\<close>
+       0 => a \<comment> \<open>\<open> cannot happen, call discipline guarentees e >= 1 \<close>\<close>
      | (Suc 0) => mul a b
      | (  (Suc(Suc e'))) => (let e'' = (e div( 2 :: nat)) in
                    (let a' = (if (e mod( 2 :: nat)) =( 0 :: nat) then a else mul a b) in
@@ -278,7 +278,7 @@ definition gen_pow  :: " 'a \<Rightarrow>('a \<Rightarrow> 'a \<Rightarrow> 'a)\
   if (e =( 0 :: nat)) then one else gen_pow_aux mul one b e )"
 
 
-(*val natPow : nat -> nat -> nat*)
+\<comment> \<open>\<open>val natPow : nat -> nat -> nat\<close>\<close>
 
 definition instance_Num_NumPow_nat_dict  :: "(nat)NumPow_class "  where 
      " instance_Num_NumPow_nat_dict = ((|
@@ -286,9 +286,9 @@ definition instance_Num_NumPow_nat_dict  :: "(nat)NumPow_class "  where
   numPow_method = (^)|) )"
 
 
-(*val natMin : nat -> nat -> nat*)
+\<comment> \<open>\<open>val natMin : nat -> nat -> nat\<close>\<close>
 
-(*val natMax : nat -> nat -> nat*)
+\<comment> \<open>\<open>val natMax : nat -> nat -> nat\<close>\<close>
 
 definition instance_Basic_classes_OrdMaxMin_nat_dict  :: "(nat)OrdMaxMin_class "  where 
      " instance_Basic_classes_OrdMaxMin_nat_dict = ((|
@@ -299,20 +299,20 @@ definition instance_Basic_classes_OrdMaxMin_nat_dict  :: "(nat)OrdMaxMin_class "
 
 
 
-(* ----------------------- *)
-(* natural                 *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> natural                 \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val naturalFromNumeral : numeral -> natural*)
+\<comment> \<open>\<open>val naturalFromNumeral : numeral -> natural\<close>\<close>
 
-(*val naturalEq : natural -> natural -> bool*)
+\<comment> \<open>\<open>val naturalEq : natural -> natural -> bool\<close>\<close>
 
-(*val naturalLess : natural -> natural -> bool*)
-(*val naturalLessEqual : natural -> natural -> bool*)
-(*val naturalGreater : natural -> natural -> bool*)
-(*val naturalGreaterEqual : natural -> natural -> bool*)
+\<comment> \<open>\<open>val naturalLess : natural -> natural -> bool\<close>\<close>
+\<comment> \<open>\<open>val naturalLessEqual : natural -> natural -> bool\<close>\<close>
+\<comment> \<open>\<open>val naturalGreater : natural -> natural -> bool\<close>\<close>
+\<comment> \<open>\<open>val naturalGreaterEqual : natural -> natural -> bool\<close>\<close>
 
-(*val naturalCompare : natural -> natural -> ordering*)
+\<comment> \<open>\<open>val naturalCompare : natural -> natural -> ordering\<close>\<close>
 
 definition instance_Basic_classes_Ord_Num_natural_dict  :: "(nat)Ord_class "  where 
      " instance_Basic_classes_Ord_Num_natural_dict = ((|
@@ -328,7 +328,7 @@ definition instance_Basic_classes_Ord_Num_natural_dict  :: "(nat)Ord_class "  wh
   isGreaterEqual_method = (\<ge>)|) )"
 
 
-(*val naturalAdd : natural -> natural -> natural*)
+\<comment> \<open>\<open>val naturalAdd : natural -> natural -> natural\<close>\<close>
 
 definition instance_Num_NumAdd_Num_natural_dict  :: "(nat)NumAdd_class "  where 
      " instance_Num_NumAdd_Num_natural_dict = ((|
@@ -336,7 +336,7 @@ definition instance_Num_NumAdd_Num_natural_dict  :: "(nat)NumAdd_class "  where
   numAdd_method = (+)|) )"
 
 
-(*val naturalMinus : natural -> natural -> natural*)
+\<comment> \<open>\<open>val naturalMinus : natural -> natural -> natural\<close>\<close>
 
 definition instance_Num_NumMinus_Num_natural_dict  :: "(nat)NumMinus_class "  where 
      " instance_Num_NumMinus_Num_natural_dict = ((|
@@ -344,22 +344,22 @@ definition instance_Num_NumMinus_Num_natural_dict  :: "(nat)NumMinus_class "  wh
   numMinus_method = (-)|) )"
 
 
-(*val naturalSucc : natural -> natural*)
-(*let naturalSucc n=  (Instance_Num_NumAdd_Num_natural.+) n 1*)
+\<comment> \<open>\<open>val naturalSucc : natural -> natural\<close>\<close>
+\<comment> \<open>\<open>let naturalSucc n=  (Instance_Num_NumAdd_Num_natural.+) n 1\<close>\<close>
 definition instance_Num_NumSucc_Num_natural_dict  :: "(nat)NumSucc_class "  where 
      " instance_Num_NumSucc_Num_natural_dict = ((|
 
   succ_method = Suc |) )"
 
 
-(*val naturalPred : natural -> natural*)
+\<comment> \<open>\<open>val naturalPred : natural -> natural\<close>\<close>
 definition instance_Num_NumPred_Num_natural_dict  :: "(nat)NumPred_class "  where 
      " instance_Num_NumPred_Num_natural_dict = ((|
 
   pred_method = (\<lambda> n. n -( 1 :: nat))|) )"
 
 
-(*val naturalMult : natural -> natural -> natural*)
+\<comment> \<open>\<open>val naturalMult : natural -> natural -> natural\<close>\<close>
 
 definition instance_Num_NumMult_Num_natural_dict  :: "(nat)NumMult_class "  where 
      " instance_Num_NumMult_Num_natural_dict = ((|
@@ -368,7 +368,7 @@ definition instance_Num_NumMult_Num_natural_dict  :: "(nat)NumMult_class "  wher
 
 
 
-(*val naturalPow : natural -> nat -> natural*)
+\<comment> \<open>\<open>val naturalPow : natural -> nat -> natural\<close>\<close>
 
 definition instance_Num_NumPow_Num_natural_dict  :: "(nat)NumPow_class "  where 
      " instance_Num_NumPow_Num_natural_dict = ((|
@@ -376,7 +376,7 @@ definition instance_Num_NumPow_Num_natural_dict  :: "(nat)NumPow_class "  where
   numPow_method = (^)|) )"
 
 
-(*val naturalDiv : natural -> natural -> natural*)
+\<comment> \<open>\<open>val naturalDiv : natural -> natural -> natural\<close>\<close>
 
 definition instance_Num_NumIntegerDivision_Num_natural_dict  :: "(nat)NumIntegerDivision_class "  where 
      " instance_Num_NumIntegerDivision_Num_natural_dict = ((|
@@ -390,7 +390,7 @@ definition instance_Num_NumDivision_Num_natural_dict  :: "(nat)NumDivision_class
   numDivision_method = (div)|) )"
 
 
-(*val naturalMod : natural -> natural -> natural*)
+\<comment> \<open>\<open>val naturalMod : natural -> natural -> natural\<close>\<close>
 
 definition instance_Num_NumRemainder_Num_natural_dict  :: "(nat)NumRemainder_class "  where 
      " instance_Num_NumRemainder_Num_natural_dict = ((|
@@ -398,9 +398,9 @@ definition instance_Num_NumRemainder_Num_natural_dict  :: "(nat)NumRemainder_cla
   mod_method = (mod)|) )"
 
 
-(*val naturalMin : natural -> natural -> natural*)
+\<comment> \<open>\<open>val naturalMin : natural -> natural -> natural\<close>\<close>
 
-(*val naturalMax : natural -> natural -> natural*)
+\<comment> \<open>\<open>val naturalMax : natural -> natural -> natural\<close>\<close>
 
 definition instance_Basic_classes_OrdMaxMin_Num_natural_dict  :: "(nat)OrdMaxMin_class "  where 
      " instance_Basic_classes_OrdMaxMin_Num_natural_dict = ((|
@@ -411,20 +411,20 @@ definition instance_Basic_classes_OrdMaxMin_Num_natural_dict  :: "(nat)OrdMaxMin
 
 
 
-(* ----------------------- *)
-(* int                     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> int                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val intFromNumeral : numeral -> int*)
+\<comment> \<open>\<open>val intFromNumeral : numeral -> int\<close>\<close>
 
-(*val intEq : int -> int -> bool*)
+\<comment> \<open>\<open>val intEq : int -> int -> bool\<close>\<close>
 
-(*val intLess : int -> int -> bool*)
-(*val intLessEqual : int -> int -> bool*)
-(*val intGreater : int -> int -> bool*)
-(*val intGreaterEqual : int -> int -> bool*)
+\<comment> \<open>\<open>val intLess : int -> int -> bool\<close>\<close>
+\<comment> \<open>\<open>val intLessEqual : int -> int -> bool\<close>\<close>
+\<comment> \<open>\<open>val intGreater : int -> int -> bool\<close>\<close>
+\<comment> \<open>\<open>val intGreaterEqual : int -> int -> bool\<close>\<close>
 
-(*val intCompare : int -> int -> ordering*)
+\<comment> \<open>\<open>val intCompare : int -> int -> ordering\<close>\<close>
 
 definition instance_Basic_classes_Ord_Num_int_dict  :: "(int)Ord_class "  where 
      " instance_Basic_classes_Ord_Num_int_dict = ((|
@@ -440,7 +440,7 @@ definition instance_Basic_classes_Ord_Num_int_dict  :: "(int)Ord_class "  where
   isGreaterEqual_method = (\<ge>)|) )"
 
 
-(*val intNegate : int -> int*)
+\<comment> \<open>\<open>val intNegate : int -> int\<close>\<close>
 
 definition instance_Num_NumNegate_Num_int_dict  :: "(int)NumNegate_class "  where 
      " instance_Num_NumNegate_Num_int_dict = ((|
@@ -448,7 +448,7 @@ definition instance_Num_NumNegate_Num_int_dict  :: "(int)NumNegate_class "  wher
   numNegate_method = (\<lambda> i. - i)|) )"
 
 
-(*val intAbs : int -> int*) (* TODO: check *)
+\<comment> \<open>\<open>val intAbs : int -> int\<close>\<close> \<comment> \<open>\<open> TODO: check \<close>\<close>
 
 definition instance_Num_NumAbs_Num_int_dict  :: "(int)NumAbs_class "  where 
      " instance_Num_NumAbs_Num_int_dict = ((|
@@ -456,7 +456,7 @@ definition instance_Num_NumAbs_Num_int_dict  :: "(int)NumAbs_class "  where
   abs_method = abs |) )"
 
 
-(*val intAdd : int -> int -> int*)
+\<comment> \<open>\<open>val intAdd : int -> int -> int\<close>\<close>
 
 definition instance_Num_NumAdd_Num_int_dict  :: "(int)NumAdd_class "  where 
      " instance_Num_NumAdd_Num_int_dict = ((|
@@ -464,7 +464,7 @@ definition instance_Num_NumAdd_Num_int_dict  :: "(int)NumAdd_class "  where
   numAdd_method = (+)|) )"
 
 
-(*val intMinus : int -> int -> int*)
+\<comment> \<open>\<open>val intMinus : int -> int -> int\<close>\<close>
 
 definition instance_Num_NumMinus_Num_int_dict  :: "(int)NumMinus_class "  where 
      " instance_Num_NumMinus_Num_int_dict = ((|
@@ -472,21 +472,21 @@ definition instance_Num_NumMinus_Num_int_dict  :: "(int)NumMinus_class "  where
   numMinus_method = (-)|) )"
 
 
-(*val intSucc : int -> int*)
+\<comment> \<open>\<open>val intSucc : int -> int\<close>\<close>
 definition instance_Num_NumSucc_Num_int_dict  :: "(int)NumSucc_class "  where 
      " instance_Num_NumSucc_Num_int_dict = ((|
 
   succ_method = (\<lambda> n. n +( 1 :: int))|) )"
 
 
-(*val intPred : int -> int*)
+\<comment> \<open>\<open>val intPred : int -> int\<close>\<close>
 definition instance_Num_NumPred_Num_int_dict  :: "(int)NumPred_class "  where 
      " instance_Num_NumPred_Num_int_dict = ((|
 
   pred_method = (\<lambda> n. n -( 1 :: int))|) )"
 
 
-(*val intMult : int -> int -> int*)
+\<comment> \<open>\<open>val intMult : int -> int -> int\<close>\<close>
 
 definition instance_Num_NumMult_Num_int_dict  :: "(int)NumMult_class "  where 
      " instance_Num_NumMult_Num_int_dict = ((|
@@ -495,7 +495,7 @@ definition instance_Num_NumMult_Num_int_dict  :: "(int)NumMult_class "  where
 
 
 
-(*val intPow : int -> nat -> int*)
+\<comment> \<open>\<open>val intPow : int -> nat -> int\<close>\<close>
 
 definition instance_Num_NumPow_Num_int_dict  :: "(int)NumPow_class "  where 
      " instance_Num_NumPow_Num_int_dict = ((|
@@ -503,7 +503,7 @@ definition instance_Num_NumPow_Num_int_dict  :: "(int)NumPow_class "  where
   numPow_method = (^)|) )"
 
 
-(*val intDiv : int -> int -> int*)
+\<comment> \<open>\<open>val intDiv : int -> int -> int\<close>\<close>
 
 definition instance_Num_NumIntegerDivision_Num_int_dict  :: "(int)NumIntegerDivision_class "  where 
      " instance_Num_NumIntegerDivision_Num_int_dict = ((|
@@ -517,7 +517,7 @@ definition instance_Num_NumDivision_Num_int_dict  :: "(int)NumDivision_class "  
   numDivision_method = (div)|) )"
 
 
-(*val intMod : int -> int -> int*)
+\<comment> \<open>\<open>val intMod : int -> int -> int\<close>\<close>
 
 definition instance_Num_NumRemainder_Num_int_dict  :: "(int)NumRemainder_class "  where 
      " instance_Num_NumRemainder_Num_int_dict = ((|
@@ -525,9 +525,9 @@ definition instance_Num_NumRemainder_Num_int_dict  :: "(int)NumRemainder_class "
   mod_method = (mod)|) )"
 
 
-(*val intMin : int -> int -> int*)
+\<comment> \<open>\<open>val intMin : int -> int -> int\<close>\<close>
 
-(*val intMax : int -> int -> int*)
+\<comment> \<open>\<open>val intMax : int -> int -> int\<close>\<close>
 
 definition instance_Basic_classes_OrdMaxMin_Num_int_dict  :: "(int)OrdMaxMin_class "  where 
      " instance_Basic_classes_OrdMaxMin_Num_int_dict = ((|
@@ -537,19 +537,19 @@ definition instance_Basic_classes_OrdMaxMin_Num_int_dict  :: "(int)OrdMaxMin_cla
   min_method = min |) )"
 
 
-(* ----------------------- *)
-(* int32                   *)
-(* ----------------------- *)
-(*val int32FromNumeral : numeral -> int32*)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> int32                   \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open>val int32FromNumeral : numeral -> int32\<close>\<close>
 
-(*val int32Eq : int32 -> int32 -> bool*)
+\<comment> \<open>\<open>val int32Eq : int32 -> int32 -> bool\<close>\<close>
 
-(*val int32Less : int32 -> int32 -> bool*)
-(*val int32LessEqual : int32 -> int32 -> bool*)
-(*val int32Greater : int32 -> int32 -> bool*)
-(*val int32GreaterEqual : int32 -> int32 -> bool*)
+\<comment> \<open>\<open>val int32Less : int32 -> int32 -> bool\<close>\<close>
+\<comment> \<open>\<open>val int32LessEqual : int32 -> int32 -> bool\<close>\<close>
+\<comment> \<open>\<open>val int32Greater : int32 -> int32 -> bool\<close>\<close>
+\<comment> \<open>\<open>val int32GreaterEqual : int32 -> int32 -> bool\<close>\<close>
 
-(*val int32Compare : int32 -> int32 -> ordering*)
+\<comment> \<open>\<open>val int32Compare : int32 -> int32 -> ordering\<close>\<close>
 
 definition instance_Basic_classes_Ord_Num_int32_dict  :: "( 32 word)Ord_class "  where 
      " instance_Basic_classes_Ord_Num_int32_dict = ((|
@@ -565,7 +565,7 @@ definition instance_Basic_classes_Ord_Num_int32_dict  :: "( 32 word)Ord_class " 
   isGreaterEqual_method = (\<lambda> x y. word_sle y x)|) )"
 
 
-(*val int32Negate : int32 -> int32*)
+\<comment> \<open>\<open>val int32Negate : int32 -> int32\<close>\<close>
 
 definition instance_Num_NumNegate_Num_int32_dict  :: "( 32 word)NumNegate_class "  where 
      " instance_Num_NumNegate_Num_int32_dict = ((|
@@ -573,7 +573,7 @@ definition instance_Num_NumNegate_Num_int32_dict  :: "( 32 word)NumNegate_class 
   numNegate_method = (\<lambda> i. - i)|) )"
 
 
-(*val int32Abs : int32 -> int32*)
+\<comment> \<open>\<open>val int32Abs : int32 -> int32\<close>\<close>
 definition int32Abs  :: " 32 word \<Rightarrow> 32 word "  where 
      " int32Abs i = ( (if word_sle(((word_of_int 0) ::  32 word)) i then i else - i))"
 
@@ -585,7 +585,7 @@ definition instance_Num_NumAbs_Num_int32_dict  :: "( 32 word)NumAbs_class "  whe
 
 
 
-(*val int32Add : int32 -> int32 -> int32*)
+\<comment> \<open>\<open>val int32Add : int32 -> int32 -> int32\<close>\<close>
 
 definition instance_Num_NumAdd_Num_int32_dict  :: "( 32 word)NumAdd_class "  where 
      " instance_Num_NumAdd_Num_int32_dict = ((|
@@ -593,7 +593,7 @@ definition instance_Num_NumAdd_Num_int32_dict  :: "( 32 word)NumAdd_class "  whe
   numAdd_method = (+)|) )"
 
 
-(*val int32Minus : int32 -> int32 -> int32*)
+\<comment> \<open>\<open>val int32Minus : int32 -> int32 -> int32\<close>\<close>
 
 definition instance_Num_NumMinus_Num_int32_dict  :: "( 32 word)NumMinus_class "  where 
      " instance_Num_NumMinus_Num_int32_dict = ((|
@@ -601,7 +601,7 @@ definition instance_Num_NumMinus_Num_int32_dict  :: "( 32 word)NumMinus_class " 
   numMinus_method = (-)|) )"
 
 
-(*val int32Succ : int32 -> int32*)
+\<comment> \<open>\<open>val int32Succ : int32 -> int32\<close>\<close>
 
 definition instance_Num_NumSucc_Num_int32_dict  :: "( 32 word)NumSucc_class "  where 
      " instance_Num_NumSucc_Num_int32_dict = ((|
@@ -609,14 +609,14 @@ definition instance_Num_NumSucc_Num_int32_dict  :: "( 32 word)NumSucc_class "  w
   succ_method = (\<lambda> n. n +((word_of_int 1) ::  32 word))|) )"
 
 
-(*val int32Pred : int32 -> int32*)
+\<comment> \<open>\<open>val int32Pred : int32 -> int32\<close>\<close>
 definition instance_Num_NumPred_Num_int32_dict  :: "( 32 word)NumPred_class "  where 
      " instance_Num_NumPred_Num_int32_dict = ((|
 
   pred_method = (\<lambda> n. n -((word_of_int 1) ::  32 word))|) )"
 
 
-(*val int32Mult : int32 -> int32 -> int32*)
+\<comment> \<open>\<open>val int32Mult : int32 -> int32 -> int32\<close>\<close>
 
 definition instance_Num_NumMult_Num_int32_dict  :: "( 32 word)NumMult_class "  where 
      " instance_Num_NumMult_Num_int32_dict = ((|
@@ -625,7 +625,7 @@ definition instance_Num_NumMult_Num_int32_dict  :: "( 32 word)NumMult_class "  w
 
 
 
-(*val int32Pow : int32 -> nat -> int32*)
+\<comment> \<open>\<open>val int32Pow : int32 -> nat -> int32\<close>\<close>
 
 definition instance_Num_NumPow_Num_int32_dict  :: "( 32 word)NumPow_class "  where 
      " instance_Num_NumPow_Num_int32_dict = ((|
@@ -633,7 +633,7 @@ definition instance_Num_NumPow_Num_int32_dict  :: "( 32 word)NumPow_class "  whe
   numPow_method = (^)|) )"
 
 
-(*val int32Div : int32 -> int32 -> int32*)
+\<comment> \<open>\<open>val int32Div : int32 -> int32 -> int32\<close>\<close>
 
 definition instance_Num_NumIntegerDivision_Num_int32_dict  :: "( 32 word)NumIntegerDivision_class "  where 
      " instance_Num_NumIntegerDivision_Num_int32_dict = ((|
@@ -647,7 +647,7 @@ definition instance_Num_NumDivision_Num_int32_dict  :: "( 32 word)NumDivision_cl
   numDivision_method = (div)|) )"
 
 
-(*val int32Mod : int32 -> int32 -> int32*)
+\<comment> \<open>\<open>val int32Mod : int32 -> int32 -> int32\<close>\<close>
 
 definition instance_Num_NumRemainder_Num_int32_dict  :: "( 32 word)NumRemainder_class "  where 
      " instance_Num_NumRemainder_Num_int32_dict = ((|
@@ -655,9 +655,9 @@ definition instance_Num_NumRemainder_Num_int32_dict  :: "( 32 word)NumRemainder_
   mod_method = (mod)|) )"
 
 
-(*val int32Min : int32 -> int32 -> int32*)
+\<comment> \<open>\<open>val int32Min : int32 -> int32 -> int32\<close>\<close>
 
-(*val int32Max : int32 -> int32 -> int32*)
+\<comment> \<open>\<open>val int32Max : int32 -> int32 -> int32\<close>\<close>
 
 definition instance_Basic_classes_OrdMaxMin_Num_int32_dict  :: "( 32 word)OrdMaxMin_class "  where 
      " instance_Basic_classes_OrdMaxMin_Num_int32_dict = ((|
@@ -669,19 +669,19 @@ definition instance_Basic_classes_OrdMaxMin_Num_int32_dict  :: "( 32 word)OrdMax
 
 
 
-(* ----------------------- *)
-(* int64                   *)
-(* ----------------------- *)
-(*val int64FromNumeral : numeral -> int64*)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> int64                   \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open>val int64FromNumeral : numeral -> int64\<close>\<close>
 
-(*val int64Eq : int64 -> int64 -> bool*)
+\<comment> \<open>\<open>val int64Eq : int64 -> int64 -> bool\<close>\<close>
 
-(*val int64Less : int64 -> int64 -> bool*)
-(*val int64LessEqual : int64 -> int64 -> bool*)
-(*val int64Greater : int64 -> int64 -> bool*)
-(*val int64GreaterEqual : int64 -> int64 -> bool*)
+\<comment> \<open>\<open>val int64Less : int64 -> int64 -> bool\<close>\<close>
+\<comment> \<open>\<open>val int64LessEqual : int64 -> int64 -> bool\<close>\<close>
+\<comment> \<open>\<open>val int64Greater : int64 -> int64 -> bool\<close>\<close>
+\<comment> \<open>\<open>val int64GreaterEqual : int64 -> int64 -> bool\<close>\<close>
 
-(*val int64Compare : int64 -> int64 -> ordering*)
+\<comment> \<open>\<open>val int64Compare : int64 -> int64 -> ordering\<close>\<close>
 
 definition instance_Basic_classes_Ord_Num_int64_dict  :: "( 64 word)Ord_class "  where 
      " instance_Basic_classes_Ord_Num_int64_dict = ((|
@@ -697,7 +697,7 @@ definition instance_Basic_classes_Ord_Num_int64_dict  :: "( 64 word)Ord_class " 
   isGreaterEqual_method = (\<lambda> x y. word_sle y x)|) )"
 
 
-(*val int64Negate : int64 -> int64*)
+\<comment> \<open>\<open>val int64Negate : int64 -> int64\<close>\<close>
 
 definition instance_Num_NumNegate_Num_int64_dict  :: "( 64 word)NumNegate_class "  where 
      " instance_Num_NumNegate_Num_int64_dict = ((|
@@ -705,7 +705,7 @@ definition instance_Num_NumNegate_Num_int64_dict  :: "( 64 word)NumNegate_class 
   numNegate_method = (\<lambda> i. - i)|) )"
 
 
-(*val int64Abs : int64 -> int64*)
+\<comment> \<open>\<open>val int64Abs : int64 -> int64\<close>\<close>
 definition int64Abs  :: " 64 word \<Rightarrow> 64 word "  where 
      " int64Abs i = ( (if word_sle(((word_of_int 0) ::  64 word)) i then i else - i))"
 
@@ -717,7 +717,7 @@ definition instance_Num_NumAbs_Num_int64_dict  :: "( 64 word)NumAbs_class "  whe
 
 
 
-(*val int64Add : int64 -> int64 -> int64*)
+\<comment> \<open>\<open>val int64Add : int64 -> int64 -> int64\<close>\<close>
 
 definition instance_Num_NumAdd_Num_int64_dict  :: "( 64 word)NumAdd_class "  where 
      " instance_Num_NumAdd_Num_int64_dict = ((|
@@ -725,7 +725,7 @@ definition instance_Num_NumAdd_Num_int64_dict  :: "( 64 word)NumAdd_class "  whe
   numAdd_method = (+)|) )"
 
 
-(*val int64Minus : int64 -> int64 -> int64*)
+\<comment> \<open>\<open>val int64Minus : int64 -> int64 -> int64\<close>\<close>
 
 definition instance_Num_NumMinus_Num_int64_dict  :: "( 64 word)NumMinus_class "  where 
      " instance_Num_NumMinus_Num_int64_dict = ((|
@@ -733,7 +733,7 @@ definition instance_Num_NumMinus_Num_int64_dict  :: "( 64 word)NumMinus_class " 
   numMinus_method = (-)|) )"
 
 
-(*val int64Succ : int64 -> int64*)
+\<comment> \<open>\<open>val int64Succ : int64 -> int64\<close>\<close>
 
 definition instance_Num_NumSucc_Num_int64_dict  :: "( 64 word)NumSucc_class "  where 
      " instance_Num_NumSucc_Num_int64_dict = ((|
@@ -741,14 +741,14 @@ definition instance_Num_NumSucc_Num_int64_dict  :: "( 64 word)NumSucc_class "  w
   succ_method = (\<lambda> n. n +((word_of_int 1) ::  64 word))|) )"
 
 
-(*val int64Pred : int64 -> int64*)
+\<comment> \<open>\<open>val int64Pred : int64 -> int64\<close>\<close>
 definition instance_Num_NumPred_Num_int64_dict  :: "( 64 word)NumPred_class "  where 
      " instance_Num_NumPred_Num_int64_dict = ((|
 
   pred_method = (\<lambda> n. n -((word_of_int 1) ::  64 word))|) )"
 
 
-(*val int64Mult : int64 -> int64 -> int64*)
+\<comment> \<open>\<open>val int64Mult : int64 -> int64 -> int64\<close>\<close>
 
 definition instance_Num_NumMult_Num_int64_dict  :: "( 64 word)NumMult_class "  where 
      " instance_Num_NumMult_Num_int64_dict = ((|
@@ -757,7 +757,7 @@ definition instance_Num_NumMult_Num_int64_dict  :: "( 64 word)NumMult_class "  w
 
 
 
-(*val int64Pow : int64 -> nat -> int64*)
+\<comment> \<open>\<open>val int64Pow : int64 -> nat -> int64\<close>\<close>
 
 definition instance_Num_NumPow_Num_int64_dict  :: "( 64 word)NumPow_class "  where 
      " instance_Num_NumPow_Num_int64_dict = ((|
@@ -765,7 +765,7 @@ definition instance_Num_NumPow_Num_int64_dict  :: "( 64 word)NumPow_class "  whe
   numPow_method = (^)|) )"
 
 
-(*val int64Div : int64 -> int64 -> int64*)
+\<comment> \<open>\<open>val int64Div : int64 -> int64 -> int64\<close>\<close>
 
 definition instance_Num_NumIntegerDivision_Num_int64_dict  :: "( 64 word)NumIntegerDivision_class "  where 
      " instance_Num_NumIntegerDivision_Num_int64_dict = ((|
@@ -779,7 +779,7 @@ definition instance_Num_NumDivision_Num_int64_dict  :: "( 64 word)NumDivision_cl
   numDivision_method = (div)|) )"
 
 
-(*val int64Mod : int64 -> int64 -> int64*)
+\<comment> \<open>\<open>val int64Mod : int64 -> int64 -> int64\<close>\<close>
 
 definition instance_Num_NumRemainder_Num_int64_dict  :: "( 64 word)NumRemainder_class "  where 
      " instance_Num_NumRemainder_Num_int64_dict = ((|
@@ -787,9 +787,9 @@ definition instance_Num_NumRemainder_Num_int64_dict  :: "( 64 word)NumRemainder_
   mod_method = (mod)|) )"
 
 
-(*val int64Min : int64 -> int64 -> int64*)
+\<comment> \<open>\<open>val int64Min : int64 -> int64 -> int64\<close>\<close>
 
-(*val int64Max : int64 -> int64 -> int64*)
+\<comment> \<open>\<open>val int64Max : int64 -> int64 -> int64\<close>\<close>
 
 definition instance_Basic_classes_OrdMaxMin_Num_int64_dict  :: "( 64 word)OrdMaxMin_class "  where 
      " instance_Basic_classes_OrdMaxMin_Num_int64_dict = ((|
@@ -800,22 +800,22 @@ definition instance_Basic_classes_OrdMaxMin_Num_int64_dict  :: "( 64 word)OrdMax
 
 
 
-(* ----------------------- *)
-(* integer                 *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> integer                 \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val integerFromNumeral : numeral -> integer*)
+\<comment> \<open>\<open>val integerFromNumeral : numeral -> integer\<close>\<close>
 
-(*val integerFromNat : nat -> integer*) (* TODO: check *)
+\<comment> \<open>\<open>val integerFromNat : nat -> integer\<close>\<close> \<comment> \<open>\<open> TODO: check \<close>\<close>
 
-(*val integerEq : integer -> integer -> bool*)
+\<comment> \<open>\<open>val integerEq : integer -> integer -> bool\<close>\<close>
 
-(*val integerLess : integer -> integer -> bool*)
-(*val integerLessEqual : integer -> integer -> bool*)
-(*val integerGreater : integer -> integer -> bool*)
-(*val integerGreaterEqual : integer -> integer -> bool*)
+\<comment> \<open>\<open>val integerLess : integer -> integer -> bool\<close>\<close>
+\<comment> \<open>\<open>val integerLessEqual : integer -> integer -> bool\<close>\<close>
+\<comment> \<open>\<open>val integerGreater : integer -> integer -> bool\<close>\<close>
+\<comment> \<open>\<open>val integerGreaterEqual : integer -> integer -> bool\<close>\<close>
 
-(*val integerCompare : integer -> integer -> ordering*)
+\<comment> \<open>\<open>val integerCompare : integer -> integer -> ordering\<close>\<close>
 
 definition instance_Basic_classes_Ord_Num_integer_dict  :: "(int)Ord_class "  where 
      " instance_Basic_classes_Ord_Num_integer_dict = ((|
@@ -831,7 +831,7 @@ definition instance_Basic_classes_Ord_Num_integer_dict  :: "(int)Ord_class "  wh
   isGreaterEqual_method = (\<ge>)|) )"
 
 
-(*val integerNegate : integer -> integer*)
+\<comment> \<open>\<open>val integerNegate : integer -> integer\<close>\<close>
 
 definition instance_Num_NumNegate_Num_integer_dict  :: "(int)NumNegate_class "  where 
      " instance_Num_NumNegate_Num_integer_dict = ((|
@@ -839,7 +839,7 @@ definition instance_Num_NumNegate_Num_integer_dict  :: "(int)NumNegate_class "  
   numNegate_method = (\<lambda> i. - i)|) )"
 
 
-(*val integerAbs : integer -> integer*) (* TODO: check *)
+\<comment> \<open>\<open>val integerAbs : integer -> integer\<close>\<close> \<comment> \<open>\<open> TODO: check \<close>\<close>
 
 definition instance_Num_NumAbs_Num_integer_dict  :: "(int)NumAbs_class "  where 
      " instance_Num_NumAbs_Num_integer_dict = ((|
@@ -847,7 +847,7 @@ definition instance_Num_NumAbs_Num_integer_dict  :: "(int)NumAbs_class "  where
   abs_method = abs |) )"
 
 
-(*val integerAdd : integer -> integer -> integer*)
+\<comment> \<open>\<open>val integerAdd : integer -> integer -> integer\<close>\<close>
 
 definition instance_Num_NumAdd_Num_integer_dict  :: "(int)NumAdd_class "  where 
      " instance_Num_NumAdd_Num_integer_dict = ((|
@@ -855,7 +855,7 @@ definition instance_Num_NumAdd_Num_integer_dict  :: "(int)NumAdd_class "  where
   numAdd_method = (+)|) )"
 
 
-(*val integerMinus : integer -> integer -> integer*)
+\<comment> \<open>\<open>val integerMinus : integer -> integer -> integer\<close>\<close>
 
 definition instance_Num_NumMinus_Num_integer_dict  :: "(int)NumMinus_class "  where 
      " instance_Num_NumMinus_Num_integer_dict = ((|
@@ -863,21 +863,21 @@ definition instance_Num_NumMinus_Num_integer_dict  :: "(int)NumMinus_class "  wh
   numMinus_method = (-)|) )"
 
 
-(*val integerSucc : integer -> integer*)
+\<comment> \<open>\<open>val integerSucc : integer -> integer\<close>\<close>
 definition instance_Num_NumSucc_Num_integer_dict  :: "(int)NumSucc_class "  where 
      " instance_Num_NumSucc_Num_integer_dict = ((|
 
   succ_method = (\<lambda> n. n +( 1 :: int))|) )"
 
 
-(*val integerPred : integer -> integer*)
+\<comment> \<open>\<open>val integerPred : integer -> integer\<close>\<close>
 definition instance_Num_NumPred_Num_integer_dict  :: "(int)NumPred_class "  where 
      " instance_Num_NumPred_Num_integer_dict = ((|
 
   pred_method = (\<lambda> n. n -( 1 :: int))|) )"
 
 
-(*val integerMult : integer -> integer -> integer*)
+\<comment> \<open>\<open>val integerMult : integer -> integer -> integer\<close>\<close>
 
 definition instance_Num_NumMult_Num_integer_dict  :: "(int)NumMult_class "  where 
      " instance_Num_NumMult_Num_integer_dict = ((|
@@ -886,7 +886,7 @@ definition instance_Num_NumMult_Num_integer_dict  :: "(int)NumMult_class "  wher
 
 
 
-(*val integerPow : integer -> nat -> integer*)
+\<comment> \<open>\<open>val integerPow : integer -> nat -> integer\<close>\<close>
 
 definition instance_Num_NumPow_Num_integer_dict  :: "(int)NumPow_class "  where 
      " instance_Num_NumPow_Num_integer_dict = ((|
@@ -894,7 +894,7 @@ definition instance_Num_NumPow_Num_integer_dict  :: "(int)NumPow_class "  where
   numPow_method = (^)|) )"
 
 
-(*val integerDiv : integer -> integer -> integer*)
+\<comment> \<open>\<open>val integerDiv : integer -> integer -> integer\<close>\<close>
 
 definition instance_Num_NumIntegerDivision_Num_integer_dict  :: "(int)NumIntegerDivision_class "  where 
      " instance_Num_NumIntegerDivision_Num_integer_dict = ((|
@@ -908,7 +908,7 @@ definition instance_Num_NumDivision_Num_integer_dict  :: "(int)NumDivision_class
   numDivision_method = (div)|) )"
 
 
-(*val integerMod : integer -> integer -> integer*)
+\<comment> \<open>\<open>val integerMod : integer -> integer -> integer\<close>\<close>
 
 definition instance_Num_NumRemainder_Num_integer_dict  :: "(int)NumRemainder_class "  where 
      " instance_Num_NumRemainder_Num_integer_dict = ((|
@@ -916,9 +916,9 @@ definition instance_Num_NumRemainder_Num_integer_dict  :: "(int)NumRemainder_cla
   mod_method = (mod)|) )"
 
 
-(*val integerMin : integer -> integer -> integer*)
+\<comment> \<open>\<open>val integerMin : integer -> integer -> integer\<close>\<close>
 
-(*val integerMax : integer -> integer -> integer*)
+\<comment> \<open>\<open>val integerMax : integer -> integer -> integer\<close>\<close>
 
 definition instance_Basic_classes_OrdMaxMin_Num_integer_dict  :: "(int)OrdMaxMin_class "  where 
      " instance_Basic_classes_OrdMaxMin_Num_integer_dict = ((|
@@ -930,22 +930,22 @@ definition instance_Basic_classes_OrdMaxMin_Num_integer_dict  :: "(int)OrdMaxMin
 
 
 
-(* ----------------------- *)
-(* rational                *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> rational                \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val rationalFromNumeral : numeral -> rational*)
+\<comment> \<open>\<open>val rationalFromNumeral : numeral -> rational\<close>\<close>
 
-(*val rationalFromInt : int -> rational*)
+\<comment> \<open>\<open>val rationalFromInt : int -> rational\<close>\<close>
 
-(*val rationalEq : rational -> rational -> bool*)
+\<comment> \<open>\<open>val rationalEq : rational -> rational -> bool\<close>\<close>
 
-(*val rationalLess : rational -> rational -> bool*)
-(*val rationalLessEqual : rational -> rational -> bool*)
-(*val rationalGreater : rational -> rational -> bool*)
-(*val rationalGreaterEqual : rational -> rational -> bool*)
+\<comment> \<open>\<open>val rationalLess : rational -> rational -> bool\<close>\<close>
+\<comment> \<open>\<open>val rationalLessEqual : rational -> rational -> bool\<close>\<close>
+\<comment> \<open>\<open>val rationalGreater : rational -> rational -> bool\<close>\<close>
+\<comment> \<open>\<open>val rationalGreaterEqual : rational -> rational -> bool\<close>\<close>
 
-(*val rationalCompare : rational -> rational -> ordering*)
+\<comment> \<open>\<open>val rationalCompare : rational -> rational -> ordering\<close>\<close>
 
 definition instance_Basic_classes_Ord_Num_rational_dict  :: "(rat)Ord_class "  where 
      " instance_Basic_classes_Ord_Num_rational_dict = ((|
@@ -961,7 +961,7 @@ definition instance_Basic_classes_Ord_Num_rational_dict  :: "(rat)Ord_class "  w
   isGreaterEqual_method = (\<ge>)|) )"
 
 
-(*val rationalAdd : rational -> rational -> rational*)
+\<comment> \<open>\<open>val rationalAdd : rational -> rational -> rational\<close>\<close>
 
 definition instance_Num_NumAdd_Num_rational_dict  :: "(rat)NumAdd_class "  where 
      " instance_Num_NumAdd_Num_rational_dict = ((|
@@ -969,7 +969,7 @@ definition instance_Num_NumAdd_Num_rational_dict  :: "(rat)NumAdd_class "  where
   numAdd_method = (+)|) )"
 
 
-(*val rationalMinus : rational -> rational -> rational*)
+\<comment> \<open>\<open>val rationalMinus : rational -> rational -> rational\<close>\<close>
 
 definition instance_Num_NumMinus_Num_rational_dict  :: "(rat)NumMinus_class "  where 
      " instance_Num_NumMinus_Num_rational_dict = ((|
@@ -977,7 +977,7 @@ definition instance_Num_NumMinus_Num_rational_dict  :: "(rat)NumMinus_class "  w
   numMinus_method = (-)|) )"
 
 
-(*val rationalNegate : rational -> rational*)
+\<comment> \<open>\<open>val rationalNegate : rational -> rational\<close>\<close>
 
 definition instance_Num_NumNegate_Num_rational_dict  :: "(rat)NumNegate_class "  where 
      " instance_Num_NumNegate_Num_rational_dict = ((|
@@ -985,7 +985,7 @@ definition instance_Num_NumNegate_Num_rational_dict  :: "(rat)NumNegate_class " 
   numNegate_method = (\<lambda> i. - i)|) )"
 
 
-(*val rationalAbs : rational -> rational*)
+\<comment> \<open>\<open>val rationalAbs : rational -> rational\<close>\<close>
 
 definition instance_Num_NumAbs_Num_rational_dict  :: "(rat)NumAbs_class "  where 
      " instance_Num_NumAbs_Num_rational_dict = ((|
@@ -993,21 +993,21 @@ definition instance_Num_NumAbs_Num_rational_dict  :: "(rat)NumAbs_class "  where
   abs_method = abs |) )"
 
 
-(*val rationalSucc : rational -> rational*)
+\<comment> \<open>\<open>val rationalSucc : rational -> rational\<close>\<close>
 definition instance_Num_NumSucc_Num_rational_dict  :: "(rat)NumSucc_class "  where 
      " instance_Num_NumSucc_Num_rational_dict = ((|
 
   succ_method = (\<lambda> n. n +(Fract ( 1 :: int) (1 :: int)))|) )"
 
 
-(*val rationalPred : rational -> rational*)
+\<comment> \<open>\<open>val rationalPred : rational -> rational\<close>\<close>
 definition instance_Num_NumPred_Num_rational_dict  :: "(rat)NumPred_class "  where 
      " instance_Num_NumPred_Num_rational_dict = ((|
 
   pred_method = (\<lambda> n. n -(Fract ( 1 :: int) (1 :: int)))|) )"
 
 
-(*val rationalMult : rational -> rational -> rational*)
+\<comment> \<open>\<open>val rationalMult : rational -> rational -> rational\<close>\<close>
 
 definition instance_Num_NumMult_Num_rational_dict  :: "(rat)NumMult_class "  where 
      " instance_Num_NumMult_Num_rational_dict = ((|
@@ -1015,7 +1015,7 @@ definition instance_Num_NumMult_Num_rational_dict  :: "(rat)NumMult_class "  whe
   numMult_method = (*)|) )"
 
 
-(*val rationalDiv : rational -> rational -> rational*)
+\<comment> \<open>\<open>val rationalDiv : rational -> rational -> rational\<close>\<close>
 
 definition instance_Num_NumDivision_Num_rational_dict  :: "(rat)NumDivision_class "  where 
      " instance_Num_NumDivision_Num_rational_dict = ((|
@@ -1023,10 +1023,10 @@ definition instance_Num_NumDivision_Num_rational_dict  :: "(rat)NumDivision_clas
   numDivision_method = (div)|) )"
 
 
-(*val rationalFromFrac : int -> int -> rational*)
-(*let rationalFromFrac n d=  (Instance_Num_NumDivision_Num_rational./) (rationalFromInt n) (rationalFromInt d)*)
+\<comment> \<open>\<open>val rationalFromFrac : int -> int -> rational\<close>\<close>
+\<comment> \<open>\<open>let rationalFromFrac n d=  (Instance_Num_NumDivision_Num_rational./) (rationalFromInt n) (rationalFromInt d)\<close>\<close>
 
-(*val rationalPowInteger : rational -> integer -> rational*)
+\<comment> \<open>\<open>val rationalPowInteger : rational -> integer -> rational\<close>\<close>
 fun  rationalPowInteger  :: " rat \<Rightarrow> int \<Rightarrow> rat "  where 
      " rationalPowInteger b e = (
   if e =( 0 :: int) then(Fract ( 1 :: int) (1 :: int)) else
@@ -1034,8 +1034,8 @@ fun  rationalPowInteger  :: " rat \<Rightarrow> int \<Rightarrow> rat "  where
   rationalPowInteger b (e +( 1 :: int)) div b )"
 
 
-(*val rationalPowNat : rational -> nat -> rational*)
-(*let rationalPowNat r e=  rationalPowInteger r (integerFromNat e)*)
+\<comment> \<open>\<open>val rationalPowNat : rational -> nat -> rational\<close>\<close>
+\<comment> \<open>\<open>let rationalPowNat r e=  rationalPowInteger r (integerFromNat e)\<close>\<close>
 
 definition instance_Num_NumPow_Num_rational_dict  :: "(rat)NumPow_class "  where 
      " instance_Num_NumPow_Num_rational_dict = ((|
@@ -1043,9 +1043,9 @@ definition instance_Num_NumPow_Num_rational_dict  :: "(rat)NumPow_class "  where
   numPow_method = power |) )"
 
 
-(*val rationalMin : rational -> rational -> rational*)
+\<comment> \<open>\<open>val rationalMin : rational -> rational -> rational\<close>\<close>
 
-(*val rationalMax : rational -> rational -> rational*)
+\<comment> \<open>\<open>val rationalMax : rational -> rational -> rational\<close>\<close>
 
 definition instance_Basic_classes_OrdMaxMin_Num_rational_dict  :: "(rat)OrdMaxMin_class "  where 
      " instance_Basic_classes_OrdMaxMin_Num_rational_dict = ((|
@@ -1057,22 +1057,22 @@ definition instance_Basic_classes_OrdMaxMin_Num_rational_dict  :: "(rat)OrdMaxMi
 
 
 
-(* ----------------------- *)
-(* real                    *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> real                    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val realFromNumeral : numeral -> real*)
+\<comment> \<open>\<open>val realFromNumeral : numeral -> real\<close>\<close>
 
-(*val realFromInteger : integer -> real*)
+\<comment> \<open>\<open>val realFromInteger : integer -> real\<close>\<close>
 
-(*val realEq : real -> real -> bool*)
+\<comment> \<open>\<open>val realEq : real -> real -> bool\<close>\<close>
 
-(*val realLess : real -> real -> bool*)
-(*val realLessEqual : real -> real -> bool*)
-(*val realGreater : real -> real -> bool*)
-(*val realGreaterEqual : real -> real -> bool*)
+\<comment> \<open>\<open>val realLess : real -> real -> bool\<close>\<close>
+\<comment> \<open>\<open>val realLessEqual : real -> real -> bool\<close>\<close>
+\<comment> \<open>\<open>val realGreater : real -> real -> bool\<close>\<close>
+\<comment> \<open>\<open>val realGreaterEqual : real -> real -> bool\<close>\<close>
 
-(*val realCompare : real -> real -> ordering*)
+\<comment> \<open>\<open>val realCompare : real -> real -> ordering\<close>\<close>
 
 definition instance_Basic_classes_Ord_Num_real_dict  :: "(real)Ord_class "  where 
      " instance_Basic_classes_Ord_Num_real_dict = ((|
@@ -1088,7 +1088,7 @@ definition instance_Basic_classes_Ord_Num_real_dict  :: "(real)Ord_class "  wher
   isGreaterEqual_method = (\<ge>)|) )"
 
 
-(*val realAdd : real -> real -> real*)
+\<comment> \<open>\<open>val realAdd : real -> real -> real\<close>\<close>
 
 definition instance_Num_NumAdd_Num_real_dict  :: "(real)NumAdd_class "  where 
      " instance_Num_NumAdd_Num_real_dict = ((|
@@ -1096,7 +1096,7 @@ definition instance_Num_NumAdd_Num_real_dict  :: "(real)NumAdd_class "  where
   numAdd_method = (+)|) )"
 
 
-(*val realMinus : real -> real -> real*)
+\<comment> \<open>\<open>val realMinus : real -> real -> real\<close>\<close>
 
 definition instance_Num_NumMinus_Num_real_dict  :: "(real)NumMinus_class "  where 
      " instance_Num_NumMinus_Num_real_dict = ((|
@@ -1104,7 +1104,7 @@ definition instance_Num_NumMinus_Num_real_dict  :: "(real)NumMinus_class "  wher
   numMinus_method = (-)|) )"
 
 
-(*val realNegate : real -> real*)
+\<comment> \<open>\<open>val realNegate : real -> real\<close>\<close>
 
 definition instance_Num_NumNegate_Num_real_dict  :: "(real)NumNegate_class "  where 
      " instance_Num_NumNegate_Num_real_dict = ((|
@@ -1112,7 +1112,7 @@ definition instance_Num_NumNegate_Num_real_dict  :: "(real)NumNegate_class "  wh
   numNegate_method = (\<lambda> i. - i)|) )"
 
 
-(*val realAbs : real -> real*)
+\<comment> \<open>\<open>val realAbs : real -> real\<close>\<close>
 
 definition instance_Num_NumAbs_Num_real_dict  :: "(real)NumAbs_class "  where 
      " instance_Num_NumAbs_Num_real_dict = ((|
@@ -1120,21 +1120,21 @@ definition instance_Num_NumAbs_Num_real_dict  :: "(real)NumAbs_class "  where
   abs_method = abs |) )"
 
 
-(*val realSucc : real -> real*)
+\<comment> \<open>\<open>val realSucc : real -> real\<close>\<close>
 definition instance_Num_NumSucc_Num_real_dict  :: "(real)NumSucc_class "  where 
      " instance_Num_NumSucc_Num_real_dict = ((|
 
   succ_method = (\<lambda> n. n +( 1 :: real))|) )"
 
 
-(*val realPred : real -> real*)
+\<comment> \<open>\<open>val realPred : real -> real\<close>\<close>
 definition instance_Num_NumPred_Num_real_dict  :: "(real)NumPred_class "  where 
      " instance_Num_NumPred_Num_real_dict = ((|
 
   pred_method = (\<lambda> n. n -( 1 :: real))|) )"
 
 
-(*val realMult : real -> real -> real*)
+\<comment> \<open>\<open>val realMult : real -> real -> real\<close>\<close>
 
 definition instance_Num_NumMult_Num_real_dict  :: "(real)NumMult_class "  where 
      " instance_Num_NumMult_Num_real_dict = ((|
@@ -1142,7 +1142,7 @@ definition instance_Num_NumMult_Num_real_dict  :: "(real)NumMult_class "  where
   numMult_method = (*)|) )"
 
 
-(*val realDiv : real -> real -> real*)
+\<comment> \<open>\<open>val realDiv : real -> real -> real\<close>\<close>
 
 definition instance_Num_NumDivision_Num_real_dict  :: "(real)NumDivision_class "  where 
      " instance_Num_NumDivision_Num_real_dict = ((|
@@ -1150,12 +1150,12 @@ definition instance_Num_NumDivision_Num_real_dict  :: "(real)NumDivision_class "
   numDivision_method = (div)|) )"
 
 
-(*val realFromFrac : integer -> integer -> real*)
+\<comment> \<open>\<open>val realFromFrac : integer -> integer -> real\<close>\<close>
 definition realFromFrac  :: " int \<Rightarrow> int \<Rightarrow> real "  where 
      " realFromFrac n d = ( ((real_of_int n)) div ((real_of_int d)))"
 
 
-(*val realPowInteger : real -> integer -> real*)
+\<comment> \<open>\<open>val realPowInteger : real -> integer -> real\<close>\<close>
 fun  realPowInteger  :: " real \<Rightarrow> int \<Rightarrow> real "  where 
      " realPowInteger b e = (
   if e =( 0 :: int) then( 1 :: real) else
@@ -1163,8 +1163,8 @@ fun  realPowInteger  :: " real \<Rightarrow> int \<Rightarrow> real "  where
   realPowInteger b (e +( 1 :: int)) div b )"
 
 
-(*val realPowNat : real -> nat -> real*)
-(*let realPowNat r e=  realPowInteger r (integerFromNat e)*)
+\<comment> \<open>\<open>val realPowNat : real -> nat -> real\<close>\<close>
+\<comment> \<open>\<open>let realPowNat r e=  realPowInteger r (integerFromNat e)\<close>\<close>
 
 definition instance_Num_NumPow_Num_real_dict  :: "(real)NumPow_class "  where 
      " instance_Num_NumPow_Num_real_dict = ((|
@@ -1172,11 +1172,11 @@ definition instance_Num_NumPow_Num_real_dict  :: "(real)NumPow_class "  where
   numPow_method = power |) )"
 
 
-(*val realSqrt : real -> real*)
+\<comment> \<open>\<open>val realSqrt : real -> real\<close>\<close>
 
-(*val realMin : real -> real -> real*)
+\<comment> \<open>\<open>val realMin : real -> real -> real\<close>\<close>
 
-(*val realMax : real -> real -> real*)
+\<comment> \<open>\<open>val realMax : real -> real -> real\<close>\<close>
 
 definition instance_Basic_classes_OrdMaxMin_Num_real_dict  :: "(real)OrdMaxMin_class "  where 
      " instance_Basic_classes_OrdMaxMin_Num_real_dict = ((|
@@ -1186,116 +1186,116 @@ definition instance_Basic_classes_OrdMaxMin_Num_real_dict  :: "(real)OrdMaxMin_c
   min_method = min |) )"
 
 
-(*val realCeiling : real -> integer*)
+\<comment> \<open>\<open>val realCeiling : real -> integer\<close>\<close>
 
-(*val realFloor : real -> integer*)
+\<comment> \<open>\<open>val realFloor : real -> integer\<close>\<close>
 
-(* ========================================================================== *)
-(* Translation between number types                                           *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Translation between number types                                           \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(******************)
-(* integerFrom... *)
-(******************)
+\<comment> \<open>\<open>****************\<close>\<close>
+\<comment> \<open>\<open> integerFrom... \<close>\<close>
+\<comment> \<open>\<open>****************\<close>\<close>
 
-(*val integerFromInt : int -> integer*)
+\<comment> \<open>\<open>val integerFromInt : int -> integer\<close>\<close>
 
-(*val integerFromNatural : natural -> integer*)
-
-
-(*val integerFromInt32 : int32 -> integer*)
+\<comment> \<open>\<open>val integerFromNatural : natural -> integer\<close>\<close>
 
 
-(*val integerFromInt64 : int64 -> integer*)
+\<comment> \<open>\<open>val integerFromInt32 : int32 -> integer\<close>\<close>
 
 
-(******************)
-(* naturalFrom... *)
-(******************)
-
-(*val naturalFromNat : nat -> natural*)
-
-(*val naturalFromInteger : integer -> natural*)
+\<comment> \<open>\<open>val integerFromInt64 : int64 -> integer\<close>\<close>
 
 
-(******************)
-(* intFrom ...    *)
-(******************)
+\<comment> \<open>\<open>****************\<close>\<close>
+\<comment> \<open>\<open> naturalFrom... \<close>\<close>
+\<comment> \<open>\<open>****************\<close>\<close>
 
-(*val intFromInteger : integer -> int*)
+\<comment> \<open>\<open>val naturalFromNat : nat -> natural\<close>\<close>
 
-(*val intFromNat : nat -> int*)
-
-
-(******************)
-(* natFrom ...    *)
-(******************)
-
-(*val natFromNatural : natural -> nat*)
-
-(*val natFromInt : int -> nat*)
+\<comment> \<open>\<open>val naturalFromInteger : integer -> natural\<close>\<close>
 
 
-(******************)
-(* int32From ...  *)
-(******************)
+\<comment> \<open>\<open>****************\<close>\<close>
+\<comment> \<open>\<open> intFrom ...    \<close>\<close>
+\<comment> \<open>\<open>****************\<close>\<close>
 
-(*val int32FromNat : nat -> int32*)
+\<comment> \<open>\<open>val intFromInteger : integer -> int\<close>\<close>
 
-(*val int32FromNatural : natural -> int32*)
+\<comment> \<open>\<open>val intFromNat : nat -> int\<close>\<close>
 
-(*val int32FromInteger : integer -> int32*)
-(*let int32FromInteger i=  (
+
+\<comment> \<open>\<open>****************\<close>\<close>
+\<comment> \<open>\<open> natFrom ...    \<close>\<close>
+\<comment> \<open>\<open>****************\<close>\<close>
+
+\<comment> \<open>\<open>val natFromNatural : natural -> nat\<close>\<close>
+
+\<comment> \<open>\<open>val natFromInt : int -> nat\<close>\<close>
+
+
+\<comment> \<open>\<open>****************\<close>\<close>
+\<comment> \<open>\<open> int32From ...  \<close>\<close>
+\<comment> \<open>\<open>****************\<close>\<close>
+
+\<comment> \<open>\<open>val int32FromNat : nat -> int32\<close>\<close>
+
+\<comment> \<open>\<open>val int32FromNatural : natural -> int32\<close>\<close>
+
+\<comment> \<open>\<open>val int32FromInteger : integer -> int32\<close>\<close>
+\<comment> \<open>\<open>let int32FromInteger i=  (
   let abs_int32 = int32FromNatural (naturalFromInteger i) in
   if ((Instance_Basic_classes_Ord_Num_integer.<) i 0) then (Instance_Num_NumNegate_Num_int32.~ abs_int32) else abs_int32 
-)*)
+)\<close>\<close>
 
-(*val int32FromInt : int -> int32*)
-(*let int32FromInt i=  int32FromInteger (integerFromInt i)*)
-
-
-(*val int32FromInt64 : int64 -> int32*)
-(*let int32FromInt64 i=  int32FromInteger (integerFromInt64 i)*)
+\<comment> \<open>\<open>val int32FromInt : int -> int32\<close>\<close>
+\<comment> \<open>\<open>let int32FromInt i=  int32FromInteger (integerFromInt i)\<close>\<close>
 
 
+\<comment> \<open>\<open>val int32FromInt64 : int64 -> int32\<close>\<close>
+\<comment> \<open>\<open>let int32FromInt64 i=  int32FromInteger (integerFromInt64 i)\<close>\<close>
 
 
-(******************)
-(* int64From ...  *)
-(******************)
 
-(*val int64FromNat : nat -> int64*)
 
-(*val int64FromNatural : natural -> int64*)
+\<comment> \<open>\<open>****************\<close>\<close>
+\<comment> \<open>\<open> int64From ...  \<close>\<close>
+\<comment> \<open>\<open>****************\<close>\<close>
 
-(*val int64FromInteger : integer -> int64*)
-(*let int64FromInteger i=  (
+\<comment> \<open>\<open>val int64FromNat : nat -> int64\<close>\<close>
+
+\<comment> \<open>\<open>val int64FromNatural : natural -> int64\<close>\<close>
+
+\<comment> \<open>\<open>val int64FromInteger : integer -> int64\<close>\<close>
+\<comment> \<open>\<open>let int64FromInteger i=  (
   let abs_int64 = int64FromNatural (naturalFromInteger i) in
   if ((Instance_Basic_classes_Ord_Num_integer.<) i 0) then (Instance_Num_NumNegate_Num_int64.~ abs_int64) else abs_int64 
-)*)
+)\<close>\<close>
 
-(*val int64FromInt : int -> int64*)
-(*let int64FromInt i=  int64FromInteger (integerFromInt i)*)
-
-
-(*val int64FromInt32 : int32 -> int64*)
-(*let int64FromInt32 i=  int64FromInteger (integerFromInt32 i)*)
+\<comment> \<open>\<open>val int64FromInt : int -> int64\<close>\<close>
+\<comment> \<open>\<open>let int64FromInt i=  int64FromInteger (integerFromInt i)\<close>\<close>
 
 
-(******************)
-(* what's missing *)
-(******************)
-
-(*val naturalFromInt : int -> natural*)
-(*val naturalFromInt32 : int32 -> natural*)
-(*val naturalFromInt64 : int64 -> natural*)
+\<comment> \<open>\<open>val int64FromInt32 : int32 -> int64\<close>\<close>
+\<comment> \<open>\<open>let int64FromInt32 i=  int64FromInteger (integerFromInt32 i)\<close>\<close>
 
 
-(*val intFromNatural : natural -> int*)
-(*val intFromInt32 : int32 -> int*)
-(*val intFromInt64 : int64 -> int*)
+\<comment> \<open>\<open>****************\<close>\<close>
+\<comment> \<open>\<open> what's missing \<close>\<close>
+\<comment> \<open>\<open>****************\<close>\<close>
 
-(*val natFromInteger : integer -> nat*)
-(*val natFromInt32 : int32 -> nat*)
-(*val natFromInt64 : int64 -> nat*)
+\<comment> \<open>\<open>val naturalFromInt : int -> natural\<close>\<close>
+\<comment> \<open>\<open>val naturalFromInt32 : int32 -> natural\<close>\<close>
+\<comment> \<open>\<open>val naturalFromInt64 : int64 -> natural\<close>\<close>
+
+
+\<comment> \<open>\<open>val intFromNatural : natural -> int\<close>\<close>
+\<comment> \<open>\<open>val intFromInt32 : int32 -> int\<close>\<close>
+\<comment> \<open>\<open>val intFromInt64 : int64 -> int\<close>\<close>
+
+\<comment> \<open>\<open>val natFromInteger : integer -> nat\<close>\<close>
+\<comment> \<open>\<open>val natFromInt32 : int32 -> nat\<close>\<close>
+\<comment> \<open>\<open>val natFromInt64 : int64 -> nat\<close>\<close>
 end

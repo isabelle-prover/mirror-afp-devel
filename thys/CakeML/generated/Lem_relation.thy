@@ -14,37 +14,37 @@ begin
 
 
 
-(*open import Bool Basic_classes Tuple Set Num*)
-(*open import {hol} `set_relationTheory`*)
+\<comment> \<open>\<open>open import Bool Basic_classes Tuple Set Num\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `set_relationTheory`\<close>\<close>
 
-(* ========================================================================== *)
-(* The type of relations                                                      *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> The type of relations                                                      \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
 type_synonym( 'a, 'b) rel_pred =" 'a \<Rightarrow> 'b \<Rightarrow> bool "
 type_synonym( 'a, 'b) rel_set =" ('a * 'b) set "
 
-(* Binary relations are usually represented as either
+\<comment> \<open>\<open> Binary relations are usually represented as either
    sets of pairs (rel_set) or as curried functions (rel_pred). 
    
    The choice depends on taste and the backend. Lem should not take a 
    decision, but supports both representations. There is an abstract type
    pred, which can be converted to both representations. The representation
    of pred itself then depends on the backend. However, for the time beeing,
-   let's implement relations as sets to get them working more quickly. *)
+   let's implement relations as sets to get them working more quickly. \<close>\<close>
 
 type_synonym( 'a, 'b) rel =" ('a, 'b) rel_set "
 
-(*val relToSet : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> rel_set 'a 'b*)
-(*val relFromSet : forall 'a 'b. SetType 'a, SetType 'b => rel_set 'a 'b -> rel 'a 'b*)
+\<comment> \<open>\<open>val relToSet : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> rel_set 'a 'b\<close>\<close>
+\<comment> \<open>\<open>val relFromSet : forall 'a 'b. SetType 'a, SetType 'b => rel_set 'a 'b -> rel 'a 'b\<close>\<close>
 
-(*val relEq : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> rel 'a 'b -> bool*)
+\<comment> \<open>\<open>val relEq : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> rel 'a 'b -> bool\<close>\<close>
 definition relEq  :: "('a*'b)set \<Rightarrow>('a*'b)set \<Rightarrow> bool "  where 
      " relEq r1 r2 = ( (r1 = r2))"
 
 
-(*val relToPred : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => rel 'a 'b -> rel_pred 'a 'b*)
-(*val relFromPred : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => set 'a -> set 'b -> rel_pred 'a 'b -> rel 'a 'b*)
+\<comment> \<open>\<open>val relToPred : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => rel 'a 'b -> rel_pred 'a 'b\<close>\<close>
+\<comment> \<open>\<open>val relFromPred : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => set 'a -> set 'b -> rel_pred 'a 'b -> rel 'a 'b\<close>\<close>
 
 definition relToPred  :: "('a*'b)set \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> bool "  where 
      " relToPred r = ( (\<lambda> x y .  (x, y) \<in> r))"
@@ -55,65 +55,65 @@ definition relFromPred  :: " 'a set \<Rightarrow> 'b set \<Rightarrow>('a \<Righ
 
 
  
-(* ========================================================================== *)
-(* Basic Operations                                                           *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Basic Operations                                                           \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ----------------------- *)
-(* membership test         *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> membership test         \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val inRel : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => 'a -> 'b -> rel 'a 'b -> bool*)
-
-
-(* ----------------------- *)
-(* empty relation          *)
-(* ----------------------- *)
-
-(*val relEmpty : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b*)
-
-(* ----------------------- *)
-(* Insertion               *)
-(* ----------------------- *)
-
-(*val relAdd : forall 'a 'b. SetType 'a, SetType 'b => 'a -> 'b -> rel 'a 'b -> rel 'a 'b*)
+\<comment> \<open>\<open>val inRel : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => 'a -> 'b -> rel 'a 'b -> bool\<close>\<close>
 
 
-(* ----------------------- *)
-(* Identity relation       *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> empty relation          \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val relIdOn : forall 'a. SetType 'a, Eq 'a => set 'a -> rel 'a 'a*)
+\<comment> \<open>\<open>val relEmpty : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b\<close>\<close>
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Insertion               \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val relAdd : forall 'a 'b. SetType 'a, SetType 'b => 'a -> 'b -> rel 'a 'b -> rel 'a 'b\<close>\<close>
+
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Identity relation       \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val relIdOn : forall 'a. SetType 'a, Eq 'a => set 'a -> rel 'a 'a\<close>\<close>
 definition relIdOn  :: " 'a set \<Rightarrow>('a*'a)set "  where 
      " relIdOn s = ( relFromPred s s (=))"
 
 
-(*val relId : forall 'a. SetType 'a, Eq 'a => rel 'a 'a*)
+\<comment> \<open>\<open>val relId : forall 'a. SetType 'a, Eq 'a => rel 'a 'a\<close>\<close>
 
-(* ----------------------- *)
-(* relation union          *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> relation union          \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val relUnion : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> rel 'a 'b -> rel 'a 'b*) 
+\<comment> \<open>\<open>val relUnion : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> rel 'a 'b -> rel 'a 'b\<close>\<close> 
 
-(* ----------------------- *)
-(* relation intersection   *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> relation intersection   \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val relIntersection : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => rel 'a 'b -> rel 'a 'b -> rel 'a 'b*) 
+\<comment> \<open>\<open>val relIntersection : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => rel 'a 'b -> rel 'a 'b -> rel 'a 'b\<close>\<close> 
 
-(* ----------------------- *)
-(* Relation Composition    *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Relation Composition    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val relComp : forall 'a 'b 'c. SetType 'a, SetType 'b, SetType 'c, Eq 'a, Eq 'b => rel 'a 'b -> rel 'b 'c -> rel 'a 'c*)
-(*let relComp r1 r2=  relFromSet {(e1, e3) | forall ((e1,e2) IN (relToSet r1)) ((e2',e3) IN (relToSet r2)) | e2 = e2'}*)
+\<comment> \<open>\<open>val relComp : forall 'a 'b 'c. SetType 'a, SetType 'b, SetType 'c, Eq 'a, Eq 'b => rel 'a 'b -> rel 'b 'c -> rel 'a 'c\<close>\<close>
+\<comment> \<open>\<open>let relComp r1 r2=  relFromSet {(e1, e3) | forall ((e1,e2) IN (relToSet r1)) ((e2',e3) IN (relToSet r2)) | e2 = e2'}\<close>\<close>
 
-(* ----------------------- *)
-(* restrict                *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> restrict                \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val relRestrict : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> rel 'a 'a*)
+\<comment> \<open>\<open>val relRestrict : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> rel 'a 'a\<close>\<close>
 definition relRestrict  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow>('a*'a)set "  where 
      " relRestrict r s = ( ((let x2 = 
   ({}) in  Finite_Set.fold
@@ -124,285 +124,285 @@ definition relRestrict  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow>('a*'a)
 
 
 
-(* ----------------------- *)
-(* Converse                *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> Converse                \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val relConverse : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> rel 'b 'a*)
-(*let relConverse r=  relFromSet (Set.map swap (relToSet r))*)
-
-
-(* ----------------------- *)
-(* domain                  *)
-(* ----------------------- *)
-
-(*val relDomain : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> set 'a*)
-(*let relDomain r=  Set.map (fun x -> fst x) (relToSet r)*)
-
-(* ----------------------- *)
-(* range                   *)
-(* ----------------------- *)
-
-(*val relRange : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> set 'b*)
-(*let relRange r=  Set.map (fun x -> snd x) (relToSet r)*)
+\<comment> \<open>\<open>val relConverse : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> rel 'b 'a\<close>\<close>
+\<comment> \<open>\<open>let relConverse r=  relFromSet (Set.map swap (relToSet r))\<close>\<close>
 
 
-(* ----------------------- *)
-(* field / definedOn       *)
-(*                         *)
-(* avoid the keyword field *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> domain                  \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val relDefinedOn : forall 'a. SetType 'a => rel 'a 'a -> set 'a*)
+\<comment> \<open>\<open>val relDomain : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> set 'a\<close>\<close>
+\<comment> \<open>\<open>let relDomain r=  Set.map (fun x -> fst x) (relToSet r)\<close>\<close>
 
-(* ----------------------- *)
-(* relOver                 *)
-(*                         *)
-(* avoid the keyword field *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> range                   \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val relOver : forall 'a. SetType 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val relRange : forall 'a 'b. SetType 'a, SetType 'b => rel 'a 'b -> set 'b\<close>\<close>
+\<comment> \<open>\<open>let relRange r=  Set.map (fun x -> snd x) (relToSet r)\<close>\<close>
+
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> field / definedOn       \<close>\<close>
+\<comment> \<open>\<open>                         \<close>\<close>
+\<comment> \<open>\<open> avoid the keyword field \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val relDefinedOn : forall 'a. SetType 'a => rel 'a 'a -> set 'a\<close>\<close>
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> relOver                 \<close>\<close>
+\<comment> \<open>\<open>                         \<close>\<close>
+\<comment> \<open>\<open> avoid the keyword field \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val relOver : forall 'a. SetType 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition relOver  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " relOver r s = ( ((((Domain r) \<union> (Range r))) \<subseteq> s))"
 
 
 
-(* ----------------------- *)
-(* apply a relation        *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> apply a relation        \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(* Given a relation r and a set s, relApply r s applies s to r, i.e.
+\<comment> \<open>\<open> Given a relation r and a set s, relApply r s applies s to r, i.e.
    it returns the set of all value reachable via r from a value in s.
-   This operation can be seen as a generalisation of function application. *)
+   This operation can be seen as a generalisation of function application. \<close>\<close>
    
-(*val relApply : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a => rel 'a 'b -> set 'a -> set 'b*)
-(*let relApply r s=  { y | forall ((x, y) IN (relToSet r)) | x IN s }*)
+\<comment> \<open>\<open>val relApply : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a => rel 'a 'b -> set 'a -> set 'b\<close>\<close>
+\<comment> \<open>\<open>let relApply r s=  { y | forall ((x, y) IN (relToSet r)) | x IN s }\<close>\<close>
 
 
-(* ========================================================================== *)
-(* Properties                                                                 *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Properties                                                                 \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ----------------------- *)
-(* subrel                  *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> subrel                  \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isSubrel : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => rel 'a 'b -> rel 'a 'b -> bool*)
+\<comment> \<open>\<open>val isSubrel : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => rel 'a 'b -> rel 'a 'b -> bool\<close>\<close>
 
-(* ----------------------- *)
-(* reflexivity             *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> reflexivity             \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isReflexiveOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isReflexiveOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isReflexiveOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isReflexiveOn r s = ( ((\<forall> e \<in> s.  (e, e) \<in> r)))"
 
 
-(*val isReflexive : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
-(*let ~{ocaml;coq} isReflexive r=  (forall e. inRel e e r)*)
+\<comment> \<open>\<open>val isReflexive : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let ~{ocaml;coq} isReflexive r=  (forall e. inRel e e r)\<close>\<close>
 
 
-(* ----------------------- *)
-(* irreflexivity           *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> irreflexivity           \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isIrreflexiveOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isIrreflexiveOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isIrreflexiveOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isIrreflexiveOn r s = ( ((\<forall> e \<in> s.  \<not> ((e, e) \<in> r))))"
 
 
-(*val isIrreflexive : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
-(*let isIrreflexive r=  (forall ((e1, e2) IN (relToSet r)). not (e1 = e2))*)
+\<comment> \<open>\<open>val isIrreflexive : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let isIrreflexive r=  (forall ((e1, e2) IN (relToSet r)). not (e1 = e2))\<close>\<close>
 
 
-(* ----------------------- *)
-(* symmetry                *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> symmetry                \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isSymmetricOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isSymmetricOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isSymmetricOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isSymmetricOn r s = ( ((\<forall> e1 \<in> s. \<forall> e2 \<in> s.  ((e1, e2) \<in> r) \<longrightarrow> ((e2, e1) \<in> r))))"
 
 
-(*val isSymmetric : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
-(*let isSymmetric r=  (forall ((e1, e2) IN relToSet r). inRel e2 e1 r)*)
+\<comment> \<open>\<open>val isSymmetric : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let isSymmetric r=  (forall ((e1, e2) IN relToSet r). inRel e2 e1 r)\<close>\<close>
 
 
-(* ----------------------- *)
-(* antisymmetry            *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> antisymmetry            \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isAntisymmetricOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isAntisymmetricOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isAntisymmetricOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isAntisymmetricOn r s = ( ((\<forall> e1 \<in> s. \<forall> e2 \<in> s.  ((e1, e2) \<in> r) \<longrightarrow> (((e2, e1) \<in> r) \<longrightarrow> (e1 = e2)))))"
 
 
-(*val isAntisymmetric : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
-(*let isAntisymmetric r=  (forall ((e1, e2) IN relToSet r). (inRel e2 e1 r) --> (e1 = e2))*)
+\<comment> \<open>\<open>val isAntisymmetric : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let isAntisymmetric r=  (forall ((e1, e2) IN relToSet r). (inRel e2 e1 r) --> (e1 = e2))\<close>\<close>
 
 
-(* ----------------------- *)
-(* transitivity            *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> transitivity            \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isTransitiveOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isTransitiveOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isTransitiveOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isTransitiveOn r s = ( ((\<forall> e1 \<in> s. \<forall> e2 \<in> s. \<forall> e3 \<in> s.  ((e1, e2) \<in> r) \<longrightarrow> (((e2, e3) \<in> r) \<longrightarrow> ((e1, e3) \<in> r)))))"
 
 
-(*val isTransitive : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
-(*let isTransitive r=  (forall ((e1, e2) IN relToSet r) (e3 IN relApply r {e2}). inRel e1 e3 r)*)
+\<comment> \<open>\<open>val isTransitive : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let isTransitive r=  (forall ((e1, e2) IN relToSet r) (e3 IN relApply r {e2}). inRel e1 e3 r)\<close>\<close>
 
-(* ----------------------- *)
-(* total                   *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> total                   \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isTotalOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isTotalOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isTotalOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isTotalOn r s = ( ((\<forall> e1 \<in> s. \<forall> e2 \<in> s.  ((e1, e2) \<in> r) \<or> ((e2, e1) \<in> r))))"
 
 
 
-(*val isTotal : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
-(*let ~{ocaml;coq} isTotal r=  (forall e1 e2. (inRel e1 e2 r) || (inRel e2 e1 r))*)
+\<comment> \<open>\<open>val isTotal : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
+\<comment> \<open>\<open>let ~{ocaml;coq} isTotal r=  (forall e1 e2. (inRel e1 e2 r) || (inRel e2 e1 r))\<close>\<close>
 
-(*val isTrichotomousOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isTrichotomousOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isTrichotomousOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isTrichotomousOn r s = ( ((\<forall> e1 \<in> s. \<forall> e2 \<in> s.  ((e1, e2) \<in> r) \<or> ((e1 = e2) \<or> ((e2, e1) \<in> r)))))"
 
 
-(*val isTrichotomous : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
+\<comment> \<open>\<open>val isTrichotomous : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
 definition isTrichotomous  :: "('a*'a)set \<Rightarrow> bool "  where 
      " isTrichotomous r = ( ((\<forall> e1. \<forall> e2.  ((e1, e2) \<in> r) \<or> ((e1 = e2) \<or> ((e2, e1) \<in> r)))))"
 
 
 
-(* ----------------------- *)
-(* is_single_valued        *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> is_single_valued        \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isSingleValued : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => rel 'a 'b -> bool*)
+\<comment> \<open>\<open>val isSingleValued : forall 'a 'b. SetType 'a, SetType 'b, Eq 'a, Eq 'b => rel 'a 'b -> bool\<close>\<close>
 definition isSingleValued  :: "('a*'b)set \<Rightarrow> bool "  where 
      " isSingleValued r = ( ((\<forall> (e1, e2a) \<in> r. \<forall> e2b \<in> Image r {e1}.  e2a = e2b)))"
 
 
 
-(* ----------------------- *)
-(* equivalence relation    *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> equivalence relation    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isEquivalenceOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isEquivalenceOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isEquivalenceOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isEquivalenceOn r s = ( isReflexiveOn r s \<and> (isSymmetricOn r s \<and> isTransitiveOn r s))"
 
 
 
-(*val isEquivalence : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
+\<comment> \<open>\<open>val isEquivalence : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
 definition isEquivalence  :: "('a*'a)set \<Rightarrow> bool "  where 
      " isEquivalence r = ( refl r \<and> (sym r \<and> trans r))"
 
 
 
-(* ----------------------- *)
-(* well founded            *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> well founded            \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isWellFounded : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
+\<comment> \<open>\<open>val isWellFounded : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
 definition isWellFounded  :: "('a*'a)set \<Rightarrow> bool "  where 
      " isWellFounded r = ( ((\<forall> P.  ((\<forall> x.  ((\<forall> y.  ((y, x) \<in> r) \<longrightarrow> P x)) \<longrightarrow> P x)) \<longrightarrow> ((\<forall> x.  P x)))))"
 
 
 
-(* ========================================================================== *)
-(* Orders                                                                     *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Orders                                                                     \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
 
-(* ----------------------- *)
-(* pre- or quasiorders     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> pre- or quasiorders     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isPreorderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isPreorderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isPreorderOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isPreorderOn r s = ( isReflexiveOn r s \<and> isTransitiveOn r s )"
 
 
-(*val isPreorder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
+\<comment> \<open>\<open>val isPreorder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
 definition isPreorder  :: "('a*'a)set \<Rightarrow> bool "  where 
      " isPreorder r = ( refl r \<and> trans r )"
 
 
 
-(* ----------------------- *)
-(* partial orders          *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> partial orders          \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isPartialOrderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isPartialOrderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isPartialOrderOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isPartialOrderOn r s = ( isReflexiveOn r s \<and> (isTransitiveOn r s \<and> isAntisymmetricOn r s))"
 
 
 
-(*val isStrictPartialOrderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isStrictPartialOrderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isStrictPartialOrderOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isStrictPartialOrderOn r s = ( isIrreflexiveOn r s \<and> isTransitiveOn r s )"
 
 
 
-(*val isStrictPartialOrder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
+\<comment> \<open>\<open>val isStrictPartialOrder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
 definition isStrictPartialOrder  :: "('a*'a)set \<Rightarrow> bool "  where 
      " isStrictPartialOrder r = ( irrefl r \<and> trans r )"
 
 
-(*val isPartialOrder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
+\<comment> \<open>\<open>val isPartialOrder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
 definition isPartialOrder  :: "('a*'a)set \<Rightarrow> bool "  where 
      " isPartialOrder r = ( refl r \<and> (trans r \<and> antisym r))"
 
 
-(* ----------------------- *)
-(* total / linear orders   *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> total / linear orders   \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val isTotalOrderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isTotalOrderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isTotalOrderOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isTotalOrderOn r s = ( isPartialOrderOn r s \<and> isTotalOn r s )"
 
 
-(*val isStrictTotalOrderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool*)
+\<comment> \<open>\<open>val isStrictTotalOrderOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> bool\<close>\<close>
 definition isStrictTotalOrderOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow> bool "  where 
      " isStrictTotalOrderOn r s = ( isStrictPartialOrderOn r s \<and> isTrichotomousOn r s )"
 
 
-(*val isTotalOrder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
+\<comment> \<open>\<open>val isTotalOrder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
 definition isTotalOrder  :: "('a*'a)set \<Rightarrow> bool "  where 
      " isTotalOrder r = ( isPartialOrder r \<and> total r )"
 
 
-(*val isStrictTotalOrder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool*)
+\<comment> \<open>\<open>val isStrictTotalOrder : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> bool\<close>\<close>
 definition isStrictTotalOrder  :: "('a*'a)set \<Rightarrow> bool "  where 
      " isStrictTotalOrder r = ( isStrictPartialOrder r \<and> isTrichotomous r )"
 
 
 
 
-(* ========================================================================== *)
-(* closures                                                                   *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> closures                                                                   \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ----------------------- *)
-(* transitive closure      *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> transitive closure      \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val transitiveClosure : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> rel 'a 'a*)
-(*val transitiveClosureByEq  : forall 'a. ('a -> 'a -> bool) -> rel 'a 'a -> rel 'a 'a*)
-(*val transitiveClosureByCmp : forall 'a. ('a * 'a -> 'a * 'a -> ordering) -> rel 'a 'a -> rel 'a 'a*)
+\<comment> \<open>\<open>val transitiveClosure : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> rel 'a 'a\<close>\<close>
+\<comment> \<open>\<open>val transitiveClosureByEq  : forall 'a. ('a -> 'a -> bool) -> rel 'a 'a -> rel 'a 'a\<close>\<close>
+\<comment> \<open>\<open>val transitiveClosureByCmp : forall 'a. ('a * 'a -> 'a * 'a -> ordering) -> rel 'a 'a -> rel 'a 'a\<close>\<close>
 
 
-(* ----------------------- *)
-(* transitive closure step *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> transitive closure step \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val transitiveClosureAdd : forall 'a. SetType 'a, Eq 'a => 'a -> 'a -> rel 'a 'a -> rel 'a 'a*)
+\<comment> \<open>\<open>val transitiveClosureAdd : forall 'a. SetType 'a, Eq 'a => 'a -> 'a -> rel 'a 'a -> rel 'a 'a\<close>\<close>
 
 definition transitiveClosureAdd  :: " 'a \<Rightarrow> 'a \<Rightarrow>('a*'a)set \<Rightarrow>('a*'a)set "  where 
      " transitiveClosureAdd x y r = ( 
@@ -416,34 +416,34 @@ definition transitiveClosureAdd  :: " 'a \<Rightarrow> 'a \<Rightarrow>('a*'a)se
 
 
 
-(* ========================================================================== *)
-(* reflexive closure                                                          *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> reflexive closure                                                          \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(*val reflexiveTransitiveClosureOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> rel 'a 'a*)
+\<comment> \<open>\<open>val reflexiveTransitiveClosureOn : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> set 'a -> rel 'a 'a\<close>\<close>
 definition reflexiveTransitiveClosureOn  :: "('a*'a)set \<Rightarrow> 'a set \<Rightarrow>('a*'a)set "  where 
      " reflexiveTransitiveClosureOn r s = ( trancl (((r) \<union> ((relIdOn s)))))"
 
 
 
-(*val reflexiveTransitiveClosure : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> rel 'a 'a*)
+\<comment> \<open>\<open>val reflexiveTransitiveClosure : forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> rel 'a 'a\<close>\<close>
 definition reflexiveTransitiveClosure  :: "('a*'a)set \<Rightarrow>('a*'a)set "  where 
      " reflexiveTransitiveClosure r = ( trancl (((r) \<union> (Id))))"
 
 
 
 
-(* ========================================================================== *)
-(* inverse of closures                                                        *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> inverse of closures                                                        \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(* ----------------------- *)
-(* without transitve edges *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> without transitve edges \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val withoutTransitiveEdges: forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> rel 'a 'a*)
-(*let withoutTransitiveEdges r=
+\<comment> \<open>\<open>val withoutTransitiveEdges: forall 'a. SetType 'a, Eq 'a => rel 'a 'a -> rel 'a 'a\<close>\<close>
+\<comment> \<open>\<open>let withoutTransitiveEdges r=
    let tc = transitiveClosure r in
   {(a, c) | forall ((a, c) IN r) 
-  | forall (b IN relRange r). a <> b && b <> c --> not ((a, b) IN tc && (b, c) IN tc)}*)
+  | forall (b IN relRange r). a <> b && b <> c --> not ((a, b) IN tc && (b, c) IN tc)}\<close>\<close>
 end

@@ -14,43 +14,43 @@ imports
 
 begin 
 
-(*open import Pervasives_extra*)
-(*open import Lib*)
-(*open import Ast*)
-(*open import Namespace*)
-(*open import SemanticPrimitives*)
-(*open import Ffi*)
+\<comment> \<open>\<open>open import Pervasives_extra\<close>\<close>
+\<comment> \<open>\<open>open import Lib\<close>\<close>
+\<comment> \<open>\<open>open import Ast\<close>\<close>
+\<comment> \<open>\<open>open import Namespace\<close>\<close>
+\<comment> \<open>\<open>open import SemanticPrimitives\<close>\<close>
+\<comment> \<open>\<open>open import Ffi\<close>\<close>
 
-(* Small-step semantics for expression only.  Modules and definitions have
- * big-step semantics only *)
+\<comment> \<open>\<open> Small-step semantics for expression only.  Modules and definitions have
+ * big-step semantics only \<close>\<close>
 
-(* Evaluation contexts
+\<comment> \<open>\<open> Evaluation contexts
  * The hole is denoted by the unit type
  * The env argument contains bindings for the free variables of expressions in
-     the context *)
+     the context \<close>\<close>
 datatype ctxt_frame =
     Craise " unit "
   | Chandle " unit " " (pat * exp0) list "
   | Capp " op0 " " v list " " unit " " exp0 list "
   | Clog " lop " " unit " " exp0 "
   | Cif " unit " " exp0 " " exp0 "
-  (* The value is raised if none of the patterns match *)
+  \<comment> \<open>\<open> The value is raised if none of the patterns match \<close>\<close>
   | Cmat " unit " " (pat * exp0) list " " v "
   | Clet "  varN option " " unit " " exp0 "
-  (* Evaluating a constructor's arguments
-   * The v list should be in reverse order. *)
+  \<comment> \<open>\<open> Evaluating a constructor's arguments
+   * The v list should be in reverse order. \<close>\<close>
   | Ccon "  ( (modN, conN)id0)option " " v list " " unit " " exp0 list "
   | Ctannot " unit " " t "
   | Clannot " unit " " locs "
 type_synonym ctxt =" ctxt_frame * v sem_env "
 
-(* State for CEK-style expression evaluation
+\<comment> \<open>\<open> State for CEK-style expression evaluation
  * - constructor data
  * - the store
  * - the environment for the free variables of the current expression
  * - the current expression to evaluate, or a value if finished
  * - the context stack (continuation) of what to do once the current expression
- *   is finished.  Each entry has an environment for it's free variables *)
+ *   is finished.  Each entry has an environment for it's free variables \<close>\<close>
 
 type_synonym 'ffi small_state =" v sem_env * ('ffi, v) store_ffi * exp_or_val * ctxt list "
 
@@ -59,22 +59,22 @@ datatype 'ffi e_step_result =
   | Eabort " abort "
   | Estuck
 
-(* The semantics are deterministic, and presented functionally instead of
+\<comment> \<open>\<open> The semantics are deterministic, and presented functionally instead of
  * relationally for proof rather that readability; the steps are very small: we
  * push individual frames onto the context stack instead of finding a redex in a
- * single step *)
+ * single step \<close>\<close>
 
-(*val push : forall 'ffi. sem_env v -> store_ffi 'ffi v -> exp -> ctxt_frame -> list ctxt -> e_step_result 'ffi*)
+\<comment> \<open>\<open>val push : forall 'ffi. sem_env v -> store_ffi 'ffi v -> exp -> ctxt_frame -> list ctxt -> e_step_result 'ffi\<close>\<close>
 definition push  :: "(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow> exp0 \<Rightarrow> ctxt_frame \<Rightarrow>(ctxt_frame*(v)sem_env)list \<Rightarrow> 'ffi e_step_result "  where 
      " push env s e c' cs = ( Estep (env, s, Exp e, ((c',env)# cs)))"
 
 
-(*val return : forall 'ffi. sem_env v -> store_ffi 'ffi v -> v -> list ctxt -> e_step_result 'ffi*)
+\<comment> \<open>\<open>val return : forall 'ffi. sem_env v -> store_ffi 'ffi v -> v -> list ctxt -> e_step_result 'ffi\<close>\<close>
 definition return  :: "(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow> v \<Rightarrow>(ctxt)list \<Rightarrow> 'ffi e_step_result "  where 
      " return env s v2 c2 = ( Estep (env, s, Val v2, c2))"
 
 
-(*val application : forall 'ffi. op -> sem_env v -> store_ffi 'ffi v -> list v -> list ctxt -> e_step_result 'ffi*)
+\<comment> \<open>\<open>val application : forall 'ffi. op -> sem_env v -> store_ffi 'ffi v -> list v -> list ctxt -> e_step_result 'ffi\<close>\<close>
 definition application  :: " op0 \<Rightarrow>(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow>(v)list \<Rightarrow>(ctxt)list \<Rightarrow> 'ffi e_step_result "  where 
      " application op1 env s vs c2 = (
   (case  op1 of
@@ -96,8 +96,8 @@ definition application  :: " op0 \<Rightarrow>(v)sem_env \<Rightarrow>(v)store*'
     ))"
 
 
-(* apply a context to a value *)
-(*val continue : forall 'ffi. store_ffi 'ffi v -> v -> list ctxt -> e_step_result 'ffi*)
+\<comment> \<open>\<open> apply a context to a value \<close>\<close>
+\<comment> \<open>\<open>val continue : forall 'ffi. store_ffi 'ffi v -> v -> list ctxt -> e_step_result 'ffi\<close>\<close>
 fun continue  :: "(v)store*'ffi ffi_state \<Rightarrow> v \<Rightarrow>(ctxt_frame*(v)sem_env)list \<Rightarrow> 'ffi e_step_result "  where 
      " continue s v2 ([]) = ( Estuck )"
 |" continue s v2 ((Craise _, env) # c2) = (
@@ -156,13 +156,13 @@ fun continue  :: "(v)store*'ffi ffi_state \<Rightarrow> v \<Rightarrow>(ctxt_fra
         return env s v2 c2 )"
 
 
-(* The single step expression evaluator.  Returns None if there is nothing to
+\<comment> \<open>\<open> The single step expression evaluator.  Returns None if there is nothing to
  * do, but no type error.  Returns Type_error on encountering free variables,
  * mis-applied (or non-existent) constructors, and when the wrong kind of value
  * if given to a primitive.  Returns Bind_error when no pattern in a match
- * matches the value.  Otherwise it returns the next state *)
+ * matches the value.  Otherwise it returns the next state \<close>\<close>
 
-(*val e_step : forall 'ffi. small_state 'ffi -> e_step_result 'ffi*)
+\<comment> \<open>\<open>val e_step : forall 'ffi. small_state 'ffi -> e_step_result 'ffi\<close>\<close>
 fun e_step  :: "(v)sem_env*((v)store*'ffi ffi_state)*exp_or_val*(ctxt)list \<Rightarrow> 'ffi e_step_result "  where 
      " e_step (env, s,(Val v2), c2) = (
         continue s v2 c2 )"
@@ -214,10 +214,10 @@ fun e_step  :: "(v)sem_env*((v)store*'ffi ffi_state)*exp_or_val*(ctxt)list \<Rig
         ))"
 
 
-(* Define a semantic function using the steps *)
+\<comment> \<open>\<open> Define a semantic function using the steps \<close>\<close>
 
-(*val e_step_reln : forall 'ffi. small_state 'ffi -> small_state 'ffi -> bool*)
-(*val small_eval : forall 'ffi. sem_env v -> store_ffi 'ffi v -> exp -> list ctxt -> store_ffi 'ffi v * result v v -> bool*)
+\<comment> \<open>\<open>val e_step_reln : forall 'ffi. small_state 'ffi -> small_state 'ffi -> bool\<close>\<close>
+\<comment> \<open>\<open>val small_eval : forall 'ffi. sem_env v -> store_ffi 'ffi v -> exp -> list ctxt -> store_ffi 'ffi v * result v v -> bool\<close>\<close>
 
 definition e_step_reln  :: "(v)sem_env*('ffi,(v))store_ffi*exp_or_val*(ctxt)list \<Rightarrow>(v)sem_env*('ffi,(v))store_ffi*exp_or_val*(ctxt)list \<Rightarrow> bool "  where 
      " e_step_reln st1 st2 = (
@@ -242,7 +242,7 @@ small_eval env s e c2 (s', Rerr (Rabort a)) = ((
     (e_step (env',s',e',c') = Eabort a)))"
 
 
-(*val e_diverges : forall 'ffi. sem_env v -> store_ffi 'ffi v -> exp -> bool*)
+\<comment> \<open>\<open>val e_diverges : forall 'ffi. sem_env v -> store_ffi 'ffi v -> exp -> bool\<close>\<close>
 definition e_diverges  :: "(v)sem_env \<Rightarrow>(v)store*'ffi ffi_state \<Rightarrow> exp0 \<Rightarrow> bool "  where 
      " e_diverges env s e = ((
   \<forall> env'. 

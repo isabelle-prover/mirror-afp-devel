@@ -11,41 +11,41 @@ begin
 
  
 
-(*open import Bool Basic_classes*)
+\<comment> \<open>\<open>open import Bool Basic_classes\<close>\<close>
 
-(* ----------------------- *)
-(* fst                     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> fst                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val fst : forall 'a 'b. 'a * 'b -> 'a*)
-(*let fst (v1, v2)=  v1*)
+\<comment> \<open>\<open>val fst : forall 'a 'b. 'a * 'b -> 'a\<close>\<close>
+\<comment> \<open>\<open>let fst (v1, v2)=  v1\<close>\<close>
 
-(* ----------------------- *)
-(* snd                     *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> snd                     \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val snd : forall 'a 'b. 'a * 'b -> 'b*)
-(*let snd (v1, v2)=  v2*)
-
-
-(* ----------------------- *)
-(* curry                   *)
-(* ----------------------- *)
-
-(*val curry : forall 'a 'b 'c. ('a * 'b -> 'c) -> ('a -> 'b -> 'c)*)
-
-(* ----------------------- *)
-(* uncurry                 *)
-(* ----------------------- *)
-
-(*val uncurry : forall 'a 'b 'c. ('a -> 'b -> 'c) -> ('a * 'b -> 'c)*)
+\<comment> \<open>\<open>val snd : forall 'a 'b. 'a * 'b -> 'b\<close>\<close>
+\<comment> \<open>\<open>let snd (v1, v2)=  v2\<close>\<close>
 
 
-(* ----------------------- *)
-(* swap                    *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> curry                   \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val swap : forall 'a 'b. ('a * 'b) -> ('b * 'a)*) 
-(*let swap (v1, v2)=  (v2, v1)*)
+\<comment> \<open>\<open>val curry : forall 'a 'b 'c. ('a * 'b -> 'c) -> ('a -> 'b -> 'c)\<close>\<close>
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> uncurry                 \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val uncurry : forall 'a 'b 'c. ('a -> 'b -> 'c) -> ('a * 'b -> 'c)\<close>\<close>
+
+
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> swap                    \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+
+\<comment> \<open>\<open>val swap : forall 'a 'b. ('a * 'b) -> ('b * 'a)\<close>\<close> 
+\<comment> \<open>\<open>let swap (v1, v2)=  (v2, v1)\<close>\<close>
 
 end

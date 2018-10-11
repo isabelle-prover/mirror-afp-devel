@@ -15,34 +15,34 @@ imports
 
 begin 
 
-(******************************************************************************)
-(* A library for sets                                                         *)
-(*                                                                            *)
-(* It mainly follows the Haskell Set-library                                  *)
-(******************************************************************************)
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
+\<comment> \<open>\<open> A library for sets                                                         \<close>\<close>
+\<comment> \<open>\<open>                                                                            \<close>\<close>
+\<comment> \<open>\<open> It mainly follows the Haskell Set-library                                  \<close>\<close>
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
 
-(* ========================================================================== *)
-(* Header                                                                     *)
-(* ========================================================================== *)
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
+\<comment> \<open>\<open> Header                                                                     \<close>\<close>
+\<comment> \<open>\<open> ========================================================================== \<close>\<close>
 
-(*open import Bool Basic_classes Maybe Function Num List Sorting Set*)
+\<comment> \<open>\<open>open import Bool Basic_classes Maybe Function Num List Sorting Set\<close>\<close>
 
 
-(* ----------------------------*)
-(* set choose (be careful !)   *)
-(* --------------------------- *)
+\<comment> \<open>\<open> ----------------------------\<close>\<close>
+\<comment> \<open>\<open> set choose (be careful !)   \<close>\<close>
+\<comment> \<open>\<open> --------------------------- \<close>\<close>
 
-(*val choose : forall 'a. SetType 'a => set 'a -> 'a*)
+\<comment> \<open>\<open>val choose : forall 'a. SetType 'a => set 'a -> 'a\<close>\<close>
 
-(* ------------------------ *)
-(* chooseAndSplit           *)
-(* ------------------------ *)
-(* The idea here is to provide a simple primitive that Lem code can use
+\<comment> \<open>\<open> ------------------------ \<close>\<close>
+\<comment> \<open>\<open> chooseAndSplit           \<close>\<close>
+\<comment> \<open>\<open> ------------------------ \<close>\<close>
+\<comment> \<open>\<open> The idea here is to provide a simple primitive that Lem code can use
  * to perform its own custom searches within the set -- likely using a
  * search criterion related to the element ordering, but not necessarily).
  * For example, sometimes we don't necessarily want to search for a specific
  * element, but want to search for elements greater than or less than some other.
- * Someties we'd like to use split but don't know a good value to split at.
+ * Someties we'd like to use "split" but don't know a good value to "split" at.
  * This function lets the set implementation decide that value.
  *
  * The contract of chooseAndSplit is simply to select an element nondeterministically
@@ -50,8 +50,8 @@ begin
  * greater than it. In this way, we can recursively traverse the set with any
  * search criterion, and we avoid baking in the tree representation (although that
  * is the obvious choice).
- *)
-(*val chooseAndSplit : forall 'a. SetType 'a, Ord 'a => set 'a -> maybe (set 'a * 'a * set 'a)*)
+ \<close>\<close>
+\<comment> \<open>\<open>val chooseAndSplit : forall 'a. SetType 'a, Ord 'a => set 'a -> maybe (set 'a * 'a * set 'a)\<close>\<close>
 definition chooseAndSplit  :: " 'a Ord_class \<Rightarrow> 'a set \<Rightarrow>('a set*'a*'a set)option "  where 
      " chooseAndSplit dict_Basic_classes_Ord_a s = (
   if s = {} then
@@ -63,38 +63,38 @@ definition chooseAndSplit  :: " 'a Ord_class \<Rightarrow> 'a set \<Rightarrow>(
       Some (lt, element, gt))))"
 
 
-(* ----------------------------*)
-(* universal set               *)
-(* --------------------------- *)
+\<comment> \<open>\<open> ----------------------------\<close>\<close>
+\<comment> \<open>\<open> universal set               \<close>\<close>
+\<comment> \<open>\<open> --------------------------- \<close>\<close>
 
-(*val universal : forall 'a. SetType 'a => set 'a*)
-
-
-(* ----------------------------*)
-(* toList                      *)
-(* --------------------------- *)
-
-(*val toList        : forall 'a. SetType 'a => set 'a -> list 'a*)
+\<comment> \<open>\<open>val universal : forall 'a. SetType 'a => set 'a\<close>\<close>
 
 
-(* ----------------------------*)
-(* toOrderedList               *)
-(* --------------------------- *)
+\<comment> \<open>\<open> ----------------------------\<close>\<close>
+\<comment> \<open>\<open> toList                      \<close>\<close>
+\<comment> \<open>\<open> --------------------------- \<close>\<close>
 
-(* toOrderedList returns a sorted list. Therefore the result is (given a suitable order) deterministic.
-   Therefore, it is much preferred to toList. However, it still is only defined for finite sets. So, please
+\<comment> \<open>\<open>val toList        : forall 'a. SetType 'a => set 'a -> list 'a\<close>\<close>
+
+
+\<comment> \<open>\<open> ----------------------------\<close>\<close>
+\<comment> \<open>\<open> toOrderedList               \<close>\<close>
+\<comment> \<open>\<open> --------------------------- \<close>\<close>
+
+\<comment> \<open>\<open> "toOrderedList" returns a sorted list. Therefore the result is (given a suitable order) deterministic.
+   Therefore, it is much preferred to "toList". However, it still is only defined for finite sets. So, please
    use carefully and consider using set-operations instead of translating sets to lists, performing list manipulations
-   and then transforming back to sets. *)
+   and then transforming back to sets. \<close>\<close>
 
-(*val toOrderedListBy : forall 'a. ('a -> 'a -> bool) -> set 'a -> list 'a*)
+\<comment> \<open>\<open>val toOrderedListBy : forall 'a. ('a -> 'a -> bool) -> set 'a -> list 'a\<close>\<close>
 
-(*val toOrderedList : forall 'a. SetType 'a, Ord 'a => set 'a -> list 'a*)
+\<comment> \<open>\<open>val toOrderedList : forall 'a. SetType 'a, Ord 'a => set 'a -> list 'a\<close>\<close>
 
-(* ----------------------- *)
-(* compare                 *)
-(* ----------------------- *)
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
+\<comment> \<open>\<open> compare                 \<close>\<close>
+\<comment> \<open>\<open> ----------------------- \<close>\<close>
 
-(*val setCompareBy: forall 'a. ('a -> 'a -> ordering) -> set 'a -> set 'a -> ordering*)
+\<comment> \<open>\<open>val setCompareBy: forall 'a. ('a -> 'a -> ordering) -> set 'a -> set 'a -> ordering\<close>\<close>
 definition setCompareBy  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> ordering "  where 
      " setCompareBy cmp ss ts = (
   (let ss' = (ordered_list_of_set (\<lambda> x y .  cmp x y = LT) ss) in
@@ -102,20 +102,20 @@ definition setCompareBy  :: "('a \<Rightarrow> 'a \<Rightarrow> ordering)\<Right
     lexicographicCompareBy cmp ss' ts')))"
 
 
-(*val setCompare : forall 'a. SetType 'a, Ord 'a => set 'a -> set 'a -> ordering*)
+\<comment> \<open>\<open>val setCompare : forall 'a. SetType 'a, Ord 'a => set 'a -> set 'a -> ordering\<close>\<close>
 definition setCompare  :: " 'a Ord_class \<Rightarrow> 'a set \<Rightarrow> 'a set \<Rightarrow> ordering "  where 
      " setCompare dict_Basic_classes_Ord_a = ( setCompareBy 
   (compare_method   dict_Basic_classes_Ord_a) )"
 
 
-(* ----------------------------*)
-(* unbounded fixed point       *)
-(* --------------------------- *)
+\<comment> \<open>\<open> ----------------------------\<close>\<close>
+\<comment> \<open>\<open> unbounded fixed point       \<close>\<close>
+\<comment> \<open>\<open> --------------------------- \<close>\<close>
 
-(* Is NOT supported by the coq backend! *)
-(*val leastFixedPointUnbounded : forall 'a. SetType 'a => (set 'a -> set 'a) -> set 'a -> set 'a*)
-(*let rec leastFixedPointUnbounded f x=
+\<comment> \<open>\<open> Is NOT supported by the coq backend! \<close>\<close>
+\<comment> \<open>\<open>val leastFixedPointUnbounded : forall 'a. SetType 'a => (set 'a -> set 'a) -> set 'a -> set 'a\<close>\<close>
+\<comment> \<open>\<open>let rec leastFixedPointUnbounded f x=
     let fx = f x in
    if fx subset x then x
-   else leastFixedPointUnbounded f (fx union x)*)
+   else leastFixedPointUnbounded f (fx union x)\<close>\<close>
 end

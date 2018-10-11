@@ -19,11 +19,11 @@ imports
 begin 
 
 
-(****************************************************)
-(*                                                  *)
-(* Termination Proofs                               *)
-(*                                                  *)
-(****************************************************)
+\<comment> \<open>\<open>**************************************************\<close>\<close>
+\<comment> \<open>\<open>                                                  \<close>\<close>
+\<comment> \<open>\<open> Termination Proofs                               \<close>\<close>
+\<comment> \<open>\<open>                                                  \<close>\<close>
+\<comment> \<open>\<open>**************************************************\<close>\<close>
 
 termination pmatch by lexicographic_order
 

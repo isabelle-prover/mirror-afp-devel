@@ -12,23 +12,23 @@ imports
 
 begin 
 
-(*open import Pervasives*)
-(*open import Pervasives_extra*)
-(*open import Lib*)
-(*open import Ffi*)
+\<comment> \<open>\<open>open import Pervasives\<close>\<close>
+\<comment> \<open>\<open>open import Pervasives_extra\<close>\<close>
+\<comment> \<open>\<open>open import Lib\<close>\<close>
+\<comment> \<open>\<open>open import Ffi\<close>\<close>
 
 datatype_record simpleIO = 
  input ::"  8 word llist " 
  output0 ::"  8 word llist " 
 
 
-(*val isEof : oracle_function simpleIO*)
+\<comment> \<open>\<open>val isEof : oracle_function simpleIO\<close>\<close>
 fun isEof  :: " simpleIO \<Rightarrow>(8 word)list \<Rightarrow>(8 word)list \<Rightarrow>(simpleIO)oracle_result "  where 
      " isEof st conf ([]) = ( Oracle_fail )"
 |" isEof st conf (x # xs) = ( Oracle_return st ((if(input   st) = LNil then of_nat (( 1 :: nat)) else of_nat (( 0 :: nat)))# xs))"
 
 
-(*val getChar : oracle_function simpleIO*)
+\<comment> \<open>\<open>val getChar : oracle_function simpleIO\<close>\<close>
 fun getChar  :: " simpleIO \<Rightarrow>(8 word)list \<Rightarrow>(8 word)list \<Rightarrow>(simpleIO)oracle_result "  where 
      " getChar st conf ([]) = ( Oracle_fail )"
 |" getChar st conf (x # xs) = (
@@ -38,7 +38,7 @@ fun getChar  :: " simpleIO \<Rightarrow>(8 word)list \<Rightarrow>(8 word)list \
       ))"
 
 
-(*val putChar : oracle_function simpleIO*)
+\<comment> \<open>\<open>val putChar : oracle_function simpleIO\<close>\<close>
 definition putChar  :: " simpleIO \<Rightarrow>(8 word)list \<Rightarrow>(8 word)list \<Rightarrow>(simpleIO)oracle_result "  where 
      " putChar st conf input1 = (
   (case  input1 of
@@ -47,12 +47,12 @@ definition putChar  :: " simpleIO \<Rightarrow>(8 word)list \<Rightarrow>(8 word
   ))"
 
 
-(*val exit : oracle_function simpleIO*)
+\<comment> \<open>\<open>val exit : oracle_function simpleIO\<close>\<close>
 definition exit0  :: " simpleIO \<Rightarrow>(8 word)list \<Rightarrow>(8 word)list \<Rightarrow>(simpleIO)oracle_result "  where 
      " exit0 st conf input1 = ( Oracle_diverge )"
 
 
-(*val simpleIO_oracle : oracle simpleIO*)
+\<comment> \<open>\<open>val simpleIO_oracle : oracle simpleIO\<close>\<close>
 definition simpleIO_oracle  :: " string \<Rightarrow> simpleIO \<Rightarrow>(8 word)list \<Rightarrow>(8 word)list \<Rightarrow>(simpleIO)oracle_result "  where 
      " simpleIO_oracle s st conf input1 = (
   if s = (''isEof'') then

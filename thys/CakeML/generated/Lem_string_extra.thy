@@ -12,32 +12,32 @@ imports
 
 begin 
 
-(******************************************************************************)
-(* String functions                                                           *)
-(******************************************************************************)
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
+\<comment> \<open>\<open> String functions                                                           \<close>\<close>
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
 
-(*open import Basic_classes*)
-(*open import Num*)
-(*open import List*)
-(*open import String*)
-(*open import List_extra*)
-(*open import {hol} `stringLib`*)
-(*open import {hol} `ASCIInumbersTheory`*)
+\<comment> \<open>\<open>open import Basic_classes\<close>\<close>
+\<comment> \<open>\<open>open import Num\<close>\<close>
+\<comment> \<open>\<open>open import List\<close>\<close>
+\<comment> \<open>\<open>open import String\<close>\<close>
+\<comment> \<open>\<open>open import List_extra\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `stringLib`\<close>\<close>
+\<comment> \<open>\<open>open import {hol} `ASCIInumbersTheory`\<close>\<close>
 
 
-(******************************************************************************)
-(* Character's to numbers                                                     *)
-(******************************************************************************)
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
+\<comment> \<open>\<open> Character's to numbers                                                     \<close>\<close>
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
 
-(*val ord : char -> nat*)
+\<comment> \<open>\<open>val ord : char -> nat\<close>\<close>
 
-(*val chr : nat -> char*)
+\<comment> \<open>\<open>val chr : nat -> char\<close>\<close>
 
-(******************************************************************************)
-(* Converting to strings                                                      *)
-(******************************************************************************)
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
+\<comment> \<open>\<open> Converting to strings                                                      \<close>\<close>
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
 
-(*val stringFromNatHelper : nat -> list char -> list char*)
+\<comment> \<open>\<open>val stringFromNatHelper : nat -> list char -> list char\<close>\<close>
 fun  stringFromNatHelper  :: " nat \<Rightarrow>(char)list \<Rightarrow>(char)list "  where 
      " stringFromNatHelper n acc1 = (
   if n =( 0 :: nat) then
@@ -46,13 +46,13 @@ fun  stringFromNatHelper  :: " nat \<Rightarrow>(char)list \<Rightarrow>(char)li
     stringFromNatHelper (n div( 10 :: nat)) ((%n. char_of (n::nat)) ((n mod( 10 :: nat)) +( 48 :: nat)) # acc1))"
 
 
-(*val stringFromNat : nat -> string*)
+\<comment> \<open>\<open>val stringFromNat : nat -> string\<close>\<close>
 definition stringFromNat  :: " nat \<Rightarrow> string "  where 
      " stringFromNat n = ( 
   if n =( 0 :: nat) then (''0'') else  (stringFromNatHelper n []))"
 
 
-(*val stringFromNaturalHelper : natural -> list char -> list char*)
+\<comment> \<open>\<open>val stringFromNaturalHelper : natural -> list char -> list char\<close>\<close>
 fun  stringFromNaturalHelper  :: " nat \<Rightarrow>(char)list \<Rightarrow>(char)list "  where 
      " stringFromNaturalHelper n acc1 = (
   if n =( 0 :: nat) then
@@ -61,13 +61,13 @@ fun  stringFromNaturalHelper  :: " nat \<Rightarrow>(char)list \<Rightarrow>(cha
     stringFromNaturalHelper (n div( 10 :: nat)) ((%n. char_of (n::nat)) ( ((n mod( 10 :: nat)) +( 48 :: nat))) # acc1))"
 
 
-(*val stringFromNatural : natural -> string*)
+\<comment> \<open>\<open>val stringFromNatural : natural -> string\<close>\<close>
 definition stringFromNatural  :: " nat \<Rightarrow> string "  where 
      " stringFromNatural n = ( 
   if n =( 0 :: nat) then (''0'') else  (stringFromNaturalHelper n []))"
 
 
-(*val stringFromInt : int -> string*)
+\<comment> \<open>\<open>val stringFromInt : int -> string\<close>\<close>
 definition stringFromInt  :: " int \<Rightarrow> string "  where 
      " stringFromInt i = ( 
   if i <( 0 :: int) then 
@@ -76,7 +76,7 @@ definition stringFromInt  :: " int \<Rightarrow> string "  where
     stringFromNat (nat (abs i)))"
 
 
-(*val stringFromInteger : integer -> string*)
+\<comment> \<open>\<open>val stringFromInteger : integer -> string\<close>\<close>
 definition stringFromInteger  :: " int \<Rightarrow> string "  where 
      " stringFromInteger i = ( 
   if i <( 0 :: int) then 
@@ -86,26 +86,26 @@ definition stringFromInteger  :: " int \<Rightarrow> string "  where
 
 
 
-(******************************************************************************)
-(* List-like operations                                                       *)
-(******************************************************************************)
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
+\<comment> \<open>\<open> List-like operations                                                       \<close>\<close>
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
 
-(*val nth : string -> nat -> char*)
+\<comment> \<open>\<open>val nth : string -> nat -> char\<close>\<close>
 definition nth  :: " string \<Rightarrow> nat \<Rightarrow> char "  where 
      " nth s n = ( List.nth ( s) n )"
 
 
-(*val stringConcat : list string -> string*)
+\<comment> \<open>\<open>val stringConcat : list string -> string\<close>\<close>
 definition stringConcat  :: "(string)list \<Rightarrow> string "  where 
      " stringConcat s = (
   List.foldr (@) s (''''))"
 
 
-(******************************************************************************)
-(* String comparison                                                          *)
-(******************************************************************************)
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
+\<comment> \<open>\<open> String comparison                                                          \<close>\<close>
+\<comment> \<open>\<open>****************************************************************************\<close>\<close>
 
-(*val stringCompare : string -> string -> ordering*)
+\<comment> \<open>\<open>val stringCompare : string -> string -> ordering\<close>\<close>
 
 definition stringLess  :: " string \<Rightarrow> string \<Rightarrow> bool "  where 
      " stringLess x y = ( orderingIsLess (EQ))"

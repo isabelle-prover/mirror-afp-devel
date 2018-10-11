@@ -18,8 +18,8 @@ begin
 
 
 
-(*open import String Maybe Num Basic_classes Set Relation Show*) 
-(*import Set_extra String_extra*)
+\<comment> \<open>\<open>open import String Maybe Num Basic_classes Set Relation Show\<close>\<close> 
+\<comment> \<open>\<open>import Set_extra String_extra\<close>\<close>
 
 definition instance_Show_Show_nat_dict  :: "(nat)Show_class "  where 
      " instance_Show_Show_nat_dict = ((|
@@ -50,14 +50,14 @@ definition stringFromSet  :: "('a \<Rightarrow> string)\<Rightarrow> 'a set \<Ri
   (''{'') @ (Lem_show.stringFromListAux showX (list_of_set xs) @ (''}'')))"
 
 
-(* Abbreviates the representation if the relation is transitive. *)
+\<comment> \<open>\<open> Abbreviates the representation if the relation is transitive. \<close>\<close>
 definition stringFromRelation  :: "('a*'a \<Rightarrow> string)\<Rightarrow>('a*'a)set \<Rightarrow> string "  where 
      " stringFromRelation showX rel = (
   if trans rel then
     (let pruned_rel = (LemExtraDefs.without_trans_edges rel) in
     if ((\<forall> e \<in> rel.  (e \<in> pruned_rel))) then
-      \<comment> \<open>The relations are the same (there are no transitive edges),\<close>
-      \<comment> \<open>so we can just as well print the original one.\<close>
+      \<comment> \<open>\<open> The relations are the same (there are no transitive edges),
+         so we can just as well print the original one. \<close>\<close>
       stringFromSet showX rel
     else
       (''trancl of '') @ stringFromSet showX pruned_rel)

@@ -10,29 +10,29 @@ imports
 
 begin 
 
-(*open import Pervasives*)
-(*open import Set_extra*)
+\<comment> \<open>\<open>open import Pervasives\<close>\<close>
+\<comment> \<open>\<open>open import Set_extra\<close>\<close>
 
 type_synonym( 'k, 'v) alist0 =" ('k * 'v) list "
 
-(* Identifiers *)
+\<comment> \<open>\<open> Identifiers \<close>\<close>
 datatype( 'm, 'n) id0 =
     Short " 'n "
   | Long " 'm " " ('m, 'n) id0 "
 
-(*val mk_id : forall 'n 'm. list 'm -> 'n -> id 'm 'n*)
+\<comment> \<open>\<open>val mk_id : forall 'n 'm. list 'm -> 'n -> id 'm 'n\<close>\<close>
 fun  mk_id  :: " 'm list \<Rightarrow> 'n \<Rightarrow>('m,'n)id0 "  where 
      " mk_id [] n = ( Short n )"
     |" mk_id (mn # mns) n = ( Long mn (mk_id mns n))"
 
 
-(*val id_to_n : forall 'n 'm. id 'm 'n -> 'n*)
+\<comment> \<open>\<open>val id_to_n : forall 'n 'm. id 'm 'n -> 'n\<close>\<close>
 fun  id_to_n  :: "('m,'n)id0 \<Rightarrow> 'n "  where 
      " id_to_n (Short n) = ( n )"
     |" id_to_n (Long _ id1) = ( id_to_n id1 )"
 
 
-(*val id_to_mods : forall 'n 'm. id 'm 'n -> list 'm*)
+\<comment> \<open>\<open>val id_to_mods : forall 'n 'm. id 'm 'n -> list 'm\<close>\<close>
 fun  id_to_mods  :: "('m,'n)id0 \<Rightarrow> 'm list "  where 
      " id_to_mods (Short _) = ( [])"
     |" id_to_mods (Long mn id1) = ( mn # id_to_mods id1 )"
@@ -41,7 +41,7 @@ fun  id_to_mods  :: "('m,'n)id0 \<Rightarrow> 'm list "  where
 datatype( 'm, 'n, 'v) namespace =
   Bind " ('n, 'v) alist0 " " ('m, ( ('m, 'n, 'v)namespace)) alist0 "
 
-(*val nsLookup : forall 'v 'm 'n. Eq 'n, Eq 'm => namespace 'm 'n 'v -> id 'm 'n -> maybe 'v*)
+\<comment> \<open>\<open>val nsLookup : forall 'v 'm 'n. Eq 'n, Eq 'm => namespace 'm 'n 'v -> id 'm 'n -> maybe 'v\<close>\<close>
 fun  nsLookup  :: "('m,'n,'v)namespace \<Rightarrow>('m,'n)id0 \<Rightarrow> 'v option "  where 
      " nsLookup (Bind v2 m) (Short n) = ( Map.map_of v2 n )"
     |" nsLookup (Bind v2 m) (Long mn id1) = (
@@ -51,7 +51,7 @@ fun  nsLookup  :: "('m,'n,'v)namespace \<Rightarrow>('m,'n)id0 \<Rightarrow> 'v 
       ))"
 
 
-(*val nsLookupMod : forall 'm 'n 'v. Eq 'n, Eq 'm => namespace 'm 'n 'v -> list 'm -> maybe (namespace 'm 'n 'v)*)
+\<comment> \<open>\<open>val nsLookupMod : forall 'm 'n 'v. Eq 'n, Eq 'm => namespace 'm 'n 'v -> list 'm -> maybe (namespace 'm 'n 'v)\<close>\<close>
 fun  nsLookupMod  :: "('m,'n,'v)namespace \<Rightarrow> 'm list \<Rightarrow>(('m,'n,'v)namespace)option "  where 
      " nsLookupMod e [] = ( Some e )"
     |" nsLookupMod (Bind v2 m) (mn # path) = (
@@ -61,50 +61,50 @@ fun  nsLookupMod  :: "('m,'n,'v)namespace \<Rightarrow> 'm list \<Rightarrow>(('
       ))"
 
 
-(*val nsEmpty : forall 'v 'm 'n. namespace 'm 'n 'v*)
+\<comment> \<open>\<open>val nsEmpty : forall 'v 'm 'n. namespace 'm 'n 'v\<close>\<close>
 definition nsEmpty  :: "('m,'n,'v)namespace "  where 
      " nsEmpty = ( Bind [] [])"
 
 
-(*val nsAppend : forall 'v 'm 'n. namespace 'm 'n 'v -> namespace 'm 'n 'v -> namespace 'm 'n 'v*)
+\<comment> \<open>\<open>val nsAppend : forall 'v 'm 'n. namespace 'm 'n 'v -> namespace 'm 'n 'v -> namespace 'm 'n 'v\<close>\<close>
 fun nsAppend  :: "('m,'n,'v)namespace \<Rightarrow>('m,'n,'v)namespace \<Rightarrow>('m,'n,'v)namespace "  where 
      " nsAppend (Bind v1 m1) (Bind v2 m2) = ( Bind (v1 @ v2) (m1 @ m2))"
 
 
-(*val nsLift : forall 'v 'm 'n. 'm -> namespace 'm 'n 'v -> namespace 'm 'n 'v*)
+\<comment> \<open>\<open>val nsLift : forall 'v 'm 'n. 'm -> namespace 'm 'n 'v -> namespace 'm 'n 'v\<close>\<close>
 definition nsLift  :: " 'm \<Rightarrow>('m,'n,'v)namespace \<Rightarrow>('m,'n,'v)namespace "  where 
      " nsLift mn env = ( Bind [] [(mn, env)])"
 
 
-(*val alist_to_ns : forall 'v 'm 'n. alist 'n 'v -> namespace 'm 'n 'v*)
+\<comment> \<open>\<open>val alist_to_ns : forall 'v 'm 'n. alist 'n 'v -> namespace 'm 'n 'v\<close>\<close>
 definition alist_to_ns  :: "('n*'v)list \<Rightarrow>('m,'n,'v)namespace "  where 
      " alist_to_ns a = ( Bind a [])"
 
 
-(*val nsBind : forall 'v 'm 'n. 'n -> 'v -> namespace 'm 'n 'v -> namespace 'm 'n 'v*)
+\<comment> \<open>\<open>val nsBind : forall 'v 'm 'n. 'n -> 'v -> namespace 'm 'n 'v -> namespace 'm 'n 'v\<close>\<close>
 fun nsBind  :: " 'n \<Rightarrow> 'v \<Rightarrow>('m,'n,'v)namespace \<Rightarrow>('m,'n,'v)namespace "  where 
      " nsBind k x (Bind v2 m) = ( Bind ((k,x)# v2) m )"
 
 
-(*val nsBindList : forall 'v 'm 'n. list ('n * 'v) -> namespace 'm 'n 'v -> namespace 'm 'n 'v*)
+\<comment> \<open>\<open>val nsBindList : forall 'v 'm 'n. list ('n * 'v) -> namespace 'm 'n 'v -> namespace 'm 'n 'v\<close>\<close>
 definition nsBindList  :: "('n*'v)list \<Rightarrow>('m,'n,'v)namespace \<Rightarrow>('m,'n,'v)namespace "  where 
      " nsBindList l e = ( List.foldr ( \<lambda>x .  
   (case  x of (x,v2) => \<lambda> e .  nsBind x v2 e )) l e )"
 
 
-(*val nsOptBind : forall 'v 'm 'n. maybe 'n -> 'v -> namespace 'm 'n 'v -> namespace 'm 'n 'v*)
+\<comment> \<open>\<open>val nsOptBind : forall 'v 'm 'n. maybe 'n -> 'v -> namespace 'm 'n 'v -> namespace 'm 'n 'v\<close>\<close>
 fun nsOptBind  :: " 'n option \<Rightarrow> 'v \<Rightarrow>('m,'n,'v)namespace \<Rightarrow>('m,'n,'v)namespace "  where 
      " nsOptBind None x env = ( env )"
 |" nsOptBind (Some n') x env = ( nsBind n' x env )"
 
 
-(*val nsSing : forall 'v 'm 'n. 'n -> 'v -> namespace 'm 'n 'v*)
+\<comment> \<open>\<open>val nsSing : forall 'v 'm 'n. 'n -> 'v -> namespace 'm 'n 'v\<close>\<close>
 definition nsSing  :: " 'n \<Rightarrow> 'v \<Rightarrow>('m,'n,'v)namespace "  where 
      " nsSing n x = ( Bind ([(n,x)]) [])"
 
 
-(*val nsSub : forall 'v1 'v2 'm 'n. Eq 'm, Eq 'n, Eq 'v1, Eq 'v2 =>
-  (id 'm 'n -> 'v1 -> 'v2 -> bool) -> namespace 'm 'n 'v1 -> namespace 'm 'n 'v2 -> bool*)
+\<comment> \<open>\<open>val nsSub : forall 'v1 'v2 'm 'n. Eq 'm, Eq 'n, Eq 'v1, Eq 'v2 =>
+  (id 'm 'n -> 'v1 -> 'v2 -> bool) -> namespace 'm 'n 'v1 -> namespace 'm 'n 'v2 -> bool\<close>\<close>
 definition nsSub  :: "(('m,'n)id0 \<Rightarrow> 'v1 \<Rightarrow> 'v2 \<Rightarrow> bool)\<Rightarrow>('m,'n,'v1)namespace \<Rightarrow>('m,'n,'v2)namespace \<Rightarrow> bool "  where 
      " nsSub r env1 env2 = (
   ((\<forall> id0. \<forall> v1. 
@@ -116,7 +116,7 @@ definition nsSub  :: "(('m,'n)id0 \<Rightarrow> 'v1 \<Rightarrow> 'v2 \<Rightarr
     (nsLookupMod env2 path = None) \<longrightarrow> (nsLookupMod env1 path = None))))"
 
 
-(*val nsAll : forall 'v 'm 'n. Eq 'm, Eq 'n, Eq 'v => (id 'm 'n -> 'v -> bool) -> namespace 'm 'n 'v -> bool*)
+\<comment> \<open>\<open>val nsAll : forall 'v 'm 'n. Eq 'm, Eq 'n, Eq 'v => (id 'm 'n -> 'v -> bool) -> namespace 'm 'n 'v -> bool\<close>\<close>
 fun  nsAll  :: "(('m,'n)id0 \<Rightarrow> 'v \<Rightarrow> bool)\<Rightarrow>('m,'n,'v)namespace \<Rightarrow> bool "  where 
      " nsAll f env = (
   ((\<forall> id0. \<forall> v1. 
@@ -125,15 +125,15 @@ fun  nsAll  :: "(('m,'n)id0 \<Rightarrow> 'v \<Rightarrow> bool)\<Rightarrow>('m
      f id0 v1)))"
 
 
-(*val eAll2 : forall 'v1 'v2 'm 'n. Eq 'm, Eq 'n, Eq 'v1, Eq 'v2 =>
-   (id 'm 'n -> 'v1 -> 'v2 -> bool) -> namespace 'm 'n 'v1 -> namespace 'm 'n 'v2 -> bool*)
+\<comment> \<open>\<open>val eAll2 : forall 'v1 'v2 'm 'n. Eq 'm, Eq 'n, Eq 'v1, Eq 'v2 =>
+   (id 'm 'n -> 'v1 -> 'v2 -> bool) -> namespace 'm 'n 'v1 -> namespace 'm 'n 'v2 -> bool\<close>\<close>
 definition nsAll2  :: "(('d,'c)id0 \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool)\<Rightarrow>('d,'c,'b)namespace \<Rightarrow>('d,'c,'a)namespace \<Rightarrow> bool "  where 
      " nsAll2 r env1 env2 = (
   nsSub r env1 env2 \<and>
   nsSub (\<lambda> x y z .  r x z y) env2 env1 )"
 
 
-(*val nsDom : forall 'v 'm 'n. Eq 'm, Eq 'n, Eq 'v, SetType 'v => namespace 'm 'n 'v -> set (id 'm 'n)*)
+\<comment> \<open>\<open>val nsDom : forall 'v 'm 'n. Eq 'm, Eq 'n, Eq 'v, SetType 'v => namespace 'm 'n 'v -> set (id 'm 'n)\<close>\<close>
 definition nsDom  :: "('m,'n,'v)namespace \<Rightarrow>(('m,'n)id0)set "  where 
      " nsDom env = ( (let x2 = 
   ({}) in  Finite_Set.fold
@@ -143,7 +143,7 @@ definition nsDom  :: "('m,'n,'v)namespace \<Rightarrow>(('m,'n)id0)set "  where
                          else x2) x2 UNIV) x2 UNIV))"
 
 
-(*val nsDomMod : forall 'v 'm 'n. SetType 'm, Eq 'm, Eq 'n, Eq 'v => namespace 'm 'n 'v -> set (list 'm)*)
+\<comment> \<open>\<open>val nsDomMod : forall 'v 'm 'n. SetType 'm, Eq 'm, Eq 'n, Eq 'v => namespace 'm 'n 'v -> set (list 'm)\<close>\<close>
 definition nsDomMod  :: "('m,'n,'v)namespace \<Rightarrow>('m list)set "  where 
      " nsDomMod env = ( (let x2 = 
   ({}) in  Finite_Set.fold
@@ -153,7 +153,7 @@ definition nsDomMod  :: "('m,'n,'v)namespace \<Rightarrow>('m list)set "  where
                          else x2) x2 UNIV) x2 UNIV))"
 
 
-(*val nsMap : forall 'v 'w 'm 'n. ('v -> 'w) -> namespace 'm 'n 'v -> namespace 'm 'n 'w*)
+\<comment> \<open>\<open>val nsMap : forall 'v 'w 'm 'n. ('v -> 'w) -> namespace 'm 'n 'v -> namespace 'm 'n 'w\<close>\<close>
 function (sequential,domintros)  nsMap  :: "('v \<Rightarrow> 'w)\<Rightarrow>('m,'n,'v)namespace \<Rightarrow>('m,'n,'w)namespace "  where 
      " nsMap f (Bind v2 m) = (
   Bind (List.map ( \<lambda>x .  

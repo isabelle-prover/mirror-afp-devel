@@ -17,23 +17,23 @@ imports
 
 begin 
 
-(*open import Pervasives*)
-(*open import Lib*)
-(*import List_extra*)
-(*import String*)
-(*import String_extra*)
-(*open import Ast*)
-(*open import Namespace*)
-(*open import Ffi*)
-(*open import FpSem*)
+\<comment> \<open>\<open>open import Pervasives\<close>\<close>
+\<comment> \<open>\<open>open import Lib\<close>\<close>
+\<comment> \<open>\<open>import List_extra\<close>\<close>
+\<comment> \<open>\<open>import String\<close>\<close>
+\<comment> \<open>\<open>import String_extra\<close>\<close>
+\<comment> \<open>\<open>open import Ast\<close>\<close>
+\<comment> \<open>\<open>open import Namespace\<close>\<close>
+\<comment> \<open>\<open>open import Ffi\<close>\<close>
+\<comment> \<open>\<open>open import FpSem\<close>\<close>
 
-(* The type that a constructor builds is either a named datatype or an exception.
- * For exceptions, we also keep the module that the exception was declared in. *)
+\<comment> \<open>\<open> The type that a constructor builds is either a named datatype or an exception.
+ * For exceptions, we also keep the module that the exception was declared in. \<close>\<close>
 datatype tid_or_exn =
     TypeId " (modN, typeN) id0 "
   | TypeExn " (modN, conN) id0 "
 
-(*val type_defs_to_new_tdecs : list modN -> type_def -> set tid_or_exn*)
+\<comment> \<open>\<open>val type_defs_to_new_tdecs : list modN -> type_def -> set tid_or_exn\<close>\<close>
 definition type_defs_to_new_tdecs  :: "(string)list \<Rightarrow>((tvarN)list*string*(conN*(t)list)list)list \<Rightarrow>(tid_or_exn)set "  where 
      " type_defs_to_new_tdecs mn tdefs = (
   List.set (List.map ( \<lambda>x .  
@@ -48,18 +48,18 @@ datatype_record 'v sem_env =
    
 
 
-(* Value forms *)
+\<comment> \<open>\<open> Value forms \<close>\<close>
 datatype v =
     Litv " lit "
-  (* Constructor application. *)
+  \<comment> \<open>\<open> Constructor application. \<close>\<close>
   | Conv "  (conN * tid_or_exn)option " " v list "
-  (* Function closures
-     The environment is used for the free variables in the function *)
+  \<comment> \<open>\<open> Function closures
+     The environment is used for the free variables in the function \<close>\<close>
   | Closure " v sem_env " " varN " " exp0 "
-  (* Function closure for recursive functions
+  \<comment> \<open>\<open> Function closure for recursive functions
    * See Closure and Letrec above
    * The last variable name indicates which function from the mutually
-   * recursive bundle this closure value represents *)
+   * recursive bundle this closure value represents \<close>\<close>
   | Recclosure " v sem_env " " (varN * varN * exp0) list " " varN "
   | Loc " nat "
   | Vectorv " v list "
@@ -71,29 +71,29 @@ definition Bindv  :: " v "  where
      " Bindv = ( Conv (Some((''Bind''),TypeExn(Short(''Bind'')))) [])"
 
 
-(* The result of evaluation *)
+\<comment> \<open>\<open> The result of evaluation \<close>\<close>
 datatype abort =
     Rtype_error
   | Rtimeout_error
 
 datatype 'a error_result =
-    Rraise " 'a " (* Should only be a value of type exn *)
+    Rraise " 'a " \<comment> \<open>\<open> Should only be a value of type exn \<close>\<close>
   | Rabort " abort "
 
 datatype( 'a, 'b) result =
     Rval " 'a "
   | Rerr " 'b error_result "
 
-(* Stores *)
+\<comment> \<open>\<open> Stores \<close>\<close>
 datatype 'a store_v =
-  (* A ref cell *)
+  \<comment> \<open>\<open> A ref cell \<close>\<close>
     Refv " 'a "
-  (* A byte array *)
+  \<comment> \<open>\<open> A byte array \<close>\<close>
   | W8array " 8 word list "
-  (* An array of values *)
+  \<comment> \<open>\<open> An array of values \<close>\<close>
   | Varray " 'a list "
 
-(*val store_v_same_type : forall 'a. store_v 'a -> store_v 'a -> bool*)
+\<comment> \<open>\<open>val store_v_same_type : forall 'a. store_v 'a -> store_v 'a -> bool\<close>\<close>
 definition store_v_same_type  :: " 'a store_v \<Rightarrow> 'a store_v \<Rightarrow> bool "  where 
      " store_v_same_type v1 v2 = (
   (case  (v1,v2) of
@@ -104,15 +104,15 @@ definition store_v_same_type  :: " 'a store_v \<Rightarrow> 'a store_v \<Rightar
   ))"
 
 
-(* The nth item in the list is the value at location n *)
+\<comment> \<open>\<open> The nth item in the list is the value at location n \<close>\<close>
 type_synonym 'a store =" ( 'a store_v) list "
 
-(*val empty_store : forall 'a. store 'a*)
+\<comment> \<open>\<open>val empty_store : forall 'a. store 'a\<close>\<close>
 definition empty_store  :: "('a store_v)list "  where 
      " empty_store = ( [])"
 
 
-(*val store_lookup : forall 'a. nat -> store 'a -> maybe (store_v 'a)*)
+\<comment> \<open>\<open>val store_lookup : forall 'a. nat -> store 'a -> maybe (store_v 'a)\<close>\<close>
 definition store_lookup  :: " nat \<Rightarrow>('a store_v)list \<Rightarrow>('a store_v)option "  where 
      " store_lookup l st = (
   if l < List.length st then
@@ -121,13 +121,13 @@ definition store_lookup  :: " nat \<Rightarrow>('a store_v)list \<Rightarrow>('a
     None )"
 
 
-(*val store_alloc : forall 'a. store_v 'a -> store 'a -> store 'a * nat*)
+\<comment> \<open>\<open>val store_alloc : forall 'a. store_v 'a -> store 'a -> store 'a * nat\<close>\<close>
 definition store_alloc  :: " 'a store_v \<Rightarrow>('a store_v)list \<Rightarrow>('a store_v)list*nat "  where 
      " store_alloc v2 st = (
   ((st @ [v2]), List.length st))"
 
 
-(*val store_assign : forall 'a. nat -> store_v 'a -> store 'a -> maybe (store 'a)*)
+\<comment> \<open>\<open>val store_assign : forall 'a. nat -> store_v 'a -> store 'a -> maybe (store 'a)\<close>\<close>
 definition store_assign  :: " nat \<Rightarrow> 'a store_v \<Rightarrow>('a store_v)list \<Rightarrow>(('a store_v)list)option "  where 
      " store_assign n v2 st = (
   if (n < List.length st) \<and>
@@ -152,9 +152,9 @@ datatype_record 'ffi state =
    
 
 
-(* Other primitives *)
-(* Check that a constructor is properly applied *)
-(*val do_con_check : env_ctor -> maybe (id modN conN) -> nat -> bool*)
+\<comment> \<open>\<open> Other primitives \<close>\<close>
+\<comment> \<open>\<open> Check that a constructor is properly applied \<close>\<close>
+\<comment> \<open>\<open>val do_con_check : env_ctor -> maybe (id modN conN) -> nat -> bool\<close>\<close>
 fun do_con_check  :: "((string),(string),(nat*tid_or_exn))namespace \<Rightarrow>(((string),(string))id0)option \<Rightarrow> nat \<Rightarrow> bool "  where 
      " do_con_check cenv None l = ( True )"
 |" do_con_check cenv (Some n) l = (
@@ -164,7 +164,7 @@ fun do_con_check  :: "((string),(string),(nat*tid_or_exn))namespace \<Rightarrow
         ))"
 
 
-(*val build_conv : env_ctor -> maybe (id modN conN) -> list v -> maybe v*)
+\<comment> \<open>\<open>val build_conv : env_ctor -> maybe (id modN conN) -> list v -> maybe v\<close>\<close>
 fun build_conv  :: "((string),(string),(nat*tid_or_exn))namespace \<Rightarrow>(((string),(string))id0)option \<Rightarrow>(v)list \<Rightarrow>(v)option "  where 
      " build_conv envC None vs = (
         Some (Conv None vs))"
@@ -175,7 +175,7 @@ fun build_conv  :: "((string),(string),(nat*tid_or_exn))namespace \<Rightarrow>(
         ))"
 
 
-(*val lit_same_type : lit -> lit -> bool*)
+\<comment> \<open>\<open>val lit_same_type : lit -> lit -> bool\<close>\<close>
 definition lit_same_type  :: " lit \<Rightarrow> lit \<Rightarrow> bool "  where 
      " lit_same_type l1 l2 = (
   (case  (l1,l2) of
@@ -193,20 +193,20 @@ datatype 'a match_result =
   | Match_type_error
   | Match " 'a "
 
-(*val same_tid : tid_or_exn -> tid_or_exn -> bool*)
+\<comment> \<open>\<open>val same_tid : tid_or_exn -> tid_or_exn -> bool\<close>\<close>
 fun  same_tid  :: " tid_or_exn \<Rightarrow> tid_or_exn \<Rightarrow> bool "  where 
      " same_tid (TypeId tn1) (TypeId tn2) = ( tn1 = tn2 )"
 |" same_tid (TypeExn _) (TypeExn _) = ( True )"
 |" same_tid _ _ = ( False )"
 
 
-(*val same_ctor : conN * tid_or_exn -> conN * tid_or_exn -> bool*)
+\<comment> \<open>\<open>val same_ctor : conN * tid_or_exn -> conN * tid_or_exn -> bool\<close>\<close>
 fun  same_ctor  :: " string*tid_or_exn \<Rightarrow> string*tid_or_exn \<Rightarrow> bool "  where 
      " same_ctor (cn1, TypeExn mn1) (cn2, TypeExn mn2) = ( (cn1 = cn2) \<and> (mn1 = mn2))"
 |" same_ctor (cn1, _) (cn2, _) = ( cn1 = cn2 )"
 
 
-(*val ctor_same_type : maybe (conN * tid_or_exn) -> maybe (conN * tid_or_exn) -> bool*)
+\<comment> \<open>\<open>val ctor_same_type : maybe (conN * tid_or_exn) -> maybe (conN * tid_or_exn) -> bool\<close>\<close>
 definition ctor_same_type  :: "(string*tid_or_exn)option \<Rightarrow>(string*tid_or_exn)option \<Rightarrow> bool "  where 
      " ctor_same_type c1 c2 = (
   (case  (c1,c2) of
@@ -216,15 +216,15 @@ definition ctor_same_type  :: "(string*tid_or_exn)option \<Rightarrow>(string*ti
   ))"
 
 
-(* A big-step pattern matcher.  If the value matches the pattern, return an
+\<comment> \<open>\<open> A big-step pattern matcher.  If the value matches the pattern, return an
  * environment with the pattern variables bound to the corresponding sub-terms
  * of the value; this environment extends the environment given as an argument.
  * No_match is returned when there is no match, but any constructors
  * encountered in determining the match failure are applied to the correct
  * number of arguments, and constructors in corresponding positions in the
  * pattern and value come from the same type.  Match_type_error is returned
- * when one of these conditions is violated *)
-(*val pmatch : env_ctor -> store v -> pat -> v -> alist varN v -> match_result (alist varN v)*)
+ * when one of these conditions is violated \<close>\<close>
+\<comment> \<open>\<open>val pmatch : env_ctor -> store v -> pat -> v -> alist varN v -> match_result (alist varN v)\<close>\<close>
 function (sequential,domintros) 
 pmatch_list  :: "((string),(string),(nat*tid_or_exn))namespace \<Rightarrow>((v)store_v)list \<Rightarrow>(pat)list \<Rightarrow>(v)list \<Rightarrow>(string*v)list \<Rightarrow>((string*v)list)match_result "  
                    and
@@ -289,8 +289,8 @@ pmatch_list envC s _ _ env = ( Match_type_error )"
 by pat_completeness auto
 
 
-(* Bind each function of a mutually recursive set of functions to its closure *)
-(*val build_rec_env : list (varN * varN * exp) -> sem_env v -> env_val -> env_val*)
+\<comment> \<open>\<open> Bind each function of a mutually recursive set of functions to its closure \<close>\<close>
+\<comment> \<open>\<open>val build_rec_env : list (varN * varN * exp) -> sem_env v -> env_val -> env_val\<close>\<close>
 definition build_rec_env  :: "(varN*varN*exp0)list \<Rightarrow>(v)sem_env \<Rightarrow>((string),(string),(v))namespace \<Rightarrow>((string),(string),(v))namespace "  where 
      " build_rec_env funs cl_env add_to_env = (
   List.foldr ( \<lambda>x .  
@@ -299,8 +299,8 @@ definition build_rec_env  :: "(varN*varN*exp0)list \<Rightarrow>(v)sem_env \<Rig
   )) funs add_to_env )"
 
 
-(* Lookup in the list of mutually recursive functions *)
-(*val find_recfun : forall 'a 'b. varN -> list (varN * 'a * 'b) -> maybe ('a * 'b)*)
+\<comment> \<open>\<open> Lookup in the list of mutually recursive functions \<close>\<close>
+\<comment> \<open>\<open>val find_recfun : forall 'a 'b. varN -> list (varN * 'a * 'b) -> maybe ('a * 'b)\<close>\<close>
 fun  find_recfun  :: " string \<Rightarrow>(string*'a*'b)list \<Rightarrow>('a*'b)option "  where 
      " find_recfun n ([]) = ( None )"
 |" find_recfun n ((f,x,e) # funs) = (
@@ -314,7 +314,7 @@ datatype eq_result =
     Eq_val " bool "
   | Eq_type_error
 
-(*val do_eq : v -> v -> eq_result*)
+\<comment> \<open>\<open>val do_eq : v -> v -> eq_result\<close>\<close>
 function (sequential,domintros) 
 do_eq_list  :: "(v)list \<Rightarrow>(v)list \<Rightarrow> eq_result "  
                    and
@@ -366,13 +366,13 @@ do_eq_list _ _ = ( Eq_val False )"
 by pat_completeness auto
 
 
-(*val prim_exn : conN -> v*)
+\<comment> \<open>\<open>val prim_exn : conN -> v\<close>\<close>
 definition prim_exn  :: " string \<Rightarrow> v "  where 
      " prim_exn cn = ( Conv (Some (cn, TypeExn (Short cn))) [])"
 
 
-(* Do an application *)
-(*val do_opapp : list v -> maybe (sem_env v * exp)*)
+\<comment> \<open>\<open> Do an application \<close>\<close>
+\<comment> \<open>\<open>val do_opapp : list v -> maybe (sem_env v * exp)\<close>\<close>
 fun do_opapp  :: "(v)list \<Rightarrow>((v)sem_env*exp0)option "  where 
      " do_opapp ([Closure env n e, v2]) = (
       Some (( env (| v := (nsBind n v2(v   env)) |)), e))"
@@ -388,8 +388,8 @@ fun do_opapp  :: "(v)list \<Rightarrow>((v)sem_env*exp0)option "  where
 |" do_opapp _ = ( None )"
 
 
-(* If a value represents a list, get that list. Otherwise return Nothing *)
-(*val v_to_list : v -> maybe (list v)*)
+\<comment> \<open>\<open> If a value represents a list, get that list. Otherwise return Nothing \<close>\<close>
+\<comment> \<open>\<open>val v_to_list : v -> maybe (list v)\<close>\<close>
 function (sequential,domintros)  v_to_list  :: " v \<Rightarrow>((v)list)option "  where 
      " v_to_list (Conv (Some (cn, TypeId (Short tn))) []) = (
   if (cn = (''nil'')) \<and> (tn = (''list'')) then
@@ -408,7 +408,7 @@ function (sequential,domintros)  v_to_list  :: " v \<Rightarrow>((v)list)option 
 by pat_completeness auto
 
 
-(*val v_to_char_list : v -> maybe (list char)*)
+\<comment> \<open>\<open>val v_to_char_list : v -> maybe (list char)\<close>\<close>
 function (sequential,domintros)  v_to_char_list  :: " v \<Rightarrow>((char)list)option "  where 
      " v_to_char_list (Conv (Some (cn, TypeId (Short tn))) []) = (
   if (cn = (''nil'')) \<and> (tn = (''list'')) then
@@ -427,7 +427,7 @@ function (sequential,domintros)  v_to_char_list  :: " v \<Rightarrow>((char)list
 by pat_completeness auto
 
 
-(*val vs_to_string : list v -> maybe string*)
+\<comment> \<open>\<open>val vs_to_string : list v -> maybe string\<close>\<close>
 function (sequential,domintros)  vs_to_string  :: "(v)list \<Rightarrow>(string)option "  where 
      " vs_to_string [] = ( Some (''''))"
 |" vs_to_string (Litv(StrLit s1)# vs) = (
@@ -439,7 +439,7 @@ function (sequential,domintros)  vs_to_string  :: "(v)list \<Rightarrow>(string)
 by pat_completeness auto
 
 
-(*val copy_array : forall 'a. list 'a * integer -> integer -> maybe (list 'a * integer) -> maybe (list 'a)*)
+\<comment> \<open>\<open>val copy_array : forall 'a. list 'a * integer -> integer -> maybe (list 'a * integer) -> maybe (list 'a)\<close>\<close>
 fun copy_array  :: " 'a list*int \<Rightarrow> int \<Rightarrow>('a list*int)option \<Rightarrow>('a list)option "  where 
      " copy_array (src,srcoff) len d = (
   if (srcoff <( 0 :: int)) \<or> ((len <( 0 :: int)) \<or> (List.length src < nat (abs ( (srcoff + len))))) then None else
@@ -454,17 +454,17 @@ fun copy_array  :: " 'a list*int \<Rightarrow> int \<Rightarrow>('a list*int)opt
     )))"
 
 
-(*val ws_to_chars : list word8 -> list char*)
+\<comment> \<open>\<open>val ws_to_chars : list word8 -> list char\<close>\<close>
 definition ws_to_chars  :: "(8 word)list \<Rightarrow>(char)list "  where 
      " ws_to_chars ws = ( List.map (\<lambda> w .  (%n. char_of (n::nat))(unat w)) ws )"
 
 
-(*val chars_to_ws : list char -> list word8*)
+\<comment> \<open>\<open>val chars_to_ws : list char -> list word8\<close>\<close>
 definition chars_to_ws  :: "(char)list \<Rightarrow>(8 word)list "  where 
      " chars_to_ws cs = ( List.map (\<lambda> c2 .  word_of_int(int(of_char c2))) cs )"
 
 
-(*val opn_lookup : opn -> integer -> integer -> integer*)
+\<comment> \<open>\<open>val opn_lookup : opn -> integer -> integer -> integer\<close>\<close>
 fun opn_lookup  :: " opn \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int "  where 
      " opn_lookup Plus = ( (+))"
 |" opn_lookup Minus = ( (-))"
@@ -473,7 +473,7 @@ fun opn_lookup  :: " opn \<Rightarrow> int \<Rightarrow> int \<Rightarrow> int "
 |" opn_lookup Modulo = ( (mod))"
 
 
-(*val opb_lookup : opb -> integer -> integer -> bool*)
+\<comment> \<open>\<open>val opb_lookup : opb -> integer -> integer -> bool\<close>\<close>
 fun opb_lookup  :: " opb \<Rightarrow> int \<Rightarrow> int \<Rightarrow> bool "  where 
      " opb_lookup Lt = ( (<))"
 |" opb_lookup Gt = ( (>))"
@@ -481,7 +481,7 @@ fun opb_lookup  :: " opb \<Rightarrow> int \<Rightarrow> int \<Rightarrow> bool 
 |" opb_lookup Geq = ( (\<ge>))"
 
 
-(*val opw8_lookup : opw -> word8 -> word8 -> word8*)
+\<comment> \<open>\<open>val opw8_lookup : opw -> word8 -> word8 -> word8\<close>\<close>
 fun opw8_lookup  :: " opw \<Rightarrow> 8 word \<Rightarrow> 8 word \<Rightarrow> 8 word "  where 
      " opw8_lookup Andw = ( Bits.bitAND )"
 |" opw8_lookup Orw = ( Bits.bitOR )"
@@ -490,7 +490,7 @@ fun opw8_lookup  :: " opw \<Rightarrow> 8 word \<Rightarrow> 8 word \<Rightarrow
 |" opw8_lookup Sub = ( Groups.minus )"
 
 
-(*val opw64_lookup : opw -> word64 -> word64 -> word64*)
+\<comment> \<open>\<open>val opw64_lookup : opw -> word64 -> word64 -> word64\<close>\<close>
 fun opw64_lookup  :: " opw \<Rightarrow> 64 word \<Rightarrow> 64 word \<Rightarrow> 64 word "  where 
      " opw64_lookup Andw = ( Bits.bitAND )"
 |" opw64_lookup Orw = ( Bits.bitOR )"
@@ -499,7 +499,7 @@ fun opw64_lookup  :: " opw \<Rightarrow> 64 word \<Rightarrow> 64 word \<Rightar
 |" opw64_lookup Sub = ( Groups.minus )"
 
 
-(*val shift8_lookup : shift -> word8 -> nat -> word8*)
+\<comment> \<open>\<open>val shift8_lookup : shift -> word8 -> nat -> word8\<close>\<close>
 fun shift8_lookup  :: " shift \<Rightarrow> 8 word \<Rightarrow> nat \<Rightarrow> 8 word "  where 
      " shift8_lookup Lsl = ( shiftl )"
 |" shift8_lookup Lsr = ( shiftr )"
@@ -507,7 +507,7 @@ fun shift8_lookup  :: " shift \<Rightarrow> 8 word \<Rightarrow> nat \<Rightarro
 |" shift8_lookup Ror = ( (% a b. word_rotr b a) )"
 
 
-(*val shift64_lookup : shift -> word64 -> nat -> word64*)
+\<comment> \<open>\<open>val shift64_lookup : shift -> word64 -> nat -> word64\<close>\<close>
 fun shift64_lookup  :: " shift \<Rightarrow> 64 word \<Rightarrow> nat \<Rightarrow> 64 word "  where 
      " shift64_lookup Lsl = ( shiftl )"
 |" shift64_lookup Lsr = ( shiftr )"
@@ -515,7 +515,7 @@ fun shift64_lookup  :: " shift \<Rightarrow> 64 word \<Rightarrow> nat \<Rightar
 |" shift64_lookup Ror = ( (% a b. word_rotr b a) )"
 
 
-(*val Boolv : bool -> v*)
+\<comment> \<open>\<open>val Boolv : bool -> v\<close>\<close>
 definition Boolv  :: " bool \<Rightarrow> v "  where 
      " Boolv b = ( if b
   then Conv (Some ((''true''), TypeId (Short (''bool'')))) []
@@ -528,7 +528,7 @@ datatype exp_or_val =
 
 type_synonym( 'ffi, 'v) store_ffi =" 'v store * 'ffi ffi_state "
 
-(*val do_app : forall 'ffi. store_ffi 'ffi v -> op -> list v -> maybe (store_ffi 'ffi v * result v v)*)
+\<comment> \<open>\<open>val do_app : forall 'ffi. store_ffi 'ffi v -> op -> list v -> maybe (store_ffi 'ffi v * result v v)\<close>\<close>
 fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(v)list \<Rightarrow>((((v)store_v)list*'ffi ffi_state)*((v),(v))result)option "  where 
      " do_app ((s:: v store),(t1:: 'ffi ffi_state)) op1 vs = (
   (case  (op1, vs) of
@@ -784,8 +784,8 @@ fun do_app  :: "((v)store_v)list*'ffi ffi_state \<Rightarrow> op0 \<Rightarrow>(
   ))"
 
 
-(* Do a logical operation *)
-(*val do_log : lop -> v -> exp -> maybe exp_or_val*)
+\<comment> \<open>\<open> Do a logical operation \<close>\<close>
+\<comment> \<open>\<open>val do_log : lop -> v -> exp -> maybe exp_or_val\<close>\<close>
 fun do_log  :: " lop \<Rightarrow> v \<Rightarrow> exp0 \<Rightarrow>(exp_or_val)option "  where 
      " do_log And v2 e = ( 
   (case  v2 of
@@ -878,8 +878,8 @@ fun do_log  :: " lop \<Rightarrow> v \<Rightarrow> exp0 \<Rightarrow>(exp_or_val
   ) )"
 
 
-(* Do an if-then-else *)
-(*val do_if : v -> exp -> exp -> maybe exp*)
+\<comment> \<open>\<open> Do an if-then-else \<close>\<close>
+\<comment> \<open>\<open>val do_if : v -> exp -> exp -> maybe exp\<close>\<close>
 definition do_if  :: " v \<Rightarrow> exp0 \<Rightarrow> exp0 \<Rightarrow>(exp0)option "  where 
      " do_if v2 e1 e2 = (
   if v2 = (Boolv True) then
@@ -890,10 +890,10 @@ definition do_if  :: " v \<Rightarrow> exp0 \<Rightarrow> exp0 \<Rightarrow>(exp
     None )"
 
 
-(* Semantic helpers for definitions *)
+\<comment> \<open>\<open> Semantic helpers for definitions \<close>\<close>
 
-(* Build a constructor environment for the type definition tds *)
-(*val build_tdefs : list modN -> list (list tvarN * typeN * list (conN * list t)) -> env_ctor*)
+\<comment> \<open>\<open> Build a constructor environment for the type definition tds \<close>\<close>
+\<comment> \<open>\<open>val build_tdefs : list modN -> list (list tvarN * typeN * list (conN * list t)) -> env_ctor\<close>\<close>
 definition build_tdefs  :: "(string)list \<Rightarrow>((tvarN)list*string*(string*(t)list)list)list \<Rightarrow>((string),(string),(nat*tid_or_exn))namespace "  where 
      " build_tdefs mn tds = (
   alist_to_ns
@@ -912,8 +912,8 @@ definition build_tdefs  :: "(string)list \<Rightarrow>((tvarN)list*string*(strin
           tds))))"
 
 
-(* Checks that no constructor is defined twice in a type *)
-(*val check_dup_ctors : list (list tvarN * typeN * list (conN * list t)) -> bool*)
+\<comment> \<open>\<open> Checks that no constructor is defined twice in a type \<close>\<close>
+\<comment> \<open>\<open>val check_dup_ctors : list (list tvarN * typeN * list (conN * list t)) -> bool\<close>\<close>
 definition check_dup_ctors  :: "((tvarN)list*string*(string*(t)list)list)list \<Rightarrow> bool "  where 
      " check_dup_ctors tds = (
   Lem_list.allDistinct ((let x2 = 
@@ -933,19 +933,19 @@ definition check_dup_ctors  :: "((tvarN)list*string*(string*(t)list)list)list \<
                   )) tds x2)))"
 
 
-(*val combine_dec_result : forall 'a. sem_env v -> result (sem_env v) 'a -> result (sem_env v) 'a*)
+\<comment> \<open>\<open>val combine_dec_result : forall 'a. sem_env v -> result (sem_env v) 'a -> result (sem_env v) 'a\<close>\<close>
 fun combine_dec_result  :: "(v)sem_env \<Rightarrow>(((v)sem_env),'a)result \<Rightarrow>(((v)sem_env),'a)result "  where 
      " combine_dec_result env (Rerr e) = ( Rerr e )"
 |" combine_dec_result env (Rval env') = ( Rval (| v = (nsAppend(v   env')(v   env)), c = (nsAppend(c   env')(c   env)) |) )"
 
 
-(*val extend_dec_env : sem_env v -> sem_env v -> sem_env v*)
+\<comment> \<open>\<open>val extend_dec_env : sem_env v -> sem_env v -> sem_env v\<close>\<close>
 definition extend_dec_env  :: "(v)sem_env \<Rightarrow>(v)sem_env \<Rightarrow>(v)sem_env "  where 
      " extend_dec_env new_env env = (
   (| v = (nsAppend(v   new_env)(v   env)), c = (nsAppend(c   new_env)(c   env))  |) )"
 
 
-(*val decs_to_types : list dec -> list typeN*)
+\<comment> \<open>\<open>val decs_to_types : list dec -> list typeN\<close>\<close>
 definition decs_to_types  :: "(dec)list \<Rightarrow>(string)list "  where 
      " decs_to_types ds = (
   List.concat (List.map (\<lambda> d . 
@@ -956,13 +956,13 @@ definition decs_to_types  :: "(dec)list \<Rightarrow>(string)list "  where
      ds))"
 
 
-(*val no_dup_types : list dec -> bool*)
+\<comment> \<open>\<open>val no_dup_types : list dec -> bool\<close>\<close>
 definition no_dup_types  :: "(dec)list \<Rightarrow> bool "  where 
      " no_dup_types ds = (
   Lem_list.allDistinct (decs_to_types ds))"
 
 
-(*val prog_to_mods : list top -> list (list modN)*)
+\<comment> \<open>\<open>val prog_to_mods : list top -> list (list modN)\<close>\<close>
 definition prog_to_mods  :: "(top0)list \<Rightarrow>((string)list)list "  where 
      " prog_to_mods tops = (
   List.concat (List.map (\<lambda> top1 . 
@@ -972,14 +972,14 @@ definition prog_to_mods  :: "(top0)list \<Rightarrow>((string)list)list "  where
      tops))"
 
 
-(*val no_dup_mods : list top -> set (list modN) -> bool*)
+\<comment> \<open>\<open>val no_dup_mods : list top -> set (list modN) -> bool\<close>\<close>
 definition no_dup_mods  :: "(top0)list \<Rightarrow>((modN)list)set \<Rightarrow> bool "  where 
      " no_dup_mods tops defined_mods2 = (
   Lem_list.allDistinct (prog_to_mods tops) \<and>
   (% M N. M \<inter> N = {}) (List.set (prog_to_mods tops)) defined_mods2 )"
 
 
-(*val prog_to_top_types : list top -> list typeN*)
+\<comment> \<open>\<open>val prog_to_top_types : list top -> list typeN\<close>\<close>
 definition prog_to_top_types  :: "(top0)list \<Rightarrow>(string)list "  where 
      " prog_to_top_types tops = (
   List.concat (List.map (\<lambda> top1 . 
@@ -989,7 +989,7 @@ definition prog_to_top_types  :: "(top0)list \<Rightarrow>(string)list "  where
      tops))"
 
 
-(*val no_dup_top_types : list top -> set tid_or_exn -> bool*)
+\<comment> \<open>\<open>val no_dup_top_types : list top -> set tid_or_exn -> bool\<close>\<close>
 definition no_dup_top_types  :: "(top0)list \<Rightarrow>(tid_or_exn)set \<Rightarrow> bool "  where 
      " no_dup_top_types tops defined_types2 = (
   Lem_list.allDistinct (prog_to_top_types tops) \<and>

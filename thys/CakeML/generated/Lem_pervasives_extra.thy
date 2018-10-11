@@ -21,6 +21,6 @@ begin
 
  
 
-(*include import Pervasives*) 
-(*include import Function_extra Maybe_extra Map_extra Num_extra Set_extra Set_helpers List_extra String_extra Assert_extra Show_extra Machine_word*)
+\<comment> \<open>\<open>include import Pervasives\<close>\<close> 
+\<comment> \<open>\<open>include import Function_extra Maybe_extra Map_extra Num_extra Set_extra Set_helpers List_extra String_extra Assert_extra Show_extra Machine_word\<close>\<close>
 end

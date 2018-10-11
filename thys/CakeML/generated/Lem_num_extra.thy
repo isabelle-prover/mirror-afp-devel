@@ -9,26 +9,26 @@ imports
 
 begin 
 
-(* **************************************************** *)
-(*                                                      *)
-(* A library of additional functions on numbers         *)
-(*                                                      *)
-(* **************************************************** *)
+\<comment> \<open>\<open> **************************************************** \<close>\<close>
+\<comment> \<open>\<open>                                                      \<close>\<close>
+\<comment> \<open>\<open> A library of additional functions on numbers         \<close>\<close>
+\<comment> \<open>\<open>                                                      \<close>\<close>
+\<comment> \<open>\<open> **************************************************** \<close>\<close>
 
-(*open import Num*)
-(*open import String*)
+\<comment> \<open>\<open>open import Num\<close>\<close>
+\<comment> \<open>\<open>open import String\<close>\<close>
 
-(*val naturalOfString : string -> natural*)
+\<comment> \<open>\<open>val naturalOfString : string -> natural\<close>\<close>
 
-(*val integerOfString : string -> integer*)
+\<comment> \<open>\<open>val integerOfString : string -> integer\<close>\<close>
 
 
-(* Truncation integer division (round toward zero) *)
-(*val integerDiv_t: integer -> integer -> integer*)
+\<comment> \<open>\<open> Truncation integer division (round toward zero) \<close>\<close>
+\<comment> \<open>\<open>val integerDiv_t: integer -> integer -> integer\<close>\<close>
 
-(* Truncation modulo *)
-(*val integerRem_t: integer -> integer -> integer*)
+\<comment> \<open>\<open> Truncation modulo \<close>\<close>
+\<comment> \<open>\<open>val integerRem_t: integer -> integer -> integer\<close>\<close>
 
-(* Flooring modulo *)
-(*val integerRem_f: integer -> integer -> integer*)
+\<comment> \<open>\<open> Flooring modulo \<close>\<close>
+\<comment> \<open>\<open>val integerRem_f: integer -> integer -> integer\<close>\<close>
 end
