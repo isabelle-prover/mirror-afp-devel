@@ -244,6 +244,26 @@ apply (rewrite option_bind_commute) \<comment> \<open>force a particular binder 
 apply (simp only: conj_comms)
 done
 
+text \<open>
+  The next example shows that even monad normalisation alone is not confluent because 
+  the term ordering prevents the reordering of @{text "f A"} with @{text "f B"}.
+  But if we change @{text A} to @{text E}, then the reordering works as expected.
+\<close>
+
+lemma
+  "do {a \<leftarrow> f A; b \<leftarrow> f B; c \<leftarrow> D b; d \<leftarrow> f C; F a c d} = 
+   do {b \<leftarrow> f B; c \<leftarrow> D b; a \<leftarrow> f A; d \<leftarrow> f C; F a c d}"
+  for f :: "'b \<Rightarrow> 'a option" and D :: "'a \<Rightarrow> 'a option"
+  apply(simp)? \<comment> \<open>no progress made\<close>
+  apply(subst option_bind_commute, subst (2) option_bind_commute, rule refl)
+  done
+
+lemma
+  "do {a \<leftarrow> f E; b \<leftarrow> f B; c \<leftarrow> D b; d \<leftarrow> f C; F a c d} = 
+   do {b \<leftarrow> f B; c \<leftarrow> D b; a \<leftarrow> f E; d \<leftarrow> f C; F a c d}"
+  for f :: "'b \<Rightarrow> 'a option" and D :: "'a \<Rightarrow> 'a option"
+  by simp
+
 end
 
 end
