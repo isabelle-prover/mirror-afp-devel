@@ -107,7 +107,7 @@ next
     from insert have "\<exists>B\<subseteq>A. card B = k - 1" by (intro insert.IH) auto
     then obtain B where B: "B \<subseteq> A" "card B = k - 1" by auto
     with insert have [simp]: "x \<notin> B" by auto
-    have "insert x B \<subseteq> insert x A" 
+    have "insert x B \<subseteq> insert x A"
       using B insert by auto
     moreover have "card (insert x B) = k"
       using insert B finite_subset[of B A] False by (subst card_insert) auto
@@ -563,7 +563,7 @@ qed
 subsection \<open>Restricting a monomial to a subset of variables\<close>
 
 lift_definition restrictpm :: "'a set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b :: zero) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b)" is
-  "\<lambda>A f x. if x \<in> A then f x else 0" 
+  "\<lambda>A f x. if x \<in> A then f x else 0"
   by (erule finite_subset[rotated]) auto
 
 lemma lookup_restrictpm: "lookup (restrictpm A m) x = (if x \<in> A then lookup m x else 0)"
@@ -601,7 +601,7 @@ lift_definition map_mpoly :: "('a :: zero \<Rightarrow> 'b :: zero) \<Rightarrow
   "\<lambda>(f :: 'a \<Rightarrow> 'b) (p :: (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a). Poly_Mapping.map f p" .
 
 lift_definition mapm_mpoly :: "((nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> 'a :: zero \<Rightarrow> 'b :: zero) \<Rightarrow> 'a mpoly \<Rightarrow> 'b mpoly" is
-  "\<lambda>(f :: (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> 'a \<Rightarrow> 'b) (p :: (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a). 
+  "\<lambda>(f :: (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow> 'a \<Rightarrow> 'b) (p :: (nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a).
      Poly_Mapping.mapp f p" .
 
 lemma poly_mapping_map_conv_mapp: "Poly_Mapping.map f = Poly_Mapping.mapp (\<lambda>_. f)"
@@ -652,7 +652,7 @@ lemma insertion_Prod_any:
   "finite {x. g x \<noteq> 1} \<Longrightarrow> insertion f (Prod_any g) = Prod_any (\<lambda>x. insertion f (g x))"
   by (auto simp: Prod_any.expand_set insertion_prod intro!: prod.mono_neutral_right)
 
-lemma insertion_insertion: 
+lemma insertion_insertion:
   "insertion g (insertion k p) =
      insertion (\<lambda>x. insertion g (k x)) (map_mpoly (insertion g) p)" (is "?lhs = ?rhs")
 proof -
@@ -679,7 +679,7 @@ lemma insertion_substitute_linear:
   unfolding insertion_altdef
 proof (intro Sum_any.cong, goal_cases)
   case (1 m)
-  have "coeff (mapm_mpoly (\<lambda>m. ( * ) (\<Prod>i. c i ^ lookup m i)) p) m * (\<Prod>i. f i ^ lookup m i) =
+  have "coeff (mapm_mpoly (\<lambda>m. (*) (\<Prod>i. c i ^ lookup m i)) p) m * (\<Prod>i. f i ^ lookup m i) =
           MPoly_Type.coeff p m * ((\<Prod>i. c i ^ lookup m i) * (\<Prod>i. f i ^ lookup m i))"
     by (simp add: mult_ac)
   also have "(\<Prod>i. c i ^ lookup m i) * (\<Prod>i. f i ^ lookup m i) =
@@ -703,7 +703,7 @@ subsection \<open>The leading monomial and leading coefficient\<close>
 
 text \<open>
   The leading monomial of a multivariate polynomial is the one with the largest monomial
-  w.\,r.\,t.\ the monomial ordering induced by the standard variable ordering. The 
+  w.\,r.\,t.\ the monomial ordering induced by the standard variable ordering. The
   leading coefficient is the coefficient of the leading monomial.
 
   As a convention, the leading monomial of the zero polynomial is defined to be the same as
@@ -743,7 +743,7 @@ lemma lead_monom_uminus [simp]: "lead_monom (-p) = lead_monom p"
 lemma keys_mult_const [simp]:
   fixes c :: "'a :: {semiring_0, semiring_no_zero_divisors}"
   assumes "c \<noteq> 0"
-  shows "keys (Poly_Mapping.map (( * ) c) p) = keys p"
+  shows "keys (Poly_Mapping.map ((*) c) p) = keys p"
   using assms by transfer auto
 
 lemma lead_monom_eq_0_iff: "lead_monom p = 0 \<longleftrightarrow> vars p = {}"
@@ -884,7 +884,7 @@ lemma lead_monom_mult:
   by (intro antisym lead_monom_mult_le lead_monom_geI)
      (insert assms, auto simp: lead_coeff_mult_aux)
 
-lemma lead_coeff_mult: 
+lemma lead_coeff_mult:
   assumes "lead_coeff p * lead_coeff q \<noteq> 0"
   shows   "lead_coeff (p * q) = lead_coeff p * lead_coeff q"
   using assms by (simp add: lead_monom_mult lead_coeff_mult_aux lead_coeff_def)
@@ -964,7 +964,7 @@ proof -
   from assms have "(\<Prod>i\<in>A. lead_coeff (f i)) \<noteq> 0"
     by (cases "finite A") auto
   thus ?th1 ?th2 by (simp_all add: lead_monom_prod lead_coeff_prod)
-qed 
+qed
 
 lemma
   fixes p :: "'a :: comm_semiring_1 mpoly"
@@ -986,7 +986,7 @@ lemma
 subsection \<open>Turning a set of variables into a monomial\<close>
 
 text \<open>
-  Given a finite set $\{X_1,\ldots,X_n\}$ of variables, the following is the monomial 
+  Given a finite set $\{X_1,\ldots,X_n\}$ of variables, the following is the monomial
   $X_1\ldots X_n$:
 \<close>
 lift_definition monom_of_set :: "nat set \<Rightarrow> (nat \<Rightarrow>\<^sub>0 nat)" is
@@ -1101,7 +1101,7 @@ proof (transfer, safe)
     case True
     with fin have "finite (the_inv f -` {t. y t \<noteq> 0})"
       by (intro finite_vimageI) (auto simp: bij_is_inj bij_betw_the_inv_into)
-    moreover have "y \<circ> the_inv f \<circ> f = y" 
+    moreover have "y \<circ> the_inv f \<circ> f = y"
       using True by (simp add: fun_eq_iff the_inv_f_f bij_is_inj)
     ultimately show ?thesis by (intro bexI[of _ "y \<circ> the_inv f"]) (auto simp: True)
   qed (use fin in auto)
@@ -1258,8 +1258,8 @@ lemma mpoly_map_vars_uminus [simp]: "mpoly_map_vars f (-p) = -mpoly_map_vars f p
   by transfer simp
 
 lemma permutep_smult:
-  "permutep (permutep f) (Poly_Mapping.map (( * ) c) p) =
-     Poly_Mapping.map (( * ) c) (permutep (permutep f) p)"
+  "permutep (permutep f) (Poly_Mapping.map ((*) c) p) =
+     Poly_Mapping.map ((*) c) (permutep (permutep f) p)"
   by transfer' (auto split: if_splits simp: fun_eq_iff)
 
 lemma mpoly_map_vars_smult [simp]: "mpoly_map_vars f (smult c p) = smult c (mpoly_map_vars f p)"
@@ -1297,12 +1297,12 @@ lemma insertion_mpoly_map_vars:
   assumes "bij f"
   shows   "insertion g (mpoly_map_vars f p) = insertion (g \<circ> f) p"
 proof -
-  have "insertion g (mpoly_map_vars f p) = 
+  have "insertion g (mpoly_map_vars f p) =
           (\<Sum>m. coeff p (permutep f m) * (\<Prod>i. g i ^ lookup m i))"
     using assms by (simp add: insertion_altdef coeff_mpoly_map_vars)
-  also have "\<dots> = Sum_any (\<lambda>m. coeff p (permutep f m) * 
+  also have "\<dots> = Sum_any (\<lambda>m. coeff p (permutep f m) *
                     Prod_any (\<lambda>i. g (f i) ^ lookup m (f i)))"
-    by (intro Sum_any.cong arg_cong[where ?f = "\<lambda>y. x * y" for x] 
+    by (intro Sum_any.cong arg_cong[where ?f = "\<lambda>y. x * y" for x]
           Prod_any.reindex_cong[OF assms]) (auto simp: o_def)
   also have "\<dots> = Sum_any (\<lambda>m. coeff p m * (\<Prod>i. g (f i) ^ lookup m i))"
     by (intro Sum_any.reindex_cong [OF bij_permutep[of f], symmetric])
@@ -1934,7 +1934,7 @@ text \<open>
   the $A = \{X_1,\ldots, X_n\}$, $c$ contains only variables not in $A$, and the sequence $i_j$
   is decreasing. The latter holds because $p$ is symmetric.
 
-  Now, we form the polynomial $q := c e_1^{i_1 - i_2} e_2^{i_2 - i_3} \ldots e_n^{i_n}$, which 
+  Now, we form the polynomial $q := c e_1^{i_1 - i_2} e_2^{i_2 - i_3} \ldots e_n^{i_n}$, which
   has the same leading term as $p$. Then $p - q$ has a smaller leading monomial, so by induction,
   we can assume it to be of the required form and obtain a witness for $p - q$.
 
@@ -1984,7 +1984,7 @@ proof -
   have *: "\<And>m. coeff (p ^ x) m \<in> C" if "\<And>m. coeff p m \<in> C"  for p x
     using that by (induction x)
                   (auto simp: coeff_mpoly_times mpoly_coeff_1 intro!: prod_fun_closed)
-  have **: "\<And>m. coeff (prod f X) m \<in> C" if "\<And>i m. i \<in> X \<Longrightarrow> coeff (f i) m \<in> C" 
+  have **: "\<And>m. coeff (prod f X) m \<in> C" if "\<And>i m. i \<in> X \<Longrightarrow> coeff (f i) m \<in> C"
     for X and f :: "nat \<Rightarrow> _"
     using that by (induction X rule: infinite_finite_induct)
                   (auto simp: coeff_mpoly_times mpoly_coeff_1 intro!: prod_fun_closed)
@@ -2034,7 +2034,7 @@ proof -
   have "set xs = A" "distinct xs" and [simp]: "length xs = n"
     using finite by (auto simp: xs_def n_def)
   have [simp]: "lead_coeff c = lead_coeff p" "lead_monom c = restrictpm (- A) (lead_monom p)"
-    by (simp_all add: c_def lead_monom_monom) 
+    by (simp_all add: c_def lead_monom_monom)
   hence f_range [simp]: "f i \<in> A" if "i < n" for i
     using that \<open>set xs = A\<close> by (auto simp: f_def set_conv_nth)
   have "sorted xs" by (simp add: xs_def)
@@ -2087,7 +2087,7 @@ proof -
       case True
       with \<open>set xs = A\<close> obtain m where m: "i = xs ! m" "m < n"
         by (auto simp: set_conv_nth)
-      have "lookup (lead_monom c + lead_monom q) i = 
+      have "lookup (lead_monom c + lead_monom q) i =
               (\<Sum>j<n. (g j - g (Suc j)) * lookup (monom_of_set (set (take (Suc j) xs))) i)"
         using True by (simp add: lookup_add lookup_sum lead_monom_q)
       also have "\<dots> = (\<Sum>j | j < n \<and> i \<in> set (take (Suc j) xs). g j - g (Suc j))"
@@ -2180,7 +2180,7 @@ proof (induction p rule: lead_monom_induct)
       using False less.prems less.hyps decr
       by (intro less.IH fund_sym_step_poly symmetric_mpoly_diff
                 lead_monom_fund_sym_step_poly_less) (auto simp: decr_def)
-    thus ?thesis using fund_sym_poly_wit.domintros by blast    
+    thus ?thesis using fund_sym_poly_wit.domintros by blast
   qed (auto intro: fund_sym_poly_wit.domintros)
 qed
 
@@ -2194,7 +2194,7 @@ proof -
     thus ?thesis using fund_sym_poly_wit_dom_aux[of "vars p" p] by (auto simp: vars_finite)
   qed (auto intro: fund_sym_poly_wit.domintros)
 qed
-  
+
 termination fund_sym_poly_wit
   by (intro allI fund_sym_poly_wit_dom)
 
@@ -2208,7 +2208,7 @@ text \<open>
     \<^enum> If the original polynomial was in $R[X_1,\ldots,X_n,\ldots, X_m]$ where the $X_1$ to
       $X_n$ are the symmetric variables, then the witness is a polynomial in
       $R[X_{n+1},\ldots,X_m][Y_1,\ldots,Y_n]$. This means that its coefficients are polynomials
-      in the variables of the original polynomial, minus the symmetric ones, and 
+      in the variables of the original polynomial, minus the symmetric ones, and
       the (new and independent) variables of the witness polynomial range from $1$ to $n$.
     \<^enum> Substituting the \<open>i\<close>-th symmetric polynomial $e_i(X_1,\ldots,X_n)$ for the $Y_i$
       variable for every \<open>i\<close> yields the original polynomial.
@@ -2305,7 +2305,7 @@ proof (induction p rule: fund_sym_poly_wit.induct)
     moreover have "fund_sym_step_poly p =
                     fund_sym_step_coeff p * (\<Prod>x. sym_mpoly A x ^ lookup (fund_sym_step_monom p) x)"
       using "1.prems" finite_subset[of A B] False \<open>decr p\<close> by (intro fund_sym_step_poly) auto
-    ultimately show ?thesis 
+    ultimately show ?thesis
       unfolding fund_sym_poly_wit.simps[of p] by (auto simp: insertion_add)
   qed (auto simp: fund_sym_poly_wit.simps[of p])
 qed
@@ -2357,7 +2357,7 @@ text \<open>
   Next, we show that the polynomial representation of a symmetric polynomial in terms of the
   elementary symmetric polynomials not only exists, but is unique.
 
-  The key property here is that products of powers of elementary symmetric polynomials uniquely 
+  The key property here is that products of powers of elementary symmetric polynomials uniquely
   determine the exponent vectors, i.\,e.\ if $e_1, \ldots, e_n$ are the elementary symmetric
   polynomials, $a = (a_1,\ldots, a_n)$ and $b = (b_1,\ldots,b_n)$ are vectors of natural numbers,
   then:
@@ -2371,7 +2371,7 @@ lemma lead_monom_sym_mpoly_prod:
 proof -
   have "(\<Prod>i=1..n. lead_coeff (sym_mpoly A i ^ h i :: 'a mpoly)) = 1"
     using assms unfolding n_def by (intro prod.neutral allI) (auto simp: lead_coeff_power)
-  hence "lead_monom (\<Prod>i=1..n. sym_mpoly A i ^ h i :: 'a mpoly) = 
+  hence "lead_monom (\<Prod>i=1..n. sym_mpoly A i ^ h i :: 'a mpoly) =
            (\<Sum>i=1..n. lead_monom (sym_mpoly A i ^ h i :: 'a mpoly))"
     by (subst lead_monom_prod) auto
   also have "\<dots> = (\<Sum>i=1..n. of_nat (h i) * lead_monom (sym_mpoly A i :: 'a mpoly))"
@@ -2623,7 +2623,7 @@ qed
 
 text \<open>
   The general uniqueness theorem now follows easily. This essentially shows that
-  the substitution $Y_i \mapsto e_i(X_1,\ldots,X_n)$ is an isomorphism between the 
+  the substitution $Y_i \mapsto e_i(X_1,\ldots,X_n)$ is an isomorphism between the
   ring $R[Y_1,\ldots, Y_n]$ and the ring $R[X_1,\ldots,X_n]^{S_n}$ of symmetric polynomials.
 \<close>
 theorem sym_mpoly_representation_unique:
@@ -2691,7 +2691,7 @@ proof (induction p rule: lead_monom_induct)
       using False less.prems less.hyps
       by (intro less.IH fund_sym_step_poly symmetric_mpoly_diff
                 lead_monom_fund_sym_step_poly_less) (auto simp: decr_def)
-    thus ?thesis using check_symmetric_mpoly.domintros by blast    
+    thus ?thesis using check_symmetric_mpoly.domintros by blast
   qed (auto intro: check_symmetric_mpoly.domintros simp: lead_monom_eq_0_iff)
 qed
 
@@ -2735,11 +2735,11 @@ end
 subsection \<open>Symmetric functions of roots of a univariate polynomial\<close>
 
 text \<open>
-  Consider a factored polynomial 
+  Consider a factored polynomial
   \[p(X) = c_n X^n + c_{n-1} X^{n-1} + \ldots + c_1X + c_0 = (X - x_1)\ldots(X - x_n)\ .\]
   where $c_n$ is a unit.
 
-  Then any symmetric polynomial expression $q(x_1, \ldots, x_n)$ in the roots $x_i$ can 
+  Then any symmetric polynomial expression $q(x_1, \ldots, x_n)$ in the roots $x_i$ can
   be written as a polynomial expression $q'(c_0,\ldots, c_{n-1})$ in the $c_i$.
 
   Moreover, if the coefficients of $q$ and the inverse of $c_n$ all lie in some
@@ -2822,7 +2822,7 @@ proof -
 
   moreover have "coeff (mpoly_map_vars reindex q'') m \<in> C" for m
     unfolding q''_def q'_def using \<open>bij reindex\<close> fund_sym_poly_wit_coeff[of q C A] C \<open>cinv \<in> C\<close>
-    by (auto simp: coeff_mpoly_map_vars 
+    by (auto simp: coeff_mpoly_map_vars
              intro!: mult_closed Prod_any_closed power_closed Sum_any_closed)
   moreover have "vars (mpoly_map_vars reindex q'') \<subseteq> {0..<n}"
     using \<open>bij reindex\<close> and \<open>vars q'' \<subseteq> {1..n}\<close>
@@ -2846,9 +2846,9 @@ qed
 
 text \<open>
   As a corollary, we obtain the following: Let $R, S$ be rings with $R\subseteq S$.
-  Consider a polynomial $p\in R[X]$ whose leading coefficient $c$ is a unit in $R$ and 
+  Consider a polynomial $p\in R[X]$ whose leading coefficient $c$ is a unit in $R$ and
   that has a full set of roots $x_1,\ldots, x_n \in S$,
-  i.\,e.\ $p(X) = c(X - x_1) \ldots (X - x_n)$. Let $q \in R[X_1,\ldots, X_n]$ be some 
+  i.\,e.\ $p(X) = c(X - x_1) \ldots (X - x_n)$. Let $q \in R[X_1,\ldots, X_n]$ be some
   symmetric polynomial expression in the roots. Then $q(x_1, \ldots, x_n) \in R$.
 
   A typical use case is $R = \mathbb{Q}$ and $S = \mathbb{C}$, i.\,e.\ any symmetric
@@ -2856,8 +2856,8 @@ text \<open>
   again rational. Similarly, any symmetric polynomial expression with integer coefficients
   in the roots of a monic integer polynomial is agan an integer.
 
-  This is remarkable, since the roots themselves are usually not rational (possibly not 
-  even real). This particular fact is a key ingredient used in the standard proof 
+  This is remarkable, since the roots themselves are usually not rational (possibly not
+  even real). This particular fact is a key ingredient used in the standard proof
   that $\pi$ is transcendental.
 \<close>
 corollary symmetric_poly_of_roots_in_subring:

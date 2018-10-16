@@ -86,7 +86,7 @@ proof -
     case (1 X)
     let ?f = "\<lambda>x. if x \<in> X then f1 x else f2 x"
     have "prod f1 X * prod f2 (A - X) = prod ?f X * prod ?f (A - X)"
-      by (intro arg_cong2[of _ _ _ _ "( * )"] prod.cong) auto
+      by (intro arg_cong2[of _ _ _ _ "(*)"] prod.cong) auto
     also have "\<dots> = prod ?f (X \<union> (A - X))"
       using 1 by (subst prod.union_disjoint) (auto intro: finite_subset[OF _ finite])
     also have "X \<union> (A - X) = A" using 1 by auto
@@ -130,8 +130,8 @@ subsection \<open>Main proofs\<close>
 
 text \<open>
   Our goal is to determine the coefficients of some fully factored polynomial
-  $p(X) = c (X - x_1) \ldots (X - x_n)$ in terms of the $x_i$. It is clear that it is 
-  sufficient to consider monic polynomials (i.e. $c = 1$), since the general case follows 
+  $p(X) = c (X - x_1) \ldots (X - x_n)$ in terms of the $x_i$. It is clear that it is
+  sufficient to consider monic polynomials (i.e. $c = 1$), since the general case follows
   easily from this one.
 
   We start off by expanding the product over the linear factors:
@@ -184,7 +184,7 @@ corollary coeff_poly_from_roots':
   shows   "coeff (\<Prod>x\<in>A. [:-f x, 1:]) k =
              (-1) ^ (card A - k) * (\<Sum>X | X \<subseteq> f ` A \<and> card X = card A - k. \<Prod>X)"
 proof -
-  have "coeff (\<Prod>x\<in>A. [:-f x, 1:]) k = 
+  have "coeff (\<Prod>x\<in>A. [:-f x, 1:]) k =
           (-1) ^ (card A - k) * (\<Sum>X | X \<subseteq> A \<and> card X = card A - k. (\<Prod>x\<in>X. f x))"
     by (intro coeff_poly_from_roots assms)
   also have "(\<Sum>X | X \<subseteq> A \<and> card X = card A - k. (\<Prod>x\<in>X. f x)) =
