@@ -2,7 +2,7 @@ theory FmapUtils
   imports "HOL-Library.Finite_Map" FactoredSystemLib
 begin
 
-\<comment> \<open>TODO 
+\<comment> \<open>TODO
   A lemma 'fmrestrict\_set\_twice\_eq'
     'fmrestrict\_set ?vs (fmrestrict\_set ?vs ?f) = fmrestrict\_set ?vs ?f'
 to replace the recurring proofs steps using 'by (simp add: fmfilter\_alt\_defs(4))' would make sense.\<close>
@@ -12,62 +12,15 @@ to replace the recurring proofs steps using 'by (simp add: fmfilter\_alt\_defs(4
 hide_const (open) Map.map_add
 no_notation Map.map_add (infixl "++" 100)
 
-
-lemma finite_dom_always_has_mapping: "\<And>s. finite s \<Longrightarrow> \<exists>f. fmdom' f = s" 
-proof -
-  fix s
-  assume P: "finite s"
-  then show " \<exists>f. fmdom' f = s" proof (cases "s = {}")
-    case True
-    moreover have "fmdom' fmempty = {}" using fmempty_def by auto
-    then show ?thesis
-      using calculation by blast
-  next
-    case False
-    moreover {
-      \<comment> \<open>NOTE 
-        Assume the contradiction; then construct the finite map where 'fmlookup x = y' for all 'x'
-         in 's' and show that this proves the contradiction wrong.\<close>
-      assume C: "\<not>(\<exists>f. fmdom' f = s)"
-      moreover have "\<exists>y. y \<in> (UNIV :: 'b set)" by auto
-      moreover obtain y where obtain_y: "y \<in> (UNIV :: 'b set)" using calculation(1) by blast
-      moreover have "\<exists>l. set l = s" 
-        \<comment> \<open>fmdom\_of\_list: fmdom (fmap\_of\_list ?m) = fst |`| fset\_of\_list ?m\<close>
-        by (simp add: P finite_list)
-      moreover obtain l where obtain_l: "set l = s" using calculation(4)
-        by blast
-      let ?f = "fmap_of_list (map (\<lambda>x. (x, y)) l)"
-      have "fmdom ?f = fst |`| (fset_of_list (map (\<lambda>x. (x, y)) l))"
-        by simp 
-      moreover have "fset (fst |`| (fset_of_list (map (\<lambda>x. (x, y)) l))) = s"
-        using fset_of_list.rep_eq obtain_l by fastforce 
-      moreover have "fmdom' ?f = s"
-        using calculation(6) fmdom'_alt_def by force
-      ultimately have False
-        by (metis fmdom'_map)
-    }
-    then show ?thesis
-      by blast
-  qed
-qed
-
 \<comment> \<open>TODO more explicit proof.\<close>
 lemma IN_FDOM_DRESTRICT_DIFF:
-  fixes fmdom vs v f
+  fixes vs v f
   assumes "\<not>(v \<in> vs)" "fmdom' f \<subseteq> fdom" "v \<in> fmdom' f"
   shows "v \<in> fmdom' (fmrestrict_set (fdom - vs) f)"
-  using assms 
+  using assms
   by (metis DiffI Int_def Int_iff Set.filter_def fmdom'_filter fmfilter_alt_defs(4) inf.order_iff)
 
-\<comment> \<open>TODO this is identical to 'fmsubset\_restrict\_set\_mono'.\<close>
-lemma submap_drest_submap: 
-  fixes fm1 fm2 vs
-  assumes "(fm2 \<subseteq>\<^sub>f fm1)"
-  shows "(fmrestrict_set vs fm2) \<subseteq>\<^sub>f (fmrestrict_set vs fm1)"
-  using assms fmsubset_restrict_set_mono
-  by blast
-
-lemma disj_dom_drest_fupdate_eq: "\<And>vs s x.
+lemma disj_dom_drest_fupdate_eq: "
   disjnt (fmdom' x) vs \<Longrightarrow> (fmrestrict_set vs s = fmrestrict_set vs (x ++ s))
 "
 proof -
@@ -78,7 +31,7 @@ proof -
   moreover
   {
     fix x''
-    have "fmlookup (fmrestrict_set vs s) x'' = fmlookup (fmrestrict_set vs (x ++ s)) x''" 
+    have "fmlookup (fmrestrict_set vs s) x'' = fmlookup (fmrestrict_set vs (x ++ s)) x''"
       apply(cases "x'' \<notin> fmdom' x")
        apply(cases "x'' \<notin> vs")
         apply(auto simp add: "1")
@@ -88,33 +41,21 @@ proof -
     using fmap_ext by blast
 qed
 
-lemma drestrict_empty_iff_disj:
-  fixes x vs
-  shows "(fmdom' (fmrestrict_set vs x) = {}) \<longleftrightarrow> (fmdom' x \<inter> vs = {})"
-  unfolding fmdom'_alt_def fmfilter_alt_defs(4) 
-  by (simp add: inf_commute)
-
 \<comment> \<open>TODO refactor into 'FmapUtils.thy'.\<close>
-lemma graph_plan_card_state_set: 
-  fixes PROB vs 
+lemma graph_plan_card_state_set:
+  fixes PROB vs
   assumes "finite vs"
   shows "card (fmdom' (fmrestrict_set vs s)) \<le> card vs"
 proof -
   let ?vs' = "fmdom' (fmrestrict_set vs s)"
-  have "?vs' \<subseteq> vs" 
+  have "?vs' \<subseteq> vs"
     using fmdom'_restrict_set
     by metis
-  moreover have "card ?vs' \<le> card vs" 
+  moreover have "card ?vs' \<le> card vs"
     using assms calculation card_mono
     by blast
   ultimately show ?thesis by blast
 qed
-
-lemma x_in_fdom_eq_in_fdom_drestrict: 
-  fixes x vs y 
-  assumes "x \<in> vs" 
-  shows "(x \<in> fmdom' (fmrestrict_set vs y) \<longleftrightarrow> (x \<in> fmdom' y))"
-  using assms by (simp add: fmfilter_alt_defs(4))
 
 lemma exec_drest_5:
   fixes x vs
@@ -124,7 +65,7 @@ proof -
   \<comment> \<open>TODO refactor and make into ISAR proof.\<close>
   {
     fix v
-    have "fmlookup (fmrestrict_set vs x) v = fmlookup x v" 
+    have "fmlookup (fmrestrict_set vs x) v = fmlookup x v"
       apply(cases "v \<in> fmdom' x")
       subgoal using assms by auto
       subgoal by (simp add: fmdom'_notD)
@@ -132,16 +73,16 @@ proof -
     then have "fmlookup (fmrestrict_set vs x) v = fmlookup x v"
       by fast
   }
-  moreover have "fmlookup (fmrestrict_set vs x) = fmlookup x" 
+  moreover have "fmlookup (fmrestrict_set vs x) = fmlookup x"
     using calculation fmap_ext
     by auto
   ultimately show ?thesis
-    using fmlookup_inject 
-    by blast 
+    using fmlookup_inject
+    by blast
 qed
 
 lemma graph_plan_lemma_5:
-  fixes s s' vs 
+  fixes s s' vs
   assumes "(fmrestrict_set (fmdom' s - vs) s = fmrestrict_set (fmdom' s' - vs) s')"
     "(fmrestrict_set vs s = fmrestrict_set vs s')"
   shows "(s = s')"
@@ -153,35 +94,36 @@ proof -
     by blast
 qed
 
-lemma drest_smap_drest_smap_drest: 
+lemma drest_smap_drest_smap_drest:
   fixes x s vs
   shows "fmrestrict_set vs x \<subseteq>\<^sub>f s \<longleftrightarrow> fmrestrict_set vs x \<subseteq>\<^sub>f fmrestrict_set vs s"
 proof -
   \<comment> \<open>TODO this could be refactored into standalone lemma since it's very common in proofs.\<close>
   have 1: "fmlookup (fmrestrict_set vs s) \<subseteq>\<^sub>m fmlookup s"
     by (metis fmdom'.rep_eq fmdom'_notI fmlookup_restrict_set map_le_def)
-  moreover 
+  moreover
   {
     assume P1: "fmrestrict_set vs x \<subseteq>\<^sub>f s"
-    moreover have 2: "fmlookup (fmrestrict_set vs x) \<subseteq>\<^sub>m fmlookup s" 
+    moreover have 2: "fmlookup (fmrestrict_set vs x) \<subseteq>\<^sub>m fmlookup s"
       using P1 fmsubset.rep_eq by blast
     {
       fix v
       assume "v \<in> fmdom' (fmrestrict_set vs x)"
       then have "fmlookup (fmrestrict_set vs x) v = fmlookup (fmrestrict_set vs s) v"
-        by (metis (full_types) "2" domIff fmdom'_notI fmlookup_restrict_set map_le_def) 
+        by (metis (full_types) "2" domIff fmdom'_notI fmlookup_restrict_set map_le_def)
     }
     ultimately have "fmrestrict_set vs x \<subseteq>\<^sub>f fmrestrict_set vs s"
-      by (simp add: fmdom'_alt_def fmdom.rep_eq fmsubset.rep_eq map_le_def)
+      unfolding fmsubset.rep_eq
+      by (simp add: map_le_def)
   }
   moreover
   {
     assume P2: "fmrestrict_set vs x \<subseteq>\<^sub>f fmrestrict_set vs s"
-    moreover have "fmrestrict_set vs s \<subseteq>\<^sub>f s" 
+    moreover have "fmrestrict_set vs s \<subseteq>\<^sub>f s"
       using 1 fmsubset.rep_eq
       by blast
     ultimately have "fmrestrict_set vs x \<subseteq>\<^sub>f s"
-      using fmsubset.rep_eq map_le_trans 
+      using fmsubset.rep_eq map_le_trans
       by blast
   }
   ultimately show ?thesis by blast
@@ -198,7 +140,7 @@ lemma sat_precond_as_proj_4:
   fixes fm1 fm2 vs
   assumes "fm2 \<subseteq>\<^sub>f fm1"
   shows "(fmrestrict_set vs fm2 \<subseteq>\<^sub>f fm1)"
-  using assms fmpred_restrict_set fmsubset_alt_def 
+  using assms fmpred_restrict_set fmsubset_alt_def
   by metis
 
 lemma sublist_as_proj_eq_as_1:
@@ -206,7 +148,7 @@ lemma sublist_as_proj_eq_as_1:
   assumes "(x \<subseteq>\<^sub>f fmrestrict_set vs s)"
   shows "(x \<subseteq>\<^sub>f s)"
   using assms
-  by (meson fmsubset.rep_eq fmsubset_alt_def fmsubset_pred drest_smap_drest_smap_drest map_le_refl) 
+  by (meson fmsubset.rep_eq fmsubset_alt_def fmsubset_pred drest_smap_drest_smap_drest map_le_refl)
 
 lemma limited_dom_neq_restricted_neq:
   assumes "fmdom' f1 \<subseteq> vs" "f1 ++ f2 \<noteq> f2"
@@ -214,58 +156,31 @@ lemma limited_dom_neq_restricted_neq:
 proof -
   {
     assume C: "fmrestrict_set vs (f1 ++ f2) = fmrestrict_set vs f2"
-    then have "\<forall>x \<in> fmdom' (fmrestrict_set vs (f1 ++ f2)). 
-      fmlookup (fmrestrict_set vs (f1 ++ f2)) x 
+    then have "\<forall>x \<in> fmdom' (fmrestrict_set vs (f1 ++ f2)).
+      fmlookup (fmrestrict_set vs (f1 ++ f2)) x
       = fmlookup (fmrestrict_set vs f2) x"
       by simp
     obtain v where a: "v \<in> fmdom' f1" "fmlookup (f1 ++ f2) v \<noteq> fmlookup f2 v"
       using assms(2)
-      by (metis fmap_add_ltr_def fmap_ext fmdom'_notD fmdom_notI fmlookup_add) 
-    then have b: "v \<in> vs" 
+      by (metis fmap_add_ltr_def fmap_ext fmdom'_notD fmdom_notI fmlookup_add)
+    then have b: "v \<in> vs"
       using assms(1)
       by blast
     moreover {
       have "fmdom' (fmrestrict_set vs (f1 ++ f2)) = vs \<inter> fmdom' (f1 ++ f2)"
         by (simp add: fmdom'_alt_def fmfilter_alt_defs(4))
-      then have "v \<in> fmdom' (fmrestrict_set vs (f1 ++ f2))" 
-        using C a b 
+      then have "v \<in> fmdom' (fmrestrict_set vs (f1 ++ f2))"
+        using C a b
         by fastforce
     }
     then have False
       by (metis C a(2) calculation fmlookup_restrict_set)
   }
-  then show ?thesis 
+  then show ?thesis
     by auto
 qed
 
-\<comment> \<open>NOTE added lemma\<close>
-lemma finite_fmdom': "\<And>s. finite (fmdom' s)"
-  by (simp add: fmdom'_alt_def)
-
 lemma fmlookup_fmrestrict_set_dom: "\<And>vs s. dom (fmlookup (fmrestrict_set vs s)) = vs \<inter> (fmdom' s)"
-proof -
-  fix vs s
-  let ?d = "dom (fmlookup (fmrestrict_set vs s))"
-  have "fmdom' (fmrestrict_set vs s) = Set.filter (\<lambda>v. v \<in> vs) (fmdom' s)"
-    by (simp add: fmfilter_alt_defs(4))
-  moreover have "\<dots> = vs \<inter> (fmdom' s)" by fastforce 
-  ultimately show "dom (fmlookup (fmrestrict_set vs s)) = vs \<inter> (fmdom' s)" 
-    by (simp add: fmdom'.rep_eq) 
-qed
-
-
-\<comment> \<open>NOTE added lemma\<close>
-\<comment> \<open>TODO refactor/move into 'FmapUtils.thy'.\<close>
-lemma fmrestrict_subset: "\<And>s vs. fmrestrict_set vs s \<subseteq>\<^sub>f s"
-proof -
-  fix s vs
-  have "dom (fmlookup (fmrestrict_set vs s)) = vs \<inter> (fmdom' s)"
-    by (simp add: fmlookup_fmrestrict_set_dom)
-  moreover have "\<dots> \<subseteq> (fmdom' s)"
-    by simp
-  moreover have "fmlookup (fmrestrict_set vs s) \<subseteq>\<^sub>m fmlookup s"
-    by (simp add: calculation(1) map_le_def)
-  ultimately show "fmrestrict_set vs s \<subseteq>\<^sub>f s" by (simp add: fmsubset.rep_eq)
-qed
+by (auto simp add: fmdom'_restrict_set_precise)
 
 end

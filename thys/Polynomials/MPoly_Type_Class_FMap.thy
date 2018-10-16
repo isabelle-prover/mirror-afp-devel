@@ -31,8 +31,8 @@ proof -
     by (rule deg_pm_superset) auto
   also have "\<dots> = sum (the o fmlookup xs) (fmdom' xs)"
     by (rule sum.mono_neutral_cong_left)
-      (auto simp: fmlookup_dom'_iff fmdom'I in_keys_iff fmlookup_default_def fmdom'.rep_eq
-        split: option.splits)
+       (auto simp: fmlookup_dom'_iff fmdom'I in_keys_iff fmlookup_default_def
+             split: option.splits)
   finally show ?thesis .
 qed
 
@@ -417,7 +417,7 @@ lemma in_set_clearjunk_iff_map_of_eq_Some:
 
 lemma Pm_fmap_of_list_eq_zero_iff:
   "Pm_fmap (fmap_of_list xs) = 0 \<longleftrightarrow> [(k, v)\<leftarrow>AList.clearjunk xs . v \<noteq> 0] = []"
-  by (auto simp: poly_mapping_eq_iff fmlookup_default_def fun_eq_iff 
+  by (auto simp: poly_mapping_eq_iff fmlookup_default_def fun_eq_iff
     in_set_clearjunk_iff_map_of_eq_Some filter_empty_conv fmlookup_of_list split: option.splits)
 
 lemma fmdom'_clearjunk0: "fmdom' (clearjunk0 xs) = fmdom' xs - {x. fmlookup xs x = Some 0}"

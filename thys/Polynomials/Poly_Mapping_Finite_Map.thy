@@ -8,9 +8,6 @@ begin
 
 subsection \<open>TODO: move!\<close>
 
-lemma finite_fmdom'[simp]: "finite (fmdom' f)"
-  by (simp add: fmdom'_alt_def)
-
 lemma fmdom'_fmap_of_list: "fmdom' (fmap_of_list xs) = set (map fst xs)"
   by (auto simp: fmdom'_def fmdom'I fmap_of_list.rep_eq weak_map_of_SomeI)
     (metis map_of_eq_None_iff option.distinct(1))
@@ -60,7 +57,7 @@ proof -
   have "{x. fmlookup_default d xs x \<noteq> d} \<subseteq> fmdom' xs"
     by (auto simp: fmlookup_default_def fmdom'I split: option.splits)
   also have "finite \<dots>"
-    by (simp add: fmdom'.rep_eq)
+    by simp
   finally (finite_subset) show ?thesis .
 qed
 
