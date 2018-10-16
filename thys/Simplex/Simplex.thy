@@ -3572,9 +3572,8 @@ locale MinRVarsEq =
   assumes min_rvar_incdec_eq_None:
     "min_rvar_incdec_eq dir s eq = Inl is \<Longrightarrow>
       (\<forall> x \<in> rvars_eq eq. \<not> reasable_var dir x eq s) \<and>
-      (LI dir s (lhs eq) \<in> set is) \<and>
-      (\<forall> x \<in> rvars_eq eq. coeff (rhs eq) x < 0 \<longrightarrow> LI dir s x \<in> set is) \<and>
-      (\<forall> x \<in> rvars_eq eq. coeff (rhs eq) x > 0 \<longrightarrow> UI dir s x \<in> set is) \<and>
+      (set is = {LI dir s (lhs eq)} \<union> {LI dir s x | x. x \<in> rvars_eq eq \<and> coeff (rhs eq) x < 0}
+          \<union> {UI dir s x | x. x \<in> rvars_eq eq \<and> coeff (rhs eq) x > 0}) \<and>
       ((dir = Positive \<or> dir = Negative) \<longrightarrow> LI dir s (lhs eq) \<in> indices_state s \<longrightarrow> set is \<subseteq> indices_state s)"
   assumes min_rvar_incdec_eq_Some_rvars:
     "min_rvar_incdec_eq dir s eq = Inr x\<^sub>j \<Longrightarrow> x\<^sub>j \<in> rvars_eq eq"
@@ -6135,11 +6134,34 @@ proof
     then have 2: "dir = Positive \<or> dir = Negative \<Longrightarrow> LI dir s (lhs eq) \<in> indices_state s \<Longrightarrow>
       set is \<subseteq> indices_state s" by auto
     show "
-    (\<forall> x \<in> rvars_eq eq. \<not> reasable_var dir x eq s) \<and> LI dir s (lhs eq) \<in> set is \<and>
-       (\<forall>x\<in>rvars_eq eq. coeff (rhs eq) x < 0 \<longrightarrow> LI dir s x \<in> set is) \<and>
-       (\<forall>x\<in>rvars_eq eq. 0 < coeff (rhs eq) x \<longrightarrow> UI dir s x \<in> set is) \<and>
+    (\<forall> x \<in> rvars_eq eq. \<not> reasable_var dir x eq s) \<and> set is =
+       {LI dir s (lhs eq)} \<union> {LI dir s x |x. x \<in> rvars_eq eq \<and> 
+         coeff (rhs eq) x < 0} \<union> {UI dir s x |x. x \<in> rvars_eq eq \<and> 0 < coeff (rhs eq) x} \<and>
        (dir = Positive \<or> dir = Negative \<longrightarrow> LI dir s (lhs eq) \<in> indices_state s \<longrightarrow> set is \<subseteq> indices_state s)"
-      by (intro conjI impI 2, insert 1, unfold I unsat_indices_def Let_def, auto simp: set_vars_list)
+    proof (intro conjI impI 2, goal_cases)
+      case 2
+      have "set is = {LI dir s (lhs eq)} \<union> LI dir s ` (rvars_eq eq \<inter> {x. coeff (rhs eq) x < 0}) \<union> UI dir s ` (rvars_eq eq \<inter> {x. \<not> coeff (rhs eq) x < 0})" 
+        unfolding I unsat_indices_def Let_def 
+        by (auto simp add: set_vars_list) 
+      also have "\<dots> = {LI dir s (lhs eq)} \<union> LI dir s ` {x. x \<in> rvars_eq eq \<and> coeff (rhs eq) x < 0} 
+       \<union> UI dir s ` { x. x \<in> rvars_eq eq \<and> 0 < coeff (rhs eq) x}"
+      proof (intro arg_cong2[of _ _ _ _ "(\<union>)"] arg_cong[of _ _ "\<lambda> x. _ ` x"] refl, goal_cases)
+        case 2
+        {
+          fix x
+          assume "x \<in> rvars_eq eq"
+          hence "coeff (rhs eq) x \<noteq> 0" 
+            by (simp add: coeff_zero)
+          hence or: "coeff (rhs eq) x < 0 \<or> coeff (rhs eq) x > 0" by auto
+          assume "\<not> coeff (rhs eq) x < 0" 
+          hence "coeff (rhs eq) x > 0" using or by simp
+        } note [dest] = this
+        show ?case by auto
+      qed auto
+      finally
+      show "set is = {LI dir s (lhs eq)} \<union> {LI dir s x |x. x \<in> rvars_eq eq \<and> coeff (rhs eq) x < 0} 
+       \<union> {UI dir s x |x. x \<in> rvars_eq eq \<and> 0 < coeff (rhs eq) x}" by auto
+    qed (insert 1, auto)
   }
   fix x\<^sub>j
   assume "min_rvar_incdec_eq dir s eq = Inr x\<^sub>j"
