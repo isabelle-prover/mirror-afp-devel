@@ -287,9 +287,13 @@ definition rvars :: "tableau \<Rightarrow> var set" where
   "rvars t = \<Union> set (map rvars_eq t)"
 abbreviation tvars where "tvars t \<equiv> lvars t \<union> rvars t"
 
+text \<open>The condition that the rhss are non-zero is required to obtain minimal unsatisfiable cores.
+To observe the problem with 0 as rhs, consider the tableau $x = 0$ in combination
+with atom $(A: x \leq 0)$ where then $(B: x \geq 1)$ is asserted.
+In this case, the unsat core would be computed as $\{A,B\}$, although already $\{B\}$ is unsatisfiable.\<close>
 
 definition normalized_tableau :: "tableau \<Rightarrow> bool" ("\<triangle>") where
-  "normalized_tableau t \<equiv> distinct (map lhs t) \<and> lvars t \<inter> rvars t = {}"
+  "normalized_tableau t \<equiv> distinct (map lhs t) \<and> lvars t \<inter> rvars t = {} \<and> 0 \<notin> rhs ` set t"
 
 text\<open>Equations are of the form @{text "x = p"}, where @{text "x"} is
 a variable and @{text "p"} is a polynomial, and are represented by the
@@ -502,8 +506,8 @@ i_preprocess_sat: "\<And> v. preprocess cs = (t,as,trans_v) \<Longrightarrow> (I
 
 preprocess_unsat: "preprocess cs = (t, as,trans_v) \<Longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs \<Longrightarrow> \<exists> v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t" and
 
-\<comment> \<open>preprocessing does not change the set of indices\<close>
-preprocess_index: "preprocess cs = (t,as,trans_v) \<Longrightarrow> fst ` set cs = fst ` set as"
+\<comment> \<open>preprocessing cannot introduce new indices\<close>
+preprocess_index: "preprocess cs = (t,as,trans_v) \<Longrightarrow> fst ` set as \<subseteq> fst ` set cs"
 begin
 lemma preprocess_sat: "preprocess cs = (t,as,trans_v) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> \<langle>trans_v v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)"
   using i_preprocess_sat[of cs t as trans_v UNIV v] by auto
@@ -542,7 +546,7 @@ proof
   obtain t as trans_v where prep: "preprocess cs = (t,as,trans_v)" by (cases "preprocess cs")
   from preprocess_tableau_normalized[OF prep]
   have t: "\<triangle> t" .
-  from preprocess_index[OF prep] have index: "fst ` set cs = fst ` set as" by auto
+  from preprocess_index[OF prep] have index: "fst ` set as \<subseteq> fst ` set cs" by auto
   note solve = solve_exec_ns_def[of cs, unfolded prep split]
   {
     fix v
@@ -557,7 +561,7 @@ proof
       by (auto split: sum.splits)
     from assert_all_unsat[OF t assert] preprocess_unsat[OF prep, of "set I"]
     have "set I \<subseteq> fst ` set as" "\<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" by force+
-    then show "unsat_core_ns True (set I) (set cs)" unfolding unsat_core_ns_def index by auto
+    then show "unsat_core_ns True (set I) (set cs)" unfolding unsat_core_ns_def using index by auto
   }
 qed
 
@@ -814,8 +818,20 @@ declare satisfies_state_index.simps[simp del]
 definition indices_state :: "('i,'a)state \<Rightarrow> 'i set" where
   "indices_state s = { i. \<exists> x b. look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b)}"
 
+text \<open>distinctness requires that for each index $i$, there is at most one variable $x$ and bound
+  $b$ such that $x \leq b$ or $x \geq b$ or both are enforced.\<close>
+definition distinct_indices_state :: "('i,'a)state \<Rightarrow> bool" where
+  "distinct_indices_state s = (\<forall> i x b x' b'. 
+    (look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b)) \<longrightarrow>
+    (look (\<B>\<^sub>i\<^sub>l s) x' = Some (i,b') \<or> look (\<B>\<^sub>i\<^sub>u s) x' = Some (i,b')) \<longrightarrow>
+    (x = x' \<and> b = b')
+  )" 
+
 definition unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
   "unsat_state_core s = (set (the (\<U>\<^sub>c s)) \<subseteq> indices_state s \<and> (\<not> (\<exists> v. (set (the (\<U>\<^sub>c s)),v) \<Turnstile>\<^sub>i\<^sub>s s)))"
+
+definition subsets_sat_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
+  "subsets_sat_core s = ((\<forall> I. I \<subset> set (the (\<U>\<^sub>c s)) \<longrightarrow> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>s s)))" 
 
 lemma state_satisfies_index: assumes "v \<Turnstile>\<^sub>s s"
   shows "(I,v) \<Turnstile>\<^sub>i\<^sub>s s"
@@ -2161,6 +2177,318 @@ lemma bounds_updates: "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>u_update u s) = \<B>\<^s
   "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>l_update (upd x (i,c)) s) = (\<B>\<^sub>l s) (x \<mapsto> c)"
   by (auto simp: boundsl_def boundsu_def)
 
+locale EqForLVar =
+  fixes eq_idx_for_lvar :: "tableau \<Rightarrow> var \<Rightarrow> nat"
+  assumes eq_idx_for_lvar:
+    "\<lbrakk>x \<in> lvars t\<rbrakk> \<Longrightarrow> eq_idx_for_lvar t x < length t \<and> lhs (t ! eq_idx_for_lvar t x) = x"
+begin
+definition eq_for_lvar :: "tableau \<Rightarrow> var \<Rightarrow> eq" where
+  "eq_for_lvar t v \<equiv> t ! (eq_idx_for_lvar t v)"
+lemma eq_for_lvar:
+  "\<lbrakk>x \<in> lvars t\<rbrakk> \<Longrightarrow> eq_for_lvar t x \<in> set t \<and> lhs (eq_for_lvar t x) = x"
+  unfolding eq_for_lvar_def
+  using eq_idx_for_lvar
+  by auto
+
+abbreviation rvars_of_lvar where
+  "rvars_of_lvar t x \<equiv> rvars_eq (eq_for_lvar t x)"
+
+lemma rvars_of_lvar_rvars:
+  assumes "x \<in> lvars t"
+  shows "rvars_of_lvar t x \<subseteq> rvars t"
+  using assms eq_for_lvar[of x t]
+  unfolding rvars_def
+  by auto
+
+end
+
+text \<open>Updating changes the value of @{text x} and then updates
+values of all lhs variables so that the tableau remains
+satisfied. This can be based on a function that recalculates rhs
+polynomial values in the changed valuation:\<close>
+
+locale RhsEqVal = fixes rhs_eq_val::"(var, 'a::lrv) mapping \<Rightarrow> var \<Rightarrow> 'a \<Rightarrow> eq \<Rightarrow> 'a"
+  \<comment> \<open>@{text rhs_eq_val} computes the value of the rhs of @{text e} in @{text "\<langle>v\<rangle>(x := c)"}.\<close>
+  assumes rhs_eq_val:  "\<langle>v\<rangle> \<Turnstile>\<^sub>e e \<Longrightarrow> rhs_eq_val v x c e = rhs e \<lbrace> \<langle>v\<rangle> (x := c) \<rbrace>"
+
+begin
+
+text\<open>\noindent Then, the next implementation of @{text update}
+satisfies its specification:\<close>
+
+abbreviation update_eq where
+  "update_eq v x c v' e \<equiv> upd (lhs e) (rhs_eq_val v x c e) v'"
+
+definition update :: "var \<Rightarrow> 'a \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state" where
+  "update x c s \<equiv> \<V>_update (upd x c (foldl (update_eq (\<V> s) x c) (\<V> s) (\<T> s))) s"
+
+lemma update_no_set_none:
+  shows "look (\<V> s) y \<noteq> None \<Longrightarrow>
+         look (foldl (update_eq (\<V> s) x v) (\<V> s) t) y \<noteq> None"
+  by (induct t rule: rev_induct, auto simp: lookup_update')
+
+lemma update_no_left:
+  assumes  "y \<notin> lvars t"
+  shows "look (\<V> s) y = look (foldl (update_eq (\<V> s) x v) (\<V> s) t) y"
+  using assms
+  by (induct t rule: rev_induct) (auto simp add: lvars_def lookup_update')
+
+lemma update_left:
+  assumes "y \<in> lvars t"
+  shows "\<exists> eq \<in> set t. lhs eq = y \<and>
+     look (foldl (update_eq (\<V> s) x v) (\<V> s) t) y = Some (rhs_eq_val (\<V> s) x v eq)"
+  using assms
+  by (induct t rule: rev_induct) (auto simp add: lvars_def lookup_update')
+
+lemma update_valuate_rhs:
+  assumes "e \<in> set (\<T> s)" "\<triangle> (\<T> s)"
+  shows "rhs e \<lbrace> \<langle>\<V> (update x c s)\<rangle> \<rbrace> = rhs e \<lbrace> \<langle>\<V> s\<rangle> (x := c) \<rbrace>"
+proof (rule valuate_depend, safe)
+  fix y
+  assume "y \<in> rvars_eq e"
+  then have "y \<notin> lvars (\<T> s)"
+    using \<open>\<triangle> (\<T> s)\<close> \<open>e \<in> set (\<T> s)\<close>
+    by (auto simp add: normalized_tableau_def rvars_def)
+  then show "\<langle>\<V> (update x c s)\<rangle> y = (\<langle>\<V> s\<rangle>(x := c)) y"
+    using update_no_left[of y "\<T> s" s x c]
+    by (auto simp add: update_def map2fun_def lookup_update')
+qed
+
+end
+
+
+sublocale RhsEqVal < Update update
+proof
+  fix s::"('i,'a) state" and x c
+  show "let s' = update x c s in \<T> s' = \<T> s \<and> \<B>\<^sub>i s' = \<B>\<^sub>i s \<and> \<U> s' = \<U> s \<and> \<U>\<^sub>c s' = \<U>\<^sub>c s"
+    by (simp add: Let_def update_def add: boundsl_def boundsu_def indexl_def indexu_def)
+next
+  fix s::"('i,'a) state" and x c
+  assume "\<triangle> (\<T> s)" "\<nabla> s" "x \<notin> lvars (\<T> s)"
+  then show "\<nabla> (update x c s)"
+    using update_no_set_none[of s]
+    by (simp add: Let_def update_def tableau_valuated_def lookup_update')
+next
+  fix s::"('i,'a) state" and  x x' c
+  assume "\<triangle> (\<T> s)" "\<nabla> s" "x \<notin> lvars (\<T> s)"
+  show "x' \<notin> lvars (\<T> s) \<longrightarrow>
+          look (\<V> (update x c s)) x' =
+          (if x = x' then Some c else look (\<V> s) x')"
+    using update_no_left[of x' "\<T> s" s x c]
+    unfolding update_def lvars_def Let_def
+    by (auto simp: lookup_update')
+next
+  fix s::"('i,'a) state" and x c
+  assume "\<triangle> (\<T> s)" "\<nabla> s" "x \<notin> lvars (\<T> s)"
+  have "\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s \<Longrightarrow> \<forall>e \<in> set (\<T> s). \<langle>\<V> (update x c s)\<rangle> \<Turnstile>\<^sub>e e"
+  proof
+    fix e
+    assume "e \<in> set (\<T> s)" "\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s"
+    then have "\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>e e"
+      by (simp add: satisfies_tableau_def)
+
+    have "x \<noteq> lhs e"
+      using \<open>x \<notin> lvars (\<T> s)\<close> \<open>e \<in> set (\<T> s)\<close>
+      by (auto simp add: lvars_def)
+    then have "\<langle>\<V> (update x c s)\<rangle> (lhs e) = rhs_eq_val (\<V> s) x c e"
+      using update_left[of "lhs e" "\<T> s" s x c] \<open>e \<in> set (\<T> s)\<close> \<open>\<triangle> (\<T> s)\<close>
+      by (auto simp add: lvars_def lookup_update' update_def Let_def map2fun_def normalized_tableau_def distinct_map inj_on_def)
+    then show "\<langle>\<V> (update x c s)\<rangle> \<Turnstile>\<^sub>e e"
+      using \<open>\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>e e\<close> \<open>e \<in> set (\<T> s)\<close> \<open>x \<notin> lvars (\<T> s)\<close> \<open>\<triangle> (\<T> s)\<close>
+      using rhs_eq_val
+      by (simp add: satisfies_eq_def update_valuate_rhs)
+  qed
+  then show "\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s \<longrightarrow> \<langle>\<V> (update x c s)\<rangle> \<Turnstile>\<^sub>t \<T> s"
+    by(simp add: satisfies_tableau_def update_def)
+qed
+
+
+text\<open>To update the valuation for a variable that is on the lhs of
+the tableau it should first be swapped with some rhs variable of its
+equation, in an operation called \emph{pivoting}. Pivoting has the
+precondition that the tableau is normalized and that it is always
+called for a lhs variable of the tableau, and a rhs variable in the
+equation with that lhs variable. The set of rhs variables for the
+given lhs variable is found using the @{text rvars_of_lvar} function
+(specified in a very simple locale @{text EqForLVar}, that we do not
+print).\<close>
+
+locale Pivot = EqForLVar + fixes pivot::"var \<Rightarrow> var \<Rightarrow> ('i,'a::lrv) state \<Rightarrow> ('i,'a) state"
+  assumes
+    \<comment> \<open>Valuation, bounds, and the unsatisfiability flag are not changed.\<close>
+
+pivot_id:  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      let s' = pivot x\<^sub>i x\<^sub>j s in \<V> s' = \<V> s \<and> \<B>\<^sub>i s' = \<B>\<^sub>i s \<and> \<U> s' = \<U> s \<and> \<U>\<^sub>c s' = \<U>\<^sub>c s" and
+
+\<comment> \<open>The tableau remains equivalent to the previous one and normalized.\<close>
+
+pivot_tableau:  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      let s' = pivot x\<^sub>i x\<^sub>j s in  ((v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> s') \<and> \<triangle> (\<T> s') " and
+
+\<comment> \<open>@{text "x\<^sub>i"} and @{text "x\<^sub>j"} are swapped, while the other variables do not change sides.\<close>
+
+pivot_vars':   "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> let s' = pivot x\<^sub>i x\<^sub>j s in
+   rvars(\<T> s') = rvars(\<T> s)-{x\<^sub>j}\<union>{x\<^sub>i}  \<and>  lvars(\<T> s') = lvars(\<T> s)-{x\<^sub>i}\<union>{x\<^sub>j}"
+
+begin
+lemma pivot_bounds_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      \<B>\<^sub>i (pivot x\<^sub>i x\<^sub>j s) = \<B>\<^sub>i s"
+  using pivot_id
+  by (simp add: Let_def)
+
+lemma pivot_bounds_id': assumes "\<triangle> (\<T> s)" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
+  shows "\<B>\<I> (pivot x\<^sub>i x\<^sub>j s) = \<B>\<I> s" "\<B> (pivot x\<^sub>i x\<^sub>j s) = \<B> s" "\<I> (pivot x\<^sub>i x\<^sub>j s) = \<I> s"
+  using pivot_bounds_id[OF assms]
+  by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
+
+lemma pivot_valuation_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> \<V> (pivot x\<^sub>i x\<^sub>j s) = \<V> s"
+  using pivot_id
+  by (simp add: Let_def)
+
+lemma pivot_unsat_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> \<U> (pivot x\<^sub>i x\<^sub>j s) = \<U> s"
+  using pivot_id
+  by (simp add: Let_def)
+
+lemma pivot_unsat_core_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> \<U>\<^sub>c (pivot x\<^sub>i x\<^sub>j s) = \<U>\<^sub>c s"
+  using pivot_id
+  by (simp add: Let_def)
+
+lemma pivot_tableau_equiv: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      (v::'a valuation) \<Turnstile>\<^sub>t \<T> s = v \<Turnstile>\<^sub>t \<T> (pivot x\<^sub>i x\<^sub>j s)"
+  using pivot_tableau
+  by (simp add: Let_def)
+
+lemma pivot_tableau_normalized: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> \<triangle> (\<T> (pivot x\<^sub>i x\<^sub>j s))"
+  using pivot_tableau
+  by (simp add: Let_def)
+
+lemma pivot_rvars: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> rvars (\<T> (pivot x\<^sub>i x\<^sub>j s)) = rvars (\<T> s) - {x\<^sub>j} \<union> {x\<^sub>i}"
+  using pivot_vars'
+  by (simp add: Let_def)
+
+lemma pivot_lvars: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> lvars (\<T> (pivot x\<^sub>i x\<^sub>j s)) = lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j}"
+  using pivot_vars'
+  by (simp add: Let_def)
+
+lemma pivot_vars:
+  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> tvars (\<T> (pivot x\<^sub>i x\<^sub>j s)) = tvars (\<T> s) "
+  using pivot_lvars[of s x\<^sub>i x\<^sub>j] pivot_rvars[of s x\<^sub>i x\<^sub>j]
+  using rvars_of_lvar_rvars[of x\<^sub>i "\<T> s"]
+  by auto
+
+lemma
+  pivot_tableau_valuated: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i; \<nabla> s\<rbrakk> \<Longrightarrow> \<nabla> (pivot x\<^sub>i x\<^sub>j s)"
+  using pivot_valuation_id pivot_vars
+  by (auto simp add: tableau_valuated_def)
+
+end
+
+
+text\<open>Functions @{text pivot} and @{text update} can be used to
+implement the @{text check} function. In its context, @{text pivot}
+and @{text update} functions are always called together, so the
+following definition can be used: @{prop "pivot_and_update x\<^sub>i x\<^sub>j c s =
+update x\<^sub>i c (pivot x\<^sub>i x\<^sub>j s)"}. It is possible to make a more efficient
+implementation of @{text pivot_and_update} that does not use separate
+implementations of @{text pivot} and @{text update}. To allow this, a
+separate specification for @{text pivot_and_update} can be given. It can be
+easily shown that the @{text pivot_and_update} definition above
+satisfies this specification.\<close>
+
+
+locale PivotAndUpdate = EqForLVar +
+  fixes pivot_and_update :: "var \<Rightarrow> var \<Rightarrow> 'a::lrv \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
+  assumes  pivotandupdate_unsat_id:   "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      \<U> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<U> s"
+  assumes pivotandupdate_unsat_core_id: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      \<U>\<^sub>c (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<U>\<^sub>c s"
+  assumes  pivotandupdate_bounds_id:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      \<B>\<^sub>i (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<B>\<^sub>i s"
+  assumes  pivotandupdate_tableau_normalized:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      \<triangle> (\<T> (pivot_and_update x\<^sub>i x\<^sub>j c s))"
+  assumes  pivotandupdate_tableau_equiv:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      (v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> (pivot_and_update x\<^sub>i x\<^sub>j c s)"
+  assumes pivotandupdate_satisfies_tableau:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s \<longrightarrow> \<langle>\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)\<rangle> \<Turnstile>\<^sub>t \<T> s"
+  assumes  pivotandupdate_rvars:   "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      rvars (\<T> (pivot_and_update x\<^sub>i x\<^sub>j c s)) = rvars (\<T> s) - {x\<^sub>j} \<union> {x\<^sub>i}"
+  assumes  pivotandupdate_lvars:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      lvars (\<T> (pivot_and_update x\<^sub>i x\<^sub>j c s)) = lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j}"
+  assumes pivotandupdate_valuation_nonlhs:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+      x \<notin> lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j} \<longrightarrow> look (\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)) x = (if x = x\<^sub>i then Some c else look (\<V> s) x)"
+  assumes pivotandupdate_tableau_valuated:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
+ \<nabla> (pivot_and_update x\<^sub>i x\<^sub>j c s)"
+begin
+
+lemma pivotandupdate_bounds_id':  assumes "\<triangle> (\<T> s)" "\<nabla> s" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
+  shows "\<B>\<I> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<B>\<I> s"
+    "\<B> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<B> s"
+    "\<I> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<I> s"
+  using pivotandupdate_bounds_id[OF assms]
+  by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
+
+lemma  pivotandupdate_valuation_xi: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> look (\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)) x\<^sub>i = Some c"
+  using pivotandupdate_valuation_nonlhs[of s x\<^sub>i x\<^sub>j x\<^sub>i c]
+  using rvars_of_lvar_rvars
+  by (auto simp add:  normalized_tableau_def)
+
+lemma  pivotandupdate_valuation_other_nolhs: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i; x \<notin> lvars (\<T> s); x \<noteq> x\<^sub>j\<rbrakk> \<Longrightarrow> look (\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)) x = look (\<V> s) x"
+  using pivotandupdate_valuation_nonlhs[of s x\<^sub>i x\<^sub>j x c]
+  by auto
+
+lemma pivotandupdate_nolhs:
+  "\<lbrakk> \<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i;
+     \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<B>\<^sub>l s x\<^sub>i = Some c \<or> \<B>\<^sub>u s x\<^sub>i = Some c\<rbrakk> \<Longrightarrow>
+     \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s (pivot_and_update x\<^sub>i x\<^sub>j c s)"
+  using pivotandupdate_satisfies_tableau[of s x\<^sub>i x\<^sub>j c]
+  using pivotandupdate_tableau_equiv[of s x\<^sub>i x\<^sub>j _ c]
+  using pivotandupdate_valuation_xi[of s x\<^sub>i x\<^sub>j c]
+  using pivotandupdate_valuation_other_nolhs[of s x\<^sub>i x\<^sub>j _ c]
+  using pivotandupdate_lvars[of s x\<^sub>i x\<^sub>j c]
+  by (auto simp add: curr_val_satisfies_no_lhs_def satisfies_bounds.simps satisfies_bounds_set.simps
+      bounds_consistent_geq_lb bounds_consistent_leq_ub map2fun_def pivotandupdate_bounds_id')
+
+lemma pivotandupdate_bounds_consistent:
+  assumes "\<triangle> (\<T> s)" "\<nabla> s" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
+  shows "\<diamond> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<diamond> s"
+  using assms pivotandupdate_bounds_id'[of s x\<^sub>i x\<^sub>j c]
+  by (simp add: bounds_consistent_def)
+end
+
+
+locale PivotUpdate = Pivot eq_idx_for_lvar pivot + Update update for
+  eq_idx_for_lvar :: "tableau \<Rightarrow> var \<Rightarrow> nat" and
+  pivot :: "var \<Rightarrow> var \<Rightarrow> ('i,'a::lrv) state \<Rightarrow> ('i,'a) state" and
+  update :: "var \<Rightarrow> 'a \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
+begin
+definition  pivot_and_update :: "var \<Rightarrow> var \<Rightarrow> 'a \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state" where [simp]:
+  "pivot_and_update x\<^sub>i x\<^sub>j c s \<equiv> update x\<^sub>i c (pivot x\<^sub>i x\<^sub>j s)"
+
+lemma pivot_update_precond:
+  assumes "\<triangle> (\<T> s)" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
+  shows "\<triangle> (\<T> (pivot x\<^sub>i x\<^sub>j s))" "x\<^sub>i \<notin> lvars (\<T> (pivot x\<^sub>i x\<^sub>j s))"
+proof-
+  from assms have "x\<^sub>i \<noteq> x\<^sub>j"
+    using rvars_of_lvar_rvars[of x\<^sub>i "\<T> s"]
+    by (auto simp add: normalized_tableau_def)
+  then show "\<triangle> (\<T> (pivot x\<^sub>i x\<^sub>j s))" "x\<^sub>i \<notin> lvars (\<T> (pivot x\<^sub>i x\<^sub>j s))"
+    using assms
+    using pivot_tableau_normalized[of s x\<^sub>i x\<^sub>j]
+    using pivot_lvars[of s x\<^sub>i x\<^sub>j]
+    by auto
+qed
+
+end
+
+
+sublocale PivotUpdate < PivotAndUpdate eq_idx_for_lvar pivot_and_update
+  using pivot_update_precond
+  using update_unsat_id pivot_unsat_id pivot_unsat_core_id update_bounds_id pivot_bounds_id
+    update_tableau_id pivot_tableau_normalized pivot_tableau_equiv update_satisfies_tableau
+    pivot_valuation_id pivot_lvars pivot_rvars  update_valuation_nonlhs update_valuation_nonlhs
+    pivot_tableau_valuated update_tableau_valuated update_unsat_core_id
+  by (unfold_locales, auto)
+
 text\<open>Given the @{term update} function, @{text assert_bound} can be
 implemented as follows.
 \vspace{-2mm}
@@ -2177,7 +2505,12 @@ avoid symmetries is discussed in Section \ref{sec:symmetries}). This
 implementation satisfies both its specifications.
 \<close>
 
-sublocale Update < AssertBoundNoLhs assert_bound
+text \<open>Note that in order to ensure minimality of the unsat cores, pivoting is required.\<close>
+
+context Update
+begin
+lemma update_to_assert_bound_no_lhs: assumes pivot: "Pivot eqlvar (pivot :: var \<Rightarrow> var \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state)" 
+  shows "AssertBoundNoLhs assert_bound" 
 proof
   fix s::"('i,'a) state" and a
   assume "\<not> \<U> s" "\<triangle> (\<T> s)" "\<nabla> s"
@@ -2187,23 +2520,35 @@ next
   fix s::"('i,'a) state" and ia and as
   assume *: "\<not> \<U> s" "\<triangle> (\<T> s)" "\<nabla> s" and **: "\<U> (assert_bound ia s)"
     and index: "index_valid as s"
+    and consistent: "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<diamond> s" 
   obtain i a where ia: "ia = (i,a)" by force
   let ?modelU = "\<lambda> lt UB UI s v x c i. UB s x = Some c \<longrightarrow> UI s x = i \<longrightarrow> i \<in> set (the (\<U>\<^sub>c s)) \<longrightarrow> (lt (v x) c \<or> v x = c)"
   let ?modelL = "\<lambda> lt LB LI s v x c i. LB s x = Some c \<longrightarrow> LI s x = i \<longrightarrow> i \<in> set (the (\<U>\<^sub>c s)) \<longrightarrow> (lt c (v x) \<or> c = v x)"
+  let ?modelIU = "\<lambda> I lt UB UI s v x c i. UB s x = Some c \<longrightarrow> UI s x = i \<longrightarrow> i \<in> I \<longrightarrow> (lt (v x) c \<or> v x = c)"
+  let ?modelIL = "\<lambda> I lt LB LI s v x c i. LB s x = Some c \<longrightarrow> LI s x = i \<longrightarrow> i \<in> I \<longrightarrow> (lt c (v x) \<or> c = v x)"
   let ?P' = "\<lambda> lt UBI LBI UB LB UBI_upd UI LI LE GE s.
-    \<U> s \<longrightarrow> set (the (\<U>\<^sub>c s)) \<subseteq> indices_state s \<and> \<not> (\<exists>v. (v \<Turnstile>\<^sub>t \<T> s
+    \<U> s \<longrightarrow> (set (the (\<U>\<^sub>c s)) \<subseteq> indices_state s \<and> \<not> (\<exists>v. (v \<Turnstile>\<^sub>t \<T> s
       \<and> (\<forall> x c i. ?modelU lt UB UI s v x c i)
-      \<and> (\<forall> x c i. ?modelL lt LB LI s v x c i)))"
-  have "\<U> (assert_bound ia s) \<longrightarrow> unsat_state_core (assert_bound ia s)" (is "?P (assert_bound ia s)") unfolding ia
+      \<and> (\<forall> x c i. ?modelL lt LB LI s v x c i))))
+      \<and> (distinct_indices_state s \<longrightarrow> (\<forall> I. I \<subset> set (the (\<U>\<^sub>c s)) \<longrightarrow> (\<exists> v. v \<Turnstile>\<^sub>t \<T> s \<and>
+            (\<forall> x c i. ?modelIU I lt UB UI s v x c i) \<and> (\<forall> x c i. ?modelIL I lt LB LI s v x c i))))"
+  have "\<U> (assert_bound ia s) \<longrightarrow> (unsat_state_core (assert_bound ia s) \<and> 
+    (distinct_indices_state (assert_bound ia s) \<longrightarrow> subsets_sat_core (assert_bound ia s)))" (is "?P (assert_bound ia s)") unfolding ia
   proof (rule assert_bound_cases[of _ _ ?P'])
-    fix s'
+    fix s' :: "('i,'a) state"
     have id: "((x :: 'a) < y \<or> x = y) \<longleftrightarrow> x \<le> y" "((x :: 'a) > y \<or> x = y) \<longleftrightarrow> x \<ge> y" for x y by auto
-    show "?P s' = ?P' (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l undefined \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'"
-      "?P s' = ?P' (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u undefined \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
+    have id': "?P' (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u undefined \<I>\<^sub>l \<I>\<^sub>u Geq Leq s' = ?P' (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l undefined \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'" 
+      by (intro arg_cong[of _ _ "\<lambda> y. _ \<longrightarrow> y"] arg_cong[of _ _ "\<lambda> x. _ \<and> x"], 
+        intro arg_cong2[of _ _ _ _ "(\<and>)"] arg_cong[of _ _ "\<lambda> y. _ \<longrightarrow> y"] arg_cong[of _ _ "\<lambda> y. \<forall> x \<subset> set (the (\<U>\<^sub>c s')). y x"] ext arg_cong[of _ _ Not],
+        unfold id, auto)
+    show "?P s' = ?P' (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u undefined \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
       unfolding satisfies_state_def satisfies_bounds_index.simps satisfies_bounds.simps
-        in_bounds.simps unsat_state_core_def satisfies_state_index.simps
-      unfolding bound_compare''_defs id
-      by auto
+        in_bounds.simps unsat_state_core_def satisfies_state_index.simps subsets_sat_core_def
+      unfolding bound_compare''_defs id 
+      by ((intro arg_cong[of _ _ "\<lambda> x. _ \<longrightarrow> x"] arg_cong[of _ _ "\<lambda> x. _ \<and> x"], 
+        intro arg_cong2[of _ _ _ _ "(\<and>)"] refl arg_cong[of _ _ "\<lambda> x. _ \<longrightarrow> x"] arg_cong[of _ _ Not]
+        arg_cong[of _ _ "\<lambda> y. \<forall> x \<subset> set (the (\<U>\<^sub>c s')). y x"] ext; intro arg_cong[of _ _ Ex] ext), auto)
+    then show "?P s' = ?P' (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l undefined \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'" unfolding id' .
   next
     fix c::'a and x::nat and dir
     assume "\<lhd>\<^sub>l\<^sub>b (lt dir) c (LB dir s x)" and dir: "dir = Positive \<or> dir = Negative"
@@ -2213,18 +2558,96 @@ next
       some dir obtain j where ind: "LI dir s x = j" "look (LBI dir s) x = Some (j,d)" and ge: "(j, GE dir x d) \<in> as"
       by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
     let ?s = "set_unsat [i, ((LI dir) s x)] (update\<B>\<I> (UBI_upd dir) i x c s)"
+    let ?ss = "update\<B>\<I> (UBI_upd dir) i x c s" 
     show "?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir) ?s"
-    proof (intro conjI impI; clarify)
-      fix v
-      assume vU: "\<forall> x c i. ?modelU (lt dir) (UB dir) (UI dir) ?s v x c i"
-      assume vL: "\<forall> x c i. ?modelL (lt dir) (LB dir) (LI dir) ?s v x c i"
-      from dir have "UB dir ?s x = Some c" "UI dir ?s x = i" by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
-      from vU[rule_format, OF this] have vx_le_c: "lt dir (v x) c \<or> v x = c" by auto
-      from dir ind some have *: "LB dir ?s x = Some d" "LI dir ?s x = j" by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
-      have d_le_vx: "lt dir d (v x) \<or> d = v x" by (intro vL[rule_format, OF *], insert some ind, auto)
-      from dir d_le_vx vx_le_c lt
-      show False by auto
-    qed (insert dir ind ge lt some, force simp: indices_state_def split: if_splits)
+    proof (intro conjI impI, goal_cases)
+      case 2
+      {
+        fix v
+        assume vU: "\<forall> x c i. ?modelU (lt dir) (UB dir) (UI dir) ?s v x c i"
+        assume vL: "\<forall> x c i. ?modelL (lt dir) (LB dir) (LI dir) ?s v x c i" 
+        from dir have "UB dir ?s x = Some c" "UI dir ?s x = i" by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
+        from vU[rule_format, OF this] have vx_le_c: "lt dir (v x) c \<or> v x = c" by auto
+        from dir ind some have *: "LB dir ?s x = Some d" "LI dir ?s x = j" by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
+        have d_le_vx: "lt dir d (v x) \<or> d = v x" by (intro vL[rule_format, OF *], insert some ind, auto)
+        from dir d_le_vx vx_le_c lt
+        have False by auto
+      }
+      thus ?case by blast
+    next
+      case 1
+      thus ?case using dir ind ge lt some by (force simp: indices_state_def split: if_splits)
+    next
+      case 3
+      hence dist: "distinct_indices_state ?ss" unfolding distinct_indices_state_def by auto
+      have id: "UB dir ?s y = UB dir ?ss y" "LB dir ?s y = LB dir ?ss y"
+               "UI dir ?s y = UI dir ?ss y" "LI dir ?s y = LI dir ?ss y" 
+               "\<T> ?s = \<T> s" 
+               "set (the (\<U>\<^sub>c ?s)) = {i,LI dir s x}" for y        
+        using dir by (auto simp: boundsu_def boundsl_def indexu_def indexl_def) 
+      show ?case unfolding id 
+      proof (intro allI impI, goal_cases)
+        case (1 I)
+        then obtain j where I: "I \<subseteq> {j}" by auto
+        hence id: "(\<forall> k. P1 k \<longrightarrow> P2 k \<longrightarrow> k \<in> I \<longrightarrow> Q k) \<longleftrightarrow> (I = {} \<or> (P1 j \<longrightarrow> P2 j \<longrightarrow> Q j))" for P1 P2 Q by auto
+        have id2: "(UB dir s xa = Some ca \<longrightarrow> UI dir s xa = j \<longrightarrow> P) = (look (UBI dir s) xa = Some (j,ca) \<longrightarrow> P)"
+            "(LB dir s xa = Some ca \<longrightarrow> LI dir s xa = j \<longrightarrow> P) = (look (LBI dir s) xa = Some (j,ca) \<longrightarrow> P)" for xa ca P s
+          using dir by (auto simp: boundsu_def indexu_def boundsl_def indexl_def)
+        show "\<exists>v. v \<Turnstile>\<^sub>t \<T> s \<and>
+             (\<forall>xa ca ia.
+                 UB dir ?ss xa = Some ca \<longrightarrow> UI dir ?ss xa = ia \<longrightarrow> ia \<in> I \<longrightarrow> lt dir (v xa) ca \<or> v xa = ca) \<and>
+             (\<forall>xa ca ia.
+                 LB dir ?ss xa = Some ca \<longrightarrow> LI dir ?ss xa = ia \<longrightarrow> ia \<in> I \<longrightarrow> lt dir ca (v xa) \<or> ca = v xa)" 
+        proof (cases "\<exists> xa ca. look (UBI dir ?ss) xa = Some (j,ca) \<or> look (LBI dir ?ss) xa = Some (j,ca)")
+          case False
+          thus ?thesis unfolding id id2 using consistent unfolding curr_val_satisfies_no_lhs_def 
+            by (intro exI[of _ "\<langle>\<V> s\<rangle>"], auto)
+        next
+          case True
+          from consistent have val: " \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s" unfolding curr_val_satisfies_no_lhs_def by auto
+          define ss where ss: "ss = ?ss" 
+          from True obtain y b where "look (UBI dir ?ss) y = Some (j,b) \<or> look (LBI dir ?ss) y = Some (j,b)" by force
+          then have id3: "(look (LBI dir ss) yy = Some (j,bb) \<or> look (UBI dir ss) yy = Some (j,bb)) \<longleftrightarrow> (yy = y \<and> bb = b)" for yy bb 
+            using dist[unfolded distinct_indices_state_def, rule_format, of y j b yy bb] using dir
+            unfolding ss[symmetric] 
+            by (auto simp: boundsu_def boundsl_def indexu_def indexl_def)
+          have "\<exists>v. v \<Turnstile>\<^sub>t \<T> s \<and> v y = b" 
+          proof (cases "y \<in> lvars (\<T> s)")
+            case False
+            let ?v = "\<langle>\<V> (update y b s)\<rangle>" 
+            show ?thesis
+            proof (intro exI[of _ ?v] conjI)
+              from update_satisfies_tableau[OF *(2,3) False] val 
+              show "?v \<Turnstile>\<^sub>t \<T> s" by simp
+              from update_valuation_nonlhs[OF *(2,3) False, of y b] False
+              show "?v y = b" by (simp add: map2fun_def')
+            qed
+          next
+            case True            
+            from *(2)[unfolded normalized_tableau_def]
+            have zero: "0 \<notin> rhs ` set (\<T> s)" by auto
+            interpret Pivot eqlvar pivot by fact
+            interpret PivotUpdate eqlvar pivot update ..
+            let ?eq = "eq_for_lvar (\<T> s) y" 
+            from eq_for_lvar[OF True] have "?eq \<in> set (\<T> s)" "lhs ?eq = y" by auto
+            with zero have rhs: "rhs ?eq \<noteq> 0" by force
+            hence "rvars_eq ?eq \<noteq> {}"
+              by (simp add: vars_empty_zero)
+            then obtain z where z: "z \<in> rvars_eq ?eq" by auto
+            let ?v = "\<V> (pivot_and_update y z b s)" 
+            let ?vv = "\<langle>?v\<rangle>" 
+            from pivotandupdate_valuation_xi[OF *(2,3) True z]
+            have "look ?v y = Some b" .
+            hence vv: "?vv y = b" unfolding map2fun_def' by auto
+            show ?thesis
+            proof (intro exI[of _ ?vv] conjI vv)
+              show "?vv \<Turnstile>\<^sub>t \<T> s" using pivotandupdate_satisfies_tableau[OF *(2,3) True z] val by auto
+            qed
+          qed
+          thus ?thesis unfolding id id2 ss[symmetric] using id3 by metis
+        qed
+      qed
+    qed
   next
     fix c::'a and x::nat and dir
     assume **: "dir = Positive \<or> dir = Negative" "a = LE dir x c" "x \<notin> lvars (\<T> s)" "lt dir c (\<langle>\<V> s\<rangle> x)" "\<not> \<unrhd>\<^sub>u\<^sub>b (lt dir) c (UB dir s x)" "\<not> \<lhd>\<^sub>l\<^sub>b (lt dir) c (LB dir s x)"
@@ -2629,319 +3052,7 @@ next
   qed auto
   then show "insert ia ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound ia s)" unfolding ia A_def by blast
 qed
-
-
-locale EqForLVar =
-  fixes eq_idx_for_lvar :: "tableau \<Rightarrow> var \<Rightarrow> nat"
-  assumes eq_idx_for_lvar:
-    "\<lbrakk>x \<in> lvars t\<rbrakk> \<Longrightarrow> eq_idx_for_lvar t x < length t \<and> lhs (t ! eq_idx_for_lvar t x) = x"
-begin
-definition eq_for_lvar :: "tableau \<Rightarrow> var \<Rightarrow> eq" where
-  "eq_for_lvar t v \<equiv> t ! (eq_idx_for_lvar t v)"
-lemma eq_for_lvar:
-  "\<lbrakk>x \<in> lvars t\<rbrakk> \<Longrightarrow> eq_for_lvar t x \<in> set t \<and> lhs (eq_for_lvar t x) = x"
-  unfolding eq_for_lvar_def
-  using eq_idx_for_lvar
-  by auto
-
-abbreviation rvars_of_lvar where
-  "rvars_of_lvar t x \<equiv> rvars_eq (eq_for_lvar t x)"
-
-lemma rvars_of_lvar_rvars:
-  assumes "x \<in> lvars t"
-  shows "rvars_of_lvar t x \<subseteq> rvars t"
-  using assms eq_for_lvar[of x t]
-  unfolding rvars_def
-  by auto
-
 end
-
-text \<open>Updating changes the value of @{text x} and then updates
-values of all lhs variables so that the tableau remains
-satisfied. This can be based on a function that recalculates rhs
-polynomial values in the changed valuation:\<close>
-
-locale RhsEqVal = fixes rhs_eq_val::"(var, 'a::lrv) mapping \<Rightarrow> var \<Rightarrow> 'a \<Rightarrow> eq \<Rightarrow> 'a"
-  \<comment> \<open>@{text rhs_eq_val} computes the value of the rhs of @{text e} in @{text "\<langle>v\<rangle>(x := c)"}.\<close>
-  assumes rhs_eq_val:  "\<langle>v\<rangle> \<Turnstile>\<^sub>e e \<Longrightarrow> rhs_eq_val v x c e = rhs e \<lbrace> \<langle>v\<rangle> (x := c) \<rbrace>"
-
-begin
-
-text\<open>\noindent Then, the next implementation of @{text update}
-satisfies its specification:\<close>
-
-abbreviation update_eq where
-  "update_eq v x c v' e \<equiv> upd (lhs e) (rhs_eq_val v x c e) v'"
-
-definition update :: "var \<Rightarrow> 'a \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state" where
-  "update x c s \<equiv> \<V>_update (upd x c (foldl (update_eq (\<V> s) x c) (\<V> s) (\<T> s))) s"
-
-lemma update_no_set_none:
-  shows "look (\<V> s) y \<noteq> None \<Longrightarrow>
-         look (foldl (update_eq (\<V> s) x v) (\<V> s) t) y \<noteq> None"
-  by (induct t rule: rev_induct, auto simp: lookup_update')
-
-lemma update_no_left:
-  assumes  "y \<notin> lvars t"
-  shows "look (\<V> s) y = look (foldl (update_eq (\<V> s) x v) (\<V> s) t) y"
-  using assms
-  by (induct t rule: rev_induct) (auto simp add: lvars_def lookup_update')
-
-lemma update_left:
-  assumes "y \<in> lvars t"
-  shows "\<exists> eq \<in> set t. lhs eq = y \<and>
-     look (foldl (update_eq (\<V> s) x v) (\<V> s) t) y = Some (rhs_eq_val (\<V> s) x v eq)"
-  using assms
-  by (induct t rule: rev_induct) (auto simp add: lvars_def lookup_update')
-
-lemma update_valuate_rhs:
-  assumes "e \<in> set (\<T> s)" "\<triangle> (\<T> s)"
-  shows "rhs e \<lbrace> \<langle>\<V> (update x c s)\<rangle> \<rbrace> = rhs e \<lbrace> \<langle>\<V> s\<rangle> (x := c) \<rbrace>"
-proof (rule valuate_depend, safe)
-  fix y
-  assume "y \<in> rvars_eq e"
-  then have "y \<notin> lvars (\<T> s)"
-    using \<open>\<triangle> (\<T> s)\<close> \<open>e \<in> set (\<T> s)\<close>
-    by (auto simp add: normalized_tableau_def rvars_def)
-  then show "\<langle>\<V> (update x c s)\<rangle> y = (\<langle>\<V> s\<rangle>(x := c)) y"
-    using update_no_left[of y "\<T> s" s x c]
-    by (auto simp add: update_def map2fun_def lookup_update')
-qed
-
-end
-
-
-sublocale RhsEqVal < Update update
-proof
-  fix s::"('i,'a) state" and x c
-  show "let s' = update x c s in \<T> s' = \<T> s \<and> \<B>\<^sub>i s' = \<B>\<^sub>i s \<and> \<U> s' = \<U> s \<and> \<U>\<^sub>c s' = \<U>\<^sub>c s"
-    by (simp add: Let_def update_def add: boundsl_def boundsu_def indexl_def indexu_def)
-next
-  fix s::"('i,'a) state" and x c
-  assume "\<triangle> (\<T> s)" "\<nabla> s" "x \<notin> lvars (\<T> s)"
-  then show "\<nabla> (update x c s)"
-    using update_no_set_none[of s]
-    by (simp add: Let_def update_def tableau_valuated_def lookup_update')
-next
-  fix s::"('i,'a) state" and  x x' c
-  assume "\<triangle> (\<T> s)" "\<nabla> s" "x \<notin> lvars (\<T> s)"
-  show "x' \<notin> lvars (\<T> s) \<longrightarrow>
-          look (\<V> (update x c s)) x' =
-          (if x = x' then Some c else look (\<V> s) x')"
-    using update_no_left[of x' "\<T> s" s x c]
-    unfolding update_def lvars_def Let_def
-    by (auto simp: lookup_update')
-next
-  fix s::"('i,'a) state" and x c
-  assume "\<triangle> (\<T> s)" "\<nabla> s" "x \<notin> lvars (\<T> s)"
-  have "\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s \<Longrightarrow> \<forall>e \<in> set (\<T> s). \<langle>\<V> (update x c s)\<rangle> \<Turnstile>\<^sub>e e"
-  proof
-    fix e
-    assume "e \<in> set (\<T> s)" "\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s"
-    then have "\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>e e"
-      by (simp add: satisfies_tableau_def)
-
-    have "x \<noteq> lhs e"
-      using \<open>x \<notin> lvars (\<T> s)\<close> \<open>e \<in> set (\<T> s)\<close>
-      by (auto simp add: lvars_def)
-    then have "\<langle>\<V> (update x c s)\<rangle> (lhs e) = rhs_eq_val (\<V> s) x c e"
-      using update_left[of "lhs e" "\<T> s" s x c] \<open>e \<in> set (\<T> s)\<close> \<open>\<triangle> (\<T> s)\<close>
-      by (auto simp add: lvars_def lookup_update' update_def Let_def map2fun_def normalized_tableau_def distinct_map inj_on_def)
-    then show "\<langle>\<V> (update x c s)\<rangle> \<Turnstile>\<^sub>e e"
-      using \<open>\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>e e\<close> \<open>e \<in> set (\<T> s)\<close> \<open>x \<notin> lvars (\<T> s)\<close> \<open>\<triangle> (\<T> s)\<close>
-      using rhs_eq_val
-      by (simp add: satisfies_eq_def update_valuate_rhs)
-  qed
-  then show "\<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s \<longrightarrow> \<langle>\<V> (update x c s)\<rangle> \<Turnstile>\<^sub>t \<T> s"
-    by(simp add: satisfies_tableau_def update_def)
-qed
-
-
-text\<open>To update the valuation for a variable that is on the lhs of
-the tableau it should first be swapped with some rhs variable of its
-equation, in an operation called \emph{pivoting}. Pivoting has the
-precondition that the tableau is normalized and that it is always
-called for a lhs variable of the tableau, and a rhs variable in the
-equation with that lhs variable. The set of rhs variables for the
-given lhs variable is found using the @{text rvars_of_lvar} function
-(specified in a very simple locale @{text EqForLVar}, that we do not
-print).\<close>
-
-locale Pivot = EqForLVar + fixes pivot::"var \<Rightarrow> var \<Rightarrow> ('i,'a::lrv) state \<Rightarrow> ('i,'a) state"
-  assumes
-    \<comment> \<open>Valuation, bounds, and the unsatisfiability flag are not changed.\<close>
-
-pivot_id:  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      let s' = pivot x\<^sub>i x\<^sub>j s in \<V> s' = \<V> s \<and> \<B>\<^sub>i s' = \<B>\<^sub>i s \<and> \<U> s' = \<U> s \<and> \<U>\<^sub>c s' = \<U>\<^sub>c s" and
-
-\<comment> \<open>The tableau remains equivalent to the previous one and normalized.\<close>
-
-pivot_tableau:  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      let s' = pivot x\<^sub>i x\<^sub>j s in  ((v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> s') \<and> \<triangle> (\<T> s') " and
-
-\<comment> \<open>@{text "x\<^sub>i"} and @{text "x\<^sub>j"} are swapped, while the other variables do not change sides.\<close>
-
-pivot_vars':   "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> let s' = pivot x\<^sub>i x\<^sub>j s in
-   rvars(\<T> s') = rvars(\<T> s)-{x\<^sub>j}\<union>{x\<^sub>i}  \<and>  lvars(\<T> s') = lvars(\<T> s)-{x\<^sub>i}\<union>{x\<^sub>j}"
-
-begin
-lemma pivot_bounds_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      \<B>\<^sub>i (pivot x\<^sub>i x\<^sub>j s) = \<B>\<^sub>i s"
-  using pivot_id
-  by (simp add: Let_def)
-
-lemma pivot_bounds_id': assumes "\<triangle> (\<T> s)" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
-  shows "\<B>\<I> (pivot x\<^sub>i x\<^sub>j s) = \<B>\<I> s" "\<B> (pivot x\<^sub>i x\<^sub>j s) = \<B> s" "\<I> (pivot x\<^sub>i x\<^sub>j s) = \<I> s"
-  using pivot_bounds_id[OF assms]
-  by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
-
-lemma pivot_valuation_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> \<V> (pivot x\<^sub>i x\<^sub>j s) = \<V> s"
-  using pivot_id
-  by (simp add: Let_def)
-
-lemma pivot_unsat_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> \<U> (pivot x\<^sub>i x\<^sub>j s) = \<U> s"
-  using pivot_id
-  by (simp add: Let_def)
-
-lemma pivot_unsat_core_id: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> \<U>\<^sub>c (pivot x\<^sub>i x\<^sub>j s) = \<U>\<^sub>c s"
-  using pivot_id
-  by (simp add: Let_def)
-
-lemma pivot_tableau_equiv: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      (v::'a valuation) \<Turnstile>\<^sub>t \<T> s = v \<Turnstile>\<^sub>t \<T> (pivot x\<^sub>i x\<^sub>j s)"
-  using pivot_tableau
-  by (simp add: Let_def)
-
-lemma pivot_tableau_normalized: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> \<triangle> (\<T> (pivot x\<^sub>i x\<^sub>j s))"
-  using pivot_tableau
-  by (simp add: Let_def)
-
-lemma pivot_rvars: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> rvars (\<T> (pivot x\<^sub>i x\<^sub>j s)) = rvars (\<T> s) - {x\<^sub>j} \<union> {x\<^sub>i}"
-  using pivot_vars'
-  by (simp add: Let_def)
-
-lemma pivot_lvars: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> lvars (\<T> (pivot x\<^sub>i x\<^sub>j s)) = lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j}"
-  using pivot_vars'
-  by (simp add: Let_def)
-
-lemma pivot_vars:
-  "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> tvars (\<T> (pivot x\<^sub>i x\<^sub>j s)) = tvars (\<T> s) "
-  using pivot_lvars[of s x\<^sub>i x\<^sub>j] pivot_rvars[of s x\<^sub>i x\<^sub>j]
-  using rvars_of_lvar_rvars[of x\<^sub>i "\<T> s"]
-  by auto
-
-lemma
-  pivot_tableau_valuated: "\<lbrakk>\<triangle> (\<T> s); x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i; \<nabla> s\<rbrakk> \<Longrightarrow> \<nabla> (pivot x\<^sub>i x\<^sub>j s)"
-  using pivot_valuation_id pivot_vars
-  by (auto simp add: tableau_valuated_def)
-
-end
-
-
-text\<open>Functions @{text pivot} and @{text update} can be used to
-implement the @{text check} function. In its context, @{text pivot}
-and @{text update} functions are always called together, so the
-following definition can be used: @{prop "pivot_and_update x\<^sub>i x\<^sub>j c s =
-update x\<^sub>i c (pivot x\<^sub>i x\<^sub>j s)"}. It is possible to make a more efficient
-implementation of @{text pivot_and_update} that does not use separate
-implementations of @{text pivot} and @{text update}. To allow this, a
-separate specification for @{text pivot_and_update} can be given. It can be
-easily shown that the @{text pivot_and_update} definition above
-satisfies this specification.\<close>
-
-
-locale PivotAndUpdate = EqForLVar +
-  fixes pivot_and_update :: "var \<Rightarrow> var \<Rightarrow> 'a::lrv \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
-  assumes  pivotandupdate_unsat_id:   "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      \<U> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<U> s"
-  assumes pivotandupdate_unsat_core_id: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      \<U>\<^sub>c (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<U>\<^sub>c s"
-  assumes  pivotandupdate_bounds_id:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      \<B>\<^sub>i (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<B>\<^sub>i s"
-  assumes  pivotandupdate_tableau_normalized:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      \<triangle> (\<T> (pivot_and_update x\<^sub>i x\<^sub>j c s))"
-  assumes  pivotandupdate_tableau_equiv:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      (v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> (pivot_and_update x\<^sub>i x\<^sub>j c s)"
-  assumes pivotandupdate_satisfies_tableau:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s \<longrightarrow> \<langle>\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)\<rangle> \<Turnstile>\<^sub>t \<T> s"
-  assumes  pivotandupdate_rvars:   "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      rvars (\<T> (pivot_and_update x\<^sub>i x\<^sub>j c s)) = rvars (\<T> s) - {x\<^sub>j} \<union> {x\<^sub>i}"
-  assumes  pivotandupdate_lvars:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      lvars (\<T> (pivot_and_update x\<^sub>i x\<^sub>j c s)) = lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j}"
-  assumes pivotandupdate_valuation_nonlhs:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
-      x \<notin> lvars (\<T> s) - {x\<^sub>i} \<union> {x\<^sub>j} \<longrightarrow> look (\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)) x = (if x = x\<^sub>i then Some c else look (\<V> s) x)"
-  assumes pivotandupdate_tableau_valuated:  "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow>
- \<nabla> (pivot_and_update x\<^sub>i x\<^sub>j c s)"
-begin
-
-lemma pivotandupdate_bounds_id':  assumes "\<triangle> (\<T> s)" "\<nabla> s" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
-  shows "\<B>\<I> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<B>\<I> s"
-    "\<B> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<B> s"
-    "\<I> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<I> s"
-  using pivotandupdate_bounds_id[OF assms]
-  by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
-
-lemma  pivotandupdate_valuation_xi: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i\<rbrakk> \<Longrightarrow> look (\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)) x\<^sub>i = Some c"
-  using pivotandupdate_valuation_nonlhs[of s x\<^sub>i x\<^sub>j x\<^sub>i c]
-  using rvars_of_lvar_rvars
-  by (auto simp add:  normalized_tableau_def)
-
-lemma  pivotandupdate_valuation_other_nolhs: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i; x \<notin> lvars (\<T> s); x \<noteq> x\<^sub>j\<rbrakk> \<Longrightarrow> look (\<V> (pivot_and_update x\<^sub>i x\<^sub>j c s)) x = look (\<V> s) x"
-  using pivotandupdate_valuation_nonlhs[of s x\<^sub>i x\<^sub>j x c]
-  by auto
-
-lemma pivotandupdate_nolhs:
-  "\<lbrakk> \<triangle> (\<T> s); \<nabla> s; x\<^sub>i \<in> lvars (\<T> s); x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i;
-     \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<B>\<^sub>l s x\<^sub>i = Some c \<or> \<B>\<^sub>u s x\<^sub>i = Some c\<rbrakk> \<Longrightarrow>
-     \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s (pivot_and_update x\<^sub>i x\<^sub>j c s)"
-  using pivotandupdate_satisfies_tableau[of s x\<^sub>i x\<^sub>j c]
-  using pivotandupdate_tableau_equiv[of s x\<^sub>i x\<^sub>j _ c]
-  using pivotandupdate_valuation_xi[of s x\<^sub>i x\<^sub>j c]
-  using pivotandupdate_valuation_other_nolhs[of s x\<^sub>i x\<^sub>j _ c]
-  using pivotandupdate_lvars[of s x\<^sub>i x\<^sub>j c]
-  by (auto simp add: curr_val_satisfies_no_lhs_def satisfies_bounds.simps satisfies_bounds_set.simps
-      bounds_consistent_geq_lb bounds_consistent_leq_ub map2fun_def pivotandupdate_bounds_id')
-
-lemma pivotandupdate_bounds_consistent:
-  assumes "\<triangle> (\<T> s)" "\<nabla> s" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
-  shows "\<diamond> (pivot_and_update x\<^sub>i x\<^sub>j c s) = \<diamond> s"
-  using assms pivotandupdate_bounds_id'[of s x\<^sub>i x\<^sub>j c]
-  by (simp add: bounds_consistent_def)
-end
-
-
-locale PivotUpdate = Pivot eq_idx_for_lvar pivot + Update update for
-  eq_idx_for_lvar :: "tableau \<Rightarrow> var \<Rightarrow> nat" and
-  pivot :: "var \<Rightarrow> var \<Rightarrow> ('i,'a::lrv) state \<Rightarrow> ('i,'a) state" and
-  update :: "var \<Rightarrow> 'a \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state"
-begin
-definition  pivot_and_update :: "var \<Rightarrow> var \<Rightarrow> 'a \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state" where [simp]:
-  "pivot_and_update x\<^sub>i x\<^sub>j c s \<equiv> update x\<^sub>i c (pivot x\<^sub>i x\<^sub>j s)"
-
-lemma pivot_update_precond:
-  assumes "\<triangle> (\<T> s)" "x\<^sub>i \<in> lvars (\<T> s)" "x\<^sub>j \<in> rvars_of_lvar (\<T> s) x\<^sub>i"
-  shows "\<triangle> (\<T> (pivot x\<^sub>i x\<^sub>j s))" "x\<^sub>i \<notin> lvars (\<T> (pivot x\<^sub>i x\<^sub>j s))"
-proof-
-  from assms have "x\<^sub>i \<noteq> x\<^sub>j"
-    using rvars_of_lvar_rvars[of x\<^sub>i "\<T> s"]
-    by (auto simp add: normalized_tableau_def)
-  then show "\<triangle> (\<T> (pivot x\<^sub>i x\<^sub>j s))" "x\<^sub>i \<notin> lvars (\<T> (pivot x\<^sub>i x\<^sub>j s))"
-    using assms
-    using pivot_tableau_normalized[of s x\<^sub>i x\<^sub>j]
-    using pivot_lvars[of s x\<^sub>i x\<^sub>j]
-    by auto
-qed
-
-end
-
-
-sublocale PivotUpdate < PivotAndUpdate eq_idx_for_lvar pivot_and_update
-  using pivot_update_precond
-  using update_unsat_id pivot_unsat_id pivot_unsat_core_id update_bounds_id pivot_bounds_id
-    update_tableau_id pivot_tableau_normalized pivot_tableau_equiv update_satisfies_tableau
-    pivot_valuation_id pivot_lvars pivot_rvars  update_valuation_nonlhs update_valuation_nonlhs
-    pivot_tableau_valuated update_tableau_valuated update_unsat_core_id
-  by (unfold_locales, auto)
 
 
 text \<open>Pivoting the tableau can be reduced to pivoting single equations,
@@ -2989,6 +3100,10 @@ locale SubstVar =
 
 vars_subst_var':
 "(vars lp - {x\<^sub>j}) - vars lp' \<subseteq>s vars (subst_var x\<^sub>j lp' lp) \<subseteq>s (vars lp - {x\<^sub>j}) \<union> vars lp'"and
+
+subst_no_effect: "x\<^sub>j \<notin> vars lp \<Longrightarrow> subst_var x\<^sub>j lp' lp = lp" and
+
+subst_with_effect: "x\<^sub>j \<in> vars lp \<Longrightarrow> x \<in> vars lp' - vars lp \<Longrightarrow> x \<in> vars (subst_var x\<^sub>j lp' lp)" and
 
 \<comment> \<open>Effect of @{text "subst_var x\<^sub>j lp' lp"} on @{text lp} value.\<close>
 
@@ -3270,13 +3385,51 @@ proof
   have "\<triangle> (\<T> (pivot' x\<^sub>i x\<^sub>j s))"
     unfolding normalized_tableau_def
   proof
-    show "lvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) \<inter>
-          rvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) = {}"
+    have "lvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) \<inter> rvars (\<T> (pivot' x\<^sub>i x\<^sub>j s)) = {}" (is ?g1)
       using \<open>\<triangle> (\<T> s)\<close>
       unfolding normalized_tableau_def
       using lvars_pivot rvars_pivot
       using \<open>x\<^sub>i \<noteq> x\<^sub>j\<close>
       by auto
+
+    moreover have "0 \<notin> rhs ` set (\<T> (pivot' x\<^sub>i x\<^sub>j s))" (is ?g2)
+    proof
+      let ?eq = "eq_for_lvar (\<T> s) x\<^sub>i" 
+      from eq_for_lvar[OF \<open>x\<^sub>i \<in> lvars (\<T> s)\<close>]
+      have "?eq \<in> set (\<T> s)" and var: "lhs ?eq = x\<^sub>i" by auto
+      have "lhs ?eq \<notin> rvars_eq ?eq" using \<open>\<triangle> (\<T> s)\<close> \<open>?eq \<in> set (\<T> s)\<close>
+        using \<open>x\<^sub>i \<notin> rvars_eq (\<T> s ! eq_idx_for_lvar (\<T> s) x\<^sub>i)\<close> eq_for_lvar_def var by auto
+      from vars_pivot_eq[OF \<open>x\<^sub>j \<in> rvars_eq ?eq\<close> this]
+      have vars_pivot: "lhs (pivot_eq ?eq x\<^sub>j) = x\<^sub>j" "rvars_eq (pivot_eq ?eq x\<^sub>j) = {lhs (eq_for_lvar (\<T> s) x\<^sub>i)} \<union> (rvars_eq (eq_for_lvar (\<T> s) x\<^sub>i) - {x\<^sub>j})" 
+        unfolding Let_def by auto
+      from vars_pivot(2) have rhs_pivot0: "rhs (pivot_eq ?eq x\<^sub>j) \<noteq> 0" using vars_zero by auto
+      assume "0 \<in> rhs ` set (\<T> (pivot' x\<^sub>i x\<^sub>j s))" 
+      from this[unfolded pivot'pivot[OF \<open>\<triangle> (\<T> s)\<close> \<open>x\<^sub>i \<in> lvars (\<T> s)\<close>] pivot_def]
+      have "0 \<in> rhs ` set (pivot_tableau x\<^sub>i x\<^sub>j (\<T> s))" by simp
+      from this[unfolded pivot_tableau_def Let_def var, unfolded var] rhs_pivot0
+      obtain e where "e \<in> set (\<T> s)" "lhs e \<noteq> x\<^sub>i" and rvars_eq: "rvars_eq (subst_var_eq x\<^sub>j (rhs (pivot_eq ?eq x\<^sub>j)) e) = {}" 
+        by (auto simp: vars_zero)
+      from rvars_eq[unfolded subst_var_eq_def]
+      have empty: "vars (subst_var x\<^sub>j (rhs (pivot_eq ?eq x\<^sub>j)) (rhs e)) = {}" by auto 
+      show False
+      proof (cases "x\<^sub>j \<in> vars (rhs e)")
+        case False
+        from empty[unfolded subst_no_effect[OF False]]
+        have "rvars_eq e = {}" by auto
+        hence "rhs e = 0" using zero_coeff_zero coeff_zero by auto
+        with \<open>e \<in> set (\<T> s)\<close> \<open>\<triangle> (\<T> s)\<close> show False unfolding normalized_tableau_def by auto
+      next
+        case True
+        from \<open>e \<in> set (\<T> s)\<close> have "rvars_eq e \<subseteq> rvars (\<T> s)" unfolding rvars_def by auto
+        hence "x\<^sub>i \<in> vars (rhs (pivot_eq ?eq x\<^sub>j)) - rvars_eq e" 
+          unfolding vars_pivot(2) var 
+          using `\<triangle> (\<T> s)`[unfolded normalized_tableau_def] \<open>x\<^sub>i \<in> lvars (\<T> s)\<close> by auto
+        from subst_with_effect[OF True this] rvars_eq
+        show ?thesis by (simp add: subst_var_eq_def)
+      qed
+    qed
+
+    ultimately show "?g1 \<and> ?g2" ..
 
     show "distinct (map lhs (\<T> (pivot' x\<^sub>i x\<^sub>j s)))"
       using map_parametrize_idx[of lhs ?t]
@@ -6211,6 +6364,21 @@ next
     using valuate_scaleRat[of "coeff lp x\<^sub>j" lp' v] valuate_scaleRat[of "coeff lp x\<^sub>j" "Var x\<^sub>j" v]
     using valuate_Var[of x\<^sub>j v]
     by auto
+next
+  fix x\<^sub>j lp lp'
+  assume "x\<^sub>j \<notin> vars lp" 
+  hence 0: "coeff lp x\<^sub>j = 0" using coeff_zero by blast
+  show "subst_var x\<^sub>j lp' lp = lp" 
+    unfolding subst_var_def 0 by simp
+next
+  fix x\<^sub>j lp x lp'
+  assume "x\<^sub>j \<in> vars lp" "x \<in> vars lp' - vars lp" 
+  hence x: "x \<noteq> x\<^sub>j" and 0: "coeff lp x = 0" and no0: "coeff lp x\<^sub>j \<noteq> 0" "coeff lp' x \<noteq> 0" 
+    using coeff_zero by blast+
+  from x have 00: "coeff (Var x\<^sub>j) x = 0" using coeff_Var2 by auto
+  show "x \<in> vars (subst_var x\<^sub>j lp' lp)" 
+    unfolding subst_var_def coeff_zero[symmetric]
+    by (simp add: 0 00 no0)
 qed (simp_all add: subst_var_eq_code_def)
 
 (* -------------------------------------------------------------------------- *)
@@ -6265,6 +6433,11 @@ global_interpretation PivotUpdateMinVarsDefault: PivotUpdateMinVars eq_idx_for_l
     "PivotUpdateMinVars.check' eq_idx_for_lvar min_rvar_incdec_eq pivot_and_update_code = check'_code"
   by (unfold_locales) (simp_all add: check_code_def check'_code_def)
 
+sublocale Update < AssertBoundNoLhs assert_bound
+proof (rule update_to_assert_bound_no_lhs)
+  show "Pivot eq_idx_for_lvar pivot_code" ..
+qed
+
 definition "assert_code = Assert'.assert assert_bound_code check_code"
 
 global_interpretation Assert'Default: Assert' assert_bound_code check_code
@@ -6307,6 +6480,11 @@ primrec
   "qdelta_constraint_to_atom (LEQ_ns l r) v = (if (is_monom l) then (monom_to_atom (LEQ_ns l r)) else (Leq v r))"
 | "qdelta_constraint_to_atom (GEQ_ns l r) v = (if (is_monom l) then (monom_to_atom (GEQ_ns l r)) else (Geq v r))"
 
+primrec
+  qdelta_constraint_to_atom':: "QDelta ns_constraint \<Rightarrow> var \<Rightarrow> QDelta atom" where
+  "qdelta_constraint_to_atom' (LEQ_ns l r) v = (Leq v r)"
+| "qdelta_constraint_to_atom' (GEQ_ns l r) v = (Geq v r)"
+
 fun linear_poly_to_eq:: "linear_poly \<Rightarrow> var \<Rightarrow> eq" where
   "linear_poly_to_eq p v = (v, p)"
 
@@ -6315,6 +6493,17 @@ datatype 'i istate = IState
   (Tableau: tableau)
   (Atoms: "('i,QDelta) i_atom list")
   (Poly_Mapping: "linear_poly \<rightharpoonup> var")
+
+primrec zero_satisfies :: "'a :: lrv ns_constraint \<Rightarrow> bool" where
+  "zero_satisfies (LEQ_ns l r) \<longleftrightarrow> 0 \<le> r"
+| "zero_satisfies (GEQ_ns l r) \<longleftrightarrow> 0 \<ge> r"
+
+ 
+lemma zero_satisfies: "poly c = 0 \<Longrightarrow> zero_satisfies c \<Longrightarrow> v \<Turnstile>\<^sub>n\<^sub>s c" 
+  by (cases c, auto simp: valuate_zero)
+
+lemma not_zero_satisfies: "poly c = 0 \<Longrightarrow> \<not> zero_satisfies c \<Longrightarrow> \<not> v \<Turnstile>\<^sub>n\<^sub>s c" 
+  by (cases c, auto simp: valuate_zero)
 
 fun
   preprocess' :: "('i,QDelta) i_ns_constraint list \<Rightarrow> var \<Rightarrow> 'i istate" where
@@ -6326,11 +6515,33 @@ fun
                          m' = Poly_Mapping s' in
                          if is_monom_h then IState v' t'
                            ((i,qdelta_constraint_to_atom h v') # a') m'
+                         else if p = 0 then
+                           if zero_satisfies h then IState v' t' a' m' else 
+                              let v'' = 0 in IState (max v' 1) t' ((i,Geq v'' 1) # (i,Leq v'' 0) # a') m'
                          else (case m' p of Some v \<Rightarrow>
                             IState v' t' ((i,qdelta_constraint_to_atom h v) # a') m'
                           | None \<Rightarrow> IState (v' + 1) (linear_poly_to_eq p v' # t')
                            ((i,qdelta_constraint_to_atom h v') # a') (m' (p \<mapsto> v')))
 )"
+
+lemma preprocess'_simps: "preprocess' ((i,h) # t) v = (let s' = preprocess' t v; p = poly h; is_monom_h = is_monom p;
+                         v' = FirstFreshVariable s';
+                         t' = Tableau s';
+                         a' = Atoms s';
+                         m' = Poly_Mapping s' in
+                         if is_monom_h then IState v' t'
+                           ((i,monom_to_atom h) # a') m'
+                         else if p = 0 then
+                           if zero_satisfies h then IState v' t' a' m' else 
+                              IState (if v' = 0 then 1 else v') t' ((i,Geq 0 1) # (i,Leq 0 0) # a') m'
+                         else (case m' p of Some v \<Rightarrow>
+                            IState v' t' ((i,qdelta_constraint_to_atom' h v) # a') m'
+                          | None \<Rightarrow> IState (v' + 1) (linear_poly_to_eq p v' # t')
+                           ((i,qdelta_constraint_to_atom' h v') # a') (m' (p \<mapsto> v')))
+    )" by (cases h, auto simp add: Let_def split: option.splits)
+
+lemmas preprocess'_code = preprocess'.simps(1) preprocess'_simps
+declare preprocess'_code[code]
 
 abbreviation max_var:: "QDelta ns_constraint \<Rightarrow> var" where
   "max_var C \<equiv> Abstract_Linear_Poly.max_var (poly C)"
@@ -6372,6 +6583,10 @@ lemma vars_tableau_vars_constraints:
 lemma lvars_tableau_ge_start:
   "\<forall> var \<in> lvars (Tableau (preprocess' cs start)). var \<ge> start"
   by (induct cs start rule: preprocess'.induct) (auto simp add: Let_def lvars_def fresh_var_monoinc split: option.splits)
+
+lemma rhs_no_zero_tableau_start:
+  "0 \<notin> rhs ` set (Tableau (preprocess' cs start))"
+  by (induct cs start rule: preprocess'.induct, auto simp add: Let_def rvars_def fresh_var_monoinc split: option.splits)
 
 lemma first_fresh_variable_not_in_lvars:
   "\<forall>var \<in> lvars (Tableau (preprocess' cs start)). FirstFreshVariable (preprocess' cs start) > var"
@@ -6428,14 +6643,19 @@ lemma preprocess'_Tableau_Poly_Mapping_Some': "(Poly_Mapping (preprocess' cs sta
   \<Longrightarrow> \<exists> h. poly h = p \<and> \<not> is_monom (poly h) \<and> qdelta_constraint_to_atom h v \<in> flat (set (Atoms (preprocess' cs start)))"
   by (induct cs start rule: preprocess'.induct, auto simp: Let_def split: option.splits if_splits)
 
+lemma not_one_le_zero_qdelta: "\<not> (1 \<le> (0 :: QDelta))" by code_simp
+
+lemma one_zero_contra[dest,consumes 2]: "1 \<le> x \<Longrightarrow> (x :: QDelta) \<le> 0 \<Longrightarrow> False" 
+  using order.trans[of 1 x 0] not_one_le_zero_qdelta by simp
+
 lemma i_preprocess'_sat:
   assumes "(I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set (Atoms (preprocess' s start))" "v \<Turnstile>\<^sub>t Tableau (preprocess' s start)"
   shows "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set s"
   using assms
   by (induct s start rule: preprocess'.induct)
     (auto simp add: Let_def satisfies_atom_set_def satisfies_tableau_def qdelta_constraint_to_atom_monom
-      sat_atom_sat_eq_sat_constraint_non_monom
-      split: if_splits option.splits dest!: preprocess'_Tableau_Poly_Mapping_Some)
+      sat_atom_sat_eq_sat_constraint_non_monom 
+      split: if_splits option.splits dest!: preprocess'_Tableau_Poly_Mapping_Some zero_satisfies)
 
 lemma preprocess'_sat:
   assumes "v \<Turnstile>\<^sub>a\<^sub>s flat (set (Atoms (preprocess' s start)))" "v \<Turnstile>\<^sub>t Tableau (preprocess' s start)"
@@ -6465,8 +6685,9 @@ proof(induct cs arbitrary: a)
       by (auto simp add: Let_def split: option.splits)
   next
     case False
-    consider (monom) "is_monom (poly h)" | (normal) "\<not> is_monom (poly h)" "(Poly_Mapping ?s) (poly h) = None"
-      | (old) var where "\<not> is_monom (poly h)" "(Poly_Mapping ?s) (poly h) = Some var"
+    consider (monom) "is_monom (poly h)" | (normal) "\<not> is_monom (poly h)" "poly h \<noteq> 0" "(Poly_Mapping ?s) (poly h) = None"
+      | (old) var where "\<not> is_monom (poly h)" "poly h \<noteq> 0" "(Poly_Mapping ?s) (poly h) = Some var"
+      | (zero) "\<not> is_monom (poly h)" "poly h = 0" 
       by auto
     then show ?thesis
     proof cases
@@ -6486,7 +6707,7 @@ proof(induct cs arbitrary: a)
         by (cases a; cases h) (auto simp add: Let_def )
     next
       case (old var)
-      from preprocess'_Tableau_Poly_Mapping_Some'[OF old(2)]
+      from preprocess'_Tableau_Poly_Mapping_Some'[OF old(3)]
       obtain h' where "poly h' = poly h" "qdelta_constraint_to_atom h' var \<in> flat (set (Atoms ?s))"
         by blast
       from Cons(1)[OF this(2)] Cons(3) this(1) old(1)
@@ -6495,6 +6716,9 @@ proof(induct cs arbitrary: a)
         using False old Cons(2) hh by (auto simp: Let_def)
       then have a: "atom_var a = var" using old by (cases a; cases h; auto simp: Let_def)
       show ?thesis unfolding a hh by (simp add: old Let_def var)
+    next
+      case zero
+      from False show ?thesis using Cons(2) hh zero by (auto simp: Let_def split: if_splits)
     qed
   qed
 qed simp
@@ -6548,67 +6772,93 @@ next
     case False
     then have id: "is_monom (poly h) = False" by simp
     let ?s = "preprocess' t start"
-    let ?look = "(Poly_Mapping ?s) (poly h)"
+    let ?x = "FirstFreshVariable ?s"
     show ?thesis
-    proof (cases ?look)
-      case None
-      let ?x = "FirstFreshVariable ?s"
-      let ?y = "poly h \<lbrace> v'\<rbrace>"
-      let ?v' = "v'(?x:=?y)"
-      show ?thesis unfolding preprocess'.simps hh Let_def id if_False istate.simps istate.sel None option.simps
-      proof (rule exI[of _ ?v'], intro conjI satisifies_atom_restrict_to_Cons satisfies_tableau_Cons)
-        show vars': "(\<forall>var\<in>V. v var = ?v' var)"
-          using \<open>(\<forall>var\<in>V. v var = v' var)\<close>
-          using fresh_var_monoinc[of start t]
-          using Cons(4)
-          by auto
-        {
-          assume "i \<in> I"
-          from vh_v'h i[OF this] False
-          show "?v' \<Turnstile>\<^sub>a qdelta_constraint_to_atom h (FirstFreshVariable (preprocess' t start))"
-            by (cases h, auto)
-        }
-        let ?atoms = "restrict_to I (set (Atoms (preprocess' t start)))"
-        show "?v' \<Turnstile>\<^sub>a\<^sub>s ?atoms"
-          unfolding satisfies_atom_set_def
-        proof
-          fix a
-          assume "a \<in> ?atoms"
-          then have "v' \<Turnstile>\<^sub>a a"
-            using \<open>v' \<Turnstile>\<^sub>a\<^sub>s ?atoms\<close> hh by (force simp add: satisfies_atom_set_def)
-          then show "?v' \<Turnstile>\<^sub>a a"
-            using \<open>a \<in> ?atoms\<close> atom_var_first[of a t start]
+    proof (cases "poly h = 0")
+      case zero: False
+      hence id': "(poly h = 0) = False" by simp
+      let ?look = "(Poly_Mapping ?s) (poly h)"
+      show ?thesis
+      proof (cases ?look)
+        case None
+        let ?y = "poly h \<lbrace> v'\<rbrace>"
+        let ?v' = "v'(?x:=?y)"
+        show ?thesis unfolding preprocess'.simps hh Let_def id id' if_False istate.simps istate.sel None option.simps
+        proof (rule exI[of _ ?v'], intro conjI satisifies_atom_restrict_to_Cons satisfies_tableau_Cons)
+          show vars': "(\<forall>var\<in>V. v var = ?v' var)"
+            using \<open>(\<forall>var\<in>V. v var = v' var)\<close>
+            using fresh_var_monoinc[of start t]
+            using Cons(4)
+            by auto
+          {
+            assume "i \<in> I"
+            from vh_v'h i[OF this] False
+            show "?v' \<Turnstile>\<^sub>a qdelta_constraint_to_atom h (FirstFreshVariable (preprocess' t start))"
+              by (cases h, auto)
+          }
+          let ?atoms = "restrict_to I (set (Atoms (preprocess' t start)))"
+          show "?v' \<Turnstile>\<^sub>a\<^sub>s ?atoms"
+            unfolding satisfies_atom_set_def
+          proof
+            fix a
+            assume "a \<in> ?atoms"
+            then have "v' \<Turnstile>\<^sub>a a"
+              using \<open>v' \<Turnstile>\<^sub>a\<^sub>s ?atoms\<close> hh by (force simp add: satisfies_atom_set_def)
+            then show "?v' \<Turnstile>\<^sub>a a"
+              using \<open>a \<in> ?atoms\<close> atom_var_first[of a t start]
+              using Cons(3) Cons(4)
+              by (cases a) auto
+          qed
+          show "?v' \<Turnstile>\<^sub>e linear_poly_to_eq (poly h) (FirstFreshVariable (preprocess' t start))"
             using Cons(3) Cons(4)
-            by (cases a) auto
+            using valuate_depend[of "poly h" v' "v'(FirstFreshVariable (preprocess' t start) := (poly h) \<lbrace> v' \<rbrace>)"]
+            using fresh_var_monoinc[of start t] hh
+            by (cases h) (force simp add: satisfies_eq_def)+
+          have "FirstFreshVariable (preprocess' t start) \<notin> tvars (Tableau (preprocess' t start))"
+            using first_fresh_variable_not_in_lvars[of t start]
+            using Cons(3) Cons(4)
+            using vars_tableau_vars_constraints[of t start]
+            using fresh_var_monoinc[of start t]
+            by force
+          then show "?v' \<Turnstile>\<^sub>t Tableau (preprocess' t start)"
+            using \<open>v' \<Turnstile>\<^sub>t Tableau (preprocess' t start)\<close>
+            using satisfies_tableau_satisfies_tableau[of v' "Tableau (preprocess' t start)" ?v']
+            by auto
         qed
-        show "?v' \<Turnstile>\<^sub>e linear_poly_to_eq (poly h) (FirstFreshVariable (preprocess' t start))"
-          using Cons(3) Cons(4)
-          using valuate_depend[of "poly h" v' "v'(FirstFreshVariable (preprocess' t start) := (poly h) \<lbrace> v' \<rbrace>)"]
-          using fresh_var_monoinc[of start t] hh
-          by (cases h) (force simp add: satisfies_eq_def)+
-        have "FirstFreshVariable (preprocess' t start) \<notin> tvars (Tableau (preprocess' t start))"
-          using first_fresh_variable_not_in_lvars[of t start]
-          using Cons(3) Cons(4)
-          using vars_tableau_vars_constraints[of t start]
-          using fresh_var_monoinc[of start t]
-          by force
-        then show "?v' \<Turnstile>\<^sub>t Tableau (preprocess' t start)"
-          using \<open>v' \<Turnstile>\<^sub>t Tableau (preprocess' t start)\<close>
-          using satisfies_tableau_satisfies_tableau[of v' "Tableau (preprocess' t start)" ?v']
-          by auto
+      next
+        case (Some var)
+        from preprocess'_Tableau_Poly_Mapping_Some[OF Some]
+        have "linear_poly_to_eq (poly h) var \<in> set (Tableau ?s)" by auto
+        with v'_t[unfolded satisfies_tableau_def]
+        have v'_h_var: "v' \<Turnstile>\<^sub>e linear_poly_to_eq (poly h) var" by auto
+        show ?thesis unfolding preprocess'.simps hh Let_def id id' if_False istate.simps istate.sel Some option.simps
+        proof (intro exI[of _ v'] conjI var v'_t satisifies_atom_restrict_to_Cons satisfies_tableau_Cons v'_as)
+          assume "i \<in> I"
+          from vh_v'h i[OF this] False v'_h_var
+          show "v' \<Turnstile>\<^sub>a qdelta_constraint_to_atom h var"
+            by (cases h, auto simp: satisfies_eq_iff)
+        qed
       qed
     next
-      case (Some var)
-      from preprocess'_Tableau_Poly_Mapping_Some[OF Some]
-      have "linear_poly_to_eq (poly h) var \<in> set (Tableau ?s)" by auto
-      with v'_t[unfolded satisfies_tableau_def]
-      have v'_h_var: "v' \<Turnstile>\<^sub>e linear_poly_to_eq (poly h) var" by auto
-      show ?thesis unfolding preprocess'.simps hh Let_def id if_False istate.simps istate.sel Some option.simps
-      proof (intro exI[of _ v'] conjI var v'_t satisifies_atom_restrict_to_Cons satisfies_tableau_Cons v'_as)
-        assume "i \<in> I"
-        from vh_v'h i[OF this] False v'_h_var
-        show "v' \<Turnstile>\<^sub>a qdelta_constraint_to_atom h var"
-          by (cases h, auto simp: satisfies_eq_iff)
+      case zero: True
+      hence id': "(poly h = 0) = True" by simp
+      show ?thesis
+      proof (cases "zero_satisfies h") 
+        case True
+        hence id'': "zero_satisfies h = True" by simp
+        show ?thesis
+          unfolding hh preprocess'.simps Let_def id id' id'' if_True if_False istate.simps istate.sel
+          by (intro exI[of _ v'] conjI v'_t var v'_as)
+      next
+        case False
+        hence id'': "zero_satisfies h = False" by simp
+        { 
+          assume "i \<in> I"
+          from i[OF this] not_zero_satisfies[OF zero False] have False by simp
+        } note no_I = this
+        show ?thesis
+          unfolding hh preprocess'.simps Let_def id id' id'' if_True if_False istate.simps istate.sel
+          by (intro exI[of _ v'] conjI v'_t var satisifies_atom_restrict_to_Cons v'_as, insert no_I, auto)
       qed
     qed
   qed
@@ -6802,7 +7052,8 @@ proof
     using lvars_tableau_ge_start[of cs "start_fresh_variable cs"]
     using vars_tableau_vars_constraints[of cs "start_fresh_variable cs"]
     using start_fresh_variable_fresh[of cs] part1
-    by (force simp add: Let_def normalized_tableau_def preprocess_part_1_def)
+    using rhs_no_zero_tableau_start[of cs "start_fresh_variable cs"]
+    by (force simp: Let_def normalized_tableau_def preprocess_part_1_def)
   note part_2 = preprocess_part_2[OF part_2 norm]
   show "\<triangle> t'" by fact
   have unsat: "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" for v using part1 i_preprocess'_sat[of I]
@@ -6810,7 +7061,7 @@ proof
   with part_2(2,3) show "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t' \<Longrightarrow> (I,\<langle>trans_v v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" by auto
   from part1[unfolded preprocess_part_1_def Let_def] obtain var where
     as: "as = Atoms (preprocess' cs var)" by auto
-  show "fst ` set cs = fst ` set as" unfolding as
+  show "fst ` set as \<subseteq> fst ` set cs" unfolding as
     by (induct cs var rule: preprocess'.induct, auto simp: Let_def split: option.splits)
   fix v
   assume "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs"
@@ -7331,4 +7582,5 @@ lemma
     (5, GT (lp_monom 3 0) 7)]
     of Sat _ \<Rightarrow> False | Unsat I \<Rightarrow> set I = {1,3,4}" \<comment> \<open>Constraints 1,3,4 are unsat core\<close>
   by eval
+
 end

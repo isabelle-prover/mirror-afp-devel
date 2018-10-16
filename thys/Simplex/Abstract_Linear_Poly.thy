@@ -505,6 +505,9 @@ lemma monom_var_in_vars:
   using vars_zero
   by (auto simp add: monom_var_def max_var_def is_monom_vars_not_empty finite_vars is_monom_def)
 
+lemma zero_is_no_monom[simp]: "\<not> is_monom 0"
+  using is_monom_vars_not_empty vars_zero by blast
+
 lemma is_monom_monom_coeff_not_zero:
   "is_monom l \<Longrightarrow> monom_coeff l \<noteq> 0"
   by (simp add: coeff_zero monom_var_in_vars monom_coeff_def)
