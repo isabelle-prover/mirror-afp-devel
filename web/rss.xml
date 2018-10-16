@@ -9,7 +9,32 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>28 Sep 2018 00:00:00 +0000</pubDate>
+    <pubDate>12 Oct 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Upper Bounding Diameters of State Spaces of Factored Transition Systems</title>
+              <link>https://www.isa-afp.org/entries/Factored_Transition_System_Bounding.html</link>
+       <guid>https://www.isa-afp.org/entries/Factored_Transition_System_Bounding.html</guid>
+       <dc:creator> Friedrich Kurz, Mohammad Abdulaziz       </dc:creator>
+       <pubDate>12 Oct 2018 00:00:00 +0000</pubDate>
+       <description>
+A completeness threshold is required to guarantee the completeness of
+planning as satisfiability, and bounded model checking of safety
+properties. One valid completeness threshold is the diameter of the
+underlying transition system. The diameter is the maximum element in
+the set of lengths of all shortest paths between pairs of states. The
+diameter is not calculated exactly in our setting, where the
+transition system is succinctly described using a (propositionally)
+factored representation. Rather, an upper bound on the diameter is
+calculated compositionally, by bounding the diameters of small
+abstract subsystems, and then composing those.  We port a HOL4
+formalisation of a compositional algorithm for computing a relatively
+tight upper bound on the system diameter. This compositional algorithm
+exploits acyclicity in the state space to achieve compositionality,
+and it was introduced by Abdulaziz et. al. The formalisation that we
+port is described as a part of another paper by Abdulaziz et. al. As a
+part of this porting we developed a libray about transition systems,
+which shall be of use in future related mechanisation efforts.</description>
+    </item>
     <item>
        <title>The Transcendence of π</title>
               <link>https://www.isa-afp.org/entries/Pi_Transcendental.html</link>
@@ -572,20 +597,6 @@ range are valid, i.e. guarantee that insertion and deletion preserve
 weight-balance. Instead of a general theorem we provide parameterized
 proofs of preservation of the invariant that work for many (all?)
 valid parameters.</description>
-    </item>
-    <item>
-       <title>CakeML</title>
-              <link>https://www.isa-afp.org/entries/CakeML.html</link>
-       <guid>https://www.isa-afp.org/entries/CakeML.html</guid>
-       <dc:creator> Lars Hupel, Yu Zhang       </dc:creator>
-       <pubDate>12 Mar 2018 00:00:00 +0000</pubDate>
-       <description>
-CakeML is a functional programming language with a proven-correct
-compiler and runtime system. This entry contains an unofficial version
-of the CakeML semantics that has been exported from the Lem
-specifications to Isabelle. Additionally, there are some hand-written
-theory files that adapt the exported code to Isabelle and port proofs
-from the HOL4 formalization, e.g. termination and equivalence proofs.</description>
     </item>
   </channel>
 </rss>

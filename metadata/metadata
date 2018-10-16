@@ -7365,3 +7365,29 @@ abstract =
   the right way.</p><p>The formalization follows the recent survey article by
   Eder and Faug&egrave;re.</p>
 
+[Factored_Transition_System_Bounding]
+title = Upper Bounding Diameters of State Spaces of Factored Transition Systems
+author = Friedrich Kurz <>, Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>
+topic = Computer Science/Automata and Formal Languages, Mathematics/Graph Theory
+date = 2018-10-12
+notify = friedrich.kurz@tum.de, mohammad.abdulaziz@in.tum.de
+abstract = 
+  A completeness threshold is required to guarantee the completeness of
+  planning as satisfiability, and bounded model checking of safety
+  properties. One valid completeness threshold is the diameter of the
+  underlying transition system. The diameter is the maximum element in
+  the set of lengths of all shortest paths between pairs of states. The
+  diameter is not calculated exactly in our setting, where the
+  transition system is succinctly described using a (propositionally)
+  factored representation. Rather, an upper bound on the diameter is
+  calculated compositionally, by bounding the diameters of small
+  abstract subsystems, and then composing those.  We port a HOL4
+  formalisation of a compositional algorithm for computing a relatively
+  tight upper bound on the system diameter. This compositional algorithm
+  exploits acyclicity in the state space to achieve compositionality,
+  and it was introduced by Abdulaziz et. al. The formalisation that we
+  port is described as a part of another paper by Abdulaziz et. al. As a
+  part of this porting we developed a libray about transition systems,
+  which shall be of use in future related mechanisation efforts.
+
+
