@@ -823,9 +823,7 @@ definition
   "invim f A B = {x. x\<in>A \<and> f x \<in> B}"
 
 lemma invim: "\<lbrakk> f:A \<rightarrow> B; B1 \<subseteq> B \<rbrakk> \<Longrightarrow> invim f A B1 \<subseteq> A"
- apply (simp add:invim_def)
- apply auto
- done
+  by (auto simp add:invim_def)
 
 lemma setim_cmpfn: "\<lbrakk> f:A \<rightarrow> B; g:B \<rightarrow> C; A1 \<subseteq> A \<rbrakk> \<Longrightarrow> 
                (compose A g f)` A1 = g`(f` A1)"

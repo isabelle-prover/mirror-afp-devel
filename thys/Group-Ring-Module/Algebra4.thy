@@ -4853,7 +4853,7 @@ done
 lemma invim_of_ideal:"\<lbrakk>Ring R; ideal R I; ideal (qring R I) J \<rbrakk> \<Longrightarrow>
   ideal R (rInvim R (qring R I) (pj R I) J)"
 apply (rule Ring.ideal_condition, assumption)
- apply (simp add:rInvim_def) apply (rule subsetI) apply (simp add:CollectI)
+ apply (simp add:rInvim_def) 
 apply (subgoal_tac "\<zero>\<^bsub>R\<^esub> \<in> rInvim R (qring R I) (pj R I) J")
 apply (simp add:nonempty)
 apply (simp add:rInvim_def)
