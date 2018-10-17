@@ -5877,7 +5877,8 @@ next
       and min_lvar: "min_lvar_not_in_bounds s' = Some x\<^sub>i"
       and dir: "dir = Positive \<or> dir = Negative"
       and lt: "\<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s'\<rangle> x\<^sub>i) (LB dir s' x\<^sub>i)"
-
+      and norm: "\<triangle> (\<T> s')" 
+    let ?eq = "eq_for_lvar (\<T> s') x\<^sub>i" 
     have unsat_core: "set (the (\<U>\<^sub>c (set_unsat I s'))) = set I"
       by auto
 
@@ -5889,27 +5890,123 @@ next
 
     from min_rvar_incdec_eq_None[OF min_rvar] dir
     have Is': "LI dir s' (lhs (eq_for_lvar (\<T> s') x\<^sub>i)) \<in> indices_state s' \<Longrightarrow> set I \<subseteq> indices_state s'" and
-      "LI dir s' (lhs (eq_for_lvar (\<T> s') x\<^sub>i)) \<in> set I" by auto
-    note this(2) also have id: "lhs (eq_for_lvar (\<T> s') x\<^sub>i) = x\<^sub>i"
+      reasable: "\<And> x. x \<in> rvars_eq ?eq \<Longrightarrow> \<not> reasable_var dir x ?eq s'" and
+      setI: "set I =
+        {LI dir s' (lhs ?eq)} \<union>
+        {LI dir s' x |x. x \<in> rvars_eq ?eq \<and> coeff (rhs ?eq) x < 0} \<union>
+        {UI dir s' x |x. x \<in> rvars_eq ?eq \<and> 0 < coeff (rhs ?eq) x}" (is "_ = ?L \<union> ?R1 \<union> ?R2")  by auto
+    note setI also have id: "lhs ?eq = x\<^sub>i"
       by (simp add: EqForLVar.eq_for_lvar EqForLVar_axioms min_lvar min_lvar_not_in_bounds_lvars)
-    finally have iI: "i \<in> set I" unfolding LI .
+    finally have iI: "i \<in> set I" unfolding LI by auto
+    note setI = setI[unfolded id]
     have "LI dir s' x\<^sub>i \<in> indices_state s'" using LBI LI
       unfolding indices_state_def using dir by force
     from Is'[unfolded id, OF this]
     have Is': "set I \<subseteq> indices_state s'" .
 
-    let ?eq = "eq_for_lvar (\<T> s') x\<^sub>i"
-
     have "x\<^sub>i \<in> lvars (\<T> s')"
       using min_lvar
       by (simp add: min_lvar_not_in_bounds_lvars)
-    then have *: "?eq \<in> set (\<T> s')" "lhs ?eq = x\<^sub>i"
+    then have **: "?eq \<in> set (\<T> s')" "lhs ?eq = x\<^sub>i"
       by (auto simp add: eq_for_lvar)
 
     have Is': "set I \<subseteq> indices_state (set_unsat I s')"
       using Is' * unfolding indices_state_def by auto
 
-    show "\<U> (set_unsat I s') \<longrightarrow> unsat_state_core (set_unsat I s')"
+    {
+      assume dist: "distinct_indices_state s'" 
+      {
+        fix x c i
+        assume c: "look (\<B>\<^sub>i\<^sub>l s') x = Some (i,c) \<or> look (\<B>\<^sub>i\<^sub>u s') x = Some (i,c)" and i: "i \<in> ?R1 \<union> ?R2" 
+        from i obtain y where y: "y \<in> rvars_eq ?eq" and
+          coeff: "coeff (rhs ?eq) y < 0 \<and> i = LI dir s' y \<or> coeff (rhs ?eq) y > 0 \<and> i = UI dir s' y" 
+          by auto
+        {
+          assume coeff: "coeff (rhs ?eq) y < 0" and i: "i = LI dir s' y" 
+          from reasable[OF y] coeff have not_gt: "\<not> (\<rhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s'\<rangle> y) (LB dir s' y))" by auto
+          then obtain d where LB: "LB dir s' y = Some d" using dir by (cases "LB dir s' y", auto simp: bound_compare_defs)
+          with not_gt have le: "le (lt dir) (\<langle>\<V> s'\<rangle> y) d" using dir by (auto simp: bound_compare_defs)
+          from LB have "look (LBI dir s') y = Some (i, d)" unfolding i using dir
+            by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
+          with c dist[unfolded distinct_indices_state_def, rule_format, of x i c y d] dir
+          have "y = x" by auto
+        }
+        moreover
+        {
+          assume coeff: "coeff (rhs ?eq) y > 0" and i: "i = UI dir s' y" 
+          from reasable[OF y] coeff have not_gt: "\<not> (\<lhd>\<^sub>u\<^sub>b (lt dir) (\<langle>\<V> s'\<rangle> y) (UB dir s' y))" by auto
+          then obtain d where UB: "UB dir s' y = Some d" using dir by (cases "UB dir s' y", auto simp: bound_compare_defs)
+          with not_gt have le: "le (lt dir) d (\<langle>\<V> s'\<rangle> y)" using dir by (auto simp: bound_compare_defs)
+          from UB have "look (UBI dir s') y = Some (i, d)" unfolding i using dir
+            by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
+          with c dist[unfolded distinct_indices_state_def, rule_format, of x i c y d] dir
+          have "y = x" by auto
+        }
+        ultimately have "y = x" using coeff by blast
+        with y have "x \<in> rvars_eq ?eq" "x \<in> rvars (\<T> s')" using **(1) unfolding rvars_def by force+       
+      } note x_rvars = this
+      have "\<langle>\<V> s'\<rangle> \<Turnstile>\<^sub>t \<T> s'" and b: "\<langle>\<V> s'\<rangle> \<Turnstile>\<^sub>b \<B> s' \<parallel> - lvars (\<T> s')" 
+        using nolhs[unfolded curr_val_satisfies_no_lhs_def] by auto
+      from norm[unfolded normalized_tableau_def]
+      have lvars_rvars: "lvars (\<T> s') \<inter> rvars (\<T> s') = {}" by auto
+      hence in_bnds: "x \<in> rvars (\<T> s') \<Longrightarrow> in_bounds x \<langle>\<V> s'\<rangle> (\<B> s')" for x
+        by (intro b[unfolded satisfies_bounds_set.simps, rule_format, of x], auto)
+
+      have R1R2: "(?R1 \<union> ?R2, \<langle>\<V> s'\<rangle>) \<Turnstile>\<^sub>i\<^sub>s s'" 
+        unfolding satisfies_state_index.simps
+      proof (intro conjI)
+        show "\<langle>\<V> s'\<rangle> \<Turnstile>\<^sub>t \<T> s'" by fact
+        show "(?R1 \<union> ?R2, \<langle>\<V> s'\<rangle>) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s'" 
+          unfolding satisfies_bounds_index.simps 
+        proof (intro conjI impI allI)
+          fix x c
+          assume c: "\<B>\<^sub>l s' x = Some c" and i: "\<I>\<^sub>l s' x \<in> ?R1 \<union> ?R2" 
+          from c have ci: "look (\<B>\<^sub>i\<^sub>l s') x = Some (\<I>\<^sub>l s' x, c)" unfolding boundsl_def indexl_def by auto
+          from x_rvars[OF _ i] ci have "x \<in> rvars (\<T> s')" by blast
+          from in_bnds[OF this] c
+          show "c \<le> \<langle>\<V> s'\<rangle> x" by auto
+        next
+          fix x c
+          assume c: "\<B>\<^sub>u s' x = Some c" and i: "\<I>\<^sub>u s' x \<in> ?R1 \<union> ?R2" 
+          from c have ci: "look (\<B>\<^sub>i\<^sub>u s') x = Some (\<I>\<^sub>u s' x, c)" unfolding boundsu_def indexu_def by auto
+          from x_rvars[OF _ i] ci have "x \<in> rvars (\<T> s')" by blast
+          from in_bnds[OF this] c
+          show "\<langle>\<V> s'\<rangle> x \<le> c" by auto
+        qed
+      qed
+
+      have id1: "set (the (\<U>\<^sub>c (set_unsat I s'))) = set I" 
+        "\<And> x. x \<Turnstile>\<^sub>i\<^sub>s set_unsat I s' \<longleftrightarrow> x \<Turnstile>\<^sub>i\<^sub>s s'" 
+        by (auto simp: satisfies_state_index.simps boundsl_def boundsu_def indexl_def indexu_def)
+
+      have "False \<Longrightarrow> subsets_sat_core (set_unsat I s')" unfolding subsets_sat_core_def id1
+      proof (intro allI impI)
+        assume False
+        fix J
+        assume sub: "J \<subset> set I" 
+        show "\<exists>v. (J, v) \<Turnstile>\<^sub>i\<^sub>s s'" 
+        proof (cases "J \<subseteq> ?R1 \<union> ?R2")
+          case True
+          with R1R2 have "(J, \<langle>\<V> s'\<rangle>) \<Turnstile>\<^sub>i\<^sub>s s'" 
+            unfolding satisfies_state_index.simps satisfies_bounds_index.simps by blast
+          thus ?thesis by blast
+        next
+          case False
+          with sub obtain k where k: "k \<in> ?R1 \<union> ?R2" "k \<notin> J" unfolding setI by blast
+          from k(1) obtain y where y: "y \<in> rvars_eq ?eq" 
+            and coeff: "k = LI dir s' y \<and> coeff (rhs ?eq) y < 0 \<or> k = UI dir s' y \<and> coeff (rhs ?eq) y > 0" by auto
+          define v where "v = \<langle>\<V> s'\<rangle>(y := undefined)" 
+          show ?thesis unfolding satisfies_state_index.simps
+          proof (intro exI[of _ v] conjI)
+            show "v \<Turnstile>\<^sub>t \<T> s'" using \<open>False\<close> by auto
+            show "(J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s'" unfolding satisfies_bounds_index.simps
+              using \<open>False\<close> by auto
+          qed
+        qed
+      qed
+    } note minimal_core = this
+
+    have unsat_core: "unsat_state_core (set_unsat I s')" 
       unfolding unsat_state_core_def unsat_core
     proof (intro impI conjI Is', clarify)
       fix v
@@ -5962,6 +6059,9 @@ next
         using dir lt LB_Some
         by (auto simp add: bound_compare_defs)
     qed
+
+    thus "\<U> (set_unsat I s') \<longrightarrow> unsat_state_core (set_unsat I s')" ..
+      
   qed (simp_all add: *)
   then show "\<U> (check s) \<Longrightarrow> unsat_state_core (check s)" by blast
 qed
@@ -6071,9 +6171,10 @@ proof
     by blast
 next
   fix s x\<^sub>i
-  show "min_lvar_not_in_bounds s = Some x\<^sub>i \<longrightarrow> x\<^sub>i \<in> lvars (\<T> s) \<and>
-                                              \<not> in_bounds x\<^sub>i \<langle>\<V> s\<rangle> (\<B> s) \<and>
-                                              (\<forall>x\<in>lvars (\<T> s). x < x\<^sub>i \<longrightarrow> in_bounds x \<langle>\<V> s\<rangle> (\<B> s))"
+  show "min_lvar_not_in_bounds s = Some x\<^sub>i \<longrightarrow> 
+            x\<^sub>i \<in> lvars (\<T> s) \<and>
+            \<not> in_bounds x\<^sub>i \<langle>\<V> s\<rangle> (\<B> s) \<and>
+            (\<forall>x\<in>lvars (\<T> s). x < x\<^sub>i \<longrightarrow> in_bounds x \<langle>\<V> s\<rangle> (\<B> s))"
     unfolding min_lvar_not_in_bounds_def lvars_def
     using min_satisfying_Some
     by blast+
