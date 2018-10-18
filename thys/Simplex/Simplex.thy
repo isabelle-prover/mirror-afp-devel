@@ -833,6 +833,9 @@ definition unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
 definition subsets_sat_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
   "subsets_sat_core s = ((\<forall> I. I \<subset> set (the (\<U>\<^sub>c s)) \<longrightarrow> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>s s)))" 
 
+definition minimal_unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
+  "minimal_unsat_state_core s = (unsat_state_core s \<and> (distinct_indices_state s \<longrightarrow> subsets_sat_core s))" 
+
 lemma state_satisfies_index: assumes "v \<Turnstile>\<^sub>s s"
   shows "(I,v) \<Turnstile>\<^sub>i\<^sub>s s"
   unfolding satisfies_state_index.simps satisfies_bounds_index.simps
@@ -946,12 +949,13 @@ datatype ('i,'a) Direction = Direction
   (UBI_upd: "(('i,'a) bounds_index \<Rightarrow> ('i,'a) bounds_index) \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state")
   (LE: "var \<Rightarrow> 'a \<Rightarrow> 'a atom")
   (GE: "var \<Rightarrow> 'a \<Rightarrow> 'a atom")
+  (le_rat: "rat \<Rightarrow> rat \<Rightarrow> bool")
 
 definition Positive where
-  [simp]: "Positive \<equiv> Direction (<) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<I>\<^sub>l \<I>\<^sub>u \<B>\<^sub>i\<^sub>u_update Leq Geq"
+  [simp]: "Positive \<equiv> Direction (<) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<I>\<^sub>l \<I>\<^sub>u \<B>\<^sub>i\<^sub>u_update Leq Geq (\<le>)"
 
 definition Negative where
-  [simp]: "Negative \<equiv> Direction (>) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<I>\<^sub>u \<I>\<^sub>l \<B>\<^sub>i\<^sub>l_update Geq Leq"
+  [simp]: "Negative \<equiv> Direction (>) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<I>\<^sub>u \<I>\<^sub>l \<B>\<^sub>i\<^sub>l_update Geq Leq (\<ge>)"
 
 
 
@@ -5822,6 +5826,31 @@ qed
 end
 
 
+lemma poly_eval_update: "(p \<lbrace> v ( x := c :: 'a :: lrv) \<rbrace>) = (p \<lbrace> v \<rbrace>) + coeff p x *R (c - v x)" 
+proof (transfer, simp, goal_cases) 
+  case (1 p v x c)
+  hence fin: "finite {v. p v \<noteq> 0}" by simp
+  have "(\<Sum>y\<in>{v. p v \<noteq> 0}. p y *R (if y = x then c else v y)) = 
+    (\<Sum>y\<in>{v. p v \<noteq> 0} \<inter> {x}. p y *R (if y = x then c else v y))
+    + (\<Sum>y\<in>{v. p v \<noteq> 0} \<inter> (UNIV - {x}). p y *R (if y = x then c else v y))"  (is "?l = ?a + ?b")
+    by (subst sum.union_disjoint[symmetric], auto intro: sum.cong fin)
+  also have "?a = (if p x = 0 then 0 else p x *R c)" by auto
+  also have "\<dots> = p x *R c" by auto
+  also have "?b = (\<Sum>y\<in>{v. p v \<noteq> 0} \<inter> (UNIV - {x}). p y *R v y)" (is "_ = ?c") by (rule sum.cong, auto)
+  finally have l: "?l = p x *R c + ?c" .
+  define r where "r = (\<Sum>y\<in>{v. p v \<noteq> 0}. p y *R v y) + p x *R (c - v x)" 
+  have "r = (\<Sum>y\<in>{v. p v \<noteq> 0}. p y *R v y) + p x *R (c - v x)" by (simp add: r_def)
+  also have "(\<Sum>y\<in>{v. p v \<noteq> 0}. p y *R v y) =
+     (\<Sum>y\<in>{v. p v \<noteq> 0} \<inter> {x}. p y *R v y) + ?c" (is "_ = ?d + _") 
+    by (subst sum.union_disjoint[symmetric], auto intro: sum.cong fin)
+  also have "?d = (if p x = 0 then 0 else p x *R v x)" by auto
+  also have "\<dots> = p x *R v x" by auto
+  finally have "(p x *R (c - v x) + p x *R v x) + ?c = r" by simp
+  also have "(p x *R (c - v x) + p x *R v x) = p x *R c" unfolding scaleRat_right_distrib[symmetric] by simp 
+  finally have r: "p x *R c + ?c = r" .
+  show ?case unfolding l r r_def ..
+qed
+
 sublocale PivotUpdateMinVars < Check check
 proof
   fix s :: "('i,'a) state"
@@ -5878,6 +5907,7 @@ next
       and dir: "dir = Positive \<or> dir = Negative"
       and lt: "\<lhd>\<^sub>l\<^sub>b (lt dir) (\<langle>\<V> s'\<rangle> x\<^sub>i) (LB dir s' x\<^sub>i)"
       and norm: "\<triangle> (\<T> s')" 
+      and valuated: "\<nabla> s'" 
     let ?eq = "eq_for_lvar (\<T> s') x\<^sub>i" 
     have unsat_core: "set (the (\<U>\<^sub>c (set_unsat I s'))) = set I"
       by auto
@@ -5913,8 +5943,11 @@ next
     have Is': "set I \<subseteq> indices_state (set_unsat I s')"
       using Is' * unfolding indices_state_def by auto
 
-    {
+    {      
       assume dist: "distinct_indices_state s'" 
+      note dist = dist[unfolded distinct_indices_state_def, rule_format]
+      fix rhs_eq_val :: "(var, 'a::lrv) mapping \<Rightarrow> var \<Rightarrow> 'a \<Rightarrow> eq \<Rightarrow> 'a" 
+      assume rhs_eq_val: "RhsEqVal rhs_eq_val" 
       {
         fix x c i
         assume c: "look (\<B>\<^sub>i\<^sub>l s') x = Some (i,c) \<or> look (\<B>\<^sub>i\<^sub>u s') x = Some (i,c)" and i: "i \<in> ?R1 \<union> ?R2" 
@@ -5928,7 +5961,7 @@ next
           with not_gt have le: "le (lt dir) (\<langle>\<V> s'\<rangle> y) d" using dir by (auto simp: bound_compare_defs)
           from LB have "look (LBI dir s') y = Some (i, d)" unfolding i using dir
             by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
-          with c dist[unfolded distinct_indices_state_def, rule_format, of x i c y d] dir
+          with c dist[of x i c y d] dir
           have "y = x" by auto
         }
         moreover
@@ -5939,7 +5972,7 @@ next
           with not_gt have le: "le (lt dir) d (\<langle>\<V> s'\<rangle> y)" using dir by (auto simp: bound_compare_defs)
           from UB have "look (UBI dir s') y = Some (i, d)" unfolding i using dir
             by (auto simp: boundsl_def boundsu_def indexl_def indexu_def)
-          with c dist[unfolded distinct_indices_state_def, rule_format, of x i c y d] dir
+          with c dist[of x i c y d] dir
           have "y = x" by auto
         }
         ultimately have "y = x" using coeff by blast
@@ -5979,9 +6012,8 @@ next
         "\<And> x. x \<Turnstile>\<^sub>i\<^sub>s set_unsat I s' \<longleftrightarrow> x \<Turnstile>\<^sub>i\<^sub>s s'" 
         by (auto simp: satisfies_state_index.simps boundsl_def boundsu_def indexl_def indexu_def)
 
-      have "False \<Longrightarrow> subsets_sat_core (set_unsat I s')" unfolding subsets_sat_core_def id1
+      have "subsets_sat_core (set_unsat I s')" unfolding subsets_sat_core_def id1
       proof (intro allI impI)
-        assume False
         fix J
         assume sub: "J \<subset> set I" 
         show "\<exists>v. (J, v) \<Turnstile>\<^sub>i\<^sub>s s'" 
@@ -5995,12 +6027,124 @@ next
           with sub obtain k where k: "k \<in> ?R1 \<union> ?R2" "k \<notin> J" unfolding setI by blast
           from k(1) obtain y where y: "y \<in> rvars_eq ?eq" 
             and coeff: "k = LI dir s' y \<and> coeff (rhs ?eq) y < 0 \<or> k = UI dir s' y \<and> coeff (rhs ?eq) y > 0" by auto
-          define v where "v = \<langle>\<V> s'\<rangle>(y := undefined)" 
+          hence cy0: "coeff (rhs ?eq) y \<noteq> 0" by auto        
+          from y **(1) have ry: "y \<in> rvars (\<T> s')" unfolding rvars_def by force      
+          hence yl: "y \<notin> lvars (\<T> s')" using lvars_rvars by blast
+          interpret rev: RhsEqVal rhs_eq_val by fact
+          note update = rev.update_valuation_nonlhs[THEN mp, OF norm valuated yl]
+          define diff where "diff = l\<^sub>i - \<langle>\<V> s'\<rangle> x\<^sub>i" 
+          have "\<langle>\<V> s'\<rangle> x\<^sub>i < l\<^sub>i \<Longrightarrow> 0 < l\<^sub>i - \<langle>\<V> s'\<rangle> x\<^sub>i" "l\<^sub>i < \<langle>\<V> s'\<rangle> x\<^sub>i \<Longrightarrow> l\<^sub>i - \<langle>\<V> s'\<rangle> x\<^sub>i < 0" 
+            using minus_gt by (blast, insert minus_lt, blast)
+          with lt dir have diff: "lt dir 0 diff" by (auto simp: diff_def) 
+          define up where "up = (inverse (coeff (rhs ?eq) y) *R diff)" 
+          define v where "v = \<langle>\<V> (rev.update y (\<langle>\<V> s'\<rangle> y + up) s')\<rangle>" 
           show ?thesis unfolding satisfies_state_index.simps
           proof (intro exI[of _ v] conjI)
-            show "v \<Turnstile>\<^sub>t \<T> s'" using \<open>False\<close> by auto
+            show "v \<Turnstile>\<^sub>t \<T> s'" unfolding v_def 
+              using rev.update_satisfies_tableau[OF norm valuated yl] \<open>\<langle>\<V> s'\<rangle> \<Turnstile>\<^sub>t \<T> s'\<close> by auto
+            with **(1) have "v \<Turnstile>\<^sub>e ?eq" unfolding satisfies_tableau_def by auto
+            from this[unfolded satisfies_eq_def id]
+            have v_xi: "v x\<^sub>i = (rhs ?eq \<lbrace> v \<rbrace>)" .  
+            from \<open>\<langle>\<V> s'\<rangle> \<Turnstile>\<^sub>t \<T> s'\<close> **(1) have "\<langle>\<V> s'\<rangle> \<Turnstile>\<^sub>e ?eq" unfolding satisfies_tableau_def by auto
+            hence V_xi: "\<langle>\<V> s'\<rangle> x\<^sub>i = (rhs ?eq \<lbrace> \<langle>\<V> s'\<rangle> \<rbrace>)" unfolding satisfies_eq_def id .
+            have "v x\<^sub>i = \<langle>\<V> s'\<rangle> x\<^sub>i + coeff (rhs ?eq) y *R up" 
+              unfolding v_xi unfolding v_def rev.update_valuate_rhs[OF **(1) norm] poly_eval_update V_xi by simp
+            also have "\<dots> = l\<^sub>i" unfolding up_def diff_def scaleRat_scaleRat using cy0 by simp 
+            finally have v_xi_l: "v x\<^sub>i = l\<^sub>i" .
             show "(J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s'" unfolding satisfies_bounds_index.simps
-              using \<open>False\<close> by auto
+            proof (intro conjI allI impI)
+              fix x c
+              assume x: "\<B>\<^sub>l s' x = Some c" "\<I>\<^sub>l s' x \<in> J" 
+              with k have not_k: "\<I>\<^sub>l s' x \<noteq> k" by auto
+              from x have ci: "look (\<B>\<^sub>i\<^sub>l s') x = Some (\<I>\<^sub>l s' x, c)" unfolding boundsl_def indexl_def by auto
+              show "c \<le> v x" 
+              proof (cases "\<I>\<^sub>l s' x = i")
+                case False
+                hence iR12: "\<I>\<^sub>l s' x \<in> ?R1 \<union> ?R2" using sub x unfolding setI LI by blast
+                from x_rvars(2)[OF _ iR12] ci have xr: "x \<in> rvars (\<T> s')" by auto
+                with lvars_rvars have xl: "x \<notin> lvars (\<T> s')" by auto
+                from iR12 R1R2 x have "c \<le> \<langle>\<V> s'\<rangle> x" 
+                  unfolding satisfies_state_index.simps satisfies_bounds_index.simps by auto
+                also have "\<dots> \<le> v x" 
+                proof (cases "x = y")
+                  case False
+                  thus ?thesis unfolding v_def map2fun_def' update[OF xl] by auto
+                next
+                  case True
+                  hence id: "v x = \<langle>\<V> s'\<rangle> x + up" unfolding v_def map2fun_def' update[OF xl] by auto
+                  have "0 \<le> up" 
+                  proof (cases "le_rat dir 0 (coeff (rhs ?eq) y)") 
+                    case False
+                    from coeff[folded True] not_k ci dir False[folded True] show ?thesis by auto
+                  next
+                    case True
+                    with cy0 have le: "le_rat dir 0 (inverse (coeff (rhs ?eq) y))" using dir
+                      by auto
+                    obtain inv where inv: "inverse (coeff (rhs ?eq) y) = inv" by auto
+                    have pos_pos: "0 < diff \<Longrightarrow> 0 \<le> inv \<Longrightarrow> 0 \<le> inv *R diff" 
+                      using le_less scaleRat_less1 by fastforce
+                    have neg_neg: "diff < 0 \<Longrightarrow> inv \<le> 0 \<Longrightarrow> 0 \<le> inv *R diff"
+                      using dual_order.strict_implies_order eq_iff scaleRat_leq2 by fastforce
+                    show ?thesis using diff dir le pos_pos neg_neg unfolding up_def inv by auto
+                  qed
+                  thus ?thesis unfolding id using add_mono by force
+                qed
+                finally show ?thesis .
+              next
+                case True
+                from LBI ci[unfolded True] dir 
+                  dist[unfolded distinct_indices_state_def, rule_format, of x i c x\<^sub>i l\<^sub>i]
+                have xxi: "x = x\<^sub>i" and c: "c = l\<^sub>i" by auto
+                have vxi: "v x = l\<^sub>i" unfolding xxi v_xi_l ..
+                thus ?thesis unfolding c by simp
+              qed
+            next
+              fix x c
+              assume x: "\<B>\<^sub>u s' x = Some c" "\<I>\<^sub>u s' x \<in> J" 
+              with k have not_k: "\<I>\<^sub>u s' x \<noteq> k" by auto
+              from x have ci: "look (\<B>\<^sub>i\<^sub>u s') x = Some (\<I>\<^sub>u s' x, c)" unfolding boundsu_def indexu_def by auto
+              show "v x \<le> c" 
+              proof (cases "\<I>\<^sub>u s' x = i")
+                case False
+                hence iR12: "\<I>\<^sub>u s' x \<in> ?R1 \<union> ?R2" using sub x unfolding setI LI by blast
+                from x_rvars(2)[OF _ iR12] ci have xr: "x \<in> rvars (\<T> s')" by auto
+                with lvars_rvars have xl: "x \<notin> lvars (\<T> s')" by auto
+                have "v x \<le> \<langle>\<V> s'\<rangle> x" 
+                proof (cases "x = y")
+                  case False
+                  thus ?thesis unfolding v_def map2fun_def' update[OF xl] by auto
+                next
+                  case True
+                  hence id: "v x = \<langle>\<V> s'\<rangle> x + up" unfolding v_def map2fun_def' update[OF xl] by auto
+                  have up: "up \<le> 0"
+                  proof (cases "le_rat dir (coeff (rhs ?eq) y) 0") 
+                    case True
+                    with cy0 have le: "le_rat dir (inverse (coeff (rhs ?eq) y)) 0" using dir
+                      by auto
+                    obtain inv where inv: "inverse (coeff (rhs ?eq) y) = inv" by auto
+                    have pos_neg: "0 < diff \<Longrightarrow> inv \<le> 0 \<Longrightarrow> inv *R diff \<le> 0" 
+                      using le_less scaleRat_less2 by fastforce
+                    have neg_pos: "diff < 0 \<Longrightarrow> 0 \<le> inv \<Longrightarrow> inv *R diff \<le> 0"
+                      using eq_iff less_imp_le scaleRat_leq1 by fastforce 
+                    show ?thesis using diff dir le pos_neg neg_pos unfolding up_def inv by auto
+                  next
+                    case False
+                    from coeff[folded True] not_k ci dir False[folded True] show ?thesis by auto
+                  qed
+                  thus ?thesis unfolding id using add_left_mono by fastforce
+                qed
+                also have "\<dots> \<le> c" using iR12 R1R2 x
+                  unfolding satisfies_state_index.simps satisfies_bounds_index.simps by force
+                finally show ?thesis .
+              next
+                case True
+                from LBI ci[unfolded True] dir 
+                  dist[unfolded distinct_indices_state_def, rule_format, of x i c x\<^sub>i l\<^sub>i]
+                have xxi: "x = x\<^sub>i" and c: "c = l\<^sub>i" by auto
+                have vxi: "v x = l\<^sub>i" unfolding xxi v_xi_l ..
+                thus ?thesis unfolding c by simp
+              qed
+            qed
           qed
         qed
       qed
