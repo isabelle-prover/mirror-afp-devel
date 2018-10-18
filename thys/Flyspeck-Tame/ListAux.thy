@@ -1076,7 +1076,7 @@ primrec removeKeyList :: "'a list \<Rightarrow> ('a \<times> 'b) list \<Rightarr
 | "removeKeyList (w#ws) ps = removeKey w (removeKeyList ws ps)"
 
 lemma removeKey_subset[simp]: "set (removeKey a ps) \<subseteq> set ps"
-  by (simp add: removeKey_def) blast
+  by (simp add: removeKey_def) 
 
 lemma length_removeKey[simp]: "|removeKey w ps| \<le> |ps|"
   by (simp add: removeKey_def) 
@@ -1097,10 +1097,8 @@ lemma removeKeyList_subset[simp]: "set (removeKeyList ws ps) \<subseteq> set ps"
 proof (induct ws) 
   case Nil then show ?case by simp
 next
-  case (Cons w ws) 
-  have "set (removeKey w (removeKeyList ws ps)) \<subseteq> set (removeKeyList ws ps)"
-    by (rule removeKey_subset)
-  with Cons show ?case by (simp add: removeKey_def)
+  case (Cons w ws) then show ?case
+    by (metis dual_order.trans removeKeyList.simps(2) removeKey_subset)
 qed
 
 lemma notin_removeKey1: "(a, b) \<notin> set (removeKey a ps)"
