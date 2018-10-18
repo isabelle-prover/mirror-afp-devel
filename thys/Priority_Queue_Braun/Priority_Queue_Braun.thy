@@ -84,8 +84,8 @@ fun del_left :: "'a tree \<Rightarrow> 'a * 'a tree" where
 lemma del_left_size:
   "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> size t = size t' + 1"
 apply(induction t arbitrary: x t' rule: del_left.induct)
-apply(auto split: prod.splits)
-by fastforce
+apply(fastforce split: prod.splits)+
+done
 
 lemma del_left_braun:
   "del_left t = (x,t') \<Longrightarrow> braun t \<Longrightarrow> t \<noteq> Leaf \<Longrightarrow> braun t'"

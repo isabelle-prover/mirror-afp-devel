@@ -1616,7 +1616,8 @@ lemma mapp_cong [fundef_cong]:
 
 lemma lookup_mapp:
   "lookup (mapp f p) k = (f k (lookup p k) when k \<in> keys p)"
-  unfolding when_def by transfer simp
+  unfolding when_def
+  by transfer simp
 
 lemma keys_mapp_subset: "keys (mapp f p) \<subseteq> keys p"
   by transfer auto

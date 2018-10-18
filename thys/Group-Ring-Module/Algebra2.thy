@@ -68,14 +68,7 @@ apply  (insert ex_minimum,
  apply (cut_tac a = d in segment_Worder)
  apply (frule_tac D = "Iod D (segment D d)" in  Worder.well_ord_compare1 [of _ 
        "E"], assumption+)
- apply (rule ballI)
- apply (frule_tac x = a in bspec, assumption+) 
- apply (simp add:Iod_segment_segment)
-
- apply (erule disjE) apply blast
- apply (frule_tac X = "{x \<in> carrier D. \<forall>b\<in>carrier E.
-        \<not> ord_equiv (Iod D (segment D x)) (Iod E (segment E b))}" and 
-        a = d in minimum_elem_mem, assumption, simp)
+ apply (auto simp add: minimum_elem_def Iod_segment_segment)
 done
 
 lemma (in Worder) Worder_equiv:"\<lbrakk>Worder E; 
@@ -678,7 +671,6 @@ done
 lemma Order_ODnods:"Order ODnods"
 apply (rule Order.intro)
  apply (simp add:ODnods_def ODrel_def)
- apply (rule subsetI) apply simp
 
  apply (simp add:ODnods_def ODrel_def, simp add:ODord_le_def)
  
@@ -3582,43 +3574,18 @@ lemma (in Order) fTo_conditional_Un_Chain_mem1:" \<lbrakk>C \<in> carrier (fTo D
 apply (cut_tac fTOrder,
        cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"])
 
-apply (simp add:upper_bounds_def upper_bound_def)
-apply (subgoal_tac "\<Union>Ca \<in>carrier (Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S})")
-apply simp
-apply (rule ballI)
- apply (simp only:Order.Iod_carrier)
- apply (frule Order.Iod_Order[of "fTo D" "{x \<in> carrier fTo D. C \<subseteq> x}"],
-              assumption+,
-        frule Order.Chain_sub[of "Iod (fTo D) {S \<in> carrier fTo D. C \<subseteq> S}" 
-              "Ca"], assumption+, simp only:Order.Iod_carrier,
-        frule_tac c = s in subsetD[of "Ca" "{S \<in> carrier fTo D. C \<subseteq> S}"],
-                     assumption+,
-        frule_tac c = s in subsetD[of "{S \<in> carrier fTo D. C \<subseteq> S}" 
-                    "carrier (fTo D)"], assumption+)
-  apply (subst Order.Iod_le[of "fTo D" "{x \<in> carrier fTo D. C \<subseteq> x}"],
-                      assumption+)
-        apply (subst Order.fTo_Order_sub, rule Order_axioms, assumption, simp)
-  apply (rule_tac A = s in mem_family_sub_Un[of _ "Ca"], assumption)
-
-apply (simp add:Order.Iod_carrier[of "fTo D"])
-apply (rule conjI)
-apply (rule Un_fTo_Chain_mem_fTo[of "Ca"])
- apply (simp add:Chain_def, erule conjE)
- apply (simp add:Order.Iod_carrier, 
-        frule subset_trans[of "Ca" "{S \<in> carrier (fTo D). C \<subseteq> S}" 
-        "carrier (fTo D)"], assumption+, simp)
- apply (frule_tac T = "{S \<in> carrier (fTo D). C \<subseteq> S}" in 
-                        Order.Iod_sub_sub[of "fTo D" "Ca"], assumption+,
-        simp)
- apply (rule sub_Union[of "Ca" "C"])
- apply (frule nonempty_ex[of "Ca"], erule exE)
- apply (frule Order.Iod_Order[of "fTo D" "{x \<in> carrier (fTo D). C \<subseteq> x}"],
-      assumption+,
-      frule Order.Chain_sub[of "Iod (fTo D) {S \<in> carrier fTo D. C \<subseteq> S}" "Ca"],
-      assumption+) apply (simp add:Order.Iod_carrier)
- apply (frule_tac c = x in subsetD[of "Ca" "{S \<in> carrier fTo D. C \<subseteq> S}"],
-              assumption+, simp, erule conjE, blast)
-done
+  apply (simp add:upper_bounds_def upper_bound_def)
+  apply (subgoal_tac "\<Union>Ca \<in>carrier (Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S})")
+   apply simp
+   apply (rule ballI)
+   apply (force simp add: Chain_def Order.Iod_carrier Order.Iod_le Union_upper fTo_Order_sub subset_eq)  
+  apply (simp add:Order.Iod_carrier[of "fTo D"])
+  apply (rule conjI)
+   apply (rule Un_fTo_Chain_mem_fTo[of "Ca"])
+   apply (force simp add: Chain_def Order.Iod_carrier Order.Iod_sub_sub)
+  apply (simp add:Chain_def, erule conjE)
+  apply (rule sub_Union[of "Ca" "C"])
+  using Order.Iod_carrier by fastforce
 
 lemma (in Order) fTo_conditional_min1:" \<lbrakk>C \<in> carrier (fTo D); 
      Chain (Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S}) Ca; Ca \<noteq> {}\<rbrakk> \<Longrightarrow>
@@ -3672,11 +3639,7 @@ apply (simp add:minimum_elem_def upper_bounds_def upper_bound_def)
 apply (cut_tac fTOrder,
        cut_tac conditional_subset[of "carrier (fTo D)" "(\<subseteq>) C"],
        simp add:Order.Iod_carrier)
-apply (rule allI, rule impI, erule conjE,
-       subst Order.Iod_le[of "fTo D" "{x \<in> carrier (fTo D). C \<subseteq> x}"],
-          assumption+, simp, simp)
-apply (subst fTo_Order_sub, assumption+)
-done
+  by (auto simp add: Order.Iod_le fTo_Order_sub)
 
 
 lemma (in Order) fTo_S_inductive:"S_inductive_set (fTo D)"
@@ -3766,13 +3729,7 @@ apply (rule ballI, rule impI)
         frule_tac a = b in forall_spec, simp,
         thin_tac "\<forall>b. b \<in> carrier (fTo D) \<and> C \<subseteq> b \<longrightarrow>
              m \<preceq>\<^bsub>Iod (fTo D) {S \<in> carrier (fTo D). C \<subseteq> S}\<^esub> b \<longrightarrow> m = b")
- apply (frule_tac x = m in 
-         satisfy_cond_mem_set[of _ "carrier (fTo D)" "(\<subseteq>) C"], assumption+,
-        frule_tac A = C and B = m and C = b in subset_trans, assumption+,
-        frule_tac x = b in 
-         satisfy_cond_mem_set[of _ "carrier (fTo D)" "(\<subseteq>) C"], assumption+,
-        simp only:Order.Iod_le, simp only:fTo_Order_sub)
-done
+  by (simp add: Order.Iod_le fTo_Order_sub)
 
 lemma (in Order) Hausdorff_ac:"C \<in> carrier (fTo D) \<Longrightarrow> 
                     \<exists>M\<in>carrier (fTo D). C \<subseteq> M \<and> maximal\<^bsub>(fTo D)\<^esub> M"

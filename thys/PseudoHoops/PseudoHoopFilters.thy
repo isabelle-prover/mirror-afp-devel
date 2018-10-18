@@ -26,8 +26,7 @@ lemma filter_ii: "F \<in> filters \<Longrightarrow> a \<in> F \<Longrightarrow> 
  by (simp add: filters_def)
 
 lemma filter_iii [simp]: "F \<in> filters \<Longrightarrow> 1 \<in> F"
- apply (simp add: filters_def)
- by auto
+  by (auto simp add: filters_def)
 
 lemma filter_left_impl:
   "(F \<in> filters) = ((1 \<in> F) \<and> (\<forall> a b . a \<in> F \<and> a l\<rightarrow> b \<in> F \<longrightarrow> b \<in> F))"
@@ -95,10 +94,7 @@ definition
   "filterof X = \<Inter> {F . F \<in> filters \<and> X \<subseteq> F}"
 
 lemma [simp]: "filterof X \<in> filters"
-  apply (simp add: filterof_def)
-  apply (subgoal_tac "{F \<in> filters. X \<subseteq> F} \<subseteq> filters")
-  apply simp
-  by blast
+  by (auto simp add: filterof_def)
 
 lemma times_le_mono [simp]: "x \<le> y \<Longrightarrow> u \<le> v \<Longrightarrow> x * u \<le> y * v"
   apply (rule_tac y = "x * v" in order_trans)

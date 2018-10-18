@@ -119,6 +119,7 @@ Error_Function
 Euler_MacLaurin
 Euler_Partition
 Example-Submission
+Factored_Transition_System_Bounding
 FFT
 FLP
 FOL-Fitting
@@ -296,6 +297,7 @@ Password_Authentication_Protocol
 Perfect-Number-Thm
 Perron_Frobenius
 Pi_Calculus
+Pi_Transcendental
 Planarity_Certificates
 Polynomial_Factorization
 Polynomial_Interpolation
@@ -397,6 +399,7 @@ Subresultants
 SumSquares
 SuperCalc
 Surprise_Paradox
+Symmetric_Polynomials
 TLA
 Tail_Recursive_Functions
 Tarskis_Geometry

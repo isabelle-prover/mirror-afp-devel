@@ -1420,11 +1420,9 @@ done
 lemma (in Corps) Vr_ring:"valuation K v \<Longrightarrow> Ring (Vr K v)"
 apply (cut_tac field_is_ring, frule Ring.ring_is_ag[of "K"],
        simp add:Vr_def, rule Ring.Sr_ring, assumption+)
-apply (simp add:sr_def)
-apply (rule conjI,
-       rule subsetI, simp, simp add:Ring.ring_one[of "K"],
-       simp add:value_of_one)
-
+  apply (simp add:sr_def)
+  apply (intro conjI subsetI)
+apply (simp_all add: value_of_one Ring.ring_one[of "K"])
 apply ((rule allI, rule impI)+,
        (erule conjE)+, rule conjI, rule aGroup.ag_pOp_closed, assumption+,
        rule aGroup.ag_mOp_closed, assumption+)
@@ -1434,9 +1432,7 @@ apply (frule_tac x = x and y = "-\<^sub>a y" in amin_le_plus[of v], assumption+,
        frule_tac z = 0 and x = "v x" and y = "v y" in amin_ge1, assumption+,
        frule_tac i = 0 and j = "amin (v x) (v y)" and k = "v (x \<plusminus> -\<^sub>a y)" in
        ale_trans, assumption+, simp)
-apply (simp add:Ring.ring_tOp_closed, simp add:val_t2p,
-       rule_tac x = "v x" and y = "v y" in aadd_two_pos, assumption+)
-done
+  by (simp add: Ring.ring_tOp_closed aadd_two_pos val_t2p)
 
 lemma (in Corps) val_pos_mem_Vr:"\<lbrakk>valuation K v; x \<in> carrier K\<rbrakk> \<Longrightarrow>
                              (0 \<le> (v x)) = (x \<in> carrier (Vr K v))"
@@ -3921,8 +3917,7 @@ apply (thin_tac "-\<^sub>a x =  -\<^sub>a 1\<^sub>r \<plusminus> (1\<^sub>r \<pl
                                   assumption+,
        rule aGroup.ag_pOp_closed, assumption+,
        simp add:val_minus_eq value_of_one, simp add:val_minus_eq)
-apply (rotate_tac -1, drule sym, simp)
-apply (simp add:value_of_one)
+apply (simp add: value_of_one)
 done
 
 end

@@ -3025,9 +3025,7 @@ definition
 
 lemma (in TwoRings) i_contract_sub:"\<lbrakk>f \<in> rHom R R'; ideal R' J \<rbrakk> \<Longrightarrow>
                        (i_contract f R R' J) \<subseteq> carrier R"
-apply (simp add:i_contract_def invim_def)
-apply blast
-done
+  by (auto simp add:i_contract_def invim_def)
 
 lemma (in TwoRings) i_contract_ideal:"\<lbrakk>f \<in> rHom R R'; ideal R' J \<rbrakk> \<Longrightarrow>
                                           ideal R (i_contract f R R' J)"

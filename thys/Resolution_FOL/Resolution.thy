@@ -424,8 +424,8 @@ proof -
     qed auto
   moreover
   have "(C-?L) \<cdot>\<^sub>l\<^sub>s lmbd = C' - L'" using inst_C by auto
-  moreover
-  ultimately show ?thesis by auto
+  ultimately show ?thesis
+    by blast    
 qed
 
 lemma relevant_vars_subt:

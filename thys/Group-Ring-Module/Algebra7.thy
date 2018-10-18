@@ -3481,8 +3481,6 @@ apply (frule quotient_of_submodules_inc_0 [of P Q], assumption+)
 apply (cut_tac sc_Ring,
        rule Ring.ideal_condition[of R], assumption+)
 apply (simp add:quotient_of_submodules_def)
- apply (rule subsetI)
- apply (simp add:CollectI)
 apply (simp add:nonempty) apply (thin_tac "\<zero>\<^bsub>R\<^esub> \<in> P \<^bsub>R\<ddagger>M\<^esub> Q")
  apply (rule ballI)+
  apply (simp add:quotient_of_submodules_def) 
