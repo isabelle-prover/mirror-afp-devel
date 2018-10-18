@@ -150,7 +150,7 @@ next
   from *(3,9)
   have "\<forall> v :: var \<Rightarrow> 'a. v \<Turnstile>\<^sub>t \<T> s' = v \<Turnstile>\<^sub>t t" unfolding T by blast+
   moreover from assert_bound_nolhs_unsat[OF *(1-5,8) U] s'
-  have "unsat_state_core s'" by auto  
+  have "unsat_state_core s'" by (auto simp: minimal_unsat_state_core_def)
   moreover from assert_bound_nolhs_index_valid[OF *(1-5,8)]
   have "index_valid (insert a as) s'" unfolding s' by auto
   moreover from assert_bound_nolhs_atoms_imply_bounds_index[OF *(1-5,7)]
@@ -193,7 +193,7 @@ next
   note * = invariant_sD[OF 4(1)]
   note ** = *(1,2,5,3,4)
   from check_unsat[OF ** U]
-  have "unsat_state_core s'" unfolding s' .
+  have "unsat_state_core s'" unfolding s' minimal_unsat_state_core_def by auto
   moreover from check_tableau_equiv[OF **] *(9)
   have "\<forall>v :: _ \<Rightarrow> 'a. v \<Turnstile>\<^sub>t \<T> s' = v \<Turnstile>\<^sub>t t" unfolding s' by auto
   moreover from check_tableau_index_valid[OF **] *(8)

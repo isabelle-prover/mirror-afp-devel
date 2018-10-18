@@ -990,7 +990,7 @@ assert_all_state_sat_atoms_equiv_bounds: "\<triangle> t \<Longrightarrow> assert
 \<comment> \<open>If @{term \<U>} is raised, then there is no valuation
    satisfying the tableau and the bounds in the final state (that are,
    in this case, equivalent to a subset of asserted atoms).\<close>
-assert_all_state_unsat: "\<triangle> t \<Longrightarrow> assert_all_state t as = s' \<Longrightarrow> \<U> s' \<Longrightarrow> unsat_state_core s'"  and
+assert_all_state_unsat: "\<triangle> t \<Longrightarrow> assert_all_state t as = s' \<Longrightarrow> \<U> s' \<Longrightarrow> minimal_unsat_state_core s'"  and
 
 assert_all_state_unsat_atoms_equiv_bounds: "\<triangle> t \<Longrightarrow> assert_all_state t as = s' \<Longrightarrow> \<U> s' \<Longrightarrow> set as \<Turnstile>\<^sub>i \<B>\<I> s'" and
 
@@ -1018,7 +1018,7 @@ proof
   assume "assert_all t as = Unsat I"
   then have i: "I = the (\<U>\<^sub>c (assert_all_state t as))" and U: "\<U> (assert_all_state t as)"
     unfolding assert_all_def Let_def by (auto split: if_splits)
-  note unsat = assert_all_state_unsat[OF D refl U, unfolded unsat_state_core_def i[symmetric]]
+  note unsat = assert_all_state_unsat[OF D refl U, unfolded minimal_unsat_state_core_def unsat_state_core_def i[symmetric]]
   from unsat have "set I \<subseteq> indices_state (assert_all_state t as)" by auto
   also have "\<dots> \<subseteq> fst ` set as" using assert_all_state_indices[OF D refl] .
   finally have indices: "set I \<subseteq> fst ` set as" .
@@ -1059,7 +1059,7 @@ locale Init' =
   assumes init'_tableau_normalized: "\<triangle> t \<Longrightarrow> \<triangle> (\<T> (init t))"
   assumes init'_tableau_equiv: "\<triangle> t \<Longrightarrow> (v::'a valuation) \<Turnstile>\<^sub>t t = v \<Turnstile>\<^sub>t \<T> (init t)"
   assumes init'_sat: "\<triangle> t \<Longrightarrow> \<not> \<U> (init t) \<longrightarrow> \<Turnstile> (init t)"
-  assumes init'_unsat: "\<triangle> t \<Longrightarrow> \<U> (init t) \<longrightarrow> unsat_state_core (init t)"
+  assumes init'_unsat: "\<triangle> t \<Longrightarrow> \<U> (init t) \<longrightarrow> minimal_unsat_state_core (init t)"
   assumes init'_atoms_equiv_bounds: "\<triangle> t \<Longrightarrow> {} \<doteq> \<B> (init t)"
   assumes init'_atoms_imply_bounds_index: "\<triangle> t \<Longrightarrow> {} \<Turnstile>\<^sub>i \<B>\<I> (init t)"
 
@@ -1189,7 +1189,7 @@ assert_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<tria
 
 \<comment> \<open>If the @{term \<U>} flag is raised, then there is no valuation
    that satisfies both the current tableau and the current bounds.\<close>
-assert_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s; index_valid ats s\<rbrakk> \<Longrightarrow> \<U> (assert a s) \<Longrightarrow>  unsat_state_core (assert a s)" and
+assert_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s; index_valid ats s\<rbrakk> \<Longrightarrow> \<U> (assert a s) \<Longrightarrow>  minimal_unsat_state_core (assert a s)" and
 
 assert_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid ats s \<Longrightarrow> index_valid (insert a ats) (assert a s)"
 
@@ -1343,7 +1343,7 @@ proof
     using * unfolding idsym
     by (rule AssertAllState'_unsat_atoms_equiv_bounds)
 
-  show "\<U> s' \<Longrightarrow> unsat_state_core s'"
+  show "\<U> s' \<Longrightarrow> minimal_unsat_state_core s'"
     using init_unsat_flag assert_unsat assert_index_valid unfolding idsym
     by (induct rule: AssertAllState'Induct) (auto simp add: * )
 
@@ -1474,7 +1474,7 @@ assert_bound_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; 
 
 \<comment> \<open>@{term \<U>} flag is raised, only if the bounds became inconsistent:\<close>
 
-assert_bound_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> assert_bound a s = s' \<Longrightarrow> \<U> s' \<Longrightarrow> unsat_state_core s'" and
+assert_bound_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> assert_bound a s = s' \<Longrightarrow> \<U> s' \<Longrightarrow> minimal_unsat_state_core s'" and
 
 assert_bound_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> index_valid (insert a as) (assert_bound a s)"
 
@@ -1497,7 +1497,7 @@ locale AssertBoundNoLhs =
   assumes assert_bound_nolhs_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     ats \<Turnstile>\<^sub>i \<B>\<I> s \<Longrightarrow> insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound a s)"
   assumes assert_bound_nolhs_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
-    index_valid as s \<Longrightarrow> \<U> (assert_bound a s) \<Longrightarrow> unsat_state_core (assert_bound a s)"
+    index_valid as s \<Longrightarrow> \<U> (assert_bound a s) \<Longrightarrow> minimal_unsat_state_core (assert_bound a s)"
   assumes assert_bound_nolhs_tableau_valuated: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
    \<nabla> (assert_bound a s)"
   assumes assert_bound_nolhs_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
@@ -1543,7 +1543,7 @@ check_bounds_id:  "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\
 check_sat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> \<not> \<U> (check s) \<Longrightarrow> \<Turnstile> (check s)"  and
 
 
-check_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> \<U> (check s) \<Longrightarrow> unsat_state_core (check s)"
+check_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> \<U> (check s) \<Longrightarrow> minimal_unsat_state_core (check s)"
 
 begin
 lemma check_tableau_equiv: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
@@ -1627,7 +1627,7 @@ next
 next
   fix s::"('i,'a) state" and a::"('i,'a) i_atom" and ats
   assume *: "\<not> \<U> s" "\<Turnstile> s" "\<triangle> (\<T> s)" "\<nabla> s" "\<U> (assert a s)" "index_valid ats s"
-  show "unsat_state_core (assert a s)"
+  show "minimal_unsat_state_core (assert a s)"
   proof (cases "\<U> (assert_bound a s)")
     case True
     then show ?thesis
@@ -1791,7 +1791,7 @@ lemma AssertAllState''_sat:
   by (rule AssertAllState''Induct) (auto simp add: init_unsat_flag init_satisfies satisfies_consistent satisfies_satisfies_no_lhs assert_bound_nolhs_sat)
 
 lemma AssertAllState''_unsat:
-  "\<triangle> t \<Longrightarrow> \<U> (assert_bound_loop ats (init t)) \<longrightarrow> unsat_state_core (assert_bound_loop ats (init t))"
+  "\<triangle> t \<Longrightarrow> \<U> (assert_bound_loop ats (init t)) \<longrightarrow> minimal_unsat_state_core (assert_bound_loop ats (init t))"
   by (rule AssertAllState''Induct)
     (auto simp add: init_tableau_id assert_bound_nolhs_unsat init_unsat_flag)
 
@@ -1855,7 +1855,7 @@ proof
     using check_sat check_unsat_id
     by (force simp add: Let_def)
 
-  show "\<U> s' \<Longrightarrow> unsat_state_core s'"
+  show "\<U> s' \<Longrightarrow> minimal_unsat_state_core s'"
     using * check_unsat check_unsat_id[of ?s'] check_bounds_id
     using AssertAllState''_unsat[of t ats] AssertAllState''_precond[of t ats] s'
     by (force simp add: Let_def satisfies_state_def)
@@ -2654,14 +2654,15 @@ next
     qed
   next
     fix c::'a and x::nat and dir
-    assume **: "dir = Positive \<or> dir = Negative" "a = LE dir x c" "x \<notin> lvars (\<T> s)" "lt dir c (\<langle>\<V> s\<rangle> x)" "\<not> \<unrhd>\<^sub>u\<^sub>b (lt dir) c (UB dir s x)" "\<not> \<lhd>\<^sub>l\<^sub>b (lt dir) c (LB dir s x)"
+    assume **: "dir = Positive \<or> dir = Negative" "a = LE dir x c" "x \<notin> lvars (\<T> s)" "lt dir c (\<langle>\<V> s\<rangle> x)" 
+      "\<not> \<unrhd>\<^sub>u\<^sub>b (lt dir) c (UB dir s x)" "\<not> \<lhd>\<^sub>l\<^sub>b (lt dir) c (LB dir s x)"
     let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"
     show "?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)
       (update x c ?s)"
       using * **
       by (auto simp add: update_unsat_id tableau_valuated_def)
   qed (auto simp add: * update_unsat_id tableau_valuated_def)
-  with ** show "unsat_state_core (assert_bound ia s)" by auto
+  with ** show "minimal_unsat_state_core (assert_bound ia s)" by (auto simp: minimal_unsat_state_core_def)
 next
   fix s::"('i,'a) state" and ia
   assume *: "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<diamond> s" "\<triangle> (\<T> s)" "\<nabla> s"
@@ -5851,7 +5852,9 @@ proof (transfer, simp, goal_cases)
   show ?case unfolding l r r_def ..
 qed
 
-sublocale PivotUpdateMinVars < Check check
+lemma (in PivotUpdateMinVars) Check_check: fixes rhs_eq_val :: "(var, 'a::lrv) mapping \<Rightarrow> var \<Rightarrow> 'a \<Rightarrow> eq \<Rightarrow> 'a" 
+  assumes rhs_eq_val: "RhsEqVal rhs_eq_val" 
+  shows "Check check" 
 proof
   fix s :: "('i,'a) state"
   assume "\<U> s"
@@ -5897,7 +5900,7 @@ next
 next
   fix s :: "('i,'a) state"
   assume *: "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<diamond> s" "\<triangle> (\<T> s)" "\<nabla> s"
-  have "\<U> (check s) \<longrightarrow> unsat_state_core (check s)" (is "?P (check s)")
+  have "\<U> (check s) \<longrightarrow> minimal_unsat_state_core (check s)" (is "?P (check s)")
   proof (rule check_induct'')
     fix s' :: "('i,'a) state" and x\<^sub>i dir I
     assume nolhs: "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s'"
@@ -5944,10 +5947,9 @@ next
       using Is' * unfolding indices_state_def by auto
 
     {      
-      assume dist: "distinct_indices_state s'" 
-      note dist = dist[unfolded distinct_indices_state_def, rule_format]
-      fix rhs_eq_val :: "(var, 'a::lrv) mapping \<Rightarrow> var \<Rightarrow> 'a \<Rightarrow> eq \<Rightarrow> 'a" 
-      assume rhs_eq_val: "RhsEqVal rhs_eq_val" 
+      assume dist: "distinct_indices_state (set_unsat I s')" 
+      hence "distinct_indices_state s'" unfolding distinct_indices_state_def by auto
+      note dist = this[unfolded distinct_indices_state_def, rule_format]
       {
         fix x c i
         assume c: "look (\<B>\<^sub>i\<^sub>l s') x = Some (i,c) \<or> look (\<B>\<^sub>i\<^sub>u s') x = Some (i,c)" and i: "i \<in> ?R1 \<union> ?R2" 
@@ -6204,10 +6206,11 @@ next
         by (auto simp add: bound_compare_defs)
     qed
 
-    thus "\<U> (set_unsat I s') \<longrightarrow> unsat_state_core (set_unsat I s')" ..
+    thus "\<U> (set_unsat I s') \<longrightarrow> minimal_unsat_state_core (set_unsat I s')" using minimal_core
+      by (auto simp: minimal_unsat_state_core_def) 
       
   qed (simp_all add: *)
-  then show "\<U> (check s) \<Longrightarrow> unsat_state_core (check s)" by blast
+  then show "\<U> (check s) \<Longrightarrow> minimal_unsat_state_core (check s)" by blast
 qed
 
 subsection\<open>Symmetries\<close>
@@ -6673,6 +6676,11 @@ proof unfold_locales
     using valuate_update_x[of "rhs e" x "\<langle>v\<rangle>" "\<langle>v\<rangle>(x := c)"]
     by (auto simp add: satisfies_eq_def)
 qed (auto simp: update_code_def assert_bound'_code_def assert_bound_code_def)
+
+sublocale PivotUpdateMinVars < Check check
+proof (rule Check_check)
+  show "RhsEqVal rhs_eq_val" ..
+qed
 
 definition "pivot_code = Pivot'.pivot eq_idx_for_lvar pivot_eq subst_var"
 definition "pivot_tableau_code = Pivot'.pivot_tableau eq_idx_for_lvar pivot_eq subst_var"
