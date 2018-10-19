@@ -1,7 +1,7 @@
 chapter AFP
 
 session Randomised_BSTs (AFP) = Random_BSTs +
-  options [timeout=150]
+  options [timeout=300]
   sessions
     Monad_Normalisation
   theories

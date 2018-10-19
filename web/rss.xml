@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>12 Oct 2018 00:00:00 +0000</pubDate>
+    <pubDate>19 Oct 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Randomised Binary Search Trees</title>
+              <link>https://www.isa-afp.org/entries/Randomised_BSTs.html</link>
+       <guid>https://www.isa-afp.org/entries/Randomised_BSTs.html</guid>
+       <dc:creator> Manuel Eberl       </dc:creator>
+       <pubDate>19 Oct 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This work is a formalisation of the Randomised Binary Search
+Trees introduced by Martínez and Roura, including definitions and
+correctness proofs.&lt;/p&gt; &lt;p&gt;Like randomised treaps, they
+are a probabilistic data structure that behaves exactly as if elements
+were inserted into a non-balancing BST in random order. However,
+unlike treaps, they only use discrete probability distributions, but
+their use of randomness is more complicated.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Upper Bounding Diameters of State Spaces of Factored Transition Systems</title>
               <link>https://www.isa-afp.org/entries/Factored_Transition_System_Bounding.html</link>
@@ -581,22 +596,6 @@ translation of a fixed finite instance of the original problem to SAT.
 This Isabelle proof contains a machine-checked version of both the
 statement for exactly three agents and alternatives and the lifting to
 the general case.&lt;/p&gt;</description>
-    </item>
-    <item>
-       <title>Weight-Balanced Trees</title>
-              <link>https://www.isa-afp.org/entries/Weight_Balanced_Trees.html</link>
-       <guid>https://www.isa-afp.org/entries/Weight_Balanced_Trees.html</guid>
-       <dc:creator> Tobias Nipkow, Stefan Dirix       </dc:creator>
-       <pubDate>13 Mar 2018 00:00:00 +0000</pubDate>
-       <description>
-This theory provides a verified implementation of weight-balanced
-trees following the work of &lt;a
-href=&#34;https://doi.org/10.1017/S0956796811000104&#34;&gt;Hirai
-and Yamamoto&lt;/a&gt; who proved that all parameters in a certain
-range are valid, i.e. guarantee that insertion and deletion preserve
-weight-balance. Instead of a general theorem we provide parameterized
-proofs of preservation of the invariant that work for many (all?)
-valid parameters.</description>
     </item>
   </channel>
 </rss>

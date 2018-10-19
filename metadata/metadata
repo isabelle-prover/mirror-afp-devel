@@ -402,6 +402,21 @@ abstract =
   the harmonic numbers. We also show how the internal path length
   relates to the average-case cost of a lookup in a BST.</p>
 
+[Randomised_BSTs]
+title = Randomised Binary Search Trees
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Data Structures
+date = 2018-10-19
+notify = eberlm@in.tum.de
+abstract =
+  <p>This work is a formalisation of the Randomised Binary Search
+  Trees introduced by Martínez and Roura, including definitions and
+  correctness proofs.</p> <p>Like randomised treaps, they
+  are a probabilistic data structure that behaves exactly as if elements
+  were inserted into a non-balancing BST in random order. However,
+  unlike treaps, they only use discrete probability distributions, but
+  their use of randomness is more complicated.</p>
+
 [E_Transcendental]
 title = The Transcendence of e
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
@@ -7371,7 +7386,7 @@ author = Friedrich Kurz <>, Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>
 topic = Computer Science/Automata and Formal Languages, Mathematics/Graph Theory
 date = 2018-10-12
 notify = friedrich.kurz@tum.de, mohammad.abdulaziz@in.tum.de
-abstract = 
+abstract =
   A completeness threshold is required to guarantee the completeness of
   planning as satisfiability, and bounded model checking of safety
   properties. One valid completeness threshold is the diameter of the
