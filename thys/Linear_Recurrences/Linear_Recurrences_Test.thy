@@ -44,4 +44,22 @@ text \<open>
 \<close>
 value "show_ratfps_solution (the (solve_lir [2, 1] [1 :: complex] [(1, 1, 2)]))"
 
+(* 20 ms *)
+definition test1 where
+  "test1 (_ :: unit) = String.implode (show (solve_lhr [-1,-1,1] [0,1 :: complex]))"
+
+definition test2 where
+  "test2 (_ :: unit) = String.implode (show (solve_lhr [-1,0,0,0,1] [0,1,2,3 :: complex]))"
+
+definition test3 where
+  "test3 (_:: unit) = String.implode (show (solve_lir [2, 1] [1 :: complex] [(1, 1, 2)]))"
+
+definition test4 where
+  "test4 (_:: unit) = String.implode (show (solve_lhr [8,-2,0,1] [8,6,-5]))"
+
+definition test5 where
+  "test5 (_:: unit) = String.implode (show (solve_lhr [1, 2, 3, 4, 5] [5, 4, 3, 2, 1]))"
+
+export_code test1 test2 test3 test4 test5 in Haskell module_name Bar file "/tmp/bla"
+
 end

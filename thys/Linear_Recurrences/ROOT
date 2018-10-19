@@ -1,16 +1,22 @@
 chapter AFP
 
-session Linear_Recurrences (AFP) = "Algebraic_Numbers_Lib" +
+session Linear_Recurrences (AFP) = Count_Complex_Roots +
   options [timeout = 600]
   sessions
     "HOL-Library"
     "HOL-Computational_Algebra"
+    "HOL-Analysis"
+    "HOL-Real_Asymp"
+    Polynomial_Factorization
   theories
-    Linear_Recurrences_Solver
+    Linear_Homogenous_Recurrences
+    Linear_Inhomogenous_Recurrences
+    Rational_FPS_Asymptotics
   document_files
     "root.tex"
 
-session Linear_Recurrences_Test (AFP) = Linear_Recurrences +
+session Linear_Recurrences_Solver (AFP) = "Algebraic_Numbers_Lib" +
   options [timeout = 1200]
   theories
     Linear_Recurrences_Test
+

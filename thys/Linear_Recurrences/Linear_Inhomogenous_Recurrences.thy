@@ -25,7 +25,7 @@ locale linear_inhomogenous_recurrence =
   fixes f g :: "nat \<Rightarrow> 'a :: comm_ring" and cs fs :: "'a list"
   assumes base: "n < length fs \<Longrightarrow> f n = fs ! n"
   assumes cs_not_null [simp]: "cs \<noteq> []" and last_cs [simp]: "last cs \<noteq> 0"
-      and hd_cs [simp]: "hd cs \<noteq> 0" and enough_base: "length fs \<ge> length cs + 1"
+      and hd_cs [simp]: "hd cs \<noteq> 0" and enough_base: "length fs + 1 \<ge> length cs"
   assumes rec:  "n \<ge> length fs + 1 - length cs \<Longrightarrow> 
                      (\<Sum>k<length cs. cs ! k * f (n + k)) = g (n + length cs - 1)"
 begin

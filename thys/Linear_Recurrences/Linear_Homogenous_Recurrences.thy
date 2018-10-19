@@ -150,7 +150,7 @@ locale linear_homogenous_recurrence =
   fixes f :: "nat \<Rightarrow> 'a :: comm_semiring_0" and cs fs :: "'a list"
   assumes base: "n < length fs \<Longrightarrow> f n = fs ! n"
   assumes cs_not_null [simp]: "cs \<noteq> []" and last_cs [simp]: "last cs \<noteq> 0"
-      and hd_cs [simp]: "hd cs \<noteq> 0" and enough_base: "length fs \<ge> length cs + 1"
+      and hd_cs [simp]: "hd cs \<noteq> 0" and enough_base: "length fs + 1 \<ge> length cs"
   assumes rec:  "n \<ge> length fs - length cs \<Longrightarrow> (\<Sum>k<length cs. cs ! k * f (n + k)) = 0"
 begin
 
