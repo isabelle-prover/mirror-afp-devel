@@ -5,7 +5,7 @@ object AFP_Check_Roots extends isabelle.Isabelle_Tool.Body {
   import isabelle._
 
   val afp_dir = Path.explode("$AFP").expand
-  val excludes = List("ROOTS", "LICENSE", "LICENSE.LGPL")
+  val excludes = List("ROOTS", "LICENSE", "LICENSE.LGPL", ".DS_Store")
 
   def print_good(string: String): Unit =
     println(Console.BOLD + Console.GREEN + string + Console.RESET)
