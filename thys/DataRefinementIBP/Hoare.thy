@@ -139,13 +139,13 @@ lemma Sup_range_comp: "(\<Squnion> range p) o S = \<Squnion> (range (\<lambda> w
 lemma Sup_less_comp: "(Sup_less P) w o S = Sup_less (\<lambda> w . ((P w) o S)) w"
   apply (simp add: Sup_less_def fun_eq_iff, safe)
   apply (subgoal_tac "((\<lambda>f. f (S x)) ` {y. \<exists>v<w. \<forall>x. y x = P v x}) = ((\<lambda>f. f x) ` {y. \<exists>v<w. \<forall>x. y x = P v (S x)})")
-  apply (auto cong del: strong_SUP_cong)
+  apply (auto cong del: SUP_cong_strong)
   done
 
 lemma Sup_less_assert: "Sup_less (\<lambda>w. {. (p w)::'a::complete_distrib_lattice .}) w = {.Sup_less p w.}"
   apply (simp add: Sup_less_def assert_Sup image_def)
   apply (subgoal_tac "{y. \<exists>v<w. y = {. p v .}} = {y. \<exists>x. (\<exists>v<w. x = p v) \<and> y = {. x .}}")
-  apply (auto simp add: image_def cong del: strong_SUP_cong)
+  apply (auto simp add: image_def cong del: SUP_cong_strong)
   done
 
 

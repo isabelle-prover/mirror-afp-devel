@@ -291,7 +291,7 @@ lemma  grd_dgr:
   apply (simp add: grd_def step_def)
   apply (unfold step_def uminus_Inf)
   apply (case_tac "(uminus ` range (\<lambda>j::'b. D (i, j) \<bottom>)) = {P::'a. \<exists>j::'b. P = - D (i, j) \<bottom>}")
-  apply (auto cong del: strong_SUP_cong)
+  apply (auto cong del: SUP_cong_strong)
   done
 
 lemma  grd_dgr_set:

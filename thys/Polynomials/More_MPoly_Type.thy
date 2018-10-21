@@ -329,7 +329,7 @@ proof -
 qed
 
 lemma insertion_single[simp]: "insertion f (monom (Poly_Mapping.single (v::nat) (n::nat)) a) = a * f v ^ n"
-  using insertion_fun_single  Sum_any.strong_cong insertion.rep_eq insertion_aux.rep_eq insertion_fun_def
+  using insertion_fun_single  Sum_any.cong insertion.rep_eq insertion_aux.rep_eq insertion_fun_def
   mapping_of_monom single.rep_eq by (metis (no_types, lifting))
 
 lemma insertion_fun_irrelevant_vars:

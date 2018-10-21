@@ -124,7 +124,7 @@ proof(rule maximalI, rule ext, unfold wp_eval)
   also {
     from ne obtain a where "a \<in> S s" by blast
     hence "Inf ((\<lambda>_. c) ` S s) = c"
-      by (auto simp add: image_constant_conv cong del: strong_INF_cong)
+      by (auto simp add: image_constant_conv cong del: INF_cong_strong)
   }
   finally show "Inf ((\<lambda>a. wp (p a) (\<lambda>_. c) s) ` S s) = c" .
 qed

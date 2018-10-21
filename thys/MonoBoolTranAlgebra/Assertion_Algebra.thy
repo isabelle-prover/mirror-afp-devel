@@ -186,7 +186,7 @@ lemma assert_Inf: "{\<cdot>Inf A} = (Inf (assert ` A)) \<sqinter> 1"
 proof (cases "A = {}")
   case True then show ?thesis by simp
 next
-  note strong_INF_cong [cong del] strong_SUP_cong [cong del]
+  note INF_cong_strong [cong del] SUP_cong_strong [cong del]
   case False then show ?thesis
   apply (simp add: Inf_Assertion_def uminus_Assertion_def)
   apply (simp add: neg_assert_def assert_Sup dual_Sup Inf_comp inf_commute inf_Inf comp_def)

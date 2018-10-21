@@ -1212,7 +1212,7 @@ proof -
   interpret E: prob_space "exponential (escape_rate s'')" for s''
     by (intro escape_rate_pos prob_space_exponential)
   have "continuous_on {..0} (p s s')"
-    by (simp add: p_nonpos continuous_on_const cong: continuous_on_strong_cong)
+    by (simp add: p_nonpos continuous_on_const cong: continuous_on_cong_strong)
   moreover have "continuous_on {0..} (p s s')"
   proof (subst continuous_on_cong[OF refl p_eq])
     let ?I = "\<lambda>t. escape_rate s * exp (escape_rate s * t) * (LINT s''|J s. p s'' s' t)"

@@ -353,7 +353,7 @@ proof(rule mcontI)
       moreover have "Complete_Partial_Order.chain (flat_ord b) (terminal ` Y)"
         using chain True by(auto intro: chain_imageI tllist_ord_terminalD)
       ultimately show ?thesis using Y
-      by (simp add: contD [OF cont_bot] cong del: b.strong_SUP_cong)
+      by (simp add: contD [OF cont_bot] cong del: b.SUP_cong_strong)
     next
       case False
       hence eq: "tSup Y = TCons (thd (tSup Y)) (ttl (tSup Y))" by simp

@@ -205,7 +205,7 @@ proof(rule bd_ctsI, rule antisym)
         by(auto)
       hence "Sup (range (\<lambda>i. min (wp a (M i) s) (wp b (M i) s))) =
            Sup_exp (range (\<lambda>i s. min (wp a (M i) s) (wp b (M i) s))) s"
-        by (simp add: Sup_exp_def cong del: strong_SUP_cong)
+        by (simp add: Sup_exp_def cong del: SUP_cong_strong)
     }
     finally show "min (wp a (Sup_exp (range M)) s) (wp b (Sup_exp (range M)) s) \<le>
                   Sup_exp (range (\<lambda>i s. min (wp a (M i) s) (wp b (M i) s))) s" .
@@ -415,7 +415,7 @@ proof(rule bd_ctsI, rule ext, simp add:o_def wp_eval)
       by(auto)
     hence "Sup (range (\<lambda>i. p s * wp a (M i) s + (1 - p s) * wp b (M i) s)) =
            Sup_exp (range (\<lambda>x s. p s * wp a (M x) s + (1 - p s) * wp b (M x) s)) s"
-      by (simp add: Sup_exp_def cong del: strong_SUP_cong)
+      by (simp add: Sup_exp_def cong del: SUP_cong_strong)
   }
   finally
   have "p s * wp a (Sup_exp (range M)) s + (1 - p s) * wp b (Sup_exp (range M)) s \<le>
@@ -552,7 +552,7 @@ proof(intro bd_ctsI ext, simp add:o_def)
     have "\<And>s. range (\<lambda>i. c * M i s) = {f s |f. f \<in> range (\<lambda>i s. c * M i s)}"
       by(auto)
     hence "(\<lambda>s. Sup (range (\<lambda>i. c * M i s))) = Sup_exp (range (\<lambda>i s. c * M i s))"
-      by (simp add: Sup_exp_def cong del: strong_SUP_cong)
+      by (simp add: Sup_exp_def cong del: SUP_cong_strong)
     hence "a (\<lambda>s. Sup (range (\<lambda>i. c * M i s))) s =
            a (Sup_exp (range (\<lambda>i s. c * M i s))) s" by(simp)
   }
@@ -791,12 +791,12 @@ proof (intro ext, simp add: SetDC_def DC_def)
     by(simp add:cInf_eq_Min)
   finally show "(INF x:insert x S. a x ab P s) =
     min (a x ab P s) (INF x:S. a x ab P s)"
-    by (simp cong del: strong_INF_cong)
+    by (simp cong del: INF_cong_strong)
 qed
 
 lemma SetDC_singleton:
   "SetDC a (\<lambda>_. {x}) = a x"
-  by (simp add: SetDC_def cong del: strong_INF_cong)
+  by (simp add: SetDC_def cong del: INF_cong_strong)
 
 lemma cts_wp_SetDC_const:
   fixes a::"'a \<Rightarrow> 's prog"

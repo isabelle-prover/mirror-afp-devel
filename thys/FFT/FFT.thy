@@ -58,14 +58,14 @@ lemma sum_add_split_nat_ivl_singleton:
     and g: "!!i. [| m < i; i < n |] ==> g i = f i"
   shows "f m + sum g {m<..<n} = sum f {m..<n}"
   using less g
-  by(simp add: sum_add_nat_ivl_singleton cong: sum.strong_cong)
+  by(simp add: sum_add_nat_ivl_singleton cong: sum.cong_strong)
 
 lemma sum_add_split_nat_ivl:
   assumes le: "m <= (k::nat)" "k <= n"
     and g: "!!i. [| m <= i; i < k |] ==> g i = f i"
     and h: "!!i. [| k <= i; i < n |] ==> h i = f i"
   shows "sum g {m..<k} + sum h {k..<n} = sum f {m..<n}"
-  using le g h by (simp add: sum_add_nat_ivl cong: sum.strong_cong)
+  using le g h by (simp add: sum_add_nat_ivl cong: sum.cong_strong)
 
 lemma ivl_splice_Un:
   "{0..<2*n::nat} = ((*) 2 ` {0..<n}) \<union> ((%i. Suc (2*i)) ` {0..<n})"

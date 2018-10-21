@@ -15,7 +15,7 @@ datatype bexp
 
 declare [[coercion Var]] [[coercion_enabled]]
 
-declare strong_SUP_cong[fundef_cong del]
+declare SUP_cong_strong[fundef_cong del]
 function cnf :: "bexp \<Rightarrow> cnf"
 where
   "cnf v = {{(v, True)}}"

@@ -121,7 +121,7 @@ next
   case (3 w i m)
   show ?case using "3.prems"
     by(simp add: 3(1,2) min.absorb1 min.absorb2 drop_take atLeastLessThanSuc_atLeastAtMost set_aux
-         del:upt_Suc cong: strong_SUP_cong)
+         del:upt_Suc cong: SUP_cong_strong)
       (simp add: add.commute)
 qed
 

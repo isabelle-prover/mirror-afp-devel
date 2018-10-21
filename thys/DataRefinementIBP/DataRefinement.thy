@@ -93,7 +93,7 @@ lemma Disjunctive_Sup:
   apply (drule_tac x = x in spec)
   apply (simp add: Apply.Disjunctive_def)
   apply (subgoal_tac "(R x ` (\<lambda>f. f x) ` X) =((\<lambda>f. f x) ` {y. \<exists>x\<in>X. y = (\<lambda>xa. R xa (x xa))})")
-  apply (auto simp add: image_image cong del: strong_SUP_cong)
+  apply (auto simp add: image_image cong del: SUP_cong_strong)
   done
 
 lemma (in DiagramTermination) disjunctive_SUP_L_P:
