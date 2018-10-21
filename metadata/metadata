@@ -3603,6 +3603,19 @@ topic = Logic/Rewriting
 abstract = This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus.
 notify = jasmin.blanchette@gmail.com
 
+[Lambda_Free_EPO]
+title = Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms
+author = Alexander Bentkamp <https://www.cs.vu.nl/~abp290/>
+topic = Logic/Rewriting
+date = 2018-10-19
+notify = a.bentkamp@vu.nl
+abstract = 
+  This Isabelle/HOL formalization defines the Embedding Path Order (EPO)
+  for higher-order terms without lambda-abstraction and proves many
+  useful properties about it. In contrast to the lambda-free recursive
+  path orders, it does not fully coincide with RPO on first-order terms,
+  but it is compatible with arbitrary higher-order contexts.
+
 [Nested_Multisets_Ordinals]
 title = Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals
 author = Jasmin Christian Blanchette <mailto:jasmin.blanchette@gmail.com>, Mathias Fleury <mailto:fleury@mpi-inf.mpg.de>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>

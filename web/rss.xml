@@ -26,6 +26,19 @@ unlike treaps, they only use discrete probability distributions, but
 their use of randomness is more complicated.&lt;/p&gt;</description>
     </item>
     <item>
+       <title>Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms</title>
+              <link>https://www.isa-afp.org/entries/Lambda_Free_EPO.html</link>
+       <guid>https://www.isa-afp.org/entries/Lambda_Free_EPO.html</guid>
+       <dc:creator> Alexander Bentkamp       </dc:creator>
+       <pubDate>19 Oct 2018 00:00:00 +0000</pubDate>
+       <description>
+This Isabelle/HOL formalization defines the Embedding Path Order (EPO)
+for higher-order terms without lambda-abstraction and proves many
+useful properties about it. In contrast to the lambda-free recursive
+path orders, it does not fully coincide with RPO on first-order terms,
+but it is compatible with arbitrary higher-order contexts.</description>
+    </item>
+    <item>
        <title>Upper Bounding Diameters of State Spaces of Factored Transition Systems</title>
               <link>https://www.isa-afp.org/entries/Factored_Transition_System_Bounding.html</link>
        <guid>https://www.isa-afp.org/entries/Factored_Transition_System_Bounding.html</guid>
@@ -578,24 +591,6 @@ quotients under mild conditions.&lt;/li&gt; &lt;/ol&gt; These proofs
 are carried out for abstract BNF&lt;sub&gt;CC&lt;/sub&gt;s similar to
 the AFP entry BNF Operations.  In addition, we apply the
 BNF&lt;sub&gt;CC&lt;/sub&gt; theory to several concrete functors.</description>
-    </item>
-    <item>
-       <title>The Incompatibility of Fishburn-Strategyproofness and Pareto-Efficiency</title>
-              <link>https://www.isa-afp.org/entries/Fishburn_Impossibility.html</link>
-       <guid>https://www.isa-afp.org/entries/Fishburn_Impossibility.html</guid>
-       <dc:creator> Felix Brandt, Manuel Eberl, Christian Saile, Christian Stricker       </dc:creator>
-       <pubDate>22 Mar 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;p&gt;This formalisation contains the proof that there is no
-anonymous Social Choice Function for at least three agents and
-alternatives that fulfils both Pareto-Efficiency and
-Fishburn-Strategyproofness. It was derived from a proof of &lt;a
-href=&#34;http://dss.in.tum.de/files/brandt-research/stratset.pdf&#34;&gt;Brandt
-&lt;em&gt;et al.&lt;/em&gt;&lt;/a&gt;, which relies on an unverified
-translation of a fixed finite instance of the original problem to SAT.
-This Isabelle proof contains a machine-checked version of both the
-statement for exactly three agents and alternatives and the lifting to
-the general case.&lt;/p&gt;</description>
     </item>
   </channel>
 </rss>
