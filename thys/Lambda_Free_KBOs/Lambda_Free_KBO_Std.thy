@@ -247,7 +247,7 @@ proof (induct t arbitrary: s rule: measure_induct_rule[of size])
         enat_defs(2) ileI1 linorder_not_le not_iless0 wary_st wt_gt_\<delta>_if_superunary wt_s)
     hence nargs_s: "num_args s = 0"
       by (metis enat_ord_simps(2) less_one nargs_lt one_enat_def)
-    have s_eq_hd: "s = Hd (head s)"
+    have "s = Hd (head s)"
       by (simp add: Hd_head_id nargs_s)
     then obtain f where
       f_in: "f \<in> ground_heads (head s)" and
