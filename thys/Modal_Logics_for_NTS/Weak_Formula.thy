@@ -1,40 +1,10 @@
 theory Weak_Formula
 imports
   Weak_Transition_System
-  Formula
+  Disjunction
 begin
 
 section \<open>Weak Formulas\<close>
-
-subsection \<open>Disjunction\<close>
-
-definition Disj :: "('idx,'pred::fs,'act::bn) formula set['idx] \<Rightarrow> ('idx,'pred,'act) formula" where
-  "Disj xset = Not (Conj (map_bset Not xset))"
-
-lemma finite_supp_map_bset_Not [simp]:
-  assumes "finite (supp xset)"
-  shows "finite (supp (map_bset Not xset))"
-proof -
-  have "eqvt map_bset" and "eqvt Not"
-    by (simp add: eqvtI)+
-  then have "supp (map_bset Not) = {}"
-    using supp_fun_eqvt supp_fun_app_eqvt by blast
-  then have "supp (map_bset Not xset) \<subseteq> supp xset"
-    using supp_fun_app by blast
-  with assms show "finite (supp (map_bset Not xset))"
-    by (metis finite_subset)
-qed
-
-lemma Disj_eqvt [simp]:
-  assumes "finite (supp xset)"
-  shows "p \<bullet> Disj xset = Disj (p \<bullet> xset)"
-using assms unfolding Disj_def by simp
-
-lemma Disj_eq_iff [simp]:
-  assumes "finite (supp xset1)" and "finite (supp xset2)"
-  shows "Disj xset1 = Disj xset2 \<longleftrightarrow> xset1 = xset2"
-using assms unfolding Disj_def by (metis Conj_eq_iff Not_eq_iff bset.inj_map_strong finite_supp_map_bset_Not)
-
 
 subsection \<open>Lemmas about \texorpdfstring{$\alpha$}{alpha}-equivalence involving \texorpdfstring{$\tau$}{tau}\<close>
 
@@ -93,9 +63,17 @@ begin
       "tau_steps x 0       = x"
     | "tau_steps x (Suc n) = Act \<tau> (tau_steps x n)"
 
-  lemma tau_steps_eqvt [eqvt]:
+  lemma tau_steps_eqvt (*[eqvt]*) [simp]:
     "p \<bullet> tau_steps x n = tau_steps (p \<bullet> x) (p \<bullet> n)"
     by (induct n) (simp_all add: permute_nat_def tau_eqvt)
+
+  lemma tau_steps_eqvt' [simp]:
+    "p \<bullet> tau_steps x = tau_steps (p \<bullet> x)"
+    by (simp add: permute_fun_def)
+
+  lemma tau_steps_eqvt_raw [simp]:
+    "p \<bullet> tau_steps = tau_steps"
+    by (simp add: permute_fun_def)
 
   lemma tau_steps_add [simp]:
     "tau_steps (tau_steps x m) n = tau_steps x (m + n)"
@@ -144,7 +122,7 @@ begin
       by (metis finite_subset finite_supp)
   qed
 
-  lemma weak_tau_modality_eqvt [eqvt]:
+  lemma weak_tau_modality_eqvt (*[eqvt]*) [simp]:
     "p \<bullet> weak_tau_modality x = weak_tau_modality (p \<bullet> x)"
     unfolding weak_tau_modality_def by (simp add: map_bset_eqvt)
 
@@ -177,14 +155,14 @@ begin
   lemma Act_weak_tau_modality_eq_iff [simp]:
     "Act \<alpha>1 (weak_tau_modality x1) = Act \<alpha>2 (weak_tau_modality x2) \<longleftrightarrow> Act \<alpha>1 x1 = Act \<alpha>2 x2"
     by (simp add: Act_eq_iff_perm)
-      
+
   definition weak_action_modality :: "'act \<Rightarrow> ('idx,'pred::fs,'act::bn) formula \<Rightarrow> ('idx,'pred,'act) formula" ("\<langle>\<langle>_\<rangle>\<rangle>_")
     where
       "\<langle>\<langle>\<alpha>\<rangle>\<rangle>x \<equiv> if \<alpha> = \<tau> then weak_tau_modality x else weak_tau_modality (Act \<alpha> (weak_tau_modality x))"
 
-  lemma weak_action_modality_eqvt [eqvt]:
+  lemma weak_action_modality_eqvt (*[eqvt]*) [simp]:
     "p \<bullet> (\<langle>\<langle>\<alpha>\<rangle>\<rangle>x) = \<langle>\<langle>p \<bullet> \<alpha>\<rangle>\<rangle>(p \<bullet> x)"
-    by (simp add: weak_action_modality_def)
+    using tau_eqvt weak_action_modality_def by fastforce
 
   lemma weak_action_modality_tau:
     "(\<langle>\<langle>\<tau>\<rangle>\<rangle>x) = weak_tau_modality x"
@@ -254,7 +232,7 @@ begin
 
   text \<open>@{const weak_formula} is equivariant.\<close>
 
-  lemma weak_formula_eqvt [eqvt]: "weak_formula x \<Longrightarrow> weak_formula (p \<bullet> x)"
+  lemma weak_formula_eqvt (*[eqvt]*) [simp]: "weak_formula x \<Longrightarrow> weak_formula (p \<bullet> x)"
   proof (induct rule: weak_formula.induct)
     case (wf_Conj xset) then show ?case
       by simp (metis (no_types, lifting) imageE permute_finite permute_set_eq_image set_bset_eqvt supp_eqvt weak_formula.wf_Conj)
@@ -266,7 +244,7 @@ begin
       by (simp add: weak_formula.wf_Act)
   next
     case (wf_Pred x \<phi>) then show ?case
-      by (simp add: tau_eqvt weak_action_modality_eqvt weak_formula.wf_Pred)
+      by (simp add: tau_eqvt weak_formula.wf_Pred)
   qed
 
 end

@@ -10,16 +10,6 @@ text \<open>Weak formulas are a subset of (strong) formulas, and the definition 
 taken from the latter.  Here we prove some useful lemmas about the validity of weak modalities.
 These are similar to corresponding lemmas about the validity of the (strong) action modality.\<close>
 
-context nominal_ts
-begin
-
-  lemma valid_Disj [simp]:
-    assumes "finite (supp xset)"
-    shows "P \<Turnstile> Disj xset \<longleftrightarrow> (\<exists>x\<in>set_bset xset. P \<Turnstile> x)"
-  using assms by (simp add: Disj_def map_bset.rep_eq)
-
-end
-
 context indexed_weak_nominal_ts
 begin
 

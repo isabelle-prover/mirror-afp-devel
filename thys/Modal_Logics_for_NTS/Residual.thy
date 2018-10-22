@@ -227,4 +227,26 @@ next
     by simp
 qed
 
+\<comment> \<open>The following lemma is not about residuals, but we have no better place for it.\<close>
+lemma set_bounded_supp:
+  assumes "finite S" and "\<And>x. x\<in>X \<Longrightarrow> supp x \<subseteq> S"
+  shows "supp X \<subseteq> S"
+proof -
+  have "S supports X"
+    unfolding supports_def proof (clarify)
+    fix a b
+    assume a: "a \<notin> S" and b: "b \<notin> S"
+    {
+      fix x
+      assume "x \<in> X"
+      then have "(a \<rightleftharpoons> b) \<bullet> x = x"
+        using a b \<open>\<And>x. x\<in>X \<Longrightarrow> supp x \<subseteq> S\<close> by (meson fresh_def subsetCE swap_fresh_fresh)
+    }
+    then show "(a \<rightleftharpoons> b) \<bullet> X = X"
+      by auto (metis (full_types) eqvt_bound mem_permute_iff, metis mem_permute_iff)
+  qed
+  then show "supp X \<subseteq> S"
+    using assms(1) by (fact supp_is_subset)
+qed
+
 end

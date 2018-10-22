@@ -16,13 +16,13 @@ begin
 
   notation weakly_logically_equivalent (infix "\<equiv>\<cdot>" 50)
 
-  lemma logically_equivalent_eqvt:
+  lemma weakly_logically_equivalent_eqvt:
     assumes "P \<equiv>\<cdot> Q" shows "p \<bullet> P \<equiv>\<cdot> p \<bullet> Q"
   unfolding weakly_logically_equivalent_def proof (clarify)
     fix x :: "('idx,'pred,'act) formula"
     assume "weak_formula x"
     then have "weak_formula (-p \<bullet> x)"
-      by (simp add: weak_formula_eqvt)
+      by simp
     then show "p \<bullet> P \<Turnstile> x \<longleftrightarrow> p \<bullet> Q \<Turnstile> x"
       using assms by (metis (no_types, lifting) weakly_logically_equivalent_def permute_minus_cancel(2) valid_eqvt)
   qed

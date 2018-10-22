@@ -8,18 +8,18 @@ section \<open>Logical Equivalence Implies Bisimilarity\<close>
 context indexed_nominal_ts
 begin
 
-  definition distinguishing_formula :: "('idx, 'pred, 'act) formula \<Rightarrow> 'state \<Rightarrow> 'state \<Rightarrow> bool"
+  definition is_distinguishing_formula :: "('idx, 'pred, 'act) formula \<Rightarrow> 'state \<Rightarrow> 'state \<Rightarrow> bool"
     ("_ distinguishes _ from _" [100,100,100] 100)
   where
     "x distinguishes P from Q \<equiv> P \<Turnstile> x \<and> \<not> Q \<Turnstile> x"
 
-  lemma distinguishing_formula_eqvt [eqvt]:
+  lemma is_distinguishing_formula_eqvt (*[eqvt]*):
     assumes "x distinguishes P from Q" shows "(p \<bullet> x) distinguishes (p \<bullet> P) from (p \<bullet> Q)"
-  using assms unfolding distinguishing_formula_def
+  using assms unfolding is_distinguishing_formula_def
   by (metis permute_minus_cancel(2) valid_eqvt)
 
   lemma equivalent_iff_not_distinguished: "(P =\<cdot> Q) \<longleftrightarrow> \<not>(\<exists>x. x distinguishes P from Q)"
-  by (metis (full_types) distinguishing_formula_def logically_equivalent_def valid_Not)
+  by (metis (full_types) is_distinguishing_formula_def logically_equivalent_def valid_Not)
 
   text \<open>There exists a distinguishing formula for~@{term P} and~@{term Q} whose support is contained
   in~@{term "supp P"}.\<close>
@@ -79,12 +79,12 @@ begin
     from finite_supp_B and card_B and supp_B_subset_supp_P have "supp ?y \<subseteq> supp P"
       by simp
     moreover have "?y distinguishes P from Q"
-      unfolding distinguishing_formula_def proof
+      unfolding is_distinguishing_formula_def proof
         from assms show "P \<Turnstile> ?y"
-          by (auto simp add: card_B finite_supp_B) (metis distinguishing_formula_def supp_perm_eq valid_eqvt)
+          by (auto simp add: card_B finite_supp_B) (metis is_distinguishing_formula_def supp_perm_eq valid_eqvt)
       next
         from assms show "\<not> Q \<Turnstile> ?y"
-          by (auto simp add: card_B finite_supp_B) (metis distinguishing_formula_def permute_zero fresh_star_zero)
+          by (auto simp add: card_B finite_supp_B) (metis is_distinguishing_formula_def permute_zero fresh_star_zero)
       qed
     ultimately show ?thesis ..
   qed
@@ -113,40 +113,8 @@ begin
             then obtain f :: "'state \<Rightarrow> ('idx, 'pred, 'act) formula" where
               *: "\<forall>Q'\<in>?Q'. supp (f Q') \<subseteq> supp P' \<and> (f Q') distinguishes P' from Q'"
               by metis
-            have "supp P' supports (f ` ?Q')"
-              unfolding supports_def proof (clarify)
-                fix a b
-                assume a: "a \<notin> supp P'" and b: "b \<notin> supp P'"
-                have "(a \<rightleftharpoons> b) \<bullet> (f ` ?Q') \<subseteq> f ` ?Q'"
-                proof
-                  fix x'
-                  assume "x' \<in> (a \<rightleftharpoons> b) \<bullet> (f ` ?Q')"
-                  then obtain Q' where 1: "x' = (a \<rightleftharpoons> b) \<bullet> f Q'" and 2: "Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>"
-                    by auto (metis permute_swap_cancel transition_eqvt')
-                  with "*" and a and b have "a \<notin> supp (f Q')" and "b \<notin> supp (f Q')"
-                    by auto
-                  with 1 have "x' = f Q'"
-                    by (metis fresh_perm fresh_star_def supp_perm_eq swap_atom)
-                  with 2 show "x' \<in> f ` ?Q'"
-                    by simp
-                qed
-                moreover have "f ` ?Q' \<subseteq> (a \<rightleftharpoons> b) \<bullet> (f ` ?Q')"
-                proof
-                  fix x'
-                  assume "x' \<in> f ` ?Q'"
-                  then obtain Q' where 1: "x' = f Q'" and 2: "Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>"
-                    by auto
-                  with "*" and a and b have "a \<notin> supp (f Q')" and "b \<notin> supp (f Q')"
-                    by auto
-                  with 1 have "x' = (a \<rightleftharpoons> b) \<bullet> f Q'"
-                    by (metis fresh_perm fresh_star_def supp_perm_eq swap_atom)
-                  with 2 show "x' \<in> (a \<rightleftharpoons> b) \<bullet> (f ` ?Q')"
-                    using mem_permute_iff by blast
-                qed
-                ultimately show "(a \<rightleftharpoons> b) \<bullet> (f ` ?Q') = f ` ?Q'" ..
-              qed
-            then have supp_image_subset_supp_P': "supp (f ` ?Q') \<subseteq> supp P'"
-              by (metis (erased, lifting) finite_supp supp_is_subset)
+            have "supp (f ` ?Q') \<subseteq> supp P'"
+              by (rule set_bounded_supp, fact finite_supp, cut_tac "*", blast)
             then have finite_supp_image: "finite (supp (f ` ?Q'))"
               using finite_supp rev_finite_subset by blast
             have "|f ` ?Q'| \<le>o |UNIV :: 'state set|"
@@ -165,7 +133,7 @@ begin
                   fix Q'
                   assume "Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>"
                   with "*" have "P' \<Turnstile> f Q'"
-                    by (metis distinguishing_formula_def mem_Collect_eq)
+                    by (metis is_distinguishing_formula_def mem_Collect_eq)
                 }
                 then show "P' \<Turnstile> ?y"
                   by (simp add: finite_supp_image card_image)
@@ -178,7 +146,7 @@ begin
                 from 2 have "\<And>Q''. Q \<rightarrow> \<langle>\<alpha>,Q''\<rangle> \<longrightarrow> Q' \<Turnstile> f Q''"
                   by (simp add: finite_supp_image card_image)
                 with 1 and "*" show False
-                  using distinguishing_formula_def by blast
+                  using is_distinguishing_formula_def by blast
               qed
             ultimately have False
               by (metis `P =\<cdot> Q` logically_equivalent_def)

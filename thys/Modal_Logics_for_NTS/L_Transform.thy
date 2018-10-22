@@ -584,7 +584,7 @@ begin
     "P \<sim>\<cdot>[F] Q \<Longrightarrow> L_bisimilar (EF (F,P)) (EF (F,Q))"
   | "P \<sim>\<cdot>[F] Q \<Longrightarrow> f \<in>\<^sub>f\<^sub>s F \<Longrightarrow> L_bisimilar (AC (f, F, \<langle>f\<rangle>P)) (AC (f, F, \<langle>f\<rangle>Q))"
 
-  lemma L_bisimilar_is_bisimulation: "L_transform.is_bisimulation L_bisimilar"
+  lemma L_bisimilar_is_L_transform_bisimulation: "L_transform.is_bisimulation L_bisimilar"
   unfolding L_transform.is_bisimulation_def
   proof
     show "symp L_bisimilar"
@@ -750,7 +750,7 @@ begin
     then have "L_bisimilar (EF (F,P)) (EF (F,Q))"
         by (metis L_bisimilar.intros(1))
     then show "EF (F,P) \<sim>\<cdot>\<^sub>L EF(F,Q)"
-      by (metis L_bisimilar_is_bisimulation L_transform.bisimilar_def)
+      by (metis L_bisimilar_is_L_transform_bisimulation L_transform.bisimilar_def)
   next
     assume "EF (F, P) \<sim>\<cdot>\<^sub>L EF (F, Q)"
     then have "invL_FL_bisimilar F P Q"

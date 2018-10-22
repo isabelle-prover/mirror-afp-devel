@@ -8,19 +8,19 @@ section \<open>Logical Equivalence Implies \texorpdfstring{$F/L$}{F/L}-Bisimilar
 context indexed_effect_nominal_ts
 begin
 
-  definition distinguishing_formula :: "('idx, 'pred, 'act, 'effect) formula \<Rightarrow> 'state \<Rightarrow> 'state \<Rightarrow> bool"
+  definition is_distinguishing_formula :: "('idx, 'pred, 'act, 'effect) formula \<Rightarrow> 'state \<Rightarrow> 'state \<Rightarrow> bool"
     ("_ distinguishes _ from _" [100,100,100] 100)
   where
     "x distinguishes P from Q \<equiv> P \<Turnstile> x \<and> \<not> Q \<Turnstile> x"
 
-  lemma distinguishing_formula_eqvt (*[eqvt]*):
+  lemma is_distinguishing_formula_eqvt (*[eqvt]*):
     assumes "x distinguishes P from Q" shows "(p \<bullet> x) distinguishes (p \<bullet> P) from (p \<bullet> Q)"
-  using assms unfolding distinguishing_formula_def
+  using assms unfolding is_distinguishing_formula_def
   by (metis permute_minus_cancel(2) FL_valid_eqvt)
 
   lemma FL_equivalent_iff_not_distinguished:
     "FL_logically_equivalent F P Q \<longleftrightarrow> \<not>(\<exists>x. x \<in> \<A>[F] \<and> x distinguishes P from Q)"
-  by (meson FL_logically_equivalent_def Not distinguishing_formula_def FL_valid_Not)
+  by (meson FL_logically_equivalent_def Not is_distinguishing_formula_def FL_valid_Not)
 
   text \<open>There exists a distinguishing formula for~@{term P} and~@{term Q} in~@{text "\<A>[F]"} whose
     support is contained in~@{term "supp (F,P)"}.\<close>
@@ -97,12 +97,12 @@ begin
           using p_x by (metis is_FL_formula_eqvt)
       qed
     moreover have "?y distinguishes P from Q"
-      unfolding distinguishing_formula_def proof
+      unfolding is_distinguishing_formula_def proof
         from `x distinguishes P from Q` show "P \<Turnstile> ?y"
-          by (auto simp add: card_B finite_supp_B) (metis distinguishing_formula_def fresh_star_Un supp_Pair supp_perm_eq FL_valid_eqvt)
+          by (auto simp add: card_B finite_supp_B) (metis is_distinguishing_formula_def fresh_star_Un supp_Pair supp_perm_eq FL_valid_eqvt)
       next
         from `x distinguishes P from Q` show "\<not> Q \<Turnstile> ?y"
-          by (auto simp add: card_B finite_supp_B) (metis distinguishing_formula_def permute_zero fresh_star_zero)
+          by (auto simp add: card_B finite_supp_B) (metis is_distinguishing_formula_def permute_zero fresh_star_zero)
       qed
     ultimately show ?thesis
       using that by blast
@@ -137,40 +137,8 @@ begin
             then obtain g :: "'state \<Rightarrow> ('idx, 'pred, 'act, 'effect) formula" where
               *: "\<forall>Q'\<in>?Q'. g Q' \<in> \<A>[L (\<alpha>,F,f)] \<and> supp (g Q') \<subseteq> supp (L (\<alpha>,F,f), P') \<and> (g Q') distinguishes P' from Q'"
               by metis
-            have "supp (L (\<alpha>,F,f), P') supports (g ` ?Q')"
-              unfolding supports_def proof (clarify)
-                fix a b
-                assume a: "a \<notin> supp (L (\<alpha>,F,f), P')" and b: "b \<notin> supp (L (\<alpha>,F,f), P')"
-                have "(a \<rightleftharpoons> b) \<bullet> (g ` ?Q') \<subseteq> g ` ?Q'"
-                proof
-                  fix x'
-                  assume "x' \<in> (a \<rightleftharpoons> b) \<bullet> (g ` ?Q')"
-                  then obtain Q' where 1: "x' = (a \<rightleftharpoons> b) \<bullet> g Q'" and 2: "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>"
-                    by auto (metis effect_apply_eqvt' permute_swap_cancel transition_eqvt')
-                  with "*" and a and b have "a \<notin> supp (g Q')" and "b \<notin> supp (g Q')"
-                    by auto
-                  with 1 have "x' = g Q'"
-                    by (metis fresh_perm fresh_star_def supp_perm_eq swap_atom)
-                  with 2 show "x' \<in> g ` ?Q'"
-                    by simp
-                qed
-                moreover have "g ` ?Q' \<subseteq> (a \<rightleftharpoons> b) \<bullet> (g ` ?Q')"
-                proof
-                  fix x'
-                  assume "x' \<in> g ` ?Q'"
-                  then obtain Q' where 1: "x' = g Q'" and 2: "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>"
-                    by auto
-                  with "*" and a and b have "a \<notin> supp (g Q')" and "b \<notin> supp (g Q')"
-                    by auto
-                  with 1 have "x' = (a \<rightleftharpoons> b) \<bullet> g Q'"
-                    by (metis fresh_perm fresh_star_def supp_perm_eq swap_atom)
-                  with 2 show "x' \<in> (a \<rightleftharpoons> b) \<bullet> (g ` ?Q')"
-                    using mem_permute_iff by blast
-                qed
-                ultimately show "(a \<rightleftharpoons> b) \<bullet> (g ` ?Q') = g ` ?Q'" ..
-              qed
-            then have supp_image_subset_supp_P': "supp (g ` ?Q') \<subseteq> supp (L (\<alpha>,F,f), P')"
-              by (metis (erased, lifting) finite_supp supp_is_subset)
+            have "supp (g ` ?Q') \<subseteq> supp (L (\<alpha>,F,f), P')"
+              by (rule set_bounded_supp, fact finite_supp, cut_tac "*", blast)
             then have finite_supp_image: "finite (supp (g ` ?Q'))"
               using finite_supp rev_finite_subset by blast
             have "|g ` ?Q'| \<le>o |UNIV :: 'state set|"
@@ -209,7 +177,7 @@ begin
                   fix Q'
                   assume "\<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q'\<rangle>"
                   with "*" have "P' \<Turnstile> g Q'"
-                    by (metis distinguishing_formula_def mem_Collect_eq)
+                    by (metis is_distinguishing_formula_def mem_Collect_eq)
                 }
                 then show "P' \<Turnstile> ?y"
                   by (simp add: finite_supp_image card_image)
@@ -222,7 +190,7 @@ begin
                 from 2 have "\<And>Q''. \<langle>f\<rangle>Q \<rightarrow> \<langle>\<alpha>,Q''\<rangle> \<longrightarrow> Q' \<Turnstile> g Q''"
                   by (simp add: finite_supp_image card_image)
                 with 1 and "*" show False
-                  using distinguishing_formula_def by blast
+                  using is_distinguishing_formula_def by blast
               qed
             ultimately have False
               by (metis `FL_logically_equivalent F P Q` FL_logically_equivalent_def)
