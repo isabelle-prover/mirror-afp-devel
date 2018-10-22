@@ -77,6 +77,28 @@ shows "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s ds)"
 fun i_satisfies_cs (infixl "\<Turnstile>\<^sub>i\<^sub>c\<^sub>s" 100) where
   "(I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s cs \<longleftrightarrow> v \<Turnstile>\<^sub>c\<^sub>s restrict_to I cs"
 
+definition distinct_indices :: "('i \<times> 'c) list \<Rightarrow> bool" where
+  "distinct_indices as = (distinct (map fst as))"
+
+lemma distinct_indicesD: "distinct_indices as \<Longrightarrow> (i,x) \<in> set as \<Longrightarrow> (i,y) \<in> set as \<Longrightarrow> x = y"
+  unfolding distinct_indices_def by (rule eq_key_imp_eq_value)
+
+fun minimality_condition_constraint :: "constraint \<Rightarrow> bool" where
+  "minimality_condition_constraint (LT p c) = (p \<noteq> 0)" 
+| "minimality_condition_constraint (GT p c) = (p \<noteq> 0)" 
+| "minimality_condition_constraint (LEQ p c) = (p \<noteq> 0)" 
+| "minimality_condition_constraint (GEQ p c) = (p \<noteq> 0)" 
+| "minimality_condition_constraint (LTPP p1 p2) = (p1 \<noteq> p2)" 
+| "minimality_condition_constraint (GTPP p1 p2) = (p1 \<noteq> p2)" 
+| "minimality_condition_constraint (LEQPP p1 p2) = (p1 \<noteq> p2)" 
+| "minimality_condition_constraint (GEQPP p1 p2) = (p1 \<noteq> p2)" 
+| "minimality_condition_constraint (EQPP p1 p2) = False" 
+| "minimality_condition_constraint (EQ p1 c) = False" 
+
+definition minimality_condition :: "'i i_constraint list \<Rightarrow> bool" where
+  "minimality_condition cs = (distinct_indices cs \<and> (Ball (snd ` set cs) minimality_condition_constraint))" 
+
+
 text \<open>For the unsat-core predicate we distinguish two modes. The strict mode (True) requires that
   only indices may be returned which occur in the constraints, whereas the weak mode (False) does
   not require this. The weak mode is used for the incremental version of the simplex method where
@@ -84,8 +106,9 @@ text \<open>For the unsat-core predicate we distinguish two modes. The strict mo
   be a subset of the user-selected indices. The strict mode is used in the
   non-incremental simplex-version where this mode guarantees that the unsat-core will only contain
   indices from the input-constraints.\<close>
-definition unsat_core :: "bool \<Rightarrow> 'i set \<Rightarrow> 'i i_constraint set \<Rightarrow> bool" where
-  "unsat_core mode I ics  = ((mode \<longrightarrow> I \<subseteq> fst ` ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s ics)))"
+definition minimal_unsat_core :: "bool \<Rightarrow> 'i set \<Rightarrow> 'i i_constraint list \<Rightarrow> bool" where
+  "minimal_unsat_core mode I ics  = ((mode \<longrightarrow> I \<subseteq> fst ` set ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))
+     \<and> (mode \<longrightarrow> minimality_condition ics \<longrightarrow> (\<forall> J. J \<subset> I \<longrightarrow> (\<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))))"
 
 subsection \<open>Procedure Specification\<close>
 
@@ -103,7 +126,7 @@ locale Solve =
   assumes  simplex_sat:  "solve cs = Sat v \<Longrightarrow> v \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
     \<comment> \<open>If the status @{const Unsat} is returned, then constraints are
      unsatisfiable, i.e., an unsatisfiable core is returned.\<close>
-  assumes  simplex_unsat:  "solve cs = Unsat I \<Longrightarrow> unsat_core True (set I) (set cs)"
+  assumes  simplex_unsat:  "solve cs = Unsat I \<Longrightarrow> minimal_unsat_core True (set I) cs"
 
 abbreviation (input) look where "look \<equiv> Mapping.lookup"
 abbreviation (input) upd where "upd \<equiv> Mapping.update"
@@ -140,7 +163,7 @@ given by: @{thm map2fun_def'[no_vars]}.\<close>
 locale SolveExec =
   fixes solve_exec :: "'i i_constraint list \<Rightarrow> 'i list + (var, rat) mapping"
   assumes  simplex_sat0:  "solve_exec cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
-  assumes  simplex_unsat0:  "solve_exec cs = Unsat I \<Longrightarrow> unsat_core True (set I) (set cs)"
+  assumes  simplex_unsat0:  "solve_exec cs = Unsat I \<Longrightarrow> minimal_unsat_core True (set I) cs"
 begin
 definition solve where
   "solve cs \<equiv> case solve_exec cs of Sat v \<Rightarrow> Sat \<langle>v\<rangle> | Unsat c \<Rightarrow> Unsat c"
@@ -189,8 +212,17 @@ lemma i_satisfies_ns_constraints_mono:
   "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs \<Longrightarrow> J \<subseteq> I \<Longrightarrow> (J,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs"
   by auto
 
-definition unsat_core_ns :: "bool \<Rightarrow> 'i set \<Rightarrow> ('i,'a :: lrv) i_ns_constraint set \<Rightarrow> bool" where
-  "unsat_core_ns mode I cs = ((mode \<longrightarrow> I \<subseteq> fst ` cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs)))"
+primrec poly :: "'a ns_constraint \<Rightarrow> linear_poly" where
+  "poly (LEQ_ns p a) = p"
+| "poly (GEQ_ns p a) = p"
+
+
+definition minimality_condition_ns :: "('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where 
+  "minimality_condition_ns ns = (distinct_indices ns \<and> (0 \<notin> poly ` snd ` set ns))" 
+
+definition minimal_unsat_core_ns :: "bool \<Rightarrow> 'i set \<Rightarrow> ('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where
+  "minimal_unsat_core_ns mode I cs = ((mode \<longrightarrow> I \<subseteq> fst ` set cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs))
+     \<and> (mode \<longrightarrow> minimality_condition_ns cs \<longrightarrow> (\<forall> J \<subset> I. \<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)))"
 
 
 text\<open>Specification of reduction of constraints to non-strict form is given by:\<close>
@@ -202,9 +234,10 @@ locale To_ns =
     \<comment> \<open>Convert the valuation that satisfies all non-strict constraints to the valuation that
    satisfies all initial constraints.\<close>
   fixes from_ns :: "(var, 'a) mapping \<Rightarrow> 'a ns_constraint list \<Rightarrow> (var, rat) mapping"
-  assumes  to_ns_unsat:  "unsat_core_ns mode I (set (to_ns cs)) \<Longrightarrow> unsat_core mode I (set cs)"
+  assumes  to_ns_unsat:  "minimal_unsat_core_ns mode I (to_ns cs) \<Longrightarrow> minimal_unsat_core mode I cs"
   assumes  i_to_ns_sat:  "(I,\<langle>v'\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set (to_ns cs) \<Longrightarrow> (I,\<langle>from_ns v' (flat_list (to_ns cs))\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs"
   assumes to_ns_indices: "fst ` set (to_ns cs) = fst ` set cs"
+  assumes minimality_cond: "minimality_condition cs \<Longrightarrow> minimality_condition_ns (to_ns cs)" 
 begin
 lemma to_ns_sat: "\<langle>v'\<rangle>  \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set (to_ns cs)) \<Longrightarrow> \<langle>from_ns v' (flat_list (to_ns cs))\<rangle> \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
   using i_to_ns_sat[of UNIV v' cs] by auto
@@ -214,7 +247,7 @@ end
 locale Solve_exec_ns =
   fixes solve_exec_ns :: "('i,'a::lrv) i_ns_constraint list \<Rightarrow> 'i list + (var, 'a) mapping"
   assumes simplex_ns_sat:  "solve_exec_ns cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)"
-  assumes simplex_ns_unsat:  "solve_exec_ns cs = Unsat I \<Longrightarrow> unsat_core_ns True (set I) (set cs)"
+  assumes simplex_ns_unsat:  "solve_exec_ns cs = Unsat I \<Longrightarrow> minimal_unsat_core_ns True (set I) cs"
 
 
 text\<open>After the transformation, the procedure is reduced to solving
@@ -507,6 +540,7 @@ i_preprocess_sat: "\<And> v. preprocess cs = (t,as,trans_v) \<Longrightarrow> (I
 preprocess_unsat: "preprocess cs = (t, as,trans_v) \<Longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs \<Longrightarrow> \<exists> v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t" and
 
 \<comment> \<open>preprocessing cannot introduce new indices\<close>
+preprocess_distinct: "preprocess cs = (t, as,trans_v) \<Longrightarrow> minimality_condition_ns cs \<Longrightarrow> distinct_indices as" and
 preprocess_index: "preprocess cs = (t,as,trans_v) \<Longrightarrow> fst ` set as \<subseteq> fst ` set cs"
 begin
 lemma preprocess_sat: "preprocess cs = (t,as,trans_v) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> \<langle>trans_v v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)"
@@ -514,10 +548,20 @@ lemma preprocess_sat: "preprocess cs = (t,as,trans_v) \<Longrightarrow> \<langle
 
 end
 
+definition minimal_unsat_core_tabl_atoms :: "'i set \<Rightarrow> tableau \<Rightarrow> ('i,'a::lrv) i_atom list \<Rightarrow> bool" where
+  "minimal_unsat_core_tabl_atoms I t as = ( I \<subseteq> fst ` set as \<and> (\<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as)) \<and>
+       (distinct_indices as \<longrightarrow> (\<forall> J \<subset> I. \<exists> v. v \<Turnstile>\<^sub>t t \<and> (J,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as)))" 
+
+lemma minimal_unsat_core_tabl_atomsD: assumes "minimal_unsat_core_tabl_atoms I t as"
+  shows "I \<subseteq> fst ` set as" 
+    "\<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as)" 
+    "distinct_indices as \<Longrightarrow> J \<subset> I \<Longrightarrow> \<exists> v. v \<Turnstile>\<^sub>t t \<and> (J,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
+  using assms unfolding minimal_unsat_core_tabl_atoms_def by auto
+
 locale AssertAll =
   fixes assert_all :: "tableau \<Rightarrow> ('i,'a::lrv) i_atom list \<Rightarrow> 'i list + (var, 'a)mapping"
   assumes assert_all_sat:  "\<triangle> t \<Longrightarrow> assert_all t as = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as)"
-  assumes assert_all_unsat:  "\<triangle> t \<Longrightarrow> assert_all t as = Unsat I \<Longrightarrow> set I \<subseteq> fst ` set as \<and> (\<not> (\<exists> v. v \<Turnstile>\<^sub>t t \<and> (set I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as))"
+  assumes assert_all_unsat:  "\<triangle> t \<Longrightarrow> assert_all t as = Unsat I \<Longrightarrow> minimal_unsat_core_tabl_atoms (set I) t as"
 
 
 text\<open>Once the preprocessing is done and tableau and atoms are
@@ -559,9 +603,24 @@ proof
     assume "solve_exec_ns cs = Unsat I"
     from this[unfolded solve] have assert: "assert_all t as = Unsat I"
       by (auto split: sum.splits)
-    from assert_all_unsat[OF t assert] preprocess_unsat[OF prep, of "set I"]
-    have "set I \<subseteq> fst ` set as" "\<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" by force+
-    then show "unsat_core_ns True (set I) (set cs)" unfolding unsat_core_ns_def using index by auto
+    from minimal_unsat_core_tabl_atomsD(1,2)[OF assert_all_unsat[OF t assert]] preprocess_unsat[OF prep, of "set I"]
+    have 1: "set I \<subseteq> fst ` set as" "\<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" by force+
+    show "minimal_unsat_core_ns True (set I) cs" unfolding minimal_unsat_core_ns_def
+    proof (intro conjI impI allI 1(2))
+      show "set I \<subseteq> fst ` set cs" using 1 index by auto
+      fix J
+      assume "minimality_condition_ns cs" "J \<subset> set I" 
+      with preprocess_distinct[OF prep]
+      have "distinct_indices as" "J \<subset> set I" by auto
+      from minimal_unsat_core_tabl_atomsD(3)[OF assert_all_unsat[OF t assert] this]
+      obtain v where model: "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by auto
+      define w where "w = Mapping.Mapping (\<lambda> x. Some (v x))"
+      have "v = \<langle>w\<rangle>" unfolding w_def map2fun_def
+        by (intro ext, transfer, auto)
+      with model have "\<langle>w\<rangle> \<Turnstile>\<^sub>t t" "(J, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by auto
+      from i_preprocess_sat[OF prep this(2,1)] have "(J, \<langle>trans_v w\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" .
+      then show "\<exists> w. (J, w) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" by auto
+    qed
   }
 qed
 
@@ -799,6 +858,11 @@ fun atoms_imply_bounds_index :: "('i,'a::lrv) i_atom set \<Rightarrow> ('a bound
   "as \<Turnstile>\<^sub>i bi \<longleftrightarrow> (\<forall> I v. (I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as \<longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>b bi)"
 declare atoms_imply_bounds_index.simps[simp del]
 
+fun i_atoms_equiv_bounds :: "('i,'a::lrv) i_atom set \<Rightarrow> 
+  ('a bounds \<times> 'a bounds) \<times> ('i bound_index \<times> 'i bound_index) \<Rightarrow> 'i set \<Rightarrow> bool" ("_ \<doteq>\<^sub>i _ \<parallel>/ _") where 
+  "(as \<doteq>\<^sub>i bi \<parallel> I) \<longleftrightarrow> (\<forall> J v. J \<subseteq> I \<longrightarrow> ((J,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as \<longleftrightarrow> (J,v) \<Turnstile>\<^sub>i\<^sub>b bi))"
+declare i_atoms_equiv_bounds.simps[simp del]
+
 lemma i_satisfies_atom_set_mono: "as \<subseteq> as' \<Longrightarrow> v \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as' \<Longrightarrow> v \<Turnstile>\<^sub>i\<^sub>a\<^sub>s as"
   by (cases v, auto simp: satisfies_atom_set_def)
 
@@ -822,10 +886,16 @@ text \<open>distinctness requires that for each index $i$, there is at most one 
   $b$ such that $x \leq b$ or $x \geq b$ or both are enforced.\<close>
 definition distinct_indices_state :: "('i,'a)state \<Rightarrow> bool" where
   "distinct_indices_state s = (\<forall> i x b x' b'. 
-    (look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b)) \<longrightarrow>
+    ((look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b)) \<longrightarrow>
     (look (\<B>\<^sub>i\<^sub>l s) x' = Some (i,b') \<or> look (\<B>\<^sub>i\<^sub>u s) x' = Some (i,b')) \<longrightarrow>
-    (x = x' \<and> b = b')
+    (x = x' \<and> b = b')) \<and> (look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<longrightarrow> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b') \<longrightarrow> False)
   )" 
+
+lemma distinct_indices_stateD: assumes "distinct_indices_state s"
+  shows "look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b) \<Longrightarrow> look (\<B>\<^sub>i\<^sub>l s) x' = Some (i,b') \<or> look (\<B>\<^sub>i\<^sub>u s) x' = Some (i,b')
+    \<Longrightarrow> x = x' \<and> b = b'" 
+  "look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<Longrightarrow> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b') \<Longrightarrow> P" 
+  using assms unfolding distinct_indices_state_def by blast+
 
 definition unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
   "unsat_state_core s = (set (the (\<U>\<^sub>c s)) \<subseteq> indices_state s \<and> (\<not> (\<exists> v. (set (the (\<U>\<^sub>c s)),v) \<Turnstile>\<^sub>i\<^sub>s s)))"
@@ -866,6 +936,13 @@ lemma index_valid_indices_state: "index_valid as s \<Longrightarrow> indices_sta
 
 lemma index_valid_mono: "as \<subseteq> bs \<Longrightarrow> index_valid as s \<Longrightarrow> index_valid bs s"
   unfolding index_valid_def by blast
+
+lemma index_valid_distinct_indices: assumes "index_valid (set as) s" 
+  and "distinct_indices as" 
+shows "distinct_indices_state s" 
+  using assms
+  unfolding distinct_indices_state_def index_valid_def using distinct_indicesD[of as]
+  by blast
 
 text\<open>To be a solution of the initial problem, a valuation should
 satisfy the initial tableau and list of atoms. Since tableau is
@@ -994,8 +1071,13 @@ assert_all_state_unsat: "\<triangle> t \<Longrightarrow> assert_all_state t as =
 
 assert_all_state_unsat_atoms_equiv_bounds: "\<triangle> t \<Longrightarrow> assert_all_state t as = s' \<Longrightarrow> \<U> s' \<Longrightarrow> set as \<Turnstile>\<^sub>i \<B>\<I> s'" and
 
+assert_all_distinct_equiv_index: "\<triangle> t \<Longrightarrow> assert_all_state t as = s' \<Longrightarrow> distinct_indices as \<Longrightarrow> 
+  set as \<doteq>\<^sub>i \<B>\<I> s' \<parallel> indices_state s'" and
+
 \<comment> \<open>The set of indices is taken from the constraints\<close>
-assert_all_state_indices: "\<triangle> t \<Longrightarrow> assert_all_state t as = s \<Longrightarrow> indices_state s \<subseteq> fst ` set as"
+assert_all_state_indices: "\<triangle> t \<Longrightarrow> assert_all_state t as = s \<Longrightarrow> indices_state s \<subseteq> fst ` set as" and
+
+assert_all_index_valid: "\<triangle> t \<Longrightarrow> assert_all_state t as = s \<Longrightarrow> index_valid (set as) s"
 begin
 definition assert_all where
   "assert_all t as \<equiv> let s = assert_all_state t as in
@@ -1022,8 +1104,9 @@ proof
   from unsat have "set I \<subseteq> indices_state (assert_all_state t as)" by auto
   also have "\<dots> \<subseteq> fst ` set as" using assert_all_state_indices[OF D refl] .
   finally have indices: "set I \<subseteq> fst ` set as" .
-  show "set I \<subseteq> fst ` set as \<and> (\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as)"
-  proof (intro conjI indices, clarify)
+  show "minimal_unsat_core_tabl_atoms (set I) t as" 
+    unfolding minimal_unsat_core_tabl_atoms_def
+  proof (intro conjI impI allI indices, clarify)
     fix v
     assume model: "v \<Turnstile>\<^sub>t t" "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
     from unsat have no_model: "\<not> ((set I, v) \<Turnstile>\<^sub>i\<^sub>s assert_all_state t as)" by auto
@@ -1036,6 +1119,20 @@ proof
     with equiv model_t have "(set I, v) \<Turnstile>\<^sub>i\<^sub>s assert_all_state t as"
       unfolding satisfies_state_index.simps atoms_imply_bounds_index.simps by simp
     with no_model show False by simp
+  next
+    fix J
+    assume dist: "distinct_indices as" and J: "J \<subset> set I" 
+    from J unsat[unfolded subsets_sat_core_def, folded i] 
+    have J': "J \<subseteq> indices_state (assert_all_state t as)" by auto
+    from index_valid_distinct_indices[OF assert_all_index_valid[OF D refl] dist] J
+      unsat[unfolded subsets_sat_core_def, folded i]
+    obtain v where "(J, v) \<Turnstile>\<^sub>i\<^sub>s assert_all_state t as" by blast
+    from this[unfolded satisfies_state_index.simps, folded assert_all_state_tableau_equiv[OF D refl]]
+    have "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> (assert_all_state t as)" by auto
+    with assert_all_distinct_equiv_index[OF D refl dist, unfolded i_atoms_equiv_bounds.simps, 
+        rule_format, OF J', of v]
+    have "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by auto
+    thus "\<exists> v. v \<Turnstile>\<^sub>t t \<and> (J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by blast
   qed
 qed
 
@@ -1187,6 +1284,11 @@ assert_atoms_equiv_bounds: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> 
 assert_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> ats \<Turnstile>\<^sub>i \<B>\<I> s \<Longrightarrow>
   insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert a s)" and
 
+assert_atoms_equiv_bounds_index: "\<And> ats. \<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
+    distinct (map fst (a # ats)) \<Longrightarrow> index_valid (set ats) s 
+    \<Longrightarrow> set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s)
+    \<Longrightarrow> (insert a (set ats)) \<doteq>\<^sub>i \<B>\<I> (assert a s) \<parallel> (indices_state (assert a s))" and
+
 \<comment> \<open>If the @{term \<U>} flag is raised, then there is no valuation
    that satisfies both the current tableau and the current bounds.\<close>
 assert_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s; index_valid ats s\<rbrakk> \<Longrightarrow> \<U> (assert a s) \<Longrightarrow>  minimal_unsat_state_core (assert a s)" and
@@ -1282,7 +1384,7 @@ lemma AssertAllState'_sat_atoms_equiv_bounds:
   unfolding assert_all_state_def assert_loop_def
   by (induct as rule: rev_induct) auto
 
-lemma AssertAllState'_unsat_atoms_equiv_bounds:
+lemma AssertAllState'_unsat_atoms_implies_bounds:
   assumes "\<triangle> t"
   shows "set as \<Turnstile>\<^sub>i \<B>\<I> (assert_all_state t as)"
 proof (induct as rule: rev_induct)
@@ -1313,7 +1415,43 @@ next
   qed
 qed
 
-
+lemma AssertAllState'_atoms_equiv_bounds_index:
+  assumes "\<triangle> t"
+  shows "distinct_indices as \<Longrightarrow> set as \<doteq>\<^sub>i \<B>\<I> (assert_all_state t as) \<parallel> indices_state (assert_all_state t as)"
+  unfolding assert_all_state_def
+proof (induct as rule: rev_induct)
+  case Nil
+  then show ?case
+    unfolding i_atoms_equiv_bounds.simps
+    using init_atoms_imply_bounds_index assms
+    by (simp add: init_indices assert_loop_def satisfies_atom_set_def satisfies_bounds_index.simps)
+next
+  case (snoc a ats')
+  from snoc(2) have dist: "distinct_indices ats'" by (simp add: distinct_indices_def)
+  let ?s = "assert_loop ats' (init t)"
+  from AssertAllState_index_valid[OF assms, of ats']
+  have "index_valid (set ats') ?s" by simp
+  from index_valid_indices_state[OF this] have sub: "indices_state ?s \<subseteq> fst ` set ats'" by auto
+  from snoc(1)[OF dist] have equiv: "set ats' \<doteq>\<^sub>i \<B>\<I> ?s \<parallel> indices_state ?s" .
+  from snoc(2)[unfolded distinct_indices_def] have "fst a \<notin> fst ` set ats'" by auto
+  with sub have mem: "fst a \<notin> indices_state ?s" by auto
+  show ?case
+  proof (cases "\<U> ?s")
+    case True
+    hence id: "assert_loop (ats' @ [a]) (init t) = ?s" unfolding assert_loop_def by simp
+    show ?thesis unfolding id using equiv mem 
+      unfolding i_atoms_equiv_bounds.simps i_satisfies_atom_set.simps satisfies_atom_set_def by auto
+  next
+    case False
+    then have id: "assert_loop (ats' @ [a]) (init t) = assert a ?s"
+      unfolding assert_loop_def by auto
+    from AssertAllState'_precond[of t ats', OF assms, unfolded Let_def] False
+    have *: "\<Turnstile> ?s" "\<triangle> (\<T> ?s)" "\<nabla> ?s" by auto
+    from snoc(2) have dist: "distinct (map fst (a # ats'))" unfolding distinct_indices_def by auto
+    show ?thesis unfolding id using assert_atoms_equiv_bounds_index[OF False * dist _ equiv] 
+      AssertAllState_index_valid[OF assms, of ats'] by auto
+  qed
+qed
 
 end
 
@@ -1341,7 +1479,7 @@ proof
 
   show "\<U> s' \<Longrightarrow> set as \<Turnstile>\<^sub>i \<B>\<I> s'"
     using * unfolding idsym
-    by (rule AssertAllState'_unsat_atoms_equiv_bounds)
+    by (rule AssertAllState'_unsat_atoms_implies_bounds)
 
   show "\<U> s' \<Longrightarrow> minimal_unsat_state_core s'"
     using init_unsat_flag assert_unsat assert_index_valid unfolding idsym
@@ -1350,6 +1488,10 @@ proof
   show "indices_state s' \<subseteq> fst ` set as" unfolding idsym using *
     by (intro index_valid_indices_state, induct rule: AssertAllState'Induct,
         auto simp: init_index_valid index_valid_mono assert_index_valid)
+
+  show "index_valid (set as) s'" using "*" AssertAllState_index_valid idsym by blast
+  show "distinct_indices as \<Longrightarrow> set as \<doteq>\<^sub>i \<B>\<I> s' \<parallel> indices_state s'" 
+    using AssertAllState'_atoms_equiv_bounds_index[OF *, of as] unfolding id .
 qed
 
 
@@ -1476,6 +1618,11 @@ assert_bound_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; 
 
 assert_bound_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> assert_bound a s = s' \<Longrightarrow> \<U> s' \<Longrightarrow> minimal_unsat_state_core s'" and
 
+assert_bound_atoms_equiv_bounds_index: "\<And> ats. \<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
+    distinct (map fst (a # ats)) \<Longrightarrow> index_valid (set ats) s \<Longrightarrow> set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s)
+    \<Longrightarrow> (insert a (set ats)) \<doteq>\<^sub>i \<B>\<I> (assert_bound a s) \<parallel> (indices_state (assert_bound a s))" and
+
+
 assert_bound_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> index_valid (insert a as) (assert_bound a s)"
 
 begin
@@ -1496,6 +1643,9 @@ locale AssertBoundNoLhs =
     flat ats \<doteq> \<B> s \<Longrightarrow> flat (ats \<union> {a}) \<doteq> \<B> (assert_bound a s)"
   assumes assert_bound_nolhs_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     ats \<Turnstile>\<^sub>i \<B>\<I> s \<Longrightarrow> insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound a s)"
+  assumes assert_bound_nolhs_atoms_equiv_bounds_index: "\<And> ats. \<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
+    distinct (map fst (a # ats)) \<Longrightarrow> index_valid (set ats) s \<Longrightarrow> set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s)
+    \<Longrightarrow> (insert a (set ats)) \<doteq>\<^sub>i \<B>\<I> (assert_bound a s) \<parallel> (indices_state (assert_bound a s))"
   assumes assert_bound_nolhs_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     index_valid as s \<Longrightarrow> \<U> (assert_bound a s) \<Longrightarrow> minimal_unsat_state_core (assert_bound a s)"
   assumes assert_bound_nolhs_tableau_valuated: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
@@ -1503,13 +1653,12 @@ locale AssertBoundNoLhs =
   assumes assert_bound_nolhs_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     index_valid as s \<Longrightarrow> index_valid (insert a as) (assert_bound a s)"
 
-
-sublocale AssertBoundNoLhs < AssertBound
+sublocale AssertBoundNoLhs < AssertBound 
   by unfold_locales
     ((metis satisfies_satisfies_no_lhs satisfies_consistent
         assert_bound_nolhs_tableau_id assert_bound_nolhs_sat assert_bound_nolhs_atoms_equiv_bounds
         assert_bound_nolhs_index_valid assert_bound_nolhs_atoms_imply_bounds_index
-        assert_bound_nolhs_unsat assert_bound_nolhs_tableau_valuated)+)
+        assert_bound_nolhs_unsat assert_bound_nolhs_tableau_valuated assert_bound_nolhs_atoms_equiv_bounds_index)+) 
 
 
 text\<open>The second phase of @{text assert}, the @{text check} function,
@@ -1546,6 +1695,7 @@ check_sat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h
 check_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> \<U> (check s) \<Longrightarrow> minimal_unsat_state_core (check s)"
 
 begin
+
 lemma check_tableau_equiv: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
                       (v::'a valuation) \<Turnstile>\<^sub>t \<T> s \<longleftrightarrow> v \<Turnstile>\<^sub>t \<T> (check s)"
   using check_tableau
@@ -1564,6 +1714,17 @@ lemma check_tableau_normalized: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^
 lemma check_tableau_valuated: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<diamond> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> \<nabla> (check s)"
   using check_tableau
   by (simp add: Let_def)
+
+lemma check_indices_state: assumes "\<not> \<U> s \<Longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<not> \<U> s \<Longrightarrow> \<diamond> s" "\<not> \<U> s \<Longrightarrow> \<triangle> (\<T> s)" "\<not> \<U> s \<Longrightarrow> \<nabla> s"
+  shows "indices_state (check s) = indices_state s" 
+  using check_bounds_id[OF _ assms] check_unsat_id[of s]
+  unfolding indices_state_def by (cases "\<U> s", auto)
+
+lemma check_distinct_indices_state: assumes "\<not> \<U> s \<Longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<not> \<U> s \<Longrightarrow> \<diamond> s" "\<not> \<U> s \<Longrightarrow> \<triangle> (\<T> s)" "\<not> \<U> s \<Longrightarrow> \<nabla> s"
+  shows "distinct_indices_state (check s) = distinct_indices_state s" 
+  using check_bounds_id[OF _ assms] check_unsat_id[of s]
+  unfolding distinct_indices_state_def by (cases "\<U> s", auto)
+
 end
 
 
@@ -1680,6 +1841,24 @@ next
     show ?thesis unfolding assert_def
       by (auto simp: indexl_def indexu_def boundsl_def boundsu_def)
   qed
+next
+  fix s :: "('i, 'a) state" and a and ats :: "('i \<times> 'a atom) list" 
+  assume *: "\<not> \<U> s" "\<Turnstile> s" "\<triangle> (\<T> s)" "\<nabla> s" 
+    and dist: "distinct (map fst (a # ats))" "index_valid (set ats) s"
+    and equiv: "set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> indices_state s" 
+  note pre = Assert'Precond[OF *, of a]
+  let ?s = "assert_bound a s" 
+  have "\<B>\<^sub>i (check ?s) = \<B>\<^sub>i ?s" using pre check_bounds_id[of ?s] check_unsat_id[of ?s]
+    by (cases "\<U> ?s", auto)
+  hence bnds: "\<B>\<I> (check ?s) = \<B>\<I> ?s" 
+    by (metis Pair_inject boundsl_def boundsu_def indexl_def indexu_def)
+  from assert_bound_atoms_equiv_bounds_index[OF * dist equiv]
+  have "insert a (set ats) \<doteq>\<^sub>i \<B>\<I> ?s \<parallel> indices_state ?s" by auto
+  also have "indices_state ?s = indices_state (assert a s)" 
+    unfolding assert_def 
+    by (rule check_indices_state[symmetric], insert pre, auto)
+  finally show "insert a (set ats) \<doteq>\<^sub>i \<B>\<I> (assert a s) \<parallel> indices_state (assert a s)" 
+    unfolding bnds assert_def by auto
 qed
 
 text\<open>Under these assumptions for @{text "assert_bound"} and @{text
@@ -1829,11 +2008,50 @@ next
     have *: "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s ?s" "\<triangle> (\<T> ?s)" "\<nabla> ?s" "\<diamond> ?s" by auto
     show ?thesis unfolding id using assert_bound_nolhs_atoms_imply_bounds_index[OF False * ats, of a] by auto
   qed
-qed
+qed 
 
 lemma AssertAllState''_index_valid:
   "\<triangle> t \<Longrightarrow> index_valid (set ats) (assert_bound_loop ats (init t))"
   by (rule AssertAllState''Induct, auto simp: init_index_valid index_valid_mono assert_bound_nolhs_index_valid)
+
+lemma AssertAllState''_atoms_equiv_bounds_index:
+  assumes "\<triangle> t"
+  shows "distinct_indices ats \<Longrightarrow> set ats \<doteq>\<^sub>i \<B>\<I> (assert_bound_loop ats (init t)) \<parallel> indices_state (assert_bound_loop ats (init t))"
+proof (induct ats rule: rev_induct)
+  case Nil
+  then show ?case
+    unfolding assert_bound_loop_def i_atoms_equiv_bounds.simps
+    using init_atoms_imply_bounds_index assms
+    by (simp add: init_indices satisfies_atom_set_def satisfies_bounds_index.simps)
+next
+  case (snoc a ats')
+  from snoc(2) have dist: "distinct_indices ats'" by (simp add: distinct_indices_def)
+  let ?s = "assert_bound_loop ats' (init t)"
+  from AssertAllState''_index_valid[OF assms, of ats']
+  have "index_valid (set ats') ?s" .
+  from index_valid_indices_state[OF this] have sub: "indices_state ?s \<subseteq> fst ` set ats'" by auto
+  from snoc(1)[OF dist] have equiv: "set ats' \<doteq>\<^sub>i \<B>\<I> ?s \<parallel> indices_state ?s" .
+  from snoc(2)[unfolded distinct_indices_def] have "fst a \<notin> fst ` set ats'" by auto
+  with sub have mem: "fst a \<notin> indices_state ?s" by auto
+  show ?case
+  proof (cases "\<U> ?s")
+    case True
+    hence id: "assert_bound_loop (ats' @ [a]) (init t) = ?s" unfolding assert_bound_loop_def by simp
+    show ?thesis unfolding id using equiv mem 
+      unfolding i_atoms_equiv_bounds.simps i_satisfies_atom_set.simps satisfies_atom_set_def by auto
+  next
+    case False
+    then have id: "assert_bound_loop (ats' @ [a]) (init t) = assert_bound a ?s"
+      unfolding assert_bound_loop_def by auto
+    from AssertAllState''_precond[of t ats', OF assms, unfolded Let_def] False
+    have *: "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s ?s" "\<triangle> (\<T> ?s)" "\<nabla> ?s" "\<diamond> ?s" by auto
+    from snoc(2) have dist: "distinct (map fst (a # ats'))" unfolding distinct_indices_def by auto
+    show ?thesis unfolding id 
+      using assert_bound_nolhs_atoms_equiv_bounds_index[OF False * dist AssertAllState''_index_valid[OF assms] equiv] 
+      by auto
+  qed
+qed
+
 end
 
 sublocale AssertAllState'' < AssertAllState assert_all_state
@@ -1876,16 +2094,36 @@ proof
     using check_unsat_id[of ?s']
     by (cases "\<U> ?s'") (auto simp add: Let_def simp: indexl_def indexu_def boundsl_def boundsu_def)
 
+  show "index_valid (set ats) s'"
+    unfolding assert_all_state_def s'
+    using * AssertAllState''_precond[of t ats] AssertAllState''_index_valid[OF *, of ats]
+    unfolding Let_def
+    using check_tableau_index_valid[of ?s']
+    using check_unsat_id[of ?s']
+    by (cases "\<U> ?s'", auto)
+
   show "indices_state s' \<subseteq> fst ` set ats"
-  proof (intro index_valid_indices_state)
-    show "index_valid (set ats) s'"
-      unfolding assert_all_state_def s'
-      using * AssertAllState''_precond[of t ats] AssertAllState''_index_valid[OF *, of ats]
-      unfolding Let_def
-      using check_tableau_index_valid[of ?s']
-      using check_unsat_id[of ?s']
-      by (cases "\<U> ?s'", auto)
-  qed
+    by (intro index_valid_indices_state, fact)
+
+  assume dist: "distinct_indices ats" 
+  let ?s = "assert_bound_loop ats (init t)" 
+  from AssertAllState''_precond[OF *, of ats, unfolded Let_def] 
+  have pre: 
+    "\<not> \<U> ?s \<Longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s ?s" 
+    "\<not> \<U> ?s \<Longrightarrow> \<diamond> ?s" 
+    "\<not> \<U> ?s \<Longrightarrow> \<triangle> (\<T> ?s)" 
+    "\<not> \<U> ?s \<Longrightarrow> \<nabla> ?s" 
+    by auto
+
+  have "\<B>\<^sub>i (check ?s) = \<B>\<^sub>i ?s" using pre check_bounds_id[of ?s] check_unsat_id[of ?s]
+    by (cases "\<U> ?s", auto)
+  hence bnds: "\<B>\<I> (check ?s) = \<B>\<I> ?s" 
+    by (metis Pair_inject boundsl_def boundsu_def indexl_def indexu_def)
+  
+  show "set ats \<doteq>\<^sub>i \<B>\<I> s' \<parallel> indices_state s'" 
+    unfolding s' using AssertAllState''_atoms_equiv_bounds_index[OF *(1) dist]
+    unfolding assert_all_state_def 
+    by (subst check_indices_state[OF pre], force, insert bnds, auto)
 qed
 
 
@@ -1931,6 +2169,11 @@ lemma update_bounds_id:
     "\<B>\<^sub>u (update x c s) = \<B>\<^sub>u s"
   using update_id assms
   by (auto simp add: Let_def simp: indexl_def indexu_def boundsl_def boundsu_def)
+
+lemma update_indices_state_id:
+  assumes "\<triangle> (\<T> s)" "\<nabla> s" "x \<notin> lvars (\<T> s)"
+  shows "indices_state (update x c s) = indices_state s" 
+  using update_bounds_id[OF assms] unfolding indices_state_def by auto
 
 lemma update_tableau_id: "\<lbrakk>\<triangle> (\<T> s); \<nabla> s; x \<notin> lvars (\<T> s)\<rbrakk> \<Longrightarrow> \<T> (update x c s) = \<T> s"
   using update_id
@@ -2509,6 +2752,12 @@ avoid symmetries is discussed in Section \ref{sec:symmetries}). This
 implementation satisfies both its specifications.
 \<close>
 
+lemma indices_state_set_unsat: "indices_state (set_unsat I s) = indices_state s" 
+  by (cases s, auto simp: indices_state_def)
+
+lemma \<B>\<I>_set_unsat: "\<B>\<I> (set_unsat I s) = \<B>\<I> s" 
+  by (cases s, auto simp: boundsl_def boundsu_def indexl_def indexu_def)
+  
 text \<open>Note that in order to ensure minimality of the unsat cores, pivoting is required.\<close>
 
 context Update
@@ -2612,7 +2861,7 @@ next
           define ss where ss: "ss = ?ss" 
           from True obtain y b where "look (UBI dir ?ss) y = Some (j,b) \<or> look (LBI dir ?ss) y = Some (j,b)" by force
           then have id3: "(look (LBI dir ss) yy = Some (j,bb) \<or> look (UBI dir ss) yy = Some (j,bb)) \<longleftrightarrow> (yy = y \<and> bb = b)" for yy bb 
-            using dist[unfolded distinct_indices_state_def, rule_format, of y j b yy bb] using dir
+            using distinct_indices_stateD(1)[OF dist, of y j b yy bb] using dir
             unfolding ss[symmetric] 
             by (auto simp: boundsu_def boundsl_def indexu_def indexl_def)
           have "\<exists>v. v \<Turnstile>\<^sub>t \<T> s \<and> v y = b" 
@@ -2942,120 +3191,253 @@ next
       unfolding P_def s'_def[symmetric] by auto
   qed auto
 next
-  fix s and ia :: "('i,'a) i_atom" and ats :: "('i,'a) i_atom set"
-  assume *: "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s" and ats: "ats \<Turnstile>\<^sub>i \<B>\<I> s"
-  obtain i a where ia: "ia = (i,a)" by force
-  have id: "\<And> dir x c s. dir = Positive \<or> dir = Negative \<Longrightarrow>
-     \<nabla> (update\<B>\<I> (UBI_upd dir) i x c s) = \<nabla> s"
-    "\<And> s I. \<nabla> (set_unsat I s) = \<nabla> s"
-    by (auto simp add: tableau_valuated_def)
-  have idlt: "(c < (a :: 'a) \<or> c = a) = (c \<le> a)"
-    "(a < c \<or> c = a) = (c \<ge> a)" for a c by auto
-  define A where "A = insert (i,a) ats"
-  let ?P = "\<lambda> (s :: ('i,'a) state). A \<Turnstile>\<^sub>i \<B>\<I> s"
-  let ?Q = "\<lambda> bs (lt :: 'a \<Rightarrow> 'a \<Rightarrow> bool)
-    (UBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index) (LBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index)
-    (UB :: ('i,'a) state \<Rightarrow> 'a bounds) (LB :: ('i,'a) state \<Rightarrow> 'a bounds)
-    (UBI_upd :: (('i,'a) bounds_index \<Rightarrow> ('i,'a) bounds_index) \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state)
-    UI LI
-    (LE :: nat \<Rightarrow> 'a \<Rightarrow> 'a atom) (GE :: nat \<Rightarrow> 'a \<Rightarrow> 'a atom) s'.
-       (\<forall> I v. (I :: 'i set,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s bs \<longrightarrow>
-       ((\<forall> x c. LB s' x = Some c \<longrightarrow> LI s' x \<in> I \<longrightarrow> lt c (v x) \<or> c = v x)
-      \<and> (\<forall> x c. UB s' x = Some c \<longrightarrow> UI s' x \<in> I \<longrightarrow> lt (v x) c \<or> v x = c)))"
-  define Q where "Q = ?Q"
-  let ?P' = "Q A"
-  have equiv:
-    "bs \<Turnstile>\<^sub>i \<B>\<I> s' \<longleftrightarrow> Q bs (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'"
-    "bs \<Turnstile>\<^sub>i \<B>\<I> s' \<longleftrightarrow> Q bs (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
-    for bs s'
-    unfolding satisfies_bounds_set.simps in_bounds.simps bound_compare_defs index_valid_def Q_def
-      atoms_imply_bounds_index.simps
-    by (atomize(full), (intro conjI iff_exI allI arg_cong2[of _ _ _ _ "(\<and>)"] refl iff_allI
-          arg_cong2[of _ _ _ _ "(=)"]; unfold satisfies_bounds_index.simps idlt), auto)
-  have x: "\<And> s'. ?P s' = ?P' (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'"
-    and xx: "\<And> s'. ?P s' = ?P' (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
-    using equiv by blast+
-  from ats equiv[of ats s]
-  have Q_ats:
-    "Q ats (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s"
-    "Q ats (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s"
-    by auto
-  let ?P'' = "\<lambda> (dir :: ('i,'a) Direction). ?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)"
-  have P_upd: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir (set_unsat I s) = ?P'' dir s" for s I dir
-    unfolding Q_def
-    by (intro iff_exI arg_cong2[of _ _ _ _ "(\<and>)"] refl iff_allI arg_cong2[of _ _ _ _ "(=)"]
-        arg_cong2[of _ _ _ _ "(\<longrightarrow>)"], auto simp: boundsl_def boundsu_def indexl_def indexu_def)
-  have P_upd: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s \<Longrightarrow> ?P'' dir (set_unsat I s)" for s I dir
-    using P_upd[of dir] by blast
-  have ats_sub: "ats \<subseteq> A" unfolding A_def by auto
   {
-    fix x c and dir :: "('i,'a) Direction"
-    assume dir: "dir = Positive \<or> dir = Negative"
-      and a: "a = LE dir x c"
-    from Q_ats dir
-    have Q_ats: "Q ats (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir) s"
+    fix s and ia :: "('i,'a) i_atom" and ats :: "('i,'a) i_atom set"
+    assume *: "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s" and ats: "ats \<Turnstile>\<^sub>i \<B>\<I> s"
+    obtain i a where ia: "ia = (i,a)" by force
+    have id: "\<And> dir x c s. dir = Positive \<or> dir = Negative \<Longrightarrow>
+       \<nabla> (update\<B>\<I> (UBI_upd dir) i x c s) = \<nabla> s"
+      "\<And> s I. \<nabla> (set_unsat I s) = \<nabla> s"
+      by (auto simp add: tableau_valuated_def)
+    have idlt: "(c < (a :: 'a) \<or> c = a) = (c \<le> a)"
+      "(a < c \<or> c = a) = (c \<ge> a)" for a c by auto
+    define A where "A = insert (i,a) ats"
+    let ?P = "\<lambda> (s :: ('i,'a) state). A \<Turnstile>\<^sub>i \<B>\<I> s"
+    let ?Q = "\<lambda> bs (lt :: 'a \<Rightarrow> 'a \<Rightarrow> bool)
+      (UBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index) (LBI :: ('i,'a) state \<Rightarrow> ('i,'a) bounds_index)
+      (UB :: ('i,'a) state \<Rightarrow> 'a bounds) (LB :: ('i,'a) state \<Rightarrow> 'a bounds)
+      (UBI_upd :: (('i,'a) bounds_index \<Rightarrow> ('i,'a) bounds_index) \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state)
+      UI LI
+      (LE :: nat \<Rightarrow> 'a \<Rightarrow> 'a atom) (GE :: nat \<Rightarrow> 'a \<Rightarrow> 'a atom) s'.
+         (\<forall> I v. (I :: 'i set,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s bs \<longrightarrow>
+         ((\<forall> x c. LB s' x = Some c \<longrightarrow> LI s' x \<in> I \<longrightarrow> lt c (v x) \<or> c = v x)
+        \<and> (\<forall> x c. UB s' x = Some c \<longrightarrow> UI s' x \<in> I \<longrightarrow> lt (v x) c \<or> v x = c)))"
+    define Q where "Q = ?Q"
+    let ?P' = "Q A"
+    have equiv:
+      "bs \<Turnstile>\<^sub>i \<B>\<I> s' \<longleftrightarrow> Q bs (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'"
+      "bs \<Turnstile>\<^sub>i \<B>\<I> s' \<longleftrightarrow> Q bs (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
+      for bs s'
+      unfolding satisfies_bounds_set.simps in_bounds.simps bound_compare_defs index_valid_def Q_def
+        atoms_imply_bounds_index.simps
+      by (atomize(full), (intro conjI iff_exI allI arg_cong2[of _ _ _ _ "(\<and>)"] refl iff_allI
+            arg_cong2[of _ _ _ _ "(=)"]; unfold satisfies_bounds_index.simps idlt), auto)
+    have x: "\<And> s'. ?P s' = ?P' (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s'"
+      and xx: "\<And> s'. ?P s' = ?P' (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s'"
+      using equiv by blast+
+    from ats equiv[of ats s]
+    have Q_ats:
+      "Q ats (<) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<B>\<^sub>i\<^sub>u_update \<I>\<^sub>u \<I>\<^sub>l Leq Geq s"
+      "Q ats (>) \<B>\<^sub>i\<^sub>l \<B>\<^sub>i\<^sub>u \<B>\<^sub>l \<B>\<^sub>u \<B>\<^sub>i\<^sub>l_update \<I>\<^sub>l \<I>\<^sub>u Geq Leq s"
       by auto
-    have "?P'' dir (update\<B>\<I> (UBI_upd dir) i x c s)"
+    let ?P'' = "\<lambda> (dir :: ('i,'a) Direction). ?P' (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir)"
+    have P_upd: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir (set_unsat I s) = ?P'' dir s" for s I dir
       unfolding Q_def
-    proof (intro allI impI conjI)
-      fix I v y d
-      assume IvA: "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s A"
-      from i_satisfies_atom_set_mono[OF ats_sub this]
-      have "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s ats" by auto
-      from Q_ats[unfolded Q_def, rule_format, OF this]
-      have s_bnds:
-        "LB dir s x = Some c \<Longrightarrow> LI dir s x \<in> I \<Longrightarrow> lt dir c (v x) \<or> c = v x"
-        "UB dir s x = Some c \<Longrightarrow> UI dir s x \<in> I \<Longrightarrow> lt dir (v x) c \<or> v x = c" for x c by auto
-      from IvA[unfolded A_def, unfolded i_satisfies_atom_set.simps satisfies_atom_set_def, simplified]
-      have va: "i \<in> I \<Longrightarrow> v \<Turnstile>\<^sub>a a" by auto
-      with a dir have vc: "i \<in> I \<Longrightarrow> lt dir (v x) c \<or> v x = c"
+      by (intro iff_exI arg_cong2[of _ _ _ _ "(\<and>)"] refl iff_allI arg_cong2[of _ _ _ _ "(=)"]
+          arg_cong2[of _ _ _ _ "(\<longrightarrow>)"], auto simp: boundsl_def boundsu_def indexl_def indexu_def)
+    have P_upd: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s \<Longrightarrow> ?P'' dir (set_unsat I s)" for s I dir
+      using P_upd[of dir] by blast
+    have ats_sub: "ats \<subseteq> A" unfolding A_def by auto
+    {
+      fix x c and dir :: "('i,'a) Direction"
+      assume dir: "dir = Positive \<or> dir = Negative"
+        and a: "a = LE dir x c"
+      from Q_ats dir
+      have Q_ats: "Q ats (lt dir) (UBI dir) (LBI dir) (UB dir) (LB dir) (UBI_upd dir) (UI dir) (LI dir) (LE dir) (GE dir) s"
         by auto
-      let ?s = "(update\<B>\<I> (UBI_upd dir) i x c s)"
-      show "LB dir ?s y = Some d \<Longrightarrow> LI dir ?s y \<in> I \<Longrightarrow> lt dir d (v y) \<or> d = v y"
-        "UB dir ?s y = Some d \<Longrightarrow> UI dir ?s y \<in> I \<Longrightarrow> lt dir (v y) d \<or> v y = d"
-      proof (atomize(full), goal_cases)
-        case 1
-        consider (main) "y = x" "UI dir ?s x = i" |
-          (easy1) "x \<noteq> y" | (easy2) "x = y" "UI dir ?s y \<noteq> i"
-          by blast
-        then show ?case
-        proof cases
-          case easy1
-          then show ?thesis using s_bnds[of y d] dir by (fastforce simp: boundsl_def boundsu_def indexl_def indexu_def)
-        next
-          case easy2
-          then show ?thesis using s_bnds[of y d] dir by (fastforce simp: boundsl_def boundsu_def indexl_def indexu_def)
-        next
-          case main
-          note s_bnds = s_bnds[of x]
-          show ?thesis unfolding main using s_bnds dir vc by (auto simp: boundsl_def boundsu_def indexl_def indexu_def) blast+
+      have "?P'' dir (update\<B>\<I> (UBI_upd dir) i x c s)"
+        unfolding Q_def
+      proof (intro allI impI conjI)
+        fix I v y d
+        assume IvA: "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s A"
+        from i_satisfies_atom_set_mono[OF ats_sub this]
+        have "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s ats" by auto
+        from Q_ats[unfolded Q_def, rule_format, OF this]
+        have s_bnds:
+          "LB dir s x = Some c \<Longrightarrow> LI dir s x \<in> I \<Longrightarrow> lt dir c (v x) \<or> c = v x"
+          "UB dir s x = Some c \<Longrightarrow> UI dir s x \<in> I \<Longrightarrow> lt dir (v x) c \<or> v x = c" for x c by auto
+        from IvA[unfolded A_def, unfolded i_satisfies_atom_set.simps satisfies_atom_set_def, simplified]
+        have va: "i \<in> I \<Longrightarrow> v \<Turnstile>\<^sub>a a" by auto
+        with a dir have vc: "i \<in> I \<Longrightarrow> lt dir (v x) c \<or> v x = c"
+          by auto
+        let ?s = "(update\<B>\<I> (UBI_upd dir) i x c s)"
+        show "LB dir ?s y = Some d \<Longrightarrow> LI dir ?s y \<in> I \<Longrightarrow> lt dir d (v y) \<or> d = v y"
+          "UB dir ?s y = Some d \<Longrightarrow> UI dir ?s y \<in> I \<Longrightarrow> lt dir (v y) d \<or> v y = d"
+        proof (atomize(full), goal_cases)
+          case 1
+          consider (main) "y = x" "UI dir ?s x = i" |
+            (easy1) "x \<noteq> y" | (easy2) "x = y" "UI dir ?s y \<noteq> i"
+            by blast
+          then show ?case
+          proof cases
+            case easy1
+            then show ?thesis using s_bnds[of y d] dir by (fastforce simp: boundsl_def boundsu_def indexl_def indexu_def)
+          next
+            case easy2
+            then show ?thesis using s_bnds[of y d] dir by (fastforce simp: boundsl_def boundsu_def indexl_def indexu_def)
+          next
+            case main
+            note s_bnds = s_bnds[of x]
+            show ?thesis unfolding main using s_bnds dir vc by (auto simp: boundsl_def boundsu_def indexl_def indexu_def) blast+
+          qed
         qed
       qed
+    } note main = this
+    have Ps: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s" for dir
+      using Q_ats unfolding Q_def using i_satisfies_atom_set_mono[OF ats_sub] by fastforce
+    have "?P (assert_bound (i,a) s)"
+    proof ((rule assert_bound_cases[of _ _ ?P']; (intro x xx P_upd main Ps)?))
+      fix c x and dir :: "('i,'a) Direction"
+      assume **: "dir = Positive \<or> dir = Negative"
+        "a = LE dir x c"
+        "x \<notin> lvars (\<T> s)"
+      let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"
+      define s' where "s' = ?s"
+      from main[OF **(1-2)] have P: "?P'' dir s'" unfolding s'_def .
+      have 1: "\<triangle> (\<T> ?s)" using * ** by auto
+      have 2: "\<nabla> ?s" using id(1) ** * \<open>\<nabla> s\<close> by auto
+      have 3: "x \<notin> lvars (\<T> ?s)" using id(1) ** * \<open>\<nabla> s\<close> by auto
+      have "\<triangle> (\<T> s')" "\<nabla> s'" "x \<notin> lvars (\<T> s')" using 1 2 3 unfolding s'_def by auto
+      from update_bounds_id[OF this, of c] **(1)
+      have "?P'' dir (update x c s') = ?P'' dir s'"
+        unfolding Q_def
+        by (intro iff_allI arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] arg_cong2[of _ _ _ _ "(\<and>)"] refl, auto)
+      with P
+      show "?P'' dir (update x c ?s)" unfolding s'_def by blast
+    qed auto
+    then show "insert ia ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound ia s)" unfolding ia A_def by blast
+  } note one_implication = this
+  fix s and ia :: "('i,'a) i_atom" and ats
+  assume *: "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s"
+    and dist: "distinct (map fst (ia # ats))" 
+    and ind_valid: "index_valid (set ats) s" 
+    and equiv: "set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> indices_state s"   
+  from index_valid_distinct_indices[OF ind_valid] dist
+  have dist_s: "distinct_indices_state s" unfolding distinct_indices_def by auto
+  note equiv = equiv[unfolded i_atoms_equiv_bounds.simps, rule_format]
+  obtain i a where ia: "ia = (i,a)" by force
+  with dist have i_ats: "i \<notin> fst ` set ats" by auto
+  let ?s = "(assert_bound (i, a) s)" 
+  show "insert ia (set ats) \<doteq>\<^sub>i \<B>\<I> (assert_bound ia s) \<parallel> indices_state (assert_bound ia s)"
+    unfolding i_atoms_equiv_bounds.simps ia
+  proof (intro allI impI conjI)
+    fix J v
+    assume J: "J \<subseteq> indices_state ?s" 
+    have sub: "indices_state (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) \<subseteq> insert i (indices_state s)"
+      "indices_state (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) \<subseteq> insert i (indices_state s)"
+      for x y unfolding indices_state_def by auto
+    have "set ats \<Turnstile>\<^sub>i \<B>\<I> s" unfolding atoms_imply_bounds_index.simps
+    proof (intro allI impI)
+      fix I v
+      assume "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats" 
+      hence "(I \<inter> indices_state s, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats" 
+        by (auto simp: satisfies_atom_set_def)
+      with equiv[of "I \<inter> indices_state s" v] 
+      have "(I \<inter> indices_state s, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" by auto
+      thus "(I, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" unfolding satisfies_bounds_index.simps indices_state_def
+        by (force simp: boundsl_def indexl_def boundsu_def indexu_def)
     qed
-  } note main = this
-  have Ps: "dir = Positive \<or> dir = Negative \<Longrightarrow> ?P'' dir s" for dir
-    using Q_ats unfolding Q_def using i_satisfies_atom_set_mono[OF ats_sub] by fastforce
-  have "?P (assert_bound (i,a) s)"
-  proof ((rule assert_bound_cases[of _ _ ?P']; (intro x xx P_upd main Ps)?))
-    fix c x and dir :: "('i,'a) Direction"
-    assume **: "dir = Positive \<or> dir = Negative"
-      "a = LE dir x c"
-      "x \<notin> lvars (\<T> s)"
-    let ?s = "update\<B>\<I> (UBI_upd dir) i x c s"
-    define s' where "s' = ?s"
-    from main[OF **(1-2)] have P: "?P'' dir s'" unfolding s'_def .
-    have 1: "\<triangle> (\<T> ?s)" using * ** by auto
-    have 2: "\<nabla> ?s" using id(1) ** * \<open>\<nabla> s\<close> by auto
-    have 3: "x \<notin> lvars (\<T> ?s)" using id(1) ** * \<open>\<nabla> s\<close> by auto
-    have "\<triangle> (\<T> s')" "\<nabla> s'" "x \<notin> lvars (\<T> s')" using 1 2 3 unfolding s'_def by auto
-    from update_bounds_id[OF this, of c] **(1)
-    have "?P'' dir (update x c s') = ?P'' dir s'"
-      unfolding Q_def
-      by (intro iff_allI arg_cong2[of _ _ _ _ "(\<longrightarrow>)"] arg_cong2[of _ _ _ _ "(\<and>)"] refl, auto)
-    with P
-    show "?P'' dir (update x c ?s)" unfolding s'_def by blast
-  qed auto
-  then show "insert ia ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound ia s)" unfolding ia A_def by blast
+    from one_implication[OF * this] have one_impl: "insert (i,a) (set ats) \<Turnstile>\<^sub>i \<B>\<I> ?s" .    
+    have ind: "indices_state ?s \<subseteq> insert i (indices_state s)" 
+    proof (cases a, insert sub *, auto simp: Let_def indices_state_set_unsat, goal_cases)
+      case 1
+      thus ?case
+        by (subst (asm) update_indices_state_id, (force simp: tableau_valuated_def)+)
+    next
+      case 2
+      thus ?case
+        by (subst (asm) update_indices_state_id, (force simp: tableau_valuated_def)+)
+    qed
+    have ids: "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = \<B>\<^sub>l s"
+      "\<B>\<^sub>u (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = \<B>\<^sub>u s"
+      "\<B>\<^sub>u (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = (\<B>\<^sub>u s) (x := Some y)"
+      "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = (\<B>\<^sub>l s) (x := Some y)"
+      "\<I>\<^sub>l (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = \<I>\<^sub>l s" 
+      "\<I>\<^sub>u (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = \<I>\<^sub>u s" 
+      "\<I>\<^sub>l (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = (\<I>\<^sub>l s) (x := i)" 
+      "\<I>\<^sub>u (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = (\<I>\<^sub>u s) (x := i)" 
+      for x y
+      by (intro ext, auto simp: boundsl_def indexl_def boundsu_def indexu_def o_def)
+    have norm: "\<triangle> (\<T> (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s))" 
+      "\<triangle> (\<T> (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s))"  for x y using * by auto
+    have valu: "\<nabla> (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s)"
+      "\<nabla> (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s)" for x y using * 
+      by (auto simp add: tableau_valuated_def)
+    have look_update: 
+      "x \<notin> lvars (\<T> s) \<Longrightarrow> 
+        look (\<B>\<^sub>i\<^sub>u (update x y (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>u s)) (x \<mapsto> (i, y))"
+      "x \<notin> lvars (\<T> s) \<Longrightarrow> 
+        look (\<B>\<^sub>i\<^sub>l (update x y (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>l s)) (x \<mapsto> (i, y))"
+      "x \<notin> lvars (\<T> s) \<Longrightarrow> 
+        look (\<B>\<^sub>i\<^sub>u (update x y (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>u s))"
+      "x \<notin> lvars (\<T> s) \<Longrightarrow> 
+        look (\<B>\<^sub>i\<^sub>l (update x y (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>l s))"
+      "x \<notin> lvars (\<T> s) \<Longrightarrow> indices_state (update x y (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s)) = 
+        indices_state (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s)" 
+      "x \<notin> lvars (\<T> s) \<Longrightarrow> indices_state (update x y (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s)) = 
+        indices_state (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s)" 
+      for x y 
+      using update_id[OF norm(2) valu(2), of x x y y, unfolded Let_def] update_id[OF norm(1) valu(1), of x x y y, unfolded Let_def]
+        update_indices_state_id[OF norm(2) valu(2), of x x y y] update_indices_state_id[OF norm(1) valu(1), of x x y y]  by auto
+    have B_id: "(\<B>\<^sub>l s x = Some c \<longrightarrow> \<I>\<^sub>l s x \<in> J \<longrightarrow> c \<le> v x) \<longleftrightarrow> (\<forall> j. look (\<B>\<^sub>i\<^sub>l s) x = Some (j,c) \<longrightarrow> j \<in> J \<longrightarrow> c \<le> v x)"
+      "(\<B>\<^sub>u s x = Some c \<longrightarrow> \<I>\<^sub>u s x \<in> J \<longrightarrow> c \<ge> v x) \<longleftrightarrow> (\<forall> j. look (\<B>\<^sub>i\<^sub>u s) x = Some (j,c) \<longrightarrow> j \<in> J \<longrightarrow> c \<ge> v x)"
+      for s :: "('i,'a)state" and x c J
+      by (auto simp: boundsl_def indexl_def boundsu_def indexu_def)
+    show "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert (i, a) (set ats) = (J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" 
+    proof
+      show "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert (i, a) (set ats) \<Longrightarrow> (J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" 
+        using one_impl[unfolded atoms_imply_bounds_index.simps, rule_format] .
+      assume model: "(J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" 
+      note model_l = model[unfolded satisfies_bounds_index.simps B_id, THEN conjunct1, rule_format]
+      note model_u = model[unfolded satisfies_bounds_index.simps B_id, THEN conjunct2, rule_format]
+      define K where "K = J - {i}" 
+      have dist_i: "look (\<B>\<^sub>i\<^sub>l s) x \<noteq> Some (i, b) \<and> look (\<B>\<^sub>i\<^sub>u s) x \<noteq> Some (i, b)" for x b 
+      proof (rule ccontr)
+        assume "\<not> ?thesis" 
+        hence "look (\<B>\<^sub>i\<^sub>l s) x = Some (i, b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i, b)" by auto
+        with ind_valid[unfolded index_valid_def, rule_format, of x i b] have "i \<in> fst ` set ats" by force
+        with dist[unfolded ia] show False by auto
+      qed
+      have K_s: "K \<subseteq> indices_state s" "K \<subseteq> indices_state ?s" using J ind unfolding K_def by auto
+      have "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert (i, a) (set ats) \<longleftrightarrow> ((K, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats \<and> (i \<in> J \<longrightarrow> v \<Turnstile>\<^sub>a a))" 
+        unfolding K_def using i_ats by (force simp: satisfies_atom_set_def)
+      also have "(K, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats \<longleftrightarrow> (K, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" by (rule equiv[OF K_s(1)])
+      also have "(i \<in> J \<longrightarrow> v \<Turnstile>\<^sub>a a) = True" 
+      proof -
+        {
+          assume i_J: "i \<in> J" 
+          with J[unfolded indices_state_def] obtain x b where
+            "look (\<B>\<^sub>i\<^sub>l ?s) x = Some (i, b) \<or> look (\<B>\<^sub>i\<^sub>u ?s) x = Some (i, b)" by force
+          with model_l[of x i b] model_u[of x i b] i_J
+          have "v \<Turnstile>\<^sub>a a" by (cases a, auto simp: Let_def dist_i bound_compare_defs look_update split: if_splits)
+        }
+        thus ?thesis by simp
+      qed
+      also have "((K, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s) = True" 
+      proof (rule ccontr)
+        assume "\<not> ?thesis" 
+        then obtain x c j where look: "look (\<B>\<^sub>i\<^sub>l s) x = Some (j, c) \<and> \<not> c \<le> v x \<or> 
+           look (\<B>\<^sub>i\<^sub>u s) x = Some (j, c) \<and> \<not> c \<ge> v x" 
+          and j: "j \<in> K" unfolding satisfies_bounds_index.simps B_id by auto        
+        from j have ji: "j \<noteq> i" and jJ: "j \<in> J" unfolding K_def by auto
+        from j K_s have js: "j \<in> indices_state ?s" by auto
+        from this[unfolded indices_state_def] obtain y d where 
+          look': "look (\<B>\<^sub>i\<^sub>l ?s) y = Some (j, d) \<or> look (\<B>\<^sub>i\<^sub>u ?s) y = Some (j, d)" by auto
+        with ji have "look (\<B>\<^sub>i\<^sub>l s) y = Some (j, d) \<or> look (\<B>\<^sub>i\<^sub>u s) y = Some (j, d)" 
+          by (cases a, auto simp: Let_def look_update indices_state_set_unsat split: if_splits)
+        from distinct_indices_stateD(1)[OF dist_s, OF this, of x c] look
+        have "y = x" "d = c" by auto
+        from look'[unfolded this] model_l[of x j c] model_u[of x j c] jJ
+        have "look (\<B>\<^sub>i\<^sub>l ?s) x = Some (j, c) \<and> c \<le> v x \<or> look (\<B>\<^sub>i\<^sub>u ?s) x = Some (j, c) \<and> c \<ge> v x" by auto
+        with ji have look2: "look (\<B>\<^sub>i\<^sub>l s) x = Some (j, c)  \<and> c \<le> v x \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (j, c) \<and> c \<ge> v x" 
+          by (cases a, auto simp: Let_def look_update indices_state_set_unsat split: if_splits)
+        from look look2 have "look (\<B>\<^sub>i\<^sub>l s) x = Some (j, c)" "look (\<B>\<^sub>i\<^sub>u s) x = Some (j, c)" by auto
+        from distinct_indices_stateD(2)[OF dist_s this]
+        show False .
+      qed
+      finally show "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert (i, a) (set ats)" by simp
+    qed
+  qed
 qed
 end
 
@@ -6735,10 +7117,6 @@ global_interpretation AssertAllStateDefault: AssertAllState'' init_state assert_
 (* Preprocess preprocess  *)
 (* -------------------------------------------------------------------------- *)
 
-primrec poly :: "'a ns_constraint \<Rightarrow> linear_poly" where
-  "poly (LEQ_ns p a) = p"
-| "poly (GEQ_ns p a) = p"
-
 primrec
   monom_to_atom:: "QDelta ns_constraint \<Rightarrow> QDelta atom" where
   "monom_to_atom (LEQ_ns l r) = (if (monom_coeff l < 0) then
@@ -7336,8 +7714,11 @@ proof
   with part_2(2,3) show "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t' \<Longrightarrow> (I,\<langle>trans_v v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" by auto
   from part1[unfolded preprocess_part_1_def Let_def] obtain var where
     as: "as = Atoms (preprocess' cs var)" by auto
-  show "fst ` set as \<subseteq> fst ` set cs" unfolding as
+
+  have "(minimality_condition_ns cs \<longrightarrow> distinct_indices as) \<and> fst ` set as \<subseteq> fst ` set cs" 
+    unfolding as distinct_indices_def minimality_condition_ns_def 
     by (induct cs var rule: preprocess'.induct, auto simp: Let_def split: option.splits)
+  thus "minimality_condition_ns cs \<Longrightarrow> distinct_indices as" "fst ` set as \<subseteq> fst ` set cs" by auto
   fix v
   assume "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs"
   from preprocess'_unsat[OF this _  start_fresh_variable_fresh, of cs]
@@ -7399,347 +7780,352 @@ global_interpretation SolveExec'Default: SolveExec' to_ns from_ns solve_exec_ns_
   defines solve_exec_code = SolveExec'Default.solve_exec
     and solve_code = SolveExec'Default.solve
 proof unfold_locales
-  fix ics :: "'i i_constraint list" and v' and I
-  let ?to_ns = "to_ns ics"
-  let ?flat = "set ?to_ns"
-  assume sat: "(I,\<langle>v'\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s ?flat"
-  define cs where "cs = map snd (filter (\<lambda> ic. fst ic \<in> I) ics)"
-  define to_ns' where to_ns: "to_ns' = (\<lambda> l. concat (map constraint_to_qdelta_constraint l))"
-  show "(I,\<langle>from_ns v' (flat_list ?to_ns)\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics"  unfolding i_satisfies_cs.simps
-  proof
-    let ?listf = "map (\<lambda>C. case C of (LEQ_ns l r) \<Rightarrow> (l\<lbrace>\<langle>v'\<rangle>\<rbrace>, r)
-                                  | (GEQ_ns l r) \<Rightarrow> (r, l\<lbrace>\<langle>v'\<rangle>\<rbrace>)
-                     )"
-    let ?to_ns = "\<lambda> ics. to_ns' (map snd (filter (\<lambda>ic. fst ic \<in> I) ics))"
-    let ?list = "?listf (to_ns' cs)"              (* index-filtered list *)
-    let ?f_list = "flat_list (to_ns ics)"
-    let ?flist = "?listf ?f_list" (* full list *)
-    obtain i_list where i_list: "?list = i_list" by force
-    obtain f_list where f_list: "?flist = f_list" by force
-    have if_list: "set i_list \<subseteq> set f_list" unfolding
-        i_list[symmetric] f_list[symmetric] to_ns_def to_ns set_map set_concat cs_def
-      by (intro image_mono, force)
-    have "\<And> qd1 qd2. (qd1, qd2) \<in> set ?list \<Longrightarrow> qd1 \<le> qd2"
-    proof-
-      fix qd1 qd2
-      assume "(qd1, qd2) \<in> set ?list"
-      then show "qd1 \<le> qd2"
-        using sat unfolding cs_def
-      proof(induct ics)
-        case Nil
-        then show ?case
-          by (simp add: to_ns)
-      next
-        case (Cons h t)
-        obtain i c where h: "h = (i,c)" by force
-        from Cons(2) consider (ic) "(qd1,qd2) \<in> set (?listf (?to_ns [(i,c)]))"
-          | (t) "(qd1,qd2) \<in> set (?listf (?to_ns t))"
-          unfolding to_ns h set_map set_concat by fastforce
-        then show ?case
-        proof cases
-          case t
-          from Cons(1)[OF this] Cons(3) show ?thesis unfolding to_ns_def by auto
+  {
+    fix ics :: "'i i_constraint list" and v' and I
+    let ?to_ns = "to_ns ics"
+    let ?flat = "set ?to_ns"
+    assume sat: "(I,\<langle>v'\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s ?flat"
+    define cs where "cs = map snd (filter (\<lambda> ic. fst ic \<in> I) ics)"
+    define to_ns' where to_ns: "to_ns' = (\<lambda> l. concat (map constraint_to_qdelta_constraint l))"
+    show "(I,\<langle>from_ns v' (flat_list ?to_ns)\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics"  unfolding i_satisfies_cs.simps
+    proof
+      let ?listf = "map (\<lambda>C. case C of (LEQ_ns l r) \<Rightarrow> (l\<lbrace>\<langle>v'\<rangle>\<rbrace>, r)
+                                    | (GEQ_ns l r) \<Rightarrow> (r, l\<lbrace>\<langle>v'\<rangle>\<rbrace>)
+                       )"
+      let ?to_ns = "\<lambda> ics. to_ns' (map snd (filter (\<lambda>ic. fst ic \<in> I) ics))"
+      let ?list = "?listf (to_ns' cs)"              (* index-filtered list *)
+      let ?f_list = "flat_list (to_ns ics)"
+      let ?flist = "?listf ?f_list" (* full list *)
+      obtain i_list where i_list: "?list = i_list" by force
+      obtain f_list where f_list: "?flist = f_list" by force
+      have if_list: "set i_list \<subseteq> set f_list" unfolding
+          i_list[symmetric] f_list[symmetric] to_ns_def to_ns set_map set_concat cs_def
+        by (intro image_mono, force)
+      have "\<And> qd1 qd2. (qd1, qd2) \<in> set ?list \<Longrightarrow> qd1 \<le> qd2"
+      proof-
+        fix qd1 qd2
+        assume "(qd1, qd2) \<in> set ?list"
+        then show "qd1 \<le> qd2"
+          using sat unfolding cs_def
+        proof(induct ics)
+          case Nil
+          then show ?case
+            by (simp add: to_ns)
         next
-          case ic
-          note ic = ic[unfolded to_ns, simplified]
-          from ic have i: "(i \<in> I) = True" by (cases "i \<in> I", auto)
-          note ic = ic[unfolded i if_True, simplified]
-          from Cons(3)[unfolded h] i have "\<langle>v'\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s set (to_ns' [c])"
-            unfolding i_satisfies_ns_constraints.simps unfolding to_ns to_ns_def by force
-          with ic show ?thesis by (induct c) (auto simp add: to_ns)
+          case (Cons h t)
+          obtain i c where h: "h = (i,c)" by force
+          from Cons(2) consider (ic) "(qd1,qd2) \<in> set (?listf (?to_ns [(i,c)]))"
+            | (t) "(qd1,qd2) \<in> set (?listf (?to_ns t))"
+            unfolding to_ns h set_map set_concat by fastforce
+          then show ?case
+          proof cases
+            case t
+            from Cons(1)[OF this] Cons(3) show ?thesis unfolding to_ns_def by auto
+          next
+            case ic
+            note ic = ic[unfolded to_ns, simplified]
+            from ic have i: "(i \<in> I) = True" by (cases "i \<in> I", auto)
+            note ic = ic[unfolded i if_True, simplified]
+            from Cons(3)[unfolded h] i have "\<langle>v'\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s set (to_ns' [c])"
+              unfolding i_satisfies_ns_constraints.simps unfolding to_ns to_ns_def by force
+            with ic show ?thesis by (induct c) (auto simp add: to_ns)
+          qed
         qed
       qed
+      then have l1: "\<epsilon> > 0 \<Longrightarrow> \<epsilon> \<le> (\<delta>_min ?list) \<Longrightarrow> \<forall>qd1 qd2. (qd1, qd2) \<in> set ?list \<longrightarrow> val qd1 \<epsilon> \<le> val qd2 \<epsilon>" for \<epsilon>
+        unfolding i_list
+        by (simp add: delta_gt_zero delta_min[of i_list])
+      have "\<delta>_min ?flist \<le> \<delta>_min ?list" unfolding f_list i_list
+        by (rule delta_min_mono[OF if_list])
+      from l1[OF delta_gt_zero this]
+      have l1: "\<forall>qd1 qd2. (qd1, qd2) \<in> set ?list \<longrightarrow> val qd1 (\<delta>_min f_list) \<le> val qd2 (\<delta>_min f_list)"
+        unfolding f_list .
+      have "\<delta>0_val_min (flat_list (to_ns ics)) \<langle>v'\<rangle> = \<delta>_min f_list" unfolding f_list[symmetric]
+      proof(induct ics)
+        case Nil
+        show ?case
+          by (simp add: to_ns_def)
+      next
+        case (Cons h t)
+        then show ?case
+          by (cases h; cases "snd h") (auto simp add: to_ns_def)
+      qed
+      then have l2: "from_ns v' ?f_list = Mapping.tabulate (vars_list_constraints ?f_list) (\<lambda> var. val (\<langle>v'\<rangle> var) (\<delta>_min f_list))"
+        by (auto simp add: from_ns_def)
+      fix c
+      assume "c \<in> restrict_to I (set ics)"
+      then obtain i where i: "i \<in> I" and mem: "(i,c) \<in> set ics" by auto
+      from mem show "\<langle>from_ns v' ?f_list\<rangle> \<Turnstile>\<^sub>c c"
+      proof (induct c)
+        case (LT lll rrr)
+        then have "(lll\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta rrr (-1))) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns)
+        then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta rrr (-1)) (\<delta>_min f_list)"
+          using l1
+          by simp
+        moreover
+        have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars lll"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using LT
+            by (auto simp add: comp_def lookup_tabulate restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> (val (QDelta.QDelta rrr (-1)) (\<delta>_min f_list))"
+          by (auto simp add: valuate_rat_valuate)
+        then show ?case
+          using delta_gt_zero[of f_list]
+          by (simp add: val_def)
+      next
+        case (GT lll rrr)
+        then have "((QDelta.QDelta rrr 1), lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns)
+        then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta rrr 1) (\<delta>_min f_list)"
+          using l1
+          by simp
+        moreover
+        have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars lll"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using GT
+            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta rrr 1) (\<delta>_min f_list)"
+          using l2
+          by (simp add: valuate_rat_valuate)
+        then show ?case
+          using delta_gt_zero[of f_list]
+          by (simp add: val_def)
+      next
+        case (LEQ lll rrr)
+        then have "(lll\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta rrr 0) ) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns)
+        then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
+          using l1
+          by simp
+        moreover
+        have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars lll"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using LEQ
+            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
+          using l2
+          by (simp add: valuate_rat_valuate)
+        then show ?case
+          by (simp add: val_def)
+      next
+        case (GEQ lll rrr)
+        then have "((QDelta.QDelta rrr 0), lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns)
+        then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
+          using l1
+          by simp
+        moreover
+        have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars lll"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using GEQ
+            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
+          using l2
+          by (simp add: valuate_rat_valuate)
+        then show ?case
+          by (simp add: val_def)
+      next
+        case (EQ lll rrr)
+        then have "((QDelta.QDelta rrr 0), lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" and
+          "(lll\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta rrr 0) ) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns)+
+        then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)" and
+          "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
+          using l1
+          by simp_all
+        moreover
+        have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars lll"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using EQ
+            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)" and
+          "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
+          using l1
+          by (auto simp add: valuate_rat_valuate)
+        then show ?case
+          by (simp add: val_def)
+      next
+        case (LTPP ll1 ll2)
+        then have "((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta 0 (-1)) ) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns)
+        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta 0 (-1)) (\<delta>_min f_list)"
+          using l1
+          by simp
+        moreover
+        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars (ll1 - ll2)"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using LTPP
+            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta 0 (-1)) (\<delta>_min f_list)"
+          using l1
+          by (simp add: valuate_rat_valuate)
+        then show ?case
+          using delta_gt_zero[of f_list]
+          by (simp add: val_def valuate_minus)
+      next
+        case (GTPP ll1 ll2)
+        then have "((QDelta.QDelta 0 1), (ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns)
+        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta 0 1) (\<delta>_min f_list)"
+          using l1
+          by simp
+        moreover
+        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars (ll1 - ll2)"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using GTPP
+            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta 0 1) (\<delta>_min f_list)"
+          using l1
+          by (simp add: valuate_rat_valuate)
+        then show ?case
+          using delta_gt_zero[of f_list]
+          by (simp add: val_def valuate_minus)
+      next
+        case (LEQPP ll1 ll2)
+        then have "((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta 0 0) ) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns zero_QDelta_def)
+        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
+          using l1
+          by simp
+        moreover
+        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars (ll1 - ll2)"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using LEQPP
+            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
+          using l1
+          by (simp add: valuate_rat_valuate)
+        then show ?case
+          using delta_gt_zero[of f_list]
+          by (simp add: val_def valuate_minus)
+      next
+        case (GEQPP ll1 ll2)
+        then have "((QDelta.QDelta 0 0), (ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns zero_QDelta_def)
+        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
+          using l1
+          by simp
+        moreover
+        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars (ll1 - ll2)"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using GEQPP
+            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
+          using l1
+          by (simp add: valuate_rat_valuate)
+        then show ?case
+          using delta_gt_zero[of f_list]
+          by (simp add: val_def valuate_minus)
+      next
+        case (EQPP ll1 ll2)
+        then have "((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta 0 0) ) \<in> set ?list" and
+          "((QDelta.QDelta 0 0), (ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
+          by (force simp add: to_ns zero_QDelta_def)+
+        then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)" and
+          "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
+          using l1
+          by simp_all
+        moreover
+        have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
+              (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
+        proof (rule valuate_depend, rule)
+          fix x
+          assume "x \<in> vars (ll1 - ll2)"
+          then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
+            using l2
+            using EQPP
+            by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
+        qed
+        ultimately
+        have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)" and
+          "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
+          using l1
+          by (auto simp add: valuate_rat_valuate)
+        then show ?case
+          by (simp add: val_def valuate_minus)
+      qed
     qed
-    then have l1: "\<epsilon> > 0 \<Longrightarrow> \<epsilon> \<le> (\<delta>_min ?list) \<Longrightarrow> \<forall>qd1 qd2. (qd1, qd2) \<in> set ?list \<longrightarrow> val qd1 \<epsilon> \<le> val qd2 \<epsilon>" for \<epsilon>
-      unfolding i_list
-      by (simp add: delta_gt_zero delta_min[of i_list])
-    have "\<delta>_min ?flist \<le> \<delta>_min ?list" unfolding f_list i_list
-      by (rule delta_min_mono[OF if_list])
-    from l1[OF delta_gt_zero this]
-    have l1: "\<forall>qd1 qd2. (qd1, qd2) \<in> set ?list \<longrightarrow> val qd1 (\<delta>_min f_list) \<le> val qd2 (\<delta>_min f_list)"
-      unfolding f_list .
-    have "\<delta>0_val_min (flat_list (to_ns ics)) \<langle>v'\<rangle> = \<delta>_min f_list" unfolding f_list[symmetric]
-    proof(induct ics)
-      case Nil
-      show ?case
-        by (simp add: to_ns_def)
-    next
-      case (Cons h t)
-      then show ?case
-        by (cases h; cases "snd h") (auto simp add: to_ns_def)
-    qed
-    then have l2: "from_ns v' ?f_list = Mapping.tabulate (vars_list_constraints ?f_list) (\<lambda> var. val (\<langle>v'\<rangle> var) (\<delta>_min f_list))"
-      by (auto simp add: from_ns_def)
-    fix c
-    assume "c \<in> restrict_to I (set ics)"
-    then obtain i where i: "i \<in> I" and mem: "(i,c) \<in> set ics" by auto
-    from mem show "\<langle>from_ns v' ?f_list\<rangle> \<Turnstile>\<^sub>c c"
-    proof (induct c)
-      case (LT lll rrr)
-      then have "(lll\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta rrr (-1))) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns)
-      then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta rrr (-1)) (\<delta>_min f_list)"
-        using l1
-        by simp
-      moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars lll"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using LT
-          by (auto simp add: comp_def lookup_tabulate restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> (val (QDelta.QDelta rrr (-1)) (\<delta>_min f_list))"
-        by (auto simp add: valuate_rat_valuate)
-      then show ?case
-        using delta_gt_zero[of f_list]
-        by (simp add: val_def)
-    next
-      case (GT lll rrr)
-      then have "((QDelta.QDelta rrr 1), lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns)
-      then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta rrr 1) (\<delta>_min f_list)"
-        using l1
-        by simp
-      moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars lll"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using GT
-          by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta rrr 1) (\<delta>_min f_list)"
-        using l2
-        by (simp add: valuate_rat_valuate)
-      then show ?case
-        using delta_gt_zero[of f_list]
-        by (simp add: val_def)
-    next
-      case (LEQ lll rrr)
-      then have "(lll\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta rrr 0) ) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns)
-      then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
-        using l1
-        by simp
-      moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars lll"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using LEQ
-          by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
-        using l2
-        by (simp add: valuate_rat_valuate)
-      then show ?case
-        by (simp add: val_def)
-    next
-      case (GEQ lll rrr)
-      then have "((QDelta.QDelta rrr 0), lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns)
-      then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
-        using l1
-        by simp
-      moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars lll"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using GEQ
-          by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
-        using l2
-        by (simp add: valuate_rat_valuate)
-      then show ?case
-        by (simp add: val_def)
-    next
-      case (EQ lll rrr)
-      then have "((QDelta.QDelta rrr 0), lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" and
-        "(lll\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta rrr 0) ) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns)+
-      then have "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)" and
-        "val (lll\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
-        using l1
-        by simp_all
-      moreover
-      have "lll\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars lll"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using EQ
-          by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)" and
-        "lll\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta rrr 0) (\<delta>_min f_list)"
-        using l1
-        by (auto simp add: valuate_rat_valuate)
-      then show ?case
-        by (simp add: val_def)
-    next
-      case (LTPP ll1 ll2)
-      then have "((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta 0 (-1)) ) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns)
-      then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta 0 (-1)) (\<delta>_min f_list)"
-        using l1
-        by simp
-      moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars (ll1 - ll2)"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using LTPP
-          by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta 0 (-1)) (\<delta>_min f_list)"
-        using l1
-        by (simp add: valuate_rat_valuate)
-      then show ?case
-        using delta_gt_zero[of f_list]
-        by (simp add: val_def valuate_minus)
-    next
-      case (GTPP ll1 ll2)
-      then have "((QDelta.QDelta 0 1), (ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns)
-      then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta 0 1) (\<delta>_min f_list)"
-        using l1
-        by simp
-      moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars (ll1 - ll2)"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using GTPP
-          by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta 0 1) (\<delta>_min f_list)"
-        using l1
-        by (simp add: valuate_rat_valuate)
-      then show ?case
-        using delta_gt_zero[of f_list]
-        by (simp add: val_def valuate_minus)
-    next
-      case (LEQPP ll1 ll2)
-      then have "((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta 0 0) ) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns zero_QDelta_def)
-      then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-        using l1
-        by simp
-      moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars (ll1 - ll2)"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using LEQPP
-          by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-        using l1
-        by (simp add: valuate_rat_valuate)
-      then show ?case
-        using delta_gt_zero[of f_list]
-        by (simp add: val_def valuate_minus)
-    next
-      case (GEQPP ll1 ll2)
-      then have "((QDelta.QDelta 0 0), (ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns zero_QDelta_def)
-      then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-        using l1
-        by simp
-      moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars (ll1 - ll2)"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using GEQPP
-          by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-        using l1
-        by (simp add: valuate_rat_valuate)
-      then show ?case
-        using delta_gt_zero[of f_list]
-        by (simp add: val_def valuate_minus)
-    next
-      case (EQPP ll1 ll2)
-      then have "((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>, (QDelta.QDelta 0 0) ) \<in> set ?list" and
-        "((QDelta.QDelta 0 0), (ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) \<in> set ?list" using i unfolding cs_def
-        by (force simp add: to_ns zero_QDelta_def)+
-      then have "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)" and
-        "val ((ll1-ll2)\<lbrace>\<langle>v'\<rangle>\<rbrace>) (\<delta>_min f_list) \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-        using l1
-        by simp_all
-      moreover
-      have "(ll1-ll2)\<lbrace>(\<lambda>x. val (\<langle>v'\<rangle> x) (\<delta>_min f_list))\<rbrace> =
-            (ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace>"
-      proof (rule valuate_depend, rule)
-        fix x
-        assume "x \<in> vars (ll1 - ll2)"
-        then show "val (\<langle>v'\<rangle> x) (\<delta>_min f_list) = \<langle>from_ns v' ?f_list\<rangle> x"
-          using l2
-          using EQPP
-          by (auto simp add: lookup_tabulate comp_def restrict_map_def set_vars_list to_ns_def map2fun_def')
-      qed
-      ultimately
-      have "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<ge> val (QDelta.QDelta 0 0) (\<delta>_min f_list)" and
-        "(ll1-ll2)\<lbrace>\<langle>from_ns v' ?f_list\<rangle>\<rbrace> \<le> val (QDelta.QDelta 0 0) (\<delta>_min f_list)"
-        using l1
-        by (auto simp add: valuate_rat_valuate)
-      then show ?case
-        by (simp add: val_def valuate_minus)
-    qed
-  qed
-next
-  fix cs I mode
-  show indices: "fst ` set (to_ns cs) = fst ` set cs" unfolding to_ns_def
-  proof (simp add: image_Union, induct cs)
-    case (Cons c cs)
-    thus ?case by (cases c, cases "snd c", auto)
+  } note sat = this
+  fix cs :: "('i \<times> constraint) list" 
+  have "(minimality_condition cs \<longrightarrow> minimality_condition_ns (to_ns cs)) \<and> fst ` set (to_ns cs) = fst ` set cs" 
+    unfolding minimality_condition_def minimality_condition_ns_def to_ns_def distinct_indices_def
+  proof (induct cs)
+    case (Cons ic cs)
+    thus ?case by (cases ic, cases "snd ic", auto simp: o_def)
   qed simp
-  assume unsat: "unsat_core_ns mode I (set (to_ns cs))"
-  note unsat = unsat[unfolded unsat_core_ns_def indices]
+  thus indices: "fst ` set (to_ns cs) = fst ` set cs" 
+    and mini: "minimality_condition cs \<Longrightarrow> minimality_condition_ns (to_ns cs)" by auto
+  fix I mode
+  assume unsat: "minimal_unsat_core_ns mode I (to_ns cs)"
+  note unsat = unsat[unfolded minimal_unsat_core_ns_def indices]
   hence indices: "mode \<longrightarrow> I \<subseteq> fst ` set cs" by auto
-  show "unsat_core mode I (set cs)"
-    unfolding unsat_core_def
-  proof (intro conjI indices, clarify)
+  show "minimal_unsat_core mode I cs"
+    unfolding minimal_unsat_core_def
+  proof (intro conjI indices impI allI, clarify)
     fix v
     assume v: "(I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs"
     let ?v = "\<lambda>var. QDelta.QDelta (v var) 0"
@@ -7780,13 +8166,25 @@ next
         qed
       qed
     qed (simp add: to_ns_def)
-    with unsat show False unfolding unsat_core_ns_def by simp blast
+    with unsat show False unfolding minimal_unsat_core_ns_def by simp blast
+  next
+    fix J
+    assume *: mode "minimality_condition cs" "J \<subset> I" 
+    hence "minimality_condition_ns (to_ns cs)" 
+      using mini by auto
+    with * unsat obtain v where model: "(J, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set (to_ns cs)" by blast
+    define w where "w = Mapping.Mapping (\<lambda> x. Some (v x))"
+    have "v = \<langle>w\<rangle>" unfolding w_def map2fun_def
+      by (intro ext, transfer, auto)
+    with model have model: "(J, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set (to_ns cs)" by auto
+    from sat[OF this]
+    show " \<exists>v. (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs" by blast
   qed
 qed
 
 (* cleanup *)
 
-hide_const (open) le lt LE GE LB UB LI UI LBI UBI UBI_upd
+hide_const (open) le lt LE GE LB UB LI UI LBI UBI UBI_upd le_rat
   inv zero Var add flat flat_list restrict_to look upd
 
 
@@ -7801,14 +8199,16 @@ definition simplex_index :: "'i i_constraint list \<Rightarrow> 'i list + (var, 
   "simplex_index = solve_exec_code"
 
 lemma simplex_index:
-  "simplex_index cs = Unsat I \<Longrightarrow> set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)" \<comment> \<open>unsat core\<close>
+  "simplex_index cs = Unsat I \<Longrightarrow> set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs) \<and> 
+     (minimality_condition cs \<longrightarrow> (\<forall> J \<subset> set I. (\<exists> v. (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)))" \<comment> \<open>minimal unsat core\<close>
   "simplex_index cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s (snd ` set cs)" \<comment> \<open>satisfying assingment\<close>
 proof (unfold simplex_index_def)
   assume "solve_exec_code cs = Unsat I"
   from SolveExec'Default.simplex_unsat0[OF this]
-  have core: "unsat_core True (set I) (set cs)" by auto
-  then show "set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)"
-    unfolding unsat_core_def by auto
+  have core: "minimal_unsat_core True (set I) cs" by auto
+  then show "set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs) \<and>
+    (minimality_condition cs \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs))"
+    unfolding minimal_unsat_core_def by auto
 next
   assume "solve_exec_code cs = Sat v"
   from SolveExec'Default.simplex_sat0[OF this]
@@ -7821,19 +8221,30 @@ definition simplex where "simplex cs = simplex_index (zip [0..<length cs] cs)"
 
 lemma simplex:
   "simplex cs = Unsat I \<Longrightarrow> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s set cs)" \<comment> \<open>unsat of original constraints\<close>
-  "simplex cs = Unsat I \<Longrightarrow> set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})" \<comment> \<open>unsat core\<close>
+  "simplex cs = Unsat I \<Longrightarrow> set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})
+    \<and> (Ball (set cs) minimality_condition_constraint \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J}))" \<comment> \<open>minimal unsat core\<close>
   "simplex cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s set cs"  \<comment> \<open>satisfying assingment\<close>
 proof (unfold simplex_def)
   let ?cs = "zip [0..<length cs] cs"
   assume "simplex_index ?cs = Unsat I"
   from simplex_index(1)[OF this]
   have index: "set I \<subseteq> {0 ..< length cs}" and
-    "\<nexists>v. v \<Turnstile>\<^sub>c\<^sub>s (snd ` (set ?cs \<inter> set I \<times> UNIV))" by (auto simp flip: set_map)
-  note unsat = unsat_mono[OF this(2)]
+    core: "\<nexists>v. v \<Turnstile>\<^sub>c\<^sub>s (snd ` (set ?cs \<inter> set I \<times> UNIV))" 
+    "(minimality_condition (zip [0..<length cs] cs) \<longrightarrow> (\<forall> J \<subset> set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s (snd ` (set ?cs \<inter> J \<times> UNIV))))" 
+    by (auto simp flip: set_map)
+  note core(2)
+  also have "minimality_condition (zip [0..<length cs] cs) = Ball (set cs) minimality_condition_constraint" 
+    unfolding minimality_condition_def distinct_indices_def set_zip by (auto simp: set_conv_nth)
+  also have "(\<forall> J \<subset> set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s (snd ` (set ?cs \<inter> J \<times> UNIV))) =
+    (\<forall> J \<subset> set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s { cs ! i | i.  i \<in> J})" using index
+    by (intro all_cong1 imp_cong ex_cong1 arg_cong[of _ _ "\<lambda> x. _ \<Turnstile>\<^sub>c\<^sub>s x"] refl, force simp: set_zip)
+  finally have core': "(\<forall>a\<in>set cs. minimality_condition_constraint a) \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J}) " .
+  note unsat = unsat_mono[OF core(1)]
   show "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s set cs)"
     by (rule unsat, auto simp: set_zip)
-  show "set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})"
-    by (intro conjI[OF index], rule unsat, auto simp: set_zip)
+  show "set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})
+    \<and> (Ball (set cs) minimality_condition_constraint \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J}))"
+    by (intro conjI index core', rule unsat, auto simp: set_zip)
 next
   assume "simplex_index (zip [0..<length cs] cs) = Sat v"
   from simplex_index(2)[OF this]

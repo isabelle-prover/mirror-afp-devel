@@ -306,11 +306,11 @@ assumes
   assert_nsc_ok: "invariant_nsc nsc J s \<Longrightarrow> assert_nsc j s = Inr s' \<Longrightarrow> 
     invariant_nsc nsc (insert j J) s'" and
   assert_nsc_unsat: "invariant_nsc nsc J s \<Longrightarrow> assert_nsc j s = Unsat I \<Longrightarrow>
-    set I \<subseteq> insert j J \<and> unsat_core_ns False (set I) (set nsc)" and
+    set I \<subseteq> insert j J \<and> minimal_unsat_core_ns False (set I) nsc" and
   check_nsc_ok: "invariant_nsc nsc J s \<Longrightarrow> check_nsc s = Inr s' \<Longrightarrow> 
     checked_nsc nsc J s'" and
   check_nsc_unsat: "invariant_nsc nsc J s \<Longrightarrow> check_nsc s = Unsat I \<Longrightarrow> 
-    set I \<subseteq> J \<and> unsat_core_ns False (set I) (set nsc)" and
+    set I \<subseteq> J \<and> minimal_unsat_core_ns False (set I) nsc" and
   init_nsc: "checked_nsc nsc {} (init_nsc nsc)" and
   solution_nsc: "checked_nsc nsc J s \<Longrightarrow> solution_nsc s = v \<Longrightarrow> (J, \<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set nsc" and
   backtrack_nsc: "checked_nsc nsc J s \<Longrightarrow> checkpoint_nsc s = c 
@@ -437,7 +437,7 @@ next
   then have "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I \<inter> (insert j J), v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
     unfolding i_satisfies_atom_set_inter_right by simp
   also have "set I \<inter> (insert j J) = set I" using I by auto
-  finally show ?case using preprocess_unsat[OF prep, of "set I"] I unfolding unsat_core_ns_def by blast
+  finally show ?case using preprocess_unsat[OF prep, of "set I"] I unfolding minimal_unsat_core_ns_def by blast
 next
   case (3 nsc J S S') (* check ok *)
   then show ?case using check_s_ok unfolding check_nsc_def
@@ -456,7 +456,7 @@ next
   then have "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I \<inter> J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
     unfolding i_satisfies_atom_set_inter_right by simp
   also have "set I \<inter> J = set I" using I by auto
-  finally show ?case using preprocess_unsat[OF prep, of "set I"] I  unfolding unsat_core_ns_def by blast
+  finally show ?case using preprocess_unsat[OF prep, of "set I"] I  unfolding minimal_unsat_core_ns_def by blast
 next
   case (5 nsc) (* init *)
   obtain t as tv' where prep[simp]: "preprocess nsc = (t, as, tv')" by (cases "preprocess nsc")
@@ -571,10 +571,10 @@ next
     by (auto split: sum.splits)
   from pre(1) have inv: "invariant_nsc (to_ns cs) J s" by auto
   from assert_nsc_unsat[OF inv unsat]
-  have "set I \<subseteq> insert j J" "unsat_core_ns False (set I) (set (to_ns cs))" 
+  have "set I \<subseteq> insert j J" "minimal_unsat_core_ns False (set I) (to_ns cs)" 
     by auto
   from to_ns_unsat[OF this(2)] this(1)
-  show ?case unfolding unsat_core_def by blast
+  show ?case unfolding minimal_unsat_core_def by blast
 next
   case (3 cs J S S') (* check ok *)
   then show ?case using check_nsc_ok unfolding check_cs_def
@@ -587,10 +587,10 @@ next
     by (auto split: sum.splits)
   from pre(1) have inv: "invariant_nsc (to_ns cs) J s" by auto
   from check_nsc_unsat[OF inv unsat]
-  have "set I \<subseteq> J" "unsat_core_ns False (set I) (set (to_ns cs))" 
-    unfolding unsat_core_ns_def by auto
+  have "set I \<subseteq> J" "minimal_unsat_core_ns False (set I) (to_ns cs)" 
+    unfolding minimal_unsat_core_ns_def by auto
   from to_ns_unsat[OF this(2)] this(1)
-  show ?case unfolding unsat_core_def by blast
+  show ?case unfolding minimal_unsat_core_def by blast
 next
   case (5 cs) (* init *)
   show ?case unfolding init_cs_def Let_def using init_nsc by auto
