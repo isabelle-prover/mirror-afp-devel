@@ -9,7 +9,22 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>19 Oct 2018 00:00:00 +0000</pubDate>
+    <pubDate>22 Oct 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Smooth Manifolds</title>
+              <link>https://www.isa-afp.org/entries/Smooth_Manifolds.html</link>
+       <guid>https://www.isa-afp.org/entries/Smooth_Manifolds.html</guid>
+       <dc:creator> Fabian Immler, Bohua Zhan       </dc:creator>
+       <pubDate>22 Oct 2018 00:00:00 +0000</pubDate>
+       <description>
+We formalize the definition and basic properties of smooth manifolds
+in Isabelle/HOL. Concepts covered include partition of unity, tangent
+and cotangent spaces, and the fundamental theorem of path integrals.
+We also examine some concrete manifolds such as spheres and projective
+spaces. The formalization makes extensive use of the analysis and
+linear algebra libraries in Isabelle/HOL, in particular its
+“types-to-sets” mechanism.</description>
+    </item>
     <item>
        <title>Randomised Binary Search Trees</title>
               <link>https://www.isa-afp.org/entries/Randomised_BSTs.html</link>
@@ -565,32 +580,6 @@ href=&#34;http://www.pm.inf.ethz.ch/research/verifythis.html&#34;&gt;VerifyThis
 ETAPS 2018. It was the 7th event in the VerifyThis competition series.
 In this entry, we present polished and completed versions of our
 solutions that we created during the competition.</description>
-    </item>
-    <item>
-       <title>Bounded Natural Functors with Covariance and Contravariance</title>
-              <link>https://www.isa-afp.org/entries/BNF_CC.html</link>
-       <guid>https://www.isa-afp.org/entries/BNF_CC.html</guid>
-       <dc:creator> Andreas Lochbihler, Joshua Schneider       </dc:creator>
-       <pubDate>24 Apr 2018 00:00:00 +0000</pubDate>
-       <description>
-Bounded natural functors (BNFs) provide a modular framework for the
-construction of (co)datatypes in higher-order logic.  Their functorial
-operations, the mapper and relator, are restricted to a subset of the
-parameters, namely those where recursion can take place.  For certain
-applications, such as free theorems, data refinement, quotients, and
-generalised rewriting, it is desirable that these operations do not
-ignore the other parameters.  In this article, we formalise the
-generalisation BNF&lt;sub&gt;CC&lt;/sub&gt; that extends the mapper
-and relator to covariant and contravariant parameters.  We show that
-&lt;ol&gt; &lt;li&gt; BNF&lt;sub&gt;CC&lt;/sub&gt;s are closed under
-functor composition and least and greatest fixpoints,&lt;/li&gt;
-&lt;li&gt; subtypes inherit the BNF&lt;sub&gt;CC&lt;/sub&gt; structure
-under conditions that generalise those for the BNF case,
-and&lt;/li&gt; &lt;li&gt; BNF&lt;sub&gt;CC&lt;/sub&gt;s preserve
-quotients under mild conditions.&lt;/li&gt; &lt;/ol&gt; These proofs
-are carried out for abstract BNF&lt;sub&gt;CC&lt;/sub&gt;s similar to
-the AFP entry BNF Operations.  In addition, we apply the
-BNF&lt;sub&gt;CC&lt;/sub&gt; theory to several concrete functors.</description>
     </item>
   </channel>
 </rss>

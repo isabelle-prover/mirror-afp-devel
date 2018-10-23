@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Taylor Models - Archive of Formal Proofs
+<title>Smooth Manifolds - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,9 +61,9 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">T</font>aylor
+  <h1>          <font class="first">S</font>mooth
   
-          <font class="first">M</font>odels
+          <font class="first">M</font>anifolds
   
 </h1>
   <p>&nbsp;</p>
@@ -72,7 +72,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Taylor Models</td>
+  <td class="data" width="80%">Smooth Manifolds</td>
 </tr>
 
 <tr>
@@ -80,8 +80,8 @@
           Authors:
       </td>
   <td class="data">
-                    Christoph Traut and
-          <a href="http://home.in.tum.de/~immler/">Fabian Immler</a>
+                    <a href="http://home.in.tum.de/~immler/">Fabian Immler</a> and
+          <a href="http://lcs.ios.ac.cn/~bzhan/">Bohua Zhan</a>
       </td>
 </tr>
 
@@ -89,34 +89,32 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2018-01-08</td>
+  <td class="data">2018-10-22</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-We present a formally verified implementation of multivariate Taylor
-models. Taylor models are a form of rigorous polynomial approximation,
-consisting of an approximation polynomial based on Taylor expansions,
-combined with a rigorous bound on the approximation error. Taylor
-models were introduced as a tool to mitigate the dependency problem of
-interval arithmetic. Our implementation automatically computes Taylor
-models for the class of elementary functions, expressed by composition
-of arithmetic operations and basic functions like exp, sin, or square
-root.</td>
+We formalize the definition and basic properties of smooth manifolds
+in Isabelle/HOL. Concepts covered include partition of unity, tangent
+and cotangent spaces, and the fundamental theorem of path integrals.
+We also examine some concrete manifolds such as spheres and projective
+spaces. The formalization makes extensive use of the analysis and
+linear algebra libraries in Isabelle/HOL, in particular its
+“types-to-sets” mechanism.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Taylor_Models-AFP,
-  author  = {Christoph Traut and Fabian Immler},
-  title   = {Taylor Models},
+        <pre>@article{Smooth_Manifolds-AFP,
+  author  = {Fabian Immler and Bohua Zhan},
+  title   = {Smooth Manifolds},
   journal = {Archive of Formal Proofs},
-  month   = jan,
+  month   = oct,
   year    = 2018,
-  note    = {\url{http://isa-afp.org/entries/Taylor_Models.html},
+  note    = {\url{http://isa-afp.org/entries/Smooth_Manifolds.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -127,9 +125,7 @@ root.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Affine_Arithmetic.html">Affine_Arithmetic</a>      </td></tr>
-          
+                    
                     
 
         
@@ -142,29 +138,23 @@ root.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Taylor_Models/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Taylor_Models/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Smooth_Manifolds/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Smooth_Manifolds/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Taylor_Models/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Smooth_Manifolds/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Taylor_Models-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Smooth_Manifolds-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2017:
-          <a href="../release/afp-Taylor_Models-2018-01-08.tar.gz">
-            afp-Taylor_Models-2018-01-08.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>
