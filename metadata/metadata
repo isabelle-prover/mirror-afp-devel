@@ -7418,4 +7418,18 @@ abstract =
   part of this porting we developed a libray about transition systems,
   which shall be of use in future related mechanisation efforts.
 
+[Smooth_Manifolds]
+title = Smooth Manifolds
+author = Fabian Immler <http://home.in.tum.de/~immler/>, Bohua Zhan <http://lcs.ios.ac.cn/~bzhan/>
+topic = Mathematics/Analysis, Mathematics/Topology
+date = 2018-10-22
+notify = immler@in.tum.de, bzhan@ios.ac.cn
+abstract = 
+  We formalize the definition and basic properties of smooth manifolds
+  in Isabelle/HOL. Concepts covered include partition of unity, tangent
+  and cotangent spaces, and the fundamental theorem of path integrals.
+  We also examine some concrete manifolds such as spheres and projective
+  spaces. The formalization makes extensive use of the analysis and
+  linear algebra libraries in Isabelle/HOL, in particular its
+  “types-to-sets” mechanism.
 
