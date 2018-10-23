@@ -2508,7 +2508,7 @@ proof -
           and ns': "non_speculative P (w_values P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) (map snd (concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))))))
                (lmap snd (ltake (enat r_n) (llist_of (map (Pair t_r) \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>))))"
           using r r_conv r_m r_n
-          by(simp_all add: length_concat o_def split_def sum_list_sum_nth length_list_of_conv_the_enat less_min_eq1 atLeast0LessThan lnth_ltake split: if_split_asm cong: sum.strong_cong)
+          by(simp_all add: length_concat o_def split_def sum_list_sum_nth length_list_of_conv_the_enat less_min_eq1 atLeast0LessThan lnth_ltake split: if_split_asm cong: sum.cong_strong)
         hence ns: "non_speculative P (w_values P (\<lambda>_. {}) (map snd ?start_heap_obs)) 
                      (llist_of (concat (map (\<lambda>(t, ta). \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E')))))"
           unfolding lconcat_llist_of[symmetric] lmap_lconcat lmap_llist_of[symmetric] llist.map_comp o_def split_def
@@ -2591,11 +2591,11 @@ proof -
 
         from r r_conv have r_conv': "r = (\<Sum>i<r_m. length \<lbrace>snd (lnth E' i)\<rbrace>\<^bsub>o\<^esub>) + r_n + length ?start_heap_obs" by auto
         hence len_EE: "llength EE = enat r" using r_m r_n
-          by(auto simp add: EE_def length_concat sum_list_sum_nth atLeast0LessThan lnth_ltake less_min_eq1 split_def min_def length_list_of_conv_the_enat cong: sum.strong_cong)
+          by(auto simp add: EE_def length_concat sum_list_sum_nth atLeast0LessThan lnth_ltake less_min_eq1 split_def min_def length_list_of_conv_the_enat cong: sum.cong_strong)
         
         from r_conv r_m
         have r_conv3: "llength (lconcat (lmap (\<lambda>x. llist_of (map (Pair (fst x)) \<lbrace>snd x\<rbrace>\<^bsub>o\<^esub>)) (ltake (enat r_m) E'))) = enat (r - Suc (length start_heap_obs) - r_n)" 
-          apply(simp add: llength_lconcat_lfinite_conv_sum lnth_ltake cong: sum.strong_cong conj_cong)
+          apply(simp add: llength_lconcat_lfinite_conv_sum lnth_ltake cong: sum.cong_strong conj_cong)
           apply(auto simp add: sum_hom[where f=enat, symmetric] zero_enat_def less_trans[where y="enat r_m"] intro: sum.cong)
           done            
 
@@ -2687,7 +2687,7 @@ proof -
           by(rule ta_hb_consistent_Read_hb)(rule jmm.\<E>_new_actions_for_fun[OF \<E>'[unfolded `?E = ?E'`]])
         also have r_conv'': "length (?start_heap_obs @ concat (map (\<lambda>(t, ta). map (Pair t) \<lbrace>ta\<rbrace>\<^bsub>o\<^esub>) (list_of (ltake (enat r_m) E'))) @ map (Pair t_r) (take r_n \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub>)) = r"
           using r_n r_m unfolding r_conv'
-          by(auto simp add: length_concat sum_list_sum_nth atLeast0LessThan lnth_ltake split_def o_def less_min_eq1 min_def length_list_of_conv_the_enat cong: sum.strong_cong)
+          by(auto simp add: length_concat sum_list_sum_nth atLeast0LessThan lnth_ltake split_def o_def less_min_eq1 min_def length_list_of_conv_the_enat cong: sum.cong_strong)
         finally obtain ws' where wf_exec': "P \<turnstile> (?E', ws') \<surd>" 
           and read_hb: "\<And>n. \<lbrakk> n \<in> read_actions ?E'; r \<le> n \<rbrakk> \<Longrightarrow> P,?E' \<turnstile> ws' n \<le>hb n"
           and read_same: "\<And>n. n < r \<Longrightarrow> ws' n = ws n" by blast
@@ -2730,7 +2730,7 @@ proof -
         hence "?read ?E' ws'" by blast
         moreover from r_m r_n r_n'
         have E'_r: "lnth ?E' r = (t_r, \<lbrace>ta'_r\<rbrace>\<^bsub>o\<^esub> ! r_n)" unfolding r_conv'
-          by(auto simp add: lnth_lappend nth_append length_concat sum_list_sum_nth atLeast0LessThan split_beta lnth_ltake less_min_eq1 length_list_of_conv_the_enat cong: sum.strong_cong)
+          by(auto simp add: lnth_lappend nth_append length_concat sum_list_sum_nth atLeast0LessThan split_beta lnth_ltake less_min_eq1 length_list_of_conv_the_enat cong: sum.cong_strong)
         from E_r r have E_r: "lnth E r = (t_r, \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> ! r_n)"
           unfolding E by(simp add: lnth_lappend)
         have "r \<in> read_actions E \<longleftrightarrow> (\<exists>ad al v. \<lbrace>ta_r\<rbrace>\<^bsub>o\<^esub> ! r_n = NormalAction (ReadMem ad al v))" using True
@@ -2738,7 +2738,7 @@ proof -
         with sim E'_r E_r have "?tid ?E'" "?obs ?E'"
           by(auto simp add: action_tid_def action_obs_def)
         moreover have "?actions ?E'" using r_n r_m r_n' unfolding r_conv'
-          by(cases "llength ?E'")(auto simp add: actions_def less_min_eq2 length_concat sum_list_sum_nth atLeast0LessThan split_beta lnth_ltake less_min_eq1 length_list_of_conv_the_enat enat_plus_eq_enat_conv cong: sum.strong_cong)
+          by(cases "llength ?E'")(auto simp add: actions_def less_min_eq2 length_concat sum_list_sum_nth atLeast0LessThan split_beta lnth_ltake less_min_eq1 length_list_of_conv_the_enat enat_plus_eq_enat_conv cong: sum.cong_strong)
         ultimately show ?thesis using wf_exec' \<E>'
           unfolding `?E = ?E'` by blast
       qed
