@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Count the Number of Complex Roots - Archive of Formal Proofs
+<title>Randomised Binary Search Trees - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,17 +61,13 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>ount
+  <h1>          <font class="first">R</font>andomised
   
-          the
+          <font class="first">B</font>inary
   
-          <font class="first">N</font>umber
+          <font class="first">S</font>earch
   
-          of
-  
-          <font class="first">C</font>omplex
-  
-          <font class="first">R</font>oots
+          <font class="first">T</font>rees
   
 </h1>
   <p>&nbsp;</p>
@@ -80,7 +76,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Count the Number of Complex Roots</td>
+  <td class="data" width="80%">Randomised Binary Search Trees</td>
 </tr>
 
 <tr>
@@ -88,7 +84,7 @@
           Author:
       </td>
   <td class="data">
-              <a href="https://www.cl.cam.ac.uk/~wl302/">Wenda Li</a>
+              <a href="https://www21.in.tum.de/~eberlm">Manuel Eberl</a>
       </td>
 </tr>
 
@@ -96,32 +92,32 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-10-17</td>
+  <td class="data">2018-10-19</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-Based on evaluating Cauchy indices through remainder sequences, this
-entry provides an effective procedure to count the number of complex
-roots (with multiplicity) of a polynomial within a rectangle box or a
-half-plane. Potential applications of this entry include certified
-complex root isolation (of a polynomial) and testing the Routh-Hurwitz
-stability criterion (i.e., to check whether all the roots of some
-characteristic polynomial have negative real parts).</td>
+<p>This work is a formalisation of the Randomised Binary Search
+Trees introduced by Martínez and Roura, including definitions and
+correctness proofs.</p> <p>Like randomised treaps, they
+are a probabilistic data structure that behaves exactly as if elements
+were inserted into a non-balancing BST in random order. However,
+unlike treaps, they only use discrete probability distributions, but
+their use of randomness is more complicated.</p></td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Count_Complex_Roots-AFP,
-  author  = {Wenda Li},
-  title   = {Count the Number of Complex Roots},
+        <pre>@article{Randomised_BSTs-AFP,
+  author  = {Manuel Eberl},
+  title   = {Randomised Binary Search Trees},
   journal = {Archive of Formal Proofs},
   month   = oct,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Count_Complex_Roots.html},
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Randomised_BSTs.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -133,11 +129,9 @@ characteristic polynomial have negative real parts).</td>
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Sturm_Tarski.html">Sturm_Tarski</a>, <a href="Winding_Number_Eval.html">Winding_Number_Eval</a>      </td></tr>
+          <td class="data"><a href="Monad_Normalisation.html">Monad_Normalisation</a>, <a href="Random_BSTs.html">Random_BSTs</a>      </td></tr>
           
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Linear_Recurrences.html">Linear_Recurrences</a>      </td></tr>
-          
+                    
 
         
   </tbody>
@@ -149,29 +143,23 @@ characteristic polynomial have negative real parts).</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Count_Complex_Roots/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Count_Complex_Roots/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Randomised_BSTs/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Randomised_BSTs/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Count_Complex_Roots/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Randomised_BSTs/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Count_Complex_Roots-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Randomised_BSTs-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2017:
-            <a href="../release/afp-Count_Complex_Roots-2017-10-18.tar.gz">
-              afp-Count_Complex_Roots-2017-10-18.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>

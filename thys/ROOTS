@@ -215,6 +215,7 @@ Lambda_Free_RPOs
 Landau_Symbols
 Latin_Square
 LatticeProperties
+Lambda_Free_EPO
 Launchbury
 Lazy-Lists-II
 Lazy_Case
@@ -332,6 +333,7 @@ ROBDD
 RSAPSS
 Ramsey-Infinite
 Random_BSTs
+Randomised_BSTs
 Random_Graph_Subgraph_Threshold
 Randomised_Social_Choice
 Rank_Nullity_Theorem
@@ -375,6 +377,7 @@ Simple_Firewall
 Simplex
 Skew_Heap
 Slicing
+Smooth_Manifolds
 Sort_Encodings
 Source_Coding_Theorem
 Special_Function_Bounds

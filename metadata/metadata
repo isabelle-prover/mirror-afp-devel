@@ -407,6 +407,21 @@ abstract =
   the harmonic numbers. We also show how the internal path length
   relates to the average-case cost of a lookup in a BST.</p>
 
+[Randomised_BSTs]
+title = Randomised Binary Search Trees
+author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
+topic = Computer Science/Data Structures
+date = 2018-10-19
+notify = eberlm@in.tum.de
+abstract =
+  <p>This work is a formalisation of the Randomised Binary Search
+  Trees introduced by Martínez and Roura, including definitions and
+  correctness proofs.</p> <p>Like randomised treaps, they
+  are a probabilistic data structure that behaves exactly as if elements
+  were inserted into a non-balancing BST in random order. However,
+  unlike treaps, they only use discrete probability distributions, but
+  their use of randomness is more complicated.</p>
+
 [E_Transcendental]
 title = The Transcendence of e
 author = Manuel Eberl <https://www21.in.tum.de/~eberlm>
@@ -3602,6 +3617,19 @@ date = 2016-11-12
 topic = Logic/Rewriting
 abstract = This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus.
 notify = jasmin.blanchette@gmail.com
+
+[Lambda_Free_EPO]
+title = Formalization of the Embedding Path Order for Lambda-Free Higher-Order Terms
+author = Alexander Bentkamp <https://www.cs.vu.nl/~abp290/>
+topic = Logic/Rewriting
+date = 2018-10-19
+notify = a.bentkamp@vu.nl
+abstract = 
+  This Isabelle/HOL formalization defines the Embedding Path Order (EPO)
+  for higher-order terms without lambda-abstraction and proves many
+  useful properties about it. In contrast to the lambda-free recursive
+  path orders, it does not fully coincide with RPO on first-order terms,
+  but it is compatible with arbitrary higher-order contexts.
 
 [Nested_Multisets_Ordinals]
 title = Formalization of Nested Multisets, Hereditary Multisets, and Syntactic Ordinals
@@ -7386,7 +7414,7 @@ author = Friedrich Kurz <>, Mohammad Abdulaziz <http://home.in.tum.de/~mansour/>
 topic = Computer Science/Automata and Formal Languages, Mathematics/Graph Theory
 date = 2018-10-12
 notify = friedrich.kurz@tum.de, mohammad.abdulaziz@in.tum.de
-abstract = 
+abstract =
   A completeness threshold is required to guarantee the completeness of
   planning as satisfiability, and bounded model checking of safety
   properties. One valid completeness threshold is the diameter of the
@@ -7405,4 +7433,18 @@ abstract =
   part of this porting we developed a libray about transition systems,
   which shall be of use in future related mechanisation efforts.
 
+[Smooth_Manifolds]
+title = Smooth Manifolds
+author = Fabian Immler <http://home.in.tum.de/~immler/>, Bohua Zhan <http://lcs.ios.ac.cn/~bzhan/>
+topic = Mathematics/Analysis, Mathematics/Topology
+date = 2018-10-22
+notify = immler@in.tum.de, bzhan@ios.ac.cn
+abstract = 
+  We formalize the definition and basic properties of smooth manifolds
+  in Isabelle/HOL. Concepts covered include partition of unity, tangent
+  and cotangent spaces, and the fundamental theorem of path integrals.
+  We also examine some concrete manifolds such as spheres and projective
+  spaces. The formalization makes extensive use of the analysis and
+  linear algebra libraries in Isabelle/HOL, in particular its
+  “types-to-sets” mechanism.
 

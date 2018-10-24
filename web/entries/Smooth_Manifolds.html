@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Count the Number of Complex Roots - Archive of Formal Proofs
+<title>Smooth Manifolds - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,17 +61,9 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">C</font>ount
+  <h1>          <font class="first">S</font>mooth
   
-          the
-  
-          <font class="first">N</font>umber
-  
-          of
-  
-          <font class="first">C</font>omplex
-  
-          <font class="first">R</font>oots
+          <font class="first">M</font>anifolds
   
 </h1>
   <p>&nbsp;</p>
@@ -80,15 +72,16 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Count the Number of Complex Roots</td>
+  <td class="data" width="80%">Smooth Manifolds</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Author:
+          Authors:
       </td>
   <td class="data">
-              <a href="https://www.cl.cam.ac.uk/~wl302/">Wenda Li</a>
+                    <a href="http://home.in.tum.de/~immler/">Fabian Immler</a> and
+          <a href="http://lcs.ios.ac.cn/~bzhan/">Bohua Zhan</a>
       </td>
 </tr>
 
@@ -96,32 +89,32 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2017-10-17</td>
+  <td class="data">2018-10-22</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-Based on evaluating Cauchy indices through remainder sequences, this
-entry provides an effective procedure to count the number of complex
-roots (with multiplicity) of a polynomial within a rectangle box or a
-half-plane. Potential applications of this entry include certified
-complex root isolation (of a polynomial) and testing the Routh-Hurwitz
-stability criterion (i.e., to check whether all the roots of some
-characteristic polynomial have negative real parts).</td>
+We formalize the definition and basic properties of smooth manifolds
+in Isabelle/HOL. Concepts covered include partition of unity, tangent
+and cotangent spaces, and the fundamental theorem of path integrals.
+We also examine some concrete manifolds such as spheres and projective
+spaces. The formalization makes extensive use of the analysis and
+linear algebra libraries in Isabelle/HOL, in particular its
+“types-to-sets” mechanism.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Count_Complex_Roots-AFP,
-  author  = {Wenda Li},
-  title   = {Count the Number of Complex Roots},
+        <pre>@article{Smooth_Manifolds-AFP,
+  author  = {Fabian Immler and Bohua Zhan},
+  title   = {Smooth Manifolds},
   journal = {Archive of Formal Proofs},
   month   = oct,
-  year    = 2017,
-  note    = {\url{http://isa-afp.org/entries/Count_Complex_Roots.html},
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Smooth_Manifolds.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -132,12 +125,8 @@ characteristic polynomial have negative real parts).</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Sturm_Tarski.html">Sturm_Tarski</a>, <a href="Winding_Number_Eval.html">Winding_Number_Eval</a>      </td></tr>
-          
-                      <tr><td class="datahead">Used by:</td>
-          <td class="data"><a href="Linear_Recurrences.html">Linear_Recurrences</a>      </td></tr>
-          
+                    
+                    
 
         
   </tbody>
@@ -149,29 +138,23 @@ characteristic polynomial have negative real parts).</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Count_Complex_Roots/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Count_Complex_Roots/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Smooth_Manifolds/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Smooth_Manifolds/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Count_Complex_Roots/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Smooth_Manifolds/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Count_Complex_Roots-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Smooth_Manifolds-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
           <tr><td class="links">Older releases:
-              <ul>
-                              <li>Isabelle 2017:
-            <a href="../release/afp-Count_Complex_Roots-2017-10-18.tar.gz">
-              afp-Count_Complex_Roots-2017-10-18.tar.gz
-            </a>
-            </li>
-                          </ul>
+            None
             </td></tr>
     
   </tbody>
