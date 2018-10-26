@@ -390,6 +390,256 @@ begin
 
   subsection {* Phase 4 *}
 
+  definition items_4 :: "('label, 'state) nba \<Rightarrow> 'state \<Rightarrow> item \<Rightarrow> item set" where
+    "items_4 A p \<equiv> \<lambda> (k, c). {(l, c \<and> even l) |l. k \<le> Suc l \<and> l \<le> k \<and> (accepting A p \<longrightarrow> even l)}"
+  definition get_4 :: "('label, 'state) nba \<Rightarrow> 'state items \<Rightarrow> ('state \<rightharpoonup> item set)" where
+    "get_4 A f \<equiv> \<lambda> p. map_option (items_4 A p) (f p)"
+  definition complement_succ_4 ::
+    "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set" where
+    "complement_succ_4 A a \<equiv> expand_map \<circ> get_4 A \<circ> bounds_3 A a \<circ> refresh_1"
+  definition complement_4 :: "('label, 'state) nba \<Rightarrow> ('label, 'state items) nba" where
+    "complement_4 A \<equiv> nba
+      (alphabet A)
+      ({(Some \<circ> (const (2 * card (nodes A), False))) |` initial A})
+      (complement_succ_4 A)
+      (\<lambda> f. \<forall> (p, k, c) \<in> map_to_set f. \<not> c)"
+
+  lemma get_4_dom[simp]: "dom (get_4 A f) = dom f" unfolding get_4_def by (auto split: bind_splits)
+
+  definition R :: "'state items rel" where
+    "R \<equiv> {(f, g).
+      dom f = dom g \<and>
+      (\<forall> p \<in> dom f. fst (the (f p)) \<le> fst (the (g p))) \<and>
+      (\<forall> p \<in> dom f. snd (the (f p)) \<longleftrightarrow> snd (the (g p)))}"
+
+  lemma bounds_R:
+    assumes "(f, g) \<in> R"
+    assumes "bounds_3 A a (refresh_1 f) p = Some (n, e)"
+    assumes "bounds_3 A a (refresh_1 g) p = Some (k, c)"
+    shows "n \<le> k" "e \<longleftrightarrow> c"
+  proof -
+    have 1:
+      "dom f = dom g"
+      "\<forall> p \<in> dom f. fst (the (f p)) \<le> fst (the (g p))"
+      "\<forall> p \<in> dom f. snd (the (f p)) \<longleftrightarrow> snd (the (g p))"
+      using assms(1) unfolding R_def by auto
+    have "n = INFIMUM (Some -` refresh_1 f ` pred A a p) fst"
+      using assms(2) unfolding bounds_3_def by (auto simp: Let_def split: if_splits)
+    also have "fst ` Some -` refresh_1 f ` pred A a p = fst ` Some -` f ` pred A a p"
+    proof
+      show " fst ` Some -` refresh_1 f ` pred A a p \<subseteq> fst ` Some -` f ` pred A a p"
+        unfolding refresh_1_def image_def
+        by (auto simp: map_option_case split: option.split) (force)
+      show "fst ` Some -` f ` pred A a p \<subseteq> fst ` Some -` refresh_1 f ` pred A a p"
+        unfolding refresh_1_def image_def
+        by (auto simp: map_option_case split: option.split) (metis fst_conv option.sel)
+    qed
+    also have "\<dots> = fst ` Some -` f ` (pred A a p \<inter> dom f)"
+      unfolding dom_def image_def Int_def by auto metis
+    also have "\<dots> = fst ` the ` f ` (pred A a p \<inter> dom f)"
+      unfolding dom_def by force
+    also have "\<dots> = (fst \<circ> the \<circ> f) ` (pred A a p \<inter> dom f)" by force
+    also have "INFIMUM (pred A a p \<inter> dom f) (fst \<circ> the \<circ> f) \<le>
+      INFIMUM (pred A a p \<inter> dom g) (fst \<circ> the \<circ> g)"
+    proof (rule cINF_mono)
+      show "pred A a p \<inter> dom g \<noteq> {}"
+        using assms(2) 1(1) unfolding bounds_3_def refresh_1_def
+        by (auto simp: Let_def split: if_splits) (force+)
+      show "bdd_below ((fst \<circ> the \<circ> f) ` (pred A a p \<inter> dom f))" by rule
+      show "\<exists> n \<in> pred A a p \<inter> dom f. (fst \<circ> the \<circ> f) n \<le> (fst \<circ> the \<circ> g) m"
+        if "m \<in> pred A a p \<inter> dom g" for m using 1 that by auto
+    qed
+    also have "(fst \<circ> the \<circ> g) ` (pred A a p \<inter> dom g) = fst ` the ` g ` (pred A a p \<inter> dom g)" by force
+    also have "\<dots> = fst ` Some -` g ` (pred A a p \<inter> dom g)"
+      unfolding dom_def by force
+    also have "\<dots> = fst ` Some -` g ` pred A a p"
+      unfolding dom_def image_def Int_def by auto metis
+    also have "\<dots> = fst ` Some -` refresh_1 g ` pred A a p"
+    proof
+      show "fst ` Some -` g ` pred A a p \<subseteq> fst ` Some -` refresh_1 g ` pred A a p"
+        unfolding refresh_1_def image_def
+        by (auto simp: map_option_case split: option.split) (metis fst_conv option.sel)
+      show "fst ` Some -` refresh_1 g ` pred A a p \<subseteq> fst ` Some -` g ` pred A a p"
+        unfolding refresh_1_def image_def
+        by (auto simp: map_option_case split: option.split) (force)
+    qed
+    also have "INFIMUM (Some -` refresh_1 g ` pred A a p) fst = k"
+      using assms(3) unfolding bounds_3_def by (auto simp: Let_def split: if_splits)
+    finally show "n \<le> k" by this
+    have "e \<longleftrightarrow> SUPREMUM (Some -` refresh_1 f ` pred A a p) snd"
+      using assms(2) unfolding bounds_3_def by (auto simp: Let_def split: if_splits)
+    also have "snd ` Some -` refresh_1 f ` pred A a p = snd ` Some -` refresh_1 f ` (pred A a p \<inter> dom (refresh_1 f))"
+      unfolding dom_def image_def Int_def by auto metis
+    also have "\<dots> = snd ` the ` refresh_1 f ` (pred A a p \<inter> dom (refresh_1 f))"
+      unfolding dom_def by force
+    also have "\<dots> = (snd \<circ> the \<circ> refresh_1 f) ` (pred A a p \<inter> dom (refresh_1 f))" by force
+    also have "\<dots> = (snd \<circ> the \<circ> refresh_1 g) ` (pred A a p \<inter> dom (refresh_1 g))"
+    proof (rule image_cong)
+      show "pred A a p \<inter> dom (refresh_1 f) = pred A a p \<inter> dom (refresh_1 g)"
+        unfolding refresh_1_dom 1(1) by rule
+      show "(snd \<circ> the \<circ> refresh_1 f) q \<longleftrightarrow> (snd \<circ> the \<circ> refresh_1 g) q"
+        if 2: "q \<in> pred A a p \<inter> dom (refresh_1 g)" for q
+      proof
+        have 3: "\<forall> x \<in> ran f. \<not> snd x \<Longrightarrow> (n, True) \<in> ran g \<Longrightarrow> g q = Some (k, c) \<Longrightarrow> c" for n k c
+          using 1(1, 3) unfolding dom_def ran_def
+          by (auto dest!: Collect_inj) (metis option.sel snd_conv)
+        have 4: "g q = Some (n, True) \<Longrightarrow> f q = Some (k, c) \<Longrightarrow> c" for n k c
+          using 1(3) unfolding dom_def by force
+        have 5: "\<forall> x \<in> ran g. \<not> snd x \<Longrightarrow> (k, True) \<in> ran f \<Longrightarrow> False" for k
+          using 1(1, 3) unfolding dom_def ran_def
+          by (auto dest!: Collect_inj) (metis option.sel snd_conv)
+        show "(snd \<circ> the \<circ> refresh_1 f) q \<Longrightarrow> (snd \<circ> the \<circ> refresh_1 g) q"
+          using 1(1, 3) 2 3 unfolding refresh_1_def by (force split: if_splits)
+        show "(snd \<circ> the \<circ> refresh_1 g) q \<Longrightarrow> (snd \<circ> the \<circ> refresh_1 f) q"
+          using 1(1, 3) 2 4 5 unfolding refresh_1_def
+          by (auto simp: map_option_case split: option.splits if_splits) (force+)
+      qed
+    qed
+    also have "\<dots> = snd ` the ` refresh_1 g ` (pred A a p \<inter> dom (refresh_1 g))" by force
+    also have "\<dots> = snd ` Some -` refresh_1 g ` (pred A a p \<inter> dom (refresh_1 g))"
+      unfolding dom_def by force
+    also have "\<dots> = snd ` Some -` refresh_1 g ` pred A a p"
+      unfolding dom_def image_def Int_def by auto metis
+    also have "SUPREMUM (Some -` refresh_1 g ` pred A a p) snd \<longleftrightarrow> c"
+      using assms(3) unfolding bounds_3_def by (auto simp: Let_def split: if_splits)
+    finally show "e \<longleftrightarrow> c" by this
+  qed
+
+  lemma complement_4_language_1: "language (complement_3 A) \<subseteq> language (complement_4 A)"
+  proof (rule simulation_language)
+    show "alphabet (complement_3 A) \<subseteq> alphabet (complement_4 A)"
+      unfolding complement_3_def complement_4_def by simp
+    show "\<exists> q \<in> initial (complement_4 A). (p, q) \<in> R" if "p \<in> initial (complement_3 A)" for p
+      using that unfolding complement_3_def complement_4_def R_def by simp
+    show "\<exists> g' \<in> succ (complement_4 A) a g. (f', g') \<in> R"
+      if "f' \<in> succ (complement_3 A) a f" "(f, g) \<in> R"
+      for a f f' g
+    proof -
+      have 1: "f' \<in> expand_map (get_3 A (bounds_3 A a (refresh_1 f)))"
+        using that(1) unfolding complement_3_def complement_succ_3_def by auto
+      have 2:
+        "dom f = dom g"
+        "\<forall> p \<in> dom f. fst (the (f p)) \<le> fst (the (g p))"
+        "\<forall> p \<in> dom f. snd (the (f p)) \<longleftrightarrow> snd (the (g p))"
+        using that(2) unfolding R_def by auto
+      have "dom f' = dom (get_3 A (bounds_3 A a (refresh_1 f)))" using expand_map_dom 1 by this
+      also have "\<dots> = dom (bounds_3 A a (refresh_1 f))" by simp
+      finally have 3: "dom f' = dom (bounds_3 A a (refresh_1 f))" by this
+      define g' where "g' p \<equiv> do
+      {
+        (k, c) \<leftarrow> bounds_3 A a (refresh_1 g) p;
+        (l, d) \<leftarrow> f' p;
+        Some (if even k = even l then k else k - 1, d)
+      }" for p
+      have 4: "g' p = do
+      {
+        kc \<leftarrow> bounds_3 A a (refresh_1 g) p;
+        ld \<leftarrow> f' p;
+        Some (if even (fst kc) = even (fst ld) then fst kc else fst kc - 1, snd ld)
+      }" for p unfolding g'_def case_prod_beta by rule
+      have "dom g' = dom (bounds_3 A a (refresh_1 g)) \<inter> dom f'" using 4 bind_eq_Some_conv by fastforce
+      also have "\<dots> = dom f'" using 2 3 by simp
+      finally have 5: "dom g' = dom f'" by this
+      have 6: "(l, d) \<in> items_3 A p (k, c)"
+        if "bounds_3 A a (refresh_1 f) p = Some (k, c)" "f' p = Some (l, d)" for p k c l d
+        using 1 that unfolding expand_map_alt_def get_3_def by blast
+      show ?thesis
+      unfolding complement_4_def nba.sel complement_succ_4_def comp_apply
+      proof
+        show "(f', g') \<in> R"
+        unfolding R_def mem_Collect_eq prod.case
+        proof (intro conjI ballI)
+          show "dom f' = dom g'" using 5 by rule
+        next
+          fix p
+          assume 10: "p \<in> dom f'"
+          have 11: "p \<in> dom (bounds_3 A a (refresh_1 g))" using 2(1) 3 10 by simp
+          obtain k c where 12: "bounds_3 A a (refresh_1 g) p = Some (k, c)" using 11 by fast
+          obtain l d where 13: "f' p = Some (l, d)" using 10 by auto
+          obtain n e where 14: "bounds_3 A a (refresh_1 f) p = Some (n, e)" using 10 3 by fast
+          have 15: "(l, d) \<in> items_3 A p (n, e)" using 6 14 13 by this
+          have 16: "n \<le> k" using bounds_R(1) that(2) 14 12 by this
+          have 17: "l \<le> k" using 15 16 unfolding items_3_def by simp
+          have 18: "even k \<longleftrightarrow> odd l \<Longrightarrow> l \<le> k \<Longrightarrow> l \<le> k - 1" by presburger
+          have 19: "e \<longleftrightarrow> c" using bounds_R(2) that(2) 14 12 by this
+          show "fst (the (f' p)) \<le> fst (the (g' p))" using 17 18 unfolding 4 12 13 by simp
+          show "snd (the (f' p)) \<longleftrightarrow> snd (the (g' p))" using 19 unfolding 4 12 13 by simp
+        qed
+        show "g' \<in> expand_map (get_4 A (bounds_3 A a (refresh_1 g)))"
+        unfolding expand_map_alt_def mem_Collect_eq
+        proof (intro conjI allI impI)
+          show "dom g' = dom (get_4 A (bounds_3 A a (refresh_1 g)))" using 2(1) 3 5 by simp
+          fix p S xy
+          assume 10: "get_4 A (bounds_3 A a (refresh_1 g)) p = Some S"
+          assume 11: "g' p = Some xy"
+          obtain k c where 12: "bounds_3 A a (refresh_1 g) p = Some (k, c)" "S = items_4 A p (k, c)"
+            using 10 unfolding get_4_def by auto
+          obtain l d where 13: "f' p = Some (l, d)" "xy = (if even k \<longleftrightarrow> even l then k else k - 1, d)"
+            using 11 12 unfolding g'_def by (auto split: bind_splits)
+          obtain n e where 14: "bounds_3 A a (refresh_1 f) p = Some (n, e)" using 13(1) 3 by fast
+          have 15: "(l, d) \<in> items_3 A p (n, e)" using 6 14 13(1) by this
+          have 16: "n \<le> k" using bounds_R(1) that(2) 14 12(1) by this
+          have 17: "e \<longleftrightarrow> c" using bounds_R(2) that(2) 14 12(1) by this
+          show "xy \<in> S" using 15 16 17 unfolding 12(2) 13(2) items_3_def items_4_def by auto
+        qed
+      qed
+    qed
+    show "\<And> p q. (p, q) \<in> R \<Longrightarrow> accepting (complement_3 A) p \<Longrightarrow> accepting (complement_4 A) q"
+      unfolding complement_3_def complement_4_def R_def map_to_set_def
+      by (auto) (metis domIff eq_snd_iff option.exhaust_sel option.sel)
+  qed
+  lemma complement_4_less: "complement_4 A \<le> complement_3 A"
+  unfolding less_eq_nba_def
+  unfolding complement_4_def complement_3_def nba.sel
+  unfolding complement_succ_4_def complement_succ_3_def
+  proof (safe intro!: le_funI, unfold comp_apply)
+    fix a f g
+    assume "g \<in> expand_map (get_4 A (bounds_3 A a (refresh_1 f)))"
+    then show "g \<in> expand_map (get_3 A (bounds_3 A a (refresh_1 f)))"
+      unfolding get_4_def get_3_def items_4_def items_3_def expand_map_alt_def by blast
+  qed
+  lemma complement_4_language_2: "language (complement_4 A) \<subseteq> language (complement_3 A)"
+    using language_mono complement_4_less by (auto dest: monoD)
+  lemma complement_4_language: "language (complement_3 A) = language (complement_4 A)"
+    using complement_4_language_1 complement_4_language_2 by blast
+
+  lemma complement_4_finite[simp]:
+    assumes "finite (nodes A)"
+    shows "finite (nodes (complement_4 A))"
+  proof -
+    have "(nodes (complement_3 A), nodes (complement_2 A)) \<in> \<langle>Id\<rangle> set_rel"
+      using complement_3_refine by parametricity auto
+    also have "(nodes (complement_2 A), nodes (complement_1 A)) \<in> \<langle>Id\<rangle> set_rel"
+      using complement_2_refine by parametricity auto
+    also have "(nodes (complement_1 A), nodes (complement A)) \<in> \<langle>cs_rel\<rangle> set_rel"
+      using complement_1_refine by parametricity auto
+    finally have 1: "(nodes (complement_3 A), nodes (complement A)) \<in> \<langle>cs_rel\<rangle> set_rel" by simp
+    have 2: "finite (nodes (complement A))" using complement_finite assms(1) by this
+    have 3: "finite (nodes (complement_3 A))"
+      using finite_set_rel_transfer_back 1 cs_rel_inv_single_valued 2 by this
+    have 4: "nodes (complement_4 A) \<subseteq> nodes (complement_3 A)"
+      using nodes_mono complement_4_less by (auto dest: monoD)
+    show "finite (nodes (complement_4 A))" using finite_subset 4 3 by this
+  qed
+  lemma complement_4_correct:
+    assumes "finite (nodes A)"
+    shows "language (complement_4 A) = streams (alphabet A) - language A"
+  proof -
+    have "language (complement_4 A) = language (complement_3 A)"
+      using complement_4_language by rule
+    also have "(language (complement_3 A), language (complement_2 A)) \<in> \<langle>\<langle>Id\<rangle> stream_rel\<rangle> set_rel"
+      using complement_3_refine by parametricity auto
+    also have "(language (complement_2 A), language (complement_1 A)) \<in> \<langle>\<langle>Id\<rangle> stream_rel\<rangle> set_rel"
+      using complement_2_refine by parametricity auto
+    also have "(language (complement_1 A), language (complement A)) \<in> \<langle>\<langle>Id\<rangle> stream_rel\<rangle> set_rel"
+      using complement_1_refine by parametricity auto
+    also have "language (complement A) = streams (alphabet A) - language A"
+      using complement_language assms(1) by this
+    finally show "language (complement_4 A) = streams (alphabet A) - language A" by simp
+  qed
+
+  subsection {* Phase 5 *}
+
   (* TODO: find abstract representations for all of these, have them implemented by autoref,
     we don't want to deal with this intermediate representation by hand on the overall algorithm
     level, since it's all compositional and can be handled on an operations level,
@@ -402,8 +652,8 @@ begin
   (* TODO: it would be ideal if we could just give a deterministic abstract specification for
     the whole complement automaton from which autoref can generate the implementation automaton
     with the correct refinement statement *)
-  definition refresh_4 :: "'state items \<Rightarrow> 'state items nres" where
-    "refresh_4 f \<equiv> if \<exists> (p, k, c) \<in> map_to_set f. c
+  definition refresh_5 :: "'state items \<Rightarrow> 'state items nres" where
+    "refresh_5 f \<equiv> if \<exists> (p, k, c) \<in> map_to_set f. c
       then RETURN f
       else do
       {
@@ -415,53 +665,53 @@ begin
         }
         ) Map.empty
       }"
-  definition merge_4 :: "item \<Rightarrow> item option \<Rightarrow> item" where
-    "merge_4 \<equiv> \<lambda> (k, c). \<lambda> None \<Rightarrow> (k, c) | Some (l, d) \<Rightarrow> (k \<sqinter> l, c \<squnion> d)"
-  definition bounds_4 :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items nres" where
-    "bounds_4 A a f \<equiv> do
+  definition merge_5 :: "item \<Rightarrow> item option \<Rightarrow> item" where
+    "merge_5 \<equiv> \<lambda> (k, c). \<lambda> None \<Rightarrow> (k, c) | Some (l, d) \<Rightarrow> (k \<sqinter> l, c \<squnion> d)"
+  definition bounds_5 :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items nres" where
+    "bounds_5 A a f \<equiv> do
     {
       ASSUME (finite (dom f));
       ASSUME (\<forall> p. finite (succ A a p));
       FOREACH (map_to_set f) (\<lambda> (p, s) m.
         FOREACH (succ A a p) (\<lambda> q f.
-          RETURN (f (q \<mapsto> merge_4 s (f q))))
+          RETURN (f (q \<mapsto> merge_5 s (f q))))
         m)
       Map.empty
     }"
-  definition items_4 :: "('label, 'state) nba \<Rightarrow> 'state \<Rightarrow> item \<Rightarrow> item set" where
-    "items_4 A p \<equiv> \<lambda> (k, c). do
+  definition items_5 :: "('label, 'state) nba \<Rightarrow> 'state \<Rightarrow> item \<Rightarrow> item set" where
+    "items_5 A p \<equiv> \<lambda> (k, c). do
     {
-      let values = if accepting A p then Set.filter even {.. k} else {.. k};
+      let values = if accepting A p then Set.filter even {k - 1 .. k} else {k - 1 .. k};
       let item = \<lambda> l. (l, c \<and> even l);
       item ` values
     }"
-  definition get_4 :: "('label, 'state) nba \<Rightarrow> 'state items \<Rightarrow> ('state \<rightharpoonup> item set)" where
-    "get_4 A f \<equiv> \<lambda> p. map_option (items_4 A p) (f p)"
-  definition expand_4 :: "('a \<rightharpoonup> 'b set) \<Rightarrow> ('a \<rightharpoonup> 'b) set nres" where
-    "expand_4 f \<equiv> FOREACH (map_to_set f) (\<lambda> (x, S) X. do {
+  definition get_5 :: "('label, 'state) nba \<Rightarrow> 'state items \<Rightarrow> ('state \<rightharpoonup> item set)" where
+    "get_5 A f \<equiv> \<lambda> p. map_option (items_5 A p) (f p)"
+  definition expand_5 :: "('a \<rightharpoonup> 'b set) \<Rightarrow> ('a \<rightharpoonup> 'b) set nres" where
+    "expand_5 f \<equiv> FOREACH (map_to_set f) (\<lambda> (x, S) X. do {
         ASSERT (\<forall> g \<in> X. x \<notin> dom g);
         ASSERT (\<forall> a \<in> S. \<forall> b \<in> S. a \<noteq> b \<longrightarrow> (\<lambda> y. (\<lambda> g. g (x \<mapsto> y)) ` X) a \<inter> (\<lambda> y. (\<lambda> g. g (x \<mapsto> y)) ` X) b = {});
         RETURN (\<Union> y \<in> S. (\<lambda> g. g (x \<mapsto> y)) ` X)
       }) {Map.empty}"
-  definition complement_succ_4 ::
+  definition complement_succ_5 ::
     "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
-    "complement_succ_4 A a f \<equiv> do
+    "complement_succ_5 A a f \<equiv> do
     {
-      f \<leftarrow> refresh_4 f;
-      f \<leftarrow> bounds_4 A a f;
+      f \<leftarrow> refresh_5 f;
+      f \<leftarrow> bounds_5 A a f;
       ASSUME (finite (dom f));
-      expand_4 (get_4 A f)
+      expand_5 (get_5 A f)
     }"
 
   lemma bounds_3_empty: "bounds_3 A a Map.empty = Map.empty"
     unfolding bounds_3_def Let_def by auto
   lemma bounds_3_update: "bounds_3 A a (f (p \<mapsto> s)) =
-    override_on (bounds_3 A a f) (Some \<circ> merge_4 s \<circ> bounds_3 A a (f (p := None))) (succ A a p)"
+    override_on (bounds_3 A a f) (Some \<circ> merge_5 s \<circ> bounds_3 A a (f (p := None))) (succ A a p)"
   proof
     note fun_upd_image[simp]
     fix q
     show "bounds_3 A a (f (p \<mapsto> s)) q =
-      override_on (bounds_3 A a f) (Some \<circ> merge_4 s \<circ> bounds_3 A a (f (p := None))) (succ A a p) q"
+      override_on (bounds_3 A a f) (Some \<circ> merge_5 s \<circ> bounds_3 A a (f (p := None))) (succ A a p) q"
     proof (cases "q \<in> succ A a p")
       case True
       define S where "S \<equiv> Some -` f ` (pred A a q - {p})"
@@ -469,9 +719,9 @@ begin
       have 2: "Some -` f (p := None) ` pred A a q = S" unfolding S_def by auto
       have "bounds_3 A a (f (p \<mapsto> s)) q = Some (INFIMUM (insert s S) fst, SUPREMUM (insert s S) snd)"
         unfolding bounds_3_def 1 by simp
-      also have "\<dots> = Some (merge_4 s (bounds_3 A a (f (p := None)) q))"
-        unfolding 2 bounds_3_def merge_4_def by (cases s) (auto simp: cINF_insert)
-      also have "\<dots> = override_on (bounds_3 A a f) (Some \<circ> merge_4 s \<circ> bounds_3 A a (f (p := None)))
+      also have "\<dots> = Some (merge_5 s (bounds_3 A a (f (p := None)) q))"
+        unfolding 2 bounds_3_def merge_5_def by (cases s) (auto simp: cINF_insert)
+      also have "\<dots> = override_on (bounds_3 A a f) (Some \<circ> merge_5 s \<circ> bounds_3 A a (f (p := None)))
         (succ A a p) q" using True by simp
       finally show ?thesis by this
     next
@@ -480,60 +730,60 @@ begin
     qed
   qed
 
-  lemma refresh_4_refine: "(refresh_4, \<lambda> f. RETURN (refresh_1 f)) \<in> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
+  lemma refresh_5_refine: "(refresh_5, \<lambda> f. RETURN (refresh_1 f)) \<in> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
   proof safe
     fix f :: "'a \<Rightarrow> item option"
     have 1: "(\<exists> (p, k, c) \<in> map_to_set f. c) \<longleftrightarrow> True \<in> snd ` ran f"
       unfolding image_def map_to_set_def ran_def by force
-    show "(refresh_4 f, RETURN (refresh_1 f)) \<in> \<langle>Id\<rangle> nres_rel"
-      unfolding refresh_4_def refresh_1_def 1
+    show "(refresh_5 f, RETURN (refresh_1 f)) \<in> \<langle>Id\<rangle> nres_rel"
+      unfolding refresh_5_def refresh_1_def 1
       by (refine_vcg FOREACH_rule_map_eq[where X = "\<lambda> m. map_option (apsnd \<top>) \<circ> m"]) (auto)
   qed
-  lemma bounds_4_refine: "(bounds_4 A a, \<lambda> f. RETURN (bounds_3 A a f)) \<in> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
-    unfolding bounds_4_def by
+  lemma bounds_5_refine: "(bounds_5 A a, \<lambda> f. RETURN (bounds_3 A a f)) \<in> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
+    unfolding bounds_5_def by
       (refine_vcg FOREACH_rule_map_eq[where X = "bounds_3 A a"] FOREACH_rule_insert_eq)
       (auto simp: override_on_insert bounds_3_empty bounds_3_update)
-  lemma items_4_refine: "items_4 = items_3"
-    unfolding items_4_def items_3_def by (intro ext) (auto split: if_splits)
-  lemma get_4_refine: "get_4 = get_3"
-    unfolding get_4_def get_3_def items_4_refine by rule
-  lemma expand_4_refine: "(expand_4 f, ASSERT (finite (dom f)) \<then> RETURN (expand_map f)) \<in> \<langle>Id\<rangle> nres_rel"
-    unfolding expand_4_def
+  lemma items_5_refine: "items_5 = items_4"
+    unfolding items_5_def items_4_def by (intro ext) (auto split: if_splits)
+  lemma get_5_refine: "get_5 = get_4"
+    unfolding get_5_def get_4_def items_5_refine by rule
+  lemma expand_5_refine: "(expand_5 f, ASSERT (finite (dom f)) \<then> RETURN (expand_map f)) \<in> \<langle>Id\<rangle> nres_rel"
+    unfolding expand_5_def
     by (refine_vcg FOREACH_rule_map_eq[where X = expand_map]) (auto dest!: expand_map_dom map_upd_eqD1)
 
-  lemma complement_succ_4_refine: "(complement_succ_4, RETURN \<circ>\<circ>\<circ> complement_succ_3) \<in>
+  lemma complement_succ_5_refine: "(complement_succ_5, RETURN \<circ>\<circ>\<circ> complement_succ_4) \<in>
     Id \<rightarrow> Id \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
-    unfolding complement_succ_4_def complement_succ_3_def get_4_refine comp_apply
-    by (refine_vcg vcg1[OF refresh_4_refine] vcg1[OF bounds_4_refine] vcg0[OF expand_4_refine]) (auto)
-
-  subsection {* Phase 5 *}
-
-  definition expand_map_get_5 :: "('label, 'state) nba \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
-    "expand_map_get_5 A f \<equiv> FOREACH (map_to_set f) (\<lambda> (k, v) X. do {
-      ASSERT (\<forall> g \<in> X. k \<notin> dom g);
-      ASSERT (\<forall> a \<in> (items_4 A k v). \<forall> b \<in> (items_4 A k v). a \<noteq> b \<longrightarrow> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) a \<inter> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) b = {});
-      RETURN (\<Union> y \<in> items_4 A k v. (\<lambda> g. g (k \<mapsto> y)) ` X)
-      }) {Map.empty}"
-
-  lemma expand_map_get_5_refine: "(expand_map_get_5, expand_4 \<circ>\<circ> get_4) \<in> Id \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
-    unfolding expand_map_get_5_def expand_4_def get_4_def by (auto intro: FOREACH_rule_map_map[param_fo])
-
-  definition complement_succ_5 ::
-    "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
-    "complement_succ_5 A a f \<equiv> do
-    {
-      f \<leftarrow> refresh_4 f;
-      f \<leftarrow> bounds_4 A a f;
-      ASSUME (finite (dom f));
-      expand_map_get_5 A f
-    }"
-
-  lemma complement_succ_5_refine:
-    "(complement_succ_5, complement_succ_4) \<in> Id \<rightarrow> Id \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
-    unfolding complement_succ_5_def complement_succ_4_def
-    by (refine_vcg vcg2[OF expand_map_get_5_refine]) (auto intro: refine_IdI)
+    unfolding complement_succ_5_def complement_succ_4_def get_5_refine comp_apply
+    by (refine_vcg vcg1[OF refresh_5_refine] vcg1[OF bounds_5_refine] vcg0[OF expand_5_refine]) (auto)
 
   subsection {* Phase 6 *}
+
+  definition expand_map_get_6 :: "('label, 'state) nba \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
+    "expand_map_get_6 A f \<equiv> FOREACH (map_to_set f) (\<lambda> (k, v) X. do {
+      ASSERT (\<forall> g \<in> X. k \<notin> dom g);
+      ASSERT (\<forall> a \<in> (items_5 A k v). \<forall> b \<in> (items_5 A k v). a \<noteq> b \<longrightarrow> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) a \<inter> (\<lambda> y. (\<lambda> g. g (k \<mapsto> y)) ` X) b = {});
+      RETURN (\<Union> y \<in> items_5 A k v. (\<lambda> g. g (k \<mapsto> y)) ` X)
+      }) {Map.empty}"
+
+  lemma expand_map_get_6_refine: "(expand_map_get_6, expand_5 \<circ>\<circ> get_5) \<in> Id \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
+    unfolding expand_map_get_6_def expand_5_def get_5_def by (auto intro: FOREACH_rule_map_map[param_fo])
+
+  definition complement_succ_6 ::
+    "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state items \<Rightarrow> 'state items set nres" where
+    "complement_succ_6 A a f \<equiv> do
+    {
+      f \<leftarrow> refresh_5 f;
+      f \<leftarrow> bounds_5 A a f;
+      ASSUME (finite (dom f));
+      expand_map_get_6 A f
+    }"
+
+  lemma complement_succ_6_refine:
+    "(complement_succ_6, complement_succ_5) \<in> Id \<rightarrow> Id \<rightarrow> Id \<rightarrow> \<langle>Id\<rangle> nres_rel"
+    unfolding complement_succ_6_def complement_succ_5_def
+    by (refine_vcg vcg2[OF expand_map_get_6_refine]) (auto intro: refine_IdI)
+
+  subsection {* Phase 7 *}
 
   interpretation autoref_syn by this
 
@@ -545,15 +795,15 @@ begin
     private lemma [simp]: "finite (dom f)"
       using list_map_rel_finite fi unfolding finite_map_rel_def by force
 
-    schematic_goal refresh_6: "(?f :: ?'a, refresh_4 f) \<in> ?R"
-      unfolding refresh_4_def by (autoref_monadic (plain))
+    schematic_goal refresh_7: "(?f :: ?'a, refresh_5 f) \<in> ?R"
+      unfolding refresh_5_def by (autoref_monadic (plain))
 
   end
 
-  concrete_definition refresh_6 uses refresh_6
+  concrete_definition refresh_7 uses refresh_7
 
-  lemma refresh_6_refine: "(\<lambda> f. RETURN (refresh_6 f), refresh_4) \<in> state_rel \<rightarrow> \<langle>state_rel\<rangle> nres_rel"
-    using refresh_6.refine by fast
+  lemma refresh_7_refine: "(\<lambda> f. RETURN (refresh_7 f), refresh_5) \<in> state_rel \<rightarrow> \<langle>state_rel\<rangle> nres_rel"
+    using refresh_7.refine by fast
 
   context
     fixes A :: "('label, nat) nba"
@@ -570,19 +820,19 @@ begin
 
     private lemma [autoref_rules]: "(min, min) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> nat_rel" by simp
 
-    schematic_goal bounds_6: 
+    schematic_goal bounds_7: 
       notes ty_REL[where R = "\<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel", autoref_tyrel]
-      shows "(?f :: ?'a, bounds_4 A a f) \<in> ?R"
-      unfolding bounds_4_def merge_4_def sup_bool_def inf_nat_def by (autoref_monadic (plain))
+      shows "(?f :: ?'a, bounds_5 A a f) \<in> ?R"
+      unfolding bounds_5_def merge_5_def sup_bool_def inf_nat_def by (autoref_monadic (plain))
 
   end
 
-  concrete_definition bounds_6 uses bounds_6
+  concrete_definition bounds_7 uses bounds_7
 
-  lemma bounds_6_refine: "(si, succ A a) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel \<Longrightarrow>
-    (\<lambda> p. RETURN (bounds_6 si p), bounds_4 A a) \<in>
+  lemma bounds_7_refine: "(si, succ A a) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel \<Longrightarrow>
+    (\<lambda> p. RETURN (bounds_7 si p), bounds_5 A a) \<in>
     state_rel \<rightarrow> \<langle>\<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel\<rangle> nres_rel"
-    using bounds_6.refine by auto
+    using bounds_7.refine by auto
 
   context
     fixes A :: "('label, nat) nba"
@@ -593,15 +843,16 @@ begin
     private lemma [autoref_op_pat]: "accepting A \<equiv> OP (accepting A)" by simp
 
     private lemma [autoref_rules]: "((dvd), (dvd)) \<in> nat_rel \<rightarrow> nat_rel \<rightarrow> bool_rel" by simp
-    private lemma [autoref_rules]: "(\<lambda> k. upt 0 (Suc k), atMost) \<in> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel"
+    private lemma [autoref_rules]: "(\<lambda> k l. upt k (Suc l), atLeastAtMost) \<in>
+      nat_rel \<rightarrow> nat_rel \<rightarrow> \<langle>nat_rel\<rangle> list_set_rel"
       by (auto simp: list_set_rel_def in_br_conv)
 
-    schematic_goal items_6: "(?f :: ?'a, items_4 A) \<in> ?R"
-      unfolding items_4_def Let_def Set.filter_def by autoref
+    schematic_goal items_7: "(?f :: ?'a, items_5 A) \<in> ?R"
+      unfolding items_5_def Let_def Set.filter_def by autoref
 
   end
 
-  concrete_definition items_6 uses items_6
+  concrete_definition items_7 uses items_7
 
   (* TODO: use generic expand_map implementation *)
   context
@@ -620,24 +871,24 @@ begin
       using assms unfolding dom_def inj_on_def by (auto) (metis fun_upd_triv fun_upd_upd)
     private lemmas [simp] = op_map_update_def[abs_def]
 
-    private lemma [autoref_op_pat]: "items_4 A \<equiv> OP (items_4 A)" by simp
+    private lemma [autoref_op_pat]: "items_5 A \<equiv> OP (items_5 A)" by simp
 
-    private lemmas [autoref_rules] = items_6.refine[OF ai]
+    private lemmas [autoref_rules] = items_7.refine[OF ai]
 
-    schematic_goal expand_map_get_6: "(?f, expand_map_get_5 A f) \<in>
+    schematic_goal expand_map_get_7: "(?f, expand_map_get_6 A f) \<in>
       \<langle>\<langle>state_rel\<rangle> list_set_rel\<rangle> nres_rel"
-      unfolding expand_map_get_5_def by (autoref_monadic (plain))
+      unfolding expand_map_get_6_def by (autoref_monadic (plain))
 
   end
 
-  concrete_definition expand_map_get_6 uses expand_map_get_6
+  concrete_definition expand_map_get_7 uses expand_map_get_7
 
-  lemma expand_map_get_6_refine:
+  lemma expand_map_get_7_refine:
     assumes "(ai, accepting A) \<in> nat_rel \<rightarrow> bool_rel"
-    shows "(\<lambda> fi. RETURN (expand_map_get_6 ai fi),
-      \<lambda> f. ASSUME (finite (dom f)) \<then> expand_map_get_5 A f) \<in>
+    shows "(\<lambda> fi. RETURN (expand_map_get_7 ai fi),
+      \<lambda> f. ASSUME (finite (dom f)) \<then> expand_map_get_6 A f) \<in>
       \<langle>nat_rel, item_rel\<rangle> dflt_ahm_rel \<rightarrow> \<langle>\<langle>state_rel\<rangle> list_set_rel\<rangle> nres_rel"
-    using expand_map_get_6.refine[OF assms] by auto
+    using expand_map_get_7.refine[OF assms] by auto
 
   context
     fixes A :: "('label, nat) nba"
@@ -654,27 +905,27 @@ begin
     private lemmas succi = nbai_nba_param(4)[THEN fun_relD, OF Ai, THEN fun_relD, OF ai]
     private lemmas acceptingi = nbai_nba_param(5)[THEN fun_relD, OF Ai]
 
-    private lemma [autoref_op_pat]: "(\<lambda> g. ASSUME (finite (dom g)) \<then> expand_map_get_5 A g) \<equiv>
-      OP (\<lambda> g. ASSUME (finite (dom g)) \<then> expand_map_get_5 A g)" by simp
-    private lemma [autoref_op_pat]: "bounds_4 A a \<equiv> OP (bounds_4 A a)" by simp
+    private lemma [autoref_op_pat]: "(\<lambda> g. ASSUME (finite (dom g)) \<then> expand_map_get_6 A g) \<equiv>
+      OP (\<lambda> g. ASSUME (finite (dom g)) \<then> expand_map_get_6 A g)" by simp
+    private lemma [autoref_op_pat]: "bounds_5 A a \<equiv> OP (bounds_5 A a)" by simp
 
     private lemmas [autoref_rules] =
-      refresh_6_refine
-      bounds_6_refine[OF succi]
-      expand_map_get_6_refine[OF acceptingi]
+      refresh_7_refine
+      bounds_7_refine[OF succi]
+      expand_map_get_7_refine[OF acceptingi]
 
-    schematic_goal complement_succ_6: "(?f :: ?'a, complement_succ_5 A a p) \<in> ?R"
-      unfolding complement_succ_5_def by (autoref_monadic (plain))
+    schematic_goal complement_succ_7: "(?f :: ?'a, complement_succ_6 A a p) \<in> ?R"
+      unfolding complement_succ_6_def by (autoref_monadic (plain))
 
   end
 
-  concrete_definition complement_succ_6 uses complement_succ_6
+  concrete_definition complement_succ_7 uses complement_succ_7
 
-  lemma complement_succ_6_refine:
-    "(RETURN \<circ>\<circ>\<circ> complement_succ_6, complement_succ_5) \<in>
+  lemma complement_succ_7_refine:
+    "(RETURN \<circ>\<circ>\<circ> complement_succ_7, complement_succ_6) \<in>
       \<langle>Id, Id\<rangle> nbai_nba_rel \<rightarrow> Id \<rightarrow> state_rel \<rightarrow>
       \<langle>\<langle>state_rel\<rangle> list_set_rel\<rangle> nres_rel"
-    using complement_succ_6.refine unfolding comp_apply by parametricity
+    using complement_succ_7.refine unfolding comp_apply by parametricity
 
   context
     fixes A :: "('label, nat) nba"
@@ -688,75 +939,46 @@ begin
 
     private lemmas [autoref_rules] = nbai_nba_param(3)[THEN fun_relD, OF Ai]
 
-    schematic_goal complement_initial_6:
+    schematic_goal complement_initial_7:
       "(?f, {(Some \<circ> (const (2 * n, False))) |` initial A}) \<in> \<langle>state_rel\<rangle> list_set_rel"
       by autoref
 
   end
 
-  concrete_definition complement_initial_6 uses complement_initial_6
+  concrete_definition complement_initial_7 uses complement_initial_7
 
-  schematic_goal complement_accepting_6: "(?f, \<lambda> f. \<forall> (p, k, c) \<in> map_to_set f. \<not> c) \<in>
+  schematic_goal complement_accepting_7: "(?f, \<lambda> f. \<forall> (p, k, c) \<in> map_to_set f. \<not> c) \<in>
     state_rel \<rightarrow> bool_rel"
     by autoref
 
-  concrete_definition complement_accepting_6 uses complement_accepting_6
+  concrete_definition complement_accepting_7 uses complement_accepting_7
 
-  definition complement_6 :: "('label, nat) nbai \<Rightarrow> nat \<Rightarrow> ('label, state) nbai" where
-    "complement_6 Ai ni \<equiv> nbai
+  definition complement_7 :: "('label, nat) nbai \<Rightarrow> nat \<Rightarrow> ('label, state) nbai" where
+    "complement_7 Ai ni \<equiv> nbai
       (alphabeti Ai)
-      (complement_initial_6 Ai ni)
-      (complement_succ_6 Ai)
-      (complement_accepting_6)"
+      (complement_initial_7 Ai ni)
+      (complement_succ_7 Ai)
+      (complement_accepting_7)"
 
-  lemma complement_6_refine[autoref_rules]:
+  lemma complement_7_refine[autoref_rules]:
     assumes "(Ai, A) \<in> \<langle>Id, Id\<rangle> nbai_nba_rel"
     assumes "(ni,
       (OP card ::: \<langle>Id\<rangle> ahs_rel bhc \<rightarrow> nat_rel) $
       ((OP nodes ::: \<langle>Id, Id\<rangle> nbai_nba_rel \<rightarrow> \<langle>Id\<rangle> ahs_rel bhc) $ A)) \<in> nat_rel"
-    shows "(complement_6 Ai ni, (OP complement_3 :::
+    shows "(complement_7 Ai ni, (OP complement_4 :::
       \<langle>Id, Id\<rangle> nbai_nba_rel \<rightarrow> \<langle>Id, state_rel\<rangle> nbai_nba_rel) $ A) \<in> \<langle>Id, state_rel\<rangle> nbai_nba_rel"
   proof -
-    note complement_succ_6_refine
+    note complement_succ_7_refine
+    also note complement_succ_6_refine
     also note complement_succ_5_refine
-    also note complement_succ_4_refine
-    finally have 1: "(complement_succ_6, complement_succ_3) \<in>
+    finally have 1: "(complement_succ_7, complement_succ_4) \<in>
       \<langle>Id, Id\<rangle> nbai_nba_rel \<rightarrow> Id \<rightarrow> state_rel \<rightarrow> \<langle>state_rel\<rangle> list_set_rel"
       unfolding nres_rel_comp unfolding nres_rel_def unfolding fun_rel_def by auto
     show ?thesis
-      unfolding complement_6_def complement_3_def
-      using 1 complement_initial_6.refine complement_accepting_6.refine assms
+      unfolding complement_7_def complement_4_def
+      using 1 complement_initial_7.refine complement_accepting_7.refine assms
       unfolding autoref_tag_defs
       by parametricity
   qed
-
-  theorem complement_6_correct:
-    assumes "nbai_invar A" "finite (nodes (nbai_nba A))"
-    shows "language (nbai_nba (complement_6 A (card (nodes (nbai_nba A))))) =
-      streams (alphabet (nbai_nba A)) - language (nbai_nba A)"
-  proof -
-    let ?I = "\<langle>\<langle>Id\<rangle> stream_rel\<rangle> set_rel"
-    let ?n = "card (nodes (nbai_nba A))"
-    have 1: "(A, nbai_nba A) \<in> \<langle>Id, Id\<rangle> nbai_nba_rel"
-      unfolding nbai_nba_br in_br_conv using assms(1) by auto
-    have "(language (nbai_nba (complement_6 A ?n)), language (id (complement_3 (nbai_nba A)))) \<in> ?I"
-      using complement_6_refine 1 by parametricity auto
-    also have "language (id (complement_3 (nbai_nba A))) = language (complement_3 (nbai_nba A))" by simp
-    also have "(language (complement_3 (nbai_nba A)), language (complement_2 (nbai_nba A))) \<in> ?I"
-      using complement_3_refine by parametricity auto
-    also have "(language (complement_2 (nbai_nba A)), language (complement_1 (nbai_nba A))) \<in> ?I"
-      using complement_2_refine by parametricity auto
-    also have "(language (complement_1 (nbai_nba A)), language (complement (nbai_nba A))) \<in> ?I"
-      using complement_1_refine by parametricity auto
-    also have "language (complement (nbai_nba A)) = streams (alphabet (nbai_nba A)) - language (nbai_nba A)"
-      using complement_language assms(2) by this
-    finally show ?thesis by simp
-  qed
-
-  (* TODO: possible optimizations:
-    - introduce op_map_map operation for maps instead of manually iterating via FOREACH
-    - consolidate various binds and maps in expand_map_get_6 *)
-
-  export_code complement_6 in SML module_name Complementation
 
 end
