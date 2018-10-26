@@ -1,7 +1,9 @@
 section {* Additional Theorems for Transition Systems *}
 
 theory Transition_System_Extra
-imports "Transition_System"
+imports
+  "../Basic/Sequence_LTL"
+  "Transition_System"
 begin
 
   context transition_system
@@ -42,6 +44,39 @@ begin
       shows "sset (trace r q) \<subseteq> reachable p"
       using assms unfolding sset_subset_stream_pred
       by (coinduction arbitrary: r q) (force elim: run.cases)
+
+    lemma infs_trace_coinduct[case_names infs_trace, consumes 1]:
+      assumes "R r p"
+      assumes "\<And> r p. R r p \<Longrightarrow>
+        (\<exists> u s. r = u @- s \<and> P (target u p)) \<and>
+        (\<exists> u s. r = u @- s \<and> u \<noteq> [] \<and> R s (target u p))"
+      shows "infs P (trace r p)"
+    proof -
+      have "infs P (p ## trace r p)"
+      using assms(1)
+      proof (coinduction arbitrary: r p)
+        case infs
+        obtain u r\<^sub>1 v r\<^sub>2 where 1:
+          "r = u @- r\<^sub>1" "P (target u p)"
+          "r = v @- r\<^sub>2" "v \<noteq> []" "R r\<^sub>2 (target v p)"
+          using assms(2) infs by blast
+        show ?case
+        unfolding ev_stl_alt_def
+        proof (intro exI conjI bexI)
+          show "P (target u p)" using 1(2) by this
+          show "target u p \<in> sset (p ## trace r p)" unfolding target_alt_def 1(1) by simp
+          show "R r\<^sub>2 (target v p)" using 1(5) by this
+          have "trace r p = states v p @- trace r\<^sub>2 (target v p)" unfolding 1(3) by simp
+          also have "states v p = butlast (states v p) @ [target v p]"
+            unfolding target_alt_def using 1(4) by simp
+          finally show "p ## trace r p =
+            (p # butlast (states v p)) @- target v p ## trace r\<^sub>2 (target v p)" by simp
+          show "p # butlast (states v p) \<noteq> []" by simp
+          show "target v p ## trace r\<^sub>2 (target v p) = target v p ## trace r\<^sub>2 (target v p)" by simp
+        qed
+      qed
+      then show ?thesis by simp
+    qed
 
   end
 

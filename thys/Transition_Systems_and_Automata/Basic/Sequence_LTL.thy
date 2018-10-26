@@ -59,14 +59,20 @@ begin
 
   lemma infs_coinduct[case_names infs, coinduct pred: infs]:
     assumes "R w"
+    assumes "\<And> w. R w \<Longrightarrow> Bex (sset w) P \<and> ev R (stl w)"
+    shows "infs P w"
+    using assms by (coinduct rule: alw_ev_coinduct) (auto simp: ev_holds_sset)
+  lemma infs_set_coinduct[case_names infs_set, consumes 1]:
+    assumes "R w"
     assumes "\<And> w. R w \<Longrightarrow> \<exists> u v. w = u @- v \<and> Bex (set u) P \<and> R v"
     shows "infs P w"
-    using assms by (coinduct rule: alw_ev_coinduct) (force simp: ev_holds_sset ev_stl_alt_def)
+    using assms by (coinduct) (force simp: ev_stl_alt_def)
   lemma infs_flat_coinduct[case_names infs_flat, consumes 1]:
     assumes "R w"
     assumes "\<And> u v. R (u ## v) \<Longrightarrow> Bex (set u) P \<and> R v"
     shows "infs P (flat w)"
-    using assms by (coinduction arbitrary: w) (metis empty_iff flat_Stream list.set(1) stream.exhaust)
+    using assms by (coinduction arbitrary: w rule: infs_set_coinduct)
+      (metis empty_iff flat_Stream list.set(1) stream.exhaust)
 
   lemma infs_mono: "(\<And> a. a \<in> sset w \<Longrightarrow> P a \<Longrightarrow> Q a) \<Longrightarrow> infs P w \<Longrightarrow> infs Q w"
     unfolding infs_snth by force
@@ -83,7 +89,7 @@ begin
     show "infs P (cycle w) \<Longrightarrow> Bex (set w) P"
       using assms by (auto simp: ev_holds_sset dest: alwD)
     show "Bex (set w) P \<Longrightarrow> infs P (cycle w)"
-      using assms by (coinduction rule: infs_coinduct) (blast dest: cycle_decomp)
+      using assms by (coinduction rule: infs_set_coinduct) (blast dest: cycle_decomp)
   qed
 
   definition rabin :: "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> bool)) set \<Rightarrow> 'a stream \<Rightarrow> bool" where
