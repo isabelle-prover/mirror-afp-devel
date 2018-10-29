@@ -3525,6 +3525,19 @@ extra-history =
   [2018-07-21]: Proved completeness theorem for open formulas. Proofs are now written in the declarative style. Enumeration of pairs and datatypes is automated using the Countable theory.
 notify = berghofe@in.tum.de
 
+[Epistemic_Logic]
+title = Epistemic Logic
+author = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
+topic = Logic
+date = 2018-10-29
+notify = s144442@student.dtu.dk
+abstract = 
+  This work is a formalization of epistemic logic with countably many
+  agents. It includes proofs of soundness and completeness for the axiom
+  system K. The completeness proof is based on the textbook
+  "Reasoning About Knowledge" by Fagin, Halpern, Moses and
+  Vardi (MIT Press 1995).
+
 [SequentInvertibility]
 title = Invertibility in Sequent Calculi
 author = Peter Chapman <http://www.cs.st-andrews.ac.uk/~pc>

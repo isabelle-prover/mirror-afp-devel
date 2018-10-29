@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>22 Oct 2018 00:00:00 +0000</pubDate>
+    <pubDate>29 Oct 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Epistemic Logic</title>
+              <link>https://www.isa-afp.org/entries/Epistemic_Logic.html</link>
+       <guid>https://www.isa-afp.org/entries/Epistemic_Logic.html</guid>
+       <dc:creator> Andreas Halkjær From       </dc:creator>
+       <pubDate>29 Oct 2018 00:00:00 +0000</pubDate>
+       <description>
+This work is a formalization of epistemic logic with countably many
+agents. It includes proofs of soundness and completeness for the axiom
+system K. The completeness proof is based on the textbook
+&#34;Reasoning About Knowledge&#34; by Fagin, Halpern, Moses and
+Vardi (MIT Press 1995).</description>
+    </item>
     <item>
        <title>Smooth Manifolds</title>
               <link>https://www.isa-afp.org/entries/Smooth_Manifolds.html</link>
@@ -566,20 +579,6 @@ al. Also included is a full proof of soundness of the type system,
 together with a verified type checker and interpreter. We include only
 a partial procedure for the extraction of the type checker and
 interpreter here. For more details, please see our paper in CPP 2018.</description>
-    </item>
-    <item>
-       <title>VerifyThis 2018 - Polished Isabelle Solutions</title>
-              <link>https://www.isa-afp.org/entries/VerifyThis2018.html</link>
-       <guid>https://www.isa-afp.org/entries/VerifyThis2018.html</guid>
-       <dc:creator> Peter Lammich, Simon Wimmer       </dc:creator>
-       <pubDate>27 Apr 2018 00:00:00 +0000</pubDate>
-       <description>
-&lt;a
-href=&#34;http://www.pm.inf.ethz.ch/research/verifythis.html&#34;&gt;VerifyThis
-2018&lt;/a&gt; was a program verification competition associated with
-ETAPS 2018. It was the 7th event in the VerifyThis competition series.
-In this entry, we present polished and completed versions of our
-solutions that we created during the competition.</description>
     </item>
   </channel>
 </rss>
