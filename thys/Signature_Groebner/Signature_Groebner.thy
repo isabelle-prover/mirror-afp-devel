@@ -50,60 +50,6 @@ proof -
   thus ?thesis by (simp only: eq2 lt_p)
 qed
 
-lemma pm_of_idx_pm_take:
-  assumes "keys f \<subseteq> {0..<j}"
-  shows "pm_of_idx_pm (take j xs) f = pm_of_idx_pm xs f"
-proof (rule poly_mapping_eqI)
-  fix i
-  let ?xs = "take j xs"
-  let ?A = "{k. k < length xs \<and> xs ! k = i}"
-  let ?B = "{k. k < length xs \<and> k < j \<and> xs ! k = i}"
-  have A_fin: "finite ?A" and B_fin: "finite ?B" by fastforce+
-  have A_ne: "i \<in> set xs \<Longrightarrow> ?A \<noteq> {}" by (simp add: in_set_conv_nth)
-  have B_ne: "i \<in> set ?xs \<Longrightarrow> ?B \<noteq> {}" by (auto simp add: in_set_conv_nth)
-  define m1 where "m1 = Min ?A"
-  define m2 where "m2 = Min ?B"
-  have m1: "m1 \<in> ?A" if "i \<in> set xs"
-    unfolding m1_def by (rule Min_in, fact A_fin, rule A_ne, fact that)
-  have m2: "m2 \<in> ?B" if "i \<in> set ?xs"
-    unfolding m2_def by (rule Min_in, fact B_fin, rule B_ne, fact that)
-  show "lookup (pm_of_idx_pm (take j xs) f) i = lookup (pm_of_idx_pm xs f) i"
-  proof (cases "i \<in> set ?xs")
-    case True
-    hence "i \<in> set xs" using set_take_subset ..
-    hence "m1 \<in> ?A" by (rule m1)
-    hence "m1 < length xs" and "xs ! m1 = i" by simp_all
-    from True have "m2 \<in> ?B" by (rule m2)
-    hence "m2 < length xs" and "m2 < j" and "xs ! m2 = i" by simp_all
-    hence "m2 \<in> ?A" by simp
-    with A_fin have "m1 \<le> m2" unfolding m1_def by (rule Min_le)
-    with \<open>m2 < j\<close> have "m1 < j" by simp
-    with \<open>m1 < length xs\<close> \<open>xs ! m1 = i\<close> have "m1 \<in> ?B" by simp
-    with B_fin have "m2 \<le> m1" unfolding m2_def by (rule Min_le)
-    with \<open>m1 \<le> m2\<close> have "m1 = m2" by (rule le_antisym)
-    with True \<open>i \<in> set xs\<close> show ?thesis by (simp add: lookup_pm_of_idx_pm m1_def m2_def cong: conj_cong)
-  next
-    case False
-    thus ?thesis
-    proof (simp add: lookup_pm_of_idx_pm when_def m1_def[symmetric], intro impI)
-      assume "i \<in> set xs"
-      hence "m1 \<in> ?A" by (rule m1)
-      hence "m1 < length xs" and "xs ! m1 = i" by simp_all
-      have "m1 \<notin> keys f"
-      proof
-        assume "m1 \<in> keys f"
-        hence "m1 \<in> {0..<j}" using assms ..
-        hence "m1 < j" by simp
-        with \<open>m1 < length xs\<close> have "m1 < length ?xs" by simp
-        hence "?xs ! m1 \<in> set ?xs" by (rule nth_mem)
-        with \<open>m1 < j\<close> have "i \<in> set ?xs" by (simp add: \<open>xs ! m1 = i\<close>)
-        with False show False ..
-      qed
-      thus "lookup f m1 = 0" by simp
-    qed
-  qed
-qed
-
 subsection \<open>Module Polynomials\<close>
 
 locale qpm_inf_term =
@@ -623,7 +569,7 @@ proof (cases "p = 0")
 next
   case False
   from assms have "p \<in> dgrad_max_set d" by (simp add: dgrad_sig_set'_def)
-  thus ?thesis using False by (rule dgrad_p_setD_lt)
+  thus ?thesis using False by (rule dgrad_p_setD_lp)
 qed
 
 lemma dgrad_sig_setD_lt:
@@ -644,7 +590,7 @@ next
   case False
   from assms(2) have "p \<in> dgrad_max_set d" by (simp add: dgrad_sig_set'_def)
   with assms(1) have "rep_list p \<in> punit_dgrad_max_set d" by (rule dgrad_max_2)
-  thus ?thesis using False by (rule punit.dgrad_p_setD_lt[simplified])
+  thus ?thesis using False by (rule punit.dgrad_p_setD_lp[simplified])
 qed
 
 definition spp_of :: "('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<times> ('a \<Rightarrow>\<^sub>0 'b))"
@@ -2978,7 +2924,7 @@ proof -
     case False
     from assms(2) have "p \<in> dgrad_max_set d" by (simp add: dgrad_sig_set'_def)
     with assms(1) have "rep_list p \<in> punit_dgrad_max_set d" by (rule dgrad_max_2)
-    thus ?thesis unfolding t1_def using False by (rule punit.dgrad_p_setD_lt[simplified])
+    thus ?thesis unfolding t1_def using False by (rule punit.dgrad_p_setD_lp[simplified])
   qed
   moreover have "d t2 \<le> dgrad_max d"
   proof (cases "rep_list q = 0")
@@ -2988,7 +2934,7 @@ proof -
     case False
     from assms(3) have "q \<in> dgrad_max_set d" by (simp add: dgrad_sig_set'_def)
     with assms(1) have "rep_list q \<in> punit_dgrad_max_set d" by (rule dgrad_max_2)
-    thus ?thesis unfolding t2_def using False by (rule punit.dgrad_p_setD_lt[simplified])
+    thus ?thesis unfolding t2_def using False by (rule punit.dgrad_p_setD_lp[simplified])
   qed
   ultimately have "ord_class.max (d t1) (d t2) \<le> dgrad_max d" by simp
   moreover from assms(1) have "d ?l \<le> ord_class.max (d t1) (d t2)" by (rule dickson_grading_lcs)
@@ -3466,7 +3412,7 @@ proof -
   from assms(4) have "d (lp p) \<le> dgrad_max d" by (rule dgrad_sig_setD_lp)
   from assms(4) \<open>p \<noteq> 0\<close> have "component_of_term (lt p) < length fs" by (rule dgrad_sig_setD_lt)
   from assms(1) \<open>p \<in> dgrad_max_set d\<close> have "rep_list p \<in> punit_dgrad_max_set d" by (rule dgrad_max_2)
-  hence "d ?lp \<le> dgrad_max d" using \<open>rep_list p \<noteq> 0\<close> by (rule punit.dgrad_p_setD_lt[simplified])
+  hence "d ?lp \<le> dgrad_max d" using \<open>rep_list p \<noteq> 0\<close> by (rule punit.dgrad_p_setD_lp[simplified])
 
   from assms(5) obtain g0 where "g0 \<in> G" and "is_sig_red (\<prec>\<^sub>t) (=) {g0} p"
     by (rule is_sig_red_singletonI)
@@ -3870,7 +3816,7 @@ proof -
       hence "p \<in> dgrad_max_set d" by (simp add: dgrad_sig_set'_def)
       with assms(1) have "rep_list p \<in> punit_dgrad_max_set d" by (rule dgrad_max_2)
       from this \<open>rep_list p \<noteq> 0\<close> have "d (punit.lt (rep_list p)) \<le> dgrad_max d"
-        by (rule punit.dgrad_p_setD_lt[simplified])
+        by (rule punit.dgrad_p_setD_lp[simplified])
       thus "t \<in> ?B" by (simp add: t dgrad_set_def)
     qed
   qed
@@ -3967,7 +3913,7 @@ proof -
         finally have "?Q \<subseteq> dgrad_max_set d" by (simp add: dgrad_sig_set'_def)
         moreover from \<open>?Q \<subseteq> range seq\<close> \<open>0 \<notin> range seq\<close> have "0 \<notin> ?Q" by blast
         ultimately have Q_sub: "pp_of_term ` lt ` ?Q \<subseteq> dgrad_set d (dgrad_max d)"
-          unfolding image_image by (smt CollectI dgrad_p_setD_lt dgrad_set_def image_subset_iff subsetCE)
+          unfolding image_image by (smt CollectI dgrad_p_setD_lp dgrad_set_def image_subset_iff subsetCE)
         have *: "\<exists>g\<in>seq ` {0..<k}. is_sig_red (=) (=) {g} (seq k)" if "k \<notin> min_set" for k
           proof -
           from that obtain j where "j < k" and a: "lt (seq j) adds\<^sub>t lt (seq k)"
@@ -4324,7 +4270,7 @@ next
         with d show "d t \<le> d (lp q)" by (rule dickson_grading_adds_imp_le)
       next
         from \<open>q \<in> G\<close> \<open>G \<subseteq> dgrad_max_set d\<close> have "q \<in> dgrad_max_set d" ..
-        thus "d (lp q) \<le> dgrad_max d" using \<open>q \<noteq> 0\<close> by (rule dgrad_p_setD_lt)
+        thus "d (lp q) \<le> dgrad_max d" using \<open>q \<noteq> 0\<close> by (rule dgrad_p_setD_lp)
       qed
       moreover from \<open>p \<in> G\<close> \<open>G \<subseteq> dgrad_sig_set d\<close> have "p \<in> dgrad_sig_set d" ..
       ultimately show "monom_mult 1 t p \<in> dgrad_sig_set d" by (rule dgrad_sig_set_closed_monom_mult)

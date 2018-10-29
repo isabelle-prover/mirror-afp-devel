@@ -446,6 +446,60 @@ proof -
   qed
 qed
 
+lemma pm_of_idx_pm_take:
+  assumes "keys f \<subseteq> {0..<j}"
+  shows "pm_of_idx_pm (take j xs) f = pm_of_idx_pm xs f"
+proof (rule poly_mapping_eqI)
+  fix i
+  let ?xs = "take j xs"
+  let ?A = "{k. k < length xs \<and> xs ! k = i}"
+  let ?B = "{k. k < length xs \<and> k < j \<and> xs ! k = i}"
+  have A_fin: "finite ?A" and B_fin: "finite ?B" by fastforce+
+  have A_ne: "i \<in> set xs \<Longrightarrow> ?A \<noteq> {}" by (simp add: in_set_conv_nth)
+  have B_ne: "i \<in> set ?xs \<Longrightarrow> ?B \<noteq> {}" by (auto simp add: in_set_conv_nth)
+  define m1 where "m1 = Min ?A"
+  define m2 where "m2 = Min ?B"
+  have m1: "m1 \<in> ?A" if "i \<in> set xs"
+    unfolding m1_def by (rule Min_in, fact A_fin, rule A_ne, fact that)
+  have m2: "m2 \<in> ?B" if "i \<in> set ?xs"
+    unfolding m2_def by (rule Min_in, fact B_fin, rule B_ne, fact that)
+  show "lookup (pm_of_idx_pm (take j xs) f) i = lookup (pm_of_idx_pm xs f) i"
+  proof (cases "i \<in> set ?xs")
+    case True
+    hence "i \<in> set xs" using set_take_subset ..
+    hence "m1 \<in> ?A" by (rule m1)
+    hence "m1 < length xs" and "xs ! m1 = i" by simp_all
+    from True have "m2 \<in> ?B" by (rule m2)
+    hence "m2 < length xs" and "m2 < j" and "xs ! m2 = i" by simp_all
+    hence "m2 \<in> ?A" by simp
+    with A_fin have "m1 \<le> m2" unfolding m1_def by (rule Min_le)
+    with \<open>m2 < j\<close> have "m1 < j" by simp
+    with \<open>m1 < length xs\<close> \<open>xs ! m1 = i\<close> have "m1 \<in> ?B" by simp
+    with B_fin have "m2 \<le> m1" unfolding m2_def by (rule Min_le)
+    with \<open>m1 \<le> m2\<close> have "m1 = m2" by (rule le_antisym)
+    with True \<open>i \<in> set xs\<close> show ?thesis by (simp add: lookup_pm_of_idx_pm m1_def m2_def cong: conj_cong)
+  next
+    case False
+    thus ?thesis
+    proof (simp add: lookup_pm_of_idx_pm when_def m1_def[symmetric], intro impI)
+      assume "i \<in> set xs"
+      hence "m1 \<in> ?A" by (rule m1)
+      hence "m1 < length xs" and "xs ! m1 = i" by simp_all
+      have "m1 \<notin> keys f"
+      proof
+        assume "m1 \<in> keys f"
+        hence "m1 \<in> {0..<j}" using assms ..
+        hence "m1 < j" by simp
+        with \<open>m1 < length xs\<close> have "m1 < length ?xs" by simp
+        hence "?xs ! m1 \<in> set ?xs" by (rule nth_mem)
+        with \<open>m1 < j\<close> have "i \<in> set ?xs" by (simp add: \<open>xs ! m1 = i\<close>)
+        with False show False ..
+      qed
+      thus "lookup f m1 = 0" by simp
+    qed
+  qed
+qed
+
 lemma lookup_idx_pm_of_pm: "lookup (idx_pm_of_pm xs f) = (\<lambda>i. lookup f (xs ! i) when i < length xs)"
   unfolding idx_pm_of_pm_def by (rule Abs_poly_mapping_inverse, simp)
 

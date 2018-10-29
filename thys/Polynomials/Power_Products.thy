@@ -408,6 +408,12 @@ definition (in plus) dickson_grading :: "('a \<Rightarrow> nat) \<Rightarrow> bo
   where "dickson_grading d \<longleftrightarrow>
           ((\<forall>s t. d (s + t) = max (d s) (d t)) \<and> (\<forall>n::nat. almost_full_on (adds) {x. d x \<le> n}))"
 
+definition dgrad_set :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a set"
+  where "dgrad_set d m = {t. d t \<le> m}"
+
+definition dgrad_set_le :: "('a \<Rightarrow> nat) \<Rightarrow> ('a set) \<Rightarrow> ('a set) \<Rightarrow> bool"
+  where "dgrad_set_le d S T \<longleftrightarrow> (\<forall>s\<in>S. \<exists>t\<in>T. d s \<le> d t)"
+
 lemma dickson_gradingI:
   assumes "\<And>s t. d (s + t) = max (d s) (d t)"
   assumes "\<And>n::nat. almost_full_on (adds) {x. d x \<le> n}"
@@ -475,6 +481,146 @@ proof -
   from assms have "d (lcs s t - s) \<le> d (lcs s t)" by (rule dickson_grading_minus, intro adds_lcs)
   also from assms have "... \<le> max (d s) (d t)" by (rule dickson_grading_lcs)
   finally show ?thesis .
+qed
+
+lemma dgrad_set_leI:
+  assumes "\<And>s. s \<in> S \<Longrightarrow> \<exists>t\<in>T. d s \<le> d t"
+  shows "dgrad_set_le d S T"
+  using assms by (auto simp: dgrad_set_le_def)
+
+lemma dgrad_set_leE:
+  assumes "dgrad_set_le d S T" and "s \<in> S"
+  obtains t where "t \<in> T" and "d s \<le> d t"
+  using assms by (auto simp: dgrad_set_le_def)
+
+lemma dgrad_set_exhaust_expl:
+  assumes "finite F"
+  shows "F \<subseteq> dgrad_set d (Max (d ` F))"
+proof
+  fix f
+  assume "f \<in> F"
+  hence "d f \<in> d ` F" by simp
+  with _ have "d f \<le> Max (d ` F)"
+  proof (rule Max_ge)
+    from assms show "finite (d ` F)" by auto
+  qed
+  hence "dgrad_set d (d f) \<subseteq> dgrad_set d (Max (d ` F))" by (auto simp: dgrad_set_def)
+  moreover have "f \<in> dgrad_set d (d f)" by (simp add: dgrad_set_def)
+  ultimately show "f \<in> dgrad_set d (Max (d ` F))" ..
+qed
+
+lemma dgrad_set_exhaust:
+  assumes "finite F"
+  obtains m where "F \<subseteq> dgrad_set d m"
+proof
+  from assms show "F \<subseteq> dgrad_set d (Max (d ` F))" by (rule dgrad_set_exhaust_expl)
+qed
+
+lemma dgrad_set_le_trans [trans]:
+  assumes "dgrad_set_le d S T" and "dgrad_set_le d T U"
+  shows "dgrad_set_le d S U"
+  unfolding dgrad_set_le_def
+proof
+  fix s
+  assume "s \<in> S"
+  with assms(1) obtain t where "t \<in> T" and 1: "d s \<le> d t" by (auto simp add: dgrad_set_le_def)
+  from assms(2) this(1) obtain u where "u \<in> U" and 2: "d t \<le> d u" by (auto simp add: dgrad_set_le_def)
+  from this(1) show "\<exists>u\<in>U. d s \<le> d u"
+  proof
+    from 1 2 show "d s \<le> d u" by (rule le_trans)
+  qed
+qed
+
+lemma dgrad_set_le_Un: "dgrad_set_le d (S \<union> T) U \<longleftrightarrow> (dgrad_set_le d S U \<and> dgrad_set_le d T U)"
+  by (auto simp add: dgrad_set_le_def)
+
+lemma dgrad_set_le_subset:
+  assumes "S \<subseteq> T"
+  shows "dgrad_set_le d S T"
+  unfolding dgrad_set_le_def using assms by blast
+
+lemma dgrad_set_le_refl: "dgrad_set_le d S S"
+  by (rule dgrad_set_le_subset, fact subset_refl)
+
+lemma dgrad_set_le_dgrad_set:
+  assumes "dgrad_set_le d F G" and "G \<subseteq> dgrad_set d m"
+  shows "F \<subseteq> dgrad_set d m"
+proof
+  fix f
+  assume "f \<in> F"
+  with assms(1) obtain g where "g \<in> G" and *: "d f \<le> d g" by (auto simp add: dgrad_set_le_def)
+  from assms(2) this(1) have "g \<in> dgrad_set d m" ..
+  hence "d g \<le> m" by (simp add: dgrad_set_def)
+  with * have "d f \<le> m" by (rule le_trans)
+  thus "f \<in> dgrad_set d m" by (simp add: dgrad_set_def)
+qed
+
+lemma dgrad_set_dgrad: "p \<in> dgrad_set d (d p)"
+  by (simp add: dgrad_set_def)
+
+lemma dgrad_setI [intro]:
+  assumes "d t \<le> m"
+  shows "t \<in> dgrad_set d m"
+  using assms by (auto simp: dgrad_set_def)
+
+lemma dgrad_setD:
+  assumes "t \<in> dgrad_set d m"
+  shows "d t \<le> m"
+  using assms by (simp add: dgrad_set_def)
+
+lemma dgrad_set_zero [simp]: "dgrad_set (\<lambda>_. 0) m = UNIV"
+  by auto
+
+lemma subset_dgrad_set_zero: "F \<subseteq> dgrad_set (\<lambda>_. 0) m"
+  by simp
+
+lemma dgrad_set_subset:
+  assumes "m \<le> n"
+  shows "dgrad_set d m \<subseteq> dgrad_set d n"
+  using assms by (auto simp: dgrad_set_def)
+
+lemma dgrad_set_closed_plus:
+  assumes "dickson_grading d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
+  shows "s + t \<in> dgrad_set d m"
+proof -
+  from assms(1) have "d (s + t) = ord_class.max (d s) (d t)" by (rule dickson_gradingD1)
+  also from assms(2, 3) have "... \<le> m" by (simp add: dgrad_set_def)
+  finally show ?thesis by (simp add: dgrad_set_def)
+qed
+
+lemma dgrad_set_closed_minus:
+  assumes "dickson_grading d" and "s \<in> dgrad_set d m" and "t adds (s::'a::cancel_ab_semigroup_add)"
+  shows "s - t \<in> dgrad_set d m"
+proof -
+  from assms(1, 3) have "d (s - t) \<le> d s" by (rule dickson_grading_minus)
+  also from assms(2) have "... \<le> m" by (simp add: dgrad_set_def)
+  finally show ?thesis by (simp add: dgrad_set_def)
+qed
+
+lemma dgrad_set_closed_lcs:
+  assumes "dickson_grading d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
+  shows "lcs s t \<in> dgrad_set d m"
+proof -
+  from assms(1) have "d (lcs s t) \<le> ord_class.max (d s) (d t)" by (rule dickson_grading_lcs)
+  also from assms(2, 3) have "... \<le> m" by (simp add: dgrad_set_def)
+  finally show ?thesis by (simp add: dgrad_set_def)
+qed
+
+lemma dickson_gradingD_dgrad_set: "dickson_grading d \<Longrightarrow> almost_full_on (adds) (dgrad_set d m)"
+  by (auto dest: dickson_gradingD2 simp: dgrad_set_def)
+
+lemma ex_finite_adds:
+  assumes "dickson_grading d" and "S \<subseteq> dgrad_set d m"
+  obtains T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds (s::'a::cancel_comm_monoid_add))"
+proof -
+  have "reflp ((adds)::'a \<Rightarrow> _)" by (simp add: reflp_def)
+  moreover from assms(2) have "almost_full_on (adds) S"
+  proof (rule almost_full_on_subset)
+    from assms(1) show "almost_full_on (adds) (dgrad_set d m)" by (rule dickson_gradingD_dgrad_set)
+  qed
+  ultimately obtain T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds s)"
+    by (rule almost_full_on_finite_subsetE, blast)
+  thus ?thesis ..
 qed
 
 class graded_dickson_powerprod = ulcs_powerprod +
@@ -728,157 +874,11 @@ locale gd_powerprod =
   and ord_strict (infixl "\<prec>" 50)
 begin
 
-definition dgrad_set :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a set"
-  where "dgrad_set d m = {t. d t \<le> m}"
-
-definition dgrad_set_le :: "('a \<Rightarrow> nat) \<Rightarrow> ('a set) \<Rightarrow> ('a set) \<Rightarrow> bool"
-  where "dgrad_set_le d S T \<longleftrightarrow> (\<forall>s\<in>S. \<exists>t\<in>T. d s \<le> d t)"
-
 definition dickson_le :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
   where "dickson_le d m s t \<longleftrightarrow> (d s \<le> m \<and> d t \<le> m \<and> s \<preceq> t)"
 
 definition dickson_less :: "('a \<Rightarrow> nat) \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bool"
   where "dickson_less d m s t \<longleftrightarrow> (d s \<le> m \<and> d t \<le> m \<and> s \<prec> t)"
-
-lemma dgrad_set_leI:
-  assumes "\<And>s. s \<in> S \<Longrightarrow> \<exists>t\<in>T. d s \<le> d t"
-  shows "dgrad_set_le d S T"
-  using assms by (auto simp: dgrad_set_le_def)
-
-lemma dgrad_set_leE:
-  assumes "dgrad_set_le d S T" and "s \<in> S"
-  obtains t where "t \<in> T" and "d s \<le> d t"
-  using assms by (auto simp: dgrad_set_le_def)
-
-lemma dgrad_set_exhaust_expl:
-  assumes "finite F"
-  shows "F \<subseteq> dgrad_set d (Max (d ` F))"
-proof
-  fix f
-  assume "f \<in> F"
-  hence "d f \<in> d ` F" by simp
-  with _ have "d f \<le> Max (d ` F)"
-  proof (rule Max_ge)
-    from assms show "finite (d ` F)" by auto
-  qed
-  hence "dgrad_set d (d f) \<subseteq> dgrad_set d (Max (d ` F))" by (auto simp: dgrad_set_def)
-  moreover have "f \<in> dgrad_set d (d f)" by (simp add: dgrad_set_def)
-  ultimately show "f \<in> dgrad_set d (Max (d ` F))" ..
-qed
-
-lemma dgrad_set_exhaust:
-  assumes "finite F"
-  obtains m where "F \<subseteq> dgrad_set d m"
-proof
-  from assms show "F \<subseteq> dgrad_set d (Max (d ` F))" by (rule dgrad_set_exhaust_expl)
-qed
-
-lemma dgrad_set_le_trans [trans]:
-  assumes "dgrad_set_le d S T" and "dgrad_set_le d T U"
-  shows "dgrad_set_le d S U"
-  unfolding dgrad_set_le_def
-proof
-  fix s
-  assume "s \<in> S"
-  with assms(1) obtain t where "t \<in> T" and 1: "d s \<le> d t" by (auto simp add: dgrad_set_le_def)
-  from assms(2) this(1) obtain u where "u \<in> U" and 2: "d t \<le> d u" by (auto simp add: dgrad_set_le_def)
-  from this(1) show "\<exists>u\<in>U. d s \<le> d u"
-  proof
-    from 1 2 show "d s \<le> d u" by (rule le_trans)
-  qed
-qed
-
-lemma dgrad_set_le_Un: "dgrad_set_le d (S \<union> T) U \<longleftrightarrow> (dgrad_set_le d S U \<and> dgrad_set_le d T U)"
-  by (auto simp add: dgrad_set_le_def)
-
-lemma dgrad_set_le_subset:
-  assumes "S \<subseteq> T"
-  shows "dgrad_set_le d S T"
-  unfolding dgrad_set_le_def using assms by blast
-
-lemma dgrad_set_le_refl: "dgrad_set_le d S S"
-  by (rule dgrad_set_le_subset, fact subset_refl)
-
-lemma dgrad_set_le_dgrad_set:
-  assumes "dgrad_set_le d F G" and "G \<subseteq> dgrad_set d m"
-  shows "F \<subseteq> dgrad_set d m"
-proof
-  fix f
-  assume "f \<in> F"
-  with assms(1) obtain g where "g \<in> G" and *: "d f \<le> d g" by (auto simp add: dgrad_set_le_def)
-  from assms(2) this(1) have "g \<in> dgrad_set d m" ..
-  hence "d g \<le> m" by (simp add: dgrad_set_def)
-  with * have "d f \<le> m" by (rule le_trans)
-  thus "f \<in> dgrad_set d m" by (simp add: dgrad_set_def)
-qed
-
-lemma dgrad_set_dgrad: "p \<in> dgrad_set d (d p)"
-  by (simp add: dgrad_set_def)
-
-lemma dgrad_setI [intro]:
-  assumes "d t \<le> m"
-  shows "t \<in> dgrad_set d m"
-  using assms by (auto simp: dgrad_set_def)
-
-lemma dgrad_setD:
-  assumes "t \<in> dgrad_set d m"
-  shows "d t \<le> m"
-  using assms by (simp add: dgrad_set_def)
-
-lemma dgrad_set_zero [simp]: "dgrad_set (\<lambda>_. 0) m = UNIV"
-  by auto
-
-lemma subset_dgrad_set_zero: "F \<subseteq> dgrad_set (\<lambda>_. 0) m"
-  by simp
-
-lemma dgrad_set_subset:
-  assumes "m \<le> n"
-  shows "dgrad_set d m \<subseteq> dgrad_set d n"
-  using assms by (auto simp: dgrad_set_def)
-
-lemma dgrad_set_closed_plus:
-  assumes "dickson_grading d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
-  shows "s + t \<in> dgrad_set d m"
-proof -
-  from assms(1) have "d (s + t) = ord_class.max (d s) (d t)" by (rule dickson_gradingD1)
-  also from assms(2, 3) have "... \<le> m" by (simp add: dgrad_set_def)
-  finally show ?thesis by (simp add: dgrad_set_def)
-qed
-
-lemma dgrad_set_closed_minus:
-  assumes "dickson_grading d" and "s \<in> dgrad_set d m" and "t adds s"
-  shows "s - t \<in> dgrad_set d m"
-proof -
-  from assms(1, 3) have "d (s - t) \<le> d s" by (rule dickson_grading_minus)
-  also from assms(2) have "... \<le> m" by (simp add: dgrad_set_def)
-  finally show ?thesis by (simp add: dgrad_set_def)
-qed
-
-lemma dgrad_set_closed_lcs:
-  assumes "dickson_grading d" and "s \<in> dgrad_set d m" and "t \<in> dgrad_set d m"
-  shows "lcs s t \<in> dgrad_set d m"
-proof -
-  from assms(1) have "d (lcs s t) \<le> ord_class.max (d s) (d t)" by (rule dickson_grading_lcs)
-  also from assms(2, 3) have "... \<le> m" by (simp add: dgrad_set_def)
-  finally show ?thesis by (simp add: dgrad_set_def)
-qed
-
-lemma dickson_gradingD_dgrad_set: "dickson_grading d \<Longrightarrow> almost_full_on (adds) (dgrad_set d m)"
-  by (auto dest: dickson_gradingD2 simp: dgrad_set_def)
-
-lemma ex_finite_adds:
-  assumes "dickson_grading d" and "S \<subseteq> dgrad_set d m"
-  obtains T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds s)"
-proof -
-  have "reflp ((adds)::'a \<Rightarrow> _)" by (simp add: reflp_def)
-  moreover from assms(2) have "almost_full_on (adds) S"
-  proof (rule almost_full_on_subset)
-    from assms(1) show "almost_full_on (adds) (dgrad_set d m)" by (rule dickson_gradingD_dgrad_set)
-  qed
-  ultimately obtain T where "finite T" and "T \<subseteq> S" and "\<And>s. s \<in> S \<Longrightarrow> (\<exists>t\<in>T. t adds s)"
-    by (rule almost_full_on_finite_subsetE, blast)
-  thus ?thesis ..
-qed
 
 lemma dickson_leI:
   assumes "d s \<le> m" and "d t \<le> m" and "s \<preceq> t"

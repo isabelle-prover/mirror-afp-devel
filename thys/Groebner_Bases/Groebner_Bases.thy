@@ -810,9 +810,9 @@ proof (cases "component_of_term (lt p) = component_of_term (lt q)")
   let ?ltq = "lcs ?lt ?lq"
 
   from \<open>p \<in> F\<close> \<open>F \<subseteq> dgrad_p_set d m\<close> have "p \<in> dgrad_p_set d m" ..
-  from this \<open>p \<noteq> 0\<close> have "d ?lt \<le> m" by (rule dgrad_p_setD_lt)
+  from this \<open>p \<noteq> 0\<close> have "d ?lt \<le> m" by (rule dgrad_p_setD_lp)
   from \<open>q \<in> F\<close> \<open>F \<subseteq> dgrad_p_set d m\<close> have "q \<in> dgrad_p_set d m" ..
-  from this \<open>q \<noteq> 0\<close> have "d ?lq \<le> m" by (rule dgrad_p_setD_lt)
+  from this \<open>q \<noteq> 0\<close> have "d ?lq \<le> m" by (rule dgrad_p_setD_lp)
   from assms(1) have "d ?ltq \<le> ord_class.max (d ?lt) (d ?lq)" by (rule dickson_grading_lcs)
   also from \<open>d ?lt \<le> m\<close> \<open>d ?lq \<le> m\<close> have "... \<le> m" by simp
   finally have "d ?ltq \<le> m" .
@@ -1772,7 +1772,7 @@ proof (rule wfP_on_chain, rule, erule exE)
     from this(2) obtain q where "is_red {g i} q" by auto
     hence "g i \<noteq> 0" by (rule is_red_singleton_not_0)
     from a1_subset \<open>g i \<in> f (Suc i)\<close> have "g i \<in> ?A" ..
-    from this \<open>g i \<noteq> 0\<close> have "d (lp (g i)) \<le> m" by (rule dgrad_p_setD_lt)
+    from this \<open>g i \<noteq> 0\<close> have "d (lp (g i)) \<le> m" by (rule dgrad_p_setD_lp)
     thus "lp (g i) \<in> dgrad_set d m" by (rule dgrad_setI)
   qed
 

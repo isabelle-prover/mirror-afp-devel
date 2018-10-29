@@ -189,6 +189,12 @@ lemma lt_zero [simp]: "lt 0 = min_term"
 lemma lc_zero [simp]: "lc 0 = 0"
   by (simp add: lc_def)
 
+lemma lt_uminus [simp]: "lt (- p) = lt p"
+  by (simp add: lt_def keys_uminus)
+
+lemma lc_uminus [simp]: "lc (- p) = - lc p"
+  by (simp add: lc_def)
+
 lemma lt_alt:
   assumes "p \<noteq> 0"
   shows "lt p = ord_term_lin.Max (keys p)"
@@ -275,6 +281,9 @@ proof -
   from keys_zero assms have "keys p \<noteq> {}" by auto
   from lt_alt[OF assms] ord_term_lin.Max_in[OF finite_keys this] show ?thesis by (simp add: lc_def)
 qed
+
+lemma lc_eq_zero_iff: "lc p = 0 \<longleftrightarrow> p = 0"
+  using lc_not_0 lc_zero by blast
 
 lemma lt_in_keys:
   assumes "p \<noteq> 0"
@@ -369,7 +378,28 @@ next
     qed
   qed
 qed
-    
+
+lemma lt_plus_eqI_3:
+  assumes "lt q = lt p" and "lc p + lc q \<noteq> 0"
+  shows "lt (p + q) = lt (p::'t \<Rightarrow>\<^sub>0 'b::monoid_add)"
+proof (rule lt_eqI)
+  from assms(2) show "lookup (p + q) (lt p) \<noteq> 0" by (simp add: lookup_add lc_def assms(1))
+next
+  fix u
+  assume "lookup (p + q) u \<noteq> 0"
+  hence "lookup p u + lookup q u \<noteq> 0" by (simp add: lookup_add)
+  hence "lookup p u \<noteq> 0 \<or> lookup q u \<noteq> 0" by auto
+  thus "u \<preceq>\<^sub>t lt p"
+  proof
+    assume "lookup p u \<noteq> 0"
+    thus ?thesis by (rule lt_max)
+  next
+    assume "lookup q u \<noteq> 0"
+    hence "u \<preceq>\<^sub>t lt q" by (rule lt_max)
+    thus ?thesis by (simp only: assms(1))
+  qed
+qed
+
 lemma lt_plus_lessE:
   assumes "lt p \<prec>\<^sub>t lt (p + q)"
   shows "lt p \<prec>\<^sub>t lt q"
@@ -392,6 +422,31 @@ proof (rule ccontr)
   next
     assume "lt q \<prec>\<^sub>t lt p"
     from lt_plus_eqI_2[OF this] assms show False by simp
+  qed
+qed
+
+lemma lt_plus_lessE_2:
+  assumes "lt q \<prec>\<^sub>t lt (p + q)"
+  shows "lt q \<prec>\<^sub>t lt p"
+proof (rule ccontr)
+  assume "\<not> lt q \<prec>\<^sub>t lt p"
+  hence "lt q = lt p \<or> lt p \<prec>\<^sub>t lt q" by auto
+  thus False
+  proof
+    assume lt_eq: "lt q = lt p"
+    have "lt (p + q) \<preceq>\<^sub>t lt q"
+    proof (rule lt_le)
+      fix u
+      assume "lt q \<prec>\<^sub>t u"
+      with lt_gr[of q u "lt q"] have "lookup q u = 0" by blast
+      from \<open>lt q \<prec>\<^sub>t u\<close> have "lt p \<prec>\<^sub>t u" using lt_eq by simp
+      with lt_gr[of p u "lt p"] have "lookup p u = 0" by blast
+      with \<open>lookup q u = 0\<close> show "lookup (p + q) u = 0" by (simp add: lookup_add)
+    qed
+    with assms show False by simp
+  next
+    assume "lt p \<prec>\<^sub>t lt q"
+    from lt_plus_eqI[OF this] assms show False by simp
   qed
 qed
 
@@ -420,7 +475,7 @@ proof (rule ccontr)
 qed
 
 corollary lt_plus_lessI:
-  fixes p q :: "'t \<Rightarrow>\<^sub>0 'b::ring"
+  fixes p q :: "'t \<Rightarrow>\<^sub>0 'b::group_add"
   assumes "p + q \<noteq> 0" and "lt q = lt p" and "lc q = - lc p"
   shows "lt (p + q) \<prec>\<^sub>t lt p"
   using assms(1, 2)
@@ -464,6 +519,64 @@ next
   hence "lt (p + q) = ord_term_lin.max (lt p) (lt q)" by (rule lt_plus_distinct_eq_max)
   thus ?thesis by simp
 qed
+
+lemma lt_minus_eqI: "lt p \<prec>\<^sub>t lt q \<Longrightarrow> lt (p - q) = lt q" for p q :: "'t \<Rightarrow>\<^sub>0 'b::ab_group_add"
+  by (metis lt_plus_eqI_2 lt_uminus uminus_add_conv_diff)
+
+lemma lt_minus_eqI_2: "lt q \<prec>\<^sub>t lt p \<Longrightarrow> lt (p - q) = lt p" for p q :: "'t \<Rightarrow>\<^sub>0 'b::ab_group_add"
+  by (metis lt_minus_eqI lt_uminus minus_diff_eq)
+
+lemma lt_minus_eqI_3:
+  assumes "lt q = lt p" and "lc q \<noteq> lc p"
+  shows "lt (p - q) = lt (p::'t \<Rightarrow>\<^sub>0 'b::ab_group_add)"
+proof (rule lt_eqI)
+  from assms(2) show "lookup (p - q) (lt p) \<noteq> 0" by (simp add: lookup_minus lc_def assms(1))
+next
+  fix u
+  assume "lookup (p - q) u \<noteq> 0"
+  hence "lookup p u \<noteq> lookup q u" by (simp add: lookup_minus)
+  hence "lookup p u \<noteq> 0 \<or> lookup q u \<noteq> 0" by auto
+  thus "u \<preceq>\<^sub>t lt p"
+  proof
+    assume "lookup p u \<noteq> 0"
+    thus ?thesis by (rule lt_max)
+  next
+    assume "lookup q u \<noteq> 0"
+    hence "u \<preceq>\<^sub>t lt q" by (rule lt_max)
+    thus ?thesis by (simp only: assms(1))
+  qed
+qed
+
+lemma lt_minus_distinct_eq_max:
+  assumes "lt p \<noteq> lt (q::'t \<Rightarrow>\<^sub>0 'b::ab_group_add)"
+  shows "lt (p - q) = ord_term_lin.max (lt p) (lt q)"
+proof (rule ord_term_lin.linorder_cases)
+  assume a: "lt p \<prec>\<^sub>t lt q"
+  hence "lt (p - q) = lt q" by (rule lt_minus_eqI)
+  also from a have "... = ord_term_lin.max (lt p) (lt q)"
+    by (simp add: ord_term_lin.max.absorb2)
+  finally show ?thesis .
+next
+  assume a: "lt q \<prec>\<^sub>t lt p"
+  hence "lt (p - q) = lt p" by (rule lt_minus_eqI_2)
+  also from a have "... = ord_term_lin.max (lt p) (lt q)"
+    by (simp add: ord_term_lin.max.absorb1)
+  finally show ?thesis .
+next
+  assume "lt p = lt q"
+  with assms show ?thesis ..
+qed
+
+lemma lt_minus_lessE: "lt p \<prec>\<^sub>t lt (p - q) \<Longrightarrow> lt p \<prec>\<^sub>t lt q" for p q :: "'t \<Rightarrow>\<^sub>0 'b::ab_group_add"
+  using lt_minus_eqI_2 by fastforce
+
+lemma lt_minus_lessE_2: "lt q \<prec>\<^sub>t lt (p - q) \<Longrightarrow> lt q \<prec>\<^sub>t lt p" for p q :: "'t \<Rightarrow>\<^sub>0 'b::ab_group_add"
+  using lt_plus_eqI_2 by fastforce
+
+lemma lt_minus_lessI: "p - q \<noteq> 0 \<Longrightarrow> lt q = lt p \<Longrightarrow> lc q = lc p \<Longrightarrow> lt (p - q) \<prec>\<^sub>t lt p"
+  for p q :: "'t \<Rightarrow>\<^sub>0 'b::ab_group_add"
+  by (metis (no_types, hide_lams) diff_diff_eq2 diff_self group_eq_aux lc_def lc_not_0 lookup_minus
+      lt_minus_eqI ord_term_lin.antisym_conv3)
     
 lemma lt_max_keys:
   assumes "v \<in> keys p"
@@ -506,12 +619,6 @@ next
   thus ?thesis by (rule lt_plus_distinct_eq_max)
 qed
 
-lemma lt_uminus [simp]: "lt (- p) = lt p"
-  by (simp add: lt_def keys_uminus)
-
-lemma lc_uminus [simp]: "lc (- p) = - lc p"
-  by (simp add: lc_def)
-
 lemma lt_monom_mult:
   assumes "c \<noteq> (0::'b::semiring_no_zero_divisors)" and "p \<noteq> 0"
   shows "lt (monom_mult c t p) = t \<oplus> lt p"
@@ -530,6 +637,17 @@ next
   proof (rule splus_mono)
     from \<open>v \<in> keys p\<close> show "v \<preceq>\<^sub>t lt p" by (rule lt_max_keys)
   qed
+qed
+
+lemma lt_monom_mult_zero:
+  assumes "c \<noteq> (0::'b::semiring_no_zero_divisors)"
+  shows "lt (monom_mult c 0 p) = lt p"
+proof (cases "p = 0")
+  case True
+  show ?thesis by (simp add: True)
+next
+  case False
+  with assms show ?thesis by (simp add: lt_monom_mult term_simps)
 qed
 
 lemma lc_monom_mult [simp]: "lc (monom_mult c t p) = (c::'b::semiring_no_zero_divisors) * lc p"
@@ -1116,6 +1234,16 @@ next
   qed
 qed
 
+lemma lt_lower_less:
+  assumes "lower p v \<noteq> 0"
+  shows "lt (lower p v) \<prec>\<^sub>t v"
+  using assms
+proof (rule lt_less)
+  fix u
+  assume "v \<preceq>\<^sub>t u"
+  thus "lookup (lower p v) u = 0" by (simp add: lookup_lower_when)
+qed
+
 lemma lt_lower_eq_iff: "lt (lower p v) = lt p \<longleftrightarrow> (lt p = min_term \<or> lt p \<prec>\<^sub>t v)" (is "?L \<longleftrightarrow> ?R")
 proof
   assume ?L
@@ -1335,6 +1463,22 @@ proof (rule poly_mapping_eqI, simp only: lookup_add)
     moreover from \<open>tt p \<noteq> v\<close> have "lookup (monomial (tc p) (tt p)) v = 0" by (simp add: lookup_single)
     moreover from \<open>\<not> tt p \<prec>\<^sub>t v\<close> have "lookup (higher p (tt p)) v = 0" by (simp add: lookup_higher)
     ultimately show ?thesis by simp
+  qed
+qed
+
+lemma higher_lower_decomp: "higher p v + monomial (lookup p v) v + lower p v = p"
+proof (rule poly_mapping_eqI)
+  fix u
+  show "lookup (higher p v + monomial (lookup p v) v + lower p v) u = lookup p u"
+  proof (rule ord_term_lin.linorder_cases)
+    assume "u \<prec>\<^sub>t v"
+    thus ?thesis by (simp add: lookup_add lookup_higher_when lookup_single lookup_lower_when)
+  next
+    assume "u = v"
+    thus ?thesis by (simp add: lookup_add lookup_higher_when lookup_single lookup_lower_when)
+  next
+    assume "v \<prec>\<^sub>t u"
+    thus ?thesis by (simp add: lookup_add lookup_higher_when lookup_single lookup_lower_when)
   qed
 qed
 
@@ -2756,9 +2900,9 @@ lemma dgrad_p_set_subset:
   shows "dgrad_p_set d m \<subseteq> dgrad_p_set d n"
   using assms by (auto simp: dgrad_p_set_def dgrad_set_def)
 
-lemma dgrad_p_setD_lt:
+lemma dgrad_p_setD_lp:
   assumes "p \<in> dgrad_p_set d m" and "p \<noteq> 0"
-  shows "d (pp_of_term (lt p)) \<le> m"
+  shows "d (lp p) \<le> m"
   by (rule dgrad_p_setD, fact, rule lt_in_keys, fact)
 
 lemma dgrad_p_set_exhaust_expl:
@@ -3227,7 +3371,7 @@ proof (induct u arbitrary: x Q rule: wfP_induct[OF wf_dickson_less_v, OF assms(1
     hence "p \<noteq> 0" using False by auto
     with \<open>p \<in> Q\<close> have "p \<in> dgrad_p_set d m \<and> dickson_less_v d m (lt p) u" by (rule bounded)
     hence "p \<in> dgrad_p_set d m" and "dickson_less_v d m (lt p) u" by simp_all
-    moreover from this(1) \<open>p \<noteq> 0\<close> have "d (pp_of_term (lt p)) \<le> m" by (rule dgrad_p_setD_lt)
+    moreover from this(1) \<open>p \<noteq> 0\<close> have "d (pp_of_term (lt p)) \<le> m" by (rule dgrad_p_setD_lp)
     ultimately have "d (pp_of_term v) \<le> m" by (simp only: \<open>lt p = v\<close>)
     define Q2 where "Q2 = {tail p | p. p \<in> Q \<and> lt p = v}"
     from \<open>p \<in> Q\<close> \<open>lt p = v\<close> have "tail p \<in> Q2" unfolding Q2_def by auto
@@ -3247,7 +3391,7 @@ proof (induct u arbitrary: x Q rule: wfP_induct[OF wf_dickson_less_v, OF assms(1
       proof
         show "dickson_less_v d m (lt q) (lt p)"
         proof (rule dickson_less_vI)
-          from \<open>q \<in> dgrad_p_set d m\<close> \<open>q \<noteq> 0\<close> show "d (pp_of_term (lt q)) \<le> m" by (rule dgrad_p_setD_lt)
+          from \<open>q \<in> dgrad_p_set d m\<close> \<open>q \<noteq> 0\<close> show "d (pp_of_term (lt q)) \<le> m" by (rule dgrad_p_setD_lp)
         next
           from \<open>dickson_less_v d m (lt p) u\<close> show "d (pp_of_term (lt p)) \<le> m" by (rule dickson_less_vD1)
         next
@@ -3273,7 +3417,7 @@ proof (induct u arbitrary: x Q rule: wfP_induct[OF wf_dickson_less_v, OF assms(1
         assume "r \<in> Q"
         hence "\<not> dickson_less_v d m (lt r) v" by (rule v_min)
         from False \<open>r \<in> Q\<close> have "r \<noteq> 0" using False by blast
-        with \<open>r \<in> dgrad_p_set d m\<close> have "d (pp_of_term (lt r)) \<le> m" by (rule dgrad_p_setD_lt)
+        with \<open>r \<in> dgrad_p_set d m\<close> have "d (pp_of_term (lt r)) \<le> m" by (rule dgrad_p_setD_lp)
         have "\<not> lt r \<prec>\<^sub>t v"
         proof
           assume "lt r \<prec>\<^sub>t v"
@@ -3327,7 +3471,7 @@ proof (rule wfI_min[to_pred])
         and v_min: "\<And>u. dickson_less_v d m u v \<Longrightarrow> u \<notin> ?L" by (rule wfE_min[to_pred], blast)
       from this(1) obtain x1 where "x1 \<in> Q" and "v = lt x1" ..
       from this(1) True False have "x1 \<in> dgrad_p_set d m" and "x1 \<noteq> 0" by auto
-      hence "d (pp_of_term v) \<le> m" unfolding \<open>v = lt x1\<close> by (rule dgrad_p_setD_lt)
+      hence "d (pp_of_term v) \<le> m" unfolding \<open>v = lt x1\<close> by (rule dgrad_p_setD_lp)
       define Q1 where "Q1 = {tail p | p. p \<in> Q \<and> lt p = v}"
       from \<open>x1 \<in> Q\<close> have "tail x1 \<in> Q1" by (auto simp add: Q1_def \<open>v = lt x1\<close>)
       with assms have "\<exists>p\<in>Q1. \<forall>q\<in>Q1. \<not> dickson_less_p d m q p"
@@ -3345,7 +3489,7 @@ proof (rule wfI_min[to_pred])
             show "dickson_less_v d m (lt y) v"
             proof (rule dickson_less_vI)
               from \<open>y \<in> dgrad_p_set d m\<close> \<open>y \<noteq> 0\<close> show "d (pp_of_term (lt y)) \<le> m"
-                by (rule dgrad_p_setD_lt)
+                by (rule dgrad_p_setD_lp)
             next
               from \<open>y \<noteq> 0\<close> show "lt y \<prec>\<^sub>t v" unfolding \<open>v = lt y1\<close> \<open>y = tail y1\<close> by (rule lt_tail)
             qed fact
@@ -3370,7 +3514,7 @@ proof (rule wfI_min[to_pred])
         proof
           assume "lt y \<prec>\<^sub>t lt p"
           have "dickson_less_v d m (lt y) v" unfolding \<open>v = lt p\<close>
-            by (rule dickson_less_vI, rule dgrad_p_setD_lt, fact+, rule dgrad_p_setD_lt, fact+)
+            by (rule dickson_less_vI, rule dgrad_p_setD_lp, fact+, rule dgrad_p_setD_lp, fact+)
           hence "lt y \<notin> ?L" by (rule v_min)
           hence "y \<notin> Q" by fastforce
           from this \<open>y \<in> Q\<close> show False ..
