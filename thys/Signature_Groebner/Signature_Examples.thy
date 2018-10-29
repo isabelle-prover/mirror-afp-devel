@@ -3,7 +3,7 @@
 section \<open>Sample Computations with Signature-Based Algorithms\<close>
 
 theory Signature_Examples
-  imports Signature_Groebner Benchmarks Groebner_Bases.Code_Target_Rat
+  imports Signature_Groebner Groebner_Bases.Benchmarks Groebner_Bases.Code_Target_Rat
 begin
 
 subsection \<open>Setup\<close>
