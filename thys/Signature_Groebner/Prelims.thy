@@ -818,55 +818,6 @@ interpretation tailrec: recursive "\<lambda>x. x" undefined
 
 subsection \<open>Binary Relations\<close>
 
-lemma finite_minimalE:
-  assumes "finite A" and "A \<noteq> {}" and "irreflp rel" and "transp rel"
-  obtains a where "a \<in> A" and "\<And>b. rel b a \<Longrightarrow> b \<notin> A"
-  using assms(1, 2)
-proof (induct arbitrary: thesis)
-  case empty
-  from empty(2) show ?case by simp
-next
-  case (insert a A)
-  show ?case
-  proof (cases "A = {}")
-    case True
-    show ?thesis
-    proof (rule insert(4))
-      fix b
-      assume "rel b a"
-      with assms(3) show "b \<notin> insert a A" by (auto simp: True irreflp_def)
-    qed simp
-  next
-    case False
-    with insert(3) obtain z where "z \<in> A" and *: "\<And>b. rel b z \<Longrightarrow> b \<notin> A" by blast
-    show ?thesis
-    proof (cases "rel a z")
-      case True
-      show ?thesis
-      proof (rule insert(4))
-        fix b
-        assume "rel b a"
-        with assms(4) have "rel b z" using \<open>rel a z\<close> by (rule transpD)
-        hence "b \<notin> A" by (rule *)
-        moreover from \<open>rel b a\<close> assms(3) have "b \<noteq> a" by (auto simp: irreflp_def)
-        ultimately show "b \<notin> insert a A" by simp
-      qed simp
-    next
-      case False
-      show ?thesis
-      proof (rule insert(4))
-        fix b
-        assume "rel b z"
-        hence "b \<notin> A" by (rule *)
-        moreover from \<open>rel b z\<close> False have "b \<noteq> a" by blast
-        ultimately show "b \<notin> insert a A" by simp
-      next
-        from \<open>z \<in> A\<close> show "z \<in> insert a A" by simp
-      qed
-    qed
-  qed
-qed
-
 lemma almost_full_on_Int:
   assumes "almost_full_on P1 A1" and "almost_full_on P2 A2"
   shows "almost_full_on (\<lambda>x y. P1 x y \<and> P2 x y) (A1 \<inter> A2)" (is "almost_full_on ?P ?A")

@@ -835,10 +835,10 @@ text \<open>@{const gb_schema_aux_term} is needed for proving termination of fun
 
 lemma gb_schema_aux_term1_wf_on:
   assumes "dickson_grading d" and "finite K"
-  shows "wfP_on {x::(('t, 'b, 'c) pdata list) \<times> ((('t, 'b::field, 'c) pdata_pair list)).
-                    args_to_set (gs, x) \<subseteq> dgrad_p_set d m \<and> component_of_term ` Keys (args_to_set (gs, x)) \<subseteq> K}
-                (\<lambda>x y. (x, y) \<in> gb_schema_aux_term1)"
-proof (rule wfP_onI_min)
+  shows "wfp_on (\<lambda>x y. (x, y) \<in> gb_schema_aux_term1)
+                {x::(('t, 'b, 'c) pdata list) \<times> ((('t, 'b::field, 'c) pdata_pair list)).
+                    args_to_set (gs, x) \<subseteq> dgrad_p_set d m \<and> component_of_term ` Keys (args_to_set (gs, x)) \<subseteq> K}"
+proof (rule wfp_onI_min)
   let ?B = "dgrad_p_set d m"
   let ?A = "{x::(('t, 'b, 'c) pdata list) \<times> ((('t, 'b, 'c) pdata_pair list)).
               args_to_set (gs, x) \<subseteq> ?B \<and> component_of_term ` Keys (args_to_set (gs, x)) \<subseteq> K}"
@@ -859,12 +859,12 @@ proof (rule wfP_onI_min)
   assume "x \<in> Q" and "Q \<subseteq> ?A"
   have Q_sub_A: "(image fst) ` set ` fst ` Q \<subseteq> (image fst) ` set ` fst ` ?A"
     by ((rule image_mono)+, fact)
-  from assms have "wfP_on ?C (\<sqsupset>p)" by (rule red_supset_wf_on)
+  from assms have "wfp_on (\<sqsupset>p) ?C" by (rule red_supset_wf_on)
   moreover have "fst ` set (fst x) \<in> (image fst) ` set ` fst ` Q"
     by (rule, fact refl, rule, fact refl, rule, fact refl, simp add: \<open>x \<in> Q\<close>)
   moreover from Q_sub_A A_sub_Pow have "(image fst) ` set ` fst ` Q \<subseteq> ?C" by (rule subset_trans)
   ultimately obtain z1 where "z1 \<in> (image fst) ` set ` fst ` Q"
-    and 2: "\<And>y. y \<sqsupset>p z1 \<Longrightarrow> y \<notin> (image fst) ` set ` fst ` Q" by (rule wfP_onE_min, auto)
+    and 2: "\<And>y. y \<sqsupset>p z1 \<Longrightarrow> y \<notin> (image fst) ` set ` fst ` Q" by (rule wfp_onE_min, auto)
   from this(1) obtain x1 where "x1 \<in> Q" and z1: "z1 = fst ` set (fst x1)" by auto
 
   let ?Q2 = "{q \<in> Q. fst ` set (fst q) = z1}"
@@ -912,13 +912,13 @@ proof (rule wfI_min)
   from \<open>finite ?A\<close> have "finite K" unfolding K_def by (rule finite_imp_finite_component_Keys)
   let ?B = "dgrad_p_set d m"
   let ?Q = "{q \<in> Q. args_to_set (gs, q) \<subseteq> ?B \<and> component_of_term ` Keys (args_to_set (gs, q)) \<subseteq> K}"
-  from assms \<open>finite K\<close> have "wfP_on {x. args_to_set (gs, x) \<subseteq> ?B \<and> component_of_term ` Keys (args_to_set (gs, x)) \<subseteq> K}
-                          (\<lambda>x y. (x, y) \<in> gb_schema_aux_term1)"
+  from assms \<open>finite K\<close> have "wfp_on (\<lambda>x y. (x, y) \<in> gb_schema_aux_term1)
+                {x. args_to_set (gs, x) \<subseteq> ?B \<and> component_of_term ` Keys (args_to_set (gs, x)) \<subseteq> K}"
     by (rule gb_schema_aux_term1_wf_on)
   moreover from \<open>x \<in> Q\<close> A have "x \<in> ?Q" by (simp add: K_def)
   moreover have "?Q \<subseteq> {x. args_to_set (gs, x) \<subseteq> ?B \<and> component_of_term ` Keys (args_to_set (gs, x)) \<subseteq> K}" by auto
   ultimately obtain z where "z \<in> ?Q"
-    and *: "\<And>y. (y, z) \<in> gb_schema_aux_term1 \<Longrightarrow> y \<notin> ?Q" by (rule wfP_onE_min, blast)
+    and *: "\<And>y. (y, z) \<in> gb_schema_aux_term1 \<Longrightarrow> y \<notin> ?Q" by (rule wfp_onE_min, blast)
   from this(1) have "z \<in> Q" and a: "args_to_set (gs, z) \<subseteq> ?B" and b: "component_of_term ` Keys (args_to_set (gs, z)) \<subseteq> K"
     by simp_all
   from this(1) show "\<exists>z\<in>Q. \<forall>y. (y, z) \<in> gb_schema_aux_term d gs \<longrightarrow> y \<notin> Q"

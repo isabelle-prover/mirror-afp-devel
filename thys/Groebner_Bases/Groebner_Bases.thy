@@ -866,8 +866,8 @@ subsection \<open>Weak and Strong Gr\"obner Bases\<close>
 
 lemma ord_p_wf_on:
   assumes "dickson_grading d"
-  shows "wfP_on (dgrad_p_set d m) (\<prec>\<^sub>p)"
-proof (rule wfP_onI_min)
+  shows "wfp_on (\<prec>\<^sub>p) (dgrad_p_set d m)"
+proof (rule wfp_onI_min)
   fix x::"'t \<Rightarrow>\<^sub>0 'b" and Q
   assume "x \<in> Q" and "Q \<subseteq> dgrad_p_set d m"
   with assms obtain z where "z \<in> Q" and *: "\<And>y. y \<prec>\<^sub>p z \<Longrightarrow> y \<notin> Q"
@@ -886,20 +886,20 @@ lemma is_red_implies_0_red_dgrad_p_set:
   shows "(red B)\<^sup>*\<^sup>* p 0"
 proof -
   from ord_p_wf_on[OF assms(1)] assms(6, 5) show ?thesis
-  proof (induction p rule: wfP_on_induct)
-    case (step p)
+  proof (induction p rule: wfp_on_induct)
+    case (less p)
     show ?case
     proof (cases "p = 0")
       case True
       thus ?thesis by simp
     next
       case False
-      from assms(4)[OF step(3) step(1) False] obtain q where redpq: "red B p q" unfolding is_red_alt ..
-      with assms(1) assms(2) step(1) have "q \<in> dgrad_p_set d m" by (rule dgrad_p_set_closed_red)
+      from assms(4)[OF less(3, 1) False] obtain q where redpq: "red B p q" unfolding is_red_alt ..
+      with assms(1) assms(2) less(1) have "q \<in> dgrad_p_set d m" by (rule dgrad_p_set_closed_red)
       moreover from redpq have "q \<prec>\<^sub>p p" by (rule red_ord)
       moreover from \<open>pmdl B \<subseteq> pmdl A\<close> \<open>p \<in> pmdl A\<close> \<open>red B p q\<close> have "q \<in> pmdl A"
         by (rule pmdl_closed_red)
-      ultimately have "(red B)\<^sup>*\<^sup>* q 0" by (rule step(2))
+      ultimately have "(red B)\<^sup>*\<^sup>* q 0" by (rule less(2))
       show ?thesis by (rule converse_rtranclp_into_rtranclp, rule redpq, fact)
     qed
   qed
@@ -914,8 +914,8 @@ proof -
   from assms(2) obtain n where "m \<le> n" and "p \<in> dgrad_p_set d n" and B: "B \<subseteq> dgrad_p_set d n"
     by (rule dgrad_p_set_insert)
   from ord_p_wf_on[OF assms(1)] this(2) assms(5) show ?thesis
-  proof (induction p rule: wfP_on_induct)
-    case (step p)
+  proof (induction p rule: wfp_on_induct)
+    case (less p)
     show ?case
     proof (cases "p = 0")
       case True
@@ -927,7 +927,7 @@ proof -
       moreover from redpq have "q \<prec>\<^sub>p p" by (rule red_ord)
       moreover from \<open>pmdl B \<subseteq> pmdl A\<close> \<open>p \<in> pmdl A\<close> \<open>red B p q\<close> have "q \<in> pmdl A"
         by (rule pmdl_closed_red)
-      ultimately have "(red B)\<^sup>*\<^sup>* q 0" by (rule step(2))
+      ultimately have "(red B)\<^sup>*\<^sup>* q 0" by (rule less(2))
       show ?thesis by (rule converse_rtranclp_into_rtranclp, rule redpq, fact)
     qed
   qed
@@ -1660,8 +1660,8 @@ qed
 
 lemma red_supset_wf_on:
   assumes "dickson_grading d" and "finite K"
-  shows "wfP_on (Pow (dgrad_p_set d m) \<inter> {F. component_of_term ` Keys F \<subseteq> K}) (\<sqsupset>p)"
-proof (rule wfP_on_chain, rule, erule exE)
+  shows "wfp_on (\<sqsupset>p) (Pow (dgrad_p_set d m) \<inter> {F. component_of_term ` Keys F \<subseteq> K})"
+proof (rule wfp_onI_chain, rule, erule exE)
   let ?A = "dgrad_p_set d m"
   fix f::"nat \<Rightarrow> (('t \<Rightarrow>\<^sub>0 'b) set)"
   assume "\<forall>i. f i \<in> Pow ?A \<inter> {F. component_of_term ` Keys F \<subseteq> K} \<and> f (Suc i) \<sqsupset>p f i"

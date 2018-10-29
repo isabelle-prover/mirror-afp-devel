@@ -1681,8 +1681,8 @@ lemma is_relation_order_red:
   assumes "dickson_grading d"
   shows "Confluence.relation_order (red F) (\<prec>\<^sub>p) (dgrad_p_set d m)"
 proof
-  show "wfP_on (dgrad_p_set d m) (\<prec>\<^sub>p)"
-  proof (rule wfP_onI_min)
+  show "wfp_on (\<prec>\<^sub>p) (dgrad_p_set d m)"
+  proof (rule wfp_onI_min)
     fix x::"'t \<Rightarrow>\<^sub>0 'c" and Q
     assume "x \<in> Q" and "Q \<subseteq> dgrad_p_set d m"
     with assms obtain q where "q \<in> Q" and *: "\<And>y. y \<prec>\<^sub>p q \<Longrightarrow> y \<notin> Q"
@@ -1698,8 +1698,8 @@ qed (fact ord_strict_p_transitive)
 
 lemma red_wf_dgrad_p_set_aux:
   assumes "dickson_grading d" and "F \<subseteq> dgrad_p_set d m"
-  shows "wfP_on (dgrad_p_set d m) (red F)\<inverse>\<inverse>"
-proof (rule wfP_onI_min)
+  shows "wfp_on (red F)\<inverse>\<inverse> (dgrad_p_set d m)"
+proof (rule wfp_onI_min)
   fix x::"'t \<Rightarrow>\<^sub>0 'b" and Q
   assume "x \<in> Q" and "Q \<subseteq> dgrad_p_set d m"
   with assms(1) obtain q where "q \<in> Q" and *: "\<And>y. y \<prec>\<^sub>p q \<Longrightarrow> y \<notin> Q"
@@ -1725,11 +1725,11 @@ proof (rule wfI_min[to_pred])
   from assms(2) obtain n where "m \<le> n" and "x \<in> dgrad_p_set d n" and "F \<subseteq> dgrad_p_set d n"
     by (rule dgrad_p_set_insert)
   let ?Q = "Q \<inter> dgrad_p_set d n"
-  from assms(1) \<open>F \<subseteq> dgrad_p_set d n\<close> have "wfP_on (dgrad_p_set d n) (red F)\<inverse>\<inverse>"
+  from assms(1) \<open>F \<subseteq> dgrad_p_set d n\<close> have "wfp_on (red F)\<inverse>\<inverse> (dgrad_p_set d n)"
     by (rule red_wf_dgrad_p_set_aux)
   moreover from \<open>x \<in> Q\<close> \<open>x \<in> dgrad_p_set d n\<close> have "x \<in> ?Q" ..
   moreover have "?Q \<subseteq> dgrad_p_set d n" by simp
-  ultimately obtain z where "z \<in> ?Q" and *: "\<And>y. (red F)\<inverse>\<inverse> y z \<Longrightarrow> y \<notin> ?Q" by (rule wfP_onE_min, blast)
+  ultimately obtain z where "z \<in> ?Q" and *: "\<And>y. (red F)\<inverse>\<inverse> y z \<Longrightarrow> y \<notin> ?Q" by (rule wfp_onE_min) blast
   from this(1) have "z \<in> Q" and "z \<in> dgrad_p_set d n" by simp_all
   from this(1) show "\<exists>z\<in>Q. \<forall>y. (red F)\<inverse>\<inverse> y z \<longrightarrow> y \<notin> Q"
   proof

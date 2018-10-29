@@ -27,10 +27,10 @@ definition sym_preproc_aux_term2 :: "('a \<Rightarrow> nat) \<Rightarrow> ((('t 
 definition sym_preproc_aux_term
   where "sym_preproc_aux_term d = sym_preproc_aux_term1 d \<inter> sym_preproc_aux_term2 d"
 
-lemma wfP_on_ord_term_strict:
+lemma wfp_on_ord_term_strict:
   assumes "dickson_grading d"
-  shows "wfP_on (pp_of_term -` dgrad_set d m) (\<prec>\<^sub>t)"
-proof (rule wfP_onI_min)
+  shows "wfp_on (\<prec>\<^sub>t) (pp_of_term -` dgrad_set d m)"
+proof (rule wfp_onI_min)
   fix x Q
   assume "x \<in> Q" and "Q \<subseteq> pp_of_term -` dgrad_set d m"
   from wf_dickson_less_v[OF assms, of m] \<open>x \<in> Q\<close> obtain z
@@ -48,8 +48,8 @@ qed
 
 lemma sym_preproc_aux_term1_wf_on:
   assumes "dickson_grading d"
-  shows "wfP_on {x. set (fst (snd (snd x))) \<subseteq> pp_of_term -` dgrad_set d m} (\<lambda>x y. (x, y) \<in> sym_preproc_aux_term1 d)"
-proof (rule wfP_onI_min)
+  shows "wfp_on (\<lambda>x y. (x, y) \<in> sym_preproc_aux_term1 d) {x. set (fst (snd (snd x))) \<subseteq> pp_of_term -` dgrad_set d m}"
+proof (rule wfp_onI_min)
   let ?B = "pp_of_term -` dgrad_set d m"
   let ?A = "{x::(('t \<Rightarrow>\<^sub>0 'b) list \<times> 't list \<times> 't list \<times> ('t \<Rightarrow>\<^sub>0 'b) list). set (fst (snd (snd x))) \<subseteq> ?B}"
   have A_sub_Pow: "set ` fst ` snd ` snd ` ?A \<subseteq> Pow ?B" by auto
@@ -71,7 +71,7 @@ proof (rule wfP_onI_min)
     case False
     hence *: "q \<in> Q \<Longrightarrow> fst (snd (snd q)) \<noteq> []" for q by blast
     with \<open>x \<in> Q\<close> have "fst (snd (snd x)) \<noteq> []" by simp
-    from assms have "wfP_on ?B (\<prec>\<^sub>t)" by (rule wfP_on_ord_term_strict)
+    from assms have "wfp_on (\<prec>\<^sub>t) ?B" by (rule wfp_on_ord_term_strict)
     moreover from \<open>x \<in> Q\<close> \<open>fst (snd (snd x)) \<noteq> []\<close>
     have "ord_term_lin.Max (set (fst (snd (snd x)))) \<in> ?Q" by blast
     moreover have "?Q \<subseteq> ?B"
@@ -86,7 +86,7 @@ proof (rule wfP_onI_min)
       qed (fact refl)
       ultimately show "pp_of_term (ord_term_lin.Max (set c)) \<in> dgrad_set d m" ..
     qed
-    ultimately obtain t where "t \<in> ?Q" and min: "\<And>s. s \<prec>\<^sub>t t \<Longrightarrow> s \<notin> ?Q" by (rule wfP_onE_min, blast)
+    ultimately obtain t where "t \<in> ?Q" and min: "\<And>s. s \<prec>\<^sub>t t \<Longrightarrow> s \<notin> ?Q" by (rule wfp_onE_min) blast
     from this(1) obtain z where "z \<in> Q" and "fst (snd (snd z)) \<noteq> []"
       and t: "t = ord_term_lin.Max (set (fst (snd (snd z))))" by blast
     show ?thesis
@@ -122,12 +122,12 @@ proof (rule wfI_min)
   hence A: "?A \<subseteq> pp_of_term -` dgrad_set d m" by blast
   let ?B = "pp_of_term -` dgrad_set d m"
   let ?Q = "{q \<in> Q. Keys (set (fst q)) \<union> set (fst (snd (snd q))) \<subseteq> ?B}"
-  from assms have "wfP_on {x. set (fst (snd (snd x))) \<subseteq> ?B} (\<lambda>x y. (x, y) \<in> sym_preproc_aux_term1 d)"
+  from assms have "wfp_on (\<lambda>x y. (x, y) \<in> sym_preproc_aux_term1 d) {x. set (fst (snd (snd x))) \<subseteq> ?B}"
     by (rule sym_preproc_aux_term1_wf_on)
   moreover from \<open>x \<in> Q\<close> A have "x \<in> ?Q" by simp
   moreover have "?Q \<subseteq> {x. set (fst (snd (snd x))) \<subseteq> ?B}" by auto
   ultimately obtain z where "z \<in> ?Q"
-    and *: "\<And>y. (y, z) \<in> sym_preproc_aux_term1 d \<Longrightarrow> y \<notin> ?Q" by (rule wfP_onE_min, blast)
+    and *: "\<And>y. (y, z) \<in> sym_preproc_aux_term1 d \<Longrightarrow> y \<notin> ?Q" by (rule wfp_onE_min) blast
   from this(1) have "z \<in> Q" and "Keys (set (fst z)) \<union> set (fst (snd (snd z))) \<subseteq> ?B" by simp_all
   from this(2) have a: "pp_of_term ` (Keys (set (fst z)) \<union> set (fst (snd (snd z)))) \<subseteq> dgrad_set d m"
     by blast

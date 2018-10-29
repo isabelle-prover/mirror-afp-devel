@@ -12,19 +12,6 @@ text \<open>First, we develop the whole theory for elements of the module $K[X]^
 
 subsection \<open>More Preliminaries\<close>
 
-lemma wfP_on_finite:
-  assumes "irreflp rel" and "transp rel" and "finite A"
-  shows "wfP_on A rel"
-proof (rule wfP_onI_min)
-  fix x Q
-  assume "x \<in> Q" and "Q \<subseteq> A"
-  from this(2) assms(3) have "finite Q" by (rule finite_subset)
-  moreover from \<open>x \<in> Q\<close> have "Q \<noteq> {}" by blast
-  ultimately obtain z where "z \<in> Q" and "\<And>y. rel y z \<Longrightarrow> y \<notin> Q" using assms(1, 2)
-    by (rule finite_minimalE, blast)
-  thus "\<exists>z\<in>Q. \<forall>y\<in>A. rel y z \<longrightarrow> y \<notin> Q" by blast
-qed
-
 lemma (in gd_term) lt_spoly_less_lcs:
   assumes "p \<noteq> 0" and "q \<noteq> 0" and "spoly p q \<noteq> 0"
   shows "lt (spoly p q) \<prec>\<^sub>t term_of_pair (lcs (lp p) (lp q), component_of_term (lt p))"
@@ -4021,11 +4008,11 @@ proof -
     let ?rel = "term_pp_rel (\<prec>\<^sub>t)"
     have "irreflp ?rel" by (rule irreflpI, rule term_pp_rel_irrefl, fact)
     moreover have "transp ?rel" by (rule transpI, drule term_pp_rel_trans[OF \<open>ord_term_lin.is_le_rel (\<prec>\<^sub>t)\<close>])
-    ultimately have "wfP_on ?A ?rel" using \<open>finite ?A\<close> by (rule wfP_on_finite)
+    ultimately have "wfp_on ?rel ?A" using \<open>finite ?A\<close> by (rule wfp_on_finite)
     thus "finite (R x)" using \<open>x \<in> ?A\<close>
-    proof (induct rule: wfP_on_induct)
-      case (step x)
-      from step(1) have "canon_term_pp_pair x" by simp
+    proof (induct rule: wfp_on_induct)
+      case (less x)
+      from less(1) have "canon_term_pp_pair x" by simp
       define R' where "R' = UNION (?A \<inter> {z. term_pp_rel (\<prec>\<^sub>t) z x}) R"
       define red_set where "red_set = (\<lambda>p::'t \<Rightarrow>\<^sub>0 'b. {k. lt (seq k) = lt p \<and>
                                               punit.lt (rep_list (seq k)) \<preceq> punit.lt (rep_list p)})"
@@ -4160,7 +4147,7 @@ proof -
           fix y
           assume "y \<in> ?A \<inter> {z. term_pp_rel (\<prec>\<^sub>t) z x}"
           hence "y \<in> ?A" and "term_pp_rel (\<prec>\<^sub>t) y x" by simp_all
-          thus "finite (R y)" by (rule step(2))
+          thus "finite (R y)" by (rule less(2))
         qed
         show "finite ?B" by (intro finite_UN_I \<open>finite R'\<close> finite_red_set)
       next
@@ -7303,8 +7290,8 @@ qualified definition "rb_aux_term2 \<equiv> {(x, y). (fst x, fst y) \<in> rb_aux
 
 qualified definition "rb_aux_term \<equiv> rb_aux_term2 \<inter> {(x, y). rb_aux_inv x \<and> rb_aux_inv y}"
 
-lemma wfP_on_rb_aux_term1: "wfP_on (Collect rb_aux_inv1) (\<lambda>x y. (x, y) \<in> rb_aux_term1)"
-proof (rule wfP_on_chain, rule, elim exE)
+lemma wfp_on_rb_aux_term1: "wfp_on (\<lambda>x y. (x, y) \<in> rb_aux_term1) (Collect rb_aux_inv1)"
+proof (rule wfp_onI_chain, rule, elim exE)
   fix seq'
   assume "\<forall>i. seq' i \<in> Collect rb_aux_inv1 \<and> (seq' (Suc i), seq' i) \<in> rb_aux_term1"
   hence inv: "rb_aux_inv1 (seq' j)" and cons: "\<exists>b. seq' (Suc j) = b # seq' j" for j
@@ -7425,8 +7412,8 @@ proof (rule wfP_on_chain, rule, elim exE)
   qed
 qed
 
-lemma wfP_on_rb_aux_term2: "wfP_on (Collect rb_aux_inv) (\<lambda>x y. (x, y) \<in> rb_aux_term2)"
-proof (rule wfP_onI_min)
+lemma wfp_on_rb_aux_term2: "wfp_on (\<lambda>x y. (x, y) \<in> rb_aux_term2) (Collect rb_aux_inv)"
+proof (rule wfp_onI_min)
   fix x Q
   assume "x \<in> Q" and Q_sub: "Q \<subseteq> Collect rb_aux_inv"
   from this(1) have "fst x \<in> fst ` Q" by (rule imageI)
@@ -7439,8 +7426,8 @@ proof (rule wfP_onI_min)
     from \<open>z \<in> Q\<close> Q_sub have "rb_aux_inv z" by blast
     thus "y \<in> Collect rb_aux_inv1" by (simp add: y z rb_aux_inv.simps)
   qed
-  with wfP_on_rb_aux_term1 \<open>fst x \<in> fst ` Q\<close> obtain z' where "z' \<in> fst ` Q"
-    and z'_min: "\<And>y. (y, z') \<in> rb_aux_term1 \<Longrightarrow> y \<notin> fst ` Q" by (rule wfP_onE_min, blast)
+  with wfp_on_rb_aux_term1 \<open>fst x \<in> fst ` Q\<close> obtain z' where "z' \<in> fst ` Q"
+    and z'_min: "\<And>y. (y, z') \<in> rb_aux_term1 \<Longrightarrow> y \<notin> fst ` Q" by (rule wfp_onE_min) blast
   from this(1) obtain z0 where "z0 \<in> Q" and z': "z' = fst z0" by fastforce
   define Q0 where "Q0 = {z. z \<in> Q \<and> fst z = fst z0}"
   from \<open>z0 \<in> Q\<close> have "z0 \<in> Q0" by (simp add: Q0_def)
@@ -7489,11 +7476,11 @@ proof (rule wfI_min)
   proof (cases "rb_aux_inv x")
     case True
     let ?Q = "Q \<inter> Collect rb_aux_inv"
-    note wfP_on_rb_aux_term2
+    note wfp_on_rb_aux_term2
     moreover from \<open>x \<in> Q\<close> True have "x \<in> ?Q" by simp
     moreover have "?Q \<subseteq> Collect rb_aux_inv" by simp
     ultimately obtain z where "z \<in> ?Q" and z_min: "\<And>y. (y, z) \<in> rb_aux_term2 \<Longrightarrow> y \<notin> ?Q"
-      by (rule wfP_onE_min, blast)
+      by (rule wfp_onE_min) blast
     show ?thesis
     proof (intro bexI allI impI)
       fix y

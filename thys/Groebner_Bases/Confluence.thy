@@ -3,7 +3,7 @@
 section \<open>Properties of Binary Relations\<close>
 
 theory Confluence
-imports "Abstract-Rewriting.Abstract_Rewriting"
+  imports "Abstract-Rewriting.Abstract_Rewriting" "Open_Induction.Restricted_Predicates"
 begin
 
 text \<open>This theory formalizes some general properties of binary relations, in particular a very weak
@@ -11,29 +11,18 @@ text \<open>This theory formalizes some general properties of binary relations, 
 
 (* Maybe one could build upon "Decreasing_Diagrams" / "Decreasing_Diagrams_II" from the AFP? *)
 
-subsection \<open>@{term wfP_on}\<close>
-
-definition wfP_on :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
-  where "wfP_on A r \<longleftrightarrow> (\<forall>P. (\<forall>x\<in>A. (\<forall>y\<in>A. r y x \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> (\<forall>x\<in>A. P x))"
-
-lemma wfP_on_UNIV [simp]: "wfP_on UNIV r \<longleftrightarrow> wfP r"
-  by (simp add: wfP_on_def wfP_def wf_def)
-
-lemma wfP_on_induct [consumes 2, case_names step, induct pred: wfP_on]:
-  assumes "wfP_on A r" and "a \<in> A" and "\<And>x. x \<in> A \<Longrightarrow> (\<And>y. y \<in> A \<Longrightarrow> r y x \<Longrightarrow> P y) \<Longrightarrow> P x"
-  shows "P a"
-  using assms unfolding wfP_on_def by metis
+subsection \<open>@{const wfp_on}\<close>
 
 (* Probably the converse direction holds, too. *)
-lemma wfP_on_imp_wfP:
-  assumes "wfP_on A r"
+lemma wfp_on_imp_wfP:
+  assumes "wfp_on r A"
   shows "wfP (\<lambda>x y. r x y \<and> x \<in> A \<and> y \<in> A)" (is "wfP ?r")
 proof (simp add: wfP_def wf_def, intro allI impI)
   fix P x
   assume "\<forall>x. (\<forall>y. r y x \<and> y \<in> A \<and> x \<in> A \<longrightarrow> P y) \<longrightarrow> P x"
   hence *: "\<And>x. (\<And>y. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> r y x \<Longrightarrow> P y) \<Longrightarrow> P x" by blast
-  from \<open>wfP_on A r\<close> have **: "\<And>a. a \<in> A \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> (\<And>y. y \<in> A \<Longrightarrow> r y x \<Longrightarrow> P y) \<Longrightarrow> P x) \<Longrightarrow> P a"
-    by (rule wfP_on_induct, blast+)
+  from assms have **: "\<And>a. a \<in> A \<Longrightarrow> (\<And>x. x \<in> A \<Longrightarrow> (\<And>y. y \<in> A \<Longrightarrow> r y x \<Longrightarrow> P y) \<Longrightarrow> P x) \<Longrightarrow> P a"
+    by (rule wfp_on_induct) blast+
   show "P x"
   proof (cases "x \<in> A")
     case True
@@ -49,77 +38,98 @@ proof (simp add: wfP_def wf_def, intro allI impI)
   qed
 qed
 
-lemma wfP_onI_min:
+lemma wfp_onI_min:
   assumes "\<And>x Q. x \<in> Q \<Longrightarrow> Q \<subseteq> A \<Longrightarrow> \<exists>z\<in>Q. \<forall>y\<in>A. r y z \<longrightarrow> y \<notin> Q"
-  shows "wfP_on A r"
-  unfolding wfP_on_def
-proof (intro allI impI, rule ccontr)
-  fix P
-  assume IH: "\<forall>x\<in>A. (\<forall>y\<in>A. r y x \<longrightarrow> P y) \<longrightarrow> P x"
-  let ?Q = "{q \<in> A. \<not> P q}"
-  assume "\<not> Ball A P"
-  then obtain x where "x \<in> ?Q" by auto
-  moreover have "?Q \<subseteq> A" by auto
-  ultimately have "\<exists>z\<in>?Q. \<forall>y\<in>A. r y z \<longrightarrow> y \<notin> ?Q" by (rule assms)
-  then obtain z where "z \<in> ?Q" and *: "\<forall>y\<in>A. r y z \<longrightarrow> P y" by auto
-  from this(1) have "z \<in> A" and "\<not> P z" by simp_all
-  from IH this(1) have "(\<forall>y\<in>A. r y z \<longrightarrow> P y) \<longrightarrow> P z" ..
-  hence "P z"
-  proof
-    from * show "\<forall>y\<in>A. r y z \<longrightarrow> P y" .
-  qed
-  with \<open>\<not> P z\<close> show False ..
-qed
-
-lemma wfP_onE_min:
-  assumes "wfP_on A r" and "x \<in> Q" and "Q \<subseteq> A"
-  obtains z where "z \<in> Q" and "\<And>y. r y z \<Longrightarrow> y \<notin> Q"
-proof -
-  let ?r = "\<lambda>x y. r x y \<and> x \<in> A \<and> y \<in> A"
-  from assms(1) have "wfP ?r" by (rule wfP_on_imp_wfP)
-  from this \<open>x \<in> Q\<close> obtain z where "z \<in> Q" and *: "\<And>y. ?r y z \<Longrightarrow> y \<notin> Q" by (rule wfE_min[to_pred], blast)
-  from assms(3) this(1) have "z \<in> A" ..
-  from \<open>z \<in> Q\<close> show ?thesis
-  proof
+  shows "wfp_on r A"
+proof (intro inductive_on_imp_wfp_on minimal_imp_inductive_on allI impI)
+  fix Q x
+  assume "x \<in> Q \<and> Q \<subseteq> A"
+  hence "x \<in> Q" and "Q \<subseteq> A" by simp_all
+  hence "\<exists>z\<in>Q. \<forall>y\<in>A. r y z \<longrightarrow> y \<notin> Q" by (rule assms)
+  then obtain z where "z \<in> Q" and 1: "\<And>y. y \<in> A \<Longrightarrow> r y z \<Longrightarrow> y \<notin> Q" by blast
+  show "\<exists>z\<in>Q. \<forall>y. r y z \<longrightarrow> y \<notin> Q"
+  proof (intro bexI allI impI)
     fix y
     assume "r y z"
     show "y \<notin> Q"
-    proof
-      assume "y \<in> Q"
-      with assms(3) have "y \<in> A" ..
-      have "y \<notin> Q" by (rule *, intro conjI, fact+)
-      from this \<open>y \<in> Q\<close> show False ..
+    proof (cases "y \<in> A")
+      case True
+      thus ?thesis using \<open>r y z\<close> by (rule 1)
+    next
+      case False
+      with \<open>Q \<subseteq> A\<close> show ?thesis by blast
+    qed
+  qed fact
+qed
+
+lemma wfp_onE_min:
+  assumes "wfp_on r A" and "x \<in> Q" and "Q \<subseteq> A"
+  obtains z where "z \<in> Q" and "\<And>y. r y z \<Longrightarrow> y \<notin> Q"
+  using wfp_on_imp_minimal[OF assms(1)] assms(2, 3) by blast
+
+lemma wfp_onI_chain: "\<not> (\<exists>f. \<forall>i. f i \<in> A \<and> r (f (Suc i)) (f i)) \<Longrightarrow> wfp_on r A"
+  by (simp add: wfp_on_def)
+
+lemma finite_minimalE:
+  assumes "finite A" and "A \<noteq> {}" and "irreflp rel" and "transp rel"
+  obtains a where "a \<in> A" and "\<And>b. rel b a \<Longrightarrow> b \<notin> A"
+  using assms(1, 2)
+proof (induct arbitrary: thesis)
+  case empty
+  from empty(2) show ?case by simp
+next
+  case (insert a A)
+  show ?case
+  proof (cases "A = {}")
+    case True
+    show ?thesis
+    proof (rule insert(4))
+      fix b
+      assume "rel b a"
+      with assms(3) show "b \<notin> insert a A" by (auto simp: True irreflp_def)
+    qed simp
+  next
+    case False
+    with insert(3) obtain z where "z \<in> A" and *: "\<And>b. rel b z \<Longrightarrow> b \<notin> A" by blast
+    show ?thesis
+    proof (cases "rel a z")
+      case True
+      show ?thesis
+      proof (rule insert(4))
+        fix b
+        assume "rel b a"
+        with assms(4) have "rel b z" using \<open>rel a z\<close> by (rule transpD)
+        hence "b \<notin> A" by (rule *)
+        moreover from \<open>rel b a\<close> assms(3) have "b \<noteq> a" by (auto simp: irreflp_def)
+        ultimately show "b \<notin> insert a A" by simp
+      qed simp
+    next
+      case False
+      show ?thesis
+      proof (rule insert(4))
+        fix b
+        assume "rel b z"
+        hence "b \<notin> A" by (rule *)
+        moreover from \<open>rel b z\<close> False have "b \<noteq> a" by blast
+        ultimately show "b \<notin> insert a A" by simp
+      next
+        from \<open>z \<in> A\<close> show "z \<in> insert a A" by simp
+      qed
     qed
   qed
 qed
 
-text \<open>The proof of the following lemma is essentially the same as that of
-  @{thm wf_iff_no_infinite_down_chain}.\<close>
-
-lemma wfP_on_chain:
-  assumes "\<not>(\<exists>f. \<forall>i. f i \<in> A \<and> r (f (Suc i)) (f i))"
-  shows "wfP_on A r"
-  using assms
-proof (rule contrapos_np)
-  assume "\<not> wfP_on A r"
-  then obtain Q x where x: "x \<in> Q" and "Q \<subseteq> A" and rec: "z \<in> Q \<Longrightarrow> \<exists>y. r y z \<and> y \<in> Q" for z
-    by (metis wfP_onI_min)
-  obtain descend :: "nat \<Rightarrow> 'a"
-    where descend_0: "descend 0 = x"
-      and descend_Suc: "descend (Suc n) = (SOME y. y \<in> Q \<and> r y (descend n))" for n
-    by (rule that [of "rec_nat x (\<lambda>_ rec. (SOME y. y \<in> Q \<and> r y rec))"]) simp_all
-  have descend_Q: "descend n \<in> Q" for n
-  proof (induct n)
-    case 0
-    with x show ?case by (simp only: descend_0)
-  next
-    case Suc
-    then show ?case by (simp only: descend_Suc) (rule someI2_ex; use rec in blast)
-  qed
-  hence descend_A: "descend n \<in> A" for n using \<open>Q \<subseteq> A\<close> by auto
-  have "r (descend (Suc i)) (descend i)" for i
-    by (simp only: descend_Suc) (rule someI2_ex; use descend_Q rec in blast)
-  thus "\<exists>f. \<forall>i. f i \<in> A \<and> r (f (Suc i)) (f i)" using descend_A by blast
+lemma wfp_on_finite:
+  assumes "irreflp rel" and "transp rel" and "finite A"
+  shows "wfp_on rel A"
+proof (rule wfp_onI_min)
+  fix x Q
+  assume "x \<in> Q" and "Q \<subseteq> A"
+  from this(2) assms(3) have "finite Q" by (rule finite_subset)
+  moreover from \<open>x \<in> Q\<close> have "Q \<noteq> {}" by blast
+  ultimately obtain z where "z \<in> Q" and "\<And>y. rel y z \<Longrightarrow> y \<notin> Q" using assms(1, 2)
+    by (rule finite_minimalE) blast
+  thus "\<exists>z\<in>Q. \<forall>y\<in>A. rel y z \<longrightarrow> y \<notin> Q" by blast
 qed
 
 subsection \<open>Relations\<close>
@@ -318,7 +328,7 @@ proof -
 qed
 
 lemma wf_on_imp_nf_ex:
-  assumes "wfP_on A ((\<rightarrow>)\<inverse>\<inverse>)" and "dw_closed A" and "a \<in> A"
+  assumes "wfp_on ((\<rightarrow>)\<inverse>\<inverse>) A" and "dw_closed A" and "a \<in> A"
   obtains b where "a \<rightarrow>\<^sup>* b" and "is_final b"
 proof -
   let ?A = "{b\<in>A. a \<rightarrow>\<^sup>* b}"
@@ -326,7 +336,7 @@ proof -
   moreover from assms(3) have "a \<in> ?A" by simp
   moreover have "?A \<subseteq> A" by auto
   ultimately show ?thesis
-  proof (rule wfP_onE_min)
+  proof (rule wfp_onE_min)
     fix z
     assume "z \<in> ?A" and "\<And>y. (\<rightarrow>)\<inverse>\<inverse> y z \<Longrightarrow> y \<notin> ?A"
     from this(2) have *: "\<And>y. z \<rightarrow> y \<Longrightarrow> y \<notin> ?A" by simp
@@ -348,7 +358,7 @@ qed
   
 lemma unique_nf_imp_confluence_on:
   assumes major: "\<And>a b1 b2. a \<in> A \<Longrightarrow> (a \<rightarrow>\<^sup>* b1) \<Longrightarrow> (a \<rightarrow>\<^sup>* b2) \<Longrightarrow> is_final b1 \<Longrightarrow> is_final b2 \<Longrightarrow> b1 = b2"
-    and wf: "wfP_on A ((\<rightarrow>)\<inverse>\<inverse>)" and dw: "dw_closed A"
+    and wf: "wfp_on ((\<rightarrow>)\<inverse>\<inverse>) A" and dw: "dw_closed A"
   shows "is_confluent_on A"
   unfolding is_confluent_on_def
 proof (intro ballI allI impI)
@@ -374,7 +384,7 @@ corollary wf_imp_nf_ex:
   assumes "wfP ((\<rightarrow>)\<inverse>\<inverse>)"
   obtains b where "a \<rightarrow>\<^sup>* b" and "is_final b"
 proof -
-  from assms have "wfP_on UNIV (r^--1)" by simp
+  from assms have "wfp_on (r^--1) UNIV" by simp
   moreover note dw_closed_UNIV
   moreover have "a \<in> UNIV" ..
   ultimately obtain b where "a \<rightarrow>\<^sup>* b" and "is_final b" by (rule wf_on_imp_nf_ex)
@@ -407,7 +417,7 @@ text \<open>Note that @{const cbelow_on} cannot be defined as the reflexive-tran
 definition is_loc_connective_on :: "'a set \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> bool"
   where "is_loc_connective_on A ord r \<longleftrightarrow> (\<forall>a\<in>A. \<forall>b1 b2. r a b1 \<and> r a b2 \<longrightarrow> cbelow_on A ord a (relation.sc r) b1 b2)"
 
-text \<open>Note that @{const wfP_on} is @{emph \<open>not\<close>} the same as @{const SN_on}, since in the definition
+text \<open>Note that @{const wfp_on} is @{emph \<open>not\<close>} the same as @{const SN_on}, since in the definition
   of @{const SN_on} only the @{emph \<open>first\<close>} element of the chain must be in the set.\<close>
 
 lemma cbelow_on_first_below:
@@ -558,8 +568,8 @@ locale relation_order = relation +
   fixes ord::"'a \<Rightarrow> 'a \<Rightarrow> bool"
   fixes A::"'a set"
   assumes trans: "ord x y \<Longrightarrow> ord y z \<Longrightarrow> ord x z"
-  assumes wf: "wfP_on A ord"
-  assumes refines: "(\<rightarrow>) \<le> ord^--1"
+  assumes wf: "wfp_on ord A"
+  assumes refines: "(\<rightarrow>) \<le> ord\<inverse>\<inverse>"
 begin
 
 lemma relation_refines:
@@ -567,14 +577,14 @@ lemma relation_refines:
   shows "ord b a"
   using refines assms by auto
 
-lemma relation_wf: "wfP_on A ((\<rightarrow>)^--1)"
-  unfolding wfP_on_def
-proof (intro allI impI)
-  fix P
-  assume "\<forall>x\<in>A. (\<forall>y\<in>A. (\<rightarrow>)\<inverse>\<inverse> y x \<longrightarrow> P y) \<longrightarrow> P x"
-  hence "\<forall>x\<in>A. (\<forall>y\<in>A. ord y x \<longrightarrow> P y) \<longrightarrow> P x" by (auto intro: relation_refines)
-  moreover from wf have "(\<forall>x\<in>A. (\<forall>y\<in>A. ord y x \<longrightarrow> P y) \<longrightarrow> P x) \<longrightarrow> Ball A P" unfolding wfP_on_def ..
-  ultimately show "Ball A P" by blast
+lemma relation_wf: "wfp_on (\<rightarrow>)\<inverse>\<inverse> A"
+  using subset_refl _ wf
+proof (rule wfp_on_mono)
+  fix x y
+  assume "(\<rightarrow>)\<inverse>\<inverse> x y"
+  hence "y \<rightarrow> x" by simp
+  with refines have "(ord)\<inverse>\<inverse> y x" ..
+  thus "ord x y" by simp
 qed
 
 lemma rtc_implies_cbelow_on:
@@ -627,12 +637,9 @@ proof (intro ballI allI impI)
   fix z x y::'a
   assume "\<forall>a\<in>A. \<forall>b1 b2. a \<rightarrow> b1 \<and> a \<rightarrow> b2 \<longrightarrow> cbelow_on A ord a (\<leftrightarrow>) b1 b2"
   hence A: "\<And>a b1 b2. a \<in> A \<Longrightarrow> a \<rightarrow> b1 \<Longrightarrow> a \<rightarrow> b2 \<Longrightarrow> cbelow_on A ord a (\<leftrightarrow>) b1 b2" by simp
-  assume "z \<in> A"
-  assume "z \<rightarrow>\<^sup>* x \<and> z \<rightarrow>\<^sup>* y"
-  thus "x \<down>\<^sup>* y"
-  proof (induct z arbitrary: x y rule: wfP_on_induct[OF wf])
-    show "z \<in> A" by fact
-  next
+  assume "z \<in> A" and "z \<rightarrow>\<^sup>* x \<and> z \<rightarrow>\<^sup>* y"
+  with wf show "x \<down>\<^sup>* y"
+  proof (induct z arbitrary: x y rule: wfp_on_induct)
     fix z x y::'a
     assume IH: "\<And>z0 x0 y0. z0 \<in> A \<Longrightarrow> ord z0 z \<Longrightarrow> z0 \<rightarrow>\<^sup>* x0 \<and> z0 \<rightarrow>\<^sup>* y0 \<Longrightarrow> x0 \<down>\<^sup>* y0"
       and "z \<rightarrow>\<^sup>* x \<and> z \<rightarrow>\<^sup>* y"
