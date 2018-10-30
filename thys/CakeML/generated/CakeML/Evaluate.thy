@@ -220,7 +220,7 @@ fun_evaluate_decs mn st env [Dletrec locs funs] = (
 fun_evaluate_decs mn st env [Dtype locs tds] = (
   (let new_tdecs = (type_defs_to_new_tdecs mn tds) in
     if check_dup_ctors tds \<and>
-       ((% M N. M \<inter> N = {}) new_tdecs(defined_types   st) \<and>
+       (disjnt new_tdecs(defined_types   st) \<and>
        allDistinct (List.map ( \<lambda>x .  
   (case  x of (tvs,tn,ctors) => tn )) tds))
     then

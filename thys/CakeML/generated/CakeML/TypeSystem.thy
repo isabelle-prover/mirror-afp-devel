@@ -1194,7 +1194,7 @@ type_d extra_checks mn decls tenv (Dletrec locs funs)
 check_ctor_tenv (nsAppend tenvT(t   tenv)) tdefs \<and>
 ((defined_types' = List.set (List.map ( \<lambda>x .  
   (case  x of (tvs,tn,ctors) => (mk_id mn tn) )) tdefs)) \<and>
-((% M N. M \<inter> N = {}) defined_types'(defined_types0   decls) \<and>
+(disjnt defined_types'(defined_types0   decls) \<and>
 ((tenvT = alist_to_ns (List.map ( \<lambda>x .  
   (case  x of
       (tvs,tn,ctors) => (tn, (tvs, Tapp (List.map Tvar tvs)

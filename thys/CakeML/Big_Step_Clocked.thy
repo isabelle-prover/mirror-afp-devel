@@ -435,8 +435,7 @@ next
   case dtype2
   then show ?case
     apply rule
-    apply (auto intro!:evaluate_dec.intros)
-    by blast
+    by (auto intro!: evaluate_dec.intros)
 next
   case dexn1
   then show ?case
