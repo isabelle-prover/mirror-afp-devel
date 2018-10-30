@@ -99,6 +99,225 @@ next
   thus ?thesis by simp
 qed
 
+subsection \<open>Constant @{term except}\<close>
+
+definition except_fun :: "('a \<Rightarrow> 'b) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow> 'b::zero)"
+  where "except_fun f S = (\<lambda>x. (f x when x \<notin> S))"
+
+lift_definition except :: "('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> 'a set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::zero)" is except_fun
+proof -
+  fix p::"'a \<Rightarrow> 'b" and S::"'a set"
+  assume "finite {t. p t \<noteq> 0}"
+  show "finite {t. except_fun p S t \<noteq> 0}"
+  proof (rule finite_subset[of _ "{t. p t \<noteq> 0}"], rule)
+    fix u
+    assume "u \<in> {t. except_fun p S t \<noteq> 0}"
+    hence "p u \<noteq> 0" by (simp add: except_fun_def)
+    thus "u \<in> {t. p t \<noteq> 0}" by simp
+  qed fact
+qed
+
+lemma lookup_except_when: "lookup (except p S) = (\<lambda>t. lookup p t when t \<notin> S)"
+  by (auto simp: except.rep_eq except_fun_def)
+
+lemma lookup_except: "lookup (except p S) = (\<lambda>t. if t \<in> S then 0 else lookup p t)"
+  by (rule ext) (simp add: lookup_except_when)
+
+lemma lookup_except_singleton: "lookup (except p {t}) t = 0"
+  by (simp add: lookup_except)
+
+lemma except_zero [simp]: "except 0 S = 0"
+  by (rule poly_mapping_eqI) (simp add: lookup_except)
+
+lemma lookup_except_eq_idI:
+  assumes "t \<notin> S"
+  shows "lookup (except p S) t = lookup p t"
+  using assms by (simp add: lookup_except)
+
+lemma lookup_except_eq_zeroI:
+  assumes "t \<in> S"
+  shows "lookup (except p S) t = 0"
+  using assms by (simp add: lookup_except)
+
+lemma except_empty [simp]: "except p {} = p"
+  by (rule poly_mapping_eqI) (simp add: lookup_except)
+
+lemma except_eq_zeroI:
+  assumes "keys p \<subseteq> S"
+  shows "except p S = 0"
+proof (rule poly_mapping_eqI, simp)
+  fix t
+  show "lookup (except p S) t = 0"
+  proof (cases "t \<in> S")
+    case True
+    thus ?thesis by (rule lookup_except_eq_zeroI)
+  next
+    case False
+    hence "lookup (except p S) t = lookup p t" by (rule lookup_except_eq_idI)
+    also have "... = 0" using False assms by auto
+    finally show ?thesis .
+  qed
+qed
+
+lemma except_eq_zeroE:
+  assumes "except p S = 0"
+  shows "keys p \<subseteq> S"
+proof
+  fix t
+  assume "t \<in> keys p"
+  hence "lookup p t \<noteq> 0" by simp
+  moreover from assms have "lookup (except p S) t = 0" by simp
+  ultimately show "t \<in> S" unfolding lookup_except by presburger
+qed                                                                    
+
+lemma except_eq_zero_iff: "except p S = 0 \<longleftrightarrow> keys p \<subseteq> S"
+  by (rule, elim except_eq_zeroE, elim except_eq_zeroI)
+
+lemma except_keys [simp]: "except p (keys p) = 0"
+  by (rule except_eq_zeroI, rule subset_refl)
+
+lemma plus_except: "p = Poly_Mapping.single t (lookup p t) + except p {t}"
+  by (rule poly_mapping_eqI, simp add: lookup_add lookup_single lookup_except when_def split: if_split)
+
+lemma keys_except: "keys (except p S) = keys p - S"
+  by (transfer, auto simp: except_fun_def)
+
+lemma keys_eq_empty_iff [simp]: "keys p = {} \<longleftrightarrow> p = 0"
+  by (metis keys_zero lookup_zero not_in_keys_iff_lookup_eq_zero poly_mapping_eqI)
+
+lemma except_single: "except (Poly_Mapping.single u c) S = (Poly_Mapping.single u c when u \<notin> S)"
+  by (rule poly_mapping_eqI) (simp add: lookup_except lookup_single when_def)
+
+lemma except_plus: "except (p + q) S = except p S + except q S"
+  by (rule poly_mapping_eqI) (simp add: lookup_except lookup_add)
+
+lemma except_minus: "except (p - q) S = except p S - except q S"
+  by (rule poly_mapping_eqI) (simp add: lookup_except lookup_minus)
+
+lemma except_uminus: "except (- p) S = - except p S"
+  by (rule poly_mapping_eqI) (simp add: lookup_except)
+
+lemma except_except: "except (except p S) T = except p (S \<union> T)"
+  by (rule poly_mapping_eqI) (simp add: lookup_except)
+
+lemma poly_mapping_keys_eqI:
+  assumes a1: "keys p = keys q" and a2: "\<And>t. t \<in> keys p \<Longrightarrow> lookup p t = lookup q t"
+  shows "p = q"
+proof (rule poly_mapping_eqI)
+  fix t
+  show "lookup p t = lookup q t"
+  proof (cases "t \<in> keys p")
+    case True
+    thus ?thesis by (rule a2)
+  next
+    case False
+    moreover from this have "t \<notin> keys q" unfolding a1 .
+    ultimately have "lookup p t = 0" and "lookup q t = 0" unfolding in_keys_iff by simp_all
+    thus ?thesis by simp
+  qed
+qed
+
+lemma except_id_iff: "except p S = p \<longleftrightarrow> keys p \<inter> S = {}"
+  by (metis Diff_Diff_Int Diff_eq_empty_iff Diff_triv inf_le2 keys_except lookup_except_eq_idI
+      lookup_except_eq_zeroI not_in_keys_iff_lookup_eq_zero poly_mapping_keys_eqI)
+
+lemma keys_subset_wf:
+  "wfP (\<lambda>p q::('a, 'b::zero) poly_mapping. keys p \<subset> keys q)"
+unfolding wfP_def
+proof (intro wfI_min)
+  fix x::"('a, 'b) poly_mapping" and Q
+  assume x_in: "x \<in> Q"
+  let ?Q0 = "card ` keys ` Q"
+  from x_in have "card (keys x) \<in> ?Q0" by simp
+  from wfE_min[OF wf this] obtain z0
+    where z0_in: "z0 \<in> ?Q0" and z0_min: "\<And>y. (y, z0) \<in> {(x, y). x < y} \<Longrightarrow> y \<notin> ?Q0" by auto
+  from z0_in obtain z where z0_def: "z0 = card (keys z)" and "z \<in> Q" by auto
+  show "\<exists>z\<in>Q. \<forall>y. (y, z) \<in> {(p, q). keys p \<subset> keys q} \<longrightarrow> y \<notin> Q"
+  proof (intro bexI[of _ z], rule, rule)
+    fix y::"('a, 'b) poly_mapping"
+    let ?y0 = "card (keys y)"
+    assume "(y, z) \<in> {(p, q). keys p \<subset> keys q}"
+    hence "keys y \<subset> keys z" by simp
+    hence "?y0 < z0" unfolding z0_def by (simp add: psubset_card_mono) 
+    hence "(?y0, z0) \<in> {(x, y). x < y}" by simp
+    from z0_min[OF this] show "y \<notin> Q" by auto
+  qed (fact)
+qed
+
+lemma poly_mapping_except_induct:
+  assumes base: "P 0" and ind: "\<And>p t. p \<noteq> 0 \<Longrightarrow> t \<in> keys p \<Longrightarrow> P (except p {t}) \<Longrightarrow> P p"
+  shows "P p"
+proof (induct rule: wfP_induct[OF keys_subset_wf])
+  fix p::"('a, 'b) poly_mapping"
+  assume "\<forall>q. keys q \<subset> keys p \<longrightarrow> P q"
+  hence IH: "\<And>q. keys q \<subset> keys p \<Longrightarrow> P q" by simp
+  show "P p"
+  proof (cases "p = 0")
+    case True
+    thus ?thesis using base by simp
+  next
+    case False
+    hence "keys p \<noteq> {}" by simp
+    then obtain t where "t \<in> keys p" by blast
+    show ?thesis
+    proof (rule ind, fact, fact, rule IH, simp only: keys_except, rule, rule Diff_subset, rule)
+      assume "keys p - {t} = keys p"
+      hence "t \<notin> keys p" by blast
+      from this \<open>t \<in> keys p\<close> show False ..
+    qed
+  qed
+qed
+
+lemma poly_mapping_except_induct':
+  assumes "\<And>p. (\<And>t. t \<in> keys p \<Longrightarrow> P (except p {t})) \<Longrightarrow> P p"
+  shows "P p"
+proof (induct "card (keys p)" arbitrary: p)
+  case 0
+  with finite_keys[of p] have "keys p = {}" by simp
+  show ?case by (rule assms, simp add: \<open>keys p = {}\<close>)
+next
+  case step: (Suc n)
+  show ?case
+  proof (rule assms)
+    fix t
+    assume "t \<in> keys p"
+    show "P (except p {t})"
+    proof (rule step(1), simp add: keys_except)
+      from step(2) \<open>t \<in> keys p\<close> finite_keys[of p] show "n = card (keys p - {t})" by simp
+    qed
+  qed
+qed
+
+lemma poly_mapping_plus_induct:
+  assumes "P 0" and "\<And>p c t. c \<noteq> 0 \<Longrightarrow> t \<notin> keys p \<Longrightarrow> P p \<Longrightarrow> P (Poly_Mapping.single t c + p)"
+  shows "P p"
+proof (induct "card (keys p)" arbitrary: p)
+  case 0
+  with finite_keys[of p] have "keys p = {}" by simp
+  hence "p = 0" by simp
+  with assms(1) show ?case by simp
+next
+  case step: (Suc n)
+  from step(2) obtain t where t: "t \<in> keys p" by (metis card_eq_SucD insert_iff)
+  define c where "c = lookup p t"
+  define q where "q = except p {t}"
+  have *: "p = Poly_Mapping.single t c + q"
+    by (rule poly_mapping_eqI, simp add: lookup_add lookup_single Poly_Mapping.when_def, intro conjI impI,
+        simp add: q_def lookup_except c_def, simp add: q_def lookup_except_eq_idI)
+  show ?case
+  proof (simp only: *, rule assms(2))
+    from t show "c \<noteq> 0" by (simp add: c_def)
+  next
+    show "t \<notin> keys q" by (simp add: q_def keys_except)
+  next
+    show "P q"
+    proof (rule step(1))
+      from step(2) \<open>t \<in> keys p\<close> show "n = card (keys q)" unfolding q_def keys_except
+        by (metis Suc_inject card.remove finite_keys)
+    qed
+  qed
+qed
+
 subsection \<open>'Divisibility' on Additive Structures\<close>
 
 context plus begin
@@ -1172,7 +1391,6 @@ instance "fun" :: (type, add_linorder_min) ulcs_powerprod ..
 subsubsection \<open>Power-products in a given set of indeterminates\<close>
 
 definition supp_fun::"('a \<Rightarrow> 'b::zero) \<Rightarrow> 'a set" where "supp_fun f = {x. f x \<noteq> 0}"
-definition sub_supp::"'a set \<Rightarrow> ('a \<Rightarrow> 'b::zero) \<Rightarrow> bool" where "sub_supp V s \<longleftrightarrow> supp_fun s \<subseteq> V"
 
 text \<open>@{term supp_fun} for general functions is like @{term keys} for @{type poly_mapping},
   but does not need to be finite.\<close>
@@ -1180,8 +1398,23 @@ text \<open>@{term supp_fun} for general functions is like @{term keys} for @{ty
 lemma keys_eq_supp: "keys s = supp_fun (lookup s)"
   unfolding supp_fun_def by (transfer, rule)
 
-definition truncate_fun::"'a set \<Rightarrow> ('a \<Rightarrow> 'b::zero) \<Rightarrow> ('a \<Rightarrow> 'b::zero)"
-  where "truncate_fun V f = (\<lambda>x. (if x \<in> V then f x else 0))"
+lemma supp_fun_zero [simp]: "supp_fun 0 = {}"
+  by (auto simp: supp_fun_def)
+
+lemma supp_fun_eq_zero_iff: "supp_fun f = {} \<longleftrightarrow> f = 0"
+  by (auto simp: supp_fun_def)
+
+lemma sub_supp_empty: "supp_fun s \<subseteq> {} \<longleftrightarrow> (s = 0)"
+  by (auto simp: supp_fun_def)
+
+lemma except_fun_idI: "supp_fun f \<inter> V = {} \<Longrightarrow> except_fun f V = f"
+  by (auto simp: except_fun_def supp_fun_def when_def intro!: ext)
+
+lemma supp_except_fun: "supp_fun (except_fun s V) = supp_fun s - V"
+  by (auto simp: except_fun_def supp_fun_def)
+
+lemma supp_fun_plus_subset: "supp_fun (s + t) \<subseteq> supp_fun s \<union> supp_fun (t::'a \<Rightarrow> 'b::monoid_add)"
+  unfolding supp_fun_def by force
 
 lemma fun_eq_zeroI:
   assumes "\<And>x. x \<in> supp_fun f \<Longrightarrow> f x = 0"
@@ -1198,71 +1431,44 @@ proof (rule, simp)
   qed
 qed
 
-lemma sub_supp_univ: "sub_supp (UNIV::'a set) f"
-by (simp add: sub_supp_def)
+lemma except_fun_cong1:
+  "supp_fun s \<inter> ((V - U) \<union> (U - V)) \<subseteq> {} \<Longrightarrow> except_fun s V = except_fun s U"
+  by (auto simp: except_fun_def when_def supp_fun_def intro!: ext)
 
-lemma sub_supp_empty: "sub_supp {} s = (s = 0)"
-  unfolding sub_supp_def supp_fun_def by auto
+lemma adds_except_fun:
+  "s adds t = (except_fun s V adds except_fun t V \<and> except_fun s (- V) adds except_fun t (- V))"
+  for s t :: "'a \<Rightarrow> 'b::add_linorder"
+  by (auto simp: supp_fun_def except_fun_def adds_fun_iff when_def)
 
-lemma sub_supp_supp: "sub_supp (supp_fun s) s"
-  by (simp add: sub_supp_def)
-
-lemma truncate_fun_idI: "sub_supp V f \<Longrightarrow> truncate_fun V f = f"
-  by (auto simp: sub_supp_def truncate_fun_def supp_fun_def intro!: ext)
-
-lemma sub_supp_truncate: "sub_supp V (truncate_fun V s)"
-  unfolding sub_supp_def truncate_fun_def supp_fun_def by auto
-
-lemma sub_supp_union_add:
-  fixes V U::"'a set" and s t::"'a \<Rightarrow> 'b::monoid_add"
-  assumes "sub_supp V s" and "sub_supp U t"
-  shows "sub_supp (V \<union> U) (s + t)"
-  using assms unfolding sub_supp_def supp_fun_def by force
-
-corollary supp_add_subset: "supp_fun (s + t) \<subseteq> supp_fun s \<union> supp_fun (t::'a \<Rightarrow> 'b::monoid_add)"
-proof -
-  have "sub_supp (supp_fun s) s" and "sub_supp (supp_fun t) t" by (rule sub_supp_supp)+
-  hence "sub_supp (supp_fun s \<union> supp_fun t) (s + t)" by (rule sub_supp_union_add)
-  thus ?thesis by (simp only: sub_supp_def)
-qed
-
-lemma truncate_fun_singleton_adds:
-  fixes s t::"'a \<Rightarrow> 'b::add_linorder"
-  shows "(truncate_fun {v} s adds truncate_fun {v} t) \<longleftrightarrow> (s v adds t v)"
-  unfolding truncate_fun_def adds_fun_iff by auto
-
-lemma adds_insert_supp:
-  fixes s t::"'a \<Rightarrow> 'b::add_linorder"
-  assumes "sub_supp (insert v V) s" and "sub_supp (insert v V) t"
-  shows "s adds t = (truncate_fun V s adds truncate_fun V t \<and> s v adds t v)"
-  using assms unfolding sub_supp_def supp_fun_def truncate_fun_def adds_fun_iff
-  by (auto; force)
+lemma adds_except_fun_singleton: "s adds t = (except_fun s {v} adds except_fun t {v} \<and> s v adds t v)"
+  for s t :: "'a \<Rightarrow> 'b::add_linorder"
+  by (auto simp: supp_fun_def except_fun_def adds_fun_iff when_def)
 
 subsubsection \<open>Dickson's lemma for power-products in finitely many indeterminates\<close>
 
 lemma Dickson_fun:
   assumes "finite V"
-  shows "almost_full_on (adds) {x::'a \<Rightarrow> 'b::add_wellorder. sub_supp V x}"
+  shows "almost_full_on (adds) {x::'a \<Rightarrow> 'b::add_wellorder. supp_fun x \<subseteq> V}"
   using assms
 proof (induct V)
   case empty
   have "finite {0}" by simp
   moreover have "reflp_on (adds) {0::'a \<Rightarrow> 'b}" by (simp add: reflp_on_def)
   ultimately have "almost_full_on (adds) {0::'a \<Rightarrow> 'b}" by (rule finite_almost_full_on)
-  thus ?case by (simp add: sub_supp_empty)
+  thus ?case by (simp add: supp_fun_eq_zero_iff)
 next
   case (insert v V)
   show ?case
   proof (rule almost_full_onI)
     fix seq::"nat \<Rightarrow> 'a \<Rightarrow> 'b"
-    assume "\<forall>i. seq i \<in> {x. sub_supp (insert v V) x}"
-    hence a: "sub_supp (insert v V) (seq i)" for i by simp
-    define seq' where "seq' = (\<lambda>i. (truncate_fun V (seq i), truncate_fun {v} (seq i)))"
-    have "almost_full_on (adds) {x::'a \<Rightarrow> 'b. sub_supp {v} x}"
+    assume "\<forall>i. seq i \<in> {x. supp_fun x \<subseteq> insert v V}"
+    hence a: "supp_fun (seq i) \<subseteq> insert v V" for i by simp
+    define seq' where "seq' = (\<lambda>i. (except_fun (seq i) {v}, except_fun (seq i) V))"
+    have "almost_full_on (adds) {x::'a \<Rightarrow> 'b. supp_fun x \<subseteq> {v}}"
     proof (rule almost_full_onI)
       fix f::"nat \<Rightarrow> 'a \<Rightarrow> 'b"
-      assume "\<forall>i. f i \<in> {x. sub_supp {v} x}"
-      hence b: "sub_supp {v} (f i)" for i by simp
+      assume "\<forall>i. f i \<in> {x. supp_fun x \<subseteq> {v}}"
+      hence b: "supp_fun (f i) \<subseteq> {v}" for i by simp
       let ?f = "\<lambda>i. f i v"
       have "wfP ((<)::'b \<Rightarrow> _)" by (simp add: wf wfP_def)
       hence "\<forall>f::nat \<Rightarrow> 'b. \<exists>i. f i \<le> f (Suc i)"
@@ -1270,22 +1476,39 @@ next
       hence "\<exists>i. ?f i \<le> ?f (Suc i)" ..
       then obtain i where "?f i \<le> ?f (Suc i)" ..
       have "i < Suc i" by simp
-      moreover have "f i adds f (Suc i)"
-      proof -
-        from \<open>?f i \<le> ?f (Suc i)\<close> have "?f i adds ?f (Suc i)" by (simp add: adds_def le_iff_add)
-        hence "truncate_fun {v} (f i) adds truncate_fun {v} (f (Suc i))"
-          by (simp add: truncate_fun_singleton_adds)
-        with b show ?thesis by (simp add: truncate_fun_idI)
+      moreover have "f i adds f (Suc i)" unfolding adds_fun_iff
+      proof
+        fix x
+        show "f i x adds f (Suc i) x"
+        proof (cases "x = v")
+          case True
+          with \<open>?f i \<le> ?f (Suc i)\<close> show ?thesis by (simp add: adds_def le_iff_add)
+        next
+          case False
+          with b have "x \<notin> supp_fun (f i)" and "x \<notin> supp_fun (f (Suc i))" by blast+
+          thus ?thesis by (simp add: supp_fun_def)
+        qed
       qed
       ultimately show "good (adds) f" by (meson goodI)
     qed
     with insert(3) have
-      "almost_full_on (prod_le (adds) (adds)) ({x::'a \<Rightarrow> 'b. sub_supp V x} \<times> {x::'a \<Rightarrow> 'b. sub_supp {v} x})"
+      "almost_full_on (prod_le (adds) (adds)) ({x::'a \<Rightarrow> 'b. supp_fun x \<subseteq> V} \<times> {x::'a \<Rightarrow> 'b. supp_fun x \<subseteq> {v}})"
       (is "almost_full_on ?P ?A") by (rule almost_full_on_Sigma)
-    moreover have "\<And>i. seq' i \<in> ?A" by (simp add: seq'_def sub_supp_truncate)
+    moreover from a have "seq' i \<in> ?A" for i by (auto simp add: seq'_def supp_except_fun)
     ultimately obtain i j where "i < j" and "?P (seq' i) (seq' j)" by (rule almost_full_onD)
-    from this(2) have "seq i adds seq j"
-      by (simp add: prod_le_def seq'_def adds_insert_supp[OF a[of i] a[of j]] truncate_fun_singleton_adds)
+    have "seq i adds seq j" unfolding adds_except_fun[where s="seq i" and V=V]
+    proof
+      from \<open>?P (seq' i) (seq' j)\<close> show "except_fun (seq i) V adds except_fun (seq j) V"
+        by (simp add: prod_le_def seq'_def)
+    next
+      from \<open>?P (seq' i) (seq' j)\<close> have "except_fun (seq i) {v} adds except_fun (seq j) {v}"
+        by (simp add: prod_le_def seq'_def)
+      moreover have "except_fun (seq i) (- V) = except_fun (seq i) {v}"
+        by (rule except_fun_cong1; use a[of i] insert.hyps(2) in blast)
+      moreover have "except_fun (seq j) (- V) = except_fun (seq j) {v}"
+        by (rule except_fun_cong1; use a[of j] insert.hyps(2) in blast)
+      ultimately show "except_fun (seq i) (- V) adds except_fun (seq j) (- V)" by simp
+    qed
     with \<open>i < j\<close> show "good (adds) seq" by (meson goodI)
   qed
 qed
@@ -1293,8 +1516,8 @@ qed
 instance "fun" :: (finite, add_wellorder) dickson_powerprod
 proof
   have "finite (UNIV::'a set)" by simp
-  hence "almost_full_on (adds) {x::'a \<Rightarrow> 'b. sub_supp UNIV x}" by (rule Dickson_fun)
-  thus "almost_full_on (adds) (UNIV::('a \<Rightarrow> 'b) set)" by (simp add: sub_supp_univ)
+  hence "almost_full_on (adds) {x::'a \<Rightarrow> 'b. supp_fun x \<subseteq> UNIV}" by (rule Dickson_fun)
+  thus "almost_full_on (adds) (UNIV::('a \<Rightarrow> 'b) set)" by simp
 qed
 
 subsubsection \<open>Lexicographic Term Order\<close>
@@ -1616,7 +1839,7 @@ proof -
       hence "x \<notin> supp_fun (s + t)" by simp
       thus "s x + t x = 0" by (simp add: supp_fun_def)
     qed
-  qed (rule supp_add_subset, rule)
+  qed (rule supp_fun_plus_subset, rule)
   also have "\<dots> = (\<Sum>x\<in>(supp_fun s \<union> supp_fun t). s x) + (\<Sum>x\<in>(supp_fun s \<union> supp_fun t). t x)"
     by (rule sum.distrib)
   also from fin have "(\<Sum>x\<in>(supp_fun s \<union> supp_fun t). s x) = deg_fun s" unfolding deg_fun_def
@@ -2123,44 +2346,15 @@ instance poly_mapping :: (type, add_linorder_min) ulcs_powerprod ..
 
 subsubsection \<open>Power-products in a given set of indeterminates.\<close>
 
-definition sub_keys::"'a set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> bool" where "sub_keys V s \<longleftrightarrow> keys s \<subseteq> V"
+lemma adds_except:
+  "s adds t = (except s V adds except t V \<and> except s (- V) adds except t (- V))"
+  for s t :: "'a \<Rightarrow>\<^sub>0 'b::add_linorder"
+  by (simp add: poly_mapping_adds_iff adds_except_fun[of "lookup s", where V=V] except.rep_eq)
 
-lift_definition truncate_poly_mapping::"'a set \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::zero) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::zero)"
-  is truncate_fun
-proof (simp only: truncate_fun_def)
-  fix V::"'a set" and s::"'a \<Rightarrow> 'b"
-  assume fin: "finite {x. s x \<noteq> 0}"
-  have "finite {_. 0 \<noteq> 0}" by simp
-  from finite_neq_0[OF fin this, of "\<lambda>x t f. (if x \<in> V then t else f)"]
-    show "finite {x. (if x \<in> V then s x else 0) \<noteq> 0}" by simp
-qed
-
-lemma sub_keys_iff: "sub_keys V s \<longleftrightarrow> sub_supp V (lookup s)"
-  unfolding sub_keys_def sub_supp_def supp_fun_def by (transfer, rule)
-
-lemma lookup_truncate_fun: "lookup (truncate_poly_mapping V s) = truncate_fun V (lookup s)"
-  by (fact truncate_poly_mapping.rep_eq)
-
-lemma sub_keys_univ: "sub_keys (UNIV::'a set) s"
-  by (simp only: sub_keys_iff, fact sub_supp_univ)
-
-lemma sub_keys_empty: "sub_keys {} s = (s = 0)"
-  by (simp only: sub_keys_iff poly_mapping_eq_iff lookup_zero_fun, fact sub_supp_empty)
-
-lemma sub_keys_truncate: "sub_keys V (truncate_poly_mapping V s)"
-  by (simp only: sub_keys_iff lookup_truncate_fun, fact sub_supp_truncate)
-
-lemma sub_keys_union_add:
-  fixes V U::"'a set" and s t::"'a \<Rightarrow>\<^sub>0 'b::monoid_add"
-  assumes "sub_keys V s" and "sub_keys U t"
-  shows "sub_keys (V \<union> U) (s + t)"
-  using assms by (simp only: sub_keys_iff lookup_plus_fun, elim sub_supp_union_add)
-
-lemma adds_insert_keys:
-  fixes s t::"'a \<Rightarrow>\<^sub>0 'b::add_linorder"
-  assumes "sub_keys (insert v V) s" and "sub_keys (insert v V) t"
-  shows "s adds t = (truncate_poly_mapping V s adds truncate_poly_mapping V t \<and> lookup s v adds lookup t v)"
-  using assms by (simp only: sub_keys_iff poly_mapping_adds_iff lookup_truncate_fun, elim adds_insert_supp)
+lemma adds_except_singleton:
+  "s adds t \<longleftrightarrow> (except s {v} adds except t {v} \<and> lookup s v adds lookup t v)"
+  for s t :: "'a \<Rightarrow>\<^sub>0 'b::add_linorder"
+  by (simp add: poly_mapping_adds_iff adds_except_fun_singleton[of "lookup s", where v=v] except.rep_eq)
 
 subsubsection \<open>Dickson's lemma for power-products in finitely many indeterminates\<close>
 
@@ -2190,14 +2384,14 @@ end (* countable *)
 
 lemma Dickson_poly_mapping:
   assumes "finite V"
-  shows "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b::add_wellorder. sub_keys V x}"
+  shows "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b::add_wellorder. keys x \<subseteq> V}"
 proof (rule almost_full_onI)
   fix seq::"nat \<Rightarrow> 'a \<Rightarrow>\<^sub>0 'b"
-  assume a: "\<forall>i. seq i \<in> {x::'a \<Rightarrow>\<^sub>0 'b. sub_keys V x}"
+  assume a: "\<forall>i. seq i \<in> {x::'a \<Rightarrow>\<^sub>0 'b. keys x \<subseteq> V}"
   define seq' where "seq' = (\<lambda>i. lookup (seq i))"
-  from assms have "almost_full_on (adds) {x::'a \<Rightarrow> 'b. sub_supp V x}" by (rule Dickson_fun)
-  moreover from a have "\<And>i. seq' i \<in> {x::'a \<Rightarrow> 'b. sub_supp V x}"
-    unfolding seq'_def sub_keys_def sub_supp_def keys_eq_supp by auto
+  from assms have "almost_full_on (adds) {x::'a \<Rightarrow> 'b. supp_fun x \<subseteq> V}" by (rule Dickson_fun)
+  moreover from a have "\<And>i. seq' i \<in> {x::'a \<Rightarrow> 'b. supp_fun x \<subseteq> V}"
+    by (auto simp: seq'_def keys_eq_supp)
   ultimately obtain i j where "i < j" and "seq' i adds seq' j" by (rule almost_full_onD)
   from this(2) have "seq i adds seq j" by (simp add: seq'_def poly_mapping_adds_iff)
   with \<open>i < j\<close> show "good (adds) seq" by (rule goodI)
@@ -2234,8 +2428,8 @@ lemma dickson_grading_varnum:
 proof (rule dickson_gradingI, fact varnum_plus)
   fix m::nat
   let ?V = "{x. elem_index x < m}"
-  have "{x::'a \<Rightarrow>\<^sub>0 'b. varnum x \<le> m} \<subseteq> {x. sub_keys ?V x}"
-  proof (rule, simp add: sub_keys_def, intro subsetI, simp)
+  have "{x::'a \<Rightarrow>\<^sub>0 'b. varnum x \<le> m} \<subseteq> {x. keys x \<subseteq> ?V}"
+  proof (rule, simp, intro subsetI, simp)
     fix t::"'a \<Rightarrow>\<^sub>0 'b" and x
     assume "x \<in> keys t"
     hence "elem_index x < varnum t" by (rule elem_index_less_varnum)
@@ -2245,7 +2439,7 @@ proof (rule dickson_gradingI, fact varnum_plus)
   thus "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. varnum x \<le> m}"
   proof (rule almost_full_on_subset)
     have "finite ?V" by (fact finite_nat_seg)
-    thus "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. sub_keys ?V x}" by (rule Dickson_poly_mapping)
+    thus "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. keys x \<subseteq> ?V}" by (rule Dickson_poly_mapping)
   qed
 qed
 
@@ -2255,8 +2449,8 @@ instance poly_mapping :: (countable, add_wellorder) graded_dickson_powerprod
 instance poly_mapping :: (finite, add_wellorder) dickson_powerprod
 proof
   have "finite (UNIV::'a set)" by simp
-  hence "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. sub_keys UNIV x}" by (rule Dickson_poly_mapping)
-  thus "almost_full_on (adds) (UNIV::('a \<Rightarrow>\<^sub>0 'b) set)" by (simp add: sub_keys_univ)
+  hence "almost_full_on (adds) {x::'a \<Rightarrow>\<^sub>0 'b. keys x \<subseteq> UNIV}" by (rule Dickson_poly_mapping)
+  thus "almost_full_on (adds) (UNIV::('a \<Rightarrow>\<^sub>0 'b) set)" by simp
 qed
 
 subsubsection \<open>Lexicographic Term Order\<close>

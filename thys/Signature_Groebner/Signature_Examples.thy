@@ -8,23 +8,23 @@ begin
 
 subsection \<open>Setup\<close>
 
-lift_definition truncate_pp :: "'a set \<Rightarrow> ('a, 'b) pp \<Rightarrow> ('a, 'b::zero) pp" is truncate_poly_mapping .
+lift_definition except_pp :: "('a, 'b) pp \<Rightarrow> 'a set \<Rightarrow> ('a, 'b::zero) pp" is except .
 
 lemma hom_grading_varnum_pp: "hom_grading (varnum_pp::('a::countable, 'b::add_wellorder) pp \<Rightarrow> nat)"
 proof -
-  define f where "f = (\<lambda>n. (truncate_pp {x. elem_index x < n})::_ \<Rightarrow> ('a, 'b) pp)"
+  define f where "f = (\<lambda>n t. (except_pp t (- {x. elem_index x < n}))::('a, 'b) pp)"
   show ?thesis unfolding hom_grading_def hom_grading_fun_def
   proof (intro exI allI conjI impI)
     fix n s t
-    show "f n (s + t) = f n s + f n t" unfolding f_def by (transfer, rule truncate_poly_mapping_plus)
+    show "f n (s + t) = f n s + f n t" unfolding f_def by transfer (rule except_plus)
   next
     fix n t
     show "varnum_pp (f n t) \<le> n" unfolding f_def
-      by (transfer, simp add: varnum_le_iff sub_keys_def[symmetric] sub_keys_truncate)
+      by transfer (simp add: varnum_le_iff keys_except)
   next
     fix n t
     show "varnum_pp t \<le> n \<Longrightarrow> f n t = t" unfolding f_def
-      by (transfer, simp add: truncate_poly_mapping_id_iff varnum_le_iff)
+      by transfer (auto simp: except_id_iff varnum_le_iff)
   qed
 qed
 
