@@ -278,378 +278,39 @@ next
 qed
 
 subsection \<open>Computing Minimal Bases\<close>
-  
-primrec comp_min_basis_aux :: "('t \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::zero) list" where
-  comp_min_basis_aux_base: "comp_min_basis_aux Nil ys = ys"|
-  comp_min_basis_aux_rec: "comp_min_basis_aux (x # xs) ys =
-    (if (\<exists>q\<in>(set xs \<union> set ys). lt q adds\<^sub>t lt x) then
-      (comp_min_basis_aux xs ys)
-    else
-      (comp_min_basis_aux xs (x # ys))
-    )"
-  
-lemma subset_comp_min_basis_aux: "set ys \<subseteq> set (comp_min_basis_aux xs ys)"
-proof (induct xs arbitrary: ys)
-  case Nil
-  show ?case unfolding comp_min_basis_aux_base ..
-next
-  case (Cons a xs)
-  have "set ys \<subseteq> set (a#ys)" by auto
-  also have "set (a#ys) \<subseteq> set (comp_min_basis_aux xs (a#ys))" by (rule Cons.hyps)
-  finally have "set ys \<subseteq> set (comp_min_basis_aux xs (a#ys))" .
-  moreover have "set ys \<subseteq> set (comp_min_basis_aux xs ys)" by (rule Cons.hyps)
-  ultimately show ?case unfolding comp_min_basis_aux_rec by simp
-qed
-    
-lemma comp_min_basis_aux_subset: "set (comp_min_basis_aux xs ys) \<subseteq> set xs \<union> set ys"
-proof (induct xs arbitrary: ys)
-  case Nil
-  show ?case unfolding comp_min_basis_aux_base by simp
-next
-  case (Cons a xs)
-  from Cons.hyps have "set (comp_min_basis_aux xs ys) \<subseteq> set xs \<union> set ys" .
-  also have "... \<subseteq> set (a#xs) \<union> set ys" by auto
-  finally have c1: "set (comp_min_basis_aux xs ys) \<subseteq> set (a#xs) \<union> set ys" .
-  
-  from Cons.hyps have "set (comp_min_basis_aux xs (a#ys)) \<subseteq> set xs \<union> set (a#ys)" .
-  also have "... = set (a#xs) \<union> set ys" by auto
-  finally have c2: "set (comp_min_basis_aux xs (a#ys)) \<subseteq> set (a#xs) \<union> set ys" .
-  
-  from c1 c2 show ?case unfolding comp_min_basis_aux_rec by simp
-qed
-
-lemmas comp_min_basis_aux_Nil_subset = comp_min_basis_aux_subset[of _ "[]", simplified]
-  
-lemma comp_min_basis_aux_notin:
-  assumes "x \<in> set xs \<union> set ys" and "x \<notin> set (comp_min_basis_aux xs ys)" and "x \<noteq> 0"
-  shows "\<exists>y\<in>set xs \<union> set ys. y \<noteq> 0 \<and> lt y adds\<^sub>t lt x"
-  using assms
-proof (induct xs arbitrary: x ys)
-  case Nil
-  show ?case by (rule, intro conjI, fact, rule adds_term_refl, fact)
-next
-  case (Cons a xs)
-  from Cons(3) show ?case unfolding comp_min_basis_aux_rec
-  proof (simp only: split: if_splits)
-    assume "\<exists>q\<in>set xs \<union> set ys. lt q adds\<^sub>t lt a" and "x \<notin> set (comp_min_basis_aux xs ys)"
-    from Cons(2) have "x = a \<or> x \<in> set xs \<union> set ys" by simp
-    thus ?thesis
-    proof
-      assume "x = a"
-      show ?thesis by (rule, intro conjI, fact, rule adds_term_refl, fact)
-    next
-      assume "x \<in> set xs \<union> set ys"
-      have "\<exists>y\<in>set xs \<union> set ys. y \<noteq> 0 \<and> lt y adds\<^sub>t lt x" by (rule Cons.hyps, fact+)
-      then obtain y where "y \<in> set xs \<union> set ys" and "y \<noteq> 0 \<and> lt y adds\<^sub>t lt x" ..
-      show ?thesis
-      proof (rule, fact)
-        from \<open>y \<in> set xs \<union> set ys\<close> show "y \<in> set (a # xs) \<union> set ys" by simp
-      qed
-    qed
-  next
-    assume "\<not> (\<exists>q\<in>set xs \<union> set ys. lt q adds\<^sub>t lt a)" and
-      "x \<notin> set (comp_min_basis_aux xs (a # ys))"
-    from Cons(2) have "x \<in> set xs \<union> set (a#ys)" by simp
-    have "\<exists>y\<in>set xs \<union> set (a#ys). y \<noteq> 0 \<and> lt y adds\<^sub>t lt x" by (rule Cons.hyps, fact+)
-    then obtain y where "y \<in> set xs \<union> set (a#ys)" and "y \<noteq> 0 \<and> lt y adds\<^sub>t lt x" ..
-    show ?thesis
-    proof (rule, fact)
-      from \<open>y \<in> set xs \<union> set (a#ys)\<close> show "y \<in> set (a # xs) \<union> set ys" by simp
-    qed
-  qed
-qed
-
-lemma comp_min_basis_aux_adds:
-  assumes pin: "p \<in> set xs"
-    and "\<And>x. x \<in> set xs \<union> set ys \<Longrightarrow> x \<noteq> 0"
-    and "\<And>x y. x \<in> set xs \<union> set ys \<Longrightarrow> y \<in> set ys \<Longrightarrow> x \<noteq> y \<Longrightarrow> \<not> lt x adds\<^sub>t lt y"
-    and "\<And>x y. x \<in> set xs \<union> set ys \<Longrightarrow> y \<in> set xs \<union> set ys \<Longrightarrow> x \<noteq> y \<Longrightarrow> lt x \<noteq> lt y"
-  shows "\<exists>q\<in>set (comp_min_basis_aux xs ys). lt q adds\<^sub>t lt p"
-  using assms
-proof (induct xs arbitrary: p ys)
-  case Nil
-  from \<open>p \<in> set []\<close> show ?case by simp
-next
-  case (Cons a xs)
-  let ?A = "set (a # xs) \<union> set ys"
-  let ?B = "set xs \<union> set ys"
-  let ?C = "set xs \<union> set (a # ys)"
-  have "?C = ?A" by simp
-  have "?B \<subseteq> ?A" by auto
-  have "\<And>x. x \<in> ?B \<Longrightarrow> x \<noteq> 0" by (auto simp add: \<open>?B \<subseteq> ?A\<close> Cons(3))
-  have "\<And>x y. x \<in> ?B \<Longrightarrow> y \<in> set ys \<Longrightarrow> x \<noteq> y \<Longrightarrow> \<not> lt x adds\<^sub>t lt y"
-    by (auto simp add: \<open>?B \<subseteq> ?A\<close> Cons(4))
-  have "\<And>x y. x \<in> set xs \<union> set ys \<Longrightarrow> y \<in> set xs \<union> set ys \<Longrightarrow> x \<noteq> y \<Longrightarrow> lt x \<noteq> lt y"
-    by (auto simp add: \<open>?B \<subseteq> ?A\<close> Cons(5))
-      
-  from \<open>p \<in> set (a # xs)\<close> have "p \<in> ?A" ..
-  hence "p \<noteq> 0" by (rule Cons(3))
-  from \<open>p \<in> set (a#xs)\<close> have "p = a \<or> p \<in> set xs" by auto
-  thus ?case
-  proof
-    assume "p = a"
-    with \<open>p \<noteq> 0\<close> have "a \<noteq> 0" by simp
-    show ?case
-    proof (cases "\<exists>q\<in>?B. lt q adds\<^sub>t lt a")
-      case True
-      then obtain q where "q \<in> ?B" and "lt q adds\<^sub>t lt a" ..
-      from True have eq: "comp_min_basis_aux (a # xs) ys = comp_min_basis_aux xs ys"
-        unfolding comp_min_basis_aux_rec by simp
-      from \<open>q \<in> ?B\<close> show ?thesis
-      proof
-        assume "q \<in> set xs"
-        have "\<exists>q1\<in>set (comp_min_basis_aux xs ys). lt q1 adds\<^sub>t lt q" by (rule Cons.hyps, fact+)
-        then obtain q1 where "q1 \<in> set (comp_min_basis_aux xs ys)" and "lt q1 adds\<^sub>t lt q" ..
-        show ?thesis
-        proof
-          show "q1 \<in> set (comp_min_basis_aux (a # xs) ys)" unfolding eq by fact
-        next
-          from \<open>lt q1 adds\<^sub>t lt q\<close> \<open>lt q adds\<^sub>t lt a\<close> show "lt q1 adds\<^sub>t lt p" unfolding \<open>p = a\<close>
-            by (rule adds_term_trans)
-        qed
-      next
-        assume "q \<in> set ys"
-        have "q \<in> set (comp_min_basis_aux xs ys)" by (rule, fact \<open>q \<in> set ys\<close>, rule subset_comp_min_basis_aux)
-        show ?thesis
-        proof
-          show "q \<in> set (comp_min_basis_aux (a # xs) ys)" unfolding eq by fact
-       next
-          from \<open>lt q adds\<^sub>t lt a\<close> show "lt q adds\<^sub>t lt p" unfolding \<open>p = a\<close> .
-        qed
-      qed
-    next
-      case False
-      show ?thesis
-      proof
-        have "a \<in> set (comp_min_basis_aux xs (a#ys))"
-        proof
-          show "a \<in> set (a#ys)" by simp
-        next
-          show "set (a # ys) \<subseteq> set (comp_min_basis_aux xs (a # ys))" by (rule subset_comp_min_basis_aux)
-        qed
-        with \<open>a \<noteq> 0\<close> False show "a \<in> set (comp_min_basis_aux (a # xs) ys)"
-          unfolding comp_min_basis_aux_rec by auto
-      next
-        show "lt a adds\<^sub>t lt p" unfolding \<open>p = a\<close> by (rule adds_term_refl)
-      qed
-    qed
-  next
-    assume "p \<in> set xs"
-    have "\<exists>q\<in>set (comp_min_basis_aux xs ys). lt q adds\<^sub>t lt p" by (rule Cons.hyps, fact+)
-    then obtain q where qin: "q \<in> set (comp_min_basis_aux xs ys)" and "lt q adds\<^sub>t lt p" ..
-    show ?case
-    proof (cases "\<exists>q\<in>?B. lt q adds\<^sub>t lt a")
-      case True
-      hence eq: "comp_min_basis_aux (a # xs) ys = comp_min_basis_aux xs ys"
-        unfolding comp_min_basis_aux_rec by simp
-      show ?thesis unfolding eq by (rule, fact \<open>lt q adds\<^sub>t lt p\<close>, fact)
-    next
-      case False
-      hence eq: "comp_min_basis_aux (a#xs) ys = comp_min_basis_aux xs (a#ys)"
-        unfolding comp_min_basis_aux_rec by auto
-      from False have rl: "\<And>q. q \<in> ?B \<Longrightarrow> \<not> lt q adds\<^sub>t lt a" by auto
-      show ?thesis unfolding eq
-      proof (rule Cons.hyps, fact)
-        fix x
-        assume "x \<in> ?C"
-        thus "x \<noteq> 0" unfolding \<open>?C = ?A\<close> by (rule Cons(3))
-      next
-        fix x y
-        assume "x \<in> ?C"
-        hence "x \<in> ?A" unfolding \<open>?C = ?A\<close> .
-        hence "x \<noteq> 0" by (rule Cons(3))
-        assume "x \<noteq> y"
-        assume "y \<in> set (a # ys)"
-        hence "y = a \<or> y \<in> set ys" by simp
-        thus "\<not> lt x adds\<^sub>t lt y"
-        proof
-          assume "y = a"
-          show ?thesis unfolding \<open>y = a\<close>
-          proof (rule rl)
-            from \<open>x \<in> ?A\<close> have "x = a \<or> x \<in> ?B" by simp
-            thus "x \<in> ?B"
-            proof
-              assume "x = a"
-              with \<open>x \<noteq> y\<close> show ?thesis unfolding \<open>y = a\<close> ..
-            qed
-          qed
-        next
-          assume "y \<in> set ys"
-          from \<open>x \<in> ?A\<close> this \<open>x \<noteq> y\<close> show ?thesis by (rule Cons(4))
-        qed
-      next
-        fix x y
-        assume "x \<in> ?C" and "y \<in> ?C" and "x \<noteq> y"
-        thus "lt x \<noteq> lt y" unfolding \<open>?C = ?A\<close> by (rule Cons(5))
-      qed
-    qed
-  qed
-qed
-
-lemma comp_min_basis_aux_Nil_adds:
-  assumes "p \<in> set xs" and "0 \<notin> set xs"
-    and "\<And>x y. x \<in> set xs \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<noteq> y \<Longrightarrow> lt x \<noteq> lt y"
-  obtains q where "q \<in> set (comp_min_basis_aux xs [])" and "lt q adds\<^sub>t lt p"
-proof -
-  from assms(1) have "\<exists>q\<in>set (comp_min_basis_aux xs []). lt q adds\<^sub>t lt p"
-  proof (rule comp_min_basis_aux_adds)
-    fix x
-    assume "x \<in> set xs \<union> set []"
-    hence "x \<in> set xs" by simp
-    with assms(2) show "x \<noteq> 0" by auto
-  next
-    fix x y :: "'t \<Rightarrow>\<^sub>0 'b"
-    assume "y \<in> set []"
-    thus "\<not> lt x adds\<^sub>t lt y" by simp
-  next
-    fix x y :: "'t \<Rightarrow>\<^sub>0 'b"
-    assume "x \<in> set xs \<union> set []"
-    hence x: "x \<in> set xs" by simp
-    assume "y \<in> set xs \<union> set []"
-    hence y: "y \<in> set xs" by simp
-    assume "x \<noteq> y"
-    from x y this show "lt x \<noteq> lt y" by (rule assms(3))
-  qed
-  then obtain q where "q \<in> set (comp_min_basis_aux xs [])" and "lt q adds\<^sub>t lt p" ..
-  thus ?thesis ..
-qed
-  
-lemma comp_min_basis_aux_distinct:
-  assumes "distinct ys"
-  shows "distinct (comp_min_basis_aux xs ys)"
-  using assms
-proof (induct xs arbitrary: ys)
-  case Nil
-  thus ?case unfolding comp_min_basis_aux_base .
-next
-  case (Cons a xs)
-  show ?case unfolding comp_min_basis_aux_rec
-  proof (split if_split, intro conjI impI, rule Cons.hyps, rule Cons(2))
-    assume a: "\<not> (\<exists>q\<in>set xs \<union> set ys. lt q adds\<^sub>t lt a)"
-    show "distinct (comp_min_basis_aux xs (a # ys))"
-    proof (rule Cons.hyps)
-      have "a \<notin> set ys"
-      proof
-        assume "a \<in> set ys"
-        hence "a \<in> set xs \<union> set ys" by simp
-        have "\<exists>q\<in>set xs \<union> set ys. lt q adds\<^sub>t lt a"
-        proof
-          show "lt a adds\<^sub>t lt a" by (rule adds_term_refl)
-        qed fact
-        with a show False ..
-      qed
-      with Cons(2) show "distinct (a # ys)" by simp
-    qed
-  qed
-qed
-
-lemma comp_min_basis_aux_Nil_is_red:
-  assumes "is_red (set xs) f" and "0 \<notin> set xs"
-    and "\<And>x y. x \<in> set xs \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<noteq> y \<Longrightarrow> lt x \<noteq> lt y"
-  shows "is_red (set (comp_min_basis_aux xs [])) f"
-proof -
-  from assms(1) obtain x t where "x \<in> set xs" and "t \<in> keys f" and "lt x adds\<^sub>t t"
-    by (rule is_red_addsE)
-  from \<open>x \<in> set xs\<close> assms(2) assms(3) obtain y
-    where yin: "y \<in> set (comp_min_basis_aux xs [])" and "lt y adds\<^sub>t lt x"
-    by (rule comp_min_basis_aux_Nil_adds)
-  show ?thesis
-  proof (rule is_red_addsI)
-    from \<open>lt y adds\<^sub>t lt x\<close> \<open>lt x adds\<^sub>t t\<close> show "lt y adds\<^sub>t t" by (rule adds_term_trans)
-  next
-    from comp_min_basis_aux_Nil_subset yin have "y \<in> set xs" ..
-    with assms(2) show "y \<noteq> 0" by auto
-  qed fact+
-qed
-  
-definition comp_min_basis_pre :: "('t \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::zero) list" where
-  "comp_min_basis_pre xs = remdups_wrt lt (filter (\<lambda>x. x \<noteq> 0) xs)"
-  
-lemma comp_min_basis_pre_subset: "set (comp_min_basis_pre xs) \<subseteq> set xs"
-  unfolding comp_min_basis_pre_def by (meson filter_is_subset subset_remdups_wrt subset_trans)
-
-lemma comp_min_basis_pre_nonzero:
-  assumes "p \<in> set (comp_min_basis_pre xs)"
-  shows "p \<noteq> 0"
-  using assms unfolding comp_min_basis_pre_def using subset_remdups_wrt by fastforce
-
-lemma comp_min_basis_pre_nonzero': "0 \<notin> set (comp_min_basis_pre xs)"
-  using comp_min_basis_pre_nonzero by fastforce
-
-lemma comp_min_basis_pre_distinct_lt:
-  assumes pin: "p \<in> set (comp_min_basis_pre xs)" and qin: "q \<in> set (comp_min_basis_pre xs)" and "p \<noteq> q"
-  shows "lt p \<noteq> lt q"
-  using assms unfolding comp_min_basis_pre_def by (rule remdups_wrt_distinct_wrt)
-
-lemma comp_min_basis_pre_lt:
-  assumes "p \<in> set xs" and "p \<noteq> 0"
-  obtains q where "q \<in> set (comp_min_basis_pre xs)" and "lt q = lt p"
-proof -
-  from assms have pin: "p \<in> set (filter (\<lambda>x. x \<noteq> 0) xs)" (is "p \<in> set ?ys") by simp
-  hence "lt p \<in> lt ` set ?ys" by simp
-  also have "... = lt ` set (remdups_wrt lt ?ys)" by (simp add: set_remdups_wrt)
-  finally have "lt p \<in> lt ` set (remdups_wrt lt ?ys)" .
-  then obtain q where qin: "q \<in> set (remdups_wrt lt ?ys)" and "lt q = lt p" by auto
-  show ?thesis
-  proof
-    from qin show "q \<in> set (comp_min_basis_pre xs)" unfolding comp_min_basis_pre_def .
-  qed fact
-qed
-
-lemma comp_min_basis_pre_is_red:
-  assumes "is_red (set xs) f"
-  shows "is_red (set (comp_min_basis_pre xs)) f"
-proof -
-  from assms obtain x t where "x \<in> set xs" and "t \<in> keys f" and "x \<noteq> 0" and "lt x adds\<^sub>t t"
-    by (rule is_red_addsE)
-  from \<open>x \<in> set xs\<close> \<open>x \<noteq> 0\<close> obtain y where yin: "y \<in> set (comp_min_basis_pre xs)" and "lt y = lt x"
-    by (rule comp_min_basis_pre_lt)
-  show ?thesis
-  proof (rule is_red_addsI)
-    from \<open>lt x adds\<^sub>t t\<close> show "lt y adds\<^sub>t t" by (simp only: \<open>lt y = lt x\<close>)
-  next
-    from yin show "y \<noteq> 0" by (rule comp_min_basis_pre_nonzero)
-  qed fact+
-qed
 
 definition comp_min_basis :: "('t \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::zero) list" where
-  "comp_min_basis xs = comp_min_basis_aux (comp_min_basis_pre xs) []"
-  
-lemma comp_min_basis_subset_comp_min_basis_pre: "set (comp_min_basis xs) \<subseteq> set (comp_min_basis_pre xs)"
-  unfolding comp_min_basis_def by (rule comp_min_basis_aux_Nil_subset)
-  
+  "comp_min_basis xs = filter_min (\<lambda>x y. lt x adds\<^sub>t lt y) (filter (\<lambda>x. x \<noteq> 0) xs)"
+
+lemma comp_min_basis_subset': "set (comp_min_basis xs) \<subseteq> {x \<in> set xs. x \<noteq> 0}"
+proof -
+  have "set (comp_min_basis xs) \<subseteq> set (filter (\<lambda>x. x \<noteq> 0) xs)"
+    unfolding comp_min_basis_def by (rule filter_min_subset)
+  also have "\<dots> = {x \<in> set xs. x \<noteq> 0}" by simp
+  finally show ?thesis .
+qed
+
 lemma comp_min_basis_subset: "set (comp_min_basis xs) \<subseteq> set xs"
 proof -
-  have "set (comp_min_basis xs) \<subseteq> set (comp_min_basis_pre xs)"
-    by (rule comp_min_basis_subset_comp_min_basis_pre)
-  also have "... \<subseteq> set xs" by (rule comp_min_basis_pre_subset)
+  have "set (comp_min_basis xs) \<subseteq> {x \<in> set xs. x \<noteq> 0}" by (rule comp_min_basis_subset')
+  also have "... \<subseteq> set xs" by simp
   finally show ?thesis .
 qed
     
-lemma comp_min_basis_nonzero:
-  assumes "p \<in> set (comp_min_basis xs)"
-  shows "p \<noteq> 0"
-by (rule comp_min_basis_pre_nonzero, rule, fact assms, fact comp_min_basis_subset_comp_min_basis_pre)
+lemma comp_min_basis_nonzero: "p \<in> set (comp_min_basis xs) \<Longrightarrow> p \<noteq> 0"
+  using comp_min_basis_subset' by blast
 
 lemma comp_min_basis_adds:
   assumes "p \<in> set xs" and "p \<noteq> 0"
   obtains q where "q \<in> set (comp_min_basis xs)" and "lt q adds\<^sub>t lt p"
 proof -
-  from assms obtain q1 where q1_in: "q1 \<in> set (comp_min_basis_pre xs)" and "lt q1 = lt p"
-    by (rule comp_min_basis_pre_lt)
-  have "0 \<notin> set (comp_min_basis_pre xs)" using comp_min_basis_pre_nonzero by auto
-  with q1_in obtain q where "q \<in> set (comp_min_basis_aux (comp_min_basis_pre xs) [])" and "lt q adds\<^sub>t lt q1"
-  proof (rule comp_min_basis_aux_Nil_adds)
-    fix x y
-    assume "x \<in> set (comp_min_basis_pre xs)" and "y \<in> set (comp_min_basis_pre xs)" and "x \<noteq> y"
-    thus "lt x \<noteq> lt y" by (rule comp_min_basis_pre_distinct_lt)
-  qed
-  show ?thesis
-  proof
-    show "q \<in> set (comp_min_basis xs)" unfolding comp_min_basis_def by fact
-  next
-    from \<open>lt q adds\<^sub>t lt q1\<close> show "lt q adds\<^sub>t lt p" unfolding \<open>lt q1 = lt p\<close> .
-  qed
+  let ?rel = "(\<lambda>x y. lt x adds\<^sub>t lt y)"
+  have "transp ?rel" by (auto intro!: transpI dest: adds_term_trans)
+  moreover have "reflp ?rel" by (simp add: reflp_def adds_term_refl)
+  moreover from assms have "p \<in> set (filter (\<lambda>x. x \<noteq> 0) xs)" by simp
+  ultimately obtain q where "q \<in> set (comp_min_basis xs)" and "lt q adds\<^sub>t lt p"
+    unfolding comp_min_basis_def by (rule filter_min_relE)
+  thus ?thesis ..
 qed
   
 lemma comp_min_basis_is_red:
@@ -668,195 +329,30 @@ proof -
   qed fact+
 qed
 
-end (* ordered_term *)
-
-context gd_term
-begin
-
-(* Actually, we do not need "gd_term" here, but only "ulcs_powerprod". *)
-
-lemma comp_min_basis_aux_nadds:
-  assumes "p \<in> set (comp_min_basis_aux xs ys)" and "q \<in> set xs \<union> set ys" and "p \<noteq> q"
-    and "\<And>x. x \<in> set xs \<union> set ys \<Longrightarrow> x \<noteq> 0"
-    and "\<And>x y. x \<in> set xs \<union> set ys \<Longrightarrow> y \<in> set ys \<Longrightarrow> x \<noteq> y \<Longrightarrow> \<not> lt x adds\<^sub>t lt y"
-    and "\<And>x y. x \<in> set xs \<union> set ys \<Longrightarrow> y \<in> set xs \<union> set ys \<Longrightarrow> x \<noteq> y \<Longrightarrow> lt x \<noteq> lt y"
-  shows "\<not> lt q adds\<^sub>t lt p"
-  using assms
-proof (induct xs arbitrary: p q ys)
-  case Nil
-  from Nil(1) Nil(2) have "p \<in> set ys" "q \<in> set ys" unfolding comp_min_basis_aux_base by simp_all
-  show ?case
-  proof (rule Nil(5))
-    from \<open>q \<in> set ys\<close> show "q \<in> set [] \<union> set ys" by simp
-  next
-    from \<open>p \<noteq> q\<close> show "q \<noteq> p" by simp
-  qed fact
-next
-  case (Cons a xs)
-  let ?A = "set (a#xs) \<union> set ys"
-  let ?B = "set xs \<union> set ys"
-  let ?C = "set xs \<union> set (a#ys)"
-  from Cons(2) show ?case unfolding comp_min_basis_aux_rec
-  proof (simp only: split: if_splits)
-    assume a1: "\<exists>q\<in>?B. lt q adds\<^sub>t lt a"
-      and "p \<in> set (comp_min_basis_aux xs ys)"
-    have "\<And>x. x \<in> ?B \<Longrightarrow> x \<noteq> 0"
-    proof -
-      fix x
-      assume "x \<in> ?B"
-      hence "x \<in> ?A" by simp
-      thus "x \<noteq> 0" by (rule Cons(5))
-    qed
-    have "\<And>x y. x \<in> ?B \<Longrightarrow> y \<in> set ys \<Longrightarrow> x \<noteq> y \<Longrightarrow> \<not> lt x adds\<^sub>t lt y"
-    proof -
-      fix x y
-      assume "x \<in> ?B"
-      hence "x \<in> ?A" by simp
-      assume "y \<in> set ys" and "x \<noteq> y"
-      show "\<not> lt x adds\<^sub>t lt y" by (rule Cons(6), fact+)
-    qed
-    have "\<And>x y. x \<in> ?B \<Longrightarrow> y \<in> ?B \<Longrightarrow> x \<noteq> y \<Longrightarrow> lt x \<noteq> lt y"
-    proof -
-      fix x y
-      assume "x \<in> ?B"
-      hence "x \<in> ?A" by simp
-      assume "y \<in> ?B"
-      hence "y \<in> ?A" by simp
-      assume "x \<noteq> y"
-      show "lt x \<noteq> lt y" by (rule Cons(7), fact+)
-    qed
-    have "q \<noteq> 0" by (rule Cons(5), fact)
-    from Cons(3) have "q = a \<or> q \<in> set xs \<union> set ys" by simp
-    thus ?thesis
-    proof
-      assume "q = a"
-      from a1 show ?thesis
-      proof
-        fix q1
-        assume "q1 \<in> set xs \<union> set ys" and "lt q1 adds\<^sub>t lt a"
-        show ?thesis
-        proof (cases "p = q1")
-          case True
-          from \<open>lt q1 adds\<^sub>t lt a\<close> have "lt p adds\<^sub>t lt q" unfolding True \<open>q = a\<close> .
-          show ?thesis
-          proof
-            assume "lt q adds\<^sub>t lt p"
-            with \<open>lt p adds\<^sub>t lt q\<close> have "lt p = lt q" by (rule adds_term_antisym)
-            moreover have "lt p \<noteq> lt q"
-            proof (rule Cons(7))
-              from comp_min_basis_aux_subset Cons(2) show "p \<in> set (a # xs) \<union> set ys" by blast
-            qed fact+
-            ultimately show False by simp
-          qed
-        next
-          case False
-          have "\<not> lt q1 adds\<^sub>t lt p" by (rule Cons.hyps, fact+)
-          show ?thesis
-          proof
-            from \<open>lt q1 adds\<^sub>t lt a\<close> have "lt q1 adds\<^sub>t lt q" unfolding \<open>q = a\<close> .
-            also assume "lt q adds\<^sub>t lt p"
-            finally show False using \<open>\<not> lt q1 adds\<^sub>t lt p\<close> by simp
-          qed
-        qed
-      qed
-    next
-      assume "q \<in> set xs \<union> set ys"
-      show ?thesis by (rule Cons.hyps, fact+)
-    qed
-  next
-    assume a: "\<not> (\<exists>q\<in>?B. lt q adds\<^sub>t lt a)"
-      and "p \<in> set (comp_min_basis_aux xs (a # ys))"
-    show ?thesis
-    proof (rule Cons.hyps, fact)
-      from \<open>q \<in> ?A\<close> show "q \<in> ?C" by simp
-    next
-      fix x
-      assume "x \<in> ?C"
-      hence "x \<in> ?A" by simp
-      thus "x \<noteq> 0" by (rule Cons(5))
-    next
-      fix x y
-      assume "x \<in> ?C"
-      hence "x \<in> ?A" by simp
-      assume "x \<noteq> y"
-      assume "y \<in> set (a # ys)"
-      hence "y = a \<or> y \<in> set ys" by simp
-      thus "\<not> lt x adds\<^sub>t lt y"
-      proof
-        assume "y = a"
-        from \<open>x \<in> ?A\<close> have "x = a \<or> x \<in> ?B" by simp
-        thus ?thesis
-        proof
-          assume "x = a"
-          with \<open>x \<noteq> y\<close> show ?thesis unfolding \<open>y = a\<close> ..
-        next
-          assume "x \<in> ?B"
-          from a have "\<And>q. q \<in> ?B \<Longrightarrow> q \<noteq> 0 \<Longrightarrow> \<not> lt q adds\<^sub>t lt a" by auto
-          thus ?thesis unfolding \<open>y = a\<close>
-          proof this
-            show "x \<in> ?B" by fact
-          next
-            show "x \<noteq> 0" by (rule Cons(5), fact)
-          qed
-        qed
-      next
-        assume "y \<in> set ys"
-        show ?thesis by (rule Cons(6), fact+)
-      qed
-    next
-      fix x y
-      assume "x \<in> ?C"
-      hence "x \<in> ?A" by simp
-      assume "y \<in> ?C"
-      hence "y \<in> ?A" by simp
-      assume "x \<noteq> y"
-      show "lt x \<noteq> lt y" by (rule Cons(7), fact+)
-    qed fact
-  qed
-qed
-
-lemma comp_min_basis_aux_Nil_nadds:
-  assumes "p \<in> set (comp_min_basis_aux xs [])" and "q \<in> set xs" and "p \<noteq> q" and "0 \<notin> set xs"
-    and "\<And>x y. x \<in> set xs \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<noteq> y \<Longrightarrow> lt x \<noteq> lt y"
-  shows "\<not> lt q adds\<^sub>t lt p"
-  using assms(1) _ assms(3)
-proof (rule comp_min_basis_aux_nadds)
-  from assms(2) show "q \<in> set xs \<union> set []" by simp
-next
-  fix x
-  assume "x \<in> set xs \<union> set []"
-  with assms(4) show "x \<noteq> 0" by auto
-next
-  fix x y :: "'t \<Rightarrow>\<^sub>0 'b"
-  assume "y \<in> set []"
-  thus "\<not> lt x adds\<^sub>t lt y" by simp
-next
-  fix x y
-  assume "x \<in> set xs \<union> set []" and "y \<in> set xs \<union> set []"
-  hence "x \<in> set xs" and "y \<in> set xs" by simp_all
-  moreover assume "x \<noteq> y"
-  ultimately show "lt x \<noteq> lt y" by (rule assms(5))
-qed
-
 lemma comp_min_basis_nadds:
   assumes "p \<in> set (comp_min_basis xs)" and "q \<in> set (comp_min_basis xs)" and "p \<noteq> q"
   shows "\<not> lt q adds\<^sub>t lt p"
-proof (rule comp_min_basis_aux_Nil_nadds)
-  from assms(1) show "p \<in> set (comp_min_basis_aux (comp_min_basis_pre xs) [])"
-    unfolding comp_min_basis_def .
-next
-  show "q \<in> set (comp_min_basis_pre xs)"
-    by (rule, fact assms(2), fact comp_min_basis_subset_comp_min_basis_pre)
-qed (fact, fact comp_min_basis_pre_nonzero', fact comp_min_basis_pre_distinct_lt)
+proof
+  have "transp (\<lambda>x y. lt x adds\<^sub>t lt y)" by (auto intro!: transpI dest: adds_term_trans)
+  moreover note assms(2, 1)
+  moreover assume "lt q adds\<^sub>t lt p"
+  ultimately have "q = p" unfolding comp_min_basis_def by (rule filter_min_minimal)
+  with assms(3) show False by simp
+qed
 
 lemma comp_min_basis_is_minimal_basis: "is_minimal_basis (set (comp_min_basis xs))"
   by (rule is_minimal_basisI, rule comp_min_basis_nonzero, assumption, rule comp_min_basis_nadds,
       assumption+, simp)
 
 lemma comp_min_basis_distinct: "distinct (comp_min_basis xs)"
-  unfolding comp_min_basis_def by (rule comp_min_basis_aux_distinct, simp)
+  unfolding comp_min_basis_def by (rule filter_min_distinct) (simp add: reflp_def adds_term_refl)
+
+end (* ordered_term *)
 
 subsection \<open>Auto-Reduction\<close>
+
+context gd_term
+begin
 
 lemma is_minimal_basis_trd_is_minimal_basis:
   assumes "is_minimal_basis (set (x # xs))" and "x \<notin> set xs"

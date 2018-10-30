@@ -257,117 +257,36 @@ qed
 
 subsubsection \<open>Computing Minimal Bases\<close>
 
-lemma comp_min_basis_aux_Nil_GB:
-  assumes "is_Groebner_basis (set xs)" and "0 \<notin> set xs"
-    and "\<And>x y. x \<in> set xs \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<noteq> y \<Longrightarrow> lt x \<noteq> lt y"
-  shows "is_Groebner_basis (set (comp_min_basis_aux xs []))"
-  unfolding GB_alt_2_finite[OF finite_set]
-proof (intro ballI impI)
-  fix f
-  assume fin: "f \<in> pmdl (set (comp_min_basis_aux xs []))" and "f \<noteq> 0"
-  have "f \<in> pmdl (set xs)" by (rule, fact fin, rule pmdl.module_mono, fact comp_min_basis_aux_Nil_subset)
-  show "is_red (set (comp_min_basis_aux xs [])) f"
-  proof (rule comp_min_basis_aux_Nil_is_red)
-    from assms \<open>f \<noteq> 0\<close> \<open>f \<in> pmdl (set xs)\<close> show "is_red (set xs) f"
-      by (simp add: GB_alt_2_finite[OF finite_set])
-  qed fact+
-qed
-
-lemma comp_min_basis_aux_Nil_pmdl:
-  assumes "is_Groebner_basis (set xs)" and "0 \<notin> set xs"
-    and "\<And>x y. x \<in> set xs \<Longrightarrow> y \<in> set xs \<Longrightarrow> x \<noteq> y \<Longrightarrow> lt x \<noteq> lt y"
-  shows "pmdl (set (comp_min_basis_aux xs [])) = pmdl (set xs)"
-proof -
-  show ?thesis
-  proof (rule, rule pmdl.module_mono, fact comp_min_basis_aux_Nil_subset)
-    show "pmdl (set xs) \<subseteq> pmdl (set (comp_min_basis_aux xs []))"
-    proof
-      fix f
-      assume "f \<in> pmdl (set xs)"
-      show "f \<in> pmdl (set (comp_min_basis_aux xs []))"
-      proof (cases "f = 0")
-        case True
-        show ?thesis unfolding True by (rule pmdl.module_0)
-      next
-        case False
-        let ?xs = "comp_min_basis_aux xs []"
-        have "(red (set ?xs))\<^sup>*\<^sup>* f 0"
-        proof (rule is_red_implies_0_red_finite[OF finite_set], rule pmdl.module_mono,
-                fact comp_min_basis_aux_Nil_subset)
-          fix q
-          assume "q \<noteq> 0" and "q \<in> pmdl (set xs)"
-          with assms(1) have "is_red (set xs) q" by (rule GB_imp_reducibility)
-          from this assms(2) assms(3) show "is_red (set ?xs) q" by (rule comp_min_basis_aux_Nil_is_red)
-        qed fact
-        thus ?thesis by (rule red_rtranclp_0_in_pmdl)
-      qed
-    qed
-  qed
-qed
-
-lemma comp_min_basis_pre_GB:
+lemma comp_min_basis_pmdl:
   assumes "is_Groebner_basis (set xs)"
-  shows "is_Groebner_basis (set (comp_min_basis_pre xs))"
-  unfolding GB_alt_3_finite[OF finite_set]
-proof (intro ballI impI)
+  shows "pmdl (set (comp_min_basis xs)) = pmdl (set xs)" (is "pmdl (set ?ys) = _")
+  using finite_set
+proof (rule pmdl_eqI_adds_lt_finite)
+  from comp_min_basis_subset show *: "pmdl (set ?ys) \<subseteq> pmdl (set xs)" by (rule pmdl.module_mono)
+next
   fix f
-  assume fin: "f \<in> pmdl (set (comp_min_basis_pre xs))" and "f \<noteq> 0"
-  have "f \<in> pmdl (set xs)" by (rule, fact fin, rule pmdl.module_mono, rule comp_min_basis_pre_subset)
-  from assms this \<open>f \<noteq> 0\<close> obtain g where "g \<in> set xs" and "g \<noteq> 0" and "lt g adds\<^sub>t lt f" by (rule GB_adds_lt)
-  from this(1) this(2) obtain g' where g'_in: "g' \<in> set (comp_min_basis_pre xs)" and "lt g' = lt g"
-    by (rule comp_min_basis_pre_lt)
-  from this(1) show "\<exists>g\<in>set (comp_min_basis_pre xs). g \<noteq> 0 \<and> lt g adds\<^sub>t lt f"
-  proof (rule, intro conjI)
-    from g'_in show "g' \<noteq> 0" by (rule comp_min_basis_pre_nonzero)
-  next
-    from \<open>lt g adds\<^sub>t lt f\<close> show "lt g' adds\<^sub>t lt f" by (simp only: \<open>lt g' = lt g\<close>)
-  qed
-qed
-
-lemma comp_min_basis_pre_pmdl:
-  assumes "is_Groebner_basis (set xs)"
-  shows "pmdl (set (comp_min_basis_pre xs)) = pmdl (set xs)"
-proof -
-  show ?thesis
-  proof (rule, rule pmdl.module_mono, rule comp_min_basis_pre_subset, rule)
-    fix f
-    assume "f \<in> pmdl (set xs)"
-    show "f \<in> pmdl (set (comp_min_basis_pre xs))"
-    proof (cases "f = 0")
-      case True
-      show ?thesis unfolding True by (rule pmdl.module_0)
-    next
-      case False
-      let ?xs = "comp_min_basis_pre xs"
-      have "(red (set ?xs))\<^sup>*\<^sup>* f 0"
-      proof (rule is_red_implies_0_red_finite[OF finite_set], rule pmdl.module_mono, rule comp_min_basis_pre_subset)
-        fix q
-        assume "q \<noteq> 0" and "q \<in> pmdl (set xs)"
-        with assms have "is_red (set xs) q" by (rule GB_imp_reducibility)
-        thus "is_red (set ?xs) q" by (rule comp_min_basis_pre_is_red)
-      qed fact
-      thus ?thesis by (rule red_rtranclp_0_in_pmdl)
-    qed
-  qed
+  assume "f \<in> pmdl (set xs)" and "f \<noteq> 0"
+  with assms obtain g where "g \<in> set xs" and "g \<noteq> 0" and 1: "lt g adds\<^sub>t lt f" by (rule GB_adds_lt)
+  from this(1, 2) obtain g' where "g' \<in> set ?ys" and 2: "lt g' adds\<^sub>t lt g"
+    by (rule comp_min_basis_adds)
+  note this(1)
+  moreover from this have "g' \<noteq> 0" by (rule comp_min_basis_nonzero)
+  moreover from 2 1 have "lt g' adds\<^sub>t lt f" by (rule adds_term_trans)
+  ultimately show "\<exists>g\<in>set ?ys. g \<noteq> 0 \<and> lt g adds\<^sub>t lt f" by blast
 qed
 
 lemma comp_min_basis_GB:
   assumes "is_Groebner_basis (set xs)"
-  shows "is_Groebner_basis (set (comp_min_basis xs))"
-  unfolding comp_min_basis_def
-  by (rule comp_min_basis_aux_Nil_GB, rule comp_min_basis_pre_GB, fact,
-      fact comp_min_basis_pre_nonzero', fact comp_min_basis_pre_distinct_lt)
-
-lemma comp_min_basis_pmdl:
-  assumes "is_Groebner_basis (set xs)"
-  shows "pmdl (set (comp_min_basis xs)) = pmdl (set xs)"
-proof -
-  have "pmdl (set (comp_min_basis xs)) = pmdl (set (comp_min_basis_pre xs))"
-    unfolding comp_min_basis_def
-    by (rule comp_min_basis_aux_Nil_pmdl, rule comp_min_basis_pre_GB, fact,
-        fact comp_min_basis_pre_nonzero', fact comp_min_basis_pre_distinct_lt)
-  also from assms have "... = pmdl (set xs)" by (rule comp_min_basis_pre_pmdl)
-  finally show ?thesis .
+  shows "is_Groebner_basis (set (comp_min_basis xs))" (is "is_Groebner_basis (set ?ys)")
+  unfolding GB_alt_2_finite[OF finite_set]
+proof (intro ballI impI)
+  fix f
+  assume "f \<in> pmdl (set ?ys)"
+  also from assms have "\<dots> = pmdl (set xs)" by (rule comp_min_basis_pmdl)
+  finally have "f \<in> pmdl (set xs)" .
+  moreover assume "f \<noteq> 0"
+  ultimately have "is_red (set xs) f" using assms unfolding GB_alt_2_finite[OF finite_set] by blast
+  thus "is_red (set ?ys) f" by (rule comp_min_basis_is_red)
 qed
 
 subsubsection \<open>Computing Reduced Bases\<close>

@@ -69,8 +69,6 @@ global_interpretation punit': gd_powerprod "ord_pp_punit cmp_term" "ord_pp_stric
   and gb_red_punit = punit'.punit.gb_red
   and gb_aux_punit = punit'.punit.gb_aux_punit
   and gb_punit = punit'.punit.gb_punit \<comment>\<open>Faster, because incorporates product criterion.\<close>
-  and comp_min_basis_pre_punit = punit'.punit.comp_min_basis_pre
-  and comp_min_basis_aux_punit = punit'.punit.comp_min_basis_aux
   and comp_min_basis_punit = punit'.punit.comp_min_basis
   and comp_red_basis_aux_punit = punit'.punit.comp_red_basis_aux
   and comp_red_basis_punit = punit'.punit.comp_red_basis
