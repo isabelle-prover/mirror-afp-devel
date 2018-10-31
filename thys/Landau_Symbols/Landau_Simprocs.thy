@@ -29,7 +29,7 @@ setup {*
         fn context =>
           Named_Theorems.get (Context.proof_of context) @{named_theorems landau_simp}
           |> map_filter eq_rule)
-  end;
+  end
 *}
 
 

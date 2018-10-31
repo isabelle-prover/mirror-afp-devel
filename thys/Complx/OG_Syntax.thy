@@ -414,7 +414,7 @@ print_translation \<open> let
     (@{const_syntax oghoare}, K oghoare_tr),
     (@{const_syntax oghoare_seq}, K oghoare_seq_tr)]
 
-  end;
+  end
 \<close>
 
 end

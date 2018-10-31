@@ -460,7 +460,7 @@ parse_translation \<open>
   in
    [(@{syntax_const "_may_modify"}, may_modify_tr),
     (@{syntax_const "_may_not_modify"}, may_not_modify_tr)]
-  end;
+  end
 \<close>
 
 
@@ -498,7 +498,7 @@ print_translation \<open>
   in
     [(@{const_syntax mex}, K may_modify_tr'),
      (@{const_syntax meq}, K may_not_modify_tr')]
-  end;
+  end
 \<close>
 
 

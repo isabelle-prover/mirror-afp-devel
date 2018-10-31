@@ -76,7 +76,7 @@ lemma F'in_alt: "F'in A1 A2 A3 = Fin A3 A1 A2"
   apply (rule Collect_cong)
   by (tactic {* BNF_Tactics.mk_rotate_eq_tac @{context}
   (BNF_Util.rtac @{context} @{thm refl}) @{thm trans} @{thm conj_assoc} @{thm conj_commute} @{thm conj_cong}
-  [1, 2, 3] [3, 1, 2] 1;*})
+  [1, 2, 3] [3, 1, 2] 1*})
 
 definition F'rel where
   "F'rel R1 R2 R3 = (BNF_Def.Grp (F'in (Collect (case_prod R1)) (Collect (case_prod R2)) (Collect (case_prod R3))) (F'map fst fst fst))^--1 OO
