@@ -3531,7 +3531,7 @@ author = Andreas Halkjær From <http://www.student.dtu.dk/~s144442/>
 topic = Logic
 date = 2018-10-29
 notify = s144442@student.dtu.dk
-abstract = 
+abstract =
   This work is a formalization of epistemic logic with countably many
   agents. It includes proofs of soundness and completeness for the axiom
   system K. The completeness proof is based on the textbook
@@ -3622,7 +3622,7 @@ author = Alexander Bentkamp <https://www.cs.vu.nl/~abp290/>
 topic = Logic/Rewriting
 date = 2018-10-19
 notify = a.bentkamp@vu.nl
-abstract = 
+abstract =
   This Isabelle/HOL formalization defines the Embedding Path Order (EPO)
   for higher-order terms without lambda-abstraction and proves many
   useful properties about it. In contrast to the lambda-free recursive
@@ -4615,7 +4615,7 @@ notify = bertram.felgenhauer@uibk.ac.at
 title = Gödel's God in Isabelle/HOL
 author = Christoph Benzmüller <http://page.mi.fu-berlin.de/cbenzmueller/>, Bruno Woltzenlogel Paleo <http://www.logic.at/staff/bruno/>
 date = 2013-11-12
-topic = Logic
+topic = Logic/Philosophy
 abstract = Dana Scott's version of Gödel's proof of God's existence is formalized in quantified
 	modal logic KB (QML KB).
 	QML KB is modeled as a fragment of classical higher-order logic (HOL);
@@ -4625,7 +4625,7 @@ notify = lp15@cam.ac.uk, c.benzmueller@fu-berlin.de
 [Types_Tableaus_and_Goedels_God]
 title = Types, Tableaus and Gödel’s God in Isabelle/HOL
 author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://www.christoph-benzmueller.de>
-topic = Logic
+topic = Logic/Philosophy
 date = 2017-05-01
 notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
 abstract =
@@ -4641,10 +4641,23 @@ abstract =
   We then utilize the embedded logic for the formalisation of
   Fitting's argument. (See also the earlier AFP entry ``Gödel's God in Isabelle/HOL''.)
 
+[GewirthPGCProof]
+title = Formalisation and Evaluation of Alan Gewirth's Proof for the Principle of Generic Consistency in Isabelle/HOL
+author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://christoph-benzmueller.de>
+topic = Logic/Philosophy
+date = 2018-10-30
+notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
+abstract =
+  An ambitious ethical theory ---Alan Gewirth's "Principle of
+  Generic Consistency"--- is encoded and analysed in Isabelle/HOL.
+  Gewirth's theory has stirred much attention in philosophy and
+  ethics and has been proposed as a potential means to bound the impact
+  of artificial general intelligence.
+
 [Lowe_Ontological_Argument]
 title = Computer-assisted Reconstruction and Assessment of E. J. Lowe's Modal Ontological Argument
 author = David Fuenmayor <mailto:davfuenmayor@gmail.com>, Christoph Benzmüller <http://www.christoph-benzmueller.de>
-topic = Logic
+topic = Logic/Philosophy
 date = 2017-09-21
 notify = davfuenmayor@gmail.com, c.benzmueller@gmail.com
 abstract =
@@ -4660,7 +4673,7 @@ abstract =
 [AnselmGod]
 title = Anselm's God in Isabelle/HOL
 author = Ben Blumson <https://philpapers.org/profile/805>
-topic = Logic
+topic = Logic/Philosophy
 date = 2017-09-06
 notify = benblumson@gmail.com
 abstract =
@@ -6617,7 +6630,7 @@ abstract =
 [PLM]
 title = Representation and Partial Automation of the Principia Logico-Metaphysica in Isabelle/HOL
 author = Daniel Kirchner <mailto:daniel@ekpyron.org>
-topic = Logic
+topic = Logic/Philosophy
 date = 2017-09-17
 notify = daniel@ekpyron.org
 abstract =
@@ -7437,7 +7450,7 @@ author = Fabian Immler <http://home.in.tum.de/~immler/>, Bohua Zhan <http://lcs.
 topic = Mathematics/Analysis, Mathematics/Topology
 date = 2018-10-22
 notify = immler@in.tum.de, bzhan@ios.ac.cn
-abstract = 
+abstract =
   We formalize the definition and basic properties of smooth manifolds
   in Isabelle/HOL. Concepts covered include partition of unity, tangent
   and cotangent spaces, and the fundamental theorem of path integrals.

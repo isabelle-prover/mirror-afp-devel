@@ -9,7 +9,20 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>29 Oct 2018 00:00:00 +0000</pubDate>
+    <pubDate>30 Oct 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Formalisation and Evaluation of Alan Gewirth's Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
+              <link>https://www.isa-afp.org/entries/GewirthPGCProof.html</link>
+       <guid>https://www.isa-afp.org/entries/GewirthPGCProof.html</guid>
+       <dc:creator> David Fuenmayor, Christoph Benzmüller       </dc:creator>
+       <pubDate>30 Oct 2018 00:00:00 +0000</pubDate>
+       <description>
+An ambitious ethical theory ---Alan Gewirth&#39;s &#34;Principle of
+Generic Consistency&#34;--- is encoded and analysed in Isabelle/HOL.
+Gewirth&#39;s theory has stirred much attention in philosophy and
+ethics and has been proposed as a potential means to bound the impact
+of artificial general intelligence.</description>
+    </item>
     <item>
        <title>Epistemic Logic</title>
               <link>https://www.isa-afp.org/entries/Epistemic_Logic.html</link>
@@ -565,20 +578,6 @@ supports the uniform representation of a wide range of possibilistic
 information-flow properties and provides support for the verification
 of such properties via unwinding results and compositionality results.
 We provide a formalization of this framework in Isabelle/HOL.</description>
-    </item>
-    <item>
-       <title>WebAssembly</title>
-              <link>https://www.isa-afp.org/entries/WebAssembly.html</link>
-       <guid>https://www.isa-afp.org/entries/WebAssembly.html</guid>
-       <dc:creator> Conrad Watt       </dc:creator>
-       <pubDate>29 Apr 2018 00:00:00 +0000</pubDate>
-       <description>
-This is a mechanised specification of the WebAssembly language, drawn
-mainly from the previously published paper formalisation of Haas et
-al. Also included is a full proof of soundness of the type system,
-together with a verified type checker and interpreter. We include only
-a partial procedure for the extraction of the type checker and
-interpreter here. For more details, please see our paper in CPP 2018.</description>
     </item>
   </channel>
 </rss>
