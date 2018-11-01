@@ -148,7 +148,7 @@ by auto
 text \<open>The termination of @{const opt_bst2} is not completely obvious.
 We first need to establish some functional properties of the terminating computations.
 We start by showing that the root of the returned tree is always between \<open>left\<close> and \<open>right\<close>.
-This is essentially equivalent to proving that @{prop "left \<le> right"}
+This is essentially equivalent to proving that \<open>left \<le> right\<close>
 because otherwise @{const argmin} is applied to \<open>[]\<close>, which is undefined.\<close>
 
 lemma left_le_right:
