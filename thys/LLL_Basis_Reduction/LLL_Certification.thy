@@ -186,8 +186,8 @@ code_printing
   import Prelude (Maybe(Nothing, Just), Integer);
   import External_LLL (external_lll);
 
-  lll_extern :: [[Integer]] -> Maybe ([[Integer]], [[Integer]], [[Integer]]);
-  lll_extern fs = Just (external_lll fs);\<close>
+  lll_extern :: [[Integer]] -> Maybe ([[Integer]], ([[Integer]], [[Integer]]));
+  lll_extern fs = case external_lll fs of (g,u,v) -> Just (g,(u,v));\<close>
 
 code_reserved Haskell LLL_Extern External_LLL lll_extern external_lll
 
