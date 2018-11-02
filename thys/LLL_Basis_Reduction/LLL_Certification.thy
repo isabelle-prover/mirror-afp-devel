@@ -89,6 +89,7 @@ lemma LLL_change_basis: assumes gs: "set gs \<subseteq> carrier_vec n"
   and U2: "U2 \<in> carrier_mat m m" 
   and prod1: "mat_of_rows n fs_init = U1 * mat_of_rows n gs" 
   and prod2: "mat_of_rows n gs = U2 * mat_of_rows n fs_init" 
+  and missing: False
 shows "lattice_of gs = lattice_of fs_init" "LLL_with_assms n m gs \<alpha>" 
 proof -
   let ?i = "of_int :: int \<Rightarrow> int" 
@@ -105,8 +106,94 @@ proof -
   proof
     show "4/3 \<le> \<alpha>" by (rule \<alpha>)
     show "length gs = m" by fact
-    show "lin_indep gs" using lin_dep 
-      oops
+    show "lin_indep gs" using lin_dep missing by auto
+    text \<open>TODO: continue without missing\<close>
+  qed
+qed
 end
+
+consts lll_oracle :: "integer list list \<Rightarrow> (integer list list \<times> integer list list \<times> integer list list) option" 
+
+definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
+  "short_vector_external \<alpha> fs = (let sv = short_vector \<alpha>;
+    fsi = map (map integer_of_int o list_of_vec) fs;
+    n = dim_vec (hd fs);
+    m = length fs in 
+  case lll_oracle fsi of 
+    None \<Rightarrow> sv fs
+  | Some (gsi, u1i, u2i) \<Rightarrow> let 
+     u1 = mat_of_rows_list m (map (map int_of_integer) u1i);
+     u2 = mat_of_rows_list m (map (map int_of_integer) u2i);
+     gs = (map (vec_of_list o map int_of_integer) gsi);
+     Fs = mat_of_rows n fs;
+     Gs = mat_of_rows n gs in 
+     if (dim_row u1 = m \<and> dim_col u1 = m \<and> dim_row u2 = m \<and> dim_col u2 = m 
+         \<and> length gs = m \<and> Fs = u1 * Gs \<and> Gs = u2 * Fs \<and> (\<forall> gi \<in> set gs. dim_vec gi = n))
+      then sv gs
+      else Code.abort (STR ''error in external lll invocation'') (\<lambda> _. sv fs))" 
+
+instance bool :: prime_card
+  by (standard, auto)
+
+
+context LLL_with_assms
+begin
+
+lemma short_vector_external: assumes res: "short_vector_external \<alpha> fs_init = v"
+  and m0: "m \<noteq> 0"
+  and missing: False
+shows "v \<in> carrier_vec n"
+  "v \<in> L - {0\<^sub>v n}"
+  "h \<in> L - {0\<^sub>v n} \<Longrightarrow> rat_of_int (sq_norm v) \<le> \<alpha> ^ (m - 1) * rat_of_int (sq_norm h)"
+  "v \<noteq> 0\<^sub>v j"
+proof (atomize(full), goal_cases)
+  case 1
+  show ?case
+  proof (cases "short_vector \<alpha> fs_init = v")
+    case True
+    from short_vector[OF True m0] show ?thesis by auto
+  next
+    case False
+    from m0 fs_init len have dim_fs_n: "dim_vec (hd fs_init) = n" by (cases fs_init, auto)
+    let ?ext = "lll_oracle (map (map integer_of_int \<circ> list_of_vec) fs_init)" 
+    note res = res[unfolded short_vector_external_def Let_def Code.abort_def]
+    from res False obtain gsi u1i u2i where ext: "?ext = Some (gsi, u1i, u2i)" by (cases ?ext, auto)
+    define u1 where "u1 = mat_of_rows_list m (map (map int_of_integer) u1i)"
+    define u2 where "u2 = mat_of_rows_list m (map (map int_of_integer) u2i)" 
+    define gs where "gs = map (vec_of_list o map int_of_integer) gsi" 
+    note res = res[unfolded ext option.simps split len dim_fs_n, folded u1_def u2_def gs_def]
+    from res False 
+    have u1: "u1 \<in> carrier_mat m m" 
+      and u2: "u2 \<in> carrier_mat m m" 
+      and len_gs: "length gs = m" 
+      and prod1: "mat_of_rows n fs_init = u1 * mat_of_rows n gs" 
+      and prod2: "mat_of_rows n gs = u2 * mat_of_rows n fs_init" 
+      and gs_v: "short_vector \<alpha> gs = v" 
+      and gs: "set gs \<subseteq> carrier_vec n" 
+      by (auto split: if_splits)
+    from LLL_change_basis[OF gs len_gs u1 u2 prod1 prod2 missing]
+    have id: "lattice_of gs = lattice_of fs_init" 
+      and assms: "LLL_with_assms n m gs \<alpha>" by auto
+    from LLL_with_assms.short_vector[OF assms gs_v m0]
+    show ?thesis using id by (simp add: LLL.L_def)
+  qed
+qed
+
+end
+
+code_printing
+  code_module "LLL_Extern" \<rightharpoonup> (Haskell) \<open>
+  import Prelude (Maybe(Nothing, Just), Integer);
+  import External_LLL (external_lll);
+
+  lll_extern :: [[Integer]] -> Maybe ([[Integer]], [[Integer]], [[Integer]]);
+  lll_extern fs = Just (external_lll fs);\<close>
+
+code_reserved Haskell LLL_Extern External_LLL lll_extern external_lll
+
+code_printing
+ constant lll_oracle \<rightharpoonup> (Haskell) "LLL'_Extern.lll'_extern"
+
+(* export_code short_vector_external in Haskell module_name LLL file "~/Code" *)
 
 end
