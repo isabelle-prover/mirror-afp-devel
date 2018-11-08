@@ -6,7 +6,7 @@ begin
 
 subsection \<open>Auxiliary Theorems\<close>
 
-lemma INF_Union_eq: "(INF x:\<Union>A. f x) = (INF a:A. INF x:a. f x)" for f :: "_ \<Rightarrow> 'a::complete_lattice"
+lemma INF_Union_eq: "(INF x\<in>\<Union>A. f x) = (INF a\<in>A. INF x\<in>a. f x)" for f :: "_ \<Rightarrow> 'a::complete_lattice"
   by (auto intro!: antisym INF_greatest intro: INF_lower2)
 
 lemma lift_option_eq_None: "lift_option f A B = None \<longleftrightarrow> (A \<noteq> None \<longrightarrow> B = None)"

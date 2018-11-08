@@ -59,23 +59,23 @@ lemma sup_plus:
   assumes nonempty:"R \<noteq> {}"
   assumes bddf:"bdd_above (f ` R)"
   assumes bddg:"bdd_above (g ` R)"
-  shows "(SUP x:R. f x  + g x) \<le> (SUP x:R. f x) + (SUP x:R. g x)"
+  shows "(SUP x\<in>R. f x  + g x) \<le> (SUP x\<in>R. f x) + (SUP x\<in>R. g x)"
 proof -
   have bddfg:"bdd_above((\<lambda>x. f x + g x ) ` R)" 
     using bddf bddg apply (auto simp add: bdd_above_def)
     using add_mono_thms_linordered_semiring(1) by blast
-  have eq:"(SUPREMUM R (\<lambda>x. f x + g x) \<le> (SUP x:R. f x) + (SUP x:R. g x)) = (\<forall>x\<in>R. (f x + g x) \<le> (SUP x:R. f x) + (SUP x:R. g x))"
+  have eq:"(SUPREMUM R (\<lambda>x. f x + g x) \<le> (SUP x\<in>R. f x) + (SUP x\<in>R. g x)) = (\<forall>x\<in>R. (f x + g x) \<le> (SUP x\<in>R. f x) + (SUP x\<in>R. g x))"
     apply(rule cSUP_le_iff)
      subgoal by (rule nonempty)
     subgoal by (rule bddfg)
     done
-  have fs:"\<And>x. x \<in> R \<Longrightarrow> f x \<le> (SUP x:R. f x)"
+  have fs:"\<And>x. x \<in> R \<Longrightarrow> f x \<le> (SUP x\<in>R. f x)"
     using bddf 
     by (simp add: cSUP_upper)
-  have gs:"\<And>x. x \<in> R \<Longrightarrow> g x \<le> (SUP x:R. g x)"
+  have gs:"\<And>x. x \<in> R \<Longrightarrow> g x \<le> (SUP x\<in>R. g x)"
     using bddg
     by (simp add: cSUP_upper)
-  have "(\<forall>x\<in>R. (f x + g x) \<le> (SUP x:R. f x) + (SUP x:R. g x))"
+  have "(\<forall>x\<in>R. (f x + g x) \<le> (SUP x\<in>R. f x) + (SUP x\<in>R. g x))"
     apply auto                    
     subgoal for x using fs[of x] gs[of x] by auto
     done
@@ -136,12 +136,12 @@ proof (auto simp add:  LIM_def continuous_on_def)
     have nonempty: "(UNIV::'a set) \<noteq> {}" by auto
     have nonemptyB: "(UNIV::'b set) \<noteq> {}" by auto
     have nonemptyR: "(UNIV::real set) \<noteq> {}" by auto
-    have SUP_leq:"\<And>f::('b \<Rightarrow> real). \<And> g::('b \<Rightarrow> real). \<And> S::'b set. S \<noteq> {} \<Longrightarrow> bdd_above (g ` S) \<Longrightarrow> (\<And>x. x \<in> (S::'b set) \<Longrightarrow> ((f x)::real) \<le> ((g x)::real)) \<Longrightarrow> (SUP x:S. f x) \<le> (SUP x:S. g x)"
+    have SUP_leq:"\<And>f::('b \<Rightarrow> real). \<And> g::('b \<Rightarrow> real). \<And> S::'b set. S \<noteq> {} \<Longrightarrow> bdd_above (g ` S) \<Longrightarrow> (\<And>x. x \<in> (S::'b set) \<Longrightarrow> ((f x)::real) \<le> ((g x)::real)) \<Longrightarrow> (SUP x\<in>S. f x) \<le> (SUP x\<in>S. g x)"
       by(rule cSup_mono, auto)
     have SUP_sum_comm':"\<And>R S f . finite (S::'a set) \<Longrightarrow> (R::'d::metric_space set) \<noteq> {} \<Longrightarrow>
       (\<And>i x. ((f i x)::real) \<ge> 0) \<Longrightarrow>
       (\<And>i. bdd_above (f i ` R)) \<Longrightarrow>
-      (SUP x:R . (\<Sum>i \<in> S. f i x)) \<le> (\<Sum>i \<in> S. (SUP x:R. f i x))"
+      (SUP x\<in>R . (\<Sum>i \<in> S. f i x)) \<le> (\<Sum>i \<in> S. (SUP x\<in>R. f i x))"
     proof -
       fix  R::"'d set" and S ::"('a)set"  and f  ::"'a \<Rightarrow> 'd \<Rightarrow> real"
       assume non:"R \<noteq> {} "
@@ -170,24 +170,24 @@ proof (auto simp add:  LIM_def continuous_on_def)
       show "?thesis R S f" using fin assms
       proof (induct)
         case empty
-        have "((SUP x:R. \<Sum>i\<in>{}. f i x)::real) \<le> (\<Sum>i\<in>{}. SUP a:R. f i a)"   by (simp add: non)
+        have "((SUP x\<in>R. \<Sum>i\<in>{}. f i x)::real) \<le> (\<Sum>i\<in>{}. SUP a\<in>R. f i a)"   by (simp add: non)
         then show ?case by auto
       next
         case (insert x F)
-        have "((SUP xa:R. \<Sum>i\<in>insert x F. f i xa)::real) \<le> (SUP xa:R. f x xa +  (\<Sum>i\<in>F. f i xa))"
+        have "((SUP xa\<in>R. \<Sum>i\<in>insert x F. f i xa)::real) \<le> (SUP xa\<in>R. f x xa +  (\<Sum>i\<in>F. f i xa))"
           using insert.hyps(2) by auto
-        moreover have "...  \<le> (SUP xa: R. f x xa) + (SUP xa:R. (\<Sum>i\<in>F. f i xa))"
+        moreover have "...  \<le> (SUP xa\<in> R. f x xa) + (SUP xa\<in>R. (\<Sum>i\<in>F. f i xa))"
           by(rule sup_plus, rule non, rule bddF, rule bddG)
-        moreover have "... \<le> (SUP xa: R. f x xa) + (\<Sum>i\<in>F. SUP a:R. f i a)"
+        moreover have "... \<le> (SUP xa\<in> R. f x xa) + (\<Sum>i\<in>F. SUP a\<in>R. f i a)"
           using add_le_cancel_left conts insert.hyps(3) by blast
-        moreover have "... \<le> (\<Sum>i\<in>(insert x F). SUP a:R. f i a)"
+        moreover have "... \<le> (\<Sum>i\<in>(insert x F). SUP a\<in>R. f i a)"
           by (simp add: insert.hyps(2))
-        ultimately have "((SUP xa:R. \<Sum>i\<in>insert x F. f i xa)::real) \<le> (\<Sum>i\<in>(insert x F). SUP a:R. f i a)"
+        ultimately have "((SUP xa\<in>R. \<Sum>i\<in>insert x F. f i xa)::real) \<le> (\<Sum>i\<in>(insert x F). SUP a\<in>R. f i a)"
           by linarith
         then show ?case by auto
       qed
     qed
-    have SUP_sum_comm:"\<And>R S y1 y2 . finite (S::'a set) \<Longrightarrow> (R::'b set) \<noteq> {} \<Longrightarrow> (SUP x:R . (\<Sum>i \<in> S. norm(f i y1 x - f i y2 x)/norm(x))) \<le> (\<Sum>i \<in> S. (SUP x:R. norm(f i y1 x - f i y2 x)/norm(x)))"
+    have SUP_sum_comm:"\<And>R S y1 y2 . finite (S::'a set) \<Longrightarrow> (R::'b set) \<noteq> {} \<Longrightarrow> (SUP x\<in>R . (\<Sum>i \<in> S. norm(f i y1 x - f i y2 x)/norm(x))) \<le> (\<Sum>i \<in> S. (SUP x\<in>R. norm(f i y1 x - f i y2 x)/norm(x)))"
       apply(rule SUP_sum_comm')
          apply(auto)[3]
       proof (unfold bdd_above_def)
@@ -215,9 +215,9 @@ proof (auto simp add:  LIM_def continuous_on_def)
         using L2[of "(\<lambda> x. f x x1 y - f x x2 y)" UNIV]
         by (auto simp add: divide_right_mono)
       done
-    have "\<And>i. (SUP y:UNIV.  norm((f i x1 - f i x2) y)/norm(y)) = norm(f i x1 - f i x2)"
+    have "\<And>i. (SUP y\<in>UNIV.  norm((f i x1 - f i x2) y)/norm(y)) = norm(f i x1 - f i x2)"
       by (simp add: onorm_def norm_blinfun.rep_eq)
-    then have each_norm:"\<And>i. (SUP y:UNIV.  norm(f i x1 y - f i x2 y)/norm(y)) = norm(f i x1 - f i x2)"
+    then have each_norm:"\<And>i. (SUP y\<in>UNIV.  norm(f i x1 y - f i x2 y)/norm(y)) = norm(f i x1 - f i x2)"
       by (metis (no_types, lifting) SUP_cong blinfun.diff_left)
     have bounded_linear:"\<And>i. bounded_linear (\<lambda>y. f i x1 y - f i x2 y)" 
       by (simp add: blinfun.bounded_linear_right bounded_linear_sub)
@@ -263,15 +263,15 @@ proof (auto simp add:  LIM_def continuous_on_def)
     qed 
     have "dist (?f x2) (?f x1) = norm((?f x2) - (?f x1))"
       by (simp add: dist_blinfun_def)
-    moreover have "... = (SUP y:UNIV. norm(?f x1 y - ?f x2 y)/norm(y))"
+    moreover have "... = (SUP y\<in>UNIV. norm(?f x1 y - ?f x2 y)/norm(y))"
       by (metis (no_types, lifting) SUP_cong blinfun.diff_left norm_blinfun.rep_eq norm_minus_commute onorm_def)
-    moreover have "... = (SUP y:UNIV. (L2_set (\<lambda>i. norm(f i x1 y - f i x2 y)) UNIV)/norm(y))"
+    moreover have "... = (SUP y\<in>UNIV. (L2_set (\<lambda>i. norm(f i x1 y - f i x2 y)) UNIV)/norm(y))"
       using  euclid by auto
-    moreover have "... \<le> (SUP y:UNIV. (\<Sum>i\<in>UNIV. norm(f i x1 y - f i x2 y))/norm(y))"
+    moreover have "... \<le> (SUP y\<in>UNIV. (\<Sum>i\<in>UNIV. norm(f i x1 y - f i x2 y))/norm(y))"
       using L2' SUP_cong SUP_leq bdd_above by auto
-    moreover have "... = (SUP y:UNIV. (\<Sum>i\<in>UNIV. norm(f i x1 y - f i x2 y)/norm(y)))"
+    moreover have "... = (SUP y\<in>UNIV. (\<Sum>i\<in>UNIV. norm(f i x1 y - f i x2 y)/norm(y)))"
       by (simp add: sum_divide_distrib)
-    moreover have "... \<le> (\<Sum>i\<in>UNIV. (SUP y:UNIV.  norm(f i x1 y - f i x2 y)/norm(y)))"
+    moreover have "... \<le> (\<Sum>i\<in>UNIV. (SUP y\<in>UNIV.  norm(f i x1 y - f i x2 y)/norm(y)))"
       by(rule SUP_sum_comm[OF finite  nonemptyB, of x1 x2]) 
     moreover have "... = (\<Sum>i\<in>UNIV. norm(f i x1 - f i x2))"
       using each_norm by simp

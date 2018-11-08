@@ -155,38 +155,38 @@ begin
         assume A: "u' \<in> init'"
         assume "\<forall> u . sconjunctive (S u)"
         from this have [simp]: "\<And> u . sconjunctive (S u)" by simp
-        from A have [simp]: "\<And> y . S y (INF y' : init'. S' y' x) =  (INF y' : init' . S y (S' y' x))"
+        from A have [simp]: "\<And> y . S y (INF y' \<in> init'. S' y' x) =  (INF y' \<in> init' . S y (S' y' x))"
           by (simp add: sconjunctive_INF_simp)
 
-        have [simp]: "(INF y : init . (INF y' : init' . S y (S' y' x))) \<le> (INF u : zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x))"
+        have [simp]: "(INF y \<in> init . (INF y' \<in> init' . S y (S' y' x))) \<le> (INF u \<in> zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x))"
           proof (rule INF_greatest, auto simp add: zip_set_def)
             fix u :: "'a \<Rightarrow> 'c \<times> 'b"
             assume [simp]: "fst \<circ> u \<in> init"
             assume [simp]: "snd \<circ> u \<in> init'"
-            have "(INF y : init. INF y' : init'. S y (S' y' x)) \<le> (INF y' : init'. S (fst o u) (S' y' x))"
+            have "(INF y \<in> init. INF y' \<in> init'. S y (S' y' x)) \<le> (INF y' \<in> init'. S (fst o u) (S' y' x))"
               by (rule INF_lower, simp)
             also have "... \<le> S (fst o u) (S' (snd o u) x)"
               by (rule INF_lower, simp)
-            finally show "(INF y : init. INF y' : init'. S y (S' y' x)) \<le> S (fst o u) (S' (snd o u) x)"
+            finally show "(INF y \<in> init. INF y' \<in> init'. S y (S' y' x)) \<le> S (fst o u) (S' (snd o u) x)"
               by simp
           qed
-        have [simp]: "(INF u : zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x)) \<le> (INF y : init . (INF y' : init' . S y (S' y' x)))"
+        have [simp]: "(INF u \<in> zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x)) \<le> (INF y \<in> init . (INF y' \<in> init' . S y (S' y' x)))"
           proof (rule INF_greatest, rule INF_greatest)
             fix y :: "'a \<Rightarrow> 'c" and y':: "'a \<Rightarrow> 'b"
             assume [simp]: "y \<in> init"
             assume [simp]: "y' \<in> init'"
-            have "(INF u : zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x)) \<le> S (fst o (y || y')) (S' (snd o (y || y')) x)"
+            have "(INF u \<in> zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x)) \<le> S (fst o (y || y')) (S' (snd o (y || y')) x)"
               by (rule INF_lower, simp)
             also have "... \<le>  S y (S' y' x)"
               by simp
-            finally show "(INF u::'a \<Rightarrow> 'c \<times> 'b:zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x)) \<le> S y (S' y' x)"
+            finally show "(INF u :: 'a \<Rightarrow> 'c \<times> 'b \<in> zip_set init init'. S (fst \<circ> u) (S' (snd \<circ> u) x)) \<le> S y (S' y' x)"
               by simp
           qed
-        have "local_init init S (local_init init' S' x) = (INF y : init. S y (INF y' : init'. S' y' x)) "
+        have "local_init init S (local_init init' S' x) = (INF y \<in> init. S y (INF y' \<in> init'. S' y' x)) "
           by (simp add: local_init_def)
-        also have "... = (INF y : init . (INF y' : init' . S y (S' y' x)))"
+        also have "... = (INF y \<in> init . (INF y' \<in> init' . S y (S' y' x)))"
           by simp
-        also have "... = (INF u : zip_set init init'. S (fst \<circ> u) \<circ> S' (snd \<circ> u)) x"
+        also have "... = (INF u \<in> zip_set init init'. S (fst \<circ> u) \<circ> S' (snd \<circ> u)) x"
          by (rule antisym, auto)
         also have "... = local_init (zip_set init init') (\<lambda> u . (S (fst o u)) o (S' (snd o u))) x"
           by (simp add: local_init_def)

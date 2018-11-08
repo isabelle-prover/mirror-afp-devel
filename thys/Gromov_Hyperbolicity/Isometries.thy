@@ -1715,10 +1715,10 @@ proof -
       using \<open>C \<ge> 0\<close> unfolding infdist_def by auto
   next
     case False
-    then have "(INF x:S. dist (f w) (f x)) \<le> (INF x:S. lambda * dist w x + C)"
+    then have "(INF x\<in>S. dist (f w) (f x)) \<le> (INF x\<in>S. lambda * dist w x + C)"
       apply (rule cINF_superset_mono)
         apply (meson bdd_belowI2 zero_le_dist) using assms by (auto intro!: quasi_isometry_onD(1)[OF assms(1)])
-    also have "... = (INF t:(dist w)`S. lambda * t + C)"
+    also have "... = (INF t\<in>(dist w)`S. lambda * t + C)"
       by auto
     also have "... = lambda * Inf ((dist w)`S) + C"
       apply (rule continuous_at_Inf_mono[symmetric])
@@ -1734,12 +1734,12 @@ proof -
     case False
     then have "(1/lambda) * infdist w S - C = (1/lambda) * Inf ((dist w)`S) - C"
       unfolding infdist_def by auto
-    also have "... = (INF t:(dist w)`S. (1/lambda) * t - C)"
+    also have "... = (INF t\<in>(dist w)`S. (1/lambda) * t - C)"
       apply (rule continuous_at_Inf_mono)
       unfolding mono_def using \<open>lambda \<ge> 1\<close> False by (auto simp add: divide_simps intro!: continuous_intros)
-    also have "... = (INF x:S. (1/lambda) * dist w x - C)"
+    also have "... = (INF x\<in>S. (1/lambda) * dist w x - C)"
       by auto
-    also have "... \<le> (INF x:S. dist (f w) (f x))"
+    also have "... \<le> (INF x\<in>S. dist (f w) (f x))"
       apply (rule cINF_superset_mono[OF False]) apply (rule bdd_belowI2[of _ "-C"])
       using assms \<open>lambda \<ge> 1\<close> apply simp apply simp apply (rule quasi_isometry_onD(2)[OF assms(1)])
       using assms by auto

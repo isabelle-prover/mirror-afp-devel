@@ -123,7 +123,7 @@ definition point_dist_def:
   "dist A B =  sqrt ((abscissa (A - B))^2 + (ordinate (A - B))^2)"
 
 definition
-  "(uniformity :: (point \<times> point) filter) = (INF e:{0 <..}. principal {(x, y). dist x y < e})"
+  "(uniformity :: (point \<times> point) filter) = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
 definition
   "open (S :: point set) = (\<forall>x\<in>S. \<forall>\<^sub>F (x', y) in uniformity. x' = x \<longrightarrow> y \<in> S)"

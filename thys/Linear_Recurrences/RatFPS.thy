@@ -761,43 +761,43 @@ lemma ratfps_lcm_altdef: "lcm (f :: 'a :: {field,factorial_ring_gcd} ratfps) g =
 
 lemma ratfps_Gcd:
   assumes "A - {0} \<noteq> {}"
-  shows   "Gcd A = ratfps_of_poly (monom 1 (INF f:A-{0}. ratfps_subdegree f))"
+  shows   "Gcd A = ratfps_of_poly (monom 1 (INF f\<in>A-{0}. ratfps_subdegree f))"
 proof (rule sym, rule GcdI)
   fix f assume "f \<in> A"
-  thus "ratfps_of_poly (monom 1 (INF f:A - {0}. ratfps_subdegree f)) dvd f"
+  thus "ratfps_of_poly (monom 1 (INF f\<in>A - {0}. ratfps_subdegree f)) dvd f"
     by (cases "f = 0") (auto simp: ratfps_dvd_code ratfps_of_poly_eq_0_iff ratfps_subdegree_altdef
                           subdegree_fps_of_poly intro!: cINF_lower)
 next
   fix d assume d: "\<And>f. f \<in> A \<Longrightarrow> d dvd f"
   from assms obtain f where "f \<in> A - {0}" by auto
   with d[of f] have [simp]: "d \<noteq> 0" by auto
-  from d assms have "ratfps_subdegree d \<le> (INF f:A-{0}. ratfps_subdegree f)"
+  from d assms have "ratfps_subdegree d \<le> (INF f\<in>A-{0}. ratfps_subdegree f)"
     by (intro cINF_greatest) (auto simp: ratfps_dvd_code)
-  with d assms show "d dvd ratfps_of_poly (monom 1 (INF f:A-{0}. ratfps_subdegree f))" 
+  with d assms show "d dvd ratfps_of_poly (monom 1 (INF f\<in>A-{0}. ratfps_subdegree f))" 
     by (simp add: ratfps_dvd_code ratfps_subdegree_altdef subdegree_fps_of_poly)
 qed (simp_all add: ratfps_subdegree_altdef subdegree_fps_of_poly normalize_ratfps_def)
 
 lemma ratfps_Gcd_altdef: "Gcd (A :: 'a :: {field,factorial_ring_gcd} ratfps set) =
-  (if A \<subseteq> {0} then 0 else ratfps_of_poly (monom 1 (INF f:A-{0}. ratfps_subdegree f)))"
+  (if A \<subseteq> {0} then 0 else ratfps_of_poly (monom 1 (INF f\<in>A-{0}. ratfps_subdegree f)))"
   using ratfps_Gcd by auto
 
 lemma ratfps_Lcm:
   assumes "A \<noteq> {}" "0 \<notin> A" "bdd_above (ratfps_subdegree`A)"
-  shows   "Lcm A = ratfps_of_poly (monom 1 (SUP f:A. ratfps_subdegree f))"
+  shows   "Lcm A = ratfps_of_poly (monom 1 (SUP f\<in>A. ratfps_subdegree f))"
 proof (rule sym, rule LcmI)
   fix f assume "f \<in> A"
   moreover from assms(3) have "bdd_above (ratfps_subdegree ` A)" by auto
-  ultimately show "f dvd ratfps_of_poly (monom 1 (SUP f:A. ratfps_subdegree f))" using assms(2)
+  ultimately show "f dvd ratfps_of_poly (monom 1 (SUP f\<in>A. ratfps_subdegree f))" using assms(2)
     by (cases "f = 0") (auto simp: ratfps_dvd_code ratfps_of_poly_eq_0_iff subdegree_fps_of_poly 
                           ratfps_subdegree_altdef [abs_def] intro!: cSUP_upper)
 next
   fix d assume d: "\<And>f. f \<in> A \<Longrightarrow> f dvd d"
   from assms obtain f where f: "f \<in> A" "f \<noteq> 0" by auto
-  show "ratfps_of_poly (monom 1 (SUP f:A. ratfps_subdegree f)) dvd d"
+  show "ratfps_of_poly (monom 1 (SUP f\<in>A. ratfps_subdegree f)) dvd d"
   proof (cases "d = 0")
     assume "d \<noteq> 0"
     moreover from d have "\<And>f. f \<in> A \<Longrightarrow> f \<noteq> 0 \<Longrightarrow> f dvd d" by blast
-    ultimately have "ratfps_subdegree d \<ge> (SUP f:A. ratfps_subdegree f)" using assms
+    ultimately have "ratfps_subdegree d \<ge> (SUP f\<in>A. ratfps_subdegree f)" using assms
       by (intro cSUP_least) (auto simp: ratfps_dvd_code)
     with \<open>d \<noteq> 0\<close> show ?thesis by (simp add: ratfps_dvd_code ratfps_of_poly_eq_0_iff 
           ratfps_subdegree_altdef subdegree_fps_of_poly)
@@ -807,7 +807,7 @@ qed (simp_all add: ratfps_subdegree_altdef subdegree_fps_of_poly normalize_ratfp
 lemma ratfps_Lcm_altdef:
   "Lcm (A :: 'a :: {field,factorial_ring_gcd} ratfps set) =
      (if 0 \<in> A \<or> \<not>bdd_above (ratfps_subdegree`A) then 0 else
-      if A = {} then 1 else ratfps_of_poly (monom 1 (SUP f:A. ratfps_subdegree f)))"
+      if A = {} then 1 else ratfps_of_poly (monom 1 (SUP f\<in>A. ratfps_subdegree f)))"
 proof (cases "bdd_above (ratfps_subdegree`A)")
   assume unbounded: "\<not>bdd_above (ratfps_subdegree`A)"
   have "Lcm A = 0"

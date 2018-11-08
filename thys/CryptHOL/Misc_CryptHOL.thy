@@ -504,7 +504,7 @@ subsection \<open> Extended naturals \<close>
 lemma idiff_enat_eq_enat_iff: "x - enat n = enat m \<longleftrightarrow> (\<exists>k. x = enat k \<and> k - n = m)"
 by(cases x) simp_all
 
-lemma eSuc_SUP: "A \<noteq> {} \<Longrightarrow> eSuc (SUPREMUM A f) = (SUP x:A. eSuc (f x))"
+lemma eSuc_SUP: "A \<noteq> {} \<Longrightarrow> eSuc (SUPREMUM A f) = (SUP x\<in>A. eSuc (f x))"
 by(subst eSuc_Sup)(simp_all)
 
 lemma ereal_of_enat_1: "ereal_of_enat 1 = ereal 1"
@@ -520,16 +520,16 @@ by(cases a; cases b) simp_all
 lemma enat_sub_add: "y \<le> x \<Longrightarrow> x - y + z = x + z - (y :: enat)"
 by(cases x; cases y; cases z) simp_all
 
-lemma SUP_enat_eq_0_iff [simp]: "(SUP x:A. f x) = (0 :: enat) \<longleftrightarrow> (\<forall>x\<in>A. f x = 0)"
+lemma SUP_enat_eq_0_iff [simp]: "(SUP x\<in>A. f x) = (0 :: enat) \<longleftrightarrow> (\<forall>x\<in>A. f x = 0)"
 by(simp add: bot_enat_def[symmetric])
 
 lemma SUP_enat_add_left:
   assumes "I \<noteq> {}"
-  shows "(SUP i:I. f i + c :: enat) = (SUP i:I. f i) + c" (is "?lhs = ?rhs")
+  shows "(SUP i\<in>I. f i + c :: enat) = (SUP i\<in>I. f i) + c" (is "?lhs = ?rhs")
 proof(cases "c", rule antisym)
   case (enat n)
   show "?lhs \<le> ?rhs" by(auto 4 3 intro: SUP_upper intro: SUP_least)
-  have "(SUP i:I. f i) \<le> ?lhs - c" using enat 
+  have "(SUP i\<in>I. f i) \<le> ?lhs - c" using enat 
     by(auto simp add: enat_add_sub_same2 intro!: SUP_least order_trans[OF _ SUP_upper[THEN enat_minus_mono1]])
   note add_right_mono[OF this, of c]
   also have "\<dots> + c \<le> ?lhs" using assms
@@ -539,14 +539,14 @@ qed(simp add: assms SUP_constant)
 
 lemma SUP_enat_add_right:
   assumes "I \<noteq> {}"
-  shows "(SUP i:I. c + f i :: enat) = c + (SUP i:I. f i)"
+  shows "(SUP i\<in>I. c + f i :: enat) = c + (SUP i\<in>I. f i)"
 using SUP_enat_add_left[OF assms, of f c]
 by(simp add: add.commute)
 
-lemma iadd_SUP_le_iff: "n + (SUP x:A. f x :: enat) \<le> y \<longleftrightarrow> (if A = {} then n \<le> y else \<forall>x\<in>A. n + f x \<le> y)"
+lemma iadd_SUP_le_iff: "n + (SUP x\<in>A. f x :: enat) \<le> y \<longleftrightarrow> (if A = {} then n \<le> y else \<forall>x\<in>A. n + f x \<le> y)"
 by(simp add: bot_enat_def SUP_enat_add_right[symmetric] SUP_le_iff)
 
-lemma SUP_iadd_le_iff: "(SUP x:A. f x :: enat) + n \<le> y \<longleftrightarrow> (if A = {} then n \<le> y else \<forall>x\<in>A. f x + n \<le> y)"
+lemma SUP_iadd_le_iff: "(SUP x\<in>A. f x :: enat) + n \<le> y \<longleftrightarrow> (if A = {} then n \<le> y else \<forall>x\<in>A. f x + n \<le> y)"
 using iadd_SUP_le_iff[of n f A y] by(simp add: add.commute)
 
 

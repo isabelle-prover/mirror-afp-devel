@@ -343,11 +343,11 @@ proof -
   also have "\<dots> = (\<Squnion>D\<in>K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D)"
   proof (intro antisym SUP_least)
     fix cfg :: "'s cfg" assume cfg: "cfg \<in> cfg_on s"
-    then show "(\<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (SUP D:K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D)"
+    then show "(\<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (SUP D\<in>K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D)"
       by (auto simp: E_sup_def nn_integral_K_cfg AE_measure_pmf_iff
                intro!: nn_integral_mono_AE SUP_upper2)
   next
-    fix D assume D: "D \<in> K s" show "(\<integral>\<^sup>+t. ?p t \<partial>D) \<le> (SUP cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
+    fix D assume D: "D \<in> K s" show "(\<integral>\<^sup>+t. ?p t \<partial>D) \<le> (SUP cfg \<in> cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
     proof cases
       assume p_finite: "\<forall>t\<in>D. ?p t < \<infinity>"
       show ?thesis
@@ -356,9 +356,9 @@ proof -
         have "\<forall>t\<in>D. \<exists>cfg\<in>cfg_on t. ?p t \<le> ?v cfg + e"
         proof
           fix t assume "t \<in> D"
-          moreover have "(SUP cfg : cfg_on t. ?v cfg) = ?p t"
+          moreover have "(SUP cfg \<in> cfg_on t. ?v cfg) = ?p t"
             unfolding E_sup_def by (simp add: cfg_on_def)
-          ultimately have "(SUP cfg : cfg_on t. ?v cfg) \<noteq> \<infinity>"
+          ultimately have "(SUP cfg \<in> cfg_on t. ?v cfg) \<noteq> \<infinity>"
             using p_finite by auto
           from SUP_approx_ennreal[OF \<open>0<e\<close> _ refl this]
           show "\<exists>cfg\<in>cfg_on t. ?p t \<le> ?v cfg + e"
@@ -379,9 +379,9 @@ proof -
           by (subst nn_integral_add) (auto intro: cfg_on_cfg' )
         also have "(\<integral>\<^sup>+t. ?v (cfg' t) \<partial>D) = (\<integral>\<^sup>+t. ?v t \<partial>K_cfg ?cfg)"
           by (simp add: cfg map_pmf_rep_eq nn_integral_distr)
-        also have "\<dots> \<le> (SUP cfg:cfg_on s. (\<integral>\<^sup>+t. ?v t \<partial>K_cfg cfg))"
+        also have "\<dots> \<le> (SUP cfg\<in>cfg_on s. (\<integral>\<^sup>+t. ?v t \<partial>K_cfg cfg))"
           by (auto intro!: SUP_upper intro!: cfg_of_cfg_onI D cfg_on_cfg')
-        finally show "(\<integral>\<^sup>+ t. ?p t \<partial>D) \<le> (SUP cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) + e"
+        finally show "(\<integral>\<^sup>+ t. ?p t \<partial>D) \<le> (SUP cfg \<in> cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) + e"
           by (blast intro: add_mono)
       qed
     next
@@ -390,10 +390,10 @@ proof -
         by (auto simp: not_less top_unique)
       then have "\<infinity> = pmf (D) t * ?p t"
         by (auto simp: ennreal_mult_top set_pmf_iff)
-      also have "\<dots> = (SUP cfg : cfg_on t. pmf (D) t * ?v cfg)"
+      also have "\<dots> = (SUP cfg \<in> cfg_on t. pmf (D) t * ?v cfg)"
         unfolding E_sup_def
         by (auto simp: SUP_mult_left_ennreal[symmetric])
-      also have "\<dots> \<le> (SUP cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
+      also have "\<dots> \<le> (SUP cfg \<in> cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
         unfolding E_sup_def
       proof (intro SUP_least SUP_upper2)
         fix cfg :: "'s cfg" assume cfg: "cfg \<in> cfg_on t"
@@ -525,10 +525,10 @@ proof -
   also have "\<dots> = (\<Sqinter>D\<in>K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D)"
   proof (intro antisym INF_greatest)
     fix cfg :: "'s cfg" assume cfg: "cfg \<in> cfg_on s"
-    then show "(INF D:K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D) \<le> (\<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
+    then show "(INF D\<in>K s. \<integral>\<^sup>+t. ?p t \<partial>measure_pmf D) \<le> (\<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg)"
       by (auto simp add: E_inf_def nn_integral_K_cfg AE_measure_pmf_iff intro!: nn_integral_mono_AE INF_lower2)
   next
-    fix D assume D: "D \<in> K s" show "(INF cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+t. ?p t \<partial>D)"
+    fix D assume D: "D \<in> K s" show "(INF cfg \<in> cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+t. ?p t \<partial>D)"
     proof (rule ennreal_le_epsilon)
       fix e :: real assume "0 < e"
       have "\<forall>t\<in>D. \<exists>cfg\<in>cfg_on t. ?v cfg \<le> ?p t + e"
@@ -541,9 +541,9 @@ proof -
         next
           assume p_finite: "?p t \<noteq> \<infinity>"
           note `t \<in> D`
-          moreover have "(INF cfg : cfg_on t. ?v cfg) = ?p t"
+          moreover have "(INF cfg \<in> cfg_on t. ?v cfg) = ?p t"
             unfolding E_inf_def by (simp add: cfg_on_def)
-          ultimately have "(INF cfg : cfg_on t. ?v cfg) \<noteq> \<infinity>"
+          ultimately have "(INF cfg \<in> cfg_on t. ?v cfg) \<noteq> \<infinity>"
             using p_finite by auto
           from INF_approx_ennreal[OF `0 < e` refl this]
           show "\<exists>cfg\<in>cfg_on t. ?v cfg \<le> ?p t + e"
@@ -561,11 +561,11 @@ proof -
 
       have "?cfg \<in> cfg_on s"
         by (auto intro: D cfg_on_cfg' cfg_of_cfg_onI)
-      then have "(INF cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t + e \<partial>D)"
+      then have "(INF cfg \<in> cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t + e \<partial>D)"
         by (rule INF_lower2) (auto simp: cfg map_pmf_rep_eq nn_integral_distr v_cfg' AE_measure_pmf_iff intro!: nn_integral_mono_AE)
       also have "\<dots> = (\<integral>\<^sup>+ t. ?p t \<partial>D) + e"
         using `0 < e` by (simp add: nn_integral_add measure_pmf.emeasure_space_1[simplified])
-      finally show "(INF cfg : cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t \<partial>D) + e" .
+      finally show "(INF cfg \<in> cfg_on s. \<integral>\<^sup>+ t. ?v t \<partial>K_cfg cfg) \<le> (\<integral>\<^sup>+ t. ?p t \<partial>D) + e" .
     qed
   qed
   finally show ?thesis .
@@ -608,7 +608,7 @@ proof (rule antisym)
     then obtain D where "D \<in> K s" "?I D = Min (?I ` K s)"
       by (auto simp: K_wf dest!: Min_in)
     note this(2)
-    also have "\<dots> = (INF D : K s. ?I D)"
+    also have "\<dots> = (INF D \<in> K s. ?I D)"
       using K_wf by (subst Min_Inf) (auto intro: K_finite)
     also have "\<dots> = lfp ?F s"
       by (rewrite in "_ = \<hole>" lfp_unfold[OF mono_F]) auto

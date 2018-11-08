@@ -13,20 +13,20 @@ begin
  
 subsection \<open>Auxiliary Properties\<close>
   
-lemma SUP_is_Sup: "(SUP f:F. f y) = \<Squnion>{(f::'a \<Rightarrow> 'b::proto_near_quantale) y |f. f \<in> F}"
+lemma SUP_is_Sup: "(SUP f\<in>F. f y) = \<Squnion>{(f::'a \<Rightarrow> 'b::proto_near_quantale) y |f. f \<in> F}"
 proof (rule antisym)
   fix f::"'a \<Rightarrow> 'b::proto_near_quantale"
   have "f \<in> F \<Longrightarrow> f y \<in> {f y |f. f \<in> F}"
     by (simp add: Setcompr_eq_image)
   hence "f \<in> F \<Longrightarrow> f y \<le> \<Squnion>{f y |f. f \<in> F}"
     by (simp add: Sup_upper)
-  thus "(SUP f:F. f y) \<le> \<Squnion>{(f::'a \<Rightarrow> 'b::proto_near_quantale) y |f. f \<in> F}"
+  thus "(SUP f\<in>F. f y) \<le> \<Squnion>{(f::'a \<Rightarrow> 'b::proto_near_quantale) y |f. f \<in> F}"
     by (simp add: Setcompr_eq_image)
 next 
   fix x
-  have "x \<in> {f y |f. f \<in> F} \<Longrightarrow> x \<le> (SUP f:F. f y) "
+  have "x \<in> {f y |f. f \<in> F} \<Longrightarrow> x \<le> (SUP f\<in>F. f y) "
     using mk_disjoint_insert by force
-  thus "Sup {(f::'a \<Rightarrow> 'b::proto_near_quantale) y |f. f \<in> F} \<le> (SUP f:F. f y)"
+  thus "Sup {(f::'a \<Rightarrow> 'b::proto_near_quantale) y |f. f \<in> F} \<le> (SUP f\<in>F. f y)"
     by (simp add: Setcompr_eq_image)
 qed
 

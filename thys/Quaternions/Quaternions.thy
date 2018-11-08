@@ -180,7 +180,7 @@ definition "sgn x = x /\<^sub>R norm x" for x :: quat
 definition "dist x y = norm (x - y)" for x y :: quat
 
 definition [code del]:
-  "(uniformity :: (quat \<times> quat) filter) = (INF e:{0 <..}. principal {(x, y). dist x y < e})"
+  "(uniformity :: (quat \<times> quat) filter) = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
 definition [code del]:
   "open (U :: quat set) \<longleftrightarrow> (\<forall>x\<in>U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"

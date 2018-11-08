@@ -626,7 +626,7 @@ using e2ennreal_mult[OF assms, of a] by (simp add: mult.commute)
 
 lemma SUP_real_ennreal:
   assumes "A \<noteq> {}" "bdd_above (f`A)"
-  shows "(SUP a:A. ennreal (f a)) = ennreal(SUP a:A. f a)"
+  shows "(SUP a\<in>A. ennreal (f a)) = ennreal(SUP a\<in>A. f a)"
 apply (rule antisym, simp add: SUP_least assms(2) cSUP_upper ennreal_leI)
 by (metis assms(1) ennreal_SUP ennreal_less_top le_less)
 

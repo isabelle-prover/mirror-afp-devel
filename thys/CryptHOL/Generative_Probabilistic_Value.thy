@@ -1627,7 +1627,7 @@ declaration {* Partial_Function.init "lfp_strong" @{term lfp.fixp_fun} @{term lf
 partial_function (lfp_strong) interaction_bound :: "('a, 'out, 'in) gpv \<Rightarrow> enat"
 where
   "interaction_bound gpv =
-  (SUP generat:set_spmf (the_gpv gpv). case generat of Pure _ \<Rightarrow> 0 
+  (SUP generat\<in>set_spmf (the_gpv gpv). case generat of Pure _ \<Rightarrow> 0 
      | IO out c \<Rightarrow> if consider out then eSuc (SUP input. interaction_bound (c input)) else (SUP input. interaction_bound (c input)))"
 
 lemma interaction_bound_fixp_induct [case_names adm bottom step]:
@@ -1636,7 +1636,7 @@ lemma interaction_bound_fixp_induct [case_names adm bottom step]:
     \<And>interaction_bound'. 
     \<lbrakk> P interaction_bound'; 
       \<And>gpv. interaction_bound' gpv \<le> interaction_bound gpv;
-      \<And>gpv. interaction_bound' gpv \<le> (SUP generat:set_spmf (the_gpv gpv). case generat of Pure _ \<Rightarrow> 0 
+      \<And>gpv. interaction_bound' gpv \<le> (SUP generat\<in>set_spmf (the_gpv gpv). case generat of Pure _ \<Rightarrow> 0 
      | IO out c \<Rightarrow> if consider out then eSuc (SUP input. interaction_bound' (c input)) else (SUP input. interaction_bound' (c input)))
       \<rbrakk>
       \<Longrightarrow> P (\<lambda>gpv. \<Squnion>generat\<in>set_spmf (the_gpv gpv). case generat of Pure x \<Rightarrow> 0
@@ -1692,7 +1692,7 @@ lemma interaction_bound_bind_step:
                    | IO out c \<Rightarrow>
                        if consider out then eSuc (\<Squnion>input. interaction_bound' (c input))
                        else \<Squnion>input. interaction_bound' (c input))"
-    (is "(SUP generat':?bind. ?g generat') \<le> ?p + ?f")
+    (is "(SUP generat'\<in>?bind. ?g generat') \<le> ?p + ?f")
 proof(rule SUP_least)
   fix generat'
   assume "generat' \<in> ?bind"
@@ -1704,7 +1704,7 @@ proof(rule SUP_least)
   show "?g generat' \<le> ?p + ?f"
   proof(cases generat)
     case (Pure x)
-    have "?g generat' \<le> (SUP generat':set_spmf (the_gpv (f x)). (case generat' of Pure x \<Rightarrow> 0 | IO out c \<Rightarrow> if consider out then eSuc (\<Squnion>input. interaction_bound' (c input)) else \<Squnion>input. interaction_bound' (c input)))"
+    have "?g generat' \<le> (SUP generat'\<in>set_spmf (the_gpv (f x)). (case generat' of Pure x \<Rightarrow> 0 | IO out c \<Rightarrow> if consider out then eSuc (\<Squnion>input. interaction_bound' (c input)) else \<Squnion>input. interaction_bound' (c input)))"
       using * Pure by(auto intro: SUP_upper)
     also have "\<dots> \<le> 0 + ?f" using generat Pure
       by(auto 4 3 intro: SUP_upper results'_gpv_Pure)
@@ -1715,7 +1715,7 @@ proof(rule SUP_least)
     with * have "?g generat' = (if consider out then eSuc (SUP input. interaction_bound' (c input \<bind> f)) else (SUP input. interaction_bound' (c input \<bind> f)))" by simp
     also have "\<dots> \<le> (if consider out then eSuc (SUP input. interaction_bound (c input) + (\<Squnion>x\<in>results'_gpv (c input). interaction_bound' (f x))) else (SUP input. interaction_bound (c input) + (\<Squnion>x\<in>results'_gpv (c input). interaction_bound' (f x))))"
       by(auto intro: SUP_mono IH)
-    also have "\<dots> \<le> (case IO out c of Pure (x :: 'a) \<Rightarrow> 0 | IO out c \<Rightarrow> if consider out then eSuc (SUP input. interaction_bound (c input)) else (SUP input. interaction_bound (c input))) + (SUP input. SUP x:results'_gpv (c input). interaction_bound' (f x))"
+    also have "\<dots> \<le> (case IO out c of Pure (x :: 'a) \<Rightarrow> 0 | IO out c \<Rightarrow> if consider out then eSuc (SUP input. interaction_bound (c input)) else (SUP input. interaction_bound (c input))) + (SUP input. SUP x\<in>results'_gpv (c input). interaction_bound' (f x))"
       by(simp add: iadd_Suc SUP_le_iff)(meson SUP_upper2 UNIV_I add_mono order_refl)
     also have "\<dots> \<le> ?p + ?f"
       apply(rewrite in "_ \<le> \<hole>" interaction_bound.simps)
@@ -1729,7 +1729,7 @@ qed
 
 lemma interaction_bound_bind:
   defines "ib1 \<equiv> interaction_bound"
-  shows "interaction_bound (p \<bind> f) \<le> ib1 p + (SUP x:results'_gpv p. interaction_bound (f x))"
+  shows "interaction_bound (p \<bind> f) \<le> ib1 p + (SUP x\<in>results'_gpv p. interaction_bound (f x))"
 proof(induction arbitrary: p rule: interaction_bound_fixp_induct)
   case adm show ?case by simp
   case bottom show ?case by simp
@@ -1737,7 +1737,7 @@ proof(induction arbitrary: p rule: interaction_bound_fixp_induct)
 qed
 
 lemma interaction_bound_bind_lift_spmf [simp]:
-  "interaction_bound (lift_spmf p \<bind> f) = (SUP x:set_spmf p. interaction_bound (f x))"
+  "interaction_bound (lift_spmf p \<bind> f) = (SUP x\<in>set_spmf p. interaction_bound (f x))"
 by(subst (1 2) interaction_bound.simps)(simp add: bind_UNION SUP_UNION)
 
 end
@@ -1901,7 +1901,7 @@ by(auto simp add: iadd_is_0 enat_add_sub_same intro: interaction_bounded_by_mono
 
 lemma interaction_bounded_by_bindI [interaction_bound]:
   "\<lbrakk> interaction_bounded_by consider gpv n; \<And>x. x \<in> results'_gpv gpv \<Longrightarrow> interaction_bounded_by consider (f x) (m x) \<rbrakk>
-  \<Longrightarrow> interaction_bounded_by consider (gpv \<bind> f) (n + (SUP x:results'_gpv gpv. m x))"
+  \<Longrightarrow> interaction_bounded_by consider (gpv \<bind> f) (n + (SUP x\<in>results'_gpv gpv. m x))"
 unfolding interaction_bounded_by.simps plus_enat_simps(1)[symmetric]
 by(rule interaction_bound_bind[THEN order_trans])(auto intro: add_mono SUP_mono)
 
@@ -1916,7 +1916,7 @@ by(simp add: interaction_bounded_by.simps SUP_le_iff)
 
 lemma interaction_bounded_by_bind_lift_spmfI [interaction_bound]:
   "(\<And>x. x \<in> set_spmf p \<Longrightarrow> interaction_bounded_by consider (f x) (n x))
-  \<Longrightarrow> interaction_bounded_by consider (lift_spmf p \<bind> f) (SUP x:set_spmf p. n x)"
+  \<Longrightarrow> interaction_bounded_by consider (lift_spmf p \<bind> f) (SUP x\<in>set_spmf p. n x)"
 by(auto intro: interaction_bounded_by_mono SUP_upper)
 
 lemma interaction_bounded_by_bind_DoneI [interaction_bound]:
@@ -3723,13 +3723,13 @@ lemma interaction_bounded_by_inline [interaction_bound]:
   shows "interaction_bounded_by consider (inline callee gpv s) (p * q)"
 proof
   have "interaction_bounded_by consider' gpv p \<Longrightarrow> interaction_bound consider (inline callee gpv s) \<le> p * q"
-    and "interaction_bound consider (bind_gpv gpv' f) \<le> interaction_bound consider gpv' + (SUP x:results'_gpv gpv'. interaction_bound consider (f x))"
+    and "interaction_bound consider (bind_gpv gpv' f) \<le> interaction_bound consider gpv' + (SUP x\<in>results'_gpv gpv'. interaction_bound consider (f x))"
     for gpv' and f :: "'ret \<times> 's \<Rightarrow> ('a \<times> 's, 'call', 'ret') gpv"
   proof(induction arbitrary: gpv s p gpv' f rule: interaction_bound_fixp_induct)
     case adm show ?case by simp
     case bottom case 1 show ?case by simp
     case (step interaction_bound') case step: 1
-    show ?case (is "(SUP generat:?inline. ?lhs generat) \<le> ?rhs")
+    show ?case (is "(SUP generat\<in>?inline. ?lhs generat) \<le> ?rhs")
     proof(rule SUP_least)
       fix generat
       assume "generat \<in> ?inline"
@@ -3756,9 +3756,9 @@ proof
           have "?lhs generat \<le> (if consider out then 1 else 0) + (SUP input. interaction_bound' (bind_gpv (c input) (\<lambda>(ret, s'). inline callee (rpv ret) s')))"
             (is "_ \<le> _ + ?sup")
             using IO(1) by(auto simp add: plus_1_eSuc)
-          also have "?sup \<le> (SUP input. interaction_bound consider (c input) + (SUP (ret, s') : results'_gpv (c input). interaction_bound' (inline callee (rpv ret) s')))"
+          also have "?sup \<le> (SUP input. interaction_bound consider (c input) + (SUP (ret, s') \<in> results'_gpv (c input). interaction_bound' (inline callee (rpv ret) s')))"
             unfolding split_def by(rule SUP_mono)(blast intro: step.IH)
-          also have "\<dots> \<le> (SUP input. interaction_bound consider (c input) + (SUP (ret, s') : results'_gpv (c input). (p - 1) * q))"
+          also have "\<dots> \<le> (SUP input. interaction_bound consider (c input) + (SUP (ret, s') \<in> results'_gpv (c input). (p - 1) * q))"
             using rpv by(auto intro!: SUP_mono rev_bexI add_mono step.IH)
           also have "\<dots> \<le> (SUP input. interaction_bound consider (c input) + (p - 1) * q)"
             apply(auto simp add: SUP_constant bot_enat_def intro!: SUP_mono)
@@ -3785,9 +3785,9 @@ proof
             and rpv: "\<And>x. interaction_bounded_by consider' (rpv x) p" by auto
           have "?lhs generat \<le> (SUP input. interaction_bound' (bind_gpv (c input) (\<lambda>(ret, s'). inline callee (rpv ret) s')))"
             using IO(1) out by auto
-          also have "\<dots> \<le> (SUP input. interaction_bound consider (c input) + (SUP (ret, s') : results'_gpv (c input). interaction_bound' (inline callee (rpv ret) s')))"
+          also have "\<dots> \<le> (SUP input. interaction_bound consider (c input) + (SUP (ret, s') \<in> results'_gpv (c input). interaction_bound' (inline callee (rpv ret) s')))"
             unfolding split_def by(rule SUP_mono)(blast intro: step.IH)
-          also have "\<dots> \<le> (SUP input. (SUP (ret, s') : results'_gpv (c input). p * q))"
+          also have "\<dots> \<le> (SUP input. (SUP (ret, s') \<in> results'_gpv (c input). p * q))"
             using rpv zero by(auto intro!: SUP_mono rev_bexI add_mono step.IH simp add: interaction_bounded_by_0)
           also have "\<dots> \<le> (SUP input :: 'ret'. p * q)"
             by(rule SUP_mono rev_bexI)+(auto simp add: SUP_constant)

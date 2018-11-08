@@ -33,7 +33,7 @@ partial_function (spmf) bernoulli :: "real \<Rightarrow> bool spmf" where
 
 lemma pmf_bernoulli_None: "pmf (bernoulli p) None = 0"
 proof -
-  have "ereal (pmf (bernoulli p) None) \<le> (INF n:UNIV. ereal (1 / 2 ^ n))"
+  have "ereal (pmf (bernoulli p) None) \<le> (INF n\<in>UNIV. ereal (1 / 2 ^ n))"
   proof(rule INF_greatest)
     show "ereal (pmf (bernoulli p) None) \<le> ereal (1 / 2 ^ n)" for n
     proof(induction n arbitrary: p)

@@ -444,7 +444,7 @@ subsection \<open>Strong Markov Property for Discrete-Time Markov Processes\<clo
 text \<open>The filtration adopted to streams, i.e. to the $n$-th projection.\<close>
 
 definition stream_filtration :: "'a measure \<Rightarrow> enat \<Rightarrow> 'a stream measure"
-  where "stream_filtration M n = (SUP i:{i::nat. i \<le> n}. vimage_algebra (streams (space M)) (\<lambda>\<omega> . \<omega> !! i) M)"
+  where "stream_filtration M n = (SUP i\<in>{i::nat. i \<le> n}. vimage_algebra (streams (space M)) (\<lambda>\<omega> . \<omega> !! i) M)"
 
 lemma measurable_stream_filtration1: "enat i \<le> n \<Longrightarrow> (\<lambda>\<omega>. \<omega> !! i) \<in> stream_filtration M n \<rightarrow>\<^sub>M M"
   by (auto intro!: measurable_SUP1 measurable_vimage_algebra1 snth_in simp: stream_filtration_def)

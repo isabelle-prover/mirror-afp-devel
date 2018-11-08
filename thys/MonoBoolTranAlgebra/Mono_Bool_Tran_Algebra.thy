@@ -812,7 +812,7 @@ end
 subsection{*Complete monotonic Boolean transformers algebra*}
 
 class complete_mbt_algebra = post_mbt_algebra + complete_distrib_lattice +
-  assumes Inf_comp: "(Inf X) * z = (INF x : X . (x * z))"
+  assumes Inf_comp: "(Inf X) * z = (INF x \<in> X . (x * z))"
 
 instance MonoTran :: (complete_boolean_algebra) complete_mbt_algebra
   apply intro_classes
@@ -821,7 +821,7 @@ instance MonoTran :: (complete_boolean_algebra) complete_mbt_algebra
   done
 
 context complete_mbt_algebra begin
-lemma dual_Inf: "(Inf X) ^ o = (SUP x: X . x ^ o)"
+lemma dual_Inf: "(Inf X) ^ o = (SUP x\<in> X . x ^ o)"
   apply (rule antisym)
   apply (subst dual_le, simp)
   apply (rule Inf_greatest)
@@ -831,7 +831,7 @@ lemma dual_Inf: "(Inf X) ^ o = (SUP x: X . x ^ o)"
   apply (subst dual_le, simp)
   by (rule Inf_lower, simp)
 
-lemma dual_Sup: "(Sup X) ^ o = (INF x: X . x ^ o)"
+lemma dual_Sup: "(Sup X) ^ o = (INF x\<in> X . x ^ o)"
   apply (rule antisym)
   apply (rule INF_greatest)
   apply (subst dual_le, simp)
@@ -841,26 +841,26 @@ lemma dual_Sup: "(Sup X) ^ o = (INF x: X . x ^ o)"
   apply (subst dual_le, simp)
   by (rule INF_lower, simp)
 
-lemma INF_comp: "(INFIMUM A f) * z = (INF a : A . (f a) * z)"
+lemma INF_comp: "(INFIMUM A f) * z = (INF a \<in> A . (f a) * z)"
   unfolding Inf_comp
   apply (subgoal_tac "((\<lambda>x::'a. x * z) ` f ` A) = ((\<lambda>a::'b. f a * z) ` A)")
   by auto
 
-lemma dual_INF: "(INFIMUM A f) ^ o = (SUP a : A . (f a) ^ o)"
+lemma dual_INF: "(INFIMUM A f) ^ o = (SUP a \<in> A . (f a) ^ o)"
   unfolding Inf_comp dual_Inf
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a::'b. f a ^ o) ` A)")
   by auto
 
-lemma dual_SUP: "(SUPREMUM A f) ^ o = (INF a : A . (f a) ^ o)"
+lemma dual_SUP: "(SUPREMUM A f) ^ o = (INF a \<in> A . (f a) ^ o)"
   unfolding dual_Sup
   apply (subgoal_tac "(dual ` f ` A) = ((\<lambda>a::'b. f a ^ o) ` A)")
   by auto
 
-lemma Sup_comp: "(Sup X) * z = (SUP x : X . (x * z))"
+lemma Sup_comp: "(Sup X) * z = (SUP x \<in> X . (x * z))"
   apply (rule dual_eq)
   by (simp add: dual_comp dual_Sup dual_SUP INF_comp)
 
-lemma SUP_comp: "(SUPREMUM A f) * z = (SUP a : A . (f a) * z)"
+lemma SUP_comp: "(SUPREMUM A f) * z = (SUP a \<in> A . (f a) * z)"
   unfolding Sup_comp
   apply (subgoal_tac "((\<lambda>x::'a. x * z) ` f ` A) = ((\<lambda>a::'b. f a * z) ` A)")
   by auto

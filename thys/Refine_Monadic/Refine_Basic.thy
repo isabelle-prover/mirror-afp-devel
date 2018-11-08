@@ -465,10 +465,10 @@ lemma bind_distrib_sup1: "bind (sup M N) f = sup (bind M f) (bind N f)"
 lemma  bind_distrib_sup2: "bind m (\<lambda>x. sup (f x) (g x)) = sup (bind m f) (bind m g)"
   by (auto simp: pw_eq_iff refine_pw_simps)
 
-lemma bind_distrib_Sup1: "bind (Sup M) f = (SUP m:M. bind m f)" 
+lemma bind_distrib_Sup1: "bind (Sup M) f = (SUP m\<in>M. bind m f)" 
   by (auto simp: pw_eq_iff refine_pw_simps)
 
-lemma bind_distrib_Sup2: "F\<noteq>{} \<Longrightarrow> bind m (Sup F) = (SUP f:F. bind m f)"
+lemma bind_distrib_Sup2: "F\<noteq>{} \<Longrightarrow> bind m (Sup F) = (SUP f\<in>F. bind m f)"
   by (auto simp: pw_eq_iff refine_pw_simps)
 
 

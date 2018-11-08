@@ -160,7 +160,7 @@ text{*
         by (rule Inf_lower, simp)
       have A: "\<And> x . x \<in> Q \<Longrightarrow> p \<sqinter> Inf Q \<le> p \<sqinter> x"
         by (simp, rule_tac y = "Inf Q" in order_trans, simp_all)
-      show "p \<sqinter> Inf Q \<le> (INF x:Q. p \<sqinter> x)"
+      show "p \<sqinter> Inf Q \<le> (INF x\<in>Q. p \<sqinter> x)"
         by (rule Inf_greatest, safe, rule A, simp)
     next
       fix Q :: "'a set"
@@ -170,11 +170,11 @@ text{*
         by (rule Inf_lower, cut_tac A, auto)
       also have "... \<le> p"
         by simp
-      finally show "(INF x:Q. p \<sqinter> x) \<le> p"
+      finally show "(INF x\<in>Q. p \<sqinter> x) \<le> p"
         by (simp only: image_def)
    next
       fix Q :: "'a set"
-      show "(INF x:Q. p \<sqinter> x) \<le> Inf Q"
+      show "(INF x\<in>Q. p \<sqinter> x) \<le> Inf Q"
         proof (rule Inf_greatest)
           fix x::'a
           assume A: "x \<in> Q"
@@ -182,7 +182,7 @@ text{*
             by (cut_tac A, rule Inf_lower, blast)
           also have "... \<le> x"
             by simp
-         finally show "(INF x:Q. p \<sqinter> x) \<le> x"
+         finally show "(INF x\<in>Q. p \<sqinter> x) \<le> x"
             by (simp only: image_def)
        qed
    qed

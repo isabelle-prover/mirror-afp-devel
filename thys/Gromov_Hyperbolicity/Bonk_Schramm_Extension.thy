@@ -313,8 +313,8 @@ fun extend_distance::"('a Bonk_Schramm_extension_unfolded \<Rightarrow> ('a Bonk
         dist (SOME y'. y = basepoint y') (SOME z'. z = basepoint z') else 1)"
   | "extend_distance f (middle a b) = (\<lambda>y z.
       if (y \<in> wo.underS (middle a b)) \<and> (z \<in> wo.underS (middle a b)) then f (wo.max2 y z) y z
-      else if (y \<in> wo.underS (middle a b)) \<and> (z = middle a b) then (f (wo.max2 a b) a b)/2 + (SUP w:{z \<in> wo.underS (middle a b). f z z z = 0}. f (wo.max2 y w) y w - max (f (wo.max2 a w) a w) (f (wo.max2 b w) b w))
-      else if (y = middle a b) \<and> (z \<in> wo.underS (middle a b)) then (f (wo.max2 a b) a b)/2 + (SUP w:{z \<in> wo.underS (middle a b). f z z z = 0}. f (wo.max2 z w) z w - max (f (wo.max2 a w) a w) (f (wo.max2 b w) b w))
+      else if (y \<in> wo.underS (middle a b)) \<and> (z = middle a b) then (f (wo.max2 a b) a b)/2 + (SUP w\<in>{z \<in> wo.underS (middle a b). f z z z = 0}. f (wo.max2 y w) y w - max (f (wo.max2 a w) a w) (f (wo.max2 b w) b w))
+      else if (y = middle a b) \<and> (z \<in> wo.underS (middle a b)) then (f (wo.max2 a b) a b)/2 + (SUP w\<in>{z \<in> wo.underS (middle a b). f z z z = 0}. f (wo.max2 z w) z w - max (f (wo.max2 a w) a w) (f (wo.max2 b w) b w))
       else if (y = middle a b) \<and> (z = middle a b) \<and> (f a a a = 0) \<and> (f b b b = 0) then 0
       else 1)"
   | "extend_distance f (would_be_Cauchy u) = (\<lambda>y z.
@@ -416,7 +416,7 @@ qed
 lemma extended_distance_middle_formula:
   assumes "x \<in> wo.underS (middle a b)"
   shows "extended_distance x (middle a b) = (extended_distance a b)/2
-    + (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+    + (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
           extended_distance x w - max (extended_distance a w) (extended_distance b w))"
 unfolding extended_distance_set_def extended_distance_def
 apply (subst extend_distance_fp)
@@ -539,11 +539,11 @@ proof -
                       "b \<in> extended_distance_set \<inter> wo.underS (middle a b)"
           using 2 extended_distance_set_middle'[of a b] by auto
         have dxt: "extended_distance x t = (extended_distance a b)/2
-          + (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+          + (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
               extended_distance x w - max (extended_distance a w) (extended_distance b w))"
           using that(1) unfolding M using extended_distance_middle_formula by auto
         have dzt: "extended_distance z t = (extended_distance a b)/2
-            + (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+            + (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
               extended_distance z w - max (extended_distance a w) (extended_distance b w))"
           using that(2) unfolding M using extended_distance_middle_formula by auto
 
@@ -607,7 +607,7 @@ proof -
           using ab(1) apply blast
           by (simp add: monoI, rule bij_betw_byWitness[of _ "\<lambda>s. s - (extended_distance x z)"], auto)
         have "extended_distance x t \<le> (extended_distance a b)/2
-          + (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+          + (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
               extended_distance x z + extended_distance z w - max (extended_distance a w) (extended_distance b w))"
           unfolding dxt apply (simp, rule cSUP_subset_mono)
           using M that IH bdd_3 by (auto)
@@ -738,20 +738,20 @@ lemma extended_distance_middle:
 proof -
   have "0 = extended_distance a b - max (extended_distance a b) (extended_distance b b)"
     using extended_distance_pos[OF assms] assms(2) extended_distance_set_def by auto
-  also have "... \<le> (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+  also have "... \<le> (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
           extended_distance a w - max (extended_distance a w) (extended_distance b w))"
     apply (rule cSUP_upper)
     apply (simp add: assms(2) Bonk_Schramm_extension_unfolded_wo_props'(2))
     by (rule bdd_aboveI2[of _ _ 0], auto)
-  ultimately have "0 \<le> (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+  ultimately have "0 \<le> (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
           extended_distance a w - max (extended_distance a w) (extended_distance b w))"
     by auto
-  moreover have "(SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+  moreover have "(SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
           extended_distance a w - max (extended_distance a w) (extended_distance b w)) \<le> 0"
     apply (rule cSUP_least)
     using assms(1) Bonk_Schramm_extension_unfolded_wo_props'(1) by (fastforce, auto)
   moreover have "extended_distance a (middle a b) = (extended_distance a b)/2
-    + (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+    + (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
           extended_distance a w - max (extended_distance a w) (extended_distance b w))"
     by (rule extended_distance_middle_formula, simp add: Bonk_Schramm_extension_unfolded_wo_props'(1))
   ultimately show "extended_distance a (middle a b) = (extended_distance a b)/2"
@@ -759,20 +759,20 @@ proof -
 
   have "0 = extended_distance b a - max (extended_distance a a) (extended_distance b a)"
     using extended_distance_pos[OF assms] assms(1) extended_distance_set_def extended_distance_symmetric by auto
-  also have "... \<le> (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+  also have "... \<le> (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
           extended_distance b w - max (extended_distance a w) (extended_distance b w))"
     apply (rule cSUP_upper)
     apply (simp add: assms(1) Bonk_Schramm_extension_unfolded_wo_props'(1))
     by (rule bdd_aboveI2[of _ _ 0], auto)
-  ultimately have "0 \<le> (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+  ultimately have "0 \<le> (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
           extended_distance b w - max (extended_distance a w) (extended_distance b w))"
     by auto
-  moreover have "(SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+  moreover have "(SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
           extended_distance b w - max (extended_distance a w) (extended_distance b w)) \<le> 0"
     apply (rule cSUP_least)
     using assms(1) Bonk_Schramm_extension_unfolded_wo_props'(1) by (fastforce, auto)
   moreover have "extended_distance b (middle a b) = (extended_distance a b)/2
-    + (SUP w:wo.underS (middle a b) \<inter> extended_distance_set.
+    + (SUP w\<in>wo.underS (middle a b) \<inter> extended_distance_set.
           extended_distance b w - max (extended_distance a w) (extended_distance b w))"
     by (rule extended_distance_middle_formula, simp add: Bonk_Schramm_extension_unfolded_wo_props'(2))
   ultimately show "extended_distance b (middle a b) = (extended_distance a b)/2"
@@ -907,7 +907,7 @@ text \<open>To define a metric space in the current library of Isabelle/HOL, one
 a uniformity structure and a topology, as follows (they are prescribed by the distance):\<close>
 
 definition uniformity_Bonk_Schramm_extension::"(('a Bonk_Schramm_extension) \<times> ('a Bonk_Schramm_extension)) filter"
-  where "uniformity_Bonk_Schramm_extension = (INF e:{0 <..}. principal {(x, y). dist x y < e})"
+  where "uniformity_Bonk_Schramm_extension = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
 definition open_Bonk_Schramm_extension :: "'a Bonk_Schramm_extension set \<Rightarrow> bool"
   where "open_Bonk_Schramm_extension U = (\<forall>x\<in>U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"
@@ -1156,7 +1156,7 @@ proof -
           proof -
             have "(extended_distance c d)/2 + extended_distance s w - max (extended_distance c w) (extended_distance d w)
                 \<le> (extended_distance c d)/2
-                    + (SUP w:wo.underS (middle c d) \<inter> extended_distance_set. extended_distance s w - max (extended_distance c w) (extended_distance d w))"
+                    + (SUP w\<in>wo.underS (middle c d) \<inter> extended_distance_set. extended_distance s w - max (extended_distance c w) (extended_distance d w))"
               apply auto apply (rule cSUP_upper) using w bdd that by auto
             also have "... = extended_distance s (middle c d)"
               apply (rule metric_space_class.extended_distance_middle_formula[symmetric]) using that M by auto
@@ -1173,12 +1173,12 @@ proof -
             using J[OF yzt(3)] J[OF yzt(2)] by auto
           finally show ?thesis by simp
         qed
-        have *: "(SUP w:wo.underS (middle c d) \<inter> extended_distance_set. extended_distance y w - max (extended_distance c w) (extended_distance d w)) \<le>
+        have *: "(SUP w\<in>wo.underS (middle c d) \<inter> extended_distance_set. extended_distance y w - max (extended_distance c w) (extended_distance d w)) \<le>
                 max (extended_distance y z + extended_distance t (middle c d)) (extended_distance y t + extended_distance z (middle c d)) + 2 * deltaG(TYPE('a))
                 - (extended_distance c d)/2 - extended_distance z t"
           apply (rule cSUP_least) using yzt(1) M I by auto
         have "extended_distance y (middle c d) + extended_distance z t
-          = (extended_distance c d)/2 + (SUP w:wo.underS (middle c d) \<inter> extended_distance_set. extended_distance y w - max (extended_distance c w) (extended_distance d w)) + extended_distance z t"
+          = (extended_distance c d)/2 + (SUP w\<in>wo.underS (middle c d) \<inter> extended_distance_set. extended_distance y w - max (extended_distance c w) (extended_distance d w)) + extended_distance z t"
           apply simp apply (rule metric_space_class.extended_distance_middle_formula) using yzt(1) M by auto
         also have "... \<le> max (extended_distance y z + extended_distance t (middle c d)) (extended_distance y t + extended_distance z (middle c d)) + 2 * deltaG(TYPE('a))"
           using * by simp

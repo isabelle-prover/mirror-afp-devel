@@ -22,7 +22,7 @@ all these properties below.\<close>
 
 definition hausdorff_distance::"('a::metric_space) set \<Rightarrow> 'a set \<Rightarrow> real"
   where "hausdorff_distance A B = (if A = {} \<or> B = {} \<or> (\<not>(bounded A)) \<or> (\<not>(bounded B)) then 0
-                                   else max (SUP x:A. infdist x B) (SUP x:B. infdist x A))"
+                                   else max (SUP x\<in>A. infdist x B) (SUP x\<in>B. infdist x A))"
 
 lemma hausdorff_distance_self [simp]:
   "hausdorff_distance A A = 0"
@@ -62,10 +62,10 @@ proof (cases "A = {} \<or> B = {} \<or> (\<not>(bounded A)) \<or> (\<not>(bounde
 next
   case False
   then have "A \<noteq> {}" "B \<noteq> {}" "bounded A" "bounded B" by auto
-  have "(SUP x:A. infdist x B) \<ge> 0"
+  have "(SUP x\<in>A. infdist x B) \<ge> 0"
     using bdd_above_infdist_aux[OF \<open>bounded A\<close> \<open>bounded B\<close>] infdist_nonneg
     by (metis \<open>A \<noteq> {}\<close> all_not_in_conv cSUP_upper2)
-  moreover have "(SUP x:B. infdist x A) \<ge> 0"
+  moreover have "(SUP x\<in>B. infdist x A) \<ge> 0"
     using bdd_above_infdist_aux[OF \<open>bounded B\<close> \<open>bounded A\<close>] infdist_nonneg
     by (metis \<open>B \<noteq> {}\<close> all_not_in_conv cSUP_upper2)
   ultimately show ?thesis unfolding hausdorff_distance_def by auto
@@ -82,9 +82,9 @@ proof (cases "A = {} \<or> B = {} \<or> (\<not>(bounded A)) \<or> (\<not>(bounde
 next
   case False
   then have "A \<noteq> {}" "B \<noteq> {}" "bounded A" "bounded B" by auto
-  have "(SUP x:A. infdist x B) \<le> D"
+  have "(SUP x\<in>A. infdist x B) \<le> D"
     apply (rule cSUP_least, simp add: \<open>A \<noteq> {}\<close>) using assms(1) by blast
-  moreover have "(SUP x:B. infdist x A) \<le> D"
+  moreover have "(SUP x\<in>B. infdist x A) \<le> D"
     apply (rule cSUP_least, simp add: \<open>B \<noteq> {}\<close>) using assms(2) by blast
   ultimately show ?thesis unfolding hausdorff_distance_def using False by auto
 qed
@@ -109,7 +109,7 @@ proof (cases "B = {}")
   then show ?thesis using hausdorff_distance_nonneg by auto
 next
   case False
-  have "infdist x B \<le> (SUP y:A. infdist y B)"
+  have "infdist x B \<le> (SUP y\<in>A. infdist y B)"
     using bdd_above_infdist_aux[OF \<open>bounded A\<close> \<open>bounded B\<close>] by (meson assms(1) cSUP_upper)
   then show ?thesis unfolding hausdorff_distance_def using assms False by auto
 qed
@@ -161,11 +161,11 @@ qed
 
 lemma hausdorff_distance_subset:
   assumes "A \<subseteq> B" "A \<noteq> {}" "bounded B"
-  shows "hausdorff_distance A B = (SUP x:B. infdist x A)"
+  shows "hausdorff_distance A B = (SUP x\<in>B. infdist x A)"
 proof -
   have H: "B \<noteq> {}" "bounded A" using assms bounded_subset by auto
-  have "(SUP x:A. infdist x B) = 0" using assms by (simp add: subset_eq)
-  moreover have "(SUP x:B. infdist x A) \<ge> 0"
+  have "(SUP x\<in>A. infdist x B) = 0" using assms by (simp add: subset_eq)
+  moreover have "(SUP x\<in>B. infdist x A) \<ge> 0"
     using bdd_above_infdist_aux[OF \<open>bounded B\<close> \<open>bounded A\<close>] infdist_nonneg[of _ A]
     by (meson H(1) cSUP_upper2 ex_in_conv)
   ultimately show ?thesis unfolding hausdorff_distance_def using assms H by auto
@@ -183,7 +183,7 @@ next
     using closure_subset by auto
   have "infdist x A = 0" if "x \<in> closure A" for x
     using in_closure_iff_infdist_zero[OF \<open>A \<noteq> {}\<close>] that by auto
-  then have "(SUP x:closure A. infdist x A) = 0"
+  then have "(SUP x\<in>closure A. infdist x A) = 0"
     using \<open>closure A \<noteq> {}\<close> by auto
   then show ?thesis
     unfolding hausdorff_distance_subset[OF \<open>A \<subseteq> closure A\<close> \<open>A \<noteq> {}\<close> \<open>bounded (closure A)\<close>] by simp

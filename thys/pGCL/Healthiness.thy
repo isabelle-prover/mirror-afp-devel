@@ -428,7 +428,7 @@ next
     next
       assume "c \<noteq> 0"
       from nonempty have "S s \<noteq> {}" by blast
-      then have "inverse c * (INF x:S s. c * wp (prog x) P s) \<le> (INF a:S s. wp (prog a) P s)"
+      then have "inverse c * (INF x\<in>S s. c * wp (prog x) P s) \<le> (INF a\<in>S s. wp (prog a) P s)"
       proof (rule cINF_greatest)
         fix x
         assume "x \<in> S s"
@@ -440,9 +440,9 @@ next
           with sP have "0 \<le> wp (prog b) P s" by (auto dest: healthy)
           with pos show "0 \<le> z" by (auto simp: rwz intro: mult_nonneg_nonneg)
         qed
-        then have "(INF x:S s. c * wp (prog x) P s) \<le> c * wp (prog x) P s"
+        then have "(INF x\<in>S s. c * wp (prog x) P s) \<le> c * wp (prog x) P s"
         using \<open>x \<in> S s\<close> by (rule cINF_lower)
-        with \<open>c \<noteq> 0\<close> show "inverse c * (INF x:S s. c * wp (prog x) P s) \<le> wp (prog x) P s"
+        with \<open>c \<noteq> 0\<close> show "inverse c * (INF x\<in>S s. c * wp (prog x) P s) \<le> wp (prog x) P s"
           by (simp add: mult_div_mono_left pos)
       qed
       with \<open>c \<noteq> 0\<close> have "inverse c * ?V \<le> inverse c * ?U"

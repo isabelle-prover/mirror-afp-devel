@@ -437,7 +437,7 @@ lemma The_select_first[simp]: "select_first x p y \<Longrightarrow> The (select_
   by (intro the_equality select_first_unique)
 
 lemma select_first_INF:
-  "select_first x p y \<Longrightarrow> (INF x:I x. p x) = p y"
+  "select_first x p y \<Longrightarrow> (INF x\<in>I x. p x) = p y"
   by (intro antisym cINF_greatest cINF_lower bdd_belowI2[where m="p y"])
      (auto simp: select_first_def le_less)
 
@@ -589,7 +589,7 @@ proof -
        (auto intro!: prob_space_PiM prob_space_exponential simp del: Set.bex_simps(6))
 qed
 
-lemma K_alt: "K (t, x) = distr (\<Pi>\<^sub>M y\<in>I x. exponential (R x y)) S (\<lambda>p. (t + (INF y:I x. p y), The (select_first x p)))" (is "_ = ?R")
+lemma K_alt: "K (t, x) = distr (\<Pi>\<^sub>M y\<in>I x. exponential (R x y)) S (\<lambda>p. (t + (INF y\<in>I x. p y), The (select_first x p)))" (is "_ = ?R")
 proof (rule measure_eqI_generator_eq_countable)
   let ?E = "{ {t ..} \<times> A | (t::real) A. A \<subseteq> - I x \<or> (\<exists>s\<in>I x. A = {s}) }"
   show "Int_stable ?E"

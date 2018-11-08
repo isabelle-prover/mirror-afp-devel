@@ -678,7 +678,7 @@ context
 begin
 
 lemma esum_list_tendsto_SUP:
-  "((sum_list\<circ>list_of) \<longlongrightarrow> (SUP ys : {ys. lfinite ys \<and> ys \<le> xs}. esum_list ys)) (at' xs)"
+  "((sum_list\<circ>list_of) \<longlongrightarrow> (SUP ys \<in> {ys. lfinite ys \<and> ys \<le> xs}. esum_list ys)) (at' xs)"
     (is "(_ \<longlongrightarrow> ?y) _")
 proof (rule order_tendstoI)
   fix a assume "a < ?y"

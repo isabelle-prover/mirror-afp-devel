@@ -21,7 +21,7 @@ using mult_left_le_one_le by force
 lemma ennreal_leI: "x \<le> enn2real y \<Longrightarrow> ennreal x \<le> y"
 by(cases y) simp_all
 
-lemma enn2real_INF: "\<lbrakk> A \<noteq> {}; \<forall>x\<in>A. f x < \<top> \<rbrakk> \<Longrightarrow> enn2real (INF x:A. f x) = (INF x:A. enn2real (f x))"
+lemma enn2real_INF: "\<lbrakk> A \<noteq> {}; \<forall>x\<in>A. f x < \<top> \<rbrakk> \<Longrightarrow> enn2real (INF x\<in>A. f x) = (INF x\<in>A. enn2real (f x))"
 apply(rule antisym)
  apply(rule cINF_greatest)
   apply simp
@@ -59,17 +59,17 @@ lemma mcont2mcont_times_ennreal [cont_intro, simp]:
   \<Longrightarrow> mcont lub ord Sup (\<le>) (\<lambda>x. f x * g x :: ennreal)"
 by(best intro: ccpo.mcont2mcont'[OF complete_lattice_ccpo] mcont_times_ennreal1 mcont_times_ennreal2 ccpo.mcont_const[OF complete_lattice_ccpo])
 
-lemma ereal_INF_cmult: "0 < c \<Longrightarrow> (INF i:I. c * f i) = ereal c * (INF i:I. f i)"
+lemma ereal_INF_cmult: "0 < c \<Longrightarrow> (INF i\<in>I. c * f i) = ereal c * (INF i\<in>I. f i)"
 using ereal_Inf_cmult[where P="\<lambda>x. \<exists>i\<in>I. x = f i", of c]
 by(rule box_equals)(auto intro!: arg_cong[where f="Inf"] arg_cong2[where f="(*)"])
 
-lemma ereal_INF_multc: "0 < c \<Longrightarrow> (INF i:I. f i * c) = (INF i:I. f i) * ereal c"
+lemma ereal_INF_multc: "0 < c \<Longrightarrow> (INF i\<in>I. f i * c) = (INF i\<in>I. f i) * ereal c"
 using ereal_INF_cmult[of c f I] by(simp add: mult.commute)
 
 lemma INF_mult_left_ennreal: 
   assumes "I = {} \<Longrightarrow> c \<noteq> 0"
   and "\<lbrakk> c = \<top>; \<exists>i\<in>I. f i > 0 \<rbrakk> \<Longrightarrow> \<exists>p>0. \<forall>i\<in>I. f i \<ge> p"
-  shows "c * (INF i:I. f i) = (INF i:I. c * f i ::ennreal)"
+  shows "c * (INF i\<in>I. f i) = (INF i\<in>I. c * f i ::ennreal)"
 proof -
   consider (empty) "I = {}" | (top) "c = \<top>" | (zero) "c = 0" | (normal) "I \<noteq> {}" "c \<noteq> \<top>" "c \<noteq> 0" by auto
   then show ?thesis
@@ -82,7 +82,7 @@ proof -
       case True
       with assms(2) top obtain p where "p > 0" and p: "\<And>i. i \<in> I \<Longrightarrow> f i \<ge> p" by auto
       then have *: "\<And>i. i \<in> I \<Longrightarrow> f i > 0" by(auto intro: less_le_trans)
-      note \<open>0 < p\<close> also from p have "p \<le> (INF i:I. f i)" by(rule INF_greatest)
+      note \<open>0 < p\<close> also from p have "p \<le> (INF i\<in>I. f i)" by(rule INF_greatest)
       finally show ?thesis using top by(auto simp add: ennreal_top_mult dest: *)
     next
       case False
@@ -109,7 +109,7 @@ lemma nn_integral_try_spmf:
 by(simp add: nn_integral_measure_spmf spmf_try_spmf distrib_right nn_integral_add ennreal_mult mult.assoc nn_integral_cmult)
   (simp add: mult.commute)
 
-lemma INF_UNION: "(INF z : \<Union>x\<in>A. B x. f z) = (INF x:A. INF z:B x. f z)" for f :: "_ \<Rightarrow> 'b::complete_lattice"
+lemma INF_UNION: "(INF z \<in> \<Union>x\<in>A. B x. f z) = (INF x\<in>A. INF z\<in>B x. f z)" for f :: "_ \<Rightarrow> 'b::complete_lattice"
 by(auto intro!: antisym INF_greatest intro: INF_lower2)
 
 
@@ -150,16 +150,16 @@ proof
   let ?M = "count_space (set_spmf (lub_spmf Y))"
   have "nn_integral (measure_spmf (lub_spmf Y)) f = \<integral>\<^sup>+ x. ennreal (spmf (lub_spmf Y) x) * f x \<partial>?M"
     by(simp add: nn_integral_measure_spmf')
-  also have "\<dots> = \<integral>\<^sup>+ x. (SUP p:Y. ennreal (spmf p x) * f x) \<partial>?M"
+  also have "\<dots> = \<integral>\<^sup>+ x. (SUP p\<in>Y. ennreal (spmf p x) * f x) \<partial>?M"
     by(simp add: spmf_lub_spmf Y ennreal_SUP[OF SUP_spmf_neq_top'] SUP_mult_right_ennreal)
-  also have "\<dots> = (SUP p:Y. \<integral>\<^sup>+ x. ennreal (spmf p x) * f x \<partial>?M)"
+  also have "\<dots> = (SUP p\<in>Y. \<integral>\<^sup>+ x. ennreal (spmf p x) * f x \<partial>?M)"
   proof(rule nn_integral_monotone_convergence_SUP_countable)
     show "Complete_Partial_Order.chain (\<le>) ((\<lambda>i x. ennreal (spmf i x) * f x) ` Y)"
       using Y(1) by(rule chain_imageI)(auto simp add: le_fun_def intro!: mult_right_mono dest: monotone_spmf[THEN monotoneD])
   qed(simp_all add: Y(2))
-  also have "\<dots> = (SUP p:Y. nn_integral (measure_spmf p) f)"
+  also have "\<dots> = (SUP p\<in>Y. nn_integral (measure_spmf p) f)"
     by(auto simp add: nn_integral_measure_spmf Y nn_integral_count_space_indicator set_lub_spmf spmf_eq_0_set_spmf split: split_indicator intro!: SUP_cong nn_integral_cong)
-  finally show "nn_integral (measure_spmf (lub_spmf Y)) f = (SUP p:Y. nn_integral (measure_spmf p) f)" .
+  finally show "nn_integral (measure_spmf (lub_spmf Y)) f = (SUP p\<in>Y. nn_integral (measure_spmf p) f)" .
 qed
 
 lemma mcont2mcont_nn_integral_spmf [THEN lfp.mcont2mcont, cont_intro]:
@@ -179,7 +179,7 @@ lemma nn_integral_mono_lfp [partial_function_mono]:
   by(rule nn_integral_mono2mono)
 
 lemma INF_mono_lfp [partial_function_mono]:
-  "(\<And>x. lfp.mono_body (\<lambda>f. F f x)) \<Longrightarrow> lfp.mono_body (\<lambda>f. INF x:M. F f x)"
+  "(\<And>x. lfp.mono_body (\<lambda>f. F f x)) \<Longrightarrow> lfp.mono_body (\<lambda>f. INF x\<in>M. F f x)"
   by(rule monotoneI)(blast dest: monotoneD intro: INF_mono)
 
 lemmas parallel_fixp_induct_1_2 = parallel_fixp_induct_uc[
@@ -214,14 +214,14 @@ begin
 partial_function (lfp_strong) expectation_gpv :: "('a, 'out, 'ret) gpv \<Rightarrow> ennreal" where
   "expectation_gpv gpv = 
   (\<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> f x 
-              | IO out c \<Rightarrow> INF r:responses_\<I> \<I> out. expectation_gpv (c r)) \<partial>measure_spmf (the_gpv gpv))
+              | IO out c \<Rightarrow> INF r\<in>responses_\<I> \<I> out. expectation_gpv (c r)) \<partial>measure_spmf (the_gpv gpv))
    + fail * pmf (the_gpv gpv) None"
 
 lemma expectation_gpv_fixp_induct [case_names adm bottom step]:
   assumes "lfp.admissible P"
     and "P (\<lambda>_. 0)"
     and "\<And>expectation_gpv'. \<lbrakk> \<And>gpv. expectation_gpv' gpv \<le> expectation_gpv gpv; P expectation_gpv' \<rbrakk> \<Longrightarrow>
-         P (\<lambda>gpv. (\<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> f x | IO out c \<Rightarrow> INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) \<partial>measure_spmf (the_gpv gpv)) + fail * pmf (the_gpv gpv) None)"
+         P (\<lambda>gpv. (\<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> f x | IO out c \<Rightarrow> INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<partial>measure_spmf (the_gpv gpv)) + fail * pmf (the_gpv gpv) None)"
   shows "P expectation_gpv"
   by(rule expectation_gpv.fixp_induct)(simp_all add: bot_ennreal_def assms fun_ord_def)
   
@@ -236,7 +236,7 @@ lemma expectation_gpv_lift_spmf [simp]:
   by(subst expectation_gpv.simps)(auto simp add: o_def pmf_map vimage_def measure_pmf_single)
 
 lemma expectation_gpv_Pause [simp]:
-  "expectation_gpv (Pause out c) = (INF r:responses_\<I> \<I> out. expectation_gpv (c r))"
+  "expectation_gpv (Pause out c) = (INF r\<in>responses_\<I> \<I> out. expectation_gpv (c r))"
   by(subst expectation_gpv.simps)(simp add: measure_spmf_return_spmf nn_integral_return)
 
 end
@@ -434,7 +434,7 @@ proof(induction arbitrary: gpv rule: expectation_gpv_fixp_induct)
   case adm show ?case by simp
   case bottom show ?case by simp
   case (step expectation_gpv')
-  have "integral\<^sup>N (measure_spmf (the_gpv gpv)) (case_generat (\<lambda>x. c) (\<lambda>out c. INF r:responses_\<I> \<I> out. expectation_gpv' (c r))) \<le> integral\<^sup>N (measure_spmf (the_gpv gpv)) (\<lambda>_. max c fail)"
+  have "integral\<^sup>N (measure_spmf (the_gpv gpv)) (case_generat (\<lambda>x. c) (\<lambda>out c. INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r))) \<le> integral\<^sup>N (measure_spmf (the_gpv gpv)) (\<lambda>_. max c fail)"
     using step.prems
     by(intro nn_integral_mono_AE)(auto 4 4 split: generat.split intro: INF_lower2 step.IH WT_gpv_ContD[OF step.prems] dest!: WT_gpv_OutD simp add: in_outs_\<I>_iff_responses_\<I>)
   also have "\<dots> + fail * pmf (the_gpv gpv) None \<le> \<dots> + max c fail * pmf (the_gpv gpv) None"
@@ -481,7 +481,7 @@ proof(induction arbitrary: gpv s rule: parallel_fixp_induct_1_2[OF complete_latt
   case adm show ?case by simp
   case bottom show ?case by(simp add: bot_ennreal_def)
   case (step expectation_gpv'' exec_gpv')
-  have *: "(INF r:responses_\<I> \<I> out. expectation_gpv'' (c r)) \<le> \<integral>\<^sup>+ (x, s). f x \<partial>measure_spmf (bind_spmf (callee s out) (\<lambda>(r, s'). exec_gpv' (c r) s'))" (is "?lhs \<le> ?rhs")
+  have *: "(INF r\<in>responses_\<I> \<I> out. expectation_gpv'' (c r)) \<le> \<integral>\<^sup>+ (x, s). f x \<partial>measure_spmf (bind_spmf (callee s out) (\<lambda>(r, s'). exec_gpv' (c r) s'))" (is "?lhs \<le> ?rhs")
     if "IO out c \<in> set_spmf (the_gpv gpv)" for out c 
   proof -
     from step.prems that have out: "out \<in> outs_\<I> \<I>" by(rule WT_gpvD)
@@ -513,7 +513,7 @@ by(simp add: weight_gpv_def measure_spmf.emeasure_eq_measure)
 
 lemma weight_gpv_Pause [simp]:
   "(\<And>r. r \<in> responses_\<I> \<I> out \<Longrightarrow> \<I> \<turnstile>g c r \<surd>)
-   \<Longrightarrow> weight_gpv \<I> (Pause out c) = (if out \<in> outs_\<I> \<I> then INF r:responses_\<I> \<I> out. weight_gpv \<I> (c r) else 0)"
+   \<Longrightarrow> weight_gpv \<I> (Pause out c) = (if out \<in> outs_\<I> \<I> then INF r\<in>responses_\<I> \<I> out. weight_gpv \<I> (c r) else 0)"
 apply(clarsimp simp add: weight_gpv_def in_outs_\<I>_iff_responses_\<I>)
 apply(erule enn2real_INF)
 apply(clarsimp simp add: expectation_gpv_const_le[THEN le_less_trans])
@@ -614,7 +614,7 @@ proof
   show "expectation_gpv 0 \<I> (\<lambda>_. 1) gpv = 1" using assms
   proof(induction rule: lossless_WT_gpv_induct)
     case (lossless_gpv p)
-    have "expectation_gpv 0 \<I> (\<lambda>_. 1) (GPV p) = nn_integral (measure_spmf p) (case_generat (\<lambda>_. 1) (\<lambda>out c. INF r:responses_\<I> \<I> out. 1))"
+    have "expectation_gpv 0 \<I> (\<lambda>_. 1) (GPV p) = nn_integral (measure_spmf p) (case_generat (\<lambda>_. 1) (\<lambda>out c. INF r\<in>responses_\<I> \<I> out. 1))"
       by(subst expectation_gpv.simps)(clarsimp split: generat.split cong: INF_cong simp add: lossless_gpv.IH intro!: nn_integral_cong_AE)
     also have "\<dots> = nn_integral (measure_spmf p) (\<lambda>_. 1)"
       by(intro nn_integral_cong_AE)(auto split: generat.split dest!: lossless_gpv.hyps(2) simp add: in_outs_\<I>_iff_responses_\<I>)
@@ -629,7 +629,7 @@ proof
   show "expectation_gpv 1 \<I> (\<lambda>_. 1) gpv = 1" using assms
   proof(induction rule: finite_gpv_induct)
     case (finite_gpv gpv)
-    then have "expectation_gpv 1 \<I> (\<lambda>_. 1) gpv = nn_integral (measure_spmf (the_gpv gpv)) (case_generat (\<lambda>_. 1) (\<lambda>out c. INF r:responses_\<I> \<I> out. 1)) + pmf (the_gpv gpv) None"
+    then have "expectation_gpv 1 \<I> (\<lambda>_. 1) gpv = nn_integral (measure_spmf (the_gpv gpv)) (case_generat (\<lambda>_. 1) (\<lambda>out c. INF r\<in>responses_\<I> \<I> out. 1)) + pmf (the_gpv gpv) None"
       by(subst expectation_gpv.simps)(clarsimp intro!: nn_integral_cong_AE INF_cong[OF refl] split!: generat.split simp add: WT_gpv_ContD)
     also have "\<dots> = nn_integral (measure_spmf (the_gpv gpv)) (\<lambda>_. 1) + pmf (the_gpv gpv) None"
       by(intro arg_cong2[where f="(+)"] nn_integral_cong_AE)
@@ -647,7 +647,7 @@ lemma plossless_gpv_lossless_spmfD:
 proof -
   have "1 = expectation_gpv 0 \<I> (\<lambda>_. 1) gpv"
     using lossless by(auto dest: pgen_lossless_gpvD simp add: weight_gpv_def)
-  also have "\<dots> = \<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> 1 | IO out c \<Rightarrow> INF r:responses_\<I> \<I> out. expectation_gpv 0 \<I> (\<lambda>_. 1) (c r)) \<partial>measure_spmf (the_gpv gpv)"
+  also have "\<dots> = \<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> 1 | IO out c \<Rightarrow> INF r\<in>responses_\<I> \<I> out. expectation_gpv 0 \<I> (\<lambda>_. 1) (c r)) \<partial>measure_spmf (the_gpv gpv)"
     by(subst expectation_gpv.simps)(auto)
   also have "\<dots> \<le> \<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> 1 | IO out c \<Rightarrow> 1) \<partial>measure_spmf (the_gpv gpv)"
     apply(rule nn_integral_mono_AE)
@@ -680,10 +680,10 @@ proof(rule_tac [!] pgen_lossless_gpvI, rule_tac [!] antisym[rotated], rule_tac c
   have less: "expectation_gpv fail \<I> (\<lambda>_. 1) gpv < weight_spmf (the_gpv gpv) + fail * pmf (the_gpv gpv) None"
     if fail: "fail \<le> 1" and *: "\<not> 1 \<le> expectation_gpv fail \<I> (\<lambda>_. 1) (c input)" for fail :: ennreal
   proof -
-    have "expectation_gpv fail \<I> (\<lambda>_. 1) gpv = (\<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> 1 | IO out c \<Rightarrow> INF r:responses_\<I> \<I> out. expectation_gpv fail \<I> (\<lambda>_. 1) (c r)) * spmf (the_gpv gpv) generat * indicator (UNIV - {IO out c}) generat + (INF r:responses_\<I> \<I> out. expectation_gpv fail \<I> (\<lambda>_. 1) (c r)) * spmf (the_gpv gpv) (IO out c) * indicator {IO out c} generat \<partial>count_space UNIV) + fail * pmf (the_gpv gpv) None"
+    have "expectation_gpv fail \<I> (\<lambda>_. 1) gpv = (\<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> 1 | IO out c \<Rightarrow> INF r\<in>responses_\<I> \<I> out. expectation_gpv fail \<I> (\<lambda>_. 1) (c r)) * spmf (the_gpv gpv) generat * indicator (UNIV - {IO out c}) generat + (INF r\<in>responses_\<I> \<I> out. expectation_gpv fail \<I> (\<lambda>_. 1) (c r)) * spmf (the_gpv gpv) (IO out c) * indicator {IO out c} generat \<partial>count_space UNIV) + fail * pmf (the_gpv gpv) None"
       by(subst expectation_gpv.simps)(auto simp add: nn_integral_measure_spmf mult.commute intro!: nn_integral_cong split: split_indicator generat.split)
-    also have "\<dots> = (\<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> 1 | IO out c \<Rightarrow> INF r:responses_\<I> \<I> out. expectation_gpv fail \<I> (\<lambda>_. 1) (c r)) * spmf (the_gpv gpv) generat * indicator (UNIV - {IO out c}) generat \<partial>count_space UNIV) +
-      (INF r:responses_\<I> \<I> out. expectation_gpv fail \<I> (\<lambda>_. 1) (c r)) * spmf (the_gpv gpv) (IO out c) + fail * pmf (the_gpv gpv) None" (is "_ = ?rest + ?cr + _")
+    also have "\<dots> = (\<integral>\<^sup>+ generat. (case generat of Pure x \<Rightarrow> 1 | IO out c \<Rightarrow> INF r\<in>responses_\<I> \<I> out. expectation_gpv fail \<I> (\<lambda>_. 1) (c r)) * spmf (the_gpv gpv) generat * indicator (UNIV - {IO out c}) generat \<partial>count_space UNIV) +
+      (INF r\<in>responses_\<I> \<I> out. expectation_gpv fail \<I> (\<lambda>_. 1) (c r)) * spmf (the_gpv gpv) (IO out c) + fail * pmf (the_gpv gpv) None" (is "_ = ?rest + ?cr + _")
       by(subst nn_integral_add) simp_all
     also from calculation expectation_gpv_const_le[OF WT, of fail 1] fail have fin: "?rest \<noteq> \<infinity>"
       by(auto simp add: top_add top_unique max_def split: if_split_asm)
@@ -792,7 +792,7 @@ qed
 
 lemma pfinite_INF_le_expectation_gpv:
   fixes fail \<I> gpv f
-  defines "c \<equiv> min (INF x:results_gpv \<I> gpv. f x) fail"
+  defines "c \<equiv> min (INF x\<in>results_gpv \<I> gpv. f x) fail"
   assumes fin: "pfinite_gpv \<I> gpv"
   shows "c \<le> expectation_gpv fail \<I> f gpv" (is "?lhs \<le> ?rhs")
 proof(cases "c > 0")
@@ -807,7 +807,7 @@ qed simp
 lemma plossless_INF_le_expectation_gpv:
   fixes fail
   assumes "plossless_gpv \<I> gpv" and "\<I> \<turnstile>g gpv \<surd>"
-  shows "(INF x:results_gpv \<I> gpv. f x) \<le> expectation_gpv fail \<I> f gpv" (is "?lhs \<le> ?rhs")
+  shows "(INF x\<in>results_gpv \<I> gpv. f x) \<le> expectation_gpv fail \<I> f gpv" (is "?lhs \<le> ?rhs")
 proof -
   from assms have fin: "pfinite_gpv \<I> gpv" and co: "colossless_gpv \<I> gpv"
     by(simp_all add: plossless_iff_colossless_pfinite)
@@ -834,49 +834,49 @@ proof(induction arbitrary: gpv s rule: expectation_gpv_fixp_induct)
   { fix out c
     assume IO: "IO out c \<in> set_spmf (the_gpv gpv)"
     with step.prems have out: "out \<in> outs_\<I> \<I>" by(rule WT_gpv_OutD)
-    have "(INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) = \<integral>\<^sup>+ generat. (INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) \<partial>measure_spmf (the_gpv (callee s out))"
+    have "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) = \<integral>\<^sup>+ generat. (INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<partial>measure_spmf (the_gpv (callee s out))"
       using WT_callee[OF out, of s] callee[OF out, of s]
       by(clarsimp simp add: measure_spmf.emeasure_eq_measure plossless_iff_colossless_pfinite colossless_gpv_lossless_spmfD lossless_weight_spmfD)
     also have "\<dots> \<le> \<integral>\<^sup>+ generat. (case generat of Pure (x, s') \<Rightarrow>
             \<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
-               | Inr (out', callee', rpv) \<Rightarrow> INF r':responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r, s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
+               | Inr (out', callee', rpv) \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r, s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
             \<partial>measure_spmf (inline1 callee (c x) s')
-         | IO out' rpv \<Rightarrow> INF r':responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r'))
+         | IO out' rpv \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r'))
        \<partial>measure_spmf (the_gpv (callee s out))"
     proof(rule nn_integral_mono_AE; simp split!: generat.split)
       fix x s'
       assume Pure: "Pure (x, s') \<in> set_spmf (the_gpv (callee s out))"
       hence "(x, s') \<in> results_gpv \<I>' (callee s out)" by(rule results_gpv.Pure)
       with callee'[OF out, of s] have x: "x \<in> responses_\<I> \<I> out" by blast
-      hence "(INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> expectation_gpv' (c x)" by(rule INF_lower)
+      hence "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> expectation_gpv' (c x)" by(rule INF_lower)
       also have "\<dots> \<le> expectation_gpv2 (\<lambda>(x, s). f x) (inline callee (c x) s')"
         by(rule step.IH)(rule WT_gpv_ContD[OF step.prems(1) IO x] step.prems|assumption)+
       also have "\<dots> = \<integral>\<^sup>+ xx. (case xx of Inl (x, _) \<Rightarrow> f x 
-               | Inr (out', callee', rpv) \<Rightarrow> INF r':responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r, s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
+               | Inr (out', callee', rpv) \<Rightarrow> INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r, s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (rpv r) s')) (callee' r'))
             \<partial>measure_spmf (inline1 callee (c x) s')"
         unfolding expectation_gpv2_def
         by(subst expectation_gpv.simps)(auto simp add: inline_sel split_def o_def intro!: nn_integral_cong split: generat.split sum.split)
-      finally show "(INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> \<dots>" .
+      finally show "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> \<dots>" .
     next
       fix out' rpv
       assume IO': "IO out' rpv \<in> set_spmf (the_gpv (callee s out))"
-      have "(INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> (INF (r, s'):(\<Union>r'\<in>responses_\<I> \<I>' out'. results_gpv \<I>' (rpv r')). expectation_gpv' (c r))"
+      have "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> (INF (r, s')\<in>(\<Union>r'\<in>responses_\<I> \<I>' out'. results_gpv \<I>' (rpv r')). expectation_gpv' (c r))"
         using IO' callee'[OF out, of s] by(intro INF_mono)(auto intro: results_gpv.IO)
-      also have "\<dots> = (INF r':responses_\<I> \<I>' out'. INF (r, s'):results_gpv \<I>' (rpv r'). expectation_gpv' (c r))"
+      also have "\<dots> = (INF r'\<in>responses_\<I> \<I>' out'. INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv' (c r))"
         by(simp add: INF_UNION)
-      also have "\<dots> \<le> (INF r':responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r'))"
+      also have "\<dots> \<le> (INF r'\<in>responses_\<I> \<I>' out'. expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r'))"
       proof(rule INF_mono, rule bexI)
         fix r'
         assume r': "r' \<in> responses_\<I> \<I>' out'"
-        have "(INF (r, s'):results_gpv \<I>' (rpv r'). expectation_gpv' (c r)) \<le> (INF (r, s'):results_gpv \<I>' (rpv r'). expectation_gpv2 (\<lambda>(x, s). f x) (inline callee (c r) s'))"
+        have "(INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv' (c r)) \<le> (INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv2 (\<lambda>(x, s). f x) (inline callee (c r) s'))"
           using IO IO' step.prems out callee'[OF out, of s] r'
           by(auto intro!: INF_mono rev_bexI step.IH dest: WT_gpv_ContD intro: results_gpv.IO)
         also have "\<dots> \<le>  expectation_gpv 0 \<I>' (\<lambda>(r', s'). expectation_gpv 0 \<I>' (\<lambda>(x, s). f x) (inline callee (c r') s')) (rpv r')"
           unfolding expectation_gpv2_def using plossless_gpv_ContD[OF callee, OF out IO' r'] WT_callee[OF out, of s] IO' r'
           by(intro plossless_INF_le_expectation_gpv)(auto intro: WT_gpv_ContD)
-        finally show "(INF (r, s'):results_gpv \<I>' (rpv r'). expectation_gpv' (c r)) \<le> \<dots>" .
+        finally show "(INF (r, s')\<in>results_gpv \<I>' (rpv r'). expectation_gpv' (c r)) \<le> \<dots>" .
       qed
-      finally show "(INF r:responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> \<dots>" .
+      finally show "(INF r\<in>responses_\<I> \<I> out. expectation_gpv' (c r)) \<le> \<dots>" .
     qed
     also note calculation }
   then show ?case unfolding expectation_gpv2_def

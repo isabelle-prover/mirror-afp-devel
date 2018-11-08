@@ -801,14 +801,14 @@ lemma lsc_hull_liminf_at:
   shows "\<forall>x. (lsc_hull f) x = min (f x) (Liminf (at x) f)"
 proof-
 { fix x z assume "(x,z):Epigraph UNIV (\<lambda>x. min (f x) (Liminf (at x) f))"
-  hence xz_def: "ereal z \<ge> (SUP e:{0<..}. INF y:ball x e. f y)"
+  hence xz_def: "ereal z \<ge> (SUP e\<in>{0<..}. INF y\<in>ball x e. f y)"
     unfolding Epigraph_def min_Liminf_at by auto
   { fix e::real assume "e>0"
     hence "e/sqrt 2>0" using \<open>e>0\<close> by simp
     from this obtain e1 where e1_def: "e1<e/sqrt 2 \<and> e1>0" using dense by auto
-    hence "(SUP e:{0<..}. INF y:ball x e. f y) \<ge> (INF y:ball x e1. f y)"
+    hence "(SUP e\<in>{0<..}. INF y\<in>ball x e. f y) \<ge> (INF y\<in>ball x e1. f y)"
       by (auto intro: SUP_upper)
-    hence "ereal z \<ge> (INF y:ball x e1. f y)" using xz_def by auto
+    hence "ereal z \<ge> (INF y\<in>ball x e1. f y)" using xz_def by auto
     hence *: "\<forall>y>ereal z. \<exists>t. t \<in> ball x e1 \<and> f t \<le> y"
       by (simp add: Bex_def Inf_le_iff_less)
     obtain t where t_def: "t : ball x e1 \<and> f t \<le> ereal(z+e1)"
@@ -839,27 +839,27 @@ moreover
       by (auto intro: real_sqrt_sum_squares_ge2)
     also have "\<dots><e" using y_def unfolding dist_prod_def by (simp add: algebra_simps)
     finally have h2: "dist (snd y) z < e" by auto
-    have "(INF y:ball x e. f y) \<le> f(fst y)" using h1 by (simp add: INF_lower)
+    have "(INF y\<in>ball x e. f y) \<le> f(fst y)" using h1 by (simp add: INF_lower)
     also have "\<dots>\<le>ereal(snd y)" using y_def unfolding Epigraph_def by auto
     also have "\<dots> < ereal(z+e)" using h2 unfolding dist_norm by auto
-    finally have "(INF y:ball x e. f y) < ereal(z+e)" by auto
-  } hence *: "\<forall>e>0. (INF y:ball x e. f y) < ereal(z+e)" by auto
+    finally have "(INF y\<in>ball x e. f y) < ereal(z+e)" by auto
+  } hence *: "\<forall>e>0. (INF y\<in>ball x e. f y) < ereal(z+e)" by auto
 
   { fix e assume "(e::real)>0"
     { fix d assume "(d::real)>0"
       { assume "d<e"
-        have "(INF y:ball x d. f y) < ereal(z+d)" using * \<open>d>0\<close> by auto
+        have "(INF y\<in>ball x d. f y) < ereal(z+d)" using * \<open>d>0\<close> by auto
         also have "\<dots>< ereal(z+e)" using \<open>d<e\<close> by auto
-        finally have "(INF y:ball x d. f y) < ereal(z+e)" by auto
+        finally have "(INF y\<in>ball x d. f y) < ereal(z+e)" by auto
       }
       moreover
       { assume "~(d<e)"
         hence "ball x e \<le> ball x d" by auto
-        hence "(INF y:ball x d. f y) \<le> (INF y:ball x e. f y)" apply (subst INF_mono) by auto
+        hence "(INF y\<in>ball x d. f y) \<le> (INF y\<in>ball x e. f y)" apply (subst INF_mono) by auto
         also have "\<dots>< ereal(z+e)" using * \<open>e>0\<close> by auto
-        finally have "(INF y:ball x d. f y) < ereal(z+e)" by auto
-      } ultimately have "(INF y:ball x d. f y) < ereal(z+e)" by blast
-      hence "(INF y:ball x d. f y) \<le> ereal(z+e)" by auto
+        finally have "(INF y\<in>ball x d. f y) < ereal(z+e)" by auto
+      } ultimately have "(INF y\<in>ball x d. f y) < ereal(z+e)" by blast
+      hence "(INF y\<in>ball x d. f y) \<le> ereal(z+e)" by auto
     } hence "min (f x) (Liminf (at x) f) \<le> ereal (z+e)" unfolding min_Liminf_at by (auto intro: SUP_least)
   } hence "min (f x) (Liminf (at x) f) \<le> ereal z" using ereal_le_epsilon2 by auto
   hence "(x,z):Epigraph UNIV (\<lambda>x. min (f x) (Liminf (at x) f))" unfolding Epigraph_def by auto
@@ -876,7 +876,7 @@ lemma lsc_hull_same_inf:
   shows "(INF x. lsc_hull f x) = (INF x. f x)"
 proof-
 { fix x
-  have "(INF x. f x) \<le> (INF y:ball x 1. f y)" apply (subst INF_mono) by auto
+  have "(INF x. f x) \<le> (INF y\<in>ball x 1. f y)" apply (subst INF_mono) by auto
   also have "\<dots> \<le> min (f x) (Liminf (at x) f)" unfolding min_Liminf_at by (auto intro: SUP_upper)
   also have "\<dots>=(lsc_hull f) x" using lsc_hull_liminf_at[of f] by auto
   finally have "(INF x. f x) \<le> (lsc_hull f) x" by auto

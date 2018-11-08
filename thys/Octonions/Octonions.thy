@@ -189,7 +189,7 @@ definition "sgn x = x /\<^sub>R norm x" for x :: octo
 definition "dist x y = norm (x - y)" for x y :: octo
 
 definition [code del]:
-  "(uniformity :: (octo \<times> octo) filter) = (INF e:{0 <..}. principal {(x, y). dist x y < e})"
+  "(uniformity :: (octo \<times> octo) filter) = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
 definition [code del]:
   "open (U :: octo set) \<longleftrightarrow> (\<forall>x\<in>U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"

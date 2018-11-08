@@ -147,7 +147,7 @@ text \<open>To define a metric space in the current library of Isabelle/HOL, one
 a uniformity structure and a topology, as follows (they are prescribed by the distance):\<close>
 
 definition uniformity_metric_completion::"(('a metric_completion) \<times> ('a metric_completion)) filter"
-  where "uniformity_metric_completion = (INF e:{0 <..}. principal {(x, y). dist x y < e})"
+  where "uniformity_metric_completion = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
 definition open_metric_completion :: "'a metric_completion set \<Rightarrow> bool"
   where "open_metric_completion U = (\<forall>x\<in>U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"

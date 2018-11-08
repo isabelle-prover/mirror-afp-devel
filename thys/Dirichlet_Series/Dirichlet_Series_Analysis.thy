@@ -77,7 +77,7 @@ class nat_power_normed_field = nat_power_field + real_normed_field + real_inner 
   assumes has_vector_derivative_real_power_aux:
             "x > 0 \<Longrightarrow> filterlim (\<lambda>y. (real_power y c - real_power x (c :: 'a) -
                (y - x) *\<^sub>R (c * real_power x (c - 1))) /\<^sub>R
-               norm (y - x)) (INF S:{S. open S \<and> 0 \<in> S}. principal S) (at x)"
+               norm (y - x)) (INF S\<in>{S. open S \<and> 0 \<in> S}. principal S) (at x)"
   assumes norm_nat_power: "n > 0 \<Longrightarrow> norm (nat_power n y) = real n powr (y \<bullet> 1)"
 begin
  
@@ -165,7 +165,7 @@ next
   hence "((\<lambda>y. real_power y c) has_vector_derivative c * real_power x (c - 1)) (at x)"
     by (auto intro!: derivative_eq_intros has_vector_derivative_real_complex)
   thus "LIM y at x. (real_power y c - real_power x c - (y - x) *\<^sub>R (c * real_power x (c - 1))) /\<^sub>R
-           norm (y - x) :> INF S:{S. open S \<and> 0 \<in> S}. principal S"
+           norm (y - x) :> INF S\<in>{S. open S \<and> 0 \<in> S}. principal S"
     by (simp add: has_vector_derivative_def has_derivative_def netlimit_at nhds_def)
 next
   fix n :: nat and x :: real
@@ -226,11 +226,11 @@ qed
 
 definition conv_abscissa
     :: "'a :: {nat_power,banach,real_normed_field, real_inner} fds \<Rightarrow> ereal" where
-  "conv_abscissa f = (INF s:{s. fds_converges f s}. ereal (s \<bullet> 1))"
+  "conv_abscissa f = (INF s\<in>{s. fds_converges f s}. ereal (s \<bullet> 1))"
 
 definition abs_conv_abscissa
     :: "'a :: {nat_power,banach,real_normed_field, real_inner} fds \<Rightarrow> ereal" where
-  "abs_conv_abscissa f = (INF s:{s. fds_abs_converges f s}. ereal (s \<bullet> 1))"
+  "abs_conv_abscissa f = (INF s\<in>{s. fds_abs_converges f s}. ereal (s \<bullet> 1))"
 
 lemma conv_abscissa_mono:
   assumes "\<And>s. fds_converges g s \<Longrightarrow> fds_converges f s"

@@ -1202,7 +1202,7 @@ text \<open>To define a metric space in the current library of Isabelle/HOL, one
 a uniformity structure and a topology, as follows (they are prescribed by the distance):\<close>
 
 definition uniformity_Gromov_completion::"(('a Gromov_completion) \<times> ('a Gromov_completion)) filter"
-  where "uniformity_Gromov_completion = (INF e:{0 <..}. principal {(x, y). dist x y < e})"
+  where "uniformity_Gromov_completion = (INF e\<in>{0 <..}. principal {(x, y). dist x y < e})"
 
 definition open_Gromov_completion :: "'a Gromov_completion set \<Rightarrow> bool"
   where "open_Gromov_completion U = (\<forall>x\<in>U. eventually (\<lambda>(x', y). x' = x \<longrightarrow> y \<in> U) uniformity)"

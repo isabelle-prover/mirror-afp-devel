@@ -789,8 +789,8 @@ proof (intro ext, simp add: SetDC_def DC_def)
     by(auto intro:Min_insert)
   also from B D have "... = min (a x ab P s) (Inf ((\<lambda>x. a x ab P s) ` S))"
     by(simp add:cInf_eq_Min)
-  finally show "(INF x:insert x S. a x ab P s) =
-    min (a x ab P s) (INF x:S. a x ab P s)"
+  finally show "(INF x\<in>insert x S. a x ab P s) =
+    min (a x ab P s) (INF x\<in>S. a x ab P s)"
     by (simp cong del: INF_cong_strong)
 qed
 

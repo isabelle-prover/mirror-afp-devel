@@ -108,7 +108,7 @@ proof -
 
   \<comment> \<open>The derivative of @{term p} is bounded within @{term "{x-1..x+1}"}.\<close>
   let ?f = "\<lambda>t. \<bar>poly (pderiv p) t\<bar>"
-  define M where "M = (SUP t:{x-1..x+1}. ?f t)"
+  define M where "M = (SUP t\<in>{x-1..x+1}. ?f t)"
   define roots where "roots = {x. poly p x = 0} - {x}"
 
   define A_set where "A_set = {1, 1/M} \<union> {abs (x' - x) |x'. x' \<in> roots}"

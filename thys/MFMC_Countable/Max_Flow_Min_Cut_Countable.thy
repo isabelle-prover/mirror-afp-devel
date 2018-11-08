@@ -188,12 +188,12 @@ by(auto simp add: d_IN_def intro!: nn_integral_ge_point)
 
 lemma d_OUT_monotone_convergence_SUP:
   assumes "incseq (\<lambda>n y. f n (x, y))"
-  shows "d_OUT (\<lambda>e. SUP n :: nat. f n e) x = (SUP n. d_OUT (f n) x)"
+  shows "d_OUT (\<lambda>e. SUP n. f n e) x = (SUP n. d_OUT (f n) x)"
 unfolding d_OUT_def by(rule nn_integral_monotone_convergence_SUP[OF assms]) simp
 
 lemma d_IN_monotone_convergence_SUP:
   assumes "incseq (\<lambda>n x. f n (x, y))"
-  shows "d_IN (\<lambda>e. SUP n :: nat. f n e) y = (SUP n. d_IN (f n) y)"
+  shows "d_IN (\<lambda>e. SUP n. f n e) y = (SUP n. d_IN (f n) y)"
 unfolding d_IN_def by(rule nn_integral_monotone_convergence_SUP[OF assms]) simp
 
 lemma d_OUT_diff:
@@ -248,8 +248,8 @@ lemma
   assumes chain: "Complete_Partial_Order.chain (\<le>) Y"
   and Y: "Y \<noteq> {}"
   and countable: "countable (support_flow (Sup Y))"
-  shows d_OUT_Sup: "d_OUT (Sup Y) x = (SUP f:Y. d_OUT f x)" (is "?OUT x" is "?lhs1 x = ?rhs1 x")
-  and d_IN_Sup: "d_IN (Sup Y) y = (SUP f:Y. d_IN f y)" (is "?IN" is "?lhs2 = ?rhs2")
+  shows d_OUT_Sup: "d_OUT (Sup Y) x = (SUP f\<in>Y. d_OUT f x)" (is "?OUT x" is "?lhs1 x = ?rhs1 x")
+  and d_IN_Sup: "d_IN (Sup Y) y = (SUP f\<in>Y. d_IN f y)" (is "?IN" is "?lhs2 = ?rhs2")
   and SINK_Sup: "SINK (Sup Y) = (\<Inter>f\<in>Y. SINK f)" (is "?SINK")
 proof -
   have chain': "Complete_Partial_Order.chain (\<le>) ((\<lambda>f y. f (x, y)) ` Y)" for x using chain
@@ -258,9 +258,9 @@ proof -
     using _ countable[THEN countable_image[where f=snd]]
     by(rule countable_subset)(auto intro: prod.expand rev_image_eqI)
   { fix x
-    have "?lhs1 x = (\<Sum>\<^sup>+ y\<in>{y. (x, y) \<in> support_flow (Sup Y)}. SUP f:Y. f (x, y))"
+    have "?lhs1 x = (\<Sum>\<^sup>+ y\<in>{y. (x, y) \<in> support_flow (Sup Y)}. SUP f\<in>Y. f (x, y))"
       by(subst d_OUT_alt_def2; simp)
-    also have "\<dots> = (SUP f:Y. \<Sum>\<^sup>+ y\<in>{y. (x, y) \<in> support_flow (Sup Y)}. f (x, y))" using Y
+    also have "\<dots> = (SUP f\<in>Y. \<Sum>\<^sup>+ y\<in>{y. (x, y) \<in> support_flow (Sup Y)}. f (x, y))" using Y
       by(rule nn_integral_monotone_convergence_SUP_countable)(auto simp add: chain' intro: countable')
     also have "\<dots> = ?rhs1 x" unfolding d_OUT_alt_def2
       by(auto 4 3 simp add: support_flow_Sup max_def nn_integral_count_space_indicator intro!: nn_integral_cong SUP_cong split: split_indicator dest: not_in_support_flowD)
@@ -272,9 +272,9 @@ proof -
   have countable'': "countable {x. (x, y) \<in> support_flow (Sup Y)}" for y
     using _ countable[THEN countable_image[where f=fst]]
     by(rule countable_subset)(auto intro: prod.expand rev_image_eqI)
-  have "?lhs2 = (\<Sum>\<^sup>+ x\<in>{x. (x, y) \<in> support_flow (Sup Y)}. SUP f:Y. f (x, y))"
+  have "?lhs2 = (\<Sum>\<^sup>+ x\<in>{x. (x, y) \<in> support_flow (Sup Y)}. SUP f\<in>Y. f (x, y))"
     by(subst d_IN_alt_def2; simp)
-  also have "\<dots> = (SUP f:Y. \<Sum>\<^sup>+ x\<in>{x. (x, y) \<in> support_flow (Sup Y)}. f (x, y))" using Y
+  also have "\<dots> = (SUP f\<in>Y. \<Sum>\<^sup>+ x\<in>{x. (x, y) \<in> support_flow (Sup Y)}. f (x, y))" using Y
     by(rule nn_integral_monotone_convergence_SUP_countable)(simp_all add: chain'' countable'')
   also have "\<dots> = ?rhs2" unfolding d_IN_alt_def2
     by(auto 4 3 simp add: support_flow_Sup max_def nn_integral_count_space_indicator intro!: nn_integral_cong SUP_cong split: split_indicator dest: not_in_support_flowD)
@@ -288,8 +288,8 @@ lemma
   and Y: "Y \<noteq> {}"
   and countable: "countable (support_flow f)"
   and bounded: "\<And>g e. g \<in> Y \<Longrightarrow> g e \<le> f e"
-  shows d_OUT_Inf: "d_OUT f x \<noteq> top \<Longrightarrow> d_OUT (Inf Y) x = (INF g:Y. d_OUT g x)" (is "_ \<Longrightarrow> ?OUT" is "_ \<Longrightarrow> ?lhs1 = ?rhs1")
-  and d_IN_Inf: "d_IN f x \<noteq> top \<Longrightarrow> d_IN (Inf Y) x = (INF g:Y. d_IN g x)" (is "_ \<Longrightarrow> ?IN" is "_ \<Longrightarrow> ?lhs2 = ?rhs2")
+  shows d_OUT_Inf: "d_OUT f x \<noteq> top \<Longrightarrow> d_OUT (Inf Y) x = (INF g\<in>Y. d_OUT g x)" (is "_ \<Longrightarrow> ?OUT" is "_ \<Longrightarrow> ?lhs1 = ?rhs1")
+  and d_IN_Inf: "d_IN f x \<noteq> top \<Longrightarrow> d_IN (Inf Y) x = (INF g\<in>Y. d_IN g x)" (is "_ \<Longrightarrow> ?IN" is "_ \<Longrightarrow> ?lhs2 = ?rhs2")
 proof -
   text \<open>We take a detour here via suprema because we have more theorems about @{const nn_integral}
     with suprema than with infinma.\<close>
@@ -297,9 +297,9 @@ proof -
   from Y obtain g0 where g0: "g0 \<in> Y" by auto
   have g0_le_f: "g0 e \<le> f e" for e by(rule bounded[OF g0])
 
-  have "support_flow (SUP g:Y. (\<lambda>e. f e - g e)) \<subseteq> support_flow f"
+  have "support_flow (SUP g\<in>Y. (\<lambda>e. f e - g e)) \<subseteq> support_flow f"
     by(clarsimp simp add: support_flow.simps less_SUP_iff elim!: less_le_trans intro!: diff_le_self_ennreal)
-  then have countable': "countable (support_flow (SUP g:Y. (\<lambda>e. f e - g e)))" by(rule countable_subset)(rule countable)
+  then have countable': "countable (support_flow (SUP g\<in>Y. (\<lambda>e. f e - g e)))" by(rule countable_subset)(rule countable)
 
   have "Complete_Partial_Order.chain (\<ge>) Y" using chain by(simp add: chain_dual)
   hence chain': "Complete_Partial_Order.chain (\<le>) ((\<lambda>g e. f e - g e) ` Y)"
@@ -312,7 +312,7 @@ proof -
     have finite'_g: "g (x, y) \<noteq> \<top>" if "g \<in> Y" for g y using finite'[of y]
       by(rule neq_top_trans)(rule bounded[OF that])
 
-    have finite1: "(\<Sum>\<^sup>+ y. f (x, y) - (INF g:Y. g (x, y))) \<noteq> top"
+    have finite1: "(\<Sum>\<^sup>+ y. f (x, y) - (INF g\<in>Y. g (x, y))) \<noteq> top"
       using finite by(rule neq_top_trans)(auto simp add: d_OUT_def intro!: nn_integral_mono)
     have finite2: "d_OUT g x \<noteq> top" if "g \<in> Y" for g using finite
       by(rule neq_top_trans)(auto intro: d_OUT_mono bounded[OF that])
@@ -320,18 +320,18 @@ proof -
     have bounded1: "(\<Sqinter>g\<in>Y. d_OUT g x) \<le> d_OUT f x"
       using Y by (blast intro: INF_lower2 d_OUT_mono bounded)
 
-    have "?lhs1 = (\<Sum>\<^sup>+ y. INF g:Y. g (x, y))" by(simp add: d_OUT_def)
-    also have "\<dots> = d_OUT f x - (\<Sum>\<^sup>+ y. f (x, y) - (INF g:Y. g (x, y)))" unfolding d_OUT_def
+    have "?lhs1 = (\<Sum>\<^sup>+ y. INF g\<in>Y. g (x, y))" by(simp add: d_OUT_def)
+    also have "\<dots> = d_OUT f x - (\<Sum>\<^sup>+ y. f (x, y) - (INF g\<in>Y. g (x, y)))" unfolding d_OUT_def
       using finite1 g0_le_f
       apply(subst nn_integral_diff[symmetric])
       apply(auto simp add: AE_count_space intro!: diff_le_self_ennreal INF_lower2[OF g0] nn_integral_cong diff_diff_ennreal[symmetric])
       done
-    also have "(\<Sum>\<^sup>+ y. f (x, y) - (INF g:Y. g (x, y))) = d_OUT (\<lambda>e. SUP g:Y. f e - g e) x"
+    also have "(\<Sum>\<^sup>+ y. f (x, y) - (INF g\<in>Y. g (x, y))) = d_OUT (\<lambda>e. SUP g\<in>Y. f e - g e) x"
       unfolding d_OUT_def by(subst SUP_const_minus_ennreal)(simp_all add: Y)
-    also have "\<dots> = (SUP h:(\<lambda>g e. f e - g e) ` Y. d_OUT h x)" using countable' chain' Y
+    also have "\<dots> = (SUP h\<in>(\<lambda>g e. f e - g e) ` Y. d_OUT h x)" using countable' chain' Y
       by(subst d_OUT_Sup[symmetric])(simp_all add: SUP_apply[abs_def])
-    also have "\<dots> = (SUP g:Y. d_OUT (\<lambda>e. f e - g e) x)" unfolding image_image ..
-    also have "\<dots> = (SUP g:Y. d_OUT f x - d_OUT g x)"
+    also have "\<dots> = (SUP g\<in>Y. d_OUT (\<lambda>e. f e - g e) x)" unfolding image_image ..
+    also have "\<dots> = (SUP g\<in>Y. d_OUT f x - d_OUT g x)"
       by(rule SUP_cong[OF refl] d_OUT_diff)+(auto intro: bounded simp add: finite2)
     also have "\<dots> = d_OUT f x - ?rhs1" by(subst SUP_const_minus_ennreal)(simp_all add: Y)
     also have "d_OUT f x - \<dots> = ?rhs1"
@@ -345,7 +345,7 @@ proof -
     have finite'_g: "g (y, x) \<noteq> \<top>" if "g \<in> Y" for g y using finite'[of y]
       by(rule neq_top_trans)(rule bounded[OF that])
 
-    have finite1: "(\<Sum>\<^sup>+ y. f (y, x) - (INF g:Y. g (y, x))) \<noteq> top"
+    have finite1: "(\<Sum>\<^sup>+ y. f (y, x) - (INF g\<in>Y. g (y, x))) \<noteq> top"
       using finite by(rule neq_top_trans)(auto simp add: d_IN_def diff_le_self_ennreal intro!: nn_integral_mono)
     have finite2: "d_IN g x \<noteq> top" if "g \<in> Y" for g using finite
       by(rule neq_top_trans)(auto intro: d_IN_mono bounded[OF that])
@@ -353,18 +353,18 @@ proof -
     have bounded1: "(\<Sqinter>g\<in>Y. d_IN g x) \<le> d_IN f x"
       using Y by (blast intro: INF_lower2 d_IN_mono bounded)
 
-    have "?lhs2 = (\<Sum>\<^sup>+ y. INF g:Y. g (y, x))" by(simp add: d_IN_def)
-    also have "\<dots> = d_IN f x - (\<Sum>\<^sup>+ y. f (y, x) - (INF g:Y. g (y, x)))" unfolding d_IN_def
+    have "?lhs2 = (\<Sum>\<^sup>+ y. INF g\<in>Y. g (y, x))" by(simp add: d_IN_def)
+    also have "\<dots> = d_IN f x - (\<Sum>\<^sup>+ y. f (y, x) - (INF g\<in>Y. g (y, x)))" unfolding d_IN_def
       using finite1 g0_le_f
       apply(subst nn_integral_diff[symmetric])
       apply(auto simp add: AE_count_space intro!: diff_le_self_ennreal INF_lower2[OF g0] nn_integral_cong diff_diff_ennreal[symmetric])
       done
-    also have "(\<Sum>\<^sup>+ y. f (y, x) - (INF g:Y. g (y, x))) = d_IN (\<lambda>e. SUP g:Y. f e - g e) x"
+    also have "(\<Sum>\<^sup>+ y. f (y, x) - (INF g\<in>Y. g (y, x))) = d_IN (\<lambda>e. SUP g\<in>Y. f e - g e) x"
       unfolding d_IN_def by(subst SUP_const_minus_ennreal)(simp_all add: Y)
-    also have "\<dots> = (SUP h:(\<lambda>g e. f e - g e) ` Y. d_IN h x)" using countable' chain' Y
+    also have "\<dots> = (SUP h\<in>(\<lambda>g e. f e - g e) ` Y. d_IN h x)" using countable' chain' Y
       by(subst d_IN_Sup[symmetric])(simp_all add: SUP_apply[abs_def])
-    also have "\<dots> = (SUP g:Y. d_IN (\<lambda>e. f e - g e) x)" unfolding image_image ..
-    also have "\<dots> = (SUP g:Y. d_IN f x - d_IN g x)"
+    also have "\<dots> = (SUP g\<in>Y. d_IN (\<lambda>e. f e - g e) x)" unfolding image_image ..
+    also have "\<dots> = (SUP g\<in>Y. d_IN f x - d_IN g x)"
       by(rule SUP_cong[OF refl] d_IN_diff)+(auto intro: bounded simp add: finite2)
     also have "\<dots> = d_IN f x - ?rhs2" by(subst SUP_const_minus_ennreal)(simp_all add: Y)
     also have "d_IN f x - \<dots> = ?rhs2"
@@ -2037,7 +2037,7 @@ qed
 
 context
   fixes \<alpha>
-  defines "\<alpha> \<equiv> (SUP g:{g. flow \<Delta> g}. value_flow \<Delta> g)"
+  defines "\<alpha> \<equiv> (SUP g\<in>{g. flow \<Delta> g}. value_flow \<Delta> g)"
 begin
 
 lemma flow_by_value:
@@ -2416,7 +2416,7 @@ proof -
     by(auto simp add: source_out)
   have nontrivial': "\<^bold>V\<^bsub>\<Delta>''\<^esub> - {source \<Delta>'', sink \<Delta>''} \<noteq> {}" using nontrivial by(auto simp add: "\<^bold>V_\<Delta>''")
 
-  have "(SUP g : {g. flow \<Delta>'' g}. value_flow \<Delta>'' g) = (SUP g : {g. flow \<Delta> g}. value_flow \<Delta> g)" (is "?lhs = ?rhs")
+  have "(SUP g \<in> {g. flow \<Delta>'' g}. value_flow \<Delta>'' g) = (SUP g \<in> {g. flow \<Delta> g}. value_flow \<Delta> g)" (is "?lhs = ?rhs")
   proof(intro antisym SUP_least; unfold mem_Collect_eq)
     fix g
     assume g: "flow \<Delta>'' g"
@@ -2432,7 +2432,7 @@ proof -
     then have "\<dots> \<le> ?lhs" by(blast intro: SUP_upper2)
     finally show "value_flow \<Delta> g \<le> ?lhs" .
   qed
-  with real have eq: "(SUP g : {g. flow \<Delta>'' g}. value_flow \<Delta>'' g) = ennreal \<alpha>'" by(simp add: \<alpha>_def)
+  with real have eq: "(SUP g \<in> {g. flow \<Delta>'' g}. value_flow \<Delta>'' g) = ennreal \<alpha>'" by(simp add: \<alpha>_def)
   from \<Delta>''.ex_max_flow'[OF wf_\<Delta>'' source_out' nontrivial' eq]
   obtain f where f: "flow \<Delta>'' f"
     and "value_flow \<Delta>'' f = \<alpha>"
@@ -2660,7 +2660,7 @@ proof(cases "\<alpha>")
   have source_out: "edge \<Delta>' (source \<Delta>') y \<longleftrightarrow> y = Inner (source \<Delta>)" for y by(auto)
   have nontrivial: "\<^bold>E\<^bsub>\<Delta>'\<^esub> \<noteq> {}" by(auto intro: edge'.intros)
 
-  have eq: "(SUP g : {g. flow \<Delta>' g}. value_flow \<Delta>' g) = (SUP g : {g. flow \<Delta> g}. value_flow \<Delta> g)" (is "?lhs = ?rhs")
+  have eq: "(SUP g \<in> {g. flow \<Delta>' g}. value_flow \<Delta>' g) = (SUP g \<in> {g. flow \<Delta> g}. value_flow \<Delta> g)" (is "?lhs = ?rhs")
   proof(intro antisym SUP_least; unfold mem_Collect_eq)
     fix g
     assume g: "flow \<Delta>' g"
@@ -3293,40 +3293,40 @@ lemma current_Sup:
   shows "current \<Gamma> (Sup Y)"
 proof(rule, goal_cases)
   case (1 x)
-  have "d_OUT (Sup Y) x = (SUP f:Y. d_OUT f x)" using chain Y by(simp add: d_OUT_Sup)
+  have "d_OUT (Sup Y) x = (SUP f\<in>Y. d_OUT f x)" using chain Y by(simp add: d_OUT_Sup)
   also have "\<dots> \<le> weight \<Gamma> x" using 1
     by(intro SUP_least)(auto dest!: current currentD_weight_OUT)
   finally show ?case .
 next
   case (2 x)
-  have "d_IN (Sup Y) x = (SUP f:Y. d_IN f x)" using chain Y by(simp add: d_IN_Sup)
+  have "d_IN (Sup Y) x = (SUP f\<in>Y. d_IN f x)" using chain Y by(simp add: d_IN_Sup)
   also have "\<dots> \<le> weight \<Gamma> x" using 2
     by(intro SUP_least)(auto dest!: current currentD_weight_IN)
   finally show ?case .
 next
   case (3 x)
-  have "d_OUT (Sup Y) x = (SUP f:Y. d_OUT f x)" using chain Y by(simp add: d_OUT_Sup)
-  also have "\<dots> \<le> (SUP f:Y. d_IN f x)" using 3
+  have "d_OUT (Sup Y) x = (SUP f\<in>Y. d_OUT f x)" using chain Y by(simp add: d_OUT_Sup)
+  also have "\<dots> \<le> (SUP f\<in>Y. d_IN f x)" using 3
     by(intro SUP_mono)(auto dest: current currentD_OUT_IN)
   also have "\<dots> = d_IN (Sup Y) x" using chain Y by(simp add: d_IN_Sup)
   finally show ?case .
 next
   case (4 a)
-  have "d_IN (Sup Y) a = (SUP f:Y. d_IN f a)" using chain Y by(simp add: d_IN_Sup)
-  also have "\<dots> = (SUP f:Y. 0)" using 4 by(intro SUP_cong)(auto dest!: current currentD_IN)
+  have "d_IN (Sup Y) a = (SUP f\<in>Y. d_IN f a)" using chain Y by(simp add: d_IN_Sup)
+  also have "\<dots> = (SUP f\<in>Y. 0)" using 4 by(intro SUP_cong)(auto dest!: current currentD_IN)
   also have "\<dots> = 0" using Y by simp
   finally show ?case .
 next
   case (5 b)
-  have "d_OUT (Sup Y) b = (SUP f:Y. d_OUT f b)" using chain Y by(simp add: d_OUT_Sup)
-  also have "\<dots> = (SUP f:Y. 0)" using 5 by(intro SUP_cong)(auto dest!: current currentD_OUT)
+  have "d_OUT (Sup Y) b = (SUP f\<in>Y. d_OUT f b)" using chain Y by(simp add: d_OUT_Sup)
+  also have "\<dots> = (SUP f\<in>Y. 0)" using 5 by(intro SUP_cong)(auto dest!: current currentD_OUT)
   also have "\<dots> = 0" using Y by simp
   finally show ?case .
 next
   fix e
   assume "e \<notin> \<^bold>E"
   from currentD_outside'[OF current this] have "f e = 0" if "f \<in> Y" for f using that by simp
-  hence "Sup Y e = (SUP _:Y. 0)" by(auto intro: SUP_cong)
+  hence "Sup Y e = (SUP _\<in>Y. 0)" by(auto intro: SUP_cong)
   then show "Sup Y e = 0" using Y by(simp)
 qed
 
@@ -3735,9 +3735,9 @@ proof -
     have countable': "countable (support_flow f)"
       using current_support_flow[OF f] by(rule countable_subset)(rule countable)
 
-    have OUT_M: "d_OUT (Inf M) x = (INF g:M. d_OUT g x)" for x using chain' nempty countable' _ finite_OUT
+    have OUT_M: "d_OUT (Inf M) x = (INF g\<in>M. d_OUT g x)" for x using chain' nempty countable' _ finite_OUT
       by(rule d_OUT_Inf)(auto dest!: Chains_FieldD[OF M]  simp add: leq_def)
-    have IN_M: "d_IN (Inf M) x = (INF g:M. d_IN g x)" for x using chain' nempty countable' _ finite_IN
+    have IN_M: "d_IN (Inf M) x = (INF g\<in>M. d_IN g x)" for x using chain' nempty countable' _ finite_IN
       by(rule d_IN_Inf)(auto dest!: Chains_FieldD[OF M]  simp add: leq_def)
 
     have c: "current \<Gamma> (Inf M)" using g
@@ -5910,7 +5910,7 @@ proof -
     show "source \<Psi> \<noteq> sink \<Psi>" by simp
   qed
   then interpret \<Psi>: flow_attainability "\<Psi>" .
-  define \<alpha> where "\<alpha> = (SUP f:{f. flow \<Psi> f}. value_flow \<Psi> f)"
+  define \<alpha> where "\<alpha> = (SUP f\<in>{f. flow \<Psi> f}. value_flow \<Psi> f)"
 
   define f
     where "f n xoyo =
@@ -7269,19 +7269,19 @@ proof -
     then have "support_flow ?h \<subseteq> \<^bold>E" by(auto elim!: support_flow.cases intro: ccontr)
     hence supp_flow2: "countable (support_flow ?h)" by(rule countable_subset) simp
 
-    have OUT1: "d_OUT (Sup (fst ` M)) x = (SUP (\<epsilon>, h):M. d_OUT \<epsilon> x)" for x
+    have OUT1: "d_OUT (Sup (fst ` M)) x = (SUP (\<epsilon>, h)\<in>M. d_OUT \<epsilon> x)" for x
       by(subst d_OUT_Sup[OF chain1 _ supp_flow1])(simp_all add: nempty split_beta)
-    have OUT1': "d_OUT (Sup (fst ` M)) x = (if x = a then SUP (\<epsilon>, h):M. d_OUT \<epsilon> a else 0)" for x
+    have OUT1': "d_OUT (Sup (fst ` M)) x = (if x = a then SUP (\<epsilon>, h)\<in>M. d_OUT \<epsilon> a else 0)" for x
       unfolding OUT1 by(auto intro!: SUP_eq_const simp add: nempty OUT_\<epsilon> dest!: Chains_FieldD[OF M])
     have OUT1_le: "(\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x) \<le> weight \<Gamma> x" for x
       using currentD_weight_OUT[OF SM1, of x] OUT1[of x] by(simp add: split_beta)
     have OUT1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_OUT (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2)(simp add: )
-    have IN1: "d_IN (Sup (fst ` M)) x = (SUP (\<epsilon>, h):M. d_IN \<epsilon> x)" for x
+    have IN1: "d_IN (Sup (fst ` M)) x = (SUP (\<epsilon>, h)\<in>M. d_IN \<epsilon> x)" for x
       by(subst d_IN_Sup[OF chain1 _ supp_flow1])(simp_all add: nempty split_beta)
     have IN1_le: "(\<Squnion>\<epsilon>h\<in>M. d_IN (fst \<epsilon>h) x) \<le> weight \<Gamma> x" for x
       using currentD_weight_IN[OF SM1, of x] IN1[of x] by(simp add: split_beta)
     have IN1_nonneg: "0 \<le> (\<Squnion>\<epsilon>h\<in>M. d_IN (fst \<epsilon>h) x)" for x using in_M by(rule SUP_upper2) simp
-    have IN1': "d_IN (Sup (fst ` M)) x = (SUP (\<epsilon>, h):M. \<epsilon> (a, x))" for x
+    have IN1': "d_IN (Sup (fst ` M)) x = (SUP (\<epsilon>, h)\<in>M. \<epsilon> (a, x))" for x
       unfolding IN1 by(rule SUP_cong[OF refl])(auto dest!: Chains_FieldD[OF M] IN_\<epsilon>)
 
     have directed: "\<exists>\<epsilon>k''\<in>M. F (snd \<epsilon>k) + F (fst \<epsilon>k') \<le> F (snd \<epsilon>k'') + F (fst \<epsilon>k'')"
@@ -7316,33 +7316,33 @@ proof -
 
       fix x
       have "d_OUT h x \<le> d_OUT ?h x" using \<epsilon>h by(intro d_OUT_mono)(auto intro: SUP_upper2)
-      also have OUT: "\<dots> = (SUP h:snd ` M. d_OUT h x)" using chain2 _ supp_flow2
+      also have OUT: "\<dots> = (SUP h\<in>snd ` M. d_OUT h x)" using chain2 _ supp_flow2
         by(rule d_OUT_Sup)(simp_all add: nempty)
-      also have "\<dots> = \<dots> + (SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x) - (SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x)"
+      also have "\<dots> = \<dots> + (SUP \<epsilon>\<in>fst ` M. d_OUT \<epsilon> x) - (SUP \<epsilon>\<in>fst ` M. d_OUT \<epsilon> x)"
         using OUT1_le[of x]
         by (intro ennreal_add_diff_cancel_right[symmetric] neq_top_trans[OF weight_finite, of _ x]) simp
-      also have "\<dots> = (SUP (\<epsilon>, k):M. d_OUT k x + d_OUT \<epsilon> x) - (SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x)" unfolding split_def
+      also have "\<dots> = (SUP (\<epsilon>, k)\<in>M. d_OUT k x + d_OUT \<epsilon> x) - (SUP \<epsilon>\<in>fst ` M. d_OUT \<epsilon> x)" unfolding split_def
         by(subst SUP_add_directed_ennreal[OF directed_OUT])(simp_all add: )
-      also have "(SUP (\<epsilon>, k):M. d_OUT k x + d_OUT \<epsilon> x) \<le> weight \<Gamma> x"
+      also have "(SUP (\<epsilon>, k)\<in>M. d_OUT k x + d_OUT \<epsilon> x) \<le> weight \<Gamma> x"
         apply(clarsimp dest!: Chains_FieldD[OF M] intro!: SUP_least)
         subgoal premises that for \<epsilon> h
           using currentD_weight_OUT[OF h[OF that], of x] currentD_weight_OUT[OF \<epsilon>_curr[OF that], of x]
              countable_bipartite_web_minus_web[OF \<epsilon>_curr, THEN countable_bipartite_web.currentD_OUT', OF that h[OF that], where x=x]
           by (auto simp add: ennreal_le_minus_iff split: if_split_asm)
         done
-      also have "(SUP \<epsilon>:fst ` M. d_OUT \<epsilon> x) = d_OUT (Sup (fst ` M)) x" using OUT1 by(simp add: split_beta)
+      also have "(SUP \<epsilon>\<in>fst ` M. d_OUT \<epsilon> x) = d_OUT (Sup (fst ` M)) x" using OUT1 by(simp add: split_beta)
       finally show "d_OUT h x \<le> weight ?\<Gamma> x"
         using \<Gamma>.currentD_OUT'[OF h[OF Field], of x] currentD_weight_IN[OF SM1, of x] by(auto simp add: ennreal_minus_mono)
 
       have "d_IN h x \<le> d_IN ?h x" using \<epsilon>h by(intro d_IN_mono)(auto intro: SUP_upper2)
-      also have IN: "\<dots> = (SUP h:snd ` M. d_IN h x)" using chain2 _ supp_flow2
+      also have IN: "\<dots> = (SUP h\<in>snd ` M. d_IN h x)" using chain2 _ supp_flow2
         by(rule d_IN_Sup)(simp_all add: nempty)
-      also have "\<dots> = \<dots> + (SUP \<epsilon>:fst ` M. d_IN \<epsilon> x) - (SUP \<epsilon>:fst ` M. d_IN \<epsilon> x)"
+      also have "\<dots> = \<dots> + (SUP \<epsilon>\<in>fst ` M. d_IN \<epsilon> x) - (SUP \<epsilon>\<in>fst ` M. d_IN \<epsilon> x)"
         using IN1_le[of x]
         by (intro ennreal_add_diff_cancel_right[symmetric] neq_top_trans[OF weight_finite, of _ x]) simp
-      also have "\<dots> = (SUP (\<epsilon>, k):M. d_IN k x + d_IN \<epsilon> x) - (SUP \<epsilon>:fst ` M. d_IN \<epsilon> x)" unfolding split_def
+      also have "\<dots> = (SUP (\<epsilon>, k)\<in>M. d_IN k x + d_IN \<epsilon> x) - (SUP \<epsilon>\<in>fst ` M. d_IN \<epsilon> x)" unfolding split_def
         by(subst SUP_add_directed_ennreal[OF directed_IN])simp_all
-      also have "(SUP (\<epsilon>, k):M. d_IN k x + d_IN \<epsilon> x) \<le> weight \<Gamma> x"
+      also have "(SUP (\<epsilon>, k)\<in>M. d_IN k x + d_IN \<epsilon> x) \<le> weight \<Gamma> x"
         apply(clarsimp dest!: Chains_FieldD[OF M] intro!: SUP_least)
         subgoal premises that for \<epsilon> h
           using currentD_weight_OUT[OF h, OF that, where x=x] currentD_weight_IN[OF h, OF that, where x=x]
@@ -7351,7 +7351,7 @@ proof -
           by(auto simp add: ennreal_le_minus_iff
                      split: if_split_asm intro: add_increasing2 order_trans[rotated])
         done
-      also have "(SUP \<epsilon>:fst ` M. d_IN \<epsilon> x) = d_IN (Sup (fst ` M)) x" using IN1 by(simp add: split_beta)
+      also have "(SUP \<epsilon>\<in>fst ` M. d_IN \<epsilon> x) = d_IN (Sup (fst ` M)) x" using IN1 by(simp add: split_beta)
       finally show "d_IN h x \<le> weight ?\<Gamma> x"
         using currentD_IN[OF h[OF Field], of x] currentD_weight_OUT[OF SM1, of x]
         by(auto simp add: ennreal_minus_mono)
@@ -7416,7 +7416,7 @@ proof -
 
         have "d_OUT f a + 0 < d_OUT f a + \<delta>"
           using currentD_finite_OUT[OF f_curr, of a] by (simp add: \<delta>_pos)
-        also have "d_OUT f a + \<delta> = (SUP (\<epsilon>, h):M. d_OUT (plus_current \<epsilon> h) a) + \<delta>"
+        also have "d_OUT f a + \<delta> = (SUP (\<epsilon>, h)\<in>M. d_OUT (plus_current \<epsilon> h) a) + \<delta>"
           using chain'' nempty supp_flow
           unfolding f_alt by(subst d_OUT_Sup)(simp_all add: plus_current_def[abs_def] split_def)
         also have "\<dots> \<le> d_OUT f a"
@@ -8696,9 +8696,9 @@ proof -
       by(rule neq_top_trans)(rule F_weight_OUT[OF f'])
     have finite_IN: "d_IN f' x \<noteq> \<top>" for x using weight_finite[of x]
       by(rule neq_top_trans)(rule F_weight_IN[OF f'])
-    have OUT_M: "d_OUT (Inf M) x = (INF g:M. d_OUT g x)" for x using chain' nempty countable' _ finite_OUT
+    have OUT_M: "d_OUT (Inf M) x = (INF g\<in>M. d_OUT g x)" for x using chain' nempty countable' _ finite_OUT
       by(rule d_OUT_Inf)(auto dest!: Chains_FieldD[OF M] simp add: leq_def F_nonneg F_le)
-    have IN_M: "d_IN (Inf M) x = (INF g:M. d_IN g x)" for x using chain' nempty countable' _ finite_IN
+    have IN_M: "d_IN (Inf M) x = (INF g\<in>M. d_IN g x)" for x using chain' nempty countable' _ finite_IN
       by(rule d_IN_Inf)(auto dest!: Chains_FieldD[OF M] simp add: leq_def F_nonneg F_le)
 
     show "Inf M \<in> F" using g0 unfolding F[symmetric]

@@ -942,7 +942,7 @@ lemma cohomologous_approx_cond_exp_aux:
       and "AE x in M. real_cond_exp M Invariants f x > 0"
     shows "\<exists>u g. u \<in> borel_measurable M \<and> (integrable M g) \<and> (AE x in M. g x \<ge> 0 \<and> g x \<le> max 0 (f x)) \<and> (\<forall>x. f x = g x + u x - u (T x))"
 proof -
-  define h::"'a \<Rightarrow> real" where "h = (\<lambda>x. (INF n:{1..}. birkhoff_sum f n x))"
+  define h::"'a \<Rightarrow> real" where "h = (\<lambda>x. (INF n\<in>{1..}. birkhoff_sum f n x))"
   define u where "u = (\<lambda>x. min (h x) 0)"
   define g where "g = (\<lambda>x. f x - u x + u (T x))"
   have [measurable]: "h \<in> borel_measurable M" "u \<in> borel_measurable M" "g \<in> borel_measurable M"

@@ -489,8 +489,8 @@ lemma wit_swap_forall:
 lemma hn_admissible:
   assumes PREC: "precise Ry"
   assumes E: "\<forall>f\<in>A. nofail (f x) \<longrightarrow> <P> c <\<lambda>r. hn_rel Ry (f x) r * F>"
-  assumes NF: "nofail (INF f:A. f x)"
-  shows "<P> c <\<lambda>r. hn_rel Ry (INF f:A. f x) r * F>"
+  assumes NF: "nofail (INF f\<in>A. f x)"
+  shows "<P> c <\<lambda>r. hn_rel Ry (INF f\<in>A. f x) r * F>"
 proof -
   from NF obtain f where "f\<in>A" and "nofail (f x)"
     by (simp only: refine_pw_simps) blast
@@ -529,9 +529,9 @@ proof -
       moreover note preciseD'[OF PREC 1 2] 
       ultimately show "(h, as) \<Turnstile> Ry a p * F \<and> RETURN a \<le> f' x" by simp
     qed
-    hence "RETURN a \<le> (INF f:A. f x)"
+    hence "RETURN a \<le> (INF f\<in>A. f x)"
       by (metis (mono_tags) le_INF_iff le_nofailI)
-    with 1 show "\<exists>a. (h, as) \<Turnstile> Ry a p * F \<and> RETURN a \<le> (INF f:A. f x)"
+    with 1 show "\<exists>a. (h, as) \<Turnstile> Ry a p * F \<and> RETURN a \<le> (INF f\<in>A. f x)"
       by blast
   qed
 qed
@@ -539,8 +539,8 @@ qed
 lemma hn_admissible':
   assumes PREC: "precise Ry"
   assumes E: "\<forall>f\<in>A. nofail (f x) \<longrightarrow> <P> c <\<lambda>r. hn_rel Ry (f x) r * F>\<^sub>t"
-  assumes NF: "nofail (INF f:A. f x)"
-  shows "<P> c <\<lambda>r. hn_rel Ry (INF f:A. f x) r * F>\<^sub>t"
+  assumes NF: "nofail (INF f\<in>A. f x)"
+  shows "<P> c <\<lambda>r. hn_rel Ry (INF f\<in>A. f x) r * F>\<^sub>t"
   apply (rule hn_admissible[OF PREC, where F="F*true", simplified])
   apply simp
   by fact+

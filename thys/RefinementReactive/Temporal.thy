@@ -67,43 +67,43 @@ to prove $-(p\ until\ -p) = \Box\; p$.
 *}
   context complete_boolean_algebra
     begin
-      lemma until_always: "(INF n. (SUP i : {i. i < n} . - p i) \<squnion> ((p :: nat \<Rightarrow> 'a) n)) \<le> p n"
+      lemma until_always: "(INF n. (SUP i \<in> {i. i < n} . - p i) \<squnion> ((p :: nat \<Rightarrow> 'a) n)) \<le> p n"
         proof -
-          have "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (INF i:{i. i \<le> n}. p i)"
+          have "(INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> (INF i\<in>{i. i \<le> n}. p i)"
             proof (induction n)
-              have "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (SUP i:{i. i < 0}. - p i) \<squnion> p 0"
+              have "(INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> (SUP i\<in>{i. i < 0}. - p i) \<squnion> p 0"
                 by (rule INF_lower, simp)
-              also have "... \<le> (INF i:{i. i \<le> 0}. p i)"
+              also have "... \<le> (INF i\<in>{i. i \<le> 0}. p i)"
                 by simp
-              finally show "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (INF i:{i. i \<le> 0}. p i)"
+              finally show "(INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> (INF i\<in>{i. i \<le> 0}. p i)"
                 by simp
             next
-              fix n::nat assume "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (INF i : {i. i \<le> n}. p i)"
+              fix n::nat assume "(INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> (INF i \<in> {i. i \<le> n}. p i)"
               also have "\<And> i . i \<le> n \<Longrightarrow> ... \<le> p i" by (rule INF_lower, simp)
-              finally have [simp]: "\<And> i . i \<le> n \<Longrightarrow> (INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> p i"
+              finally have [simp]: "\<And> i . i \<le> n \<Longrightarrow> (INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> p i"
                 by simp
-              show "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (INF i : {i. i \<le> Suc n}. p i)"
+              show "(INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> (INF i \<in> {i. i \<le> Suc n}. p i)"
                 proof (rule INF_greatest, safe, cases)
                   fix i::nat
-                    assume "i \<le> n" from this show "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> p i" by simp
+                    assume "i \<le> n" from this show "(INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> p i" by simp
                 next
                   fix i::nat
                     have A: "{i. i \<le> n} = {i . i < Suc n}" by auto
-                    have B: "(SUP i:{i. i \<le> n}. - p i) \<le> - (INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n)"
-                      by (metis (lifting, mono_tags) `(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (INF i:{i. i \<le> n}. p i)` compl_mono uminus_INF)
+                    have B: "(SUP i\<in>{i. i \<le> n}. - p i) \<le> - (INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n)"
+                      by (metis (lifting, mono_tags) `(INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> (INF i\<in>{i. i \<le> n}. p i)` compl_mono uminus_INF)
                     assume "i \<le> Suc n" and "\<not> i \<le> n"
                     from this have [simp]: "i = Suc n" by simp
-                    have "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> (INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<sqinter> ((SUP i:{i. i \<le> n}. - p i) \<squnion> p (Suc n))"
+                    have "(INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> (INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<sqinter> ((SUP i\<in>{i. i \<le> n}. - p i) \<squnion> p (Suc n))"
                       by (simp add: A, rule INF_lower, simp)
-                    also have "... \<le> ((INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<sqinter> ((- (INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n)) \<squnion> p (Suc n)))"
-                      by (rule inf_mono, simp_all, rule_tac y = "- (INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n)" in order_trans, simp_all add: B)
+                    also have "... \<le> ((INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<sqinter> ((- (INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n)) \<squnion> p (Suc n)))"
+                      by (rule inf_mono, simp_all, rule_tac y = "- (INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n)" in order_trans, simp_all add: B)
                     also have "... \<le> p i"
                       by (simp add: inf_sup_distrib1 inf_compl_bot)
-                    finally show "(INF n. (SUP i:{i. i < n}. - p i) \<squnion> p n) \<le> p i" by simp
+                    finally show "(INF n. (SUP i\<in>{i. i < n}. - p i) \<squnion> p n) \<le> p i" by simp
                 qed
             qed
-        also have "(INF i:{i. i \<le> n}. p i) \<le> p n" by (rule INF_lower, auto)
-        finally show "(INF n. (SUP i : {i. i < n} . - p i) \<squnion> ((p :: nat \<Rightarrow> 'a) n)) \<le> p n" by simp
+        also have "(INF i\<in>{i. i \<le> n}. p i) \<le> p n" by (rule INF_lower, auto)
+        finally show "(INF n. (SUP i \<in> {i. i < n} . - p i) \<squnion> ((p :: nat \<Rightarrow> 'a) n)) \<le> p n" by simp
         qed
 
      end
@@ -137,7 +137,7 @@ text{*
         next
           have "\<And> n . \<box> p \<le> p !! n"
             by (simp add: always_def INF_lower)
-          also have "\<And> n . p !! n \<le> (SUP x:{i. i < n}. (- p) !! x) \<squnion> p !! n"
+          also have "\<And> n . p !! n \<le> (SUP x\<in>{i. i < n}. (- p) !! x) \<squnion> p !! n"
             by simp
           finally show "\<box> p \<le> -(p until -p)"
             apply (simp add: until_def uminus_SUP uminus_INF)

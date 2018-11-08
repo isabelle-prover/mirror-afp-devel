@@ -36,19 +36,19 @@ qed
 
 lemma enat_in_INF:
   fixes f :: "'a \<Rightarrow> enat"
-  assumes "(INF x: S. f x) \<noteq> top"
-  obtains x where "x \<in> S" and "(INF x: S. f x) = f x"
+  assumes "(INF x\<in> S. f x) \<noteq> top"
+  obtains x where "x \<in> S" and "(INF x\<in> S. f x) = f x"
 proof -
-  from assms have "(INF x: S. f x) \<in> f ` S"
+  from assms have "(INF x\<in> S. f x) \<in> f ` S"
     using enat_in_Inf [of "f ` S"] by auto
-  then obtain x where "x \<in> S" "(INF x: S. f x) = f x" by auto
+  then obtain x where "x \<in> S" "(INF x\<in> S. f x) = f x" by auto
   then show ?thesis ..
 qed
 
 lemma enat_less_INF_I:
   fixes f :: "'a \<Rightarrow> enat"
   assumes not_inf: "x \<noteq> \<infinity>" and less: "\<And>y. y \<in> S \<Longrightarrow> x < f y"
-  shows "x < (INF y:S. f y)"
+  shows "x < (INF y\<in>S. f y)"
   using assms by (auto simp: Suc_ile_eq[symmetric] INF_greatest)
 
 lemma enat_le_Sup_iff:

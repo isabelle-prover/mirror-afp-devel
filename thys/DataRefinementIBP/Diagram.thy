@@ -165,10 +165,10 @@ locale DiagramTermination =
 begin
 
 definition
-  "SUP_L_P X u i = (SUP v:{v. pair v i < u}. X v i :: _ :: complete_lattice)" 
+  "SUP_L_P X u i = (SUP v\<in>{v. pair v i < u}. X v i :: _ :: complete_lattice)" 
 
 definition 
-  "SUP_LE_P X u i = (SUP v:{v. pair v i \<le> u}. X v i :: _ :: complete_lattice)"
+  "SUP_LE_P X u i = (SUP v\<in>{v. pair v i \<le> u}. X v i :: _ :: complete_lattice)"
 
 lemma SUP_L_P_upper:
   "pair v i < u \<Longrightarrow> P v i \<le> SUP_L_P P u i"

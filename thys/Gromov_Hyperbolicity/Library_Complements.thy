@@ -879,7 +879,7 @@ lemma infdist_mono [mono_intros]:
   assumes "A \<subseteq> B" "A \<noteq> {}"
   shows "infdist x B \<le> infdist x A"
 proof -
-  have "(INF a:B. dist x a) \<le> (INF a:A. dist x a)"
+  have "(INF a\<in>B. dist x a) \<le> (INF a\<in>A. dist x a)"
     by (rule cINF_superset_mono[OF assms(2) _ assms(1)], auto)
   then show ?thesis
     unfolding infdist_def using assms by auto
@@ -1236,8 +1236,8 @@ lemma Limsup_obtain':
   assumes "Limsup F u > c" "eventually P F"
   shows "\<exists>n. P n \<and> u n > c"
 proof -
-  have *: "(INF P:{P. eventually P F}. SUP x:{x. P x}. u x) > c" using assms by (simp add: Limsup_def)
-  have **: "c < (SUP x:{x. P x}. u x)" using less_INF_D[OF *, of P] assms by auto
+  have *: "(INF P\<in>{P. eventually P F}. SUP x\<in>{x. P x}. u x) > c" using assms by (simp add: Limsup_def)
+  have **: "c < (SUP x\<in>{x. P x}. u x)" using less_INF_D[OF *, of P] assms by auto
   then show ?thesis by (simp add: less_SUP_iff)
 qed
 
@@ -1252,8 +1252,8 @@ lemma Liminf_obtain':
   assumes "Liminf F u < c" "eventually P F"
   shows "\<exists>n. P n \<and> u n < c"
 proof -
-  have *: "(SUP P:{P. eventually P F}. INF x:{x. P x}. u x) < c" using assms by (simp add: Liminf_def)
-  have **: "(INF x:{x. P x}. u x) < c" using SUP_lessD[OF *, of P] assms by auto
+  have *: "(SUP P\<in>{P. eventually P F}. INF x\<in>{x. P x}. u x) < c" using assms by (simp add: Liminf_def)
+  have **: "(INF x\<in>{x. P x}. u x) < c" using SUP_lessD[OF *, of P] assms by auto
   then show ?thesis by (simp add: INF_less_iff)
 qed
 

@@ -181,13 +181,13 @@ lemma edges_Gu: "uedges (G -- u) \<subseteq> uedges G"
 subsection {* Girth, Independence and Vertex Colorings *}
 
 definition girth :: "ugraph \<Rightarrow> enat" where
-  "girth G \<equiv> INF p: ucycles G. enat (uwalk_length p)"
+  "girth G \<equiv> INF p\<in> ucycles G. enat (uwalk_length p)"
 
 definition independent_sets :: "ugraph \<Rightarrow> uvert set set" where
   "independent_sets Gr \<equiv> {vs. vs \<subseteq> uverts Gr \<and> all_edges vs \<inter> uedges Gr = {}}"
 
 definition \<alpha> :: "ugraph \<Rightarrow> enat" where
-   "\<alpha> G \<equiv> SUP vs: independent_sets G. enat (card vs)"
+   "\<alpha> G \<equiv> SUP vs \<in> independent_sets G. enat (card vs)"
 
 definition vertex_colorings :: "ugraph \<Rightarrow> uvert set set set" where
   "vertex_colorings G \<equiv> {C. \<Union>C = uverts G \<and> (\<forall>c1\<in>C. \<forall>c2\<in>C. c1 \<noteq> c2 \<longrightarrow> c1 \<inter> c2 = {}) \<and>
@@ -195,7 +195,7 @@ definition vertex_colorings :: "ugraph \<Rightarrow> uvert set set set" where
 
 text {* The chromatic number $\chi$: *}
 definition chromatic_number :: "ugraph \<Rightarrow> enat" where
-  "chromatic_number G \<equiv> INF c: (vertex_colorings G). enat (card c)"
+  "chromatic_number G \<equiv> INF c\<in> (vertex_colorings G). enat (card c)"
 
 lemma independent_sets_mono:
   "vs \<in> independent_sets G \<Longrightarrow> us \<subseteq> vs \<Longrightarrow> us \<in> independent_sets G"

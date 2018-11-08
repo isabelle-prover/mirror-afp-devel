@@ -29,7 +29,7 @@ instantiation float :: uniformity
 begin
 
 definition uniformity_float :: "(float \<times> float) filter"
-  where "uniformity_float = (INF e:{0<..}. principal {(x, y). dist x y < e})"
+  where "uniformity_float = (INF e\<in>{0<..}. principal {(x, y). dist x y < e})"
 
 instance ..
 end
@@ -175,12 +175,12 @@ proof standard
     assume "\<forall>x\<in>U. \<exists>e>0. \<forall>y. dist (real_of_float y) (real_of_float x) < e \<longrightarrow> y \<in> U" "x \<in> U"
     then obtain e where "e > 0" "dist (y) (x) < e \<Longrightarrow> y \<in> U" for y
       by auto
-    then show "\<forall>\<^sub>F (x', y) in INF e:{0<..}. principal {(x, y). dist x y < e}. x' = x \<longrightarrow> y \<in> U"
+    then show "\<forall>\<^sub>F (x', y) in INF e\<in>{0<..}. principal {(x, y). dist x y < e}. x' = x \<longrightarrow> y \<in> U"
       by (intro eventually_INF1[where i=e])
         (auto simp: eventually_principal dist_commute dist_float_def)
   next
     fix u
-    assume "\<forall>x\<in>U. \<forall>\<^sub>F (x', y) in INF e:{0<..}. principal {(x, y). dist x y < e}. x' = x \<longrightarrow> y \<in> U"
+    assume "\<forall>x\<in>U. \<forall>\<^sub>F (x', y) in INF e\<in>{0<..}. principal {(x, y). dist x y < e}. x' = x \<longrightarrow> y \<in> U"
       "u \<in> U"
     from this obtain E where E: "E \<subseteq> {0<..}" "finite E"
       "\<forall>(x', y)\<in>\<Inter>x\<in>E. {(y', y). dist y' y < x}. x' = u \<longrightarrow> y \<in> U"

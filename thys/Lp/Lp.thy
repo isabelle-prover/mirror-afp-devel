@@ -1845,7 +1845,7 @@ theorem Lp_Lq_duality:
           "1/p + 1/q = 1"
           "p = \<infinity> \<Longrightarrow> sigma_finite_measure M"
   shows "bdd_above ((\<lambda>g. (\<integral>x. f x * g x \<partial>M))`{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1})"
-        "Norm (\<LL> p M) f = (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
+        "Norm (\<LL> p M) f = (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
 proof -
   have [measurable]: "f \<in> borel_measurable M" using Lp_measurable[OF assms(1)] by auto
   have B: "(\<integral>x. f x * g x \<partial>M) \<le> Norm (\<LL> p M) f" if "g \<in> {g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}" for g
@@ -1861,23 +1861,23 @@ proof -
   then show "bdd_above ((\<lambda>g. (\<integral>x. f x * g x \<partial>M))`{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1})"
     by (meson bdd_aboveI2)
 
-  show "Norm (\<LL> p M) f = (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
+  show "Norm (\<LL> p M) f = (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
   proof (rule antisym)
-    show "(SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. \<integral>x. f x * g x \<partial>M) \<le> Norm (\<LL> p M) f"
+    show "(SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. \<integral>x. f x * g x \<partial>M) \<le> Norm (\<LL> p M) f"
       by (rule cSUP_least, auto, rule exI[of _ 0], auto simp add: B)
 
     have "p \<ge> 1" using conjugate_exponent_ennrealI(1)[OF `1/p + 1/q = 1`] by simp
-    show "Norm (\<LL> p M) f \<le> (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
+    show "Norm (\<LL> p M) f \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
     using `p \<ge> 1` proof (cases rule: Lp_cases_1_PInf)
       case PInf
       then have "f \<in> space\<^sub>N (\<LL> \<infinity> M)"
         using `f \<in> space\<^sub>N(\<LL> p M)` by simp
       have "q = 1" using `1/p + 1/q = 1` `p = \<infinity>` by (simp add: divide_eq_1_ennreal)
-      have "c \<le> (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))" if "c < Norm (\<LL> p M) f" for c
+      have "c \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))" if "c < Norm (\<LL> p M) f" for c
       proof (cases "c < 0")
         case True
         then have "c \<le> (\<integral>x. f x * 0 x \<partial>M)" by auto
-        also have "... \<le> (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
+        also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
           apply (rule cSUP_upper, auto simp add: zero_fun_def[symmetric]) using B by (meson bdd_aboveI2)
         finally show ?thesis by simp
       next
@@ -1928,7 +1928,7 @@ proof -
           using `measure M (Y n) > 0` by (simp add: abs_sgn mult.commute mult.left_commute)
         also have "... = (\<integral>x. f x * g x \<partial>M)"
           unfolding divide_inverse g_def divideR_apply by (auto simp add: algebra_simps)
-        also have "... \<le> (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
+        also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
           unfolding `q = 1` apply (rule cSUP_upper, auto)
           using `g \<in> space\<^sub>N (\<LL> 1 M)` `Norm (\<LL> 1 M) g \<le> 1` apply auto using B `p = \<infinity>` `q = 1` by (meson bdd_aboveI2)
         finally show ?thesis by simp
@@ -1946,7 +1946,7 @@ proof -
         unfolding `p = 1` apply (rule L1_D(3)) using `f \<in> space\<^sub>N (\<LL> p M)` unfolding `p = 1` by auto
       also have "... = (\<integral>x. f x * g x \<partial>M)"
         unfolding g_def by (simp add: abs_sgn)
-      also have "... \<le> (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
+      also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
         unfolding `q = \<infinity>` apply (rule cSUP_upper, auto)
         using `g \<in> space\<^sub>N (\<LL> \<infinity> M)` `Norm (\<LL> \<infinity> M) g \<le> 1` apply auto
         using B \<open>q = \<infinity>\<close> by fastforce
@@ -1965,7 +1965,7 @@ proof -
       proof (cases "Norm (\<LL> p M) f = 0")
         case True
         then have "Norm (\<LL> p M) f \<le> (\<integral>x. f x * 0 x \<partial>M)" by auto
-        also have "... \<le> (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
+        also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
           apply (rule cSUP_upper, auto simp add: zero_fun_def[symmetric]) using B by (meson bdd_aboveI2)
         finally show ?thesis by simp
       next
@@ -2014,7 +2014,7 @@ proof -
           unfolding q2_def using conjugate_exponent_real(5)[OF `p2 > 1`] by auto
         finally have "Norm (\<LL> p M) f = (\<integral>x. f x * g x \<partial>M)"
           unfolding `p = ennreal p2` by simp
-        also have "... \<le> (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
+        also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * g x \<partial>M))"
           unfolding `q = ennreal q2` apply (rule cSUP_upper, auto)
           using `g \<in> space\<^sub>N (\<LL> q2 M)` `Norm (\<LL> q2 M) g = 1` apply auto
           using B `q = ennreal q2` by fastforce
@@ -2039,7 +2039,7 @@ theorem Lp_Lq_duality':
   assumes "1/p + 1/q = 1"
           "sigma_finite_measure M"
       and [measurable]: "f \<in> borel_measurable M"
-  shows "eNorm (\<LL> p M) f = (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. ennreal(\<integral>x. f x * g x \<partial>M))"
+  shows "eNorm (\<LL> p M) f = (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. ennreal(\<integral>x. f x * g x \<partial>M))"
 proof (cases "eNorm (\<LL> p M) f \<noteq> \<infinity>")
   case True
   then have "f \<in> space\<^sub>N (\<LL> p M)" unfolding space\<^sub>N_def by (simp add: top.not_eq_extremum)
@@ -2087,7 +2087,7 @@ next
     have "Norm (\<LL> p M) (\<lambda>x. f x * indicator (Y n) x) > Cr"
       using n unfolding eNorm_Norm[OF `(\<lambda>x. f x * indicator (Y n) x) \<in> space\<^sub>N (\<LL> p M)`]
       by (meson ennreal_leI not_le)
-    then have "(SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * indicator (Y n) x * g x \<partial>M)) > Cr"
+    then have "(SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * indicator (Y n) x * g x \<partial>M)) > Cr"
       using Lp_Lq_duality(2)[OF `(\<lambda>x. f x * indicator (Y n) x) \<in> space\<^sub>N (\<LL> p M)` `1/p + 1/q = 1` `sigma_finite_measure M`]
       by auto
     then have "\<exists>g \<in> {g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. (\<integral>x. f x * indicator (Y n) x * g x \<partial>M) > Cr"
@@ -2108,7 +2108,7 @@ next
       unfolding `C = ennreal Cr` using `Cr \<ge> 0` by (simp add: ennreal_less_iff)
     then show ?thesis using a b by auto
   qed
-  have "(SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. ennreal(\<integral>x. f x * g x \<partial>M)) \<ge> \<infinity>"
+  have "(SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. ennreal(\<integral>x. f x * g x \<partial>M)) \<ge> \<infinity>"
     apply (rule dense_le) using B by (meson SUP_upper2)
   then show ?thesis using False neq_top_trans by force
 qed
@@ -2191,9 +2191,9 @@ proof -
   define q where "q = conjugate_exponent p"
   have "1/p + 1/q = 1" unfolding q_def using conjugate_exponent_ennreal[OF `p \<ge> 1`] by simp
   have "eNorm (\<LL> p (restr_to_subalg M F)) (real_cond_exp M F f)
-    = (SUP g:{g \<in> space\<^sub>N (\<LL> q (restr_to_subalg M F)). Norm (\<LL> q (restr_to_subalg M F)) g \<le> 1}. ennreal(\<integral>x. (real_cond_exp M F f) x * g x \<partial>(restr_to_subalg M F)))"
+    = (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q (restr_to_subalg M F)). Norm (\<LL> q (restr_to_subalg M F)) g \<le> 1}. ennreal(\<integral>x. (real_cond_exp M F f) x * g x \<partial>(restr_to_subalg M F)))"
     by (rule Lp_Lq_duality'[OF `1/p + 1/q = 1` `sigma_finite_measure (restr_to_subalg M F)`], simp)
-  also have "... \<le> (SUP g:{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. ennreal(\<integral>x. f x * g x \<partial>M))"
+  also have "... \<le> (SUP g\<in>{g \<in> space\<^sub>N (\<LL> q M). Norm (\<LL> q M) g \<le> 1}. ennreal(\<integral>x. f x * g x \<partial>M))"
   proof (rule SUP_mono, auto)
     fix g assume H: "g \<in> space\<^sub>N (\<LL> q (restr_to_subalg M F))"
                     "Norm (\<LL> q (restr_to_subalg M F)) g \<le> 1"

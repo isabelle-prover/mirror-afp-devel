@@ -27,7 +27,7 @@ lemma finite_INF_in:
   fixes f :: "'a \<Rightarrow> ereal"
   assumes "finite S"
   assumes "S \<noteq> {}"
-  shows "(INF s: S. f s) \<in> f ` S"
+  shows "(INF s\<in> S. f s) \<in> f ` S"
 proof -
   from assms
   have "finite (f ` S)" "f ` S \<noteq> {}" by auto
@@ -37,7 +37,7 @@ qed
 
 lemma not_mem_less_INF:
   fixes f :: "'a \<Rightarrow> 'b :: complete_lattice"
-  assumes "f x < (INF s: S. f s)"
+  assumes "f x < (INF s\<in> S. f s)"
   assumes "x \<in> S"
   shows "False"
 using assms by (metis INF_lower less_le_not_le)

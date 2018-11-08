@@ -690,9 +690,9 @@ next
         (SUP input. interaction_bound'' (c input))" (is "?lhs = ?rhs" is "(SUP x. ?f x) = _")
     if "IO out c \<in> set_spmf (the_gpv gpv)" for out c
   proof -
-    have "?lhs = sup (interaction_bound' (Done None)) (SUP x:range Some. ?f x)" by(simp add: UNIV_option_conv)
+    have "?lhs = sup (interaction_bound' (Done None)) (SUP x\<in>range Some. ?f x)" by(simp add: UNIV_option_conv)
     also have "interaction_bound' (Done None) = 0" using step.hyps(1)[of "Done None"] by simp
-    also have "(SUP x:range Some. ?f x) = ?rhs" by(simp add: step.IH)
+    also have "(SUP x\<in>range Some. ?f x) = ?rhs" by(simp add: step.IH)
     finally show ?thesis by(simp add: bot_enat_def[symmetric])
   qed
   then show ?case

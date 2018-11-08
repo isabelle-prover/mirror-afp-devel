@@ -124,7 +124,7 @@ qed
 
 definition "p = (\<lambda>s\<in>S. P_sup s (\<lambda>\<omega>. (HLD S1 suntil HLD S2) (s ## \<omega>)))"
 
-lemma p_eq_SUP_v: "s \<in> S \<Longrightarrow> p s = (SUP cfg : cfg_on s. v cfg)"
+lemma p_eq_SUP_v: "s \<in> S \<Longrightarrow> p s = (SUP cfg \<in> cfg_on s. v cfg)"
   by (auto simp add: p_def v_def P_sup_def T.emeasure_eq_measure intro: valid_cfgI intro!: SUP_cong)
 
 lemma v_le_p: "cfg \<in> valid_cfg \<Longrightarrow> v cfg \<le> p (state cfg)"
@@ -178,7 +178,7 @@ using assms proof (induction rule: converse_rtrancl_induct)
 qed simp
 
 definition F_sup :: "('s \<Rightarrow> ennreal) \<Rightarrow> 's \<Rightarrow> ennreal" where
-  "F_sup f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then SUP D:K s. \<integral>\<^sup>+t. f t \<partial>measure_pmf D else 0)"
+  "F_sup f = (\<lambda>s\<in>S. if s \<in> S2 then 1 else if s \<in> S1 then SUP D\<in>K s. \<integral>\<^sup>+t. f t \<partial>measure_pmf D else 0)"
 
 lemma F_sup_cong: "(\<And>s. s \<in> S \<Longrightarrow> f s = g s) \<Longrightarrow> F_sup f s = F_sup g s"
   using K_closed[of s]
@@ -1089,7 +1089,7 @@ proof (intro antisym lfp_lowerbound le_funI)
     with s obtain D where "D \<in> K s" "(\<integral>\<^sup>+t. lfp F_inf t \<partial>D) = Min (?I ` K s)"
       by (auto simp: K_wf dest!: Min_in)
     note this(2)
-    also have "\<dots> = (INF D : K s. ?I D)"
+    also have "\<dots> = (INF D \<in> K s. ?I D)"
       using s K_wf by (subst Min_Inf) (auto intro: K_finite)
     also have "s \<in> S1 \<Longrightarrow> \<dots> = lfp F_inf s"
       using s S1_S2 by (subst (3) lfp_unfold[OF mono_F_inf]) (auto simp add: F_inf_def)

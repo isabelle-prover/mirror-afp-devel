@@ -118,12 +118,12 @@ proof
   proof
     fix f
     assume "f \<in> (Apply.Conjunctive :: ('a \<Rightarrow> 'a) set)"
-    then have *: "f (Inf A) = (INF a:A. f a)" for A
+    then have *: "f (Inf A) = (INF a\<in>A. f a)" for A
       by (auto dest!: Apply.ConjunctiveD)
     show "f \<in> (Comp.Conjunctive :: ('a \<Rightarrow> 'a) set)"
     proof (rule Comp.ConjunctiveI)
       fix G :: "('a \<Rightarrow> 'a) set"
-      from * have "f (Inf ((\<lambda>f. f a) ` G)) = (INF b:(\<lambda>f. f a) ` G. f b)"
+      from * have "f (Inf ((\<lambda>f. f a) ` G)) = (INF b\<in>(\<lambda>f. f a) ` G. f b)"
         for a :: 'a .
       then show "f \<circ> Inf G = Inf (comp f ` G)"
         by (simp add: fun_eq_iff)
@@ -133,12 +133,12 @@ proof
   proof
     fix f
     assume "f \<in> (Comp.Conjunctive :: ('a \<Rightarrow> 'a) set)"
-    then have *: "f \<circ> Inf G = (INF g:G. f \<circ> g)" for G :: "('a \<Rightarrow> 'a) set"
+    then have *: "f \<circ> Inf G = (INF g\<in>G. f \<circ> g)" for G :: "('a \<Rightarrow> 'a) set"
       by (auto dest!: Comp.ConjunctiveD)
     show "f \<in> (Apply.Conjunctive :: ('a \<Rightarrow> 'a) set)"
     proof (rule Apply.ConjunctiveI)
       fix A :: "'a set"
-      from * have "f \<circ> Inf ((\<lambda>a (b::'a). a) ` A) = (INF g:(\<lambda>a b. a) ` A. f \<circ> g)" .
+      from * have "f \<circ> Inf ((\<lambda>a (b::'a). a) ` A) = (INF g\<in>(\<lambda>a b. a) ` A. f \<circ> g)" .
       then show "f (Inf A) = Inf (f ` A)"
         by (simp add: fun_eq_iff)
     qed
@@ -177,12 +177,12 @@ proof
   proof
     fix f
     assume "f \<in> (Apply.Disjunctive :: ('a \<Rightarrow> 'a) set)"
-    then have *: "f (Sup A) = (SUP a:A. f a)" for A
+    then have *: "f (Sup A) = (SUP a\<in>A. f a)" for A
       by (auto dest!: Apply.DisjunctiveD)
     show "f \<in> (Comp.Disjunctive :: ('a \<Rightarrow> 'a) set)"
     proof (rule Comp.DisjunctiveI)
       fix G :: "('a \<Rightarrow> 'a) set"
-      from * have "f (Sup ((\<lambda>f. f a) ` G)) = (SUP b:(\<lambda>f. f a) ` G. f b)"
+      from * have "f (Sup ((\<lambda>f. f a) ` G)) = (SUP b\<in>(\<lambda>f. f a) ` G. f b)"
         for a :: 'a .
       then show "f \<circ> Sup G = Sup (comp f ` G)"
         by (simp add: fun_eq_iff)
@@ -192,12 +192,12 @@ proof
   proof
     fix f
     assume "f \<in> (Comp.Disjunctive :: ('a \<Rightarrow> 'a) set)"
-    then have *: "f \<circ> Sup G = (SUP g:G. f \<circ> g)" for G :: "('a \<Rightarrow> 'a) set"
+    then have *: "f \<circ> Sup G = (SUP g\<in>G. f \<circ> g)" for G :: "('a \<Rightarrow> 'a) set"
       by (auto dest!: Comp.DisjunctiveD)
     show "f \<in> (Apply.Disjunctive :: ('a \<Rightarrow> 'a) set)"
     proof (rule Apply.DisjunctiveI)
       fix A :: "'a set"
-      from * have "f \<circ> Sup ((\<lambda>a (b::'a). a) ` A) = (SUP g:(\<lambda>a b. a) ` A. f \<circ> g)" .
+      from * have "f \<circ> Sup ((\<lambda>a (b::'a). a) ` A) = (SUP g\<in>(\<lambda>a b. a) ` A. f \<circ> g)" .
       then show "f (Sup A) = Sup (f ` A)"
         by (simp add: fun_eq_iff)
     qed
