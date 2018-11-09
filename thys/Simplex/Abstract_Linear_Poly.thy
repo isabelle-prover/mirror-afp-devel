@@ -232,7 +232,6 @@ proof-
 
   then have "(\<Sum>x\<in>{v. f1 v + f2 v \<noteq> 0}. (f1 x + f2 x) *R v x) = 
     (\<Sum>x\<in>{v. f1 v + f2 v \<noteq> 0} \<union> {v. f1 v + f2 v = 0 \<and> (f1 v \<noteq> 0 \<or> f2 v \<noteq> 0)}. (f1 x + f2 x) *R v x)"
-    find_theorems "sum" "(\<union>)" 
     by (rule sum.mono_neutral_left) auto
   also have "... = (\<Sum>x \<in> {v. f1 v \<noteq> 0 \<or> f2 v \<noteq> 0}. (f1 x + f2 x) *R v x)"
     by (rule sum.cong) auto

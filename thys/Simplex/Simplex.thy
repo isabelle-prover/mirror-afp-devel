@@ -539,8 +539,10 @@ i_preprocess_sat: "\<And> v. preprocess cs = (t,as,trans_v) \<Longrightarrow> (I
 
 preprocess_unsat: "preprocess cs = (t, as,trans_v) \<Longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs \<Longrightarrow> \<exists> v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t" and
 
-\<comment> \<open>preprocessing cannot introduce new indices\<close>
+\<comment> \<open>minimality condition ensures distinct indices in atoms\<close>
 preprocess_distinct: "preprocess cs = (t, as,trans_v) \<Longrightarrow> minimality_condition_ns cs \<Longrightarrow> distinct_indices as" and
+
+\<comment> \<open>preprocessing cannot introduce new indices\<close>
 preprocess_index: "preprocess cs = (t,as,trans_v) \<Longrightarrow> fst ` set as \<subseteq> fst ` set cs"
 begin
 lemma preprocess_sat: "preprocess cs = (t,as,trans_v) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> \<langle>trans_v v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)"
@@ -888,13 +890,13 @@ definition distinct_indices_state :: "('i,'a)state \<Rightarrow> bool" where
   "distinct_indices_state s = (\<forall> i x b x' b'. 
     ((look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b)) \<longrightarrow>
     (look (\<B>\<^sub>i\<^sub>l s) x' = Some (i,b') \<or> look (\<B>\<^sub>i\<^sub>u s) x' = Some (i,b')) \<longrightarrow>
-    (x = x' \<and> b = b')) \<and> (look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<longrightarrow> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b') \<longrightarrow> False)
-  )" 
+    (x = x' \<and> b = b')))"  (* \<and> (look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<longrightarrow> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b') \<longrightarrow> False) *)
+   
 
 lemma distinct_indices_stateD: assumes "distinct_indices_state s"
   shows "look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b) \<Longrightarrow> look (\<B>\<^sub>i\<^sub>l s) x' = Some (i,b') \<or> look (\<B>\<^sub>i\<^sub>u s) x' = Some (i,b')
     \<Longrightarrow> x = x' \<and> b = b'" 
-  "look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<Longrightarrow> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b') \<Longrightarrow> P" 
+(*  "look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<Longrightarrow> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b') \<Longrightarrow> P"  *)
   using assms unfolding distinct_indices_state_def by blast+
 
 definition unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
@@ -904,7 +906,7 @@ definition subsets_sat_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
   "subsets_sat_core s = ((\<forall> I. I \<subset> set (the (\<U>\<^sub>c s)) \<longrightarrow> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>s s)))" 
 
 definition minimal_unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
-  "minimal_unsat_state_core s = (unsat_state_core s \<and> (distinct_indices_state s \<longrightarrow> subsets_sat_core s))" 
+  "minimal_unsat_state_core s = (unsat_state_core s \<and> (distinct_indices_state s \<longrightarrow> length (the (\<U>\<^sub>c s)) > 2 \<longrightarrow> subsets_sat_core s))" 
 
 lemma state_satisfies_index: assumes "v \<Turnstile>\<^sub>s s"
   shows "(I,v) \<Turnstile>\<^sub>i\<^sub>s s"
@@ -1034,6 +1036,18 @@ definition Positive where
 definition Negative where
   [simp]: "Negative \<equiv> Direction (>) \<B>\<^sub>i\<^sub>u \<B>\<^sub>i\<^sub>l \<B>\<^sub>u \<B>\<^sub>l \<I>\<^sub>u \<I>\<^sub>l \<B>\<^sub>i\<^sub>l_update Geq Leq (\<ge>)"
 
+definition equiv_atom_state_2 where 
+  "equiv_atom_state_2 as s = (\<U> s \<and> length (the (\<U>\<^sub>c s)) \<le> 2 \<or> ((set as) \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s)))" 
+
+lemma equiv_atom_state_2I: assumes "\<not> \<U> s \<Longrightarrow> ((set as) \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s))" 
+  "\<U> s \<Longrightarrow> length (the (\<U>\<^sub>c s)) > 2 \<Longrightarrow> ((set as) \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s))" 
+shows "equiv_atom_state_2 as s" 
+  using assms unfolding equiv_atom_state_2_def by linarith
+
+lemma equiv_atom_state_2D: assumes "equiv_atom_state_2 as s" 
+  shows "\<not> \<U> s \<Longrightarrow> ((set as) \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s))" 
+  "length (the (\<U>\<^sub>c s)) > 2 \<Longrightarrow> ((set as) \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s))" 
+  using assms unfolding equiv_atom_state_2_def by linarith+ 
 
 
 text\<open>Assuming that the @{text \<U>} flag and the current valuation
@@ -1072,7 +1086,7 @@ assert_all_state_unsat: "\<triangle> t \<Longrightarrow> assert_all_state t as =
 assert_all_state_unsat_atoms_equiv_bounds: "\<triangle> t \<Longrightarrow> assert_all_state t as = s' \<Longrightarrow> \<U> s' \<Longrightarrow> set as \<Turnstile>\<^sub>i \<B>\<I> s'" and
 
 assert_all_distinct_equiv_index: "\<triangle> t \<Longrightarrow> assert_all_state t as = s' \<Longrightarrow> distinct_indices as \<Longrightarrow> 
-  set as \<doteq>\<^sub>i \<B>\<I> s' \<parallel> indices_state s'" and
+  equiv_atom_state_2 as s'" and
 
 \<comment> \<open>The set of indices is taken from the constraints\<close>
 assert_all_state_indices: "\<triangle> t \<Longrightarrow> assert_all_state t as = s \<Longrightarrow> indices_state s \<subseteq> fst ` set as" and
@@ -1083,59 +1097,6 @@ definition assert_all where
   "assert_all t as \<equiv> let s = assert_all_state t as in
      if (\<U> s) then Unsat (the (\<U>\<^sub>c s)) else Sat (\<V> s)"
 end
-
-
-
-sublocale AssertAllState < AssertAll assert_all
-proof
-  fix t as v I
-  assume D: "\<triangle> t"
-  from D show "assert_all t as = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as)"
-    unfolding Let_def assert_all_def
-    using assert_all_state_tableau_equiv[OF D refl]
-    using assert_all_state_sat[OF D refl]
-    using assert_all_state_sat_atoms_equiv_bounds[OF D refl, of as]
-    unfolding atoms_equiv_bounds.simps curr_val_satisfies_state_def satisfies_state_def satisfies_atom_set_def
-    by (auto simp: Let_def split: if_splits)
-  assume "assert_all t as = Unsat I"
-  then have i: "I = the (\<U>\<^sub>c (assert_all_state t as))" and U: "\<U> (assert_all_state t as)"
-    unfolding assert_all_def Let_def by (auto split: if_splits)
-  note unsat = assert_all_state_unsat[OF D refl U, unfolded minimal_unsat_state_core_def unsat_state_core_def i[symmetric]]
-  from unsat have "set I \<subseteq> indices_state (assert_all_state t as)" by auto
-  also have "\<dots> \<subseteq> fst ` set as" using assert_all_state_indices[OF D refl] .
-  finally have indices: "set I \<subseteq> fst ` set as" .
-  show "minimal_unsat_core_tabl_atoms (set I) t as" 
-    unfolding minimal_unsat_core_tabl_atoms_def
-  proof (intro conjI impI allI indices, clarify)
-    fix v
-    assume model: "v \<Turnstile>\<^sub>t t" "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
-    from unsat have no_model: "\<not> ((set I, v) \<Turnstile>\<^sub>i\<^sub>s assert_all_state t as)" by auto
-    from assert_all_state_unsat_atoms_equiv_bounds[OF D refl U]
-    have equiv: "set as \<Turnstile>\<^sub>i \<B>\<I> (assert_all_state t as)" by auto
-    from assert_all_state_tableau_equiv[OF D refl, of v] model
-    have model_t: "v \<Turnstile>\<^sub>t \<T> (assert_all_state t as)" by auto
-    have model_as': "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
-      using model(2) by (auto simp: satisfies_atom_set_def)
-    with equiv model_t have "(set I, v) \<Turnstile>\<^sub>i\<^sub>s assert_all_state t as"
-      unfolding satisfies_state_index.simps atoms_imply_bounds_index.simps by simp
-    with no_model show False by simp
-  next
-    fix J
-    assume dist: "distinct_indices as" and J: "J \<subset> set I" 
-    from J unsat[unfolded subsets_sat_core_def, folded i] 
-    have J': "J \<subseteq> indices_state (assert_all_state t as)" by auto
-    from index_valid_distinct_indices[OF assert_all_index_valid[OF D refl] dist] J
-      unsat[unfolded subsets_sat_core_def, folded i]
-    obtain v where "(J, v) \<Turnstile>\<^sub>i\<^sub>s assert_all_state t as" by blast
-    from this[unfolded satisfies_state_index.simps, folded assert_all_state_tableau_equiv[OF D refl]]
-    have "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> (assert_all_state t as)" by auto
-    with assert_all_distinct_equiv_index[OF D refl dist, unfolded i_atoms_equiv_bounds.simps, 
-        rule_format, OF J', of v]
-    have "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by auto
-    thus "\<exists> v. v \<Turnstile>\<^sub>t t \<and> (J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by blast
-  qed
-qed
-
 
 text\<open>The @{text assert_all_state} function can be implemented by first
 applying the @{text init} function that creates an initial state based
@@ -1286,8 +1247,8 @@ assert_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<tria
 
 assert_atoms_equiv_bounds_index: "\<And> ats. \<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
     distinct (map fst (a # ats)) \<Longrightarrow> index_valid (set ats) s 
-    \<Longrightarrow> set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s)
-    \<Longrightarrow> (insert a (set ats)) \<doteq>\<^sub>i \<B>\<I> (assert a s) \<parallel> (indices_state (assert a s))" and
+    \<Longrightarrow> equiv_atom_state_2 ats s
+    \<Longrightarrow> equiv_atom_state_2 (a # ats) (assert a s)" and
 
 \<comment> \<open>If the @{term \<U>} flag is raised, then there is no valuation
    that satisfies both the current tableau and the current bounds.\<close>
@@ -1417,12 +1378,12 @@ qed
 
 lemma AssertAllState'_atoms_equiv_bounds_index:
   assumes "\<triangle> t"
-  shows "distinct_indices as \<Longrightarrow> set as \<doteq>\<^sub>i \<B>\<I> (assert_all_state t as) \<parallel> indices_state (assert_all_state t as)"
+  shows "distinct_indices as \<Longrightarrow> equiv_atom_state_2 as (assert_all_state t as)"
   unfolding assert_all_state_def
 proof (induct as rule: rev_induct)
   case Nil
   then show ?case
-    unfolding i_atoms_equiv_bounds.simps
+    unfolding i_atoms_equiv_bounds.simps equiv_atom_state_2_def
     using init_atoms_imply_bounds_index assms
     by (simp add: init_indices assert_loop_def satisfies_atom_set_def satisfies_bounds_index.simps)
 next
@@ -1432,7 +1393,7 @@ next
   from AssertAllState_index_valid[OF assms, of ats']
   have "index_valid (set ats') ?s" by simp
   from index_valid_indices_state[OF this] have sub: "indices_state ?s \<subseteq> fst ` set ats'" by auto
-  from snoc(1)[OF dist] have equiv: "set ats' \<doteq>\<^sub>i \<B>\<I> ?s \<parallel> indices_state ?s" .
+  from snoc(1)[OF dist] have equiv: "equiv_atom_state_2 ats' ?s" .
   from snoc(2)[unfolded distinct_indices_def] have "fst a \<notin> fst ` set ats'" by auto
   with sub have mem: "fst a \<notin> indices_state ?s" by auto
   show ?case
@@ -1440,7 +1401,8 @@ next
     case True
     hence id: "assert_loop (ats' @ [a]) (init t) = ?s" unfolding assert_loop_def by simp
     show ?thesis unfolding id using equiv mem 
-      unfolding i_atoms_equiv_bounds.simps i_satisfies_atom_set.simps satisfies_atom_set_def by auto
+      unfolding i_atoms_equiv_bounds.simps equiv_atom_state_2_def 
+        i_satisfies_atom_set.simps satisfies_atom_set_def by auto
   next
     case False
     then have id: "assert_loop (ats' @ [a]) (init t) = assert a ?s"
@@ -1449,7 +1411,7 @@ next
     have *: "\<Turnstile> ?s" "\<triangle> (\<T> ?s)" "\<nabla> ?s" by auto
     from snoc(2) have dist: "distinct (map fst (a # ats'))" unfolding distinct_indices_def by auto
     show ?thesis unfolding id using assert_atoms_equiv_bounds_index[OF False * dist _ equiv] 
-      AssertAllState_index_valid[OF assms, of ats'] by auto
+      AssertAllState_index_valid[OF assms, of ats'] by (auto simp: equiv_atom_state_2_def)
   qed
 qed
 
@@ -1490,7 +1452,7 @@ proof
         auto simp: init_index_valid index_valid_mono assert_index_valid)
 
   show "index_valid (set as) s'" using "*" AssertAllState_index_valid idsym by blast
-  show "distinct_indices as \<Longrightarrow> set as \<doteq>\<^sub>i \<B>\<I> s' \<parallel> indices_state s'" 
+  show "distinct_indices as \<Longrightarrow> equiv_atom_state_2 as s'" 
     using AssertAllState'_atoms_equiv_bounds_index[OF *, of as] unfolding id .
 qed
 
@@ -1619,8 +1581,8 @@ assert_bound_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; 
 assert_bound_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> assert_bound a s = s' \<Longrightarrow> \<U> s' \<Longrightarrow> minimal_unsat_state_core s'" and
 
 assert_bound_atoms_equiv_bounds_index: "\<And> ats. \<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow>
-    distinct (map fst (a # ats)) \<Longrightarrow> index_valid (set ats) s \<Longrightarrow> set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s)
-    \<Longrightarrow> (insert a (set ats)) \<doteq>\<^sub>i \<B>\<I> (assert_bound a s) \<parallel> (indices_state (assert_bound a s))" and
+    distinct (map fst (a # ats)) \<Longrightarrow> index_valid (set ats) s \<Longrightarrow> equiv_atom_state_2 ats s
+    \<Longrightarrow> equiv_atom_state_2 (a # ats) (assert_bound a s)" and
 
 
 assert_bound_index_valid: "\<lbrakk>\<not> \<U> s; \<Turnstile> s; \<triangle> (\<T> s); \<nabla> s\<rbrakk> \<Longrightarrow> index_valid as s \<Longrightarrow> index_valid (insert a as) (assert_bound a s)"
@@ -1644,8 +1606,8 @@ locale AssertBoundNoLhs =
   assumes assert_bound_nolhs_atoms_imply_bounds_index: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     ats \<Turnstile>\<^sub>i \<B>\<I> s \<Longrightarrow> insert a ats \<Turnstile>\<^sub>i \<B>\<I> (assert_bound a s)"
   assumes assert_bound_nolhs_atoms_equiv_bounds_index: "\<And> ats. \<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
-    distinct (map fst (a # ats)) \<Longrightarrow> index_valid (set ats) s \<Longrightarrow> set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> (indices_state s)
-    \<Longrightarrow> (insert a (set ats)) \<doteq>\<^sub>i \<B>\<I> (assert_bound a s) \<parallel> (indices_state (assert_bound a s))"
+    distinct (map fst (a # ats)) \<Longrightarrow> index_valid (set ats) s \<Longrightarrow> equiv_atom_state_2 ats s
+    \<Longrightarrow> equiv_atom_state_2 (a # ats) (assert_bound a s)"
   assumes assert_bound_nolhs_unsat: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
     index_valid as s \<Longrightarrow> \<U> (assert_bound a s) \<Longrightarrow> minimal_unsat_state_core (assert_bound a s)"
   assumes assert_bound_nolhs_tableau_valuated: "\<lbrakk>\<not> \<U> s; \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s; \<triangle> (\<T> s); \<nabla> s; \<diamond> s\<rbrakk> \<Longrightarrow>
@@ -1725,6 +1687,28 @@ lemma check_distinct_indices_state: assumes "\<not> \<U> s \<Longrightarrow> \<T
   using check_bounds_id[OF _ assms] check_unsat_id[of s]
   unfolding distinct_indices_state_def by (cases "\<U> s", auto)
 
+lemma check_equiv_atom_state_2: assumes pre: "\<not> \<U> s \<Longrightarrow> \<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<not> \<U> s \<Longrightarrow> \<diamond> s" "\<not> \<U> s \<Longrightarrow> \<triangle> (\<T> s)" "\<not> \<U> s \<Longrightarrow> \<nabla> s" 
+  and eq: "equiv_atom_state_2 as s"
+  shows "equiv_atom_state_2 as (check s)" 
+proof (cases "\<U> s")
+  case True
+  hence "check s = s" using check_unsat_id[of s] by auto
+  thus ?thesis using eq by simp
+next
+  case False
+  from equiv_atom_state_2D(1)[OF eq False]
+  have equiv: "(set as) \<doteq>\<^sub>i \<B>\<I> s \<parallel> indices_state s" .
+  have "\<B>\<^sub>i (check s) = \<B>\<^sub>i s" using check_bounds_id[of s] pre False by auto
+  hence bnds: "\<B>\<I> (check s) = \<B>\<I> s" 
+    by (metis Pair_inject boundsl_def boundsu_def indexl_def indexu_def)
+  note equiv
+  moreover have "indices_state s = indices_state (check s)" 
+    by (rule check_indices_state[symmetric], insert pre, auto)
+  ultimately have "(set as) \<doteq>\<^sub>i \<B>\<I> (check s) \<parallel> indices_state (check s)" 
+    unfolding bnds by auto
+  thus ?thesis by (intro equiv_atom_state_2I, auto)
+qed
+  
 end
 
 
@@ -1845,20 +1829,13 @@ next
   fix s :: "('i, 'a) state" and a and ats :: "('i \<times> 'a atom) list" 
   assume *: "\<not> \<U> s" "\<Turnstile> s" "\<triangle> (\<T> s)" "\<nabla> s" 
     and dist: "distinct (map fst (a # ats))" "index_valid (set ats) s"
-    and equiv: "set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> indices_state s" 
+    and eq2: "equiv_atom_state_2 ats s" 
   note pre = Assert'Precond[OF *, of a]
   let ?s = "assert_bound a s" 
-  have "\<B>\<^sub>i (check ?s) = \<B>\<^sub>i ?s" using pre check_bounds_id[of ?s] check_unsat_id[of ?s]
-    by (cases "\<U> ?s", auto)
-  hence bnds: "\<B>\<I> (check ?s) = \<B>\<I> ?s" 
-    by (metis Pair_inject boundsl_def boundsu_def indexl_def indexu_def)
-  from assert_bound_atoms_equiv_bounds_index[OF * dist equiv]
-  have "insert a (set ats) \<doteq>\<^sub>i \<B>\<I> ?s \<parallel> indices_state ?s" by auto
-  also have "indices_state ?s = indices_state (assert a s)" 
-    unfolding assert_def 
-    by (rule check_indices_state[symmetric], insert pre, auto)
-  finally show "insert a (set ats) \<doteq>\<^sub>i \<B>\<I> (assert a s) \<parallel> indices_state (assert a s)" 
-    unfolding bnds assert_def by auto
+  from assert_bound_atoms_equiv_bounds_index[OF * dist eq2]
+  have eq2: "equiv_atom_state_2 (a # ats) (assert_bound a s)" .
+  show "equiv_atom_state_2 (a # ats) (assert a s)" unfolding assert_def
+    by (rule check_equiv_atom_state_2, insert pre eq2, auto)
 qed
 
 text\<open>Under these assumptions for @{text "assert_bound"} and @{text
@@ -2016,11 +1993,11 @@ lemma AssertAllState''_index_valid:
 
 lemma AssertAllState''_atoms_equiv_bounds_index:
   assumes "\<triangle> t"
-  shows "distinct_indices ats \<Longrightarrow> set ats \<doteq>\<^sub>i \<B>\<I> (assert_bound_loop ats (init t)) \<parallel> indices_state (assert_bound_loop ats (init t))"
+  shows "distinct_indices ats \<Longrightarrow> equiv_atom_state_2 ats (assert_bound_loop ats (init t))"
 proof (induct ats rule: rev_induct)
   case Nil
   then show ?case
-    unfolding assert_bound_loop_def i_atoms_equiv_bounds.simps
+    unfolding assert_bound_loop_def i_atoms_equiv_bounds.simps equiv_atom_state_2_def
     using init_atoms_imply_bounds_index assms
     by (simp add: init_indices satisfies_atom_set_def satisfies_bounds_index.simps)
 next
@@ -2030,7 +2007,7 @@ next
   from AssertAllState''_index_valid[OF assms, of ats']
   have "index_valid (set ats') ?s" .
   from index_valid_indices_state[OF this] have sub: "indices_state ?s \<subseteq> fst ` set ats'" by auto
-  from snoc(1)[OF dist] have equiv: "set ats' \<doteq>\<^sub>i \<B>\<I> ?s \<parallel> indices_state ?s" .
+  from snoc(1)[OF dist] have equiv: "equiv_atom_state_2 ats' ?s" .
   from snoc(2)[unfolded distinct_indices_def] have "fst a \<notin> fst ` set ats'" by auto
   with sub have mem: "fst a \<notin> indices_state ?s" by auto
   show ?case
@@ -2038,7 +2015,7 @@ next
     case True
     hence id: "assert_bound_loop (ats' @ [a]) (init t) = ?s" unfolding assert_bound_loop_def by simp
     show ?thesis unfolding id using equiv mem 
-      unfolding i_atoms_equiv_bounds.simps i_satisfies_atom_set.simps satisfies_atom_set_def by auto
+      unfolding i_atoms_equiv_bounds.simps i_satisfies_atom_set.simps equiv_atom_state_2_def satisfies_atom_set_def by auto
   next
     case False
     then have id: "assert_bound_loop (ats' @ [a]) (init t) = assert_bound a ?s"
@@ -2048,7 +2025,7 @@ next
     from snoc(2) have dist: "distinct (map fst (a # ats'))" unfolding distinct_indices_def by auto
     show ?thesis unfolding id 
       using assert_bound_nolhs_atoms_equiv_bounds_index[OF False * dist AssertAllState''_index_valid[OF assms] equiv] 
-      by auto
+      by (auto simp: equiv_atom_state_2_def)
   qed
 qed
 
@@ -2114,16 +2091,11 @@ proof
     "\<not> \<U> ?s \<Longrightarrow> \<triangle> (\<T> ?s)" 
     "\<not> \<U> ?s \<Longrightarrow> \<nabla> ?s" 
     by auto
-
-  have "\<B>\<^sub>i (check ?s) = \<B>\<^sub>i ?s" using pre check_bounds_id[of ?s] check_unsat_id[of ?s]
-    by (cases "\<U> ?s", auto)
-  hence bnds: "\<B>\<I> (check ?s) = \<B>\<I> ?s" 
-    by (metis Pair_inject boundsl_def boundsu_def indexl_def indexu_def)
   
-  show "set ats \<doteq>\<^sub>i \<B>\<I> s' \<parallel> indices_state s'" 
+  show "equiv_atom_state_2 ats s'" 
     unfolding s' using AssertAllState''_atoms_equiv_bounds_index[OF *(1) dist]
     unfolding assert_all_state_def 
-    by (subst check_indices_state[OF pre], force, insert bnds, auto)
+    by (intro check_equiv_atom_state_2, insert pre, auto)
 qed
 
 
@@ -2757,8 +2729,156 @@ lemma indices_state_set_unsat: "indices_state (set_unsat I s) = indices_state s"
 
 lemma \<B>\<I>_set_unsat: "\<B>\<I> (set_unsat I s) = \<B>\<I> s" 
   by (cases s, auto simp: boundsl_def boundsu_def indexl_def indexu_def)
-  
+
+lemma satisfies_tableau_cong: assumes "\<And> x. x \<in> tvars t \<Longrightarrow> v x = w x"
+  shows "(v \<Turnstile>\<^sub>t t) = (w \<Turnstile>\<^sub>t t)" 
+  unfolding satisfies_tableau_def satisfies_eq_def
+  by (intro ball_cong[OF refl] arg_cong2[of _ _ _ _ "(=)"] valuate_depend, 
+      insert assms, auto simp: lvars_def rvars_def)
+
 text \<open>Note that in order to ensure minimality of the unsat cores, pivoting is required.\<close>
+
+context AssertAllState
+begin
+lemma assert_all_state_imp_assert_all: assumes pivot_upd: "PivotUpdate eqlvar (pivot :: var \<Rightarrow> var \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state) update"
+  shows "AssertAll assert_all" 
+proof
+  fix t as v I
+  assume D: "\<triangle> t"  
+  from D show "assert_all t as = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<and> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as)"
+    unfolding Let_def assert_all_def
+    using assert_all_state_tableau_equiv[OF D refl]
+    using assert_all_state_sat[OF D refl]
+    using assert_all_state_sat_atoms_equiv_bounds[OF D refl, of as]
+    unfolding atoms_equiv_bounds.simps curr_val_satisfies_state_def satisfies_state_def satisfies_atom_set_def
+    by (auto simp: Let_def split: if_splits)
+  let ?s = "assert_all_state t as" 
+  assume "assert_all t as = Unsat I"
+  then have i: "I = the (\<U>\<^sub>c ?s)" and U: "\<U> ?s"
+    unfolding assert_all_def Let_def by (auto split: if_splits)
+  note unsat = assert_all_state_unsat[OF D refl U, unfolded minimal_unsat_state_core_def unsat_state_core_def i[symmetric]]
+  from unsat have "set I \<subseteq> indices_state ?s" by auto
+  also have "\<dots> \<subseteq> fst ` set as" using assert_all_state_indices[OF D refl] .
+  finally have indices: "set I \<subseteq> fst ` set as" .
+  show "minimal_unsat_core_tabl_atoms (set I) t as" 
+    unfolding minimal_unsat_core_tabl_atoms_def
+  proof (intro conjI impI allI indices, clarify)
+    fix v
+    assume model: "v \<Turnstile>\<^sub>t t" "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
+    from unsat have no_model: "\<not> ((set I, v) \<Turnstile>\<^sub>i\<^sub>s ?s)" by auto
+    from assert_all_state_unsat_atoms_equiv_bounds[OF D refl U]
+    have equiv: "set as \<Turnstile>\<^sub>i \<B>\<I> ?s" by auto
+    from assert_all_state_tableau_equiv[OF D refl, of v] model
+    have model_t: "v \<Turnstile>\<^sub>t \<T> ?s" by auto
+    have model_as': "(set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
+      using model(2) by (auto simp: satisfies_atom_set_def)
+    with equiv model_t have "(set I, v) \<Turnstile>\<^sub>i\<^sub>s ?s"
+      unfolding satisfies_state_index.simps atoms_imply_bounds_index.simps by simp
+    with no_model show False by simp
+  next
+    fix J
+    assume dist: "distinct_indices as" and J: "J \<subset> set I" 
+    from J unsat[unfolded subsets_sat_core_def, folded i] 
+    have J': "J \<subseteq> indices_state ?s" by auto
+    show "\<exists> v. v \<Turnstile>\<^sub>t t \<and> (J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as"
+    proof (cases "2 < length I")
+      case True
+      with index_valid_distinct_indices[OF assert_all_index_valid[OF D refl] dist] J
+        unsat[unfolded subsets_sat_core_def, folded i]
+      obtain v where "(J, v) \<Turnstile>\<^sub>i\<^sub>s ?s" by blast
+      from this[unfolded satisfies_state_index.simps, folded assert_all_state_tableau_equiv[OF D refl]]
+      have model: "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" by auto
+      from assert_all_distinct_equiv_index[OF D refl dist]
+      have "equiv_atom_state_2 as ?s" by auto
+      from equiv_atom_state_2D[OF this] U True i
+      have equiv: "set as \<doteq>\<^sub>i \<B>\<I> ?s \<parallel> indices_state ?s" by simp
+      from equiv[unfolded i_atoms_equiv_bounds.simps, 
+        rule_format, OF J', of v] model
+      have "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by auto
+      thus ?thesis by blast
+    next
+      case False
+      from this[folded i] obtain a b where I: "set I \<subseteq> {a,b}" 
+        by (cases I; cases "tl I", auto)
+      with J have "J \<subset> {a,b}" by auto
+      then obtain i where J: "J \<subseteq> {i}" by auto
+      from recalc_tableau_lvars[OF D] obtain v :: "nat \<Rightarrow> 'a" where v: "v \<Turnstile>\<^sub>t t" by auto 
+      show ?thesis
+      proof (cases "J = {i}")
+        case False
+        with J have J: "J = {}" by auto
+        show ?thesis unfolding J using v by (auto simp: satisfies_atom_set_def)
+      next
+        case True
+        from True \<open>J \<subset> set I\<close> have "i \<in> set I" by blast
+        with indices have "i \<in> fst ` set as" by auto
+        then obtain a where ia_as: "(i,a) \<in> set as" by force
+        with dist[unfolded distinct_indices_def] 
+        have "\<And> b. (i,b) \<in> set as \<Longrightarrow> b = a" 
+          by (metis eq_key_imp_eq_value)
+        with ia_as have id: "set as \<inter> {i} \<times> UNIV = {(i,a)}" by blast
+        {
+          fix v
+          have "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as = (v \<Turnstile>\<^sub>a a)" 
+            unfolding i_satisfies_atom_set.simps satisfies_atom_set_def id True by auto
+        } note id = this
+        obtain y c where a: "a = Leq y c \<or> a = Geq y c" by (cases a, auto)
+        show ?thesis
+        proof (cases "y \<in> rvars t")
+          case True
+          from recalc_tableau_lvars[OF D, rule_format, of "\<lambda> _. c"] True 
+          obtain v where "v \<Turnstile>\<^sub>t t" "v y = c" by auto
+          thus ?thesis unfolding id using a by auto
+        next
+          case y_no_r: False
+          show ?thesis
+          proof (cases "y \<in> lvars t") 
+            case False
+            have "(v (y := c) \<Turnstile>\<^sub>t t) = (v \<Turnstile>\<^sub>t t)" 
+              by (rule satisfies_tableau_cong, insert False y_no_r, auto)
+            with v show ?thesis unfolding id using a by (intro exI[of _ "v (y := c)"], auto)
+          next
+            case True            
+            from D[unfolded normalized_tableau_def]
+            have zero: "0 \<notin> rhs ` set t" by auto
+            interpret PivotUpdate eqlvar pivot update by fact
+            define allvars where "allvars = remdups (map lhs t @ concat (map (Abstract_Linear_Poly.vars_list o rhs) t))"
+            have allvars: "set allvars = tvars t" 
+              unfolding allvars_def lvars_def rvars_def set_remdups set_append set_concat set_map
+              by (intro arg_cong2[of _ _ _ _ "(\<union>)"], force, intro arg_cong[of _ _ "Union"], 
+                  unfold image_comp, intro image_cong[OF refl], auto simp: set_vars_list)
+            have dist_all: "distinct allvars" unfolding allvars_def by simp
+            let ?empty = "Mapping.empty :: ('i, 'a) bounds_index" 
+            let ?s = "State t ?empty ?empty (Mapping.tabulate allvars v) False None" 
+            let ?eq = "eq_for_lvar (\<T> ?s) y" 
+            from eq_for_lvar[OF True] have "?eq \<in> set t" "lhs ?eq = y" by auto
+            with zero have rhs: "rhs ?eq \<noteq> 0" by force
+            hence "rvars_eq ?eq \<noteq> {}"
+              by (simp add: vars_empty_zero)
+            then obtain z where z: "z \<in> rvars_eq ?eq" by auto
+            from D have norm: "\<triangle> (\<T> ?s)" by simp
+            have val: "\<nabla> ?s" unfolding tableau_valuated_def by (simp add: allvars[symmetric], auto simp: lookup_tabulate[OF dist_all])
+            from True have y: "y \<in> lvars (\<T> ?s)" by auto
+            let ?v = "\<V> (pivot_and_update y z c ?s)" 
+            let ?vv = "\<langle>?v\<rangle>" 
+            from pivotandupdate_valuation_xi[OF norm val y z, of c]
+            have "look ?v y = Some c" .
+            hence "?vv y = c" unfolding map2fun_def' by auto
+            with a have va: "?vv \<Turnstile>\<^sub>a a" by auto
+            have "(\<langle>Mapping.tabulate allvars v\<rangle> \<Turnstile>\<^sub>t t) = (v \<Turnstile>\<^sub>t t)" 
+              by (rule satisfies_tableau_cong, unfold map2fun_def', subst lookup_tabulate[OF dist_all], auto simp: allvars)
+            with v have model: "\<langle>Mapping.tabulate allvars v\<rangle> \<Turnstile>\<^sub>t t" by simp
+            show ?thesis unfolding id
+            proof (intro exI[of _ ?vv] conjI va)
+              show "?vv \<Turnstile>\<^sub>t t" using pivotandupdate_satisfies_tableau[OF norm val y z, of c] model by simp
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+end
 
 context Update
 begin
@@ -3311,132 +3431,162 @@ next
   assume *: "\<not> \<U> s" "\<Turnstile>\<^sub>n\<^sub>o\<^sub>l\<^sub>h\<^sub>s s" "\<triangle> (\<T> s)" "\<nabla> s" "\<diamond> s"
     and dist: "distinct (map fst (ia # ats))" 
     and ind_valid: "index_valid (set ats) s" 
-    and equiv: "set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> indices_state s"   
+    and eq2: "equiv_atom_state_2 ats s" 
+   
   from index_valid_distinct_indices[OF ind_valid] dist
   have dist_s: "distinct_indices_state s" unfolding distinct_indices_def by auto
+  from equiv_atom_state_2D(1)[OF eq2 *(1)]
+  have equiv: "set ats \<doteq>\<^sub>i \<B>\<I> s \<parallel> indices_state s" .
   note equiv = equiv[unfolded i_atoms_equiv_bounds.simps, rule_format]
   obtain i a where ia: "ia = (i,a)" by force
   with dist have i_ats: "i \<notin> fst ` set ats" by auto
   let ?s = "(assert_bound (i, a) s)" 
-  show "insert ia (set ats) \<doteq>\<^sub>i \<B>\<I> (assert_bound ia s) \<parallel> indices_state (assert_bound ia s)"
-    unfolding i_atoms_equiv_bounds.simps ia
-  proof (intro allI impI conjI)
-    fix J v
-    assume J: "J \<subseteq> indices_state ?s" 
-    have sub: "indices_state (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) \<subseteq> insert i (indices_state s)"
-      "indices_state (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) \<subseteq> insert i (indices_state s)"
-      for x y unfolding indices_state_def by auto
-    have "set ats \<Turnstile>\<^sub>i \<B>\<I> s" unfolding atoms_imply_bounds_index.simps
-    proof (intro allI impI)
-      fix I v
-      assume "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats" 
-      hence "(I \<inter> indices_state s, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats" 
-        by (auto simp: satisfies_atom_set_def)
-      with equiv[of "I \<inter> indices_state s" v] 
-      have "(I \<inter> indices_state s, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" by auto
-      thus "(I, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" unfolding satisfies_bounds_index.simps indices_state_def
-        by (force simp: boundsl_def indexl_def boundsu_def indexu_def)
-    qed
-    from one_implication[OF * this] have one_impl: "insert (i,a) (set ats) \<Turnstile>\<^sub>i \<B>\<I> ?s" .    
-    have ind: "indices_state ?s \<subseteq> insert i (indices_state s)" 
-    proof (cases a, insert sub *, auto simp: Let_def indices_state_set_unsat, goal_cases)
-      case 1
-      thus ?case
-        by (subst (asm) update_indices_state_id, (force simp: tableau_valuated_def)+)
-    next
-      case 2
-      thus ?case
-        by (subst (asm) update_indices_state_id, (force simp: tableau_valuated_def)+)
-    qed
-    have ids: "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = \<B>\<^sub>l s"
-      "\<B>\<^sub>u (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = \<B>\<^sub>u s"
-      "\<B>\<^sub>u (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = (\<B>\<^sub>u s) (x := Some y)"
-      "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = (\<B>\<^sub>l s) (x := Some y)"
-      "\<I>\<^sub>l (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = \<I>\<^sub>l s" 
-      "\<I>\<^sub>u (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = \<I>\<^sub>u s" 
-      "\<I>\<^sub>l (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = (\<I>\<^sub>l s) (x := i)" 
-      "\<I>\<^sub>u (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = (\<I>\<^sub>u s) (x := i)" 
-      for x y
-      by (intro ext, auto simp: boundsl_def indexl_def boundsu_def indexu_def o_def)
-    have norm: "\<triangle> (\<T> (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s))" 
-      "\<triangle> (\<T> (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s))"  for x y using * by auto
-    have valu: "\<nabla> (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s)"
-      "\<nabla> (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s)" for x y using * 
-      by (auto simp add: tableau_valuated_def)
-    have look_update: 
-      "x \<notin> lvars (\<T> s) \<Longrightarrow> 
-        look (\<B>\<^sub>i\<^sub>u (update x y (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>u s)) (x \<mapsto> (i, y))"
-      "x \<notin> lvars (\<T> s) \<Longrightarrow> 
-        look (\<B>\<^sub>i\<^sub>l (update x y (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>l s)) (x \<mapsto> (i, y))"
-      "x \<notin> lvars (\<T> s) \<Longrightarrow> 
-        look (\<B>\<^sub>i\<^sub>u (update x y (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>u s))"
-      "x \<notin> lvars (\<T> s) \<Longrightarrow> 
-        look (\<B>\<^sub>i\<^sub>l (update x y (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>l s))"
-      "x \<notin> lvars (\<T> s) \<Longrightarrow> indices_state (update x y (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s)) = 
-        indices_state (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s)" 
-      "x \<notin> lvars (\<T> s) \<Longrightarrow> indices_state (update x y (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s)) = 
-        indices_state (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s)" 
-      for x y 
-      using update_id[OF norm(2) valu(2), of x x y y, unfolded Let_def] update_id[OF norm(1) valu(1), of x x y y, unfolded Let_def]
-        update_indices_state_id[OF norm(2) valu(2), of x x y y] update_indices_state_id[OF norm(1) valu(1), of x x y y]  by auto
-    have B_id: "(\<B>\<^sub>l s x = Some c \<longrightarrow> \<I>\<^sub>l s x \<in> J \<longrightarrow> c \<le> v x) \<longleftrightarrow> (\<forall> j. look (\<B>\<^sub>i\<^sub>l s) x = Some (j,c) \<longrightarrow> j \<in> J \<longrightarrow> c \<le> v x)"
-      "(\<B>\<^sub>u s x = Some c \<longrightarrow> \<I>\<^sub>u s x \<in> J \<longrightarrow> c \<ge> v x) \<longleftrightarrow> (\<forall> j. look (\<B>\<^sub>i\<^sub>u s) x = Some (j,c) \<longrightarrow> j \<in> J \<longrightarrow> c \<ge> v x)"
-      for s :: "('i,'a)state" and x c J
-      by (auto simp: boundsl_def indexl_def boundsu_def indexu_def)
-    show "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert (i, a) (set ats) = (J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" 
-    proof
-      show "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert (i, a) (set ats) \<Longrightarrow> (J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" 
-        using one_impl[unfolded atoms_imply_bounds_index.simps, rule_format] .
-      assume model: "(J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" 
-      note model_l = model[unfolded satisfies_bounds_index.simps B_id, THEN conjunct1, rule_format]
-      note model_u = model[unfolded satisfies_bounds_index.simps B_id, THEN conjunct2, rule_format]
-      define K where "K = J - {i}" 
-      have dist_i: "look (\<B>\<^sub>i\<^sub>l s) x \<noteq> Some (i, b) \<and> look (\<B>\<^sub>i\<^sub>u s) x \<noteq> Some (i, b)" for x b 
-      proof (rule ccontr)
-        assume "\<not> ?thesis" 
-        hence "look (\<B>\<^sub>i\<^sub>l s) x = Some (i, b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i, b)" by auto
-        with ind_valid[unfolded index_valid_def, rule_format, of x i b] have "i \<in> fst ` set ats" by force
-        with dist[unfolded ia] show False by auto
+  from update_id have unsat_id: "\<triangle> (\<T> s) \<Longrightarrow> \<nabla> s \<Longrightarrow> x \<notin> lvars (\<T> s) \<Longrightarrow> \<U> (update x c s) = \<U> s" 
+    for x s c unfolding Let_def by auto
+  have ids: "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = \<B>\<^sub>l s"
+    "\<B>\<^sub>u (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = \<B>\<^sub>u s"
+    "\<B>\<^sub>u (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = (\<B>\<^sub>u s) (x := Some y)"
+    "\<B>\<^sub>l (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = (\<B>\<^sub>l s) (x := Some y)"
+    "\<I>\<^sub>l (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = \<I>\<^sub>l s" 
+    "\<I>\<^sub>u (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = \<I>\<^sub>u s" 
+    "\<I>\<^sub>l (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) = (\<I>\<^sub>l s) (x := i)" 
+    "\<I>\<^sub>u (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) = (\<I>\<^sub>u s) (x := i)" 
+    for x y
+    by (intro ext, auto simp: boundsl_def indexl_def boundsu_def indexu_def o_def)
+
+  have [simp]: "x \<notin> lvars (\<T> s) \<Longrightarrow> \<U> (update x c (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, c)) s)) = False" for x i c
+    by (subst unsat_id, insert *, auto simp: tableau_valuated_def)
+  have [simp]: "x \<notin> lvars (\<T> s) \<Longrightarrow> \<U> (update x c (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, c)) s)) = False" for x i c
+    by (subst unsat_id, insert *, auto simp: tableau_valuated_def)
+
+  show "equiv_atom_state_2 (ia # ats) (assert_bound ia s)" unfolding ia
+  proof (cases "\<U> ?s")
+    case True
+    hence "length (the (\<U>\<^sub>c ?s)) \<le> 2" using *(1)
+      by (cases a, auto simp: Let_def split: if_splits)
+    thus "equiv_atom_state_2 ((i,a) # ats) ?s" using True by (intro equiv_atom_state_2I, auto)
+  next
+    case False
+    show "equiv_atom_state_2 ((i,a) # ats) ?s" 
+    proof (intro equiv_atom_state_2I, unfold i_atoms_equiv_bounds.simps, intro allI impI conjI)
+      fix J v
+      assume J: "J \<subseteq> indices_state ?s" 
+      have sub: "indices_state (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s) \<subseteq> insert i (indices_state s)"
+        "indices_state (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s) \<subseteq> insert i (indices_state s)"
+        for x y unfolding indices_state_def by auto
+      have "set ats \<Turnstile>\<^sub>i \<B>\<I> s" unfolding atoms_imply_bounds_index.simps
+      proof (intro allI impI)
+        fix I v
+        assume "(I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats" 
+        hence "(I \<inter> indices_state s, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats" 
+          by (auto simp: satisfies_atom_set_def)
+        with equiv[of "I \<inter> indices_state s" v] 
+        have "(I \<inter> indices_state s, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" by auto
+        thus "(I, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" unfolding satisfies_bounds_index.simps indices_state_def
+          by (force simp: boundsl_def indexl_def boundsu_def indexu_def)
       qed
-      have K_s: "K \<subseteq> indices_state s" "K \<subseteq> indices_state ?s" using J ind unfolding K_def by auto
-      have "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert (i, a) (set ats) \<longleftrightarrow> ((K, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats \<and> (i \<in> J \<longrightarrow> v \<Turnstile>\<^sub>a a))" 
-        unfolding K_def using i_ats by (force simp: satisfies_atom_set_def)
-      also have "(K, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats \<longleftrightarrow> (K, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" by (rule equiv[OF K_s(1)])
-      also have "(i \<in> J \<longrightarrow> v \<Turnstile>\<^sub>a a) = True" 
-      proof -
-        {
-          assume i_J: "i \<in> J" 
-          with J[unfolded indices_state_def] obtain x b where
-            "look (\<B>\<^sub>i\<^sub>l ?s) x = Some (i, b) \<or> look (\<B>\<^sub>i\<^sub>u ?s) x = Some (i, b)" by force
-          with model_l[of x i b] model_u[of x i b] i_J
-          have "v \<Turnstile>\<^sub>a a" by (cases a, auto simp: Let_def dist_i bound_compare_defs look_update split: if_splits)
-        }
-        thus ?thesis by simp
+      from one_implication[OF * this] have one_impl: "insert (i,a) (set ats) \<Turnstile>\<^sub>i \<B>\<I> ?s" .    
+      have ind: "indices_state ?s \<subseteq> insert i (indices_state s)" 
+      proof (cases a, insert sub *, auto simp: Let_def indices_state_set_unsat, goal_cases)
+        case 1
+        thus ?case
+          by (subst (asm) update_indices_state_id, (force simp: tableau_valuated_def)+)
+      next
+        case 2
+        thus ?case
+          by (subst (asm) update_indices_state_id, (force simp: tableau_valuated_def)+)
       qed
-      also have "((K, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s) = True" 
-      proof (rule ccontr)
-        assume "\<not> ?thesis" 
-        then obtain x c j where look: "look (\<B>\<^sub>i\<^sub>l s) x = Some (j, c) \<and> \<not> c \<le> v x \<or> 
-           look (\<B>\<^sub>i\<^sub>u s) x = Some (j, c) \<and> \<not> c \<ge> v x" 
-          and j: "j \<in> K" unfolding satisfies_bounds_index.simps B_id by auto        
-        from j have ji: "j \<noteq> i" and jJ: "j \<in> J" unfolding K_def by auto
-        from j K_s have js: "j \<in> indices_state ?s" by auto
-        from this[unfolded indices_state_def] obtain y d where 
-          look': "look (\<B>\<^sub>i\<^sub>l ?s) y = Some (j, d) \<or> look (\<B>\<^sub>i\<^sub>u ?s) y = Some (j, d)" by auto
-        with ji have "look (\<B>\<^sub>i\<^sub>l s) y = Some (j, d) \<or> look (\<B>\<^sub>i\<^sub>u s) y = Some (j, d)" 
-          by (cases a, auto simp: Let_def look_update indices_state_set_unsat split: if_splits)
-        from distinct_indices_stateD(1)[OF dist_s, OF this, of x c] look
-        have "y = x" "d = c" by auto
-        from look'[unfolded this] model_l[of x j c] model_u[of x j c] jJ
-        have "look (\<B>\<^sub>i\<^sub>l ?s) x = Some (j, c) \<and> c \<le> v x \<or> look (\<B>\<^sub>i\<^sub>u ?s) x = Some (j, c) \<and> c \<ge> v x" by auto
-        with ji have look2: "look (\<B>\<^sub>i\<^sub>l s) x = Some (j, c)  \<and> c \<le> v x \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (j, c) \<and> c \<ge> v x" 
-          by (cases a, auto simp: Let_def look_update indices_state_set_unsat split: if_splits)
-        from look look2 have "look (\<B>\<^sub>i\<^sub>l s) x = Some (j, c)" "look (\<B>\<^sub>i\<^sub>u s) x = Some (j, c)" by auto
-        from distinct_indices_stateD(2)[OF dist_s this]
-        show False .
+      have norm: "\<triangle> (\<T> (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s))" 
+        "\<triangle> (\<T> (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s))"  for x y using * by auto
+      have valu: "\<nabla> (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s)"
+        "\<nabla> (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s)" for x y using * 
+        by (auto simp add: tableau_valuated_def)
+      have look_update: 
+        "x \<notin> lvars (\<T> s) \<Longrightarrow> 
+          look (\<B>\<^sub>i\<^sub>u (update x y (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>u s)) (x \<mapsto> (i, y))"
+        "x \<notin> lvars (\<T> s) \<Longrightarrow> 
+          look (\<B>\<^sub>i\<^sub>l (update x y (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>l s)) (x \<mapsto> (i, y))"
+        "x \<notin> lvars (\<T> s) \<Longrightarrow> 
+          look (\<B>\<^sub>i\<^sub>u (update x y (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>u s))"
+        "x \<notin> lvars (\<T> s) \<Longrightarrow> 
+          look (\<B>\<^sub>i\<^sub>l (update x y (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s))) = (look (\<B>\<^sub>i\<^sub>l s))"
+        "x \<notin> lvars (\<T> s) \<Longrightarrow> indices_state (update x y (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s)) = 
+          indices_state (\<B>\<^sub>i\<^sub>u_update (Mapping.update x (i, y)) s)" 
+        "x \<notin> lvars (\<T> s) \<Longrightarrow> indices_state (update x y (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s)) = 
+          indices_state (\<B>\<^sub>i\<^sub>l_update (Mapping.update x (i, y)) s)" 
+        for x y 
+        using update_id[OF norm(2) valu(2), of x x y y, unfolded Let_def] update_id[OF norm(1) valu(1), of x x y y, unfolded Let_def]
+          update_indices_state_id[OF norm(2) valu(2), of x x y y] update_indices_state_id[OF norm(1) valu(1), of x x y y]  by auto
+      have B_id: "(\<B>\<^sub>l s x = Some c \<longrightarrow> \<I>\<^sub>l s x \<in> J \<longrightarrow> c \<le> v x) \<longleftrightarrow> (\<forall> j. look (\<B>\<^sub>i\<^sub>l s) x = Some (j,c) \<longrightarrow> j \<in> J \<longrightarrow> c \<le> v x)"
+        "(\<B>\<^sub>u s x = Some c \<longrightarrow> \<I>\<^sub>u s x \<in> J \<longrightarrow> c \<ge> v x) \<longleftrightarrow> (\<forall> j. look (\<B>\<^sub>i\<^sub>u s) x = Some (j,c) \<longrightarrow> j \<in> J \<longrightarrow> c \<ge> v x)"
+        for s :: "('i,'a)state" and x c J
+        by (auto simp: boundsl_def indexl_def boundsu_def indexu_def)
+      show "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set ((i, a) # ats)) = (J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" 
+      proof
+        show "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set ((i, a) # ats)) \<Longrightarrow> (J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" 
+          using one_impl[unfolded atoms_imply_bounds_index.simps, rule_format] by simp
+        assume model: "(J, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> ?s" 
+        note model_l = model[unfolded satisfies_bounds_index.simps B_id, THEN conjunct1, rule_format]
+        note model_u = model[unfolded satisfies_bounds_index.simps B_id, THEN conjunct2, rule_format]
+        define K where "K = J - {i}" 
+        have dist_i: "look (\<B>\<^sub>i\<^sub>l s) x \<noteq> Some (i, b) \<and> look (\<B>\<^sub>i\<^sub>u s) x \<noteq> Some (i, b)" for x b 
+        proof (rule ccontr)
+          assume "\<not> ?thesis" 
+          hence "look (\<B>\<^sub>i\<^sub>l s) x = Some (i, b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i, b)" by auto
+          with ind_valid[unfolded index_valid_def, rule_format, of x i b] have "i \<in> fst ` set ats" by force
+          with dist[unfolded ia] show False by auto
+        qed
+        have K_s: "K \<subseteq> indices_state s" "K \<subseteq> indices_state ?s" using J ind unfolding K_def by auto
+        have "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert (i, a) (set ats) \<longleftrightarrow> ((K, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats \<and> (i \<in> J \<longrightarrow> v \<Turnstile>\<^sub>a a))" 
+          unfolding K_def using i_ats by (force simp: satisfies_atom_set_def)
+        also have "(K, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set ats \<longleftrightarrow> (K, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s" by (rule equiv[OF K_s(1)])
+        also have "(i \<in> J \<longrightarrow> v \<Turnstile>\<^sub>a a) = True" 
+        proof -
+          {
+            assume i_J: "i \<in> J" 
+            with J[unfolded indices_state_def] obtain x b where
+              "look (\<B>\<^sub>i\<^sub>l ?s) x = Some (i, b) \<or> look (\<B>\<^sub>i\<^sub>u ?s) x = Some (i, b)" by force
+            with model_l[of x i b] model_u[of x i b] i_J
+            have "v \<Turnstile>\<^sub>a a" by (cases a, auto simp: Let_def dist_i bound_compare_defs look_update split: if_splits)
+          }
+          thus ?thesis by simp
+        qed
+        also have "((K, v) \<Turnstile>\<^sub>i\<^sub>b \<B>\<I> s) = True" 
+        proof (rule ccontr)
+          assume "\<not> ?thesis" 
+          then obtain x c j where look: "look (\<B>\<^sub>i\<^sub>l s) x = Some (j, c) \<and> \<not> c \<le> v x \<or> 
+               look (\<B>\<^sub>i\<^sub>u s) x = Some (j, c) \<and> \<not> c \<ge> v x" 
+            and j: "j \<in> K" unfolding satisfies_bounds_index.simps B_id by auto        
+          from j have ji: "j \<noteq> i" and jJ: "j \<in> J" unfolding K_def by auto
+          from j K_s have js: "j \<in> indices_state ?s" by auto
+          from this[unfolded indices_state_def] obtain y d where 
+            look': "look (\<B>\<^sub>i\<^sub>l ?s) y = Some (j, d) \<or> look (\<B>\<^sub>i\<^sub>u ?s) y = Some (j, d)" by auto
+          with ji have "look (\<B>\<^sub>i\<^sub>l s) y = Some (j, d) \<or> look (\<B>\<^sub>i\<^sub>u s) y = Some (j, d)" 
+            by (cases a, auto simp: Let_def look_update indices_state_set_unsat split: if_splits)
+          from distinct_indices_stateD(1)[OF dist_s, OF this, of x c] look
+          have "y = x" "d = c" by auto
+          note look'' = look'[unfolded this]
+          from look'' model_l[of x j c] model_u[of x j c] jJ
+          have look': "look (\<B>\<^sub>i\<^sub>l ?s) x = Some (j, c) \<or> look (\<B>\<^sub>i\<^sub>u ?s) x = Some (j, c)"
+            "look (\<B>\<^sub>i\<^sub>l ?s) x = Some (j, c) \<Longrightarrow> c \<le> v x"
+            "look (\<B>\<^sub>i\<^sub>u ?s) x = Some (j, c) \<Longrightarrow> c \<ge> v x" by auto
+          with ji have look2: "look (\<B>\<^sub>i\<^sub>l s) x = Some (j, c)  \<and> c \<le> v x \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (j, c) \<and> c \<ge> v x" 
+            by (cases a, auto simp: Let_def look_update indices_state_set_unsat split: if_splits)+
+          from look look2 have look: "look (\<B>\<^sub>i\<^sub>l s) x = Some (j, c)" "look (\<B>\<^sub>i\<^sub>u s) x = Some (j, c)" "c \<noteq> v x" by auto
+          {
+            assume "atom_var a \<noteq> x" 
+            hence "look (\<B>\<^sub>i\<^sub>l ?s) x = look (\<B>\<^sub>i\<^sub>l s) x" "look (\<B>\<^sub>i\<^sub>u ?s) x = look (\<B>\<^sub>i\<^sub>u s) x"
+              by (cases a, auto simp: Let_def look_update split: if_splits)+
+            from look'[unfolded this] look have False by auto
+          } 
+          then obtain d where a: "a = Geq x d \<or> a = Leq x d" by (cases a, auto)
+          with look look' look'' have "\<U> ?s" 
+            by (auto simp: Let_def look_update boundsu_def boundsl_def bound_compare_defs split: if_splits)
+          thus False using \<open>\<not> \<U> ?s\<close> by auto
+        qed
+        finally show "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set ((i, a) # ats))" by simp
       qed
-      finally show "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s insert (i, a) (set ats)" by simp
-    qed
+    qed (insert False, auto)
   qed
 qed
 end
@@ -7081,6 +7231,12 @@ global_interpretation PivotUpdateDefault: PivotUpdate eq_idx_for_lvar pivot_code
     "PivotUpdate.pivot_and_update pivot_code update_code = pivot_and_update_code"
   by (unfold_locales, auto simp: pivot_and_update_code_def)
 
+
+sublocale AssertAllState < AssertAll assert_all
+proof (rule assert_all_state_imp_assert_all)
+  show "PivotUpdate eq_idx_for_lvar pivot_code update_code" ..
+qed
+
 definition "check_code = PivotUpdateMinVars.check eq_idx_for_lvar min_lvar_not_in_bounds min_rvar_incdec_eq pivot_and_update_code"
 definition "check'_code = PivotUpdateMinVars.check' eq_idx_for_lvar min_rvar_incdec_eq pivot_and_update_code"
 
@@ -8223,7 +8379,7 @@ lemma simplex:
   "simplex cs = Unsat I \<Longrightarrow> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s set cs)" \<comment> \<open>unsat of original constraints\<close>
   "simplex cs = Unsat I \<Longrightarrow> set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})
     \<and> (Ball (set cs) minimality_condition_constraint \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J}))" \<comment> \<open>minimal unsat core\<close>
-  "simplex cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s set cs"  \<comment> \<open>satisfying assingment\<close>
+  "simplex cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s set cs"  \<comment> \<open>satisfying assignment\<close>
 proof (unfold simplex_def)
   let ?cs = "zip [0..<length cs] cs"
   assume "simplex_index ?cs = Unsat I"
