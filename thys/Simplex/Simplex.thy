@@ -890,13 +890,11 @@ definition distinct_indices_state :: "('i,'a)state \<Rightarrow> bool" where
   "distinct_indices_state s = (\<forall> i x b x' b'. 
     ((look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b)) \<longrightarrow>
     (look (\<B>\<^sub>i\<^sub>l s) x' = Some (i,b') \<or> look (\<B>\<^sub>i\<^sub>u s) x' = Some (i,b')) \<longrightarrow>
-    (x = x' \<and> b = b')))"  (* \<and> (look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<longrightarrow> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b') \<longrightarrow> False) *)
-   
+    (x = x' \<and> b = b')))" 
 
 lemma distinct_indices_stateD: assumes "distinct_indices_state s"
   shows "look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<or> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b) \<Longrightarrow> look (\<B>\<^sub>i\<^sub>l s) x' = Some (i,b') \<or> look (\<B>\<^sub>i\<^sub>u s) x' = Some (i,b')
     \<Longrightarrow> x = x' \<and> b = b'" 
-(*  "look (\<B>\<^sub>i\<^sub>l s) x = Some (i,b) \<Longrightarrow> look (\<B>\<^sub>i\<^sub>u s) x = Some (i,b') \<Longrightarrow> P"  *)
   using assms unfolding distinct_indices_state_def by blast+
 
 definition unsat_state_core :: "('i,'a::lrv) state \<Rightarrow> bool" where
@@ -2880,10 +2878,7 @@ proof
 qed
 end
 
-context Update
-begin
-lemma update_to_assert_bound_no_lhs: assumes pivot: "Pivot eqlvar (pivot :: var \<Rightarrow> var \<Rightarrow> ('i,'a) state \<Rightarrow> ('i,'a) state)" 
-  shows "AssertBoundNoLhs assert_bound" 
+sublocale Update < AssertBoundNoLhs assert_bound
 proof
   fix s::"('i,'a) state" and a
   assume "\<not> \<U> s" "\<triangle> (\<T> s)" "\<nabla> s"
@@ -2903,10 +2898,10 @@ next
     \<U> s \<longrightarrow> (set (the (\<U>\<^sub>c s)) \<subseteq> indices_state s \<and> \<not> (\<exists>v. (v \<Turnstile>\<^sub>t \<T> s
       \<and> (\<forall> x c i. ?modelU lt UB UI s v x c i)
       \<and> (\<forall> x c i. ?modelL lt LB LI s v x c i))))
-      \<and> (distinct_indices_state s \<longrightarrow> (\<forall> I. I \<subset> set (the (\<U>\<^sub>c s)) \<longrightarrow> (\<exists> v. v \<Turnstile>\<^sub>t \<T> s \<and>
+      \<and> (distinct_indices_state s \<longrightarrow> length (the (\<U>\<^sub>c s)) > 2 \<longrightarrow> (\<forall> I. I \<subset> set (the (\<U>\<^sub>c s)) \<longrightarrow> (\<exists> v. v \<Turnstile>\<^sub>t \<T> s \<and>
             (\<forall> x c i. ?modelIU I lt UB UI s v x c i) \<and> (\<forall> x c i. ?modelIL I lt LB LI s v x c i))))"
   have "\<U> (assert_bound ia s) \<longrightarrow> (unsat_state_core (assert_bound ia s) \<and> 
-    (distinct_indices_state (assert_bound ia s) \<longrightarrow> subsets_sat_core (assert_bound ia s)))" (is "?P (assert_bound ia s)") unfolding ia
+    (distinct_indices_state (assert_bound ia s) \<longrightarrow> length (the (\<U>\<^sub>c (assert_bound ia s))) > 2 \<longrightarrow> subsets_sat_core (assert_bound ia s)))" (is "?P (assert_bound ia s)") unfolding ia
   proof (rule assert_bound_cases[of _ _ ?P'])
     fix s' :: "('i,'a) state"
     have id: "((x :: 'a) < y \<or> x = y) \<longleftrightarrow> x \<le> y" "((x :: 'a) > y \<or> x = y) \<longleftrightarrow> x \<ge> y" for x y by auto
@@ -2950,77 +2945,7 @@ next
     next
       case 1
       thus ?case using dir ind ge lt some by (force simp: indices_state_def split: if_splits)
-    next
-      case 3
-      hence dist: "distinct_indices_state ?ss" unfolding distinct_indices_state_def by auto
-      have id: "UB dir ?s y = UB dir ?ss y" "LB dir ?s y = LB dir ?ss y"
-               "UI dir ?s y = UI dir ?ss y" "LI dir ?s y = LI dir ?ss y" 
-               "\<T> ?s = \<T> s" 
-               "set (the (\<U>\<^sub>c ?s)) = {i,LI dir s x}" for y        
-        using dir by (auto simp: boundsu_def boundsl_def indexu_def indexl_def) 
-      show ?case unfolding id 
-      proof (intro allI impI, goal_cases)
-        case (1 I)
-        then obtain j where I: "I \<subseteq> {j}" by auto
-        hence id: "(\<forall> k. P1 k \<longrightarrow> P2 k \<longrightarrow> k \<in> I \<longrightarrow> Q k) \<longleftrightarrow> (I = {} \<or> (P1 j \<longrightarrow> P2 j \<longrightarrow> Q j))" for P1 P2 Q by auto
-        have id2: "(UB dir s xa = Some ca \<longrightarrow> UI dir s xa = j \<longrightarrow> P) = (look (UBI dir s) xa = Some (j,ca) \<longrightarrow> P)"
-            "(LB dir s xa = Some ca \<longrightarrow> LI dir s xa = j \<longrightarrow> P) = (look (LBI dir s) xa = Some (j,ca) \<longrightarrow> P)" for xa ca P s
-          using dir by (auto simp: boundsu_def indexu_def boundsl_def indexl_def)
-        show "\<exists>v. v \<Turnstile>\<^sub>t \<T> s \<and>
-             (\<forall>xa ca ia.
-                 UB dir ?ss xa = Some ca \<longrightarrow> UI dir ?ss xa = ia \<longrightarrow> ia \<in> I \<longrightarrow> lt dir (v xa) ca \<or> v xa = ca) \<and>
-             (\<forall>xa ca ia.
-                 LB dir ?ss xa = Some ca \<longrightarrow> LI dir ?ss xa = ia \<longrightarrow> ia \<in> I \<longrightarrow> lt dir ca (v xa) \<or> ca = v xa)" 
-        proof (cases "\<exists> xa ca. look (UBI dir ?ss) xa = Some (j,ca) \<or> look (LBI dir ?ss) xa = Some (j,ca)")
-          case False
-          thus ?thesis unfolding id id2 using consistent unfolding curr_val_satisfies_no_lhs_def 
-            by (intro exI[of _ "\<langle>\<V> s\<rangle>"], auto)
-        next
-          case True
-          from consistent have val: " \<langle>\<V> s\<rangle> \<Turnstile>\<^sub>t \<T> s" unfolding curr_val_satisfies_no_lhs_def by auto
-          define ss where ss: "ss = ?ss" 
-          from True obtain y b where "look (UBI dir ?ss) y = Some (j,b) \<or> look (LBI dir ?ss) y = Some (j,b)" by force
-          then have id3: "(look (LBI dir ss) yy = Some (j,bb) \<or> look (UBI dir ss) yy = Some (j,bb)) \<longleftrightarrow> (yy = y \<and> bb = b)" for yy bb 
-            using distinct_indices_stateD(1)[OF dist, of y j b yy bb] using dir
-            unfolding ss[symmetric] 
-            by (auto simp: boundsu_def boundsl_def indexu_def indexl_def)
-          have "\<exists>v. v \<Turnstile>\<^sub>t \<T> s \<and> v y = b" 
-          proof (cases "y \<in> lvars (\<T> s)")
-            case False
-            let ?v = "\<langle>\<V> (update y b s)\<rangle>" 
-            show ?thesis
-            proof (intro exI[of _ ?v] conjI)
-              from update_satisfies_tableau[OF *(2,3) False] val 
-              show "?v \<Turnstile>\<^sub>t \<T> s" by simp
-              from update_valuation_nonlhs[OF *(2,3) False, of y b] False
-              show "?v y = b" by (simp add: map2fun_def')
-            qed
-          next
-            case True            
-            from *(2)[unfolded normalized_tableau_def]
-            have zero: "0 \<notin> rhs ` set (\<T> s)" by auto
-            interpret Pivot eqlvar pivot by fact
-            interpret PivotUpdate eqlvar pivot update ..
-            let ?eq = "eq_for_lvar (\<T> s) y" 
-            from eq_for_lvar[OF True] have "?eq \<in> set (\<T> s)" "lhs ?eq = y" by auto
-            with zero have rhs: "rhs ?eq \<noteq> 0" by force
-            hence "rvars_eq ?eq \<noteq> {}"
-              by (simp add: vars_empty_zero)
-            then obtain z where z: "z \<in> rvars_eq ?eq" by auto
-            let ?v = "\<V> (pivot_and_update y z b s)" 
-            let ?vv = "\<langle>?v\<rangle>" 
-            from pivotandupdate_valuation_xi[OF *(2,3) True z]
-            have "look ?v y = Some b" .
-            hence vv: "?vv y = b" unfolding map2fun_def' by auto
-            show ?thesis
-            proof (intro exI[of _ ?vv] conjI vv)
-              show "?vv \<Turnstile>\<^sub>t \<T> s" using pivotandupdate_satisfies_tableau[OF *(2,3) True z] val by auto
-            qed
-          qed
-          thus ?thesis unfolding id id2 ss[symmetric] using id3 by metis
-        qed
-      qed
-    qed
+    qed auto
   next
     fix c::'a and x::nat and dir
     assume **: "dir = Positive \<or> dir = Negative" "a = LE dir x c" "x \<notin> lvars (\<T> s)" "lt dir c (\<langle>\<V> s\<rangle> x)" 
@@ -3563,7 +3488,7 @@ next
             look': "look (\<B>\<^sub>i\<^sub>l ?s) y = Some (j, d) \<or> look (\<B>\<^sub>i\<^sub>u ?s) y = Some (j, d)" by auto
           with ji have "look (\<B>\<^sub>i\<^sub>l s) y = Some (j, d) \<or> look (\<B>\<^sub>i\<^sub>u s) y = Some (j, d)" 
             by (cases a, auto simp: Let_def look_update indices_state_set_unsat split: if_splits)
-          from distinct_indices_stateD(1)[OF dist_s, OF this, of x c] look
+          from distinct_indices_stateD[OF dist_s, OF this, of x c] look
           have "y = x" "d = c" by auto
           note look'' = look'[unfolded this]
           from look'' model_l[of x j c] model_u[of x j c] jJ
@@ -3589,8 +3514,6 @@ next
     qed (insert False, auto)
   qed
 qed
-end
-
 
 text \<open>Pivoting the tableau can be reduced to pivoting single equations,
   and substituting variable by polynomials. These operations are specified
@@ -7246,10 +7169,6 @@ global_interpretation PivotUpdateMinVarsDefault: PivotUpdateMinVars eq_idx_for_l
     "PivotUpdateMinVars.check' eq_idx_for_lvar min_rvar_incdec_eq pivot_and_update_code = check'_code"
   by (unfold_locales) (simp_all add: check_code_def check'_code_def)
 
-sublocale Update < AssertBoundNoLhs assert_bound
-proof (rule update_to_assert_bound_no_lhs)
-  show "Pivot eq_idx_for_lvar pivot_code" ..
-qed
 
 definition "assert_code = Assert'.assert assert_bound_code check_code"
 
