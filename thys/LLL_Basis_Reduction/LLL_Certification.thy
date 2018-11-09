@@ -19,17 +19,7 @@ theory LLL_Certification
     LLL_Mu_Integer_Impl
 begin
 
-
 text \<open>First, we define and prove some required facts about the row space and column space. \<close>
-
-(*  
-    There already exists a definition of invertible matrix: thm invertible_mat_def
-    However, from that definition I don't see how to prove that the obtained inverse matrix
-    has the same number of rows/cols than the input matrix. So I add it explicitly here.    
-*)
-
-definition "invertible_mat' A \<equiv> square_mat A \<and> (\<exists>B. B\<in> carrier_mat (dim_row A) (dim_row A) 
-  \<and> inverts_mat A B \<and> inverts_mat B A)"
 
 context vec_space
 begin
@@ -115,7 +105,7 @@ lemma row_space_eq:
   using A col_space_eq unfolding row_space_eq_col_space_transpose by auto
 
 lemma row_space_is_preserved:
-  assumes inv_P: "invertible_mat' P" and P: "P \<in> carrier_mat m m" and A: "A \<in> carrier_mat m n"
+  assumes inv_P: "invertible_mat P" and P: "P \<in> carrier_mat m m" and A: "A \<in> carrier_mat m n"
   shows "row_space (P*A) = row_space A"
 proof -
   have At: "A\<^sup>T \<in> carrier_mat n m" using A by auto
@@ -137,11 +127,9 @@ proof -
     proof -
       have w_carrier: "w \<in> carrier_vec (dim_col A)" using w A unfolding row_space_eq[OF A] by auto
       obtain P' where PP': "inverts_mat P P'" and P'P: "inverts_mat P' P" 
-        and P': "P' \<in> carrier_mat m m"
-        using inv_P P unfolding invertible_mat'_def by blast
-     (* have P': "P' \<in> carrier_mat m m" using inverts_mat_def oops *)
-       (* Only from P'P and PP' I don't see how to obtain it. 
-        Do we need to add this condition to the definition of invertible_mat?*)  
+        using inv_P P unfolding invertible_mat_def by blast
+      have P': "P' \<in> carrier_mat m m" using PP' P'P P unfolding inverts_mat_def 
+        by (metis carrier_matD(1) carrier_matD(2) carrier_mat_triv index_mult_mat(3) index_one_mat(3))        
       from that obtain y where y: "y \<in> carrier_vec (dim_row A)" and 
         w_Ay: "w = A\<^sup>T *\<^sub>v y" unfolding row_space_eq[OF A] by blast
       have Py: "(P'\<^sup>T *\<^sub>v y) \<in> carrier_vec m" using P' y A by auto
@@ -442,9 +430,9 @@ proof -
       hence "det (?U1) * det (?U2) = 1" by (smt U1_hom U2_hom det_mult det_one of_int_hom.hom_det)
       hence det_U2: "det ?U2 \<noteq> 0" and det_U1: "det ?U1 \<noteq> 0" by auto    
       from det_non_zero_imp_unit[OF U2_hom det_U2, unfolded Units_def, of "()"] 
-      have inv_U2: "invertible_mat' ?U2"
+      have inv_U2: "invertible_mat ?U2"
         using U1_hom U2_hom
-        unfolding invertible_mat'_def inverts_mat_def by (auto simp: ring_mat_def)
+        unfolding invertible_mat_def inverts_mat_def by (auto simp: ring_mat_def)
       interpret Rs: vectorspace class_ring "(gs.vs (gs.row_space ?gs))" 
         by (rule gs.vector_space_row_space[OF gs_hom])
       interpret RS_fs: vectorspace class_ring "(gs.vs (gs.row_space (?fs)))"
