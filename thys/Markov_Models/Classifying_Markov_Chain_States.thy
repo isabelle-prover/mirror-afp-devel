@@ -753,7 +753,7 @@ proof -
     also have "measure (K w) UNIV - measure (K w) {x} = measure (K w) (UNIV - {x})"
       by (subst measure_pmf.finite_measure_Diff) auto
     finally have "0 = (\<integral>v. indicator (- {x}) v \<partial>K w) - (\<integral>v. U v x * indicator (- {x}) v \<partial>K w)"
-      by (simp add: Diff_subset measure_pmf.emeasure_eq_measure Compl_eq_Diff_UNIV)
+      by (simp add: measure_pmf.emeasure_eq_measure Compl_eq_Diff_UNIV)
     also have "\<dots> = (\<integral>v. (1 - U v x) * indicator (- {x}) v \<partial>K w)"
       by (subst Bochner_Integration.integral_diff[symmetric])
          (auto intro!: measure_pmf.integrable_const_bound[where B=1] Bochner_Integration.integral_cong
@@ -1638,7 +1638,7 @@ proof -
        (auto simp: stat_def AE_point_measure sets_point_measure space_point_measure
                 split: split_indicator cong del: AE_cong)
   ultimately have "emeasure (stat C) (space (stat C)) = 1"
-    using plus_emeasure[of C "stat C" "UNIV - C"] by (simp add: Diff_subset Un_absorb1)
+    using plus_emeasure[of C "stat C" "UNIV - C"] by (simp add: Un_absorb1)
   interpret stat: prob_space "stat C"
     by standard fact
 
@@ -1658,7 +1658,7 @@ proof -
         by (subst plus_emeasure) (auto intro!: measure_pmf.emeasure_eq_1_AE)
       also have "\<dots> < emeasure (stat C) {x} + emeasure (stat C) (C - {x})"
         using x N_le_C[of "C - {x}"] C ae_C
-        by (simp add: stat.emeasure_eq_measure measure_pmf.emeasure_eq_measure Diff_subset
+        by (simp add: stat.emeasure_eq_measure measure_pmf.emeasure_eq_measure
                       ennreal_plus[symmetric] ennreal_less_iff
                  del: ennreal_plus)
       also have "\<dots> = 1"

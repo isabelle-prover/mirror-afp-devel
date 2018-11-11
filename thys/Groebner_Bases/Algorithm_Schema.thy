@@ -1288,7 +1288,7 @@ proof -
                   (set gs \<union> (set bs \<union> set hs)) \<times> (set gs \<union> (set bs \<union> set hs))" (is "?l \<subseteq> ?r")
   proof (rule subset_trans)
     show "?l \<subseteq> set hs \<times> (set gs \<union> set bs \<union> set hs) \<union> set (ps -- sps)"
-      by (simp add: Diff_subset minus_pairs_def)
+      by (simp add: minus_pairs_def)
   next
     have "set hs \<times> (set gs \<union> set bs \<union> set hs) \<subseteq> ?r" by fastforce
     moreover have "set (ps -- sps) \<subseteq> ?r"

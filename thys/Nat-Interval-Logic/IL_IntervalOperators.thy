@@ -2861,7 +2861,7 @@ lemma i_set0_i_set_conv: "i_set0 - {{}} = i_set"
 by (fastforce simp: i_set_i_set0_mem_conv)
 
 corollary i_set_subset_i_set0: "i_set \<subseteq> i_set0"
-by (simp add: i_set0_i_set_conv[symmetric] Diff_subset)
+by (simp add: i_set0_i_set_conv[symmetric])
 
 lemma i_set_singleton: "{a} \<in> i_set"
 by (fastforce simp: i_set_def iIN_set_def iIN_0[symmetric])
