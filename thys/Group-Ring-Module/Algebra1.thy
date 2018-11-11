@@ -371,9 +371,6 @@ by blast
 lemma sub_which2:"\<lbrakk>A \<subseteq> B \<or> B \<subseteq> A; x \<notin> A; x \<in> B\<rbrakk> \<Longrightarrow> A \<subseteq> B"
 by blast
 
-lemma diff_sub:"A - B \<subseteq> A"
-by blast
-
 lemma nonempty_int: "A \<inter> B \<noteq> {} \<Longrightarrow> \<exists>x. x \<in> A \<inter> B "
 by blast
 
@@ -6727,7 +6724,7 @@ done
 lemma (in Worder) subset_segment:"\<lbrakk>T \<subseteq> carrier D; 
       \<forall>b\<in>T. \<forall>x. x \<prec> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T;
       minimum_elem D (carrier D - T) a\<rbrakk> \<Longrightarrow> T = segment D a"
-apply (cut_tac diff_sub[of "carrier D" T],
+apply (cut_tac Diff_subset[of "carrier D" T],
        frule minimum_elem_mem [of "carrier D - T" a], assumption,
        simp, erule conjE)
 apply (rule equalityI)
@@ -6759,7 +6756,7 @@ done
 lemma subset_Ssegment:"\<lbrakk>Worder D; T \<subseteq> carrier D; 
       \<forall>b\<in>T. \<forall>x. x \<prec>\<^bsub>D\<^esub> b \<and> x \<in> carrier D \<longrightarrow> x \<in> T;
       minimum_elem D (carrier D - T) a\<rbrakk> \<Longrightarrow> T = Ssegment D a"
-apply (cut_tac diff_sub[of "carrier D" T],
+apply (cut_tac Diff_subset[of "carrier D" T],
        frule Worder.Torder[of D],
        frule Worder.Order[of D],
        frule Order.minimum_elem_mem [of D "carrier D - T" a], assumption+,
@@ -6804,12 +6801,11 @@ apply (frule not_sym, thin_tac "T \<noteq> carrier D",
        frule diff_nonempty[of "carrier D" "T"], assumption)
  apply (cut_tac ex_minimum)
  apply (frule_tac a = "carrier D - T" in forall_spec, simp)
- apply (simp add:diff_sub)
  apply (thin_tac "\<forall>X. X \<subseteq> carrier D \<and> X \<noteq> {} \<longrightarrow> (\<exists>x. minimum_elem D X x)") 
  
  apply (erule exE, rename_tac a)
  apply (thin_tac "carrier D \<noteq> T", thin_tac "carrier D - T \<noteq> {}")
- apply (cut_tac diff_sub[of "carrier D" "T"])
+ apply (cut_tac Diff_subset[of "carrier D" "T"])
  apply (frule_tac a = a in minimum_elem_mem[of "carrier D - T"],
                assumption+,
         thin_tac "carrier D - T \<subseteq> carrier D")
@@ -6829,12 +6825,11 @@ apply (frule not_sym, thin_tac "T \<noteq> carrier D",
        frule diff_nonempty[of "carrier D" "T"], assumption)
  apply (cut_tac Worder.ex_minimum[of D])
  apply (frule_tac a = "carrier D - T" in forall_spec, simp)
- apply (simp add:diff_sub)
  apply (thin_tac "\<forall>X. X \<subseteq> carrier D \<and> X \<noteq> {} \<longrightarrow> (\<exists>x. minimum_elem D X x)") 
  
  apply (erule exE, rename_tac a)
  apply (thin_tac "carrier D \<noteq> T", thin_tac "carrier D - T \<noteq> {}")
- apply (cut_tac diff_sub[of "carrier D" "T"])
+ apply (cut_tac Diff_subset[of "carrier D" "T"])
  apply (frule Worder.Order[of D])
  apply (frule_tac a = a in Order.minimum_elem_mem[of D "carrier D - T"],
                assumption+,
