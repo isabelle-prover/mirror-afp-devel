@@ -92,8 +92,8 @@ fun minimality_condition_constraint :: "constraint \<Rightarrow> bool" where
 | "minimality_condition_constraint (GTPP p1 p2) = (p1 \<noteq> p2)" 
 | "minimality_condition_constraint (LEQPP p1 p2) = (p1 \<noteq> p2)" 
 | "minimality_condition_constraint (GEQPP p1 p2) = (p1 \<noteq> p2)" 
-| "minimality_condition_constraint (EQPP p1 p2) = False" 
-| "minimality_condition_constraint (EQ p1 c) = False" 
+| "minimality_condition_constraint (EQPP p1 p2) = (p1 \<noteq> p2)" 
+| "minimality_condition_constraint (EQ p1 c) = (p1 \<noteq> 0)" 
 
 definition minimality_condition :: "'i i_constraint list \<Rightarrow> bool" where
   "minimality_condition cs = (distinct_indices cs \<and> (Ball (snd ` set cs) minimality_condition_constraint))" 
@@ -216,9 +216,13 @@ primrec poly :: "'a ns_constraint \<Rightarrow> linear_poly" where
   "poly (LEQ_ns p a) = p"
 | "poly (GEQ_ns p a) = p"
 
+primrec ns_constraint_const :: "'a ns_constraint \<Rightarrow> 'a" where
+  "ns_constraint_const (LEQ_ns p a) = a" 
+| "ns_constraint_const (GEQ_ns p a) = a" 
 
 definition minimality_condition_ns :: "('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where 
-  "minimality_condition_ns ns = (distinct_indices ns \<and> (0 \<notin> poly ` snd ` set ns))" 
+  "minimality_condition_ns ns = ((\<forall> n1 n2 i. (i,n1) \<in> set ns \<longrightarrow> (i,n2) \<in> set ns \<longrightarrow> 
+     poly n1 = poly n2 \<and> ns_constraint_const n1 = ns_constraint_const n2) \<and> (0 \<notin> poly ` snd ` set ns))" 
 
 definition minimal_unsat_core_ns :: "bool \<Rightarrow> 'i set \<Rightarrow> ('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where
   "minimal_unsat_core_ns mode I cs = ((mode \<longrightarrow> I \<subseteq> fst ` set cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs))
@@ -7563,13 +7567,69 @@ proof
   from part1[unfolded preprocess_part_1_def Let_def] obtain var where
     as: "as = Atoms (preprocess' cs var)" by auto
 
-  have "(minimality_condition_ns cs \<longrightarrow> distinct_indices as) \<and> fst ` set as \<subseteq> fst ` set cs" 
-    unfolding as distinct_indices_def minimality_condition_ns_def 
-    by (induct cs var rule: preprocess'.induct, auto simp: Let_def split: option.splits)
-  moreover have "distinct_indices as \<Longrightarrow> distinct_indices_atoms as" 
-    unfolding distinct_indices_def distinct_indices_atoms_def using eq_key_imp_eq_value[of as] by auto
-  ultimately show
-    "minimality_condition_ns cs \<Longrightarrow> distinct_indices_atoms as" "fst ` set as \<subseteq> fst ` set cs" by auto
+  note min_defs = distinct_indices_atoms_def minimality_condition_ns_def
+  have min1: "(minimality_condition_ns cs \<longrightarrow> (\<forall> k a. (k,a) \<in> set as \<longrightarrow> (\<exists> v p. a = qdelta_constraint_to_atom p v \<and> (k,p) \<in> set cs
+    \<and> (\<not> is_monom (poly p) \<longrightarrow> Poly_Mapping (preprocess' cs var) (poly p) = Some v)  ))) 
+    \<and> fst ` set as \<subseteq> fst ` set cs" 
+    unfolding as  
+  proof (induct cs var rule: preprocess'.induct)
+    case (2 i h t v)
+    hence sub: "fst ` set (Atoms (preprocess' t v)) \<subseteq> fst ` set t" by auto
+    show ?case 
+    proof (intro conjI impI allI, goal_cases)
+      show "fst ` set (Atoms (preprocess' ((i, h) # t) v)) \<subseteq> fst ` set ((i, h) # t)" 
+        using sub by (auto simp: Let_def split: option.splits)
+    next
+      case (1 k a)
+      hence min': "minimality_condition_ns t" unfolding min_defs list.simps by blast
+      from 1 have h0: "poly h \<noteq> 0" by (auto simp: min_defs)
+      note IH = 2[THEN conjunct1, rule_format, OF min']
+      show ?case
+      proof (cases "(k,a) \<in> set (Atoms (preprocess' t v))")
+        case True
+        from IH[OF this] show ?thesis  
+          by (force simp: Let_def split: option.splits if_split) 
+      next
+        case new: False
+        with 1(2) have ki: "k = i" by (auto simp: Let_def split: if_splits option.splits)
+        show ?thesis 
+        proof (cases "is_monom (poly h)")
+          case True
+          thus ?thesis using new 1(2) by (auto simp: Let_def h0 True intro!: exI)
+        next    
+          case no_monom: False
+          thus ?thesis using new 1(2) by (auto simp: Let_def h0 no_monom split: option.splits intro!: exI)
+        qed
+      qed
+    qed
+  qed (auto simp: min_defs)
+  then show "fst ` set as \<subseteq> fst ` set cs" by auto 
+  {
+    assume mini: "minimality_condition_ns cs" 
+    note min = min1[THEN conjunct1, rule_format, OF this]
+    show "distinct_indices_atoms as" 
+      unfolding distinct_indices_atoms_def
+    proof (intro allI impI)
+      fix i a b 
+      assume a: "(i,a) \<in> set as" and b: "(i,b) \<in> set as" 
+      from min[OF a] obtain v p where aa: "a = qdelta_constraint_to_atom p v" "(i, p) \<in> set cs" 
+        "\<not> is_monom (poly p) \<Longrightarrow> Poly_Mapping (preprocess' cs var) (poly p) = Some v"
+        by auto
+      from min[OF b] obtain w q where bb: "b = qdelta_constraint_to_atom q w" "(i, q) \<in> set cs" 
+        "\<not> is_monom (poly q) \<Longrightarrow> Poly_Mapping (preprocess' cs var) (poly q) = Some w"
+        by auto
+      from mini[unfolded minimality_condition_ns_def, THEN conjunct1, rule_format, OF aa(2) bb(2)]
+      have *: "poly p = poly q" "ns_constraint_const p = ns_constraint_const q" by auto
+      show "atom_var a = atom_var b \<and> atom_const a = atom_const b" 
+      proof (cases "is_monom (poly q)")
+        case True
+        thus ?thesis unfolding aa(1) bb(1) using * by (cases p; cases q, auto)
+      next
+        case False
+        thus ?thesis unfolding aa(1) bb(1) using * aa(3) bb(3) by (cases p; cases q, auto)
+      qed
+    qed 
+  }
   fix v
   assume "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs"
   from preprocess'_unsat[OF this _  start_fresh_variable_fresh, of cs]
@@ -7962,14 +8022,43 @@ proof unfold_locales
     qed
   } note sat = this
   fix cs :: "('i \<times> constraint) list" 
-  have "(minimality_condition cs \<longrightarrow> minimality_condition_ns (to_ns cs)) \<and> fst ` set (to_ns cs) = fst ` set cs" 
-    unfolding minimality_condition_def minimality_condition_ns_def to_ns_def distinct_indices_def
-  proof (induct cs)
-    case (Cons ic cs)
-    thus ?case by (cases ic, cases "snd ic", auto simp: o_def)
-  qed simp
-  thus indices: "fst ` set (to_ns cs) = fst ` set cs" 
-    and mini: "minimality_condition cs \<Longrightarrow> minimality_condition_ns (to_ns cs)" by auto
+  have set_to_ns: "set (to_ns cs) = { (i,n) | i n c. (i,c) \<in> set cs \<and> n \<in> set (constraint_to_qdelta_constraint c)}" 
+    unfolding to_ns_def by auto
+  show indices: "fst ` set (to_ns cs) = fst ` set cs" 
+  proof 
+    show "fst ` set (to_ns cs) \<subseteq> fst ` set cs" 
+      unfolding set_to_ns by force
+    {
+      fix i
+      assume "i \<in> fst ` set cs" 
+      then obtain c where "(i,c) \<in> set cs" by force
+      hence "i \<in> fst ` set (to_ns cs)" unfolding set_to_ns by (cases c; force)
+    }
+    thus "fst ` set cs \<subseteq> fst ` set (to_ns cs)" by blast
+  qed
+  {
+    assume mini: "minimality_condition cs" 
+    show "minimality_condition_ns (to_ns cs)" unfolding minimality_condition_ns_def
+    proof (intro allI impI conjI notI)
+      assume "0 \<in> poly ` snd ` set (to_ns cs)" 
+      from this[unfolded set_to_ns] obtain i c n where "(i,c) \<in> set cs" 
+        and n: "n \<in> set (constraint_to_qdelta_constraint c)" and 0: "poly n = 0" by auto
+      with mini[unfolded minimality_condition_def] have "minimality_condition_constraint c" by auto
+      with n 0 show False by (cases c, auto)
+    next
+      fix n1 n2 i 
+      assume "(i,n1) \<in> set (to_ns cs)" "(i,n2) \<in> set (to_ns cs)" 
+      then obtain c1 c2 where i: "(i,c1) \<in> set cs" "(i,c2) \<in> set cs" 
+        and n: "n1 \<in> set (constraint_to_qdelta_constraint c1)" "n2 \<in> set (constraint_to_qdelta_constraint c2)" 
+        unfolding set_to_ns by auto
+      from mini[unfolded minimality_condition_def] 
+      have "distinct (map fst cs)" unfolding distinct_indices_def by auto
+      with i have c12: "c1 = c2" by (metis eq_key_imp_eq_value) 
+      note n = n[unfolded c12]
+      show "poly n1 = poly n2" using n by (cases c2, auto)
+      show "ns_constraint_const n1 = ns_constraint_const n2" using n by (cases c2, auto)
+    qed
+  } note mini = this
   fix I mode
   assume unsat: "minimal_unsat_core_ns mode I (to_ns cs)"
   note unsat = unsat[unfolded minimal_unsat_core_ns_def indices]
