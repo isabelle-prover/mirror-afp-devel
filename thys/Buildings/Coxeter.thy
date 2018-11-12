@@ -2298,9 +2298,9 @@ lemma exclude_one_notin_smap_singleton:
   by    auto
 
 lemma maxsimp_vertices: "w\<in>W \<Longrightarrow> s\<in>S \<Longrightarrow> w +o \<langle>S-{s}\<rangle> \<in> smap {w}"
-  using genby_lcoset_refl special_cosetsI[of "S-{s}"] special_coset_singleton
+  using special_cosetsI[of "S-{s}"] special_coset_singleton
         ordsetmap_smap[of "w +o \<langle>S-{s}\<rangle>"] smap_pseudominimal
-  by    fastforce
+  by (simp add: genby_lcoset_refl)
 
 lemma maxsimp_singleton:
   assumes "w\<in>W"

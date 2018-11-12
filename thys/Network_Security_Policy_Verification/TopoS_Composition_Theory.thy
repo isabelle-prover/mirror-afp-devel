@@ -313,8 +313,8 @@ definition valid_reqs :: "('v::vertex) SecurityInvariant_configured list \<Right
      lemma generate_valid_topology_mono_models:
       "edges (generate_valid_topology (m#M) \<lparr> nodes = V, edges = E \<rparr>) \<subseteq> edges (generate_valid_topology M \<lparr> nodes = V, edges = E \<rparr>)"
         proof(induction M arbitrary: E m)
-        case Nil thus ?case by(simp add: delete_edges_simp2) fastforce
-        case Cons thus ?case by(simp add: delete_edges_simp2) blast
+        case Nil thus ?case by(simp add: delete_edges_simp2)
+        case Cons thus ?case by(simp add: delete_edges_simp2)
       qed
      
       lemma generate_valid_topology_subseteq_edges:

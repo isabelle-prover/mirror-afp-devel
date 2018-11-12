@@ -1693,7 +1693,7 @@ proof -
   have "emeasure (restrict_space M A) (space (restrict_space M A) - recurrent_subset A) = emeasure (restrict_space M A) (A - recurrent_subset A)"
     by (metis (no_types, lifting) A_meas space_restrict_space2)
   also have "... = emeasure M (A - recurrent_subset A)"
-    by (simp add: Diff_subset emeasure_restrict_space)
+    by (simp add: emeasure_restrict_space)
   also have "... = 0" using Poincare_recurrence_thm[OF A_meas] by auto
   finally have "space (restrict_space M A) - recurrent_subset A \<in> null_sets (restrict_space M A)"
     using rsA by blast

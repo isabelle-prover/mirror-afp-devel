@@ -30,7 +30,7 @@ proof(goal_cases)
     case (insert a A)
     hence e: "a \<in> atoms \<Gamma>" "a \<notin> atoms \<Delta>" by auto
     define \<Gamma>' where "\<Gamma>' = (\<Gamma>[\<top> / a]) \<^bold>\<or> (\<Gamma>[\<bottom> / a])"
-    have su: "atoms \<Gamma>' \<subseteq> atoms \<Gamma>" unfolding \<Gamma>'_def by(cases "a \<in> atoms \<Gamma>"; simp add: subst_atoms Diff_subset)
+    have su: "atoms \<Gamma>' \<subseteq> atoms \<Gamma>" unfolding \<Gamma>'_def by(cases "a \<in> atoms \<Gamma>"; simp add: subst_atoms)
     from \<open>\<Turnstile> \<Gamma> \<^bold>\<rightarrow> \<Delta>\<close> e have "\<Turnstile> \<Gamma>' \<^bold>\<rightarrow> \<Delta>" by (auto simp add: substitution_lemma \<Gamma>'_def)
     from \<open>a \<triangleright> A = atoms \<Gamma> - atoms \<Delta>\<close> \<open>a \<notin> A\<close> e have "A = atoms \<Gamma>' - atoms \<Delta>" by(simp add: subst_atoms \<Gamma>'_def) blast
     from insert.hyps(3)[OF this \<open>\<Turnstile> \<Gamma>' \<^bold>\<rightarrow> \<Delta>\<close>] obtain \<rho> where \<rho>: "\<Turnstile> \<Gamma>' \<^bold>\<rightarrow> \<rho>" "\<Turnstile> \<rho> \<^bold>\<rightarrow> \<Delta>" "atoms \<rho> \<subseteq> atoms \<Gamma>'" "atoms \<rho> \<subseteq> atoms \<Delta>" by clarify
