@@ -83,22 +83,6 @@ definition distinct_indices :: "('i \<times> 'c) list \<Rightarrow> bool" where
 lemma distinct_indicesD: "distinct_indices as \<Longrightarrow> (i,x) \<in> set as \<Longrightarrow> (i,y) \<in> set as \<Longrightarrow> x = y"
   unfolding distinct_indices_def by (rule eq_key_imp_eq_value)
 
-fun minimality_condition_constraint :: "constraint \<Rightarrow> bool" where
-  "minimality_condition_constraint (LT p c) = (p \<noteq> 0)" 
-| "minimality_condition_constraint (GT p c) = (p \<noteq> 0)" 
-| "minimality_condition_constraint (LEQ p c) = (p \<noteq> 0)" 
-| "minimality_condition_constraint (GEQ p c) = (p \<noteq> 0)" 
-| "minimality_condition_constraint (LTPP p1 p2) = (p1 \<noteq> p2)" 
-| "minimality_condition_constraint (GTPP p1 p2) = (p1 \<noteq> p2)" 
-| "minimality_condition_constraint (LEQPP p1 p2) = (p1 \<noteq> p2)" 
-| "minimality_condition_constraint (GEQPP p1 p2) = (p1 \<noteq> p2)" 
-| "minimality_condition_constraint (EQPP p1 p2) = (p1 \<noteq> p2)" 
-| "minimality_condition_constraint (EQ p1 c) = (p1 \<noteq> 0)" 
-
-definition minimality_condition :: "'i i_constraint list \<Rightarrow> bool" where
-  "minimality_condition cs = (distinct_indices cs \<and> (Ball (snd ` set cs) minimality_condition_constraint))" 
-
-
 text \<open>For the unsat-core predicate we distinguish two modes. The strict mode (True) requires that
   only indices may be returned which occur in the constraints, whereas the weak mode (False) does
   not require this. The weak mode is used for the incremental version of the simplex method where
@@ -108,7 +92,7 @@ text \<open>For the unsat-core predicate we distinguish two modes. The strict mo
   indices from the input-constraints.\<close>
 definition minimal_unsat_core :: "bool \<Rightarrow> 'i set \<Rightarrow> 'i i_constraint list \<Rightarrow> bool" where
   "minimal_unsat_core mode I ics  = ((mode \<longrightarrow> I \<subseteq> fst ` set ics) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))
-     \<and> (mode \<longrightarrow> minimality_condition ics \<longrightarrow> (\<forall> J. J \<subset> I \<longrightarrow> (\<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))))"
+     \<and> (mode \<longrightarrow> distinct_indices ics \<longrightarrow> (\<forall> J. J \<subset> I \<longrightarrow> (\<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set ics))))"
 
 subsection \<open>Procedure Specification\<close>
 
@@ -220,13 +204,13 @@ primrec ns_constraint_const :: "'a ns_constraint \<Rightarrow> 'a" where
   "ns_constraint_const (LEQ_ns p a) = a" 
 | "ns_constraint_const (GEQ_ns p a) = a" 
 
-definition minimality_condition_ns :: "('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where 
-  "minimality_condition_ns ns = ((\<forall> n1 n2 i. (i,n1) \<in> set ns \<longrightarrow> (i,n2) \<in> set ns \<longrightarrow> 
-     poly n1 = poly n2 \<and> ns_constraint_const n1 = ns_constraint_const n2) \<and> (0 \<notin> poly ` snd ` set ns))" 
+definition distinct_indices_ns :: "('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where 
+  "distinct_indices_ns ns = ((\<forall> n1 n2 i. (i,n1) \<in> set ns \<longrightarrow> (i,n2) \<in> set ns \<longrightarrow> 
+     poly n1 = poly n2 \<and> ns_constraint_const n1 = ns_constraint_const n2))" 
 
 definition minimal_unsat_core_ns :: "bool \<Rightarrow> 'i set \<Rightarrow> ('i,'a :: lrv) i_ns_constraint list \<Rightarrow> bool" where
   "minimal_unsat_core_ns mode I cs = ((mode \<longrightarrow> I \<subseteq> fst ` set cs) \<and> (\<not> (\<exists> v. (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs))
-     \<and> (mode \<longrightarrow> minimality_condition_ns cs \<longrightarrow> (\<forall> J \<subset> I. \<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)))"
+     \<and> (mode \<longrightarrow> distinct_indices_ns cs \<longrightarrow> (\<forall> J \<subset> I. \<exists> v. (J,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)))"
 
 
 text\<open>Specification of reduction of constraints to non-strict form is given by:\<close>
@@ -241,7 +225,7 @@ locale To_ns =
   assumes  to_ns_unsat:  "minimal_unsat_core_ns mode I (to_ns cs) \<Longrightarrow> minimal_unsat_core mode I cs"
   assumes  i_to_ns_sat:  "(I,\<langle>v'\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set (to_ns cs) \<Longrightarrow> (I,\<langle>from_ns v' (flat_list (to_ns cs))\<rangle>) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs"
   assumes to_ns_indices: "fst ` set (to_ns cs) = fst ` set cs"
-  assumes minimality_cond: "minimality_condition cs \<Longrightarrow> minimality_condition_ns (to_ns cs)" 
+  assumes distinct_cond: "distinct_indices cs \<Longrightarrow> distinct_indices_ns (to_ns cs)" 
 begin
 lemma to_ns_sat: "\<langle>v'\<rangle>  \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set (to_ns cs)) \<Longrightarrow> \<langle>from_ns v' (flat_list (to_ns cs))\<rangle> \<Turnstile>\<^sub>c\<^sub>s flat (set cs)"
   using i_to_ns_sat[of UNIV v' cs] by auto
@@ -566,8 +550,8 @@ i_preprocess_sat: "\<And> v. preprocess cs = (t,as,trans_v,U) \<Longrightarrow> 
 
 preprocess_unsat: "preprocess cs = (t, as,trans_v,U) \<Longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs \<Longrightarrow> \<exists> v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t" and
 
-\<comment> \<open>minimality condition ensures distinct indices in atoms\<close>
-preprocess_distinct: "preprocess cs = (t, as,trans_v, U) \<Longrightarrow> minimality_condition_ns cs \<Longrightarrow> distinct_indices_atoms as" and
+\<comment> \<open>distinct indices on ns-constraints ensures distinct indices in atoms\<close>
+preprocess_distinct: "preprocess cs = (t, as,trans_v, U) \<Longrightarrow> distinct_indices_ns cs \<Longrightarrow> distinct_indices_atoms as" and
 
 \<comment> \<open>unsat indices\<close>
 preprocess_unsat_indices: "preprocess cs = (t, as,trans_v, U) \<Longrightarrow> i \<in> set U \<Longrightarrow> \<not> (\<exists> v. ({i},v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" and
@@ -650,7 +634,7 @@ proof
       proof (intro conjI impI allI 1(2))
         show "set I \<subseteq> fst ` set cs" using 1 index by auto
         fix J
-        assume "minimality_condition_ns cs" "J \<subset> set I" 
+        assume "distinct_indices_ns cs" "J \<subset> set I" 
         with preprocess_distinct[OF prep]
         have "distinct_indices_atoms as" "J \<subset> set I" by auto
         from minimal_unsat_core_tabl_atomsD(3)[OF assert_all_unsat[OF t assert] this]
@@ -6994,6 +6978,7 @@ datatype 'i istate = IState
   (Tableau: tableau)
   (Atoms: "('i,QDelta) i_atom list")
   (Poly_Mapping: "linear_poly \<rightharpoonup> var")
+  (UnsatIndices: "'i list")
 
 primrec zero_satisfies :: "'a :: lrv ns_constraint \<Rightarrow> bool" where
   "zero_satisfies (LEQ_ns l r) \<longleftrightarrow> 0 \<le> r"
@@ -7008,37 +6993,39 @@ lemma not_zero_satisfies: "poly c = 0 \<Longrightarrow> \<not> zero_satisfies c 
 
 fun
   preprocess' :: "('i,QDelta) i_ns_constraint list \<Rightarrow> var \<Rightarrow> 'i istate" where
-  "preprocess' [] v = IState v [] [] (\<lambda> p. None)"
+  "preprocess' [] v = IState v [] [] (\<lambda> p. None) []"
 | "preprocess' ((i,h) # t) v = (let s' = preprocess' t v; p = poly h; is_monom_h = is_monom p;
                          v' = FirstFreshVariable s';
                          t' = Tableau s';
                          a' = Atoms s';
-                         m' = Poly_Mapping s' in
+                         m' = Poly_Mapping s';
+                         u' = UnsatIndices s' in
                          if is_monom_h then IState v' t'
-                           ((i,qdelta_constraint_to_atom h v') # a') m'
+                           ((i,qdelta_constraint_to_atom h v') # a') m' u'
                          else if p = 0 then
-                           if zero_satisfies h then IState v' t' a' m' else 
-                              let v'' = 0 in IState (max v' 1) t' ((i,Geq v'' 1) # (i,Leq v'' 0) # a') m'
+                           if zero_satisfies h then s' else 
+                              IState v' t' a' m' (i # u')
                          else (case m' p of Some v \<Rightarrow>
-                            IState v' t' ((i,qdelta_constraint_to_atom h v) # a') m'
+                            IState v' t' ((i,qdelta_constraint_to_atom h v) # a') m' u'
                           | None \<Rightarrow> IState (v' + 1) (linear_poly_to_eq p v' # t')
-                           ((i,qdelta_constraint_to_atom h v') # a') (m' (p \<mapsto> v')))
+                           ((i,qdelta_constraint_to_atom h v') # a') (m' (p \<mapsto> v')) u')
 )"
 
 lemma preprocess'_simps: "preprocess' ((i,h) # t) v = (let s' = preprocess' t v; p = poly h; is_monom_h = is_monom p;
                          v' = FirstFreshVariable s';
                          t' = Tableau s';
                          a' = Atoms s';
-                         m' = Poly_Mapping s' in
+                         m' = Poly_Mapping s';
+                         u' = UnsatIndices s' in
                          if is_monom_h then IState v' t'
-                           ((i,monom_to_atom h) # a') m'
+                           ((i,monom_to_atom h) # a') m' u'
                          else if p = 0 then
-                           if zero_satisfies h then IState v' t' a' m' else 
-                              IState (if v' = 0 then 1 else v') t' ((i,Geq 0 1) # (i,Leq 0 0) # a') m'
+                           if zero_satisfies h then s' else 
+                              IState v' t' a' m' (i # u')
                          else (case m' p of Some v \<Rightarrow>
-                            IState v' t' ((i,qdelta_constraint_to_atom' h v) # a') m'
+                            IState v' t' ((i,qdelta_constraint_to_atom' h v) # a') m' u'
                           | None \<Rightarrow> IState (v' + 1) (linear_poly_to_eq p v' # t')
-                           ((i,qdelta_constraint_to_atom' h v') # a') (m' (p \<mapsto> v')))
+                           ((i,qdelta_constraint_to_atom' h v') # a') (m' (p \<mapsto> v')) u')
     )" by (cases h, auto simp add: Let_def split: option.splits)
 
 lemmas preprocess'_code = preprocess'.simps(1) preprocess'_simps
@@ -7055,7 +7042,7 @@ fun
 
 definition
   preprocess_part_1  :: "('i,QDelta) i_ns_constraint list \<Rightarrow> tableau \<times> (('i,QDelta) i_atom list) \<times> 'i list" where
-  "preprocess_part_1 l \<equiv> let start = start_fresh_variable l; is = preprocess' l start in (Tableau is, Atoms is, [])"
+  "preprocess_part_1 l \<equiv> let start = start_fresh_variable l; is = preprocess' l start in (Tableau is, Atoms is, UnsatIndices is)"
 
 lemma lhs_linear_poly_to_eq [simp]:
   "lhs (linear_poly_to_eq h v) = v"
@@ -7150,7 +7137,8 @@ lemma one_zero_contra[dest,consumes 2]: "1 \<le> x \<Longrightarrow> (x :: QDelt
   using order.trans[of 1 x 0] not_one_le_zero_qdelta by simp
 
 lemma i_preprocess'_sat:
-  assumes "(I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set (Atoms (preprocess' s start))" "v \<Turnstile>\<^sub>t Tableau (preprocess' s start)"
+  assumes "(I,v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set (Atoms (preprocess' s start))" "v \<Turnstile>\<^sub>t Tableau (preprocess' s start)" 
+    "I \<inter> set (UnsatIndices (preprocess' s start)) = {}" 
   shows "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set s"
   using assms
   by (induct s start rule: preprocess'.induct)
@@ -7159,7 +7147,7 @@ lemma i_preprocess'_sat:
       split: if_splits option.splits dest!: preprocess'_Tableau_Poly_Mapping_Some zero_satisfies)
 
 lemma preprocess'_sat:
-  assumes "v \<Turnstile>\<^sub>a\<^sub>s flat (set (Atoms (preprocess' s start)))" "v \<Turnstile>\<^sub>t Tableau (preprocess' s start)"
+  assumes "v \<Turnstile>\<^sub>a\<^sub>s flat (set (Atoms (preprocess' s start)))" "v \<Turnstile>\<^sub>t Tableau (preprocess' s start)" "set (UnsatIndices (preprocess' s start)) = {}" 
   shows "v \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set s)"
   using i_preprocess'_sat[of UNIV v s start] assms by simp
 
@@ -7230,6 +7218,15 @@ lemma satisfies_tableau_satisfies_tableau:
   using assms
   using valuate_depend[of _ v1 v2]
   by (force simp add: lvars_def rvars_def satisfies_eq_def satisfies_tableau_def)
+
+lemma preprocess'_unsat_indices:
+  assumes "i \<in> set (UnsatIndices (preprocess' s start))" 
+  shows "\<not> ({i},v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set s" 
+  using assms
+proof (induct s start rule: preprocess'.induct)
+  case (2 j h t v)
+  then show ?case by (auto simp: Let_def not_zero_satisfies split: if_splits option.splits)
+qed simp
 
 lemma preprocess'_unsat:
   assumes "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set s" "vars_constraints (flat_list s) \<subseteq> V" "\<forall>var \<in> V. var < start"
@@ -7359,7 +7356,10 @@ next
         } note no_I = this
         show ?thesis
           unfolding hh preprocess'.simps Let_def id id' id'' if_True if_False istate.simps istate.sel
-          by (intro exI[of _ v'] conjI v'_t var satisifies_atom_restrict_to_Cons v'_as, insert no_I, auto)
+        proof (rule Cons(1)[OF _ _ Cons(4)])
+          show "(I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set t" using Cons(2) by auto
+          show "vars_constraints (map snd t) \<subseteq> V" using Cons(3) by force
+        qed
       qed
     qed
   qed
@@ -7538,17 +7538,17 @@ lemma preprocess_part_2: assumes "preprocess_part_2 as t = (t',tv)" "\<triangle>
   using preprocess_opt[OF refl assms(1)[unfolded preprocess_part_2_def] assms(2)] by auto
 
 definition preprocess :: "('i,QDelta) i_ns_constraint list \<Rightarrow> _ \<times> _ \<times> (_ \<Rightarrow> (var,QDelta)mapping) \<times> 'i list" where
-  "preprocess l = (case preprocess_part_1 l of (t,as,ui) \<Rightarrow> case preprocess_part_2 as t of (t,tv) \<Rightarrow> (t,as,tv,[]))"
+  "preprocess l = (case preprocess_part_1 l of (t,as,ui) \<Rightarrow> case preprocess_part_2 as t of (t,tv) \<Rightarrow> (t,as,tv,ui))"
 
 interpretation PreprocessDefault: Preprocess preprocess
 proof
   fix cs trans_v ui t' as v I
   assume id: "preprocess cs = (t',as,trans_v, ui)"
-  then obtain t ui' where part1: "preprocess_part_1 cs = (t,as,ui')"
+  then obtain t where part1: "preprocess_part_1 cs = (t,as,ui)"
     unfolding preprocess_def by (auto split: prod.splits)
   from id[unfolded preprocess_def part1 split]
   have part_2: "preprocess_part_2 as t = (t',trans_v)" 
-    and ui: "ui = []" by (auto split: prod.splits)
+    by (auto split: prod.splits)
   have norm: "\<triangle> t"
     using lvars_distinct
     using lvars_tableau_ge_start[of cs "start_fresh_variable cs"]
@@ -7558,28 +7558,26 @@ proof
     by (force simp: Let_def normalized_tableau_def preprocess_part_1_def)
   note part_2 = preprocess_part_2[OF part_2 norm]
   show "\<triangle> t'" by fact
-  have unsat: "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" for v using part1 i_preprocess'_sat[of I]
-    by (auto simp add: preprocess_part_1_def Let_def)
-  with part_2(2,3) show "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t' \<Longrightarrow> (I,\<langle>trans_v v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" by auto
+  have unsat: "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> I \<inter> set ui = {} \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" for v 
+    using part1[unfolded preprocess_part_1_def Let_def, simplified] i_preprocess'_sat[of I] by blast
+  with part_2(2,3) show "I \<inter> set ui = {} \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t' \<Longrightarrow> (I,\<langle>trans_v v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" by auto
   from part1[unfolded preprocess_part_1_def Let_def] obtain var where
-    as: "as = Atoms (preprocess' cs var)" by auto
-
-  note min_defs = distinct_indices_atoms_def minimality_condition_ns_def
-  have min1: "(minimality_condition_ns cs \<longrightarrow> (\<forall> k a. (k,a) \<in> set as \<longrightarrow> (\<exists> v p. a = qdelta_constraint_to_atom p v \<and> (k,p) \<in> set cs
+    as: "as = Atoms (preprocess' cs var)" and ui: "ui = UnsatIndices (preprocess' cs var)" by auto
+  note min_defs = distinct_indices_atoms_def distinct_indices_ns_def
+  have min1: "(distinct_indices_ns cs \<longrightarrow> (\<forall> k a. (k,a) \<in> set as \<longrightarrow> (\<exists> v p. a = qdelta_constraint_to_atom p v \<and> (k,p) \<in> set cs
     \<and> (\<not> is_monom (poly p) \<longrightarrow> Poly_Mapping (preprocess' cs var) (poly p) = Some v)  ))) 
-    \<and> fst ` set as \<subseteq> fst ` set cs" 
-    unfolding as  
+    \<and> fst ` set as \<union> set ui \<subseteq> fst ` set cs" 
+    unfolding as ui
   proof (induct cs var rule: preprocess'.induct)
     case (2 i h t v)
-    hence sub: "fst ` set (Atoms (preprocess' t v)) \<subseteq> fst ` set t" by auto
+    hence sub: "fst ` set (Atoms (preprocess' t v)) \<union> set (UnsatIndices (preprocess' t v)) \<subseteq> fst ` set t" by auto
     show ?case 
     proof (intro conjI impI allI, goal_cases)
-      show "fst ` set (Atoms (preprocess' ((i, h) # t) v)) \<subseteq> fst ` set ((i, h) # t)" 
+      show "fst ` set (Atoms (preprocess' ((i, h) # t) v)) \<union> set (UnsatIndices (preprocess' ((i,h) #t) v)) \<subseteq> fst ` set ((i, h) # t)" 
         using sub by (auto simp: Let_def split: option.splits)
     next
       case (1 k a)
-      hence min': "minimality_condition_ns t" unfolding min_defs list.simps by blast
-      from 1 have h0: "poly h \<noteq> 0" by (auto simp: min_defs)
+      hence min': "distinct_indices_ns t" unfolding min_defs list.simps by blast
       note IH = 2[THEN conjunct1, rule_format, OF min']
       show ?case
       proof (cases "(k,a) \<in> set (Atoms (preprocess' t v))")
@@ -7592,17 +7590,17 @@ proof
         show ?thesis 
         proof (cases "is_monom (poly h)")
           case True
-          thus ?thesis using new 1(2) by (auto simp: Let_def h0 True intro!: exI)
+          thus ?thesis using new 1(2) by (auto simp: Let_def True intro!: exI)
         next    
           case no_monom: False
-          thus ?thesis using new 1(2) by (auto simp: Let_def h0 no_monom split: option.splits intro!: exI)
+          thus ?thesis using new 1(2) by (auto simp: Let_def no_monom split: option.splits if_splits intro!: exI)
         qed
       qed
     qed
   qed (auto simp: min_defs)
-  then show "fst ` set as \<union> set ui \<subseteq> fst ` set cs" using ui by auto 
+  then show "fst ` set as \<union> set ui \<subseteq> fst ` set cs" by auto 
   {
-    assume mini: "minimality_condition_ns cs" 
+    assume mini: "distinct_indices_ns cs" 
     note min = min1[THEN conjunct1, rule_format, OF this]
     show "distinct_indices_atoms as" 
       unfolding distinct_indices_atoms_def
@@ -7615,7 +7613,7 @@ proof
       from min[OF b] obtain w q where bb: "b = qdelta_constraint_to_atom q w" "(i, q) \<in> set cs" 
         "\<not> is_monom (poly q) \<Longrightarrow> Poly_Mapping (preprocess' cs var) (poly q) = Some w"
         by auto
-      from mini[unfolded minimality_condition_ns_def, THEN conjunct1, rule_format, OF aa(2) bb(2)]
+      from mini[unfolded distinct_indices_ns_def, rule_format, OF aa(2) bb(2)]
       have *: "poly p = poly q" "ns_constraint_const p = ns_constraint_const q" by auto
       show "atom_var a = atom_var b \<and> atom_const a = atom_const b" 
       proof (cases "is_monom (poly q)")
@@ -7627,7 +7625,8 @@ proof
       qed
     qed 
   }
-  show "i \<in> set ui \<Longrightarrow> \<nexists>v. ({i}, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" for i using ui by auto
+  show "i \<in> set ui \<Longrightarrow> \<nexists>v. ({i}, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" for i 
+    using preprocess'_unsat_indices[of i cs] part1 unfolding preprocess_part_1_def Let_def by auto
   fix v
   assume "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs"
   from preprocess'_unsat[OF this _  start_fresh_variable_fresh, of cs]
@@ -8035,21 +8034,15 @@ proof unfold_locales
     thus "fst ` set cs \<subseteq> fst ` set (to_ns cs)" by blast
   qed
   {
-    assume mini: "minimality_condition cs" 
-    show "minimality_condition_ns (to_ns cs)" unfolding minimality_condition_ns_def
+    assume dist: "distinct_indices cs" 
+    show "distinct_indices_ns (to_ns cs)" unfolding distinct_indices_ns_def
     proof (intro allI impI conjI notI)
-      assume "0 \<in> poly ` snd ` set (to_ns cs)" 
-      from this[unfolded set_to_ns] obtain i c n where "(i,c) \<in> set cs" 
-        and n: "n \<in> set (constraint_to_qdelta_constraint c)" and 0: "poly n = 0" by auto
-      with mini[unfolded minimality_condition_def] have "minimality_condition_constraint c" by auto
-      with n 0 show False by (cases c, auto)
-    next
       fix n1 n2 i 
       assume "(i,n1) \<in> set (to_ns cs)" "(i,n2) \<in> set (to_ns cs)" 
       then obtain c1 c2 where i: "(i,c1) \<in> set cs" "(i,c2) \<in> set cs" 
         and n: "n1 \<in> set (constraint_to_qdelta_constraint c1)" "n2 \<in> set (constraint_to_qdelta_constraint c2)" 
         unfolding set_to_ns by auto
-      from mini[unfolded minimality_condition_def] 
+      from dist 
       have "distinct (map fst cs)" unfolding distinct_indices_def by auto
       with i have c12: "c1 = c2" by (metis eq_key_imp_eq_value) 
       note n = n[unfolded c12]
@@ -8107,8 +8100,8 @@ proof unfold_locales
     with unsat show False unfolding minimal_unsat_core_ns_def by simp blast
   next
     fix J
-    assume *: mode "minimality_condition cs" "J \<subset> I" 
-    hence "minimality_condition_ns (to_ns cs)" 
+    assume *: mode "distinct_indices cs" "J \<subset> I" 
+    hence "distinct_indices_ns (to_ns cs)" 
       using mini by auto
     with * unsat obtain v where model: "(J, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set (to_ns cs)" by blast
     define w where "w = Mapping.Mapping (\<lambda> x. Some (v x))"
@@ -8138,14 +8131,14 @@ definition simplex_index :: "'i i_constraint list \<Rightarrow> 'i list + (var, 
 
 lemma simplex_index:
   "simplex_index cs = Unsat I \<Longrightarrow> set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs) \<and> 
-     (minimality_condition cs \<longrightarrow> (\<forall> J \<subset> set I. (\<exists> v. (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)))" \<comment> \<open>minimal unsat core\<close>
+     (distinct_indices cs \<longrightarrow> (\<forall> J \<subset> set I. (\<exists> v. (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs)))" \<comment> \<open>minimal unsat core\<close>
   "simplex_index cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s (snd ` set cs)" \<comment> \<open>satisfying assingment\<close>
 proof (unfold simplex_index_def)
   assume "solve_exec_code cs = Unsat I"
   from SolveExec'Default.simplex_unsat0[OF this]
   have core: "minimal_unsat_core True (set I) cs" by auto
   then show "set I \<subseteq> fst ` set cs \<and> \<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs) \<and>
-    (minimality_condition cs \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs))"
+    (distinct_indices cs \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. (J, v) \<Turnstile>\<^sub>i\<^sub>c\<^sub>s set cs))"
     unfolding minimal_unsat_core_def by auto
 next
   assume "solve_exec_code cs = Sat v"
@@ -8160,7 +8153,7 @@ definition simplex where "simplex cs = simplex_index (zip [0..<length cs] cs)"
 lemma simplex:
   "simplex cs = Unsat I \<Longrightarrow> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s set cs)" \<comment> \<open>unsat of original constraints\<close>
   "simplex cs = Unsat I \<Longrightarrow> set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})
-    \<and> (Ball (set cs) minimality_condition_constraint \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J}))" \<comment> \<open>minimal unsat core\<close>
+    \<and> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J})" \<comment> \<open>minimal unsat core\<close>
   "simplex cs = Sat v \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>c\<^sub>s set cs"  \<comment> \<open>satisfying assignment\<close>
 proof (unfold simplex_def)
   let ?cs = "zip [0..<length cs] cs"
@@ -8168,20 +8161,20 @@ proof (unfold simplex_def)
   from simplex_index(1)[OF this]
   have index: "set I \<subseteq> {0 ..< length cs}" and
     core: "\<nexists>v. v \<Turnstile>\<^sub>c\<^sub>s (snd ` (set ?cs \<inter> set I \<times> UNIV))" 
-    "(minimality_condition (zip [0..<length cs] cs) \<longrightarrow> (\<forall> J \<subset> set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s (snd ` (set ?cs \<inter> J \<times> UNIV))))" 
+    "(distinct_indices (zip [0..<length cs] cs) \<longrightarrow> (\<forall> J \<subset> set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s (snd ` (set ?cs \<inter> J \<times> UNIV))))" 
     by (auto simp flip: set_map)
   note core(2)
-  also have "minimality_condition (zip [0..<length cs] cs) = Ball (set cs) minimality_condition_constraint" 
-    unfolding minimality_condition_def distinct_indices_def set_zip by (auto simp: set_conv_nth)
+  also have "distinct_indices (zip [0..<length cs] cs)" 
+    unfolding distinct_indices_def set_zip by (auto simp: set_conv_nth)
   also have "(\<forall> J \<subset> set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s (snd ` (set ?cs \<inter> J \<times> UNIV))) =
     (\<forall> J \<subset> set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s { cs ! i | i.  i \<in> J})" using index
     by (intro all_cong1 imp_cong ex_cong1 arg_cong[of _ _ "\<lambda> x. _ \<Turnstile>\<^sub>c\<^sub>s x"] refl, force simp: set_zip)
-  finally have core': "(\<forall>a\<in>set cs. minimality_condition_constraint a) \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J}) " .
+  finally have core': "(\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J}) " .
   note unsat = unsat_mono[OF core(1)]
   show "\<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s set cs)"
     by (rule unsat, auto simp: set_zip)
   show "set I \<subseteq> {0..<length cs} \<and> \<not> (\<exists> v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i | i. i \<in> set I})
-    \<and> (Ball (set cs) minimality_condition_constraint \<longrightarrow> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J}))"
+    \<and> (\<forall>J\<subset>set I. \<exists>v. v \<Turnstile>\<^sub>c\<^sub>s {cs ! i |i. i \<in> J})"
     by (intro conjI index core', rule unsat, auto simp: set_zip)
 next
   assume "simplex_index (zip [0..<length cs] cs) = Sat v"
