@@ -556,24 +556,27 @@ definition distinct_indices_atoms :: "('i,'a) i_atom list \<Rightarrow> bool" wh
 text\<open>
 The specification of the preprocessing function is given by:\<close>
 locale Preprocess = fixes preprocess::"('i,'a::lrv) i_ns_constraint list \<Rightarrow> tableau\<times> ('i,'a) i_atom list
-  \<times> ((var,'a) mapping \<Rightarrow> (var,'a) mapping)"
+  \<times> ((var,'a) mapping \<Rightarrow> (var,'a) mapping) \<times> 'i list"
   assumes
     \<comment> \<open>The returned tableau is always normalized.\<close>
-    preprocess_tableau_normalized: "preprocess cs = (t,as,trans_v) \<Longrightarrow> \<triangle> t" and
+    preprocess_tableau_normalized: "preprocess cs = (t,as,trans_v,U) \<Longrightarrow> \<triangle> t" and
 
 \<comment> \<open>Tableau and atoms are equisatisfiable with starting non-strict constraints.\<close>
-i_preprocess_sat: "\<And> v. preprocess cs = (t,as,trans_v) \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> (I,\<langle>trans_v v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" and
+i_preprocess_sat: "\<And> v. preprocess cs = (t,as,trans_v,U) \<Longrightarrow> I \<inter> set U = {} \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> (I,\<langle>trans_v v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" and
 
-preprocess_unsat: "preprocess cs = (t, as,trans_v) \<Longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs \<Longrightarrow> \<exists> v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t" and
+preprocess_unsat: "preprocess cs = (t, as,trans_v,U) \<Longrightarrow> (I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs \<Longrightarrow> \<exists> v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t" and
 
 \<comment> \<open>minimality condition ensures distinct indices in atoms\<close>
-preprocess_distinct: "preprocess cs = (t, as,trans_v) \<Longrightarrow> minimality_condition_ns cs \<Longrightarrow> distinct_indices_atoms as" and
+preprocess_distinct: "preprocess cs = (t, as,trans_v, U) \<Longrightarrow> minimality_condition_ns cs \<Longrightarrow> distinct_indices_atoms as" and
+
+\<comment> \<open>unsat indices\<close>
+preprocess_unsat_indices: "preprocess cs = (t, as,trans_v, U) \<Longrightarrow> i \<in> set U \<Longrightarrow> \<not> (\<exists> v. ({i},v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" and
 
 \<comment> \<open>preprocessing cannot introduce new indices\<close>
-preprocess_index: "preprocess cs = (t,as,trans_v) \<Longrightarrow> fst ` set as \<subseteq> fst ` set cs"
+preprocess_index: "preprocess cs = (t,as,trans_v, U) \<Longrightarrow> fst ` set as \<union> set U \<subseteq> fst ` set cs"
 begin
-lemma preprocess_sat: "preprocess cs = (t,as,trans_v) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> \<langle>trans_v v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)"
-  using i_preprocess_sat[of cs t as trans_v UNIV v] by auto
+lemma preprocess_sat: "preprocess cs = (t,as,trans_v,U) \<Longrightarrow> U = [] \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>a\<^sub>s flat (set as) \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> \<langle>trans_v v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)"
+  using i_preprocess_sat[of cs t as trans_v U UNIV v] by auto
 
 end
 
@@ -602,55 +605,65 @@ are available, the  @{text "solve_exec_ns"} can be defined, and it
 can easily be shown that this definition satisfies the specification.\<close>
 
 locale Solve_exec_ns' = Preprocess preprocess + AssertAll assert_all for
-  preprocess:: "('i,'a::lrv) i_ns_constraint list \<Rightarrow> tableau \<times> ('i,'a) i_atom list \<times> ((var,'a)mapping \<Rightarrow> (var,'a)mapping)" and
+  preprocess:: "('i,'a::lrv) i_ns_constraint list \<Rightarrow> tableau \<times> ('i,'a) i_atom list \<times> ((var,'a)mapping \<Rightarrow> (var,'a)mapping) \<times> 'i list" and
   assert_all :: "tableau \<Rightarrow> ('i,'a::lrv) i_atom list \<Rightarrow> 'i list + (var, 'a) mapping"
 begin
 definition solve_exec_ns where
 
 "solve_exec_ns s \<equiv>
-    case preprocess s of (t,as,trans_v) \<Rightarrow>
-      case assert_all t as of Inl I \<Rightarrow> Inl I | Inr v \<Rightarrow> Inr (trans_v v) "
+    case preprocess s of (t,as,trans_v,ui) \<Rightarrow>
+      (case ui of i # _ \<Rightarrow> Inl [i] | _ \<Rightarrow>
+      (case assert_all t as of Inl I \<Rightarrow> Inl I | Inr v \<Rightarrow> Inr (trans_v v))) "
 end
 
 
 sublocale Solve_exec_ns' < Solve_exec_ns solve_exec_ns
 proof
   fix cs
-  obtain t as trans_v where prep: "preprocess cs = (t,as,trans_v)" by (cases "preprocess cs")
+  obtain t as trans_v ui where prep: "preprocess cs = (t,as,trans_v,ui)" by (cases "preprocess cs")
   from preprocess_tableau_normalized[OF prep]
   have t: "\<triangle> t" .
-  from preprocess_index[OF prep] have index: "fst ` set as \<subseteq> fst ` set cs" by auto
+  from preprocess_index[OF prep] have index: "fst ` set as \<union> set ui \<subseteq> fst ` set cs" by auto
   note solve = solve_exec_ns_def[of cs, unfolded prep split]
   {
     fix v
     assume "solve_exec_ns cs = Sat v"
     from this[unfolded solve] t assert_all_sat[OF t] preprocess_sat[OF prep]
-    show " \<langle>v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)" by (auto split: sum.splits)
+    show " \<langle>v\<rangle> \<Turnstile>\<^sub>n\<^sub>s\<^sub>s flat (set cs)" by (auto split: sum.splits list.splits)
   }
   {
     fix I
-    assume "solve_exec_ns cs = Unsat I"
-    from this[unfolded solve] have assert: "assert_all t as = Unsat I"
-      by (auto split: sum.splits)
-    from minimal_unsat_core_tabl_atomsD(1,2)[OF assert_all_unsat[OF t assert]] preprocess_unsat[OF prep, of "set I"]
-    have 1: "set I \<subseteq> fst ` set as" "\<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" by force+
-    show "minimal_unsat_core_ns True (set I) cs" unfolding minimal_unsat_core_ns_def
-    proof (intro conjI impI allI 1(2))
-      show "set I \<subseteq> fst ` set cs" using 1 index by auto
-      fix J
-      assume "minimality_condition_ns cs" "J \<subset> set I" 
-      with preprocess_distinct[OF prep]
-      have "distinct_indices_atoms as" "J \<subset> set I" by auto
-      from minimal_unsat_core_tabl_atomsD(3)[OF assert_all_unsat[OF t assert] this]
-      obtain v where model: "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as" by auto
-      from i_satisfies_atom_set'_stronger[OF model(2)] 
-      have model': "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" . 
-      define w where "w = Mapping.Mapping (\<lambda> x. Some (v x))"
-      have "v = \<langle>w\<rangle>" unfolding w_def map2fun_def
-        by (intro ext, transfer, auto)
-      with model model' have "\<langle>w\<rangle> \<Turnstile>\<^sub>t t" "(J, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by auto
-      from i_preprocess_sat[OF prep this(2,1)] have "(J, \<langle>trans_v w\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" .
-      then show "\<exists> w. (J, w) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" by auto
+    assume res: "solve_exec_ns cs = Unsat I"
+    show "minimal_unsat_core_ns True (set I) cs" 
+    proof (cases ui)
+      case (Cons i uis)
+      hence I: "I = [i]" using res[unfolded solve] by auto
+      from preprocess_unsat_indices[OF prep, of i] Cons have "\<nexists>v. ({i}, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" by auto
+      thus ?thesis unfolding I minimal_unsat_core_ns_def using Cons index by auto
+    next
+      case Nil
+      from res[unfolded solve Nil] have assert: "assert_all t as = Unsat I"
+        by (auto split: sum.splits)
+      from minimal_unsat_core_tabl_atomsD(1,2)[OF assert_all_unsat[OF t assert]] preprocess_unsat[OF prep, of "set I"]
+      have 1: "set I \<subseteq> fst ` set as" "\<not> (\<exists> v. (set I, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs)" by force+
+      show "minimal_unsat_core_ns True (set I) cs" unfolding minimal_unsat_core_ns_def
+      proof (intro conjI impI allI 1(2))
+        show "set I \<subseteq> fst ` set cs" using 1 index by auto
+        fix J
+        assume "minimality_condition_ns cs" "J \<subset> set I" 
+        with preprocess_distinct[OF prep]
+        have "distinct_indices_atoms as" "J \<subset> set I" by auto
+        from minimal_unsat_core_tabl_atomsD(3)[OF assert_all_unsat[OF t assert] this]
+        obtain v where model: "v \<Turnstile>\<^sub>t t" "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>e\<^sub>s set as" by auto
+        from i_satisfies_atom_set'_stronger[OF model(2)] 
+        have model': "(J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" . 
+        define w where "w = Mapping.Mapping (\<lambda> x. Some (v x))"
+        have "v = \<langle>w\<rangle>" unfolding w_def map2fun_def
+          by (intro ext, transfer, auto)
+        with model model' have "\<langle>w\<rangle> \<Turnstile>\<^sub>t t" "(J, \<langle>w\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" by auto
+        from i_preprocess_sat[OF prep _ this(2,1)] Nil have "(J, \<langle>trans_v w\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" by simp
+        then show "\<exists> w. (J, w) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" by auto
+      qed
     qed
   }
 qed
@@ -7041,8 +7054,8 @@ fun
 
 
 definition
-  preprocess_part_1  :: "('i,QDelta) i_ns_constraint list \<Rightarrow> tableau \<times> (('i,QDelta) i_atom list)" where
-  "preprocess_part_1 l \<equiv> let start = start_fresh_variable l; is = preprocess' l start in (Tableau is, Atoms is)"
+  preprocess_part_1  :: "('i,QDelta) i_ns_constraint list \<Rightarrow> tableau \<times> (('i,QDelta) i_atom list) \<times> 'i list" where
+  "preprocess_part_1 l \<equiv> let start = start_fresh_variable l; is = preprocess' l start in (Tableau is, Atoms is, [])"
 
 lemma lhs_linear_poly_to_eq [simp]:
   "lhs (linear_poly_to_eq h v) = v"
@@ -7524,17 +7537,18 @@ lemma preprocess_part_2: assumes "preprocess_part_2 as t = (t',tv)" "\<triangle>
     "v \<Turnstile>\<^sub>t t \<Longrightarrow> (v :: 'a valuation) \<Turnstile>\<^sub>t t'"
   using preprocess_opt[OF refl assms(1)[unfolded preprocess_part_2_def] assms(2)] by auto
 
-definition preprocess :: "_ \<Rightarrow> _ \<times> _ \<times> (_ \<Rightarrow> (var,QDelta)mapping)" where
-  "preprocess l = (case preprocess_part_1 l of (t,as) \<Rightarrow> case preprocess_part_2 as t of (t,tv) \<Rightarrow> (t,as,tv))"
+definition preprocess :: "('i,QDelta) i_ns_constraint list \<Rightarrow> _ \<times> _ \<times> (_ \<Rightarrow> (var,QDelta)mapping) \<times> 'i list" where
+  "preprocess l = (case preprocess_part_1 l of (t,as,ui) \<Rightarrow> case preprocess_part_2 as t of (t,tv) \<Rightarrow> (t,as,tv,[]))"
 
 interpretation PreprocessDefault: Preprocess preprocess
 proof
-  fix cs trans_v t' as v I
-  assume id: "preprocess cs = (t',as,trans_v)"
-  then obtain t where part1: "preprocess_part_1 cs = (t,as)"
+  fix cs trans_v ui t' as v I
+  assume id: "preprocess cs = (t',as,trans_v, ui)"
+  then obtain t ui' where part1: "preprocess_part_1 cs = (t,as,ui')"
     unfolding preprocess_def by (auto split: prod.splits)
   from id[unfolded preprocess_def part1 split]
-  have part_2: "preprocess_part_2 as t = (t',trans_v)" by (auto split: prod.splits)
+  have part_2: "preprocess_part_2 as t = (t',trans_v)" 
+    and ui: "ui = []" by (auto split: prod.splits)
   have norm: "\<triangle> t"
     using lvars_distinct
     using lvars_tableau_ge_start[of cs "start_fresh_variable cs"]
@@ -7586,7 +7600,7 @@ proof
       qed
     qed
   qed (auto simp: min_defs)
-  then show "fst ` set as \<subseteq> fst ` set cs" by auto 
+  then show "fst ` set as \<union> set ui \<subseteq> fst ` set cs" using ui by auto 
   {
     assume mini: "minimality_condition_ns cs" 
     note min = min1[THEN conjunct1, rule_format, OF this]
@@ -7613,6 +7627,7 @@ proof
       qed
     qed 
   }
+  show "i \<in> set ui \<Longrightarrow> \<nexists>v. ({i}, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" for i using ui by auto
   fix v
   assume "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs"
   from preprocess'_unsat[OF this _  start_fresh_variable_fresh, of cs]

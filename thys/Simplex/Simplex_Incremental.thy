@@ -353,20 +353,18 @@ next
   qed
 qed
 
-fun sum_wrap2 :: "('c \<Rightarrow> 's \<Rightarrow> 'i list + 's)
-  \<Rightarrow> ('c \<times> 'd) \<times> 's \<Rightarrow> 'i list + (('c \<times> 'd) \<times> 's)" where
-  "sum_wrap2 f ((asi,tv),s) = (case f asi s of Unsat I \<Rightarrow> Unsat I | Inr s' \<Rightarrow> Inr ((asi,tv),s'))" 
-
 fun sum_wrap :: "('c \<Rightarrow> 's \<Rightarrow> 'i list + 's)
   \<Rightarrow> 'c \<times> 's \<Rightarrow> 'i list + ('c \<times> 's)" where
   "sum_wrap f (asi,s) = (case f asi s of Unsat I \<Rightarrow> Unsat I | Inr s' \<Rightarrow> Inr (asi,s'))" 
 
 definition check_nsc where "check_nsc check_s = sum_wrap (\<lambda> asitv. check_s)" 
 
-definition assert_nsc where "assert_nsc assert_all_s i = sum_wrap2 (\<lambda> asi. assert_all_s (asi i))"
-fun checkpoint_nsc where "checkpoint_nsc checkpoint_s (asi_tv,s) = checkpoint_s s" 
-fun backtrack_nsc where "backtrack_nsc backtrack_s c (asi_tv,s) = (asi_tv, backtrack_s c s)" 
-fun solution_nsc where "solution_nsc solution_s ((asi,tv),s) = tv (solution_s s)" 
+definition assert_nsc where "assert_nsc assert_all_s i = (\<lambda> ((asi,tv,ui),s). 
+  if i \<in> set ui then Unsat [i] else 
+  case assert_all_s (asi i) s of Unsat I \<Rightarrow> Unsat I | Inr s' \<Rightarrow> Inr ((asi,tv,ui),s'))"
+fun checkpoint_nsc where "checkpoint_nsc checkpoint_s (asi_tv_ui,s) = checkpoint_s s" 
+fun backtrack_nsc where "backtrack_nsc backtrack_s c (asi_tv_ui,s) = (asi_tv_ui, backtrack_s c s)" 
+fun solution_nsc where "solution_nsc solution_s ((asi,tv,ui),s) = tv (solution_s s)" 
 
 
 locale Incremental_Atom_Ops_For_NS_Constraint_Ops =
@@ -382,21 +380,21 @@ locale Incremental_Atom_Ops_For_NS_Constraint_Ops =
     backtrack_s :: "'c \<Rightarrow> 's \<Rightarrow> 's" and
     invariant_s :: "tableau \<Rightarrow> ('i,'a) i_atom set \<Rightarrow> 's \<Rightarrow> bool" and
     checked_s :: "tableau \<Rightarrow> ('i,'a) i_atom set \<Rightarrow> 's \<Rightarrow> bool" and
-    preprocess :: "('i,'a) i_ns_constraint list \<Rightarrow> tableau \<times> ('i,'a) i_atom list \<times> ((var,'a)mapping \<Rightarrow> (var,'a)mapping)" 
+    preprocess :: "('i,'a) i_ns_constraint list \<Rightarrow> tableau \<times> ('i,'a) i_atom list \<times> ((var,'a)mapping \<Rightarrow> (var,'a)mapping) \<times> 'i list" 
 begin
 
-definition "init_nsc nsc = (case preprocess nsc of (t,as,trans_v) \<Rightarrow> 
-   ((list_map_to_fun (create_map as), trans_v), init_s t))"
+definition "init_nsc nsc = (case preprocess nsc of (t,as,trans_v,ui) \<Rightarrow> 
+   ((list_map_to_fun (create_map as), trans_v, remdups ui), init_s t))"
 
-fun invariant_as_asi where "invariant_as_asi as asi tc tc' = (tc = tc' \<and> (\<forall> i. set (asi i) = (as \<inter> ({i} \<times> UNIV))))" 
+fun invariant_as_asi where "invariant_as_asi as asi tc tc' ui ui' = (tc = tc' \<and> set ui = set ui' \<and> (\<forall> i. set (asi i) = (as \<inter> ({i} \<times> UNIV))))" 
 
 fun invariant_nsc where 
-  "invariant_nsc nsc J ((asi,tv),s) = (case preprocess nsc of (t,as,tv') \<Rightarrow> invariant_as_asi (set as) asi tv tv' \<and> 
-     invariant_s t (set as \<inter> (J \<times> UNIV)) s)" 
+  "invariant_nsc nsc J ((asi,tv,ui),s) = (case preprocess nsc of (t,as,tv',ui') \<Rightarrow> invariant_as_asi (set as) asi tv tv' ui ui' \<and> 
+     invariant_s t (set as \<inter> (J \<times> UNIV)) s \<and> J \<inter> set ui = {})" 
 
 fun checked_nsc where 
-  "checked_nsc nsc J ((asi,tv),s) = (case preprocess nsc of (t,as,tv') \<Rightarrow> invariant_as_asi (set as) asi tv tv' \<and> 
-     checked_s t (set as \<inter> (J \<times> UNIV)) s)" 
+  "checked_nsc nsc J ((asi,tv,ui),s) = (case preprocess nsc of (t,as,tv',ui') \<Rightarrow> invariant_as_asi (set as) asi tv tv' ui ui' \<and> 
+     checked_s t (set as \<inter> (J \<times> UNIV)) s \<and> J \<inter> set ui = {})" 
 
 lemma i_satisfies_atom_set_inter_right: "((I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (ats \<inter> (J \<times> UNIV))) \<longleftrightarrow> ((I \<inter> J, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s ats)" 
   unfolding i_satisfies_atom_set.simps
@@ -407,45 +405,56 @@ lemma ns_constraints_ops: "Incremental_NS_Constraint_Ops init_nsc (assert_nsc as
   invariant_nsc checked_nsc"
 proof (unfold_locales, goal_cases)
   case (1 nsc J S j S') (* assert ok *)
-  obtain asi tv s where S: "S = ((asi,tv),s)" by (cases S, auto)
-  obtain t as tv' where prep[simp]: "preprocess nsc = (t, as, tv')" by (cases "preprocess nsc")
+  obtain asi tv s ui where S: "S = ((asi,tv,ui),s)" by (cases S, auto)
+  obtain t as tv' ui' where prep[simp]: "preprocess nsc = (t, as, tv', ui')" by (cases "preprocess nsc")
   note pre = 1[unfolded S assert_nsc_def]
   from pre(2) obtain s' where
-    ok: "assert_all_s (asi j) s = Inr s'" and S': "S' = ((asi,tv),s')" 
-    by (auto split: sum.splits)
+    ok: "assert_all_s (asi j) s = Inr s'" and S': "S' = ((asi,tv,ui),s')" and j: "j \<notin> set ui" 
+    by (auto split: sum.splits if_splits)
   from pre(1)[simplified]
   have inv: "invariant_s t (set as \<inter> J \<times> UNIV) s" 
-    and asi: "set (asi j) = set as \<inter> {j} \<times> UNIV" "invariant_as_asi (set as) asi tv tv'" by auto
-  from assert_all_s_ok[OF inv ok, unfolded asi] asi(2)
+    and asi: "set (asi j) = set as \<inter> {j} \<times> UNIV" "invariant_as_asi (set as) asi tv tv' ui ui'" "J \<inter> set ui = {}" by auto
+  from assert_all_s_ok[OF inv ok, unfolded asi] asi(2-) j
   show ?case unfolding invariant_nsc.simps S' prep split
-    by (metis Int_Un_distrib Sigma_Un_distrib1 insert_is_Un)
+    by (metis Int_insert_left Sigma_Un_distrib1 inf_sup_distrib1 insert_is_Un)
 next
   case (2 nsc J S j I) (* assert unsat *)
-  obtain asi s tv where S: "S = ((asi,tv),s)" by (cases S, auto)
-  obtain t as tv' where prep[simp]: "preprocess nsc = (t, as, tv')" by (cases "preprocess nsc")
-  note pre = 2[unfolded S assert_nsc_def]
-  from pre(2)[simplified] have 
-    unsat: "assert_all_s (asi j) s = Unsat I"  
-    by (auto split: sum.splits)
-  from pre(1)
-  have inv: "invariant_s t (set as \<inter> J \<times> UNIV) s" 
-    and asi: "set (asi j) = set as \<inter> {j} \<times> UNIV" by auto
-  from assert_all_s_unsat[OF inv unsat, unfolded asi]
-  have I: "set I \<subseteq> insert j J" 
-    and "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set as \<inter> (insert j J) \<times> UNIV)" 
-    by (force, metis Int_Un_distrib Sigma_Un_distrib1 insert_is_Un)+
-  then have "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I \<inter> (insert j J), v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
-    unfolding i_satisfies_atom_set_inter_right by simp
-  also have "set I \<inter> (insert j J) = set I" using I by auto
-  finally show ?case using preprocess_unsat[OF prep, of "set I"] I unfolding minimal_unsat_core_ns_def by blast
+  obtain asi s tv ui where S: "S = ((asi,tv,ui),s)" by (cases S, auto)
+  obtain t as tv' ui' where prep[simp]: "preprocess nsc = (t, as, tv', ui')" by (cases "preprocess nsc")
+  note pre = 2[unfolded S assert_nsc_def split]
+  show ?case
+  proof (cases "j \<in> set ui")
+    case False
+    with pre(2) have unsat: "assert_all_s (asi j) s = Unsat I"  
+      by (auto split: sum.splits)
+    from pre(1)
+    have inv: "invariant_s t (set as \<inter> J \<times> UNIV) s" 
+      and asi: "set (asi j) = set as \<inter> {j} \<times> UNIV" by auto
+    from assert_all_s_unsat[OF inv unsat, unfolded asi]
+    have I: "set I \<subseteq> insert j J" 
+      and "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I, v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s (set as \<inter> (insert j J) \<times> UNIV)" 
+      by (force, metis Int_Un_distrib Sigma_Un_distrib1 insert_is_Un)+
+    then have "\<nexists>v. v \<Turnstile>\<^sub>t t \<and> (set I \<inter> (insert j J), v) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" 
+      unfolding i_satisfies_atom_set_inter_right by simp
+    also have "set I \<inter> (insert j J) = set I" using I by auto
+    finally show ?thesis using preprocess_unsat[OF prep, of "set I"] I unfolding minimal_unsat_core_ns_def by blast
+  next
+    case True
+    with pre(2) have I: "I = [j]" by auto
+    from pre(1)[unfolded invariant_nsc.simps prep split invariant_as_asi.simps]
+    have "set ui = set ui'" by simp
+    with True have "j \<in> set ui'" by auto
+    from preprocess_unsat_indices[OF prep this]
+    show ?thesis unfolding I minimal_unsat_core_ns_def by auto
+  qed
 next
   case (3 nsc J S S') (* check ok *)
   then show ?case using check_s_ok unfolding check_nsc_def
     by (cases S, auto split: sum.splits)
 next
   case (4 nsc J S I) (* check unsat *)
-  obtain asi s tv where S: "S = ((asi,tv),s)" by (cases S, auto)
-  obtain t as tv' where prep[simp]: "preprocess nsc = (t, as, tv')" by (cases "preprocess nsc")
+  obtain asi s tv ui where S: "S = ((asi,tv,ui),s)" by (cases S, auto)
+  obtain t as tv' ui' where prep[simp]: "preprocess nsc = (t, as, tv', ui')" by (cases "preprocess nsc")
   note pre = 4[unfolded S check_nsc_def, simplified]
   from pre have 
     unsat: "check_s s = Unsat I"  and
@@ -459,24 +468,24 @@ next
   finally show ?case using preprocess_unsat[OF prep, of "set I"] I  unfolding minimal_unsat_core_ns_def by blast
 next
   case (5 nsc) (* init *)
-  obtain t as tv' where prep[simp]: "preprocess nsc = (t, as, tv')" by (cases "preprocess nsc")
+  obtain t as tv' ui' where prep[simp]: "preprocess nsc = (t, as, tv', ui')" by (cases "preprocess nsc")
   show ?case unfolding init_nsc_def  
     using init_s preprocess_tableau_normalized[OF prep] 
     by (auto simp: list_map_to_fun_create_map)
 next
   case (6 nsc J S v) (* solution *)
-  obtain asi s tv where S: "S = ((asi,tv),s)" by (cases S, auto)
-  obtain t as tv' where prep[simp]: "preprocess nsc = (t, as, tv')" by (cases "preprocess nsc")
+  obtain asi s tv ui where S: "S = ((asi,tv,ui),s)" by (cases S, auto)
+  obtain t as tv' ui' where prep[simp]: "preprocess nsc = (t, as, tv', ui')" by (cases "preprocess nsc")
   have "(J,\<langle>solution_s s\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as" "\<langle>solution_s s\<rangle> \<Turnstile>\<^sub>t t" 
     using 6 S solution_s[of t _ s] by auto
-  from i_preprocess_sat[OF prep this]
+  from i_preprocess_sat[OF prep _ this]
   show ?case using 6 S by auto
 next
   case (7 nsc J S c K S' S'') (* backtrack *)
-  obtain t as tvp where prep[simp]: "preprocess nsc = (t, as, tvp)" by (cases "preprocess nsc")
-  obtain asi s tv where S: "S = ((asi,tv),s)" by (cases S, auto)
-  obtain asi' s' tv' where S': "S' = ((asi',tv'),s')" by (cases S', auto)
-  obtain asi'' s'' tv'' where S'': "S'' = ((asi'',tv''),s'')" by (cases S'', auto)
+  obtain t as tvp uip where prep[simp]: "preprocess nsc = (t, as, tvp, uip)" by (cases "preprocess nsc")
+  obtain asi s tv ui where S: "S = ((asi,tv,ui),s)" by (cases S, auto)
+  obtain asi' s' tv' ui' where S': "S' = ((asi',tv',ui'),s')" by (cases S', auto)
+  obtain asi'' s'' tv'' ui'' where S'': "S'' = ((asi'',tv'',ui''),s'')" by (cases S'', auto)
   from backtrack_s[of t _ s c _ s' s''] 
   show ?case using 7 S S' S'' by auto
 next
@@ -688,7 +697,7 @@ global_interpretation Incremental_Atom_Ops_For_NS_Constraint_Ops_Default:
       )
 
 type_synonym 'i simplex_state' = "QDelta ns_constraint list 
-  \<times> (('i \<Rightarrow> ('i \<times> QDelta atom) list) \<times> ((var,QDelta)mapping \<Rightarrow> (var,QDelta)mapping)) 
+  \<times> (('i \<Rightarrow> ('i \<times> QDelta atom) list) \<times> ((var,QDelta)mapping \<Rightarrow> (var,QDelta)mapping) \<times> 'i list) 
   \<times> ('i, QDelta) state"
 
 definition "init_simplex' = (init_cs init_nsc_code to_ns :: 'i :: linorder i_constraint list \<Rightarrow> 'i simplex_state')" 
@@ -711,8 +720,8 @@ text \<open>The following code-lemmas unfold some layers in the code of the simp
 lemmas code_lemmas =
   fun_cong[OF init_simplex'_def, of cs for cs, unfolded init_cs_def 
     Incremental_Atom_Ops_For_NS_Constraint_Ops_Default.init_nsc_def]
-  fun_cong[OF fun_cong[OF assert_simplex'_def], of i "(cs,((asi,tv),s))" for i cs asi tv s, 
-    unfolded assert_cs.simps assert_nsc_code_def assert_nsc_def sum_wrap2.simps case_sum_case_sum]
+  fun_cong[OF fun_cong[OF assert_simplex'_def], of i "(cs,((asi,tv,ui),s))" for i cs asi tv ui s, 
+    unfolded assert_cs.simps assert_nsc_code_def assert_nsc_def case_sum_case_sum split]
   fun_cong[OF check_simplex'_def, of "(cs,(asi_tv,s))" for cs asi_tv s, 
     unfolded check_cs_def check_nsc_code_def check_nsc_def sum_wrap.simps case_sum_case_sum] 
   fun_cong[OF solution_simplex'_def, of "(cs,((asi,tv),s))" for cs asi tv s, 
@@ -768,16 +777,16 @@ datatype 'i simplex_checkpoint = Simplex_Checkpoint "(nat, 'i \<times> QDelta) m
 fun init_simplex where "init_simplex cs =
   (let tons_cs = to_ns cs
    in Simplex_State (map snd tons_cs,
-       case preprocess tons_cs of (t, as, trans_v) \<Rightarrow> ((list_map_to_fun (create_map as), trans_v), init_state t)))" 
+       case preprocess tons_cs of (t, as, trans_v, ui) \<Rightarrow> ((list_map_to_fun (create_map as), trans_v, remdups ui), init_state t)))" 
 
-fun assert_simplex where "assert_simplex i (Simplex_State (cs, (asi, tv), s)) =
-  (case assert_all_s (asi i) s of Inl y \<Rightarrow> Inl y | Inr s' \<Rightarrow> Inr (Simplex_State (cs, (asi, tv), s')))" 
+fun assert_simplex where "assert_simplex i (Simplex_State (cs, (asi, tv, ui), s)) =
+  (if i \<in> set ui then Inl [i] else case assert_all_s (asi i) s of Inl y \<Rightarrow> Inl y | Inr s' \<Rightarrow> Inr (Simplex_State (cs, (asi, tv, ui), s')))" 
 
 fun check_simplex where 
   "check_simplex (Simplex_State (cs, asi_tv, s)) = (case check_s s of Inl y \<Rightarrow> Inl y | Inr s' \<Rightarrow> Inr (Simplex_State (cs, asi_tv, s')))"
 
 fun solution_simplex where
-  "solution_simplex (Simplex_State (cs, (asi, tv), s)) = from_ns (tv (\<V> s)) cs" 
+  "solution_simplex (Simplex_State (cs, (asi, tv, ui), s)) = from_ns (tv (\<V> s)) cs" 
 
 fun checkpoint_simplex where "checkpoint_simplex (Simplex_State (cs, asi_tv, s)) = Simplex_Checkpoint (checkpoint_s s)" 
 
@@ -972,4 +981,3 @@ value (code) "let cs = [
   in (I, map (\<lambda> x. (''x_'', x, ''='', \<langle>sol\<rangle> x)) [0,1,2,3]) \<comment> \<open>output unsat core and solution\<close>" 
 
 end
-
