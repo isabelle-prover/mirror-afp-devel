@@ -17,6 +17,7 @@ message in case the basis is not reduced.\<close>
 theory LLL_Certification
   imports
     LLL_Mu_Integer_Impl
+    Jordan_Normal_Form.Show_Matrix
 begin
 
 text \<open>First, we define and prove some required facts about the row space and column space. \<close>
@@ -541,7 +542,12 @@ definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow
      if (dim_row u1 = m \<and> dim_col u1 = m \<and> dim_row u2 = m \<and> dim_col u2 = m 
          \<and> length gs = m \<and> Fs = u1 * Gs \<and> Gs = u2 * Fs \<and> (\<forall> gi \<in> set gs. dim_vec gi = n))
       then sv gs
-      else Code.abort (STR ''error in external lll invocation'') (\<lambda> _. sv fs))" 
+      else Code.abort (STR ''error in external lll invocation\<newline>f,g,u1,u2 are as follows\<newline>''
+        + String.implode (show Fs) + STR ''\<newline>\<newline>''
+        + String.implode (show Gs) + STR ''\<newline>\<newline>''
+        + String.implode (show u1) + STR ''\<newline>\<newline>''
+        + String.implode (show u2) + STR ''\<newline>\<newline>''
+        ) (\<lambda> _. sv fs))" 
 
 instance bool :: prime_card
   by (standard, auto)
@@ -604,6 +610,10 @@ code_reserved Haskell LLL_Extern External_LLL lll_extern external_lll
 code_printing
  constant lll_oracle \<rightharpoonup> (Haskell) "LLL'_Extern.lll'_extern"
 
-(* export_code short_vector_external in Haskell module_name LLL file "~/Code" *)
+definition "short_vector_test_external xs = 
+  (let ys = map (vec_of_list o map int_of_integer) xs
+   in integer_of_int (sq_norm (short_vector_external (3/2) ys)))" 
+
+(* export_code short_vector_test_external in Haskell module_name LLL file "~/Code" *)
 
 end
