@@ -2400,11 +2400,9 @@ proof -
   let ?S = "Collect (root_cond (p, l, r))"
   assume "2 \<le> card ?S"
   hence 2: "Suc (Suc 0) \<le> card ?S" by simp
-  have finS: "finite ?S"
-    by (rule finite_subset[OF _ finR], auto simp: root_cond_def)
-  from 2[unfolded card_le_Suc_iff[OF finS]] obtain x T where 
-    ST: "?S = insert x T" and xT: "x \<notin> T" and 1: "Suc 0 \<le> card T" and finT: "finite T" by auto
-  from 1[unfolded card_le_Suc_iff[OF finT]] obtain y where yT: "y \<in> T" by auto
+  from 2[unfolded card_le_Suc_iff[of _ ?S]] obtain x T where 
+    ST: "?S = insert x T" and xT: "x \<notin> T" and 1: "Suc 0 \<le> card T" by auto
+  from 1[unfolded card_le_Suc_iff[of _ T]] obtain y where yT: "y \<in> T" by auto
   from ST xT yT have x: "x \<in> ?S" and y: "y \<in> ?S" and xy: "x \<noteq> y" by auto
   hence "abs (x - y) \<in> S" unfolding S_def root_cond_def[abs_def] by auto
   with fin have "Min S \<le> abs (x - y)" by auto

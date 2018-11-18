@@ -484,14 +484,14 @@ proof -
       obtain v1 v2 v3 v4 where "v1\<in>V" "v2\<in>V" "v3\<in>V" "v4\<in>V" "v1\<noteq>v2" "v1\<noteq>v3" "v1\<noteq>v4"
               "v2\<noteq>v3" "v2\<noteq>v4" "v3\<noteq>v4" 
         proof -
-          obtain v1 B1 where "V = insert v1 B1"  "v1 \<notin> B1"  "card B1 \<ge>3" "finite B1"
-            using `card V\<ge>4` card_le_Suc_iff[OF `finite V`, of 3] by auto
-          then obtain v2 B2 where "B1 = insert v2 B2"  "v2 \<notin> B2"  "card B2 \<ge>2" "finite B2"
-            using card_le_Suc_iff[of B1 2] by auto
-          then obtain v3 B3 where "B2= insert v3 B3" "v3\<notin>B3" "card B3\<ge>1" "finite B3"
-            using card_le_Suc_iff[of B2 1] by auto
+          obtain v1 B1 where "V = insert v1 B1"  "v1 \<notin> B1"  "card B1 \<ge>3"
+            using `card V\<ge>4` card_le_Suc_iff[of 3 V] by auto
+          then obtain v2 B2 where "B1 = insert v2 B2"  "v2 \<notin> B2"  "card B2 \<ge>2"
+            using card_le_Suc_iff[of 2 B1] by auto
+          then obtain v3 B3 where "B2= insert v3 B3" "v3\<notin>B3" "card B3\<ge>1"
+            using card_le_Suc_iff[of 1 B2] by auto
           then obtain v4 B4 where "B3=insert v4 B4" "v4\<notin>B4" 
-            using card_le_Suc_iff[of B3 0] by auto
+            using card_le_Suc_iff[of 0 B3] by auto
           have "v1\<in>V" by (metis `V = insert v1 B1` insert_subset order_refl)
           moreover have "v2\<in>V" 
             by (metis `B1 = insert v2 B2` `V = insert v1 B1` insert_subset subset_insertI)
