@@ -99,7 +99,7 @@ begin
       fix q
       assume 1: "q \<in> reachable p \<and> infinite (reachable q)"
       have 2: "finite (successors q)" using assms(2) 1 by auto
-      have 3: "infinite (insert q (UNION (successors q) reachable))" using reachable_step 1 by metis
+      have 3: "infinite (insert q (\<Union>(reachable ` (successors q))))" using reachable_step 1 by metis
       obtain s where 4: "s \<in> successors q" "infinite (reachable s)" using 2 3 by auto
       show "\<exists> a. enabled a q \<and> (execute a q \<in> reachable p \<and> infinite (reachable (execute a q))) \<and> True"
         using 1 4 by auto

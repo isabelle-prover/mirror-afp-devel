@@ -19,7 +19,7 @@ definition
 definition
   UniqueSucStates ::  "[(('s,'e,'d)seqauto) set, 's \<rightharpoonup> ('s,'e,'d)seqauto set,
                         's set] \<Rightarrow> bool" where
-  "UniqueSucStates F G C  == \<forall> S \<in> (UNION F States).
+  "UniqueSucStates F G C  == \<forall> S \<in> (\<Union>(States ` F)).
                                    \<forall> A \<in> the (G S).
                                       if (S \<in> C) then
                                        \<exists>! S' . S' \<in>  States A \<and> S' \<in> C
@@ -30,7 +30,7 @@ definition
   IsConfSet :: "[(('s,'e,'d)seqauto) set, 's \<rightharpoonup> ('s,'e,'d)seqauto set,
                  's set] => bool" where
   "IsConfSet F G C ==
-                C \<subseteq> (UNION F States) &
+                C \<subseteq> (\<Union>(States ` F)) &
                 RootExSem F G C &
                 UniqueSucStates F G C" 
 

@@ -1160,14 +1160,11 @@ lemma f: "\<forall>x. ((n,x) \<in> deriv s) = (x \<in> set (f [s] n))"
   apply(rule step) apply(auto)
   done
 
-lemma deriv_f: "deriv s = UNION UNIV (% x. set (map (% y. (x,y)) (f [s] x)))"
-  using f apply(force) done
+lemma deriv_f: "deriv s = (\<Union>x. set (map (Pair x) (f [s] x)))"
+  using f by (auto simp add: set_eq_iff)
 
 lemma finite_f: "finite (set (f s x))"
-  apply(induct x)
-  apply(simp)
-  apply(simp)
-  done
+  by (fact finite_set)
 
 lemma finite_deriv: "finite (deriv s) = (\<exists>m. f [s] m = [])"
   apply(rule)

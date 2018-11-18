@@ -459,10 +459,10 @@ definition "inf_distrib f \<equiv> strict f \<and> cont f"
 
 lemma contI[intro?]: "\<lbrakk>\<And>C. C\<noteq>{} \<Longrightarrow> f (Sup C) = Sup (f`C)\<rbrakk> \<Longrightarrow> cont f" 
   unfolding cont_def by auto
-lemma contD: "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) = Sup (f`C)" 
+lemma contD: "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) = Sup (f ` C)"
   unfolding cont_def by auto
-lemma contD': "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) = SUPREMUM C f" 
-  using contD by simp
+lemma contD': "cont f \<Longrightarrow> C\<noteq>{} \<Longrightarrow> f (Sup C) = Sup (f ` C)"
+  by (fact contD)
 
 lemma strictD[dest]: "strict f \<Longrightarrow> f bot = bot" 
   unfolding strict_def by auto

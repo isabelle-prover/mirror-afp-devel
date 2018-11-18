@@ -2296,9 +2296,9 @@ proof (intro CollectI conjI)
         fix C::"nat \<Rightarrow> bool stream set"
         assume "(\<And>i. C i \<in> sigma_sets (space M) (\<Union>i\<in>{m. m \<le> Suc n}. {geom_proc i -` A \<inter> space M |A. A \<in> sets borel}))"
           and "(\<And>i. (\<lambda>w. spick w n x) -` C i \<in> sets (G n))"
-        hence "(\<lambda>w. spick w n x) -` UNION UNIV C = (\<Union> i\<in> UNIV. (\<lambda>w. spick w n x) -` (C i))" by blast
+        hence "(\<lambda>w. spick w n x) -` \<Union>(C ` UNIV) = (\<Union> i\<in> UNIV. (\<lambda>w. spick w n x) -` (C i))" by blast
         also have "... \<in> sets (G n)" using \<open>\<And>i. (\<lambda>w. spick w n x) -` C i \<in> sets (G n)\<close> by simp
-        finally show "(\<lambda>w. spick w n x) -` UNION UNIV C \<in> sets (G n)" .
+        finally show "(\<lambda>w. spick w n x) -` \<Union>(C ` UNIV) \<in> sets (G n)" .
       }
     qed
     thus "(\<lambda>w. spick w n x) -` B \<inter> space (G n) \<in> sets (G n)" using stock_filtration stoch_proc_filt_space

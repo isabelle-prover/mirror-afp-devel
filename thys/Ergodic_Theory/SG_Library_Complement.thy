@@ -1258,18 +1258,18 @@ lemma (in prob_space) sum_measure_le_measure_Inter:
   shows "(\<Sum>i\<in>I. prob (A i)) \<le> real(card I) - 1 + prob (\<Inter>i\<in>I. A i)"
 using assms proof (induct I rule: finite_ne_induct)
   fix x F assume H: "finite F" "F \<noteq> {}" "x \<notin> F"
-            "((\<And>i. i \<in> F \<Longrightarrow> A i \<in> events) \<Longrightarrow> (\<Sum>i\<in>F. prob (A i)) \<le> real (card F) - 1 + prob (INTER F A))"
+            "((\<And>i. i \<in> F \<Longrightarrow> A i \<in> events) \<Longrightarrow> (\<Sum>i\<in>F. prob (A i)) \<le> real (card F) - 1 + prob (\<Inter>(A ` F)))"
         and [measurable]: "(\<And>i. i \<in> insert x F \<Longrightarrow> A i \<in> events)"
   have "(\<Inter>x\<in>F. A x) \<in> events" using \<open>finite F\<close> \<open>F \<noteq> {}\<close> by auto
   have "(\<Sum>i\<in>insert x F. prob (A i)) = (\<Sum>i\<in>F. prob (A i)) + prob (A x)"
     using H(1) H(3) by auto
-  also have "... \<le> real (card F)-1 + prob (INTER F A) + prob (A x)"
+  also have "... \<le> real (card F)-1 + prob (\<Inter>(A ` F)) + prob (A x)"
     using H(4) by auto
-  also have "... \<le> real (card F) + prob ((INTER F A) \<inter> A x)"
+  also have "... \<le> real (card F) + prob ((\<Inter>(A ` F)) \<inter> A x)"
     using sum_measure_le_measure_inter[OF \<open>(\<Inter>x\<in>F. A x) \<in> events\<close>, of "A x"] by auto
-  also have "... = real (card (insert x F)) - 1 + prob (INTER (insert x F) A)"
+  also have "... = real (card (insert x F)) - 1 + prob (\<Inter>(A ` (insert x F)))"
     using H(1) H(2) unfolding card_insert_disjoint[OF \<open>finite F\<close> \<open>x \<notin> F\<close>] by (simp add: inf_commute)
-  finally show "(\<Sum>i\<in>insert x F. prob (A i)) \<le> real (card (insert x F)) - 1 + prob (INTER (insert x F) A)"
+  finally show "(\<Sum>i\<in>insert x F. prob (A i)) \<le> real (card (insert x F)) - 1 + prob (\<Inter>(A ` (insert x F)))"
     by simp
 qed (auto)
 

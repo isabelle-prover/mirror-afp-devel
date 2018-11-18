@@ -829,7 +829,7 @@ definition ivlflows ::
          \<Rightarrow> ('a \<times> 'a \<Rightarrow>\<^sub>L 'a) set \<times> ('a \<times> 'a \<Rightarrow>\<^sub>L 'a) set)
         \<Rightarrow> ('a \<times> 'a \<Rightarrow>\<^sub>L 'a) set \<Rightarrow> 'a sctn \<Rightarrow> bool"
 where "ivlflows stops stopcont trap rsctn =
-  (\<forall>ivl. ivl \<subseteq> UNION stops plane_of \<times> UNIV \<longrightarrow>
+  (\<forall>ivl. ivl \<subseteq> \<Union>(plane_of ` stops) \<times> UNIV \<longrightarrow>
       ivl \<subseteq> (snd (stopcont ivl)) \<and>
       fst (stopcont ivl) \<subseteq> snd (stopcont ivl) \<and>
       (fst (stopcont ivl)) \<subseteq> sbelow_halfspace rsctn \<times> UNIV \<and>
@@ -837,7 +837,7 @@ where "ivlflows stops stopcont trap rsctn =
       flowsto (ivl) {0..} ((snd (stopcont ivl))) ((fst (stopcont ivl)) \<union> trap))"
 
 lemma ivlflowsD:
-  assumes "ivlflows stops stopcont trap rsctn" "ivl \<subseteq> UNION stops plane_of \<times> UNIV "
+  assumes "ivlflows stops stopcont trap rsctn" "ivl \<subseteq> \<Union>(plane_of ` stops) \<times> UNIV "
   shows "ivl \<subseteq> (snd (stopcont ivl))"
     "(fst (stopcont ivl)) \<subseteq> sbelow_halfspace rsctn \<times> UNIV"
     "fst (stopcont ivl) \<subseteq> snd (stopcont ivl)"
@@ -847,7 +847,7 @@ lemma ivlflowsD:
   by auto
 
 lemma ivlflows_flowsto:
-  assumes "ivlflows stops stopcont trap rsctn" "ivl \<subseteq> UNION stops plane_of \<times> UNIV"
+  assumes "ivlflows stops stopcont trap rsctn" "ivl \<subseteq> \<Union>(plane_of ` stops) \<times> UNIV"
   assumes "stopcont ivl = (x, y)"
   shows "flowsto (ivl) {0..} y (x \<union> trap)"
   using ivlflowsD[OF assms(1,2)] assms(3)
@@ -2823,7 +2823,7 @@ lemma [autoref_rules]:
 lemma intersects_sctns_spec_nres:
   "do {
     ASSUME (finite sctns);
-    FOREACH\<^bsup>\<lambda>sctns' b. \<not>b \<longrightarrow> X' \<inter> UNION (sctns - sctns') plane_of = {}\<^esup> sctns
+    FOREACH\<^bsup>\<lambda>sctns' b. \<not>b \<longrightarrow> X' \<inter> \<Union>(plane_of ` (sctns - sctns')) = {}\<^esup> sctns
           (\<lambda>sctn b. do {b' \<leftarrow> intersects_spec ( X') sctn; RETURN (b \<or> b')}) False
    } \<le> intersects_sctns_spec X' sctns"
   unfolding intersects_sctns_spec_def
@@ -2895,7 +2895,7 @@ lemma intersects_sections_spec_clw_ref:
     FORWEAK Rs (RETURN False) (\<lambda>R. intersects_sctns_spec R sctns) (\<lambda>a b. RETURN (a \<or> b))
   } \<le> intersects_sctns_spec_clw R sctns"
   unfolding intersects_sctns_spec_def intersects_sctns_spec_clw_def
-  by (refine_vcg FORWEAK_mono_rule[where I="\<lambda>S b. \<not>b \<longrightarrow> \<Union>S \<inter> UNION sctns plane_of = {}"]) auto
+  by (refine_vcg FORWEAK_mono_rule[where I="\<lambda>S b. \<not>b \<longrightarrow> \<Union>S \<inter> \<Union>(plane_of ` sctns) = {}"]) auto
 schematic_goal intersects_sections_spec_clw[autoref_rules]:
   assumes [autoref_rules]: "(Ri, R) \<in> clw_rel appr_rel" "(sctnsi, sctns) \<in> sctns_rel"
   shows "(nres_of (?r::_ dres), intersects_sctns_spec_clw $ R $ sctns) \<in> \<langle>bool_rel\<rangle>nres_rel"
@@ -7478,12 +7478,12 @@ lemma poincare_onto2[le, refine_vcg]:
           subgoal premises prems
           proof -
             note prems
-            from prems have "finite (q ` m)" "flowsto (R0 (a, b, b', c, d, e, f, g)) {0..} (g \<times> UNIV) (UNION m q)"
+            from prems have "finite (q ` m)" "flowsto (R0 (a, b, b', c, d, e, f, g)) {0..} (g \<times> UNIV) (\<Union>(q ` m))"
               by auto
             from flowsto_Union_funE[OF this]
             obtain XGs where
               XGs: "\<And>G. G \<in> q ` m \<Longrightarrow> flowsto (XGs G) {0..} (g \<times> UNIV) G"
-              "R0 (a, b, b', c, d, e, f, g) = UNION (q ` m) XGs"
+              "R0 (a, b, b', c, d, e, f, g) = \<Union>(XGs ` (q ` m))"
               by metis
             define q0 where "q0 = XGs o q"
             have "case x of (X, P1, P2, R, ivl, sctn, CX, CXS) \<Rightarrow>
@@ -7500,7 +7500,7 @@ lemma poincare_onto2[le, refine_vcg]:
                 "closed ivl"
                 "c \<subseteq> CXS \<times> UNIV"
                 "g \<subseteq> CXS"
-                "UNION m q \<subseteq> CXS \<times> UNIV"
+                "\<Union>(q ` m) \<subseteq> CXS \<times> UNIV"
                 "CXS \<inter> (guards \<union> \<Union>l) = {}"
                 "p (X, P1, P2, {}, ivl, sctn, CX, CXS) = {}"
                 "p (X, P1, P2, R, ivl, sctn, CX, CXS) \<subseteq> CXS \<times> UNIV"
@@ -8709,7 +8709,7 @@ lemma poincare_mapsto_UnionI:
 proof (safe del: conjI, goal_cases)
   case (1 x0 d0 i)
   moreover
-  have "fst ` UNION I X0 \<subseteq> S"
+  have "fst ` \<Union>(X0 ` I) \<subseteq> S"
     proof (safe, goal_cases)
       case (1 _ x0 d0 i)
       from this pm[OF 1]

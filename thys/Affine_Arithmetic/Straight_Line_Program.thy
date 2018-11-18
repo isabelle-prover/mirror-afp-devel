@@ -707,7 +707,7 @@ proof -
   obtain M slp where Mslp:
     "slp_of_fas' fas Mapping.empty [] = (M, slp)"
     using old.prod.exhaust by blast
-  have M: "UNION (set fas) subterms \<subseteq> Mapping.keys M \<and>
+  have M: "\<Union>(subterms ` (set fas)) \<subseteq> Mapping.keys M \<and>
     Mapping.keys (Mapping.empty::(floatarith, nat) mapping) \<subseteq> Mapping.keys M \<and>
     (\<forall>f\<in>Mapping.keys M.
         subterms f \<subseteq> Mapping.keys M \<and>

@@ -811,7 +811,7 @@ proof (rule proj_setI)
     finally show ?thesis
       by (simp add: dist_commute)
   qed
-  have "dist y p \<le> INFIMUM A (dist y)"
+  have "dist y p \<le> Inf (dist y ` A)"
     apply (rule cINF_greatest) using \<open>p \<in> A\<close> * by auto
   then show "dist y p \<le> infdist y A"
     unfolding infdist_def using \<open>p \<in> A\<close> by auto

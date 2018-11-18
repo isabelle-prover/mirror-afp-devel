@@ -186,9 +186,8 @@ begin
   begin
 
     interpretation autoref_syn by this
-
     lemma [autoref_op_pat]: "(Some \<circ> f) |` X \<equiv> OP (\<lambda> f X. (Some \<circ> f) |` X) f X" by simp
-    lemma [autoref_op_pat]: "UNION S m \<equiv> OP UNION S m" by simp
+    lemma [autoref_op_pat]: "\<Union>(m ` S) \<equiv> OP (\<lambda>S m. \<Union>(m ` S)) S m" by simp
 
     definition gen_UNION where
       "gen_UNION tol emp un X f \<equiv> fold (un \<circ> f) (tol X) emp"
@@ -211,10 +210,10 @@ begin
       from IT' have 10: "S = set tsl'" "distinct tsl'" unfolding it_to_sorted_list_def by simp_all
       have "gen_UNION tol emp un T g = fold (un \<circ> g) (tol T) emp" unfolding gen_UNION_def by rule
       also have "(\<dots>, fold (union \<circ> f) tsl' {}) \<in> \<langle>B\<rangle> Rs3" by parametricity
-      also have "fold (union \<circ> f) tsl' X = UNION S f \<union> X" for X
+      also have "fold (union \<circ> f) tsl' X = \<Union>(f ` S) \<union> X" for X
         unfolding 10(1) by (induct tsl' arbitrary: X) (auto)
-      also have "UNION S f \<union> {} = UNION S f" by simp
-      finally show "(gen_UNION tol emp un T g, UNION S f) \<in> \<langle>B\<rangle> Rs3" by this
+      also have "\<Union>(f ` S) \<union> {} = \<Union>(f ` S)" by simp
+      finally show "(gen_UNION tol emp un T g, \<Union>(f ` S)) \<in> \<langle>B\<rangle> Rs3" by this
     qed
 
     definition gen_Image where

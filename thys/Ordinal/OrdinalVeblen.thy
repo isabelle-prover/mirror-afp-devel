@@ -190,7 +190,7 @@ lemma critical_set_oSuc_lemma:
 by (unfold critical_set_def, rule ordinal_rec0_oSuc)
 
 lemma omega_complete_INTER:
-"omega_complete (\<lambda>x y. y \<subseteq> x) (INTER UNIV)"
+"omega_complete (\<lambda>x y. y \<subseteq> x) (\<lambda>f. \<Inter> range f)"
  apply (rule omega_complete.intro)
   apply (rule porder.flip)
   apply (rule porder_order)

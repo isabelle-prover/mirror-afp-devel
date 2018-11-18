@@ -18,7 +18,7 @@ lemma infinite_inj_infinite_image: "infinite Z \<Longrightarrow> inj_on f Z \<Lo
 
 lemma infinite_dom_finite_rng: "[| infinite A; finite (f ` A) |] ==> \<exists>b \<in> f ` A. infinite {a : A. f a = b}"
   apply(rule ccontr) apply(simp)
-  apply(subgoal_tac "UNION A (\<lambda>b. {a : A. f a = f b}) = A") prefer 2 apply(blast)
+  apply(subgoal_tac "\<Union>((\<lambda>b. {a : A. f a = f b}) ` A) = A") prefer 2 apply(blast)
   apply(subgoal_tac "(UN c : f ` A. {a : A. f a = c})= (UN b:A. {a : A. f a = f b})") prefer 2 apply(blast)
   apply(subgoal_tac "finite (UN c:f ` A. {a : A. f a = c})") apply(force) 
   apply(rule finite_UN_I)

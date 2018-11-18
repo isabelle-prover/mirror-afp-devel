@@ -28,15 +28,15 @@ proof (simp, simp add: countably_additive_def measure_of_st_vec'_def disjoint_fa
   case (1 A)
   let ?x = "st_vec x" 
   define N where "N = {i. A i \<noteq> {}}" 
-  let ?A = "UNION N A" 
-  have "finite B \<Longrightarrow> B \<subseteq> ?A \<Longrightarrow> \<exists> K. finite K \<and> K \<subseteq> N \<and> B \<subseteq> UNION K A" for B
+  let ?A = "\<Union>(A ` N)" 
+  have "finite B \<Longrightarrow> B \<subseteq> ?A \<Longrightarrow> \<exists> K. finite K \<and> K \<subseteq> N \<and> B \<subseteq> \<Union>(A ` K)" for B
   proof (induct rule: finite_induct)
     case (insert b B)
-    from insert(3-4) obtain K where K: "finite K" "K \<subseteq> N" "B \<subseteq> UNION K A" by auto
+    from insert(3-4) obtain K where K: "finite K" "K \<subseteq> N" "B \<subseteq> \<Union>(A ` K)" by auto
     from insert(4) obtain a where a: "a \<in> N" "b \<in> A a" by auto
     show ?case by (intro exI[of _ "insert a K"], insert a K, auto)
   qed auto
-  from this[OF _ subset_refl] obtain K where *: "finite K" "K \<subseteq> N" "UNION K A = ?A" by auto
+  from this[OF _ subset_refl] obtain K where *: "finite K" "K \<subseteq> N" "\<Union>(A ` K) = ?A" by auto
   {
     assume "K \<subset> N" 
     then obtain n where **: "n \<in> N" "n \<notin> K" by auto
@@ -47,9 +47,9 @@ proof (simp, simp add: countably_additive_def measure_of_st_vec'_def disjoint_fa
     with *** a have False by auto
   }
   with * have fin: "finite N" by auto
-  have id: "UNION UNIV A = ?A" unfolding N_def by auto
+  have id: "\<Union>(A ` UNIV) = ?A" unfolding N_def by auto
   show "(\<Sum>i. ennreal (sum (($h) ?x) (A i))) =
-    ennreal (sum (($h) ?x) (UNION UNIV A))" unfolding id
+    ennreal (sum (($h) ?x) (\<Union>(A ` UNIV)))" unfolding id
     apply (subst suminf_finite[OF fin], (auto simp: N_def)[1])
     apply (subst sum_ennreal, (insert non_neg_vec_st_vec[of x], auto simp: non_neg_vec_def intro!: sum_nonneg)[1])
     apply (rule arg_cong[of _ _ ennreal])

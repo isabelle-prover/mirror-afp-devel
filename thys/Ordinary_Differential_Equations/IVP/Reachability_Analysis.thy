@@ -62,16 +62,16 @@ definition "sabove_halfspace sctn = Collect (gt_halfspace sctn)"
 subsection \<open>explicit H representation of polytopes (mind \<open>Polytopes.thy\<close>)\<close>
 
 definition below_halfspaces
-where "below_halfspaces sctns = INTER sctns below_halfspace"
+where "below_halfspaces sctns = \<Inter>(below_halfspace ` sctns)"
 
 definition sbelow_halfspaces
-where "sbelow_halfspaces sctns = INTER sctns sbelow_halfspace"
+where "sbelow_halfspaces sctns = \<Inter>(sbelow_halfspace ` sctns)"
 
 definition above_halfspaces
-where "above_halfspaces sctns = INTER sctns above_halfspace"
+where "above_halfspaces sctns = \<Inter>(above_halfspace ` sctns)"
 
 definition sabove_halfspaces
-where "sabove_halfspaces sctns = INTER sctns sabove_halfspace"
+where "sabove_halfspaces sctns = \<Inter>(sabove_halfspace ` sctns)"
 
 lemmas halfspace_simps =
   above_halfspace_def

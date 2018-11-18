@@ -452,7 +452,7 @@ txt{*\nopagebreak*}
       and g: "g = (\<lambda>t. (\<Sum>k\<in>K. z2 k * \<chi> (C k) t))" 
       and a: "a = (\<Sum>k\<in>K. z1 k * measure M (C k))" 
       and b: "b = (\<Sum>k\<in>K. z2 k * measure M (C k))" 
-      and Kun: "UNION K C = UNIV" and K: "finite K" 
+      and Kun: "\<Union>(C ` K) = UNIV" and K: "finite K" 
       by (auto simp add: ext)
 
     note f g a b K
@@ -511,7 +511,7 @@ proof -
     and a2: "a = (\<Sum>i\<in>K. z1 i * measure M (C i))"
     and b2: "b = (\<Sum>i\<in>K. z2 i * measure M (C i))"
     and CK: "finite K \<and> (\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {}) \<and> 
-    (\<forall>i\<in>K. C i \<in> measurable_sets M) \<and> UNION K C = UNIV"
+    (\<forall>i\<in>K. C i \<in> measurable_sets M) \<and> \<Union>(C ` K) = UNIV"
     and z1: "nonnegative z1" and z2: "nonnegative z2"
     by auto
  
@@ -566,7 +566,7 @@ proof - txt{*\nopagebreak*}
     and a2: "a = (\<Sum>i\<in>K. z1 i * measure M (C i))"
     and b2: "b = (\<Sum>i\<in>K. z2 i * measure M (C i))"
     and K: "finite K" and dis: "(\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {})" 
-    and Cms: "(\<forall>i\<in>K. C i \<in> measurable_sets M)" and Cun: "UNION K C = UNIV"
+    and Cms: "(\<forall>i\<in>K. C i \<in> measurable_sets M)" and Cun: "\<Union>(C ` K) = UNIV"
     by auto
 
   { fix i assume iK: "i \<in> K" 
@@ -1207,7 +1207,7 @@ proof -
     and a2: "a = (\<Sum>i\<in>K. z1 i * measure M (C i))"
     and b2: "b = (\<Sum>i\<in>K. z2 i * measure M (C i))"
     and CK: "finite K \<and> (\<forall>i\<in>K. \<forall>j\<in>K. i \<noteq> j \<longrightarrow> C i \<inter> C j = {}) \<and> 
-    (\<forall>i\<in>K. C i \<in> measurable_sets M) \<and> UNION K C = UNIV"
+    (\<forall>i\<in>K. C i \<in> measurable_sets M) \<and> \<Union>(C ` K) = UNIV"
     and z1: "nonnegative z1" and z2: "nonnegative z2"
     by auto
   { fix t

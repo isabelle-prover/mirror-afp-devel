@@ -272,10 +272,10 @@ instantiation dual :: (complete_lattice) complete_lattice
 begin
 
 definition
-  "Sup A \<equiv> dual (INFIMUM A undual)"
+  "Sup A \<equiv> dual (Inf (undual ` A))"
 
 definition
-  "Inf A \<equiv> dual (SUPREMUM A undual)"
+  "Inf A \<equiv> dual (Sup (undual ` A))"
 
 instance
 apply intro_classes
@@ -287,15 +287,15 @@ done
 end
 
 lemma SUP_dual_unfold:
-  "SUPREMUM A f = dual (INFIMUM A (undual \<circ> f))"
+  "Sup (f ` A) = dual (Inf ((undual \<circ> f) ` A))"
   by (simp add: Sup_dual_def)
 
 lemma INF_dual_unfold:
-  "INFIMUM A f = dual (SUPREMUM A (undual \<circ> f))"
+  "Inf (f ` A) = dual (Sup ((undual \<circ> f) ` A))"
   by (simp add: Inf_dual_def)
 
 text \<open>
-  Apparently, the \<open>\<Sqinter>\<close> and \<open>\<Squnion>\<close> operations are dual to each
+  Apparently, the \<open>Inf\<close> and \<open>Sup\<close> operations are dual to each
   other.
 \<close>
 

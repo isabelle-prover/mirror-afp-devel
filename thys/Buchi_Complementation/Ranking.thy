@@ -267,7 +267,7 @@ begin
       have "gsuccessors A w V v \<subseteq> gusuccessors A w v" by auto
       also have "finite \<dots>" using 2 assms(1, 3) finite_nodes_gsuccessors by blast
       finally have 4: "finite (gsuccessors A w V v)" by this
-      have 5: "infinite (insert v (UNION (gsuccessors A w V v) (greachable A w V)))"
+      have 5: "infinite (insert v (\<Union>((greachable A w V) ` (gsuccessors A w V v))))"
         using graph.reachable_step 3 by metis
       obtain u where 6: "u \<in> gsuccessors A w V v" "infinite (greachable A w V u)" using 4 5 by auto
       have 7: "u \<in> clean A w V" using 6 unfolding clean_def by auto

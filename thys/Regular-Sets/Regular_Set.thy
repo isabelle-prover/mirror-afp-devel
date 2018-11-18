@@ -65,8 +65,8 @@ and   "(A \<union> B) @@ C = A @@ C \<union> B @@ C"
 by auto
 
 lemma conc_UNION_distrib:
-shows "A @@ UNION I M = UNION I (%i. A @@ M i)"
-and   "UNION I M @@ A = UNION I (%i. M i @@ A)"
+shows "A @@ \<Union>(M ` I) = \<Union>((%i. A @@ M i) ` I)"
+and   "\<Union>(M ` I) @@ A = \<Union>((%i. M i @@ A) ` I)"
 by auto
 
 lemma conc_subset_lists: "A \<subseteq> lists S \<Longrightarrow> B \<subseteq> lists S \<Longrightarrow> A @@ B \<subseteq> lists S"
@@ -328,8 +328,8 @@ and   "A \<parallel> (B \<union> C) = A \<parallel> B \<union> A \<parallel> C"
 unfolding Shuffle_def by fast+
 
 lemma shuffle_UNION_distrib:
-shows "A \<parallel> UNION I M = UNION I (%i. A \<parallel> M i)"
-and   "UNION I M \<parallel> A = UNION I (%i. M i \<parallel> A)"
+shows "A \<parallel> \<Union>(M ` I) = \<Union>((%i. A \<parallel> M i) ` I)"
+and   "\<Union>(M ` I) \<parallel> A = \<Union>((%i. M i \<parallel> A) ` I)"
 unfolding Shuffle_def by fast+
 
 lemma Shuffle_empty[simp]:

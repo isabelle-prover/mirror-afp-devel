@@ -57,7 +57,7 @@ lemma adm_Ball[simp]: "adm (\<lambda>S. \<forall>x\<in>S. P x)"
 lemma finite_subset_chain:
   fixes Y :: "nat \<Rightarrow> 'a set"
   assumes "chain Y"
-  assumes "S \<subseteq> UNION UNIV Y"
+  assumes "S \<subseteq> \<Union>(Y ` UNIV)"
   assumes "finite S"
   shows "\<exists>i. S \<subseteq> Y i"
 proof-

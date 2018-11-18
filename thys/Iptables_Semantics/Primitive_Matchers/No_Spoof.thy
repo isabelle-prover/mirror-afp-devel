@@ -201,7 +201,7 @@ begin
             (if ?noDisc \<and> matcheq_matchAny rest2
              then if ip_matches = []
                   then UNIV
-                  else INTER (set ip_matches) (case_negation_type ipt_iprange_to_set (\<lambda>ip. - ipt_iprange_to_set ip))
+                  else \<Inter>((case_negation_type ipt_iprange_to_set (\<lambda>ip. - ipt_iprange_to_set ip) ` (set ip_matches)))
               else {})"
       unfolding get_all_matching_src_ips_def
       by(simp add: True select1 select2)
@@ -229,7 +229,7 @@ begin
         with get_all_matching_src_ips_caseTrue have "get_all_matching_src_ips iface m = 
             (if ip_matches = []
              then UNIV
-             else INTER (set ip_matches) (case_negation_type ipt_iprange_to_set (\<lambda>ip. - ipt_iprange_to_set ip)))" by presburger
+             else \<Inter>((case_negation_type ipt_iprange_to_set (\<lambda>ip. - ipt_iprange_to_set ip) ` (set ip_matches))))" by presburger
 
         from primitive_extractor_correct[OF assms wf_disc_sel_common_primitive(5) select1] have
           select1_matches: "matches ?\<gamma> (alist_and (NegPos_map IIface i_matches)) a p \<and> matches ?\<gamma> rest1 a p \<longleftrightarrow> matches ?\<gamma> m a p"

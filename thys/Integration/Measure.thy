@@ -43,7 +43,7 @@ definition
   "positive M \<longleftrightarrow> measure M {} = 0 \<and> 
   (\<forall>A. A\<in> measurable_sets M \<longrightarrow> 0 \<le> measure M A)"
   (*Remark: This definition of measure space is not minimal,
-  in the sense that the containment of the UNION in the measurable sets 
+  in the sense that the containment of the \<Union>(the ` in) measurable sets 
   is implied by the measurable sets being a sigma algebra*)
 
 definition
@@ -122,9 +122,9 @@ proof -
       fix r assume "\<And>i::nat. r i \<in> Q"
       then obtain r1 where im: "\<And>i. r1 i =  f -` r i" and a: "\<And>i. r1 i \<in>        a" 
         by (simp add: Q_def)
-      from a sig have "UNION UNIV r1 \<in> a" 
+      from a sig have "\<Union>(r1 ` UNIV) \<in> a" 
         by (auto simp only: sigma_algebra_def)
-      with im Q_def show "UNION UNIV r \<in> Q" 
+      with im Q_def show "\<Union>(r ` UNIV) \<in> Q" 
         by (auto simp add: vimage_UN)
     qed }
         

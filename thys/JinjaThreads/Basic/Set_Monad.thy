@@ -5,7 +5,7 @@ imports
 begin
 
 lemma member_SUP: (* FIXME delete candidate: should be subsumed by default simpset as soon as SUP_apply is included *)
-  "x \<in> UNION A f = (SUP B\<in>A. (\<lambda>x. x \<in> f B)) x"
+  "x \<in> \<Union>(f ` A) = (SUP B\<in>A. (\<lambda>x. x \<in> f B)) x"
   by auto
 
 abbreviation (input) "of_pred == Predicate.set_of_pred" (* FIXME delte alias *)

@@ -228,7 +228,7 @@ done
 
 lemma FAddSA_RootEx:
   "\<lbrakk> \<Union> (ran G) = F - {Root F G}; 
-     dom G = UNION F States; 
+     dom G = \<Union>(States ` F); 
      (dom G \<inter> States SA) = {}; S \<in> dom G; 
      RootEx F G \<rbrakk> \<Longrightarrow> RootEx (insert SA F) (G [f+] (S,SA))"
 apply (simp add: FAddSA_RootEx_def Int_commute cong: rev_conj_cong)
@@ -244,7 +244,7 @@ done
 
 lemma FAddSA_RootEx_Root: 
   "\<lbrakk> Union (ran G) = F - {Root F G};  
-     UNION F States = dom G; 
+     \<Union>(States ` F) = dom G; 
      (dom G \<inter> States SA) = {}; S \<in> dom G;
      RootEx F G \<rbrakk> \<Longrightarrow> (Root (insert SA F) (G [f+] (S,SA))) = (Root F G)"
 apply (simp add: FAddSA_Root_def Int_commute cong: rev_conj_cong)
@@ -254,7 +254,7 @@ done
 lemma FAddSA_OneAncestor:
   "\<lbrakk> \<Union> (ran G) = F - {Root F G}; 
      (dom G \<inter> States SA) = {}; S \<in> dom G; 
-     UNION F States = dom G; RootEx F G;
+     \<Union>(States ` F) = dom G; RootEx F G;
      OneAncestor F G \<rbrakk> \<Longrightarrow> OneAncestor (insert SA F) (G [f+] (S,SA))"
 apply (subst OneAncestor_def)
 apply simp
@@ -348,7 +348,7 @@ done
 
 lemma FAddSA_NoCycles:
   "\<lbrakk> (States SA \<inter> dom G) = {}; S \<in> dom G;
-     dom G = UNION F States; NoCycles F G \<rbrakk> \<Longrightarrow> 
+     dom G = \<Union>(States ` F); NoCycles F G \<rbrakk> \<Longrightarrow> 
      NoCycles  (insert SA F) (G [f+] (S,SA))"
 apply (unfold NoCycles_def)
 apply (rule ballI impI)+
@@ -388,8 +388,8 @@ apply auto
 done
 
 lemma FAddSA_IsCompFun:
- "\<lbrakk> (States SA \<inter> (UNION F States)) = {};
-     S \<in> (UNION F States); 
+ "\<lbrakk> (States SA \<inter> (\<Union>(States ` F))) = {};
+     S \<in> (\<Union>(States ` F)); 
      IsCompFun F G \<rbrakk> \<Longrightarrow>  IsCompFun (insert SA F) (G [f+] (S,SA))"
 apply (unfold IsCompFun_def)
 apply (erule conjE)+
@@ -403,15 +403,15 @@ apply (simp add: FAddSA_Union_ran)
 apply (case_tac "SA = Root F G")
 prefer 2
 apply blast
-apply (subgoal_tac "States (Root F G) \<subseteq>  UNION F States")
+apply (subgoal_tac "States (Root F G) \<subseteq>  \<Union>(States ` F)")
 apply simp
 apply (frule subset_lemma)
 apply auto
 done
 
 lemma FAddSA_HierAuto:
-  "\<lbrakk> (States SA \<inter> (UNION F States)) = {};
-      S \<in> (UNION F States); 
+  "\<lbrakk> (States SA \<inter> (\<Union>(States ` F))) = {};
+      S \<in> (\<Union>(States ` F)); 
       HierAuto D F E G \<rbrakk> \<Longrightarrow> HierAuto D (insert SA F) (E \<union> SAEvents SA) (G [f+] (S,SA))"
 apply (unfold HierAuto_def)
 apply auto

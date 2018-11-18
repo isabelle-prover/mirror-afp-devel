@@ -504,7 +504,7 @@ subsection \<open> Extended naturals \<close>
 lemma idiff_enat_eq_enat_iff: "x - enat n = enat m \<longleftrightarrow> (\<exists>k. x = enat k \<and> k - n = m)"
 by(cases x) simp_all
 
-lemma eSuc_SUP: "A \<noteq> {} \<Longrightarrow> eSuc (SUPREMUM A f) = (SUP x\<in>A. eSuc (f x))"
+lemma eSuc_SUP: "A \<noteq> {} \<Longrightarrow> eSuc (\<Squnion>(f ` A)) = (SUP x\<in>A. eSuc (f x))"
 by(subst eSuc_Sup)(simp_all)
 
 lemma ereal_of_enat_1: "ereal_of_enat 1 = ereal 1"

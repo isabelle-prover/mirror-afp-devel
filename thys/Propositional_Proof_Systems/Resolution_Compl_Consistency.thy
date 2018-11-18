@@ -4,7 +4,7 @@ begin
  
 lemma OrI2': "(\<not>P \<Longrightarrow> Q) \<Longrightarrow> P \<or> Q" by auto
     
-lemma atomD: "Atom k \<in> S \<Longrightarrow> {Pos k} \<in> UNION S cnf" "Not (Atom k) \<in> S \<Longrightarrow> {Neg k} \<in> UNION S cnf" by force+
+lemma atomD: "Atom k \<in> S \<Longrightarrow> {Pos k} \<in> \<Union>(cnf ` S)" "Not (Atom k) \<in> S \<Longrightarrow> {Neg k} \<in> \<Union>(cnf ` S)" by force+
       
 lemma pcp_disj: (* this is the same as for LSC \<Rightarrow> Res. but I don't want to make the proof of that too, so I'm keeping my code duplication *)
  "\<lbrakk>F \<^bold>\<or> G \<in> \<Gamma>; (\<forall>xa. (xa = F \<or> xa \<in> \<Gamma>) \<longrightarrow> is_cnf xa) \<longrightarrow> (cnf F \<union> (\<Union>x\<in>\<Gamma>. cnf x) \<turnstile> \<box>); (\<forall>xa. (xa = G \<or> xa \<in> \<Gamma>) \<longrightarrow> is_cnf xa) \<longrightarrow> (cnf G \<union> (\<Union>x\<in>\<Gamma>. cnf x) \<turnstile> \<box>); \<forall>x\<in>\<Gamma>. is_cnf x\<rbrakk>

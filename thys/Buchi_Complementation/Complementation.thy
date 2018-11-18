@@ -12,14 +12,14 @@ begin
 
   definition lr_succ :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state lr \<Rightarrow> 'state lr set" where
     "lr_succ A a f \<equiv> {g.
-      dom g = UNION (dom f) (succ A a) \<and>
+      dom g = \<Union>((succ A a) ` (dom f)) \<and>
       (\<forall> p \<in> dom f. \<forall> q \<in> succ A a p. the (g q) \<le> the (f p)) \<and>
       (\<forall> q \<in> dom g. accepting A q \<longrightarrow> even (the (g q)))}"
 
   type_synonym 'state st = "'state set"
 
   definition st_succ :: "('label, 'state) nba \<Rightarrow> 'label \<Rightarrow> 'state lr \<Rightarrow> 'state st \<Rightarrow> 'state st" where
-    "st_succ A a g P \<equiv> {q \<in> if P = {} then dom g else UNION P (succ A a). even (the (g q))}"
+    "st_succ A a g P \<equiv> {q \<in> if P = {} then dom g else \<Union>((succ A a) ` P). even (the (g q))}"
 
   type_synonym 'state cs = "'state lr \<times> 'state st"
 
@@ -54,7 +54,7 @@ begin
       using execute(3)
       unfolding 1 3 complement_def nba.simps complement_succ_def lr_succ_def
       by simp
-    have 8: "dom g = UNION (dom f) (succ A a)"
+    have 8: "dom g = \<Union>((succ A a) ` (dom f))"
       using execute(3)
       unfolding 1 3 complement_def nba.simps complement_succ_def lr_succ_def
       by simp
@@ -86,7 +86,7 @@ begin
     have 11: "a \<in> alphabet A" using execute(3) unfolding 3 complement_def by auto
     have 10: "(g, Q) \<in> nodes (complement A)" using execute(1, 3) unfolding 1 3 by auto
     have 4: "dom g \<subseteq> nodes A" using dom_nodes[OF 10] by simp
-    have 5: "UNION P (succ A a) \<subseteq> nodes A" using 2 11 by auto
+    have 5: "\<Union>((succ A a) ` P) \<subseteq> nodes A" using 2 11 by auto
     have 6: "Q \<subseteq> nodes A"
       using execute(3)
       unfolding 1 3 complement_def nba.simps complement_succ_def st_succ_def
@@ -314,7 +314,7 @@ begin
   qed
   lemma reach_Suc_succ:
     assumes "w !! n \<in> alphabet A"
-    shows "reach A w (Suc n) = UNION (reach A w n) (succ A (w !! n))"
+    shows "reach A w (Suc n) = \<Union>((succ A (w !! n) ` (reach A w n)))"
   proof safe
     fix q
     assume 1: "q \<in> reach A w (Suc n)"
@@ -330,7 +330,7 @@ begin
       by (metis append_eq_conv_conj append_is_Nil_conv append_take_drop_id drop_map
         length_greater_0_conv length_stake stake_cycle_le stake_invert_Nil
         take_map zip_Cons_Cons zip_map_fst_snd)
-    show "q \<in> UNION (reach A w n) (succ A (w !! n))"
+    show "q \<in> \<Union>((succ A (w !! n) ` (reach A w n)))"
     unfolding reach_def
     proof (intro UN_I CollectI exI conjI)
       show "target (take n r) p = target (take n r) p" by rule
@@ -356,7 +356,7 @@ begin
     qed
   qed
   lemma reach_Suc[simp]: "reach A w (Suc n) = (if w !! n \<in> alphabet A
-    then UNION (reach A w n) (succ A (w !! n)) else {})"
+    then \<Union>((succ A (w !! n) ` (reach A w n))) else {})"
     using reach_Suc_empty reach_Suc_succ by metis
   lemma reach_nodes: "reach A w i \<subseteq> nodes A" by (induct i) (auto)
   lemma reach_gunodes: "{i} \<times> reach A w i \<subseteq> gunodes A w"
@@ -478,7 +478,7 @@ begin
         proof (rule ccontr)
           assume 20: "\<not> (\<forall> n. \<exists> k \<ge> n. P k = {})"
           obtain k where 22: "P (k + n) \<noteq> {}" for n using 20 using le_add1 by blast
-          define m where "m n S \<equiv> {p \<in> UNION S (succ A (w !! n)). even (the (g (Suc n) p))}" for n S
+          define m where "m n S \<equiv> {p \<in> \<Union>((succ A (w !! n) ` S)). even (the (g (Suc n) p))}" for n S
           define R where "R i n S \<equiv> rec_nat S (\<lambda> i. m (n + i)) i" for i n S
           have R_0[simp]: "R 0 n = id" for n unfolding R_def by auto
           have R_Suc[simp]: "R (Suc i) n = m (n + i) \<circ> R i n" for i n unfolding R_def by auto
@@ -500,14 +500,14 @@ begin
           proof (rule ccontr)
             assume 1: "\<not> (\<exists> p \<in> S. \<forall> i. R i n {p} \<noteq> {})"
             obtain f where 3: "\<And> p. p \<in> S \<Longrightarrow> R (f p) n {p} = {}" using 1 by metis
-            have 4: "R (SUPREMUM S f) n {p} = {}" if "p \<in> S" for p
+            have 4: "R (Sup (f ` S)) n {p} = {}" if "p \<in> S" for p
             proof (rule 52)
-              show "f p \<le> SUPREMUM S f" using le_cSup_finite assms(1) that by auto
+              show "f p \<le> Sup (f ` S)" using le_cSup_finite assms(1) that by auto
               show "R (f p) n {p} = {}" using 3 that by this
             qed
-            have "R (SUPREMUM S f) n S = (\<Union> p \<in> S. R (SUPREMUM S f) n {p})" using 50 by this
+            have "R (Sup (f ` S)) n S = (\<Union> p \<in> S. R (Sup (f ` S)) n {p})" using 50 by this
             also have "\<dots> = {}" using 4 by simp
-            finally have 5: "R (SUPREMUM S f) n S = {}" by this
+            finally have 5: "R (Sup (f ` S)) n S = {}" by this
             show "False" using that(2) 5 by auto
           qed
           have 2: "\<And> i. R i (k + 0) (P k) \<noteq> {}" using 22 P_R by simp

@@ -1626,7 +1626,7 @@ proof-
   hence "min (f x) (Liminf (at x) f) < \<infinity>" unfolding domain_def using lsc_hull_liminf_at[of f] by auto
   then obtain z where z_def: "min (f x) (Liminf (at x) f) < z \<and> z < \<infinity>" by (metis dense)
   { fix e::real assume "e>0"
-    hence "INFIMUM (ball x e) f \<le> min (f x) (Liminf (at x) f)"
+    hence "Inf (f ` ball x e) \<le> min (f x) (Liminf (at x) f)"
       unfolding min_Liminf_at apply (subst SUP_upper) by auto
     hence "\<exists>y. y \<in> ball x e \<and> f y \<le> z"
       using Inf_le_iff_less [of f "ball x e" "min (f x) (Liminf (at x) f)"] z_def by (auto simp add: Bex_def)

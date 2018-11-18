@@ -162,7 +162,7 @@ lemma Derivs_alt_def: "Derivs w L = fold Deriv w L"
 interpretation language: rexp_DFA lang Deriv "\<lambda>L. [] \<in> L" id
 proof (unfold_locales, goal_cases)
   case (4 s)
-  have "{fold Deriv w (lang s) |w. True} \<subseteq> (\<lambda>X. UNION X lang) ` Pow (pderivs_lang UNIV s)"
+  have "{fold Deriv w (lang s) |w. True} \<subseteq> (\<lambda>X. \<Union>(lang ` X)) ` Pow (pderivs_lang UNIV s)"
     by (auto simp: sym[OF Derivs_alt_def] Derivs_pderivs pderivs_lang_def)
   then show ?case by (rule finite_surj[OF iffD2[OF finite_Pow_iff finite_pderivs_lang_UNIV]])
 qed simp_all

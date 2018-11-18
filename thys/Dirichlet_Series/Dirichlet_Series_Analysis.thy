@@ -70,17 +70,17 @@ class nat_power_normed_field = nat_power_field + real_normed_field + real_inner 
   assumes norm_real_power: "x > 0 \<Longrightarrow> norm (real_power x c) = x powr (c \<bullet> 1)"
   assumes nat_power_of_real_aux: "nat_power n (x *\<^sub>R 1) = ((real n powr x) *\<^sub>R 1)"
   assumes has_field_derivative_nat_power_aux:
-            "\<And>x::'a. n > 0 \<Longrightarrow> filterlim (\<lambda>y. (nat_power n y - nat_power n x -
-               ln (real n) *\<^sub>R nat_power n x * (y - x)) /\<^sub>R norm (y - x)) 
-             (INFIMUM {S. open S \<and> 0 \<in> S} principal) 
-             (inf_class.inf (INFIMUM {S. open S \<and> x \<in> S} principal) (principal (UNIV - {x})))"
+            "\<And>x::'a. n > 0 \<Longrightarrow> LIM y inf_class.inf
+              (Inf (principal ` {S. open S \<and> x \<in> S})) (principal (UNIV - {x})).
+                (nat_power n y - nat_power n x - ln (real n) *\<^sub>R nat_power n x * (y - x)) /\<^sub>R
+                norm (y - x) :> Inf (principal ` {S. open S \<and> 0 \<in> S})"
   assumes has_vector_derivative_real_power_aux:
             "x > 0 \<Longrightarrow> filterlim (\<lambda>y. (real_power y c - real_power x (c :: 'a) -
                (y - x) *\<^sub>R (c * real_power x (c - 1))) /\<^sub>R
                norm (y - x)) (INF S\<in>{S. open S \<and> 0 \<in> S}. principal S) (at x)"
   assumes norm_nat_power: "n > 0 \<Longrightarrow> norm (nat_power n y) = real n powr (y \<bullet> 1)"
 begin
- 
+
 lemma real_power_diff: "d > 0 \<Longrightarrow> real_power d (a - b) = real_power d a / real_power d b"
   using real_power_add[of d b "a - b"] by (simp add: field_simps)
 
@@ -155,9 +155,9 @@ next
   fix n :: nat and x :: complex assume n: "n > 0"
   hence "((\<lambda>x. nat_power n x) has_field_derivative ln (real n) *\<^sub>R nat_power n x) (at x)"
     by (auto intro!: derivative_eq_intros simp: powr_def scaleR_conv_of_real mult_ac Ln_of_nat)
-  thus "LIM y inf_class.inf (INFIMUM {S. open S \<and> x \<in> S} principal) (principal (UNIV - {x})).
+  thus "LIM y inf_class.inf (Inf (principal ` {S. open S \<and> x \<in> S})) (principal (UNIV - {x})).
            (nat_power n y - nat_power n x - ln (real n) *\<^sub>R nat_power n x * (y - x)) /\<^sub>R
-           cmod (y - x) :> INFIMUM {S. open S \<and> 0 \<in> S} principal"
+           cmod (y - x) :> (Inf (principal ` {S. open S \<and> 0 \<in> S}))"
     unfolding has_field_derivative_def netlimit_at has_derivative_def
     by (simp add: nhds_def at_within_def)
 next

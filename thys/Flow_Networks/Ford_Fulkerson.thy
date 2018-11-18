@@ -48,11 +48,11 @@ proof -
       by (rule sum.union_disjoint[symmetric]) (auto simp: outgoing'_def)
     also have "outgoing' k \<union> ?LCL = (\<Union>y\<in>k-{s}. outgoing y) \<union> outgoing s"
       by (auto simp: outgoing_def outgoing'_def s_in_cut)
-    also have "(\<Sum>e\<in>(UNION (k - {s}) outgoing \<union> outgoing s). f e) 
-      = (\<Sum>e\<in>(UNION (k - {s}) outgoing). f e) + (\<Sum>e\<in>outgoing s. f e)"  
+    also have "(\<Sum>e\<in>(\<Union>(outgoing ` (k - {s})) \<union> outgoing s). f e) 
+      = (\<Sum>e\<in>(\<Union>(outgoing ` (k - {s}))). f e) + (\<Sum>e\<in>outgoing s. f e)"  
       by (rule sum.union_disjoint) 
          (auto simp: outgoing_def intro: finite_Image)
-    also have "(\<Sum>e\<in>(UNION (k - {s}) outgoing). f e) 
+    also have "(\<Sum>e\<in>(\<Union>(outgoing ` (k - {s}))). f e) 
       = (\<Sum>y \<in> k - {s}. ?SOG y)"
       by (rule sum.UNION_disjoint)
          (auto simp: outgoing_def intro: finite_Image)
@@ -64,11 +64,11 @@ proof -
       by (rule sum.union_disjoint[symmetric]) (auto simp: incoming'_def)
     also have "incoming' k \<union> ?LCL = (\<Union>y\<in>k-{s}. incoming y) \<union> incoming s"
       by (auto simp: incoming_def incoming'_def s_in_cut)
-    also have "(\<Sum>e\<in>(UNION (k - {s}) incoming \<union> incoming s). f e) 
-      = (\<Sum>e\<in>(UNION (k - {s}) incoming). f e) + (\<Sum>e\<in>incoming s. f e)"  
+    also have "(\<Sum>e\<in>(\<Union>(incoming ` (k - {s})) \<union> incoming s). f e) 
+      = (\<Sum>e\<in>(\<Union>(incoming ` (k - {s}))). f e) + (\<Sum>e\<in>incoming s. f e)"  
       by (rule sum.union_disjoint) 
          (auto simp: incoming_def intro: finite_Image)
-    also have "(\<Sum>e\<in>(UNION (k - {s}) incoming). f e) 
+    also have "(\<Sum>e\<in>(\<Union>(incoming ` (k - {s}))). f e) 
       = (\<Sum>y \<in> k - {s}. ?SIN y)"
       by (rule sum.UNION_disjoint)
          (auto simp: incoming_def intro: finite_Image)

@@ -272,10 +272,10 @@ instantiation dual :: (complete_lattice) complete_lattice
 begin
 
 definition
-  "Sup A = dual (INFIMUM A undual)"
+  "Sup A = dual (Inf (undual ` A))"
 
 definition
-  "Inf A = dual (SUPREMUM A undual)"
+  "Inf A = dual (Sup (undual ` A))"
 
 instance
   by standard (auto simp: less_eq_dual_def less_dual_def Sup_dual_def Inf_dual_def
@@ -284,30 +284,30 @@ instance
 end
 
 lemma SUP_dual_unfold:
-  "SUPREMUM A f = dual (INFIMUM A (undual \<circ> f))"
+  "Sup (f ` A) = dual (Inf ((undual \<circ> f) ` A))"
   by (simp add: Sup_dual_def)
 
 lemma INF_dual_unfold:
-  "INFIMUM A f = dual (SUPREMUM A (undual \<circ> f))"
+  "Inf (f ` A) = dual (Sup ((undual \<circ> f) ` A))"
   by (simp add: Inf_dual_def)
 
 text \<open>
-  Apparently, the \<open>\<Sqinter>\<close> and \<open>\<Squnion>\<close> operations are dual to each
+  Apparently, the \<open>Inf\<close> and \<open>Sup\<close> operations are dual to each
   other.
 \<close>
 
-theorem dual_Inf [intro?]: "dual (Inf A) = SUPREMUM A dual"
+theorem dual_Inf [intro?]: "dual (Inf A) = Sup (dual ` A)"
   by (simp add: Inf_dual_def Sup_dual_def)
 (* BH: Why not [simp]? *)
 
-theorem dual_Sup [intro?]: "dual (Sup A) = INFIMUM A dual"
+theorem dual_Sup [intro?]: "dual (Sup A) = Inf (dual ` A)"
   by (simp add: Inf_dual_def Sup_dual_def)
 (* BH: Why not [simp]? *)
 
-lemma undual_Inf: "undual (Inf A) = SUPREMUM A undual"
+lemma undual_Inf: "undual (Inf A) = Sup (undual ` A)"
   by (simp add: Inf_dual_def)
 
-lemma undual_Sup: "undual (Sup A) = INFIMUM A undual"
+lemma undual_Sup: "undual (Sup A) = Inf (undual ` A)"
   by (simp add: Sup_dual_def)
 
 theorem dual_Inf' [iff?]:

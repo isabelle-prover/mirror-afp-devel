@@ -606,7 +606,7 @@ lemma halfspaces_empty[simp]: "sbelow_halfspaces {} = UNIV" "below_halfspaces {}
 
 lemma halfspaces_planeI:
   assumes "x \<in> below_halfspaces (s)"
-  assumes "x \<notin> UNION (s) plane_of"
+  assumes "x \<notin> \<Union>(plane_of ` (s))"
   shows "x \<in> sbelow_halfspaces (s)"
   using assms
   by (force simp: halfspace_simps plane_of_def)
@@ -715,7 +715,7 @@ definition [refine_vcg_def]: "inter_sctn_spec X sctn = SPEC (\<lambda>R. X \<int
 
 definition [refine_vcg_def]: "intersects_spec X sctn = SPEC (\<lambda>b. b \<or> X \<inter> plane_of sctn = {})"
 
-definition [refine_vcg_def]: "intersects_sctns_spec X sctns = SPEC (\<lambda>b. b \<or> X \<inter> UNION sctns plane_of = {})"
+definition [refine_vcg_def]: "intersects_sctns_spec X sctns = SPEC (\<lambda>b. b \<or> X \<inter> \<Union>(plane_of ` sctns) = {})"
 
 definition [refine_vcg_def]: "reduce_spec (C::'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool) X = SPEC (\<lambda>R. X \<subseteq> R)"
 definition [refine_vcg_def]: "reduce_specs d (C::'b list \<Rightarrow> nat \<Rightarrow> real list \<Rightarrow> bool) X = SPEC (\<lambda>R. env_len R d \<and> X \<subseteq> R)"
@@ -2353,7 +2353,7 @@ lemma ivl_to_set[autoref_rules]:
     done
   done
 
-lemma clw_rel_br: "clw_rel (br a I) = br (\<lambda>xs. UNION (set xs) a) (\<lambda>xs. Ball (set xs) I)"
+lemma clw_rel_br: "clw_rel (br a I) = br (\<lambda>xs. \<Union>(a ` (set xs))) (\<lambda>xs. Ball (set xs) I)"
   unfolding lw_rel_def Union_rel_br by simp
 
 lemma ivl_rel_br: "\<langle>br a I\<rangle>ivl_rel = br (\<lambda>(x, y). set_of_ivl (a x, a y)) (\<lambda>(x, y). I x \<and> I y)"
@@ -2905,7 +2905,7 @@ lemma fold_set_of_ivl:
   fixes i s::"'a::executable_euclidean_space"
   assumes "\<And>i s. (i, s) \<in> set xs \<Longrightarrow> i \<le> s"
   assumes "i \<le> s"
-  shows "UNION (insert (i,s) (set xs)) set_of_ivl \<subseteq>
+  shows "\<Union> (set_of_ivl ` insert (i, s) (set xs)) \<subseteq>
       set_of_ivl (fold (\<lambda>(i1, s1) (i2, s2). (inf i1 i2, sup s1 s2)) xs (i, s))"
   using assms
 proof (induction xs arbitrary: i s)

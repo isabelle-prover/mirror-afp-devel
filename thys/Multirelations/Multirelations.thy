@@ -430,11 +430,11 @@ proof
     assume a1: "\<exists>B. (a, B) \<in> x \<and> B \<noteq> {} \<and> (\<exists>f. (\<forall>b\<in>B. f b \<noteq> {}) \<and> b = (\<Union>x\<in>B. f x))"
     { fix bb :: "'b set \<Rightarrow> 'b set \<Rightarrow> 'b set \<Rightarrow> ('b \<Rightarrow> 'b set) \<Rightarrow> 'b"
       obtain BB :: "'b set" and BBa :: "'b \<Rightarrow> 'b set" where
-        ff1: "(a, BB) \<in> x \<and> {} \<noteq> BB \<and> (\<forall>b. b \<notin> BB \<or> {} \<noteq> BBa b) \<and> UNION BB BBa = b"
+        ff1: "(a, BB) \<in> x \<and> {} \<noteq> BB \<and> (\<forall>b. b \<notin> BB \<or> {} \<noteq> BBa b) \<and> \<Union>(BBa ` BB) = b"
         by (metis (full_types) a1)
       hence "\<forall>B. (\<Union>b\<in>BB. (B::'b set)) = B"
         by force
-      hence "\<exists>B Ba. B \<union> Ba = b \<and> (\<exists>Bb. (a, Bb) \<in> x \<and> {} \<noteq> Bb \<and> (\<exists>f. (bb B Ba Bb f \<notin> Bb \<or> {} = f (bb B Ba Bb f)) \<and> UNION Bb f = B)) \<and> {} \<noteq> Ba"
+      hence "\<exists>B Ba. B \<union> Ba = b \<and> (\<exists>Bb. (a, Bb) \<in> x \<and> {} \<noteq> Bb \<and> (\<exists>f. (bb B Ba Bb f \<notin> Bb \<or> {} = f (bb B Ba Bb f)) \<and> \<Union>(f ` Bb) = B)) \<and> {} \<noteq> Ba"
         by (metis ff1 SUP_bot_conv(2) sup_bot.left_neutral) }
     thus "\<exists>B Ba. b = B \<union> Ba \<and> (\<exists>Ba. (a, Ba) \<in> x \<and> Ba \<noteq> {} \<and> (\<exists>f. (\<forall>b\<in>Ba. f b = {}) \<and> B = (\<Union>b\<in>Ba. f b))) \<and> Ba \<noteq> {}"
       by metis

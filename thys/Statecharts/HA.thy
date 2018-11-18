@@ -254,7 +254,7 @@ done
 subsubsection {* @{text "HAEvents"} *}
 
 lemma HAEvents_SAEvents_SAs:
-  "UNION (SAs HA) SAEvents \<subseteq> HAEvents HA"
+  "\<Union>(SAEvents ` (SAs HA)) \<subseteq> HAEvents HA"
 apply (cut_tac Rep_hierauto_select)
 apply (unfold hierauto_def HierAuto_def)
 apply fast
@@ -1012,7 +1012,7 @@ apply auto
 done
 
 lemma ChiPlus_subset_States:
-  "ChiPlus a `` {t} \<subseteq>  UNION (SAs a) States"
+  "ChiPlus a `` {t} \<subseteq>  \<Union>(States ` (SAs a))"
 apply (cut_tac A=a in ChiPlus_HAStates) 
 apply (unfold HAStates_def)
 apply auto

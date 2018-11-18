@@ -66,8 +66,8 @@ and   "(A \<union> B) @@ C = A @@ C \<union> B @@ C"
   by auto
 
 lemma conc_UNION_distrib:
-shows "A @@ UNION I M = UNION I (%i. A @@ M i)"
-and   "UNION I M @@ A = UNION I (%i. M i @@ A)"
+shows "A @@ \<Union>(M ` I) = \<Union>((%i. A @@ M i) ` I)"
+and   "\<Union>(M ` I) @@ A = \<Union>((%i. M i @@ A) ` I)"
   by auto
 
 lemma hom_image_conc: "\<lbrakk>\<And>xs ys. f (xs @ ys) = f xs @ f ys\<rbrakk> \<Longrightarrow> f ` (A @@ B) = f ` A @@ f ` B"

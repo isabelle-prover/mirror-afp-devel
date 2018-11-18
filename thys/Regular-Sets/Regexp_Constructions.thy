@@ -81,7 +81,7 @@ lemma Suffixes_conc [simp]: "A \<noteq> {} \<Longrightarrow> Suffixes (A @@ B) =
 lemma Suffixes_union [simp]: "Suffixes (A \<union> B) = Suffixes A \<union> Suffixes B"
   by (auto simp: Suffixes_def)
   
-lemma Suffixes_UNION [simp]: "Suffixes (UNION A f) = UNION A (\<lambda>x. Suffixes (f x))"
+lemma Suffixes_UNION [simp]: "Suffixes (\<Union>(f ` A)) = \<Union>((\<lambda>x. Suffixes (f x)) ` A)"
   by (auto simp: Suffixes_def)
 
 lemma Suffixes_compower: 
@@ -143,7 +143,7 @@ lemma Prefixes_conc [simp]: "B \<noteq> {} \<Longrightarrow> Prefixes (A @@ B) =
 lemma Prefixes_union [simp]: "Prefixes (A \<union> B) = Prefixes A \<union> Prefixes B"
   by (auto simp: Prefixes_def)
   
-lemma Prefixes_UNION [simp]: "Prefixes (UNION A f) = UNION A (\<lambda>x. Prefixes (f x))"
+lemma Prefixes_UNION [simp]: "Prefixes (\<Union>(f ` A)) = \<Union>((\<lambda>x. Prefixes (f x)) ` A)"
   by (auto simp: Prefixes_def)
 
 
@@ -201,7 +201,7 @@ lemma Sublists_insert: "Sublists (insert w A) = set (sublists w) \<union> Sublis
 lemma Sublists_Un [simp]: "Sublists (A \<union> B) = Sublists A \<union> Sublists B"
   by (auto simp: Sublists_altdef)
 
-lemma Sublists_UN [simp]: "Sublists (UNION A f) = UNION A (\<lambda>x. Sublists (f x))"
+lemma Sublists_UN [simp]: "Sublists (\<Union>(f ` A)) = \<Union>((\<lambda>x. Sublists (f x)) ` A)"
   by (auto simp: Sublists_altdef)
 
 lemma Sublists_conv_Prefixes: "Sublists A = Prefixes (Suffixes A)"
@@ -249,7 +249,7 @@ lemma Subseqs_singleton [simp]: "Subseqs {xs} = set (subseqs xs)"
 lemma Subseqs_Un [simp]: "Subseqs (A \<union> B) = Subseqs A \<union> Subseqs B"
   by (simp add: Subseqs_def)
     
-lemma Subseqs_UNION [simp]: "Subseqs (UNION A f) = UNION A (\<lambda>x. Subseqs (f x))"
+lemma Subseqs_UNION [simp]: "Subseqs (\<Union>(f ` A)) = \<Union>((\<lambda>x. Subseqs (f x)) ` A)"
   by (simp add: Subseqs_def)
   
 lemma Subseqs_conc [simp]: "Subseqs (A @@ B) = Subseqs A @@ Subseqs B"

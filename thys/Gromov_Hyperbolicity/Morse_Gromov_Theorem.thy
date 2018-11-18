@@ -987,7 +987,7 @@ proof -
         using dense_ge by blast
       then show ?thesis by simp
     qed
-    have "D - K \<le> INFIMUM H (dist (f t))"
+    have "D - K \<le> Inf (dist (f t) ` H)"
       apply (rule cInf_greatest) using * H(1) by auto
     then show "D - K \<le> infdist (f t) H"
       apply (subst infdist_notempty) using H(1) by auto

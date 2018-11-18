@@ -64,7 +64,8 @@ proof -
   have bddfg:"bdd_above((\<lambda>x. f x + g x ) ` R)" 
     using bddf bddg apply (auto simp add: bdd_above_def)
     using add_mono_thms_linordered_semiring(1) by blast
-  have eq:"(SUPREMUM R (\<lambda>x. f x + g x) \<le> (SUP x\<in>R. f x) + (SUP x\<in>R. g x)) = (\<forall>x\<in>R. (f x + g x) \<le> (SUP x\<in>R. f x) + (SUP x\<in>R. g x))"
+  have eq:"(SUP x\<in>R. f x + g x) \<le> (SUP x\<in>R. f x) + (SUP x\<in>R. g x)
+    \<longleftrightarrow> (\<forall>x\<in>R. (f x + g x) \<le> (SUP x\<in>R. f x) + (SUP x\<in>R. g x))"
     apply(rule cSUP_le_iff)
      subgoal by (rule nonempty)
     subgoal by (rule bddfg)

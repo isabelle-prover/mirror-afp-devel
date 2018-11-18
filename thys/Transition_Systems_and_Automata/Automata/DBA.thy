@@ -67,7 +67,7 @@ begin
   (* TODO: extract acceptance into constant, have special case for empty set, remove assumption *)
   definition dbai :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list \<times> nat) dba" where
     "dbai AA \<equiv> dba
-      (INTER (set AA) alphabet)
+      (\<Inter>(alphabet ` (set AA)))
       (map initial AA, 0)
       (\<lambda> a (pp, k). (map2 (\<lambda> A p. succ A a p) AA pp,
         if accepting (AA ! k) (pp ! k) then Suc k mod length AA else k))
@@ -324,7 +324,7 @@ begin
 
   lemma dbai_language:
     assumes "AA \<noteq> []"
-    shows "language (dbai AA) = INTER (set AA) language"
+    shows "language (dbai AA) = \<Inter>(language ` (set AA))"
   proof safe
     fix w A
     assume 1: "w \<in> language (dbai AA)" "A \<in> set AA"
@@ -349,7 +349,7 @@ begin
     qed
   next
     fix w
-    assume 1: "w \<in> INTER (set AA) language"
+    assume 1: "w \<in> \<Inter>(language ` (set AA))"
     have 2: "run A w (initial A)" "infs (accepting A) (trace A w (initial A))"
       if "A \<in> set AA" for A using 1 that by auto
     obtain pp k where 3: "initial (dbai AA) = (pp, k)" by force

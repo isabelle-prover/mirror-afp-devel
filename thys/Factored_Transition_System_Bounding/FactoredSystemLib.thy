@@ -28,7 +28,7 @@ on `union\_lemma` (finite\_mapScript.sml:756)
 
   !\^fmap g.
      ?union.
-       (FDOM union = FDOM f UNION FDOM g) /\
+       (FDOM union = FDOM f \<Union>(g ` FDOM)) /\
        (!x. FAPPLY union x = if x IN FDOM f then FAPPLY f x else FAPPLY g x)
   
 The ltr semantics are also reflected in [Abdulaziz et al., Definition 2, p.9].
@@ -66,7 +66,7 @@ definition action_dom where
 
 \<comment> \<open>NOTE lemma `action\_dom\_pair` 
 
-  action\_dom a = FDOM (FST a) UNION FDOM (SND a)
+  action\_dom a = FDOM (FST a) \<Union>((SND a) ` FDOM)
 
 was removed because the curried definition of `action\_dom` in the translation makes it redundant.\<close>
 

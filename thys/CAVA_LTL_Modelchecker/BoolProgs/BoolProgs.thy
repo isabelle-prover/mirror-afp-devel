@@ -218,7 +218,7 @@ proof (cases "bp ! pc")
     case False with ChoiceI assms obtain b i where 
       bi: "bval b s" "(b,i) \<in> set l" "pc' = nat(int(pc+1)+i)"
       by (auto split: if_split_asm)
-    with ChoiceI assms have "i \<in> UNION (set bp) offsets" by (force dest: nth_mem)
+    with ChoiceI assms have "i \<in> \<Union>(offsets ` (set bp))" by (force dest: nth_mem)
     with bi assms have "\<exists>a. (a \<in> max_next_pcs bp \<and> pc' \<le> a)"
       unfolding max_next_pcs_def offsets_is_def by force
     thus ?thesis 

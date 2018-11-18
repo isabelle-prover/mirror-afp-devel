@@ -188,8 +188,8 @@ text\<open>Note that there is an extension to Craig interpolation:
 One can show that atoms that only appear positively/negatively in the original formulas will only appear
 positively/negatively in the interpolant. \<close>
 
-abbreviation "patoms_mset S \<equiv> (UNION (set_mset S) (\<lambda>F. fst (pn_atoms F)))"
-abbreviation "natoms_mset S \<equiv> (UNION (set_mset S) (\<lambda>F. snd (pn_atoms F)))"
+abbreviation "patoms_mset S \<equiv> \<Union>F\<in>set_mset S. fst (pn_atoms F)"
+abbreviation "natoms_mset S \<equiv> \<Union>F\<in>set_mset S. snd (pn_atoms F)"
 
 theorem SC_Craig_interpolation_pn:
   assumes "\<Gamma> + \<Gamma>' \<Rightarrow> \<Delta> + \<Delta>'"

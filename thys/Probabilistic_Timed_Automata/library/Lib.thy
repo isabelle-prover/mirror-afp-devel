@@ -139,7 +139,7 @@ lemma list_hd_lastD:
 lemma SUP_eq_and_INF_eq:
   assumes "\<And>i. i \<in> A \<Longrightarrow> \<exists>j\<in>B. f i = g j"
       and "\<And>j. j \<in> B \<Longrightarrow> \<exists>i\<in>A. g j = f i"
-    shows "SUPREMUM A (f :: _ \<Rightarrow> _ :: complete_lattice) = SUPREMUM B g \<and> INFIMUM A f = INFIMUM B g"
+    shows "\<Squnion>((f :: _ \<Rightarrow> _ :: complete_lattice) ` A) = \<Squnion>(g ` B) \<and> \<Sqinter>(f ` A) = \<Sqinter>(g ` B)"
   by (auto 4 3 intro!: INF_eq SUP_eq dest: assms)
 
 (* TODO: Move *)

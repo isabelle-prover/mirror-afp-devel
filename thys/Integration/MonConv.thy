@@ -272,7 +272,7 @@ proof (unfold mon_conv_set_def)
     thus "(\<Union>i. A i) \<subseteq> (\<Union>i. mk_mon A i)"
       by auto
   qed
-  ultimately show "(\<forall>n. mk_mon A n \<subseteq> mk_mon A (Suc n)) \<and> UNION UNIV A = (\<Union>n. mk_mon A n)"
+  ultimately show "(\<forall>n. mk_mon A n \<subseteq> mk_mon A (Suc n)) \<and> \<Union>(A ` UNIV) = (\<Union>n. mk_mon A n)"
     by simp
 qed(*>*)
 

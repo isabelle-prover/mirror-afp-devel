@@ -387,13 +387,13 @@ qed
 
 lemma valid_lists_chain1:
    assumes "chain Y" 
-   assumes "xs \<in> valid_lists (UNION UNIV Y) G"
+   assumes "xs \<in> valid_lists (\<Union>(Y ` UNIV)) G"
    shows "\<exists> i. xs \<in> valid_lists (Y i) G"
 proof-
   note `chain Y`
   moreover
   from assms(2)
-  have "set xs \<subseteq> UNION UNIV Y" by (rule valid_lists_subset)
+  have "set xs \<subseteq> \<Union>(Y ` UNIV)" by (rule valid_lists_subset)
   moreover
   have "finite (set xs)" by simp
   ultimately

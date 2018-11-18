@@ -273,7 +273,7 @@ proof -
       fix a::"nat \<Rightarrow> 'a set"
       assume "(\<And>i. a i \<in> sigma_sets (space M) {f -` B \<inter> space M |B. B \<in> sets N})"
       and "(\<And>i. (x \<in> a i) = (w \<in> a i))"
-      show "(x \<in> UNION UNIV a) = (w \<in> UNION UNIV a)" by (simp add: `\<And>i. (x \<in> a i) = (w \<in> a i)`)
+      show "(x \<in> \<Union>(a ` UNIV)) = (w \<in> \<Union>(a ` UNIV))" by (simp add: `\<And>i. (x \<in> a i) = (w \<in> a i)`)
     }
     {show "(x\<in> {}) = (w\<in> {})" by simp}
   qed} note eqsig = this

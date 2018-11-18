@@ -402,7 +402,7 @@ lemma vars_diff: "vars (p1 - p2) \<subseteq> vars p1 \<union> vars p2"
   unfolding vars_def
 proof transfer'
   fix p1 p2 :: "(nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a"
-  show "UNION (keys (p1 - p2)) keys \<subseteq> UNION (keys p1) keys \<union> UNION (keys p2) keys"
+  show "UNION (keys (p1 - p2)) keys \<subseteq> \<Union>(keys ` (keys p1)) \<union> \<Union>(keys ` (keys p2))"
     using keys_diff_subset[of p1 p2] by (auto simp flip: not_in_keys_iff_lookup_eq_zero)
 qed
 
@@ -1167,7 +1167,7 @@ proof transfer'
   assume f: "bij f"
   have eq: "f (inv_into UNIV f x) = x" for x
     using f by (subst surj_f_inv_f[of f]) (auto simp: bij_is_surj)
-  show "UNION (keys (permutep (permutep f) p)) keys = f ` UNION (keys p) keys"
+  show "\<Union> (keys ` keys (permutep (permutep f) p)) = f ` \<Union> (keys ` keys p)"
   proof safe
     fix m x assume mx: "m \<in> keys (permutep (permutep f) p)" "x \<in> keys m"
     from mx have "permutep f m \<in> keys p"
@@ -1184,7 +1184,7 @@ proof transfer'
     finally have **: "permutep f (permutep (inv_into UNIV f) m) \<in> keys p" .
     moreover from f mx have "f x \<in> keys (permutep (inv_into UNIV f) m)"
       by (auto simp: keys_permutep bij_imp_bij_inv inv_f_f bij_is_inj)
-    ultimately show "f x \<in> UNION (keys (permutep (permutep f) p)) keys" using f
+    ultimately show "f x \<in> \<Union> (keys ` keys (permutep (permutep f) p))" using f
       by (auto simp: keys_permutep bij_permutep)
   qed
 qed

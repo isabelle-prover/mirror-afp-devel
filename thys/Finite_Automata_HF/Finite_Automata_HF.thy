@@ -199,7 +199,7 @@ lemma Accessible_accessible [simp]: "Accessible.accessible = accessible"
 
 
 lemma left_lang_half:
-  assumes sb: "UNION qs1 left_lang \<subseteq> UNION qs2 left_lang"
+  assumes sb: "\<Union>(left_lang ` qs1) \<subseteq> \<Union>(left_lang ` qs2)"
       and ne: "\<And>x. x \<in> qs1 \<Longrightarrow> left_lang x \<noteq> {}"
     shows "qs1 \<subseteq> qs2"
 proof
@@ -207,7 +207,7 @@ proof
   assume x: "x \<in> qs1"
   with ne obtain y where y: "y \<in> left_lang x"
     by blast
-  then have "y \<in> UNION qs2 left_lang"
+  then have "y \<in> \<Union>(left_lang ` qs2)"
     using x sb [THEN subsetD]
     by blast
   then show "x \<in> qs2"
@@ -215,7 +215,7 @@ proof
 qed
 
 lemma left_lang_UN:
-     "\<lbrakk>UNION qs1 left_lang = UNION qs2 left_lang; qs1 \<union> qs2 \<subseteq> accessible\<rbrakk>
+     "\<lbrakk>\<Union>(left_lang ` qs1) = \<Union>(left_lang ` qs2); qs1 \<union> qs2 \<subseteq> accessible\<rbrakk>
       \<Longrightarrow> qs1 = qs2"
   apply (rule equalityI [OF _ dfa.left_lang_half [OF dfa_Accessible]])
   apply (rule dfa.left_lang_half [OF dfa_Accessible], auto simp: accessible_def)

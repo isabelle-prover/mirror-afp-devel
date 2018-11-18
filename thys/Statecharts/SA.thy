@@ -152,7 +152,7 @@ apply auto
 done
 
 lemma Target_SAs_Delta_States:
-  "Target (UNION (SAs HA) Delta) \<subseteq> UNION (SAs HA) States"
+  "Target (\<Union>(Delta ` (SAs HA))) \<subseteq> \<Union>(States ` (SAs HA))"
 apply (unfold image_def Target_def target_def)
 apply auto
 apply (rename_tac SA Source Trigger Guard Action Update Target)
@@ -162,7 +162,7 @@ apply auto
 done
 
 lemma States_Int_not_mem:
- "(UNION F States Int States SA) = {} \<Longrightarrow> SA \<notin> F"
+ "(\<Union>(States ` F) Int States SA) = {} \<Longrightarrow> SA \<notin> F"
 apply (unfold Int_def)
 apply auto
 apply (subgoal_tac "\<exists> S. S \<in> States SA")

@@ -159,11 +159,11 @@ proof (intro rel_funI)
         by (rule choice) (metis Domainp_iff Domainp_set Int_Collect)
       then obtain K' where K': "\<And>k. rel_set A (k \<inter> Collect (Domainp A)) (K' k)" by metis
       from UN.IH[OF _ this] have "generate_topology C k'" if "k' \<in> K'`K" for k' using that by auto
-      from generate_topology.UN[OF this] have "generate_topology C (UNION K K')" .
+      from generate_topology.UN[OF this] have "generate_topology C (\<Union>(K' ` K))" .
       also
       from K' have [transfer_rule]: "(rel_set (=) ===> rel_set A) (\<lambda>x. x \<inter> Collect (Domainp A)) K'"
         by (fastforce simp: rel_fun_def rel_set_def)
-      have "UNION K K' = Y"
+      have "\<Union>(K' ` K) = Y"
         by transfer auto
       finally show ?case
         by (simp add: generate_topology.UN)
@@ -224,7 +224,7 @@ proof (intro rel_funI)
         by (fastforce simp: rel_fun_def rel_set_def)
       define U where "U =  (\<Union>(id ` K))"
       from \<open>rel_set A X _\<close> have [transfer_rule]: "rel_set A X U" by (simp add: U_def)
-      from U_def have "UNION K K' = X" by transfer simp
+      from U_def have "\<Union>(K' ` K) = X" by transfer simp
       finally show ?case .
     next
       case (Basis s)

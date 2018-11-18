@@ -629,9 +629,9 @@ proof (rule measure_eqI_generator_eq_countable)
         by (subst AE_iff_measurable[symmetric, where P="\<lambda>x. x \<notin> A"])
            (auto simp: AE_measure_pmf_iff set_pmf_J subset_eq)
       moreover
-      have "PAR x ((\<lambda>p. (t + INFIMUM (I x) p, The (select_first x p))) -` ({t'..} \<times> A) \<inter> space (PAR x)) = 0"
+      have "PAR x ((\<lambda>p. (t + \<Sqinter>(p ` (I x)), The (select_first x p))) -` ({t'..} \<times> A) \<inter> space (PAR x)) = 0"
         using \<open>A \<subseteq> - I x\<close> AE_PAR_least[of x] I_countable
-        by (subst AE_iff_measurable[symmetric, where P="\<lambda>p. (t + INFIMUM (I x) p, The (select_first x p)) \<notin> {t'..} \<times> A"])
+        by (subst AE_iff_measurable[symmetric, where P="\<lambda>p. (t + \<Sqinter>(p ` (I x)), The (select_first x p)) \<notin> {t'..} \<times> A"])
            (auto simp del: all_simps(5) simp add: imp_ex imp_conjL subset_eq)
       ultimately show ?thesis
         using I_countable

@@ -1042,7 +1042,7 @@ lemma spr_simAbs_fst_snd:
 lemma tObsC_abs_rel:
   assumes tC: "t \<in> SPR.jkbpC"
       and ec: "spr_simAbs ec = SPRdet.sim_equiv_class a t"
-      and r: "(x, y) \<in> (UNION (set as) (relations (spr_repMC (tObsC_abs t))))\<^sup>+"
+      and r: "(x, y) \<in> (\<Union> (relations (spr_repMC (tObsC_abs t)) ` set as))\<^sup>+"
   shows "x \<in> tObsC_abs t \<longleftrightarrow>y \<in> tObsC_abs t"
   using assms
   apply -

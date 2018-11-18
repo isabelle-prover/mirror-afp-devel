@@ -130,7 +130,7 @@ begin
         by metis
     qed
 
-  definition "local_init init S = INFIMUM init S"
+  definition "local_init init S = Inf (S ` init)"
 
   definition "zip_set A B = {u . ((fst o u) \<in> A) \<and> ((snd o u) \<in> B)}"
   definition nzip:: "('x \<Rightarrow> 'a) \<Rightarrow> ('x \<Rightarrow> 'b) \<Rightarrow> 'x \<Rightarrow> ('a\<times>'b)" (infixl "||" 65) where "(xs || ys) i = (xs i, ys i)"
@@ -367,7 +367,7 @@ begin
   lemma prec_st_inpt: "prec_st (inpt_st r) r = (\<box> (lft_pred_st (inpt_st r)))"
     by (simp add: prec_st_def neg_until_always)
 
-  lemma "grd (SymSystem init p r) = SUPREMUM init (-prec_st p r \<squnion> (\<box> (lft_pred_st (inpt_st r))))"
+  lemma "grd (SymSystem init p r) = Sup ((- prec_st p r \<squnion> (\<box> (lft_pred_st (inpt_st r)))) ` init)"
     proof (unfold fun_eq_iff, auto simp add: grd_def SymSystem_rel demonic_def assert_def)
       fix x :: "nat \<Rightarrow> 'a" and  xa :: "nat \<Rightarrow> 'b" and  u :: "nat \<Rightarrow> 'c"
       assume "\<forall>xa::nat \<Rightarrow> 'c\<in>init. prec_st p r xa x \<and> \<not> (\<box> lft_pred_st (inpt_st r)) xa x"
@@ -392,7 +392,7 @@ begin
  
   definition "guard S = {.((grd S)::'a\<Rightarrow>bool).} o S"
 
-  lemma "((grd (local_init init S))::'a\<Rightarrow>bool) = SUPREMUM init (grd o S)"
+  lemma "((grd (local_init init S))::'a\<Rightarrow>bool) = Sup ((grd o S) ` init)"
     by (simp add: fun_eq_iff local_init_def assert_def grd_def)
 
   lemma "u \<in> init \<Longrightarrow> guard ([:z \<leadsto> u, x . u \<in> init \<and> z = x:] o {.u, x . p u x.} o [:u, x \<leadsto> y . r u x y :])

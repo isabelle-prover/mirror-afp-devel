@@ -239,11 +239,11 @@ context includes lifting_syntax
 begin
 
 lemma [transfer_rule]:
-  "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) INFIMUM INFIMUM"
+  "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) (\<lambda>A f. \<Sqinter>(f ` A)) (\<lambda>A f. \<Sqinter>(f ` A))"
   by transfer_prover
 
 lemma [transfer_rule]:
-  "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) SUPREMUM SUPREMUM"
+  "(rel_set A ===> (A ===> pcr_MonoTran HOL.eq) ===> pcr_MonoTran HOL.eq) (\<lambda>A f. \<Squnion>(f ` A)) (\<lambda>A f. \<Squnion>(f ` A))"
   by transfer_prover
 
 end
@@ -258,7 +258,7 @@ proof (intro_classes, transfer)
       apply (simp add: if_split image_def)
     by blast+
 
-  show " INFIMUM A Sup \<le> SUPREMUM {x. (\<exists>f\<in>Collect (pred_fun (\<lambda>A. Ball A mono) mono). x = f ` A \<and> (\<forall>Y\<in>A. f Y \<in> Y)) \<and> Ball x mono} Inf"
+  show " \<Sqinter>(Sup ` A) \<le> \<Squnion>(Inf ` {x. (\<exists>f\<in>Collect (pred_fun (\<lambda>A. Ball A mono) mono). x = f ` A \<and> (\<forall>Y\<in>A. f Y \<in> Y)) \<and> Ball x mono})"
     by (simp add: Inf_Sup)
 qed
 

@@ -571,7 +571,7 @@ text {*
   set must be finite when the union is finite.
 *}
 lemma finite_UNION_then_finite:
-  "finite (UNION A B) \<Longrightarrow> a \<in> A \<Longrightarrow> finite (B a)"
+  "finite (\<Union>(B ` A)) \<Longrightarrow> a \<in> A \<Longrightarrow> finite (B a)"
 by (metis Set.set_insert UN_insert Un_infinite)
 
 lemma finite_if_eq_beyond_finite: "finite S \<Longrightarrow> finite {s. s - S = s' - S}"

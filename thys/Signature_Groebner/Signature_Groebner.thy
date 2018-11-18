@@ -4013,7 +4013,7 @@ proof -
     proof (induct rule: wfp_on_induct)
       case (less x)
       from less(1) have "canon_term_pp_pair x" by simp
-      define R' where "R' = UNION (?A \<inter> {z. term_pp_rel (\<prec>\<^sub>t) z x}) R"
+      define R' where " R' = \<Union> (R ` ({x. canon_term_pp_pair x \<and> R x \<noteq> {}} \<inter> {z. term_pp_rel (\<prec>\<^sub>t) z x}))"
       define red_set where "red_set = (\<lambda>p::'t \<Rightarrow>\<^sub>0 'b. {k. lt (seq k) = lt p \<and>
                                               punit.lt (rep_list (seq k)) \<preceq> punit.lt (rep_list p)})"
       have finite_red_set: "finite (red_set p)" for p

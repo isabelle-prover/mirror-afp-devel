@@ -219,7 +219,7 @@ lemma edgeSet_finite:
 by (simp add: edgeSet_def)
 
 definition statesDecls :: "states \<Rightarrow> procVarDecl set" where
-  "statesDecls s = UNION (edgeSet s) edgeDecls"
+  "statesDecls s = \<Union>(edgeDecls ` (edgeSet s))"
 
 definition statesNames :: "states \<Rightarrow> String.literal set" where
   "statesNames s = procVarDeclName ` statesDecls s"

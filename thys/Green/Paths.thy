@@ -1321,7 +1321,7 @@ definition chain_subdiv_chain where
 
 lemma chain_subdiv_chain_character:
   shows "chain_subdiv_chain one_chain1 subdiv \<longleftrightarrow>
-        (\<exists>f. UNION one_chain1 f = subdiv \<and>
+        (\<exists>f. \<Union>(f ` one_chain1) = subdiv \<and>
              (\<forall>(k, \<gamma>)\<in>one_chain1.
                  if k = 1
                  then chain_subdiv_path \<gamma> (f (k, \<gamma>))
@@ -3096,7 +3096,7 @@ proof -
   proof
     fix b
     assume ass: "b \<in> basis"
-    have "continuous_on (UNION one_chain (path_image \<circ> snd))  (\<lambda>x. F x \<bullet> b)"
+    have "continuous_on (\<Union>((path_image \<circ> snd) ` one_chain))  (\<lambda>x. F x \<bullet> b)"
       apply(rule continuous_on_closed_UN[where ?S = "(path_image o snd) ` one_chain" ])
     proof
       show "finite one_chain" using finite_one_chain by auto

@@ -129,8 +129,8 @@ text{*
 
   subsection{*Conjunctive predicate transformers*}
 
-  definition "conjunctive (S::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) = (\<forall> Q . S (Inf Q) = INFIMUM Q S)"
-  definition "sconjunctive (S::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) = (\<forall> Q . (\<exists> x . x \<in> Q) \<longrightarrow> S (Inf Q) = INFIMUM Q S)"
+  definition "conjunctive (S::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) = (\<forall> Q . S (Inf Q) = Inf (S ` Q))"
+  definition "sconjunctive (S::'a::complete_lattice \<Rightarrow> 'b::complete_lattice) = (\<forall> Q . (\<exists> x . x \<in> Q) \<longrightarrow> S (Inf Q) = Inf (S ` Q))"
 
   lemma [simp]: "conjunctive S \<Longrightarrow> sconjunctive S"
     by (simp add: conjunctive_def sconjunctive_def)
@@ -187,10 +187,10 @@ text{*
        qed
    qed
 
-  lemma sconjunctive_simp: "x \<in> Q \<Longrightarrow> sconjunctive S \<Longrightarrow> S (Inf Q) = INFIMUM Q S"
+  lemma sconjunctive_simp: "x \<in> Q \<Longrightarrow> sconjunctive S \<Longrightarrow> S (Inf Q) = Inf (S ` Q)"
     by (auto simp add: sconjunctive_def)
 
-  lemma sconjunctive_INF_simp: "x \<in> X \<Longrightarrow> sconjunctive S \<Longrightarrow> S (INFIMUM X Q) = INFIMUM (Q`X) S"
+  lemma sconjunctive_INF_simp: "x \<in> X \<Longrightarrow> sconjunctive S \<Longrightarrow> S (Inf (Q ` X)) = Inf (S ` (Q ` X))"
     by (cut_tac x = "Q x" and Q = "Q ` X" in sconjunctive_simp, auto)
 
   lemma demonic_comp [simp]: "sconjunctive S \<Longrightarrow> sconjunctive S' \<Longrightarrow> sconjunctive (S o S')"
@@ -200,17 +200,17 @@ text{*
       assume [simp]: "sconjunctive S"
       assume [simp]: "sconjunctive S'"
       assume [simp]: "a \<in> X"
-      have A: "S' (Inf X) = INFIMUM X S'"
+      have A: "S' (Inf X) = Inf (S' ` X)"
         by (rule_tac x = a in sconjunctive_simp, auto)
-      also have B: "S (INFIMUM X S') = INFIMUM (S' ` X) S"
+      also have B: "S (Inf (S' ` X)) = Inf (S ` (S' ` X))"
         by (rule_tac x = "S' a" in sconjunctive_simp, auto)
-      finally show "(S o S') (Inf X) = INFIMUM X (S \<circ> S')" by simp
+      finally show "(S o S') (Inf X) = Inf ((S \<circ> S') ` X)" by simp
     qed
 
-  lemma [simp]:"conjunctive S \<Longrightarrow> S (INFIMUM X Q) = (INFIMUM X (S o Q))"
+  lemma [simp]:"conjunctive S \<Longrightarrow> S (Inf (Q ` X)) = (Inf ((S o Q) ` X))"
     by (metis INF_image conjunctive_def)
 
-  lemma conjunctive_simp: "conjunctive S \<Longrightarrow>  S (Inf Q) = INFIMUM Q S"
+  lemma conjunctive_simp: "conjunctive S \<Longrightarrow>  S (Inf Q) = Inf (S ` Q)"
     by (metis conjunctive_def)
 
   lemma conjunctive_monotonic: "sconjunctive S \<Longrightarrow> mono S"

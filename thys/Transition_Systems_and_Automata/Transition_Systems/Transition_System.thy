@@ -112,7 +112,7 @@ begin
 
     lemma reachable_successors[intro!]: "successors p \<subseteq> reachable p" by auto
 
-    lemma reachable_step: "reachable p = insert p (UNION (successors p) reachable)" by auto
+    lemma reachable_step: "reachable p = insert p (\<Union>(reachable ` (successors p)))" by auto
 
   end
 
@@ -140,7 +140,7 @@ begin
       where "initial p" "path r p" "q = target r p"
       using assms by induct force+
 
-    lemma nodes_alt_def: "nodes = UNION (Collect initial) reachable" by auto
+    lemma nodes_alt_def: "nodes = \<Union>(reachable ` (Collect initial))" by auto
 
     lemma nodes_trans[trans]: "p \<in> nodes \<Longrightarrow> q \<in> reachable p \<Longrightarrow> q \<in> nodes" by auto
 

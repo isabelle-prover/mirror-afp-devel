@@ -166,13 +166,13 @@ proof -
       by auto
     show "\<exists>y. ?P (Suc n) y \<and> ?Q n X y"
     proof (intro exI[where x="U (Suc n) \<union> (\<Union>c\<in>M. U c)"] impI conjI)
-      show "open (U (Suc n) \<union> UNION M U)"
+      show "open (U (Suc n) \<union> \<Union>(U ` M))"
         by (auto intro!: U)
-      show "compact (closure (U (Suc n) \<union> UNION M U))"
+      show "compact (closure (U (Suc n) \<union> \<Union>(U ` M)))"
         using \<open>finite M\<close>
         by (auto simp add: closure_Union intro!: U)
-      show "U (Suc n) \<subseteq> U (Suc n) \<union> UNION M U" by auto
-      show "closure (U (Suc n) \<union> UNION M U) \<subseteq> carrier"
+      show "U (Suc n) \<subseteq> U (Suc n) \<union> \<Union>(U ` M)" by auto
+      show "closure (U (Suc n) \<union> \<Union>(U ` M)) \<subseteq> carrier"
         using U \<open>finite M\<close>
         by (force simp: closure_Union)
       show "closure X \<subseteq> U (Suc n) \<union> (\<Union>c\<in>M. U c)"
@@ -191,13 +191,13 @@ proof -
   have V_mono: "V l \<subseteq> V m" if "l \<le> m" for l m
     using V_mono_Suc that
     by (rule lift_Suc_mono_le[of V])
-  have V_cover: "carrier = UNION UNIV V"
+  have V_cover: "carrier = \<Union>(V ` UNIV)"
   proof (rule antisym)
-    show "carrier \<subseteq> UNION UNIV V"
+    show "carrier \<subseteq> \<Union>(V ` UNIV)"
       unfolding U(1)[symmetric]
       using V(4)
       by auto
-    show "UNION UNIV V \<subseteq> carrier"
+    show "\<Union>(V ` UNIV) \<subseteq> carrier"
       using V(5) by force
   qed
   define W where "W j = (if j < 2 then V j else V j - closure (V (j - 2)))" for j
@@ -212,9 +212,9 @@ proof -
     done
   have open_W: "open (W j)" for j
     by (auto simp: W_def V)
-  have W_cover: "p \<in> UNION UNIV W" if "p \<in> carrier" for p
+  have W_cover: "p \<in> \<Union>(W ` UNIV)" if "p \<in> carrier" for p
   proof -
-    have "p \<in> UNION UNIV V" using that V_cover
+    have "p \<in> \<Union>(V ` UNIV)" using that V_cover
       by auto
     then have ex: "\<exists>i. p \<in> V i" by auto
     define k where "k = (LEAST i. p \<in> V i)"
@@ -272,7 +272,7 @@ proof -
   qed
   have "locally_finite_on carrier UNIV W"
   proof (rule locally_finite_on_open_coverI)
-    show "carrier \<subseteq> UNION UNIV W" unfolding W_eq_carrier by simp
+    show "carrier \<subseteq> \<Union>(W ` UNIV)" unfolding W_eq_carrier by simp
     show "open (W i)" for i by (auto simp: open_W)
     fix k
     have "{i. W i \<inter> W k \<noteq> {}} \<subseteq> {(k - 1) .. (k + 1)}"

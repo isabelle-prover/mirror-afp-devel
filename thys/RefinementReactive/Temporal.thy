@@ -58,7 +58,7 @@ begin
         "\<circle> p = p !! (Suc 0)"
 
       definition until :: "'a \<Rightarrow> 'a \<Rightarrow> 'a" (infix "until" 65) where 
-        "(p until q) = (SUP n . (INFIMUM {i . i < n}  (at p)) \<sqinter> (q !! n))"
+        "(p until q) = (SUP n . (Inf (at p ` {i . i < n})) \<sqinter> (q !! n))"
     end
 
 text{*
