@@ -33,8 +33,7 @@ proof -
   have "card (S \<bind> f) = card (\<Union>(f ` S))"
     by (simp add: bind_UNION)
   also have "card (\<Union>(f ` S)) = (\<Sum>x\<in>S. card (f x))"
-    using assms unfolding disjoint_family_on_def
-    by (subst card_Union_image) (simp_all add: pairwise_def disjnt_def)
+    using assms unfolding disjoint_family_on_def by (simp add: card_UN_disjoint)
   finally show ?thesis .
 qed
 
