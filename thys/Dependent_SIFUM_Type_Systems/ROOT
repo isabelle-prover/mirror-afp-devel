@@ -1,7 +1,7 @@
 chapter AFP
 
 session Dependent_SIFUM_Type_Systems (AFP) = HOL +
-  description {*
+  description "
     An Isabelle/HOL formalization of a Value-Dependent extension to
     Assumptions and Guarantees for Compositional Noninterference
 
@@ -11,7 +11,7 @@ session Dependent_SIFUM_Type_Systems (AFP) = HOL +
     Sylvia Grewe, TU Darmstadt
     Heiko Mantel, TU Darmstadt
     Daniel Schoepe
-  *}
+  "
   options [timeout = 600]
   sessions
     "HOL-Eisbach"

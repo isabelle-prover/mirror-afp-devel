@@ -1,7 +1,7 @@
 chapter AFP
 
 session Algebraic_Numbers (AFP) = Berlekamp_Zassenhaus +
-  description {* Algebraic Numbers *}
+  description "Algebraic Numbers"
   options [timeout = 1200]
   sessions
     Sturm_Sequences
@@ -16,7 +16,7 @@ session Algebraic_Numbers (AFP) = Berlekamp_Zassenhaus +
     "root.tex"
 
 session Algebraic_Numbers_Lib (AFP) = Berlekamp_Zassenhaus + 
-  description {* Algebraic numbers, without tests *}
+  description "Algebraic numbers, without tests"
   options [timeout = 600]
   sessions
     Algebraic_Numbers

@@ -15,7 +15,7 @@
 chapter AFP
 
 session Key_Agreement_Strong_Adversaries (AFP) = HOL +
-  description {* Refining Authenticated Key Agreement with Strong Adversaries *}
+  description "Refining Authenticated Key Agreement with Strong Adversaries"
   options [timeout = 1500]
   theories
     Infra Refinement

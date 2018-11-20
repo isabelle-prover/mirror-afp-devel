@@ -1,14 +1,14 @@
 chapter AFP
 
 session WHATandWHERE_Security (AFP) = HOL +
-  description {*
+  description "
     An Isabelle/HOL formalization of declassification with WHATandWHERE-Security
 
     Author: Sylvia Grewe, TU Darmstadt
     Author: Alexander Lux, TU Darmstadt
     Author: Heiko Mantel, TU Darmstadt
     Author: Jens Sauer, TU Darmstadt
-  *}
+  "
   options [timeout = 600]
   sessions
     Strong_Security

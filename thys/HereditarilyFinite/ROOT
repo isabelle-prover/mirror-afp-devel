@@ -1,7 +1,7 @@
 chapter AFP
 
 session HereditarilyFinite (AFP) = "HOL-Library" +
-  description {* The Hereditarily Finite Sets *}
+  description "The Hereditarily Finite Sets"
   options [timeout = 600]
   theories
     Rank

@@ -1,7 +1,7 @@
 chapter AFP
 
 session Green (AFP) = "HOL-Analysis" +
- description {* Green's theorem *}
+ description "Green's theorem"
  options [timeout = 600]
  theories
   CircExample

@@ -1,7 +1,7 @@
 chapter AFP
 
 session Circus (AFP) = HOLCF +
-  description {* Circus Denotational Semantics and Refinements *}
+  description "Circus Denotational Semantics and Refinements"
   options [timeout = 600]
   theories
     Refinement_Example

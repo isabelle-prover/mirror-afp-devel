@@ -1,7 +1,7 @@
 chapter AFP
 
 session Featherweight_OCL (AFP) = HOL +
-  description {* Featherweight-OCL *}
+  description "Featherweight-OCL"
   options [document_variants = "annex-a=annexa,-theory,-afp,-proof,-ML:document=afp,-annexa:outline=-annexa,afp,/proof,/ML",
            show_question_marks = false, timeout = 600]
   theories

@@ -1,6 +1,6 @@
 chapter AFP
 session Stochastic_Matrices (AFP) = Markov_Models +
-  description {* Stochastic Matrices *}
+  description "Stochastic Matrices"
   options [timeout = 900]
   sessions
     Perron_Frobenius

@@ -1,7 +1,7 @@
 chapter AFP
 
 session Stream_Fusion_Code (AFP) = Coinductive +
-  description {* Stream Fusion in HOL with Code Generation*}
+  description "Stream Fusion in HOL with Code Generation"
   options [timeout = 1200]
   theories
     Stream_Fusion_Examples

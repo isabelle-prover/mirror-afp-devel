@@ -22,7 +22,7 @@ session Pre_BZ (AFP) = "Subresultants" +
     Polynomial_Factorization.Rational_Factorization 
 
 session Berlekamp_Zassenhaus (AFP) = Pre_BZ +
-  description {* Berlekamp-Zassenhaus's Factorization Algorithm *}
+  description "Berlekamp-Zassenhaus's Factorization Algorithm"
   options [timeout = 1200]
   theories
     (* Arithmetic for Finite Fields *)

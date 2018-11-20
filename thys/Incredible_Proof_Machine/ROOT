@@ -1,7 +1,7 @@
 chapter AFP
 
 session Incredible_Proof_Machine (AFP) = "HOL-Library" +
-  description {* The meta theory of the Incredible Proof Machine *}
+  description "The meta theory of the Incredible Proof Machine"
   options [timeout = 600]
   sessions
     "HOL-Eisbach"

@@ -1,7 +1,7 @@
 chapter AFP
 
 session AWN (AFP) = HOL +
-  description {* Mechanization of the Algebra for Wireless Networks (AWN) *}
+  description "Mechanization of the Algebra for Wireless Networks (AWN)"
   options [timeout = 600]
   theories
     Lib

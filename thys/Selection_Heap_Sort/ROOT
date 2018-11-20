@@ -1,11 +1,11 @@
 chapter AFP
 
 session "Selection_Heap_Sort" (AFP) = "HOL-Library" +
-  description {*
+  description \<open>
     Author:  Danijela Petrovi\'c, Facylty of Mathematics, University of Belgrade
     
     Verification of Functional Selection and Heap Sort Using Locales.
-  *}
+  \<close>
   options [timeout = 300]
   theories
     Sort

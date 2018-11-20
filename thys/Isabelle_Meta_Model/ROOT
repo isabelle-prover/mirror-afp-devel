@@ -1,7 +1,7 @@
 chapter AFP
    
 session Isabelle_Meta_Model (AFP) = "HOL-Library" +
-  description {* Isabelle_Meta_Model containing a Toy Example *}
+  description "Isabelle_Meta_Model containing a Toy Example"
   options [timeout = 600]
   theories [document = false]
     "isabelle_home/src/HOL/Isabelle_Main0"

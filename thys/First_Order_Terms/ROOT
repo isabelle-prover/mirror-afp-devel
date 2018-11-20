@@ -1,7 +1,7 @@
 chapter AFP
 
 session First_Order_Terms (AFP) = "Abstract-Rewriting" +
-  description {* First-Order Terms *}
+  description "First-Order Terms"
   options [timeout = 300]
   sessions
     "HOL-Library"

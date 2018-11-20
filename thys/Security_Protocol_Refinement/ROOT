@@ -17,7 +17,7 @@
 chapter AFP
 
 session Security_Protocol_Refinement (AFP) = HOL +
-  description {* Developing Security Protocols by Stepwise Refinement *}
+  description "Developing Security Protocols by Stepwise Refinement"
   options [timeout = 2400]
   theories
     (* Infrastructure *)

@@ -1,7 +1,7 @@
 chapter AFP
 
 session Special_Function_Bounds (AFP) = Sturm_Sequences +
-  description {* Special_Function_Bounds *}
+  description "Special_Function_Bounds"
   options [timeout = 600]
   theories
     Atan_CF_Bounds
