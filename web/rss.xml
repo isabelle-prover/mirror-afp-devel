@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>30 Oct 2018 00:00:00 +0000</pubDate>
+    <pubDate>16 Nov 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Matroids</title>
+              <link>https://www.isa-afp.org/entries/Matroids.html</link>
+       <guid>https://www.isa-afp.org/entries/Matroids.html</guid>
+       <dc:creator> Jonas Keinholz       </dc:creator>
+       <pubDate>16 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;This article defines the combinatorial structures known as
+&lt;em&gt;Independence Systems&lt;/em&gt; and
+&lt;em&gt;Matroids&lt;/em&gt; and provides basic concepts and theorems
+related to them. These structures play an important role in
+combinatorial optimisation, e. g. greedy algorithms such as
+Kruskal&#39;s algorithm. The development is based on Oxley&#39;s
+&lt;a href=&#34;http://www.math.lsu.edu/~oxley/survey4.pdf&#34;&gt;`What
+is a Matroid?&#39;&lt;/a&gt;.&lt;/p&gt;</description>
+    </item>
     <item>
        <title>Formalisation and Evaluation of Alan Gewirth's Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
               <link>https://www.isa-afp.org/entries/GewirthPGCProof.html</link>
@@ -563,21 +579,6 @@ property can exhibit awkward interleaving of text. We use OpSets to
 specify this correctness property and prove that although one existing
 replication algorithm satisfies this property, several other published
 algorithms do not.</description>
-    </item>
-    <item>
-       <title>An Isabelle/HOL Formalization of the Modular Assembly Kit for Security Properties</title>
-              <link>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</link>
-       <guid>https://www.isa-afp.org/entries/Modular_Assembly_Kit_Security.html</guid>
-       <dc:creator> Oliver Bračevac, Richard Gay, Sylvia Grewe, Heiko Mantel, Henning Sudbrock, Markus Tasch       </dc:creator>
-       <pubDate>07 May 2018 00:00:00 +0000</pubDate>
-       <description>
-The &#34;Modular Assembly Kit for Security Properties&#34; (MAKS) is
-a framework for both the definition and verification of possibilistic
-information-flow security properties at the specification-level. MAKS
-supports the uniform representation of a wide range of possibilistic
-information-flow properties and provides support for the verification
-of such properties via unwinding results and compositionality results.
-We provide a formalization of this framework in Isabelle/HOL.</description>
     </item>
   </channel>
 </rss>

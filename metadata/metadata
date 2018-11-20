@@ -7459,3 +7459,19 @@ abstract =
   linear algebra libraries in Isabelle/HOL, in particular its
   “types-to-sets” mechanism.
 
+[Matroids]
+title = Matroids
+author = Jonas Keinholz<>
+topic = Mathematics/Combinatorics
+date = 2018-11-16
+notify = eberlm@in.tum.de
+abstract = 
+  <p>This article defines the combinatorial structures known as
+  <em>Independence Systems</em> and
+  <em>Matroids</em> and provides basic concepts and theorems
+  related to them. These structures play an important role in
+  combinatorial optimisation, e. g. greedy algorithms such as
+  Kruskal's algorithm. The development is based on Oxley's
+  <a href="http://www.math.lsu.edu/~oxley/survey4.pdf">`What
+  is a Matroid?'</a>.</p>
+
