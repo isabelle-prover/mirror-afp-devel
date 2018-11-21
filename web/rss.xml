@@ -27,6 +27,23 @@ Kruskal&#39;s algorithm. The development is based on Oxley&#39;s
 is a Matroid?&#39;&lt;/a&gt;.&lt;/p&gt;</description>
     </item>
     <item>
+       <title>Deriving generic class instances for datatypes</title>
+              <link>https://www.isa-afp.org/entries/Generic_Deriving.html</link>
+       <guid>https://www.isa-afp.org/entries/Generic_Deriving.html</guid>
+       <dc:creator> Jonas Rädle, Lars Hupel       </dc:creator>
+       <pubDate>06 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+&lt;p&gt;We provide a framework for automatically deriving instances for
+generic type classes. Our approach is inspired by Haskell&#39;s
+&lt;i&gt;generic-deriving&lt;/i&gt; package and Scala&#39;s
+&lt;i&gt;shapeless&lt;/i&gt; library.  In addition to generating the
+code for type class functions, we also attempt to automatically prove
+type class laws for these instances. As of now, however, some manual
+proofs are still required for recursive datatypes.&lt;/p&gt;
+&lt;p&gt;Note: There are already articles in the AFP that provide
+automatic instantiation for a number of classes. Concretely, &lt;a href=&#34;https://www.isa-afp.org/entries/Deriving.html&#34;&gt;Deriving&lt;/a&gt; allows the automatic instantiation of comparators, linear orders, equality, and hashing. &lt;a href=&#34;https://www.isa-afp.org/entries/Show.html&#34;&gt;Show&lt;/a&gt; instantiates a Haskell-style &lt;i&gt;show&lt;/i&gt; class.&lt;/p&gt;&lt;p&gt;Our approach works for arbitrary classes (with some Isabelle/HOL overhead for each class), but a smaller set of datatypes.&lt;/p&gt;</description>
+    </item>
+    <item>
        <title>Formalisation and Evaluation of Alan Gewirth's Proof for the Principle of Generic Consistency in Isabelle/HOL</title>
               <link>https://www.isa-afp.org/entries/GewirthPGCProof.html</link>
        <guid>https://www.isa-afp.org/entries/GewirthPGCProof.html</guid>
@@ -556,29 +573,6 @@ techniques allow us to achieve bottom-up computation and
 space-efficient memoization. The framework’s utility is demonstrated
 on a number of representative dynamic programming problems. A detailed
 description of our work can be found in the accompanying paper [2].</description>
-    </item>
-    <item>
-       <title>OpSets: Sequential Specifications for Replicated Datatypes</title>
-              <link>https://www.isa-afp.org/entries/OpSets.html</link>
-       <guid>https://www.isa-afp.org/entries/OpSets.html</guid>
-       <dc:creator> Martin Kleppmann, Victor B. F. Gomes, Dominic P. Mulligan, Alastair R. Beresford       </dc:creator>
-       <pubDate>10 May 2018 00:00:00 +0000</pubDate>
-       <description>
-We introduce OpSets, an executable framework for specifying and
-reasoning about the semantics of replicated datatypes that provide
-eventual consistency in a distributed system, and for mechanically
-verifying algorithms that implement these datatypes. Our approach is
-simple but expressive, allowing us to succinctly specify a variety of
-abstract datatypes, including maps, sets, lists, text, graphs, trees,
-and registers. Our datatypes are also composable, enabling the
-construction of complex data structures. To demonstrate the utility of
-OpSets for analysing replication algorithms, we highlight an important
-correctness property for collaborative text editing that has
-traditionally been overlooked; algorithms that do not satisfy this
-property can exhibit awkward interleaving of text. We use OpSets to
-specify this correctness property and prove that although one existing
-replication algorithm satisfies this property, several other published
-algorithms do not.</description>
     </item>
   </channel>
 </rss>
