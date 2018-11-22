@@ -3988,10 +3988,10 @@ proof -
     ultimately show ?thesis by (rule finite_subset)
   qed
 
-  have "range seq \<subseteq> seq ` (UNION ?A R)"
+  have "range seq \<subseteq> seq ` (\<Union> (R ` ?A))"
   proof (rule image_mono, rule)
     fix i
-    show "i \<in> UNION ?A R"
+    show "i \<in> (\<Union> (R ` ?A))"
     proof
       show "i \<in> R (cancel_term_pp_pair (lt (seq i), punit.lt (rep_list (seq i))))"
         by (simp add: R_def term_pp_rel_cancel)
@@ -4000,8 +4000,8 @@ proof -
     qed
   qed
   moreover from \<open>inj seq\<close> have "infinite (range seq)" by (rule range_inj_infinite)
-  ultimately have "infinite (seq ` UNION ?A R)" by (rule infinite_super)
-  moreover have "finite (seq ` UNION ?A R)"
+  ultimately have "infinite (seq ` (\<Union> (R ` ?A)))" by (rule infinite_super)
+  moreover have "finite (seq ` (\<Union> (R ` ?A)))"
   proof (rule finite_imageI, rule finite_UN_I)
     fix x
     assume "x \<in> ?A"
@@ -4036,7 +4036,7 @@ proof -
       qed
 
       have "R x \<subseteq> (\<Union>i\<in>R'. \<Union>j\<in>R'. red_set (spair (seq i) (seq j))) \<union>
-                   (UNION {0..<length fs} (\<lambda>j. red_set (monomial 1 (term_of_pair (0, j)))))"
+                   (\<Union>j\<in>{0..<length fs}. red_set (monomial 1 (term_of_pair (0, j))))"
         (is "_ \<subseteq> ?B \<union> ?C")
       proof
         fix i

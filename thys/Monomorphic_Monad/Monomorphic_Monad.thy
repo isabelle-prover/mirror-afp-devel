@@ -2014,10 +2014,10 @@ end
 subsection \<open>Unbounded non-determinism\<close>
 
 abbreviation (input) return_set :: "('a, 'a set) return" where "return_set x \<equiv> {x}"
-abbreviation (input) bind_set :: "('a, 'a set) bind" where "bind_set \<equiv> UNION"
+abbreviation (input) bind_set :: "('a, 'a set) bind" where "bind_set \<equiv> \<lambda>A f. \<Union> (f ` A)"
 abbreviation (input) fail_set :: "'a set fail" where "fail_set \<equiv> {}"
 abbreviation (input) alt_set :: "'a set alt" where "alt_set \<equiv> (\<union>)"
-abbreviation (input) altc_set :: "('c, 'a set) altc" where "altc_set C \<equiv> UNION (rcset C)"
+abbreviation (input) altc_set :: "('c, 'a set) altc" where "altc_set C \<equiv> \<lambda>f. \<Union> (f ` rcset C)"
 
 lemma monad_set [locale_witness]: "monad return_set bind_set"
 by unfold_locales auto
@@ -2033,8 +2033,8 @@ by unfold_locales auto
 
 lemma monad_altc_set [locale_witness]: "monad_altc return_set bind_set altc_set"
   including cset.lifting lifting_syntax
-proof unfold_locales
-  show "(rel_cset R ===> (R ===> (=)) ===> (=)) (\<lambda>C. UNION (rcset C)) (\<lambda>C. UNION (rcset C))" for R
+proof
+  show "(rel_cset R ===> (R ===> (=)) ===> (=)) (\<lambda>C f. \<Union> (f ` rcset C)) (\<lambda>C f. \<Union> (f ` rcset C))" for R
     by transfer_prover
 qed(transfer; auto; fail)+
 

@@ -105,17 +105,7 @@ lemma groupF_empty_elem: "x \<in> set (groupF f xs) \<Longrightarrow> x \<noteq>
   by(induction f xs rule: groupF.induct) auto
 
 lemma groupF_distinct: "distinct xs \<Longrightarrow> distinct (concat (groupF f xs))"
-  proof(induction f xs rule: groupF.induct)
-  case (2 f x xs) thus ?case
-    apply (simp)
-    apply(intro conjI)
-     apply (meson filter_is_subset groupF_set subsetCE)
-    apply(subgoal_tac "UNION (set (groupF f [a\<leftarrow>xs . f x \<noteq> f a])) set = set [a\<leftarrow>xs . f x \<noteq> f a]")
-     prefer 2
-     apply (metis (no_types) groupF_concat_set set_concat)
-    by auto
-  qed(simp)
-
+  by (induction f xs rule: groupF.induct) (auto simp add: groupF_Union_set)
 
 text\<open>It is possible to use
     @{term "map (map fst) (groupF snd (map (\<lambda>x. (x, f x)) P))"}

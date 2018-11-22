@@ -1309,7 +1309,7 @@ by(cases x)(simp_all)
 
 end
 
-lemma bind_option_set [simp]: "monad.bind_option fail_set = (\<lambda>x. UNION (set_option x))"
+lemma bind_option_set [simp]: "monad.bind_option fail_set = (\<lambda>x f. \<Union> (f ` set_option x))"
 by(simp add: monad.bind_option_def fun_eq_iff split: option.split)
 
 lemma run_bind_option_stateT [simp]:
