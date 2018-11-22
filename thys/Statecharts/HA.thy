@@ -798,7 +798,7 @@ apply auto
 done
 
 lemma HAStates_CompFun_States_ChiRel:
- "S \<in> HAStates A \<Longrightarrow> ((UNION (the (CompFun A S)) States) = (ChiRel A `` {S}))"
+ "S \<in> HAStates A \<Longrightarrow> \<Union> (States ` the (CompFun A S)) = ChiRel A `` {S}"
 apply (unfold ChiRel_def Chi_def restrict_def)
 apply auto
 apply (drule HAStates_CompFun_SAs)

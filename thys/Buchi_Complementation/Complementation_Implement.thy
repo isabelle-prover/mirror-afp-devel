@@ -96,7 +96,7 @@ begin
     show "cs_lr g \<in> lr_succ A a (cs_lr f)"
     unfolding lr_succ_def
     proof (intro CollectI conjI ballI impI)
-      show "dom (cs_lr g) = UNION (dom (cs_lr f)) (succ A a)" using 1 by simp
+      show "dom (cs_lr g) = \<Union> (succ A a ` dom (cs_lr f))" using 1 by simp
     next
       fix p q
       assume 2: "p \<in> dom (cs_lr f)" "q \<in> succ A a p"
@@ -107,7 +107,7 @@ begin
       assume 2: "p \<in> dom (cs_lr g)" "accepting A p"
       show "even (the (cs_lr g p))" using 1 2 by auto
     qed
-    have 2: "cs_st g = {q \<in> UNION (cs_st (refresh_1 f)) (succ A a). even (fst (the (g q)))}"
+    have 2: "cs_st g = {q \<in> \<Union> (succ A a ` cs_st (refresh_1 f)). even (fst (the (g q)))}"
       using assms unfolding complement_succ_1_def ranks_1_def by simp
     show "cs_st g = st_succ A a (cs_lr g) (cs_st f)"
     proof (cases "cs_st f = {}")
@@ -121,7 +121,7 @@ begin
         using that 1(1) by 
           (auto intro!: cs_lr_apply)
           (metis IntE UN_iff cs_abs_rep cs_lr_dom cs_rep_st domD prod.collapse)
-      have "cs_st g = {q \<in> UNION (cs_st (refresh_1 f)) (succ A a). even (fst (the (g q)))}"
+      have "cs_st g = {q \<in> \<Union> (succ A a ` cs_st (refresh_1 f)). even (fst (the (g q)))}"
         using 2 by this
       also have "cs_st (refresh_1 f) = cs_st f" using False by simp
       also have "{q \<in> \<Union>((succ A a) ` (cs_st f)). even (fst (the (g q)))} =
@@ -143,13 +143,13 @@ begin
     have 2: "Q = {q \<in> if P = {} then dom g else \<Union>((succ A a) ` P). even (the (g q))}"
       using assms(2) unfolding complement_succ_def st_succ_def by simp
     have 3: "Q \<subseteq> dom g" unfolding 2 1(1) using assms(1) by auto
-    show "dom (cs_rep (g, Q)) = UNION (dom (refresh_1 (cs_rep (f, P)))) (succ A a)" using 1 by simp
+    show "dom (cs_rep (g, Q)) = \<Union> (succ A a ` dom (refresh_1 (cs_rep (f, P))))" using 1 by simp
     show "\<And> p q. p \<in> dom (refresh_1 (cs_rep (f, P))) \<Longrightarrow> q \<in> succ A a p \<Longrightarrow>
       fst (the (cs_rep (g, Q) q)) \<le> fst (the (refresh_1 (cs_rep (f, P)) p))"
       using 1(1, 2) by (auto) (metis UN_I cs_rep_apply domI option.sel)
     show "\<And> p. p \<in> dom (cs_rep (g, Q)) \<Longrightarrow> accepting A p \<Longrightarrow> even (fst (the (cs_rep (g, Q) p)))"
       using 1(1, 3) by auto
-    show "cs_st (cs_rep (g, Q)) = {q \<in> UNION (cs_st (refresh_1 (cs_rep (f, P)))) (succ A a).
+    show "cs_st (cs_rep (g, Q)) = {q \<in> \<Union> (succ A a ` cs_st (refresh_1 (cs_rep (f, P)))).
       even (fst (the (cs_rep (g, Q) q)))}"
     proof (cases "P = {}")
       case True

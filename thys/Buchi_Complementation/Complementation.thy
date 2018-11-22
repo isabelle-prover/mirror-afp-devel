@@ -148,7 +148,7 @@ begin
       then show ?case using 1(2) unfolding complement_def by auto
     next
       case (execute v u)
-      have "snd u \<in> UNION (dom (fst (?m !! fst v))) (succ A (w !! fst v))"
+      have "snd u \<in> \<Union> ((succ A (w !! fst v)) ` (dom (fst (?m !! fst v))))"
         using execute(2, 3) by auto
       also have "\<dots> = dom (fst (?m !! Suc (fst v)))"
         using 100 unfolding lr_succ_def by simp
@@ -263,7 +263,7 @@ begin
               succ A (w !! (Suc l + i)) (snd (gtarget (stake (Suc (l + i)) (t @- s)) u))"
             using 21 by auto
           have 22: "snd (gtarget (stake (Suc l + Suc i) (t @- s)) u) \<in>
-            UNION (P (Suc l + i)) (succ A (w !! (Suc l + i)))" using 220 Suc by auto
+            \<Union> (succ A (w !! (Suc l + i)) ` P (Suc l + i))" using 220 Suc by auto
           have "gtarget (stake (Suc l + Suc i) (t @- s)) u = gtrace (t @- s) u !! (l + Suc i)"
             unfolding sscan_snth by simp
           also have "\<dots> = gtrace s v !! (l + Suc i - length t)" using 15(1)
@@ -273,7 +273,7 @@ begin
           also have "sconst k !! (l + Suc i - length t) = k" by simp
           finally have 23: "even (f (gtarget (stake (Suc l + Suc i) (t @- s)) u))" using 13 by auto
           have "snd (gtarget (stake (Suc l + Suc i) (t @- s)) u) \<in>
-            {p \<in> UNION (P (Suc l + i)) (succ A (w !! (Suc l + i))). even (f (Suc (Suc l + i), p))}"
+            {p \<in> \<Union> (succ A (w !! (Suc l + i)) ` P (Suc l + i)). even (f (Suc (Suc l + i), p))}"
             using 21 22 23 by (metis (mono_tags) add_Suc_right mem_Collect_eq prod.collapse)
           also have "\<dots> = st_succ A (w !! (Suc l + i)) (fst (?m !! Suc (Suc l + i))) (P (Suc l + i))"
             unfolding st_succ_def f_def using 20 by simp
@@ -417,7 +417,7 @@ begin
     have g_Suc[simp]: "g (Suc n) \<in> lr_succ A (w !! n) (g n)" for n
     unfolding lr_succ_def
     proof (intro CollectI conjI ballI impI)
-      show "dom (g (Suc n)) = UNION (dom (g n)) (succ A (w !! n))" using snth_in assms(2) by auto
+      show "dom (g (Suc n)) = \<Union> (succ A (w !! n) ` dom (g n))" using snth_in assms(2) by auto
     next
       fix p q
       assume 100: "p \<in> dom (g n)" "q \<in> succ A (w !! n) p"
@@ -565,7 +565,7 @@ begin
           also have "\<dots> \<subseteq> Collect odd" using 26 by this
           finally have 28: "odd (f' (Suc (k + l), r !! Suc l))" by simp
           have "r !! Suc l \<in> P (Suc (k + l))" using 23(2) by (metis add_Suc_right)
-          also have "\<dots> = {p \<in> UNION (P (k + l)) (succ A (w !! (k + l))).
+          also have "\<dots> = {p \<in> \<Union> (succ A (w !! (k + l)) ` P (k + l)).
             even (the (g (Suc (k + l)) p))}" using 23(2) by (auto simp: st_succ_def)
           also have "\<dots> \<subseteq> {p. even (the (g (Suc (k + l)) p))}" by auto
           finally have 29: "even (the (g (Suc (k + l)) (r !! Suc l)))" by auto

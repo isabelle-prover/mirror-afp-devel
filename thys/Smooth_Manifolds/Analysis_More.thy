@@ -339,7 +339,7 @@ proof -
   moreover have "\<Union>\<D> \<subseteq> \<Union>\<F>"
     using \<D>_def by blast
   ultimately have eq1: "\<Union>\<F> = \<Union>\<D>" ..
-  have eq2: "\<Union>\<D> = UNION \<D> G"
+  have eq2: "\<Union>\<D> = \<Union> (G ` \<D>)"
     using G eq1 by auto
   show ?thesis
     apply (rule_tac \<F>' = "G ` \<D>" in that)

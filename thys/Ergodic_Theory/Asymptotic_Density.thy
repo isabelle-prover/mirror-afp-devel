@@ -366,7 +366,7 @@ proof -
     have "B \<inter> {..<n} = (\<Union>j. A j \<inter> {N j..<n})"
       unfolding B_def by auto
     also have "... = (\<Union>j \<in> {..k}. A j \<inter> {N j..<n}) \<union> (\<Union>j\<in>{k<..}. A j \<inter> {N j..<n})"
-      unfolding UN_Un[symmetric] apply (rule arg_cong2[where ?f = UNION]) by auto
+      unfolding UN_Un [symmetric] by (rule arg_cong [of _ _ Union]) auto
     also have "... = (\<Union>j \<in> {..k}. A j \<inter> {N j..<n})"
       unfolding * by simp
     also have "... \<subseteq> (\<Union>j \<in> {..k}. A k \<inter> {..<n})"

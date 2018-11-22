@@ -69,7 +69,7 @@ theorem Resolution_complete:
   shows "\<Turnstile> F \<Longrightarrow> cnf (nnf (\<^bold>\<not>F)) \<turnstile> \<box>"
 proof(erule contrapos_pp)
   assume c: "\<not> (cnf (nnf (\<^bold>\<not> F)) \<turnstile> \<box>)"
-  have "{cnf_form_of (nnf (\<^bold>\<not>F))} \<in> {\<Gamma> |\<Gamma>. \<not> ((\<forall>\<gamma>\<in>\<Gamma>. is_cnf \<gamma>) \<longrightarrow> UNION \<Gamma> cnf \<turnstile> \<box>)}"
+  have "{cnf_form_of (nnf (\<^bold>\<not>F))} \<in> {\<Gamma> |\<Gamma>. \<not> ((\<forall>\<gamma>\<in>\<Gamma>. is_cnf \<gamma>) \<longrightarrow> \<Union> (cnf ` \<Gamma>) \<turnstile> \<box>)}"
     by(simp add: cnf_cnf[OF is_nnf_nnf] c cnf_form_of_is[OF is_nnf_nnf])
   from pcp_sat[OF R_consistent this] have "sat {cnf_form_of (nnf (\<^bold>\<not> F))}" .
   thus "\<not> \<Turnstile> F" by(simp add: sat_def cnf_form_semantics[OF is_nnf_nnf] nnf_semantics)

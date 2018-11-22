@@ -5889,7 +5889,7 @@ proof -
   from assms have "flowsto X T CX (\<Union>g \<in> Gs. g \<union> trap)" by auto
   from flowsto_Union_funE[OF finite_imageI[OF \<open>finite Gs\<close>] this]
   obtain f where f: "\<And>G. G \<in> (\<lambda>g. g \<union> trap) ` Gs \<Longrightarrow> flowsto (f G) T CX G"
-    "X = UNION ((\<lambda>g. g \<union> trap) ` Gs) f"
+    "X = \<Union> (f ` ((\<lambda>g. g \<union> trap) ` Gs))"
     by auto
   define f' where "f' g = f (g \<union> trap)" for g
   have "G \<in> Gs \<Longrightarrow> flowsto (f' G) T CX (G \<union> trap)" for G

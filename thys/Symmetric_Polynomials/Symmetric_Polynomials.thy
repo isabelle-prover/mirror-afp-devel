@@ -402,7 +402,7 @@ lemma vars_diff: "vars (p1 - p2) \<subseteq> vars p1 \<union> vars p2"
   unfolding vars_def
 proof transfer'
   fix p1 p2 :: "(nat \<Rightarrow>\<^sub>0 nat) \<Rightarrow>\<^sub>0 'a"
-  show "UNION (keys (p1 - p2)) keys \<subseteq> \<Union>(keys ` (keys p1)) \<union> \<Union>(keys ` (keys p2))"
+  show "\<Union> (keys ` keys (p1 - p2)) \<subseteq> \<Union>(keys ` (keys p1)) \<union> \<Union>(keys ` (keys p2))"
     using keys_diff_subset[of p1 p2] by (auto simp flip: not_in_keys_iff_lookup_eq_zero)
 qed
 

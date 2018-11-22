@@ -208,9 +208,9 @@ proof -
   have agree':"Vagree \<nu> \<nu>' ((\<Union>i. (\<Union>j \<in>(FVT (args i)). primify j)))"
     using fvdiff_plus1 FVDiff.simps agree by (auto)
   fix i :: 'a
-  have "\<And>S. \<not> S \<subseteq> (\<Union>f. UNION (FVT (args f)) primify) \<or> Vagree \<nu> \<nu>' S"
+  have "\<And>S. \<not> S \<subseteq> (\<Union>f. \<Union> (primify ` FVT (args f))) \<or> Vagree \<nu> \<nu>' S"
     using agree' agree_supset by blast
-  then have "\<And>f. f \<notin> UNIV \<or> Vagree \<nu> \<nu>' (UNION (FVT (args f)) primify)"
+  then have "\<And>f. f \<notin> UNIV \<or> Vagree \<nu> \<nu>' (\<Union> (primify ` FVT (args f)))"
     by blast
   then show "Vagree \<nu> \<nu>' (FVDiff (args i))"
     by simp

@@ -2294,7 +2294,7 @@ begin
             by blast
         } note AUX_ex_conj_SeqSI = this
 
-        have "GS.seg ?SBIP' i = UNION {i..<length B} seg"
+        have "GS.seg ?SBIP' i = \<Union> (seg ` {i..<length B})"
           unfolding GS.seg_def[abs_def]
           apply simp
           apply (rule)

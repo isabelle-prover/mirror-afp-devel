@@ -151,13 +151,13 @@ proof -
   proof(induction F arbitrary: n)
     case (Atom x)
     have *: "Atom x \<in> all_formulas_of_size K 0" using Atom by simp
-    hence **: "Atom x \<in> UNION (set [0..<(Suc m)]) (all_formulas_of_size K)" for m
+    hence **: "Atom x \<in> \<Union> (all_formulas_of_size K ` set [0..<Suc m])" for m
       by (simp; metis atLeastLessThan_iff le_zero_eq not_le)
     thus ?case using Atom by(cases n; simp)
   next
     case Bot
     have *: "Bot \<in> all_formulas_of_size K 0" by simp
-    hence **: "Bot \<in> UNION (set [0..<(Suc m)]) (all_formulas_of_size K)" for m
+    hence **: "Bot \<in> \<Union> (all_formulas_of_size K ` set [0..<Suc m])" for m
       by (simp; metis atLeastLessThan_iff le_zero_eq not_le)
     then show ?case using Bot by(cases n; simp)
   next

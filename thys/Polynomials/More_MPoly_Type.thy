@@ -129,7 +129,7 @@ lemma coeff_all_0:"(\<And>m. coeff p m = 0) \<Longrightarrow> p=0"
   by (metis aux coeff_def mapping_of_inject zero_mpoly.rep_eq)
 
 definition vars::"'a::zero mpoly \<Rightarrow> nat set" where
-  "vars p = UNION (keys (mapping_of p)) (\<lambda>m. keys m)"
+  "vars p = \<Union> (keys ` keys (mapping_of p))"
 
 lemma vars_finite: "finite (vars p)" unfolding vars_def by auto
 

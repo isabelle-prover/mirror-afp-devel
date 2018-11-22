@@ -172,8 +172,8 @@ begin
     let ?S = "op_set_filter (Not \<circ> op_set_isEmpty \<circ> g) S"
     have 1: "inj_on g ?S" using assms(1) by (fastforce intro: inj_onI)
     have "xs \<bind> f = concat (map f ?xs)" by (induct xs) (auto split: list.split)
-    also have "(\<dots>, UNION ?S g) \<in> \<langle>B\<rangle> list_set_rel" using assms 1 by parametricity auto
-    also have "UNION ?S g = S \<bind> g" by auto auto
+    also have "(\<dots>, \<Union> (g ` ?S)) \<in> \<langle>B\<rangle> list_set_rel" using assms 1 by parametricity auto
+    also have "\<Union> (g ` ?S) = S \<bind> g" by auto auto
     finally show ?thesis by this
   qed
 
@@ -197,7 +197,7 @@ begin
       assumes to_list: "SIDE_GEN_ALGO (is_set_to_list A Rs1 tol)"
       assumes empty: "GEN_OP emp {} (\<langle>B\<rangle> Rs3)"
       assumes union: "GEN_OP un union (\<langle>B\<rangle> Rs2 \<rightarrow> \<langle>B\<rangle> Rs3 \<rightarrow> \<langle>B\<rangle> Rs3)"
-      shows "(gen_UNION tol emp un, UNION) \<in> \<langle>A\<rangle> Rs1 \<rightarrow> (A \<rightarrow> \<langle>B\<rangle> Rs2) \<rightarrow> \<langle>B\<rangle> Rs3"
+      shows "(gen_UNION tol emp un, \<lambda>A f. \<Union> (f ` A)) \<in> \<langle>A\<rangle> Rs1 \<rightarrow> (A \<rightarrow> \<langle>B\<rangle> Rs2) \<rightarrow> \<langle>B\<rangle> Rs3"
     proof (intro fun_relI)
       note [unfolded autoref_tag_defs, param] = empty union
       fix f g T S
@@ -280,7 +280,7 @@ begin
       assumes "SIDE_PRECOND_OPT (\<forall> x \<in> S. \<forall> y \<in> S. x \<noteq> y \<longrightarrow> g x \<inter> g y = {})"
       assumes "(xs, S) \<in> \<langle>A\<rangle> list_set_rel" "(f, g) \<in> A \<rightarrow> \<langle>B\<rangle> list_set_rel"
       shows "(xs \<bind> f,
-        (OP UNION ::: \<langle>A\<rangle> list_set_rel \<rightarrow> (A \<rightarrow> \<langle>B\<rangle> list_set_rel) \<rightarrow> \<langle>B\<rangle> list_set_rel) $ S $ g) \<in>
+        (OP (\<lambda>A f. \<Union> (f ` A)) ::: \<langle>A\<rangle> list_set_rel \<rightarrow> (A \<rightarrow> \<langle>B\<rangle> list_set_rel) \<rightarrow> \<langle>B\<rangle> list_set_rel) $ S $ g) \<in>
         \<langle>B\<rangle> list_set_rel"
       using assms list_set_bind unfolding bind_UNION autoref_tag_defs by metis
 

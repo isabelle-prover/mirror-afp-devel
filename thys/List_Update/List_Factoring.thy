@@ -331,7 +331,7 @@ proof -
                 = sum (%i. ALG' A qs init i x) {i. i<length qs}"
                   by (metis lessThan_def)
               also have "\<dots> = sum (%i. ALG' A qs init i x) 
-                        (UNION {y. y\<in> set init} (\<lambda>y. {i. i<length qs \<and> qs ! i = y}))"
+                        (\<Union>y\<in>{y. y \<in> set init}. {i. i < length qs \<and> qs ! i = y})"
                          apply(rule sum.cong)
                           apply(auto)
                          using inlist by auto
@@ -1884,7 +1884,7 @@ proof -
                 = sum (%i. ALG x qs i (?config i, ())) {i. i<length qs}" 
                 by (simp add: lessThan_def) 
               also have "\<dots> = sum (%i. ALG x qs i (?config i, ())) 
-                        (UNION {y. y\<in> set init} (\<lambda>y. {i. i<length qs \<and> qs ! i = y}))"
+                        (\<Union>y\<in>{y. y \<in> set init}. {i. i < length qs \<and> qs ! i = y})"
                          apply(rule sum.cong)
                          proof goal_cases
                           case 1                          

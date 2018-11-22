@@ -609,16 +609,13 @@ proof (induct "length as" arbitrary: as rule: less_induct)
     from Cons less.prems have A: "distincts (orbits_list f (fold remove1 (orbit_list f a) as'))"
       by (intro less) (auto simp: distinct_fold_remove1 length_fold_remove1_le less_Suc_eq_le)
 
-    have B: "set (orbit_list f a) \<inter> UNION (set (orbits_list f ?as')) set = {}"
+    have B: "set (orbit_list f a) \<inter> \<Union> sset (orbits_list f (fold remove1 (orbit_list f a) as')) = {}"
     proof -
       have "orbit f a \<inter> set (fold remove1 (orbit_list f a) as') = {}"
         using assms less.prems Cons by (simp add: set_fold_remove1_distinct set_orbit_list')
-      then have "orbit f a \<inter> \<Union>(orbit f ` set (fold remove1 (orbit_list f a) as')) = {}"
+      then have "orbit f a \<inter> \<Union> (orbit f ` set (fold remove1 (orbit_list f a) as')) = {}"
         by auto (metis assms(2) cyclic_on_orbit disjoint_iff_not_equal permutation_self_in_orbit[OF assms(2)] orbit_cyclic_eq3 permutation_permutes)
-      moreover
-      have "UNION (set (orbits_list f ?as')) set = \<Union>sset (orbits_list f ?as')" by blast
-      ultimately
-      show ?thesis using assms
+      then show ?thesis using assms
       by (auto simp: set_orbit_list' sset_orbits_list disjoint_iff_not_equal)
     qed
     show ?thesis

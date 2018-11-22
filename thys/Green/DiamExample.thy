@@ -274,7 +274,7 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
         apply (auto simp add: diamond_cube_boundary_explicit diamond_x_def diamond_top_edges_def diamond_bot_edges_def)
          apply (metis (no_types, hide_lams) abs_zero cancel_comm_monoid_add_class.diff_cancel diamond_x_def diamond_y_def diff_0 minus_diff_eq mult.commute mult_zero_right prod.inject neqs2)
         by (metis (no_types, hide_lams) cancel_comm_monoid_add_class.diff_cancel d_gt_0 divide_eq_0_iff linorder_not_le mult.commute mult_zero_right order_refl prod.sel(1) zero_neq_numeral)
-      then show "UNION (boundary (diamond_cube) - ?pj) ?f = ?subdiv"
+      then show "\<Union> (?f ` (boundary (diamond_cube) - ?pj)) = ?subdiv"
         by (auto simp add: diamond_top_edges_def diamond_bot_edges_def diamond_cube_boundary_to_subdiv_def)
       have "chain_subdiv_path (reversepath (\<lambda>x. (diamond_x x, diamond_y (diamond_x x))))
                  {(- 1::int, \<lambda>x. (diamond_x(x/2), diamond_x(x/2) + d/2)),
@@ -320,7 +320,7 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
         "\<forall>x\<in>boundary (diamond_cube) - ?pj. finite (?f x)"
         by(simp_all add: diamond_cube_boundary_to_subdiv_def UNION_eq 1 diamond_top_edges_def diamond_bot_edges_def diamond_bot_left_edge_def diamond_bot_right_edge_def diamond_top_left_edge_def diamond_top_right_edge_def neqs1)
     qed
-    have *: "\<And>f. UNION {rot_diamond_cube} f = f (rot_diamond_cube)" by auto
+    have *: "\<And>f. \<Union> (f ` {rot_diamond_cube}) = f (rot_diamond_cube)" by auto
     show "chain_subdiv_chain (two_chain_vertical_boundary {rot_diamond_cube} - ?pi) ?subdiv"
       unfolding chain_subdiv_chain_character two_chain_vertical_boundary_def *
     proof (intro exI conjI)
@@ -329,7 +329,7 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
         apply (auto simp add: rot_diamond_cube_vertical_boundary_explicit  diamond_left_edges_def diamond_right_edges_def)
          apply (metis (no_types, hide_lams) add.inverse_inverse add_diff_cancel_right' diff_numeral_special(11) mult.left_neutral mult.right_neutral prod.inject neqs1(2) uminus_add_conv_diff)
         by (metis (no_types, hide_lams) diff_0 mult.left_neutral mult_minus_left mult_zero_right prod.inject neqs1(2))
-      show "UNION (vertical_boundary (rot_diamond_cube) - ?pi) ?f = ?subdiv"
+      show "\<Union> (?f ` (vertical_boundary (rot_diamond_cube) - ?pi)) = ?subdiv"
         apply (simp add: rot_diamond_cube_boundary_to_subdiv_def 1 UNION_eq subpath_def)
         apply (auto simp add: set_eq_iff diamond_right_edges_def diamond_left_edges_def)
         done

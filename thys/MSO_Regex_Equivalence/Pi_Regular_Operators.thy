@@ -391,7 +391,7 @@ qed
 
 lemma samequot_soundness:
   assumes "while_option fst (rderiv_and_add as) (True, [\<guillemotleft>r\<guillemotright>]) = Some (b, rs)"
-  shows "lang n (PLUS rs) = UNION {\<guillemotleft>rderivs (replicate m as) r\<guillemotright> |m. True} (lang n)"
+  shows "lang n (PLUS rs) = \<Union> (lang n ` {\<guillemotleft>rderivs (replicate m as) r\<guillemotright> | m. True})"
 proof -
   have "\<not> b" using while_option_stop[OF assms] by simp
   moreover 
@@ -436,11 +436,11 @@ proof -
       with * show ?thesis unfolding invar_rderiv_and_add_def by auto
     qed
   }
-  hence "UNION {\<guillemotleft>rderivs (replicate m as) r\<guillemotright> |m. True} (lang n) \<subseteq> lang n (PLUS rs)"
+  hence "\<Union> (lang n ` {\<guillemotleft>rderivs (replicate m as) r\<guillemotright> |m. True}) \<subseteq> lang n (PLUS rs)"
     by (fastforce simp: in_set_conv_nth intro!: bexI[rotated])
-  moreover from * have "lang n (PLUS rs) \<subseteq> UNION {\<guillemotleft>rderivs (replicate m as) r\<guillemotright> |m. True} (lang n)"
+  moreover from * have "lang n (PLUS rs) \<subseteq> \<Union> (lang n ` {\<guillemotleft>rderivs (replicate m as) r\<guillemotright> |m. True})"
     unfolding invar_rderiv_and_add_def by (fastforce simp: in_set_conv_nth)
-  ultimately show "lang n (PLUS rs) = UNION {\<guillemotleft>rderivs (replicate m as) r\<guillemotright> |m. True} (lang n)" by blast
+  ultimately show "lang n (PLUS rs) = \<Union> (lang n ` {\<guillemotleft>rderivs (replicate m as) r\<guillemotright> |m. True})" by blast
 qed
 
 lemma length_subset_card: "\<lbrakk>finite X; distinct (x # xs); set (x # xs) \<subseteq> X\<rbrakk> \<Longrightarrow> length xs < card X"

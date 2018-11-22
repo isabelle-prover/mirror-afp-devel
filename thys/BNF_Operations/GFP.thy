@@ -4408,8 +4408,8 @@ lemmas F2set3_JF2set_JF2set = set_mp[OF F2set3_JF2set_incl_JF2set]
 lemma JFset_le:
   fixes a :: "'a JF1" and b :: "'a JF2"
   shows
-    "JF1set a \<subseteq> F1set1 (dtor1 a) \<union> (UNION (F1set2 (dtor1 a)) JF1set \<union> UNION (F1set3 (dtor1 a)) JF2set) \<and>
-  JF2set b \<subseteq> F2set1 (dtor2 b) \<union> (UNION (F2set2 (dtor2 b)) JF1set \<union> UNION (F2set3 (dtor2 b)) JF2set)"
+    "JF1set a \<subseteq> F1set1 (dtor1 a) \<union> (\<Union> (JF1set ` F1set2 (dtor1 a)) \<union> \<Union> (JF2set ` F1set3 (dtor1 a))) \<and>
+    JF2set b \<subseteq> F2set1 (dtor2 b) \<union> (\<Union> (JF1set ` F2set2 (dtor2 b)) \<union> \<Union> (JF2set ` F2set3 (dtor2 b)))"
   apply (rule JFset_minimal)
        apply (rule Un_upper1)
       apply (rule Un_upper1)

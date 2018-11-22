@@ -661,7 +661,7 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
     show "chain_reparam_chain' (boundary (circle_cube) - ?pi) ?subdiv"
       unfolding chain_reparam_chain'_def
     proof (intro exI conjI impI)
-      show "UNION ?one_chaini ?f = ?subdiv"
+      show "\<Union> (?f ` ?one_chaini) = ?subdiv"
         apply (simp add: circle_cube_boundary_to_polarcircle_def circle_cube_boundary_explicit)
         using circle_top_bot_edges_neq' by metis
         let ?l = "[subcube 0 (1/4) (1, circle_polar), subcube (1/4) (1/2) (1, circle_polar)]"
@@ -716,7 +716,7 @@ proof (rule exI [of _ "{}"], simp, intro conjI ballI)
     proof (intro exI conjI)
       have rw: "?one_chain2.0 = {rot_circle_left_edge, rot_circle_right_edge}"
         by(auto simp add: rot_circle_cube_vertical_boundary_explicit two_chain_vertical_boundary_def)
-      show "UNION ?one_chain2.0 ?f = ?subdiv"
+      show "\<Union> (?f ` ?one_chain2.0) = ?subdiv"
         using rot_circle_right_top_edges_neq'
         by (auto simp add: rot_circle_cube_boundary_to_polarcircle_def rw)
       show "(\<forall>cube\<in>?one_chain2.0. chain_reparam_weak_path (rec_join [cube]) (?f cube))"

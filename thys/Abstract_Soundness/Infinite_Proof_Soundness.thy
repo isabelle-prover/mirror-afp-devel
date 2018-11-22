@@ -588,7 +588,7 @@ definition rels where
   "rels pointsTo \<equiv> {((pointsTo, pointsTo l'), (pointsTo, Link l')) | l'. True}"
 
 definition rel :: "(('link \<Rightarrow> ('sequent, 'rule, 'link) ctree) \<times> ('sequent, 'rule, 'link) ctree) rel" where
-  "rel \<equiv> UNION {pointsTo . wf {(l,l'). pointsTo l' = Link l}} rels"
+  "rel \<equiv> \<Union> (rels ` {pointsTo. wf {(l, l'). pointsTo l' = Link l}})"
 
 lemma wf_rels[simp]:
   assumes "wf {(l,l'). (pointsTo :: 'link \<Rightarrow> ('sequent, 'rule, 'link)ctree) l' = Link l}"
