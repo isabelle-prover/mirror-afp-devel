@@ -95,20 +95,29 @@ context includes cset.lifting begin
 lemma cUNION_assoc: "cUNION (cUNION A f) g = cUNION A (\<lambda>x. cUNION (f x) g)"
   by transfer auto
 
+lemma cUnion_cempty [simp]: "cUnion cempty = cempty"
+  by transfer simp
+
 lemma cUNION_cempty [simp]: "cUNION cempty f = cempty"
-  by transfer auto
+  by simp
+
+lemma cUnion_cinsert: "cUnion (cinsert x A) = cUn x (cUnion A)"
+  by transfer simp
 
 lemma cUNION_cinsert: "cUNION (cinsert x A) f = cUn (f x) (cUNION A f)"
-  by transfer auto
+  by (simp add: cUnion_cinsert)
+
+lemma cUnion_csingle [simp]: "cUnion (csingle x) = x"
+  by (simp add: cUnion_cinsert)
 
 lemma cUNION_csingle [simp]: "cUNION (csingle x) f = f x"
-  by(simp add: cUNION_cinsert)
+  by simp
 
 lemma cUNION_csingle2 [simp]: "cUNION A csingle = A"
-  by transfer auto
+  by (fact cUN_csingleton)
 
 lemma cUNION_cUn: "cUNION (cUn A B) f = cUn (cUNION A f) (cUNION B f)"
-  by transfer auto
+  by simp
 
 lemma cUNION_parametric [transfer_rule]: includes lifting_syntax shows
   "(rel_cset A ===> (A ===> rel_cset B) ===> rel_cset B) cUNION cUNION"
@@ -704,14 +713,16 @@ proof
   let ?D = "cUNION (cinsert \<^bold>1 (csingle \<^bold>2)) (\<lambda>c. if c = \<^bold>1 then csingle \<^bold>1 else cinsert \<^bold>2 (csingle \<^bold>3))"
   let ?f = "\<lambda>c. if c = \<^bold>1 then m1 else if c = \<^bold>2 then m2 else m3"
   have "alt (alt m1 m2) m3 = altc ?C ?f"
-    by(auto simp add: alt_def altc_cUNION altc_single intro!: altc_cong)
+    by (simp only: altc_cUNION) (auto simp add: alt_def altc_single intro!: altc_cong)
   also have "?C = ?D" including cset.lifting by transfer(auto simp add: insert_commute)
   also have "altc ?D ?f = alt m1 (alt m2 m3)"
-    apply(clarsimp simp add: altc_cUNION alt_def altc_single intro!: altc_cong)
-    apply(rule altc_parametric[where R="conversep rel_12_23", THEN rel_funD, THEN rel_funD])
+    apply (simp only: altc_cUNION)
+    apply (clarsimp simp add: alt_def altc_single intro!: altc_cong)
+    apply (rule altc_parametric [where R="conversep rel_12_23", THEN rel_funD, THEN rel_funD])
     subgoal by simp
-    subgoal including cset.lifting by transfer(simp add: rel_set_def rel_12_23.simps)
-    subgoal by(auto simp add: rel_fun_def rel_12_23.simps)
+    subgoal including cset.lifting by transfer
+      (simp add: rel_set_def rel_12_23.simps)
+    subgoal by (simp add: rel_fun_def rel_12_23.simps)
     done
   finally show "alt (alt m1 m2) m3 = alt m1 (alt m2 m3)" .
 qed
@@ -4306,7 +4317,7 @@ lemma cr_ndi_prob_return [cr_prob_ndi_transfer]:
 
 lemma cr_ndi_prob_bind [cr_prob_ndi_transfer]:
   "(cr_prob_ndi A ===> (A ===> cr_prob_ndi A) ===> cr_prob_ndi A) bind_pmf bind_nondet"
-  apply(clarsimp simp add: cr_prob_ndi.simps cUNION.rep_eq intro!: rel_funI)
+  apply (clarsimp simp add: cr_prob_ndi.simps cUnion.rep_eq cimage.rep_eq intro!: rel_funI)
   apply(rule Union_transfer[THEN rel_funD])
   apply(rule image_transfer[THEN rel_funD, THEN rel_funD])
    apply(rule rel_funI)
@@ -4317,7 +4328,7 @@ lemma cr_ndi_prob_bind [cr_prob_ndi_transfer]:
 
 lemma cr_ndi_prob_sample [cr_prob_ndi_transfer]:
   "(cr_pmf_cset ===> ((=) ===> cr_prob_ndi A) ===> cr_prob_ndi A) bind_pmf altc_nondet"
-  apply(clarsimp intro!: rel_funI simp add: cr_pmf_cset.simps cr_prob_ndi.simps cUNION.rep_eq cset_pmf.rep_eq)
+  apply(clarsimp intro!: rel_funI simp add: cr_pmf_cset.simps cr_prob_ndi.simps cUnion.rep_eq cimage.rep_eq cset_pmf.rep_eq)
   apply(rule Union_transfer[THEN rel_funD])
   apply(rule image_transfer[THEN rel_funD, THEN rel_funD])                                  
    apply(rule rel_funI)
