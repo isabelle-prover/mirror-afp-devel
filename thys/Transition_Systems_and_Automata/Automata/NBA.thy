@@ -3,6 +3,7 @@ section {* Nondeterministic Büchi Automata *}
 theory NBA
 imports
   "../Basic/Sequence_Zip"
+  "../Basic/Acceptance"
   "../Transition_Systems/Transition_System"
   "../Transition_Systems/Transition_System_Extra"
   "../Transition_Systems/Transition_System_Construction"
@@ -12,7 +13,7 @@ begin
     (alphabet: "'label set")
     (initial: "'state set")
     (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state set")
-    (accepting: "'state \<Rightarrow> bool")
+    (accepting: "'state pred")
 
   global_interpretation nba: transition_system_initial
     "\<lambda> a p. snd a" "\<lambda> a p. fst a \<in> alphabet A \<and> snd a \<in> succ A (fst a) p" "\<lambda> p. p \<in> initial A"

@@ -3,6 +3,7 @@ section {* Deterministic Rabin Automata *}
 theory DRA
 imports
   "../Basic/Sequence_Zip"
+  "../Basic/Acceptance"
   "../Transition_Systems/Transition_System"
   "../Transition_Systems/Transition_System_Extra"
   "../Transition_Systems/Transition_System_Construction"
@@ -12,7 +13,7 @@ begin
     (alphabet: "'label set")
     (initial: "'state")
     (succ: "'label \<Rightarrow> 'state \<Rightarrow> 'state")
-    (accepting: "(('state \<Rightarrow> bool) \<times> ('state \<Rightarrow> bool)) set")
+    (accepting: "'state rabin gen")
 
   global_interpretation dra: transition_system_initial
     "succ A" "\<lambda> a p. a \<in> alphabet A" "\<lambda> p. p = initial A"
@@ -21,9 +22,9 @@ begin
       enableds = dra.enableds and paths = dra.paths and runs = dra.runs
     by this
 
-  abbreviation "target \<equiv> dra.target"
-  abbreviation "states \<equiv> dra.states"
-  abbreviation "trace \<equiv> dra.trace"
+  abbreviation target where "target \<equiv> dra.target"
+  abbreviation states where "states \<equiv> dra.states"
+  abbreviation trace where "trace \<equiv> dra.trace"
 
   abbreviation successors :: "('label, 'state) dra \<Rightarrow> 'state \<Rightarrow> 'state set" where
     "successors \<equiv> dra.successors TYPE('label)"
@@ -44,15 +45,15 @@ begin
   qed
 
   definition language :: "('label, 'state) dra \<Rightarrow> 'label stream set" where
-    "language A \<equiv> {w. run A w (initial A) \<and> rabin (accepting A) (trace A w (initial A))}"
+    "language A \<equiv> {w. run A w (initial A) \<and> cogen rabin (accepting A) (trace A w (initial A))}"
 
   lemma language[intro]:
-    assumes "run A w (initial A)" "rabin (accepting A) (trace A w (initial A))"
+    assumes "run A w (initial A)" "cogen rabin (accepting A) (trace A w (initial A))"
     shows "w \<in> language A"
     using assms unfolding language_def by auto
   lemma language_elim[elim]:
     assumes "w \<in> language A"
-    obtains "run A w (initial A)" "rabin (accepting A) (trace A w (initial A))"
+    obtains "run A w (initial A)" "cogen rabin (accepting A) (trace A w (initial A))"
     using assms unfolding language_def by auto
 
   lemma language_alphabet: "language A \<subseteq> streams (alphabet A)"

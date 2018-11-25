@@ -20,7 +20,12 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
     "Automata/NBA_Explicit"
     "Automata/NBA_Translate"
     "Automata/DBA"
+    "Automata/DGBA"
+    "Automata/DBA_Combine"
     "Automata/DCA"
+    "Automata/DGCA"
+    "Automata/DCA_Combine"
     "Automata/DRA"
+    "Automata/DRA_Combine"
   document_files
     "root.tex"

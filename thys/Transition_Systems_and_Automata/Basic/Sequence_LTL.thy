@@ -46,9 +46,10 @@ begin
     then show ?thesis using assms(2) by (coinduct) (metis alw_sdrop not_ev_iff sdrop_stl sdrop_wait)
   qed
 
-  subsection {* Acceptance Conditions *}
+  subsection {* Infinite Occurrence *}
 
   abbreviation "infs P w \<equiv> alw (ev (holds P)) w"
+  abbreviation "fins P w \<equiv> \<not> infs P w"
 
   lemma infs_suffix: "infs P w \<longleftrightarrow> (\<forall> u v. w = u @- v \<longrightarrow> Bex (sset v) P)"
     using alwD alw_iff_sdrop alw_shift ev_holds_sset stake_sdrop by (metis (mono_tags, hide_lams))
@@ -82,6 +83,22 @@ begin
   lemma infs_all: "Ball (sset w) P \<Longrightarrow> infs P w" unfolding infs_snth by auto
   lemma infs_any: "infs P w \<Longrightarrow> Bex (sset w) P" unfolding ev_holds_sset by auto
 
+  lemma infs_bot[iff]: "infs bot w \<longleftrightarrow> False" using infs_any by auto
+  lemma infs_top[iff]: "infs top w \<longleftrightarrow> True" by (simp add: infs_all)
+  lemma infs_disj[iff]: "infs (\<lambda> a. P a \<or> Q a) w \<longleftrightarrow> infs P w \<or> infs Q w"
+    unfolding infs_snth using le_trans le_cases by metis
+  lemma infs_bex[iff]:
+    assumes "finite S"
+    shows "infs (\<lambda> a. \<exists> x \<in> S. P x a) w \<longleftrightarrow> (\<exists> x \<in> S. infs (P x) w)"
+    using assms infs_any by induct auto
+  lemma infs_bex_le_nat[iff]: "infs (\<lambda> a. \<exists> k < n :: nat. P k a) w \<longleftrightarrow> (\<exists> k < n. infs (P k) w)"
+  proof -
+    have "infs (\<lambda> a. \<exists> k < n. P k a) w \<longleftrightarrow> infs (\<lambda> a. \<exists> k \<in> {k. k < n}. P k a) w" by simp
+    also have "\<dots> \<longleftrightarrow> (\<exists> k \<in> {k. k < n}. infs (P k) w)" by blast
+    also have "\<dots> \<longleftrightarrow> (\<exists> k < n. infs (P k) w)" by simp
+    finally show ?thesis by this
+  qed
+
   lemma infs_cycle[iff]:
     assumes "w \<noteq> []"
     shows "infs P (cycle w) \<longleftrightarrow> Bex (set w) P"
@@ -91,8 +108,5 @@ begin
     show "Bex (set w) P \<Longrightarrow> infs P (cycle w)"
       using assms by (coinduction rule: infs_set_coinduct) (blast dest: cycle_decomp)
   qed
-
-  definition rabin :: "(('a \<Rightarrow> bool) \<times> ('a \<Rightarrow> bool)) set \<Rightarrow> 'a stream \<Rightarrow> bool" where
-    "rabin S w \<equiv> \<exists> (E, F) \<in> S. \<not> infs E w \<and> infs F w"
 
 end

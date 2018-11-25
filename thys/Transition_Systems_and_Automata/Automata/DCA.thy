@@ -3,6 +3,7 @@ section {* Deterministic Co-Büchi Automata *}
 theory DCA
 imports
   "../Basic/Sequence_Zip"
+  "../Basic/Acceptance"
   "../Transition_Systems/Transition_System"
   "../Transition_Systems/Transition_System_Extra"
   "../Transition_Systems/Transition_System_Construction"
@@ -21,9 +22,9 @@ begin
       enableds = dca.enableds and paths = dca.paths and runs = dca.runs
     by this
 
-  abbreviation "target \<equiv> dca.target"
-  abbreviation "states \<equiv> dca.states"
-  abbreviation "trace \<equiv> dca.trace"
+  abbreviation target where "target \<equiv> dca.target"
+  abbreviation states where "states \<equiv> dca.states"
+  abbreviation trace where "trace \<equiv> dca.trace"
 
   abbreviation successors :: "('label, 'state) dca \<Rightarrow> 'state \<Rightarrow> 'state set" where
     "successors \<equiv> dca.successors TYPE('label)"
