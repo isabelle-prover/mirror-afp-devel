@@ -109,7 +109,7 @@ fun eval source =
   end
 
 val eval_source =
-  eval o Input.source_content
+  eval o #1 o Input.source_content
 
 fun string_of_prog ctxt t =
   let
@@ -130,7 +130,7 @@ fun cakeml_cmd ctxt mode source =
   let
     val source =
       case mode of
-        Literal => Input.source_content source
+        Literal => #1 (Input.source_content source)
       | Prog =>
           Syntax.implode_input source
           |> Syntax.parse_term ctxt
