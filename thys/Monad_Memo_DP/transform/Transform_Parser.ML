@@ -9,7 +9,7 @@ fun dp_fun binding =
 *)
 
 val memoizes_parser =
-  Parse.position Parse.name (* name of locale, e.g. dp_consistency_rbt *)
+  Parse.name_position (* name of locale, e.g. dp_consistency_rbt *)
 
 val monadifies_parser =
   Parse.term (* term to be monadified *)
@@ -24,7 +24,7 @@ val dp_monadify_cmd_parser =
   -- Scan.option (@{keyword "("} |-- (* optional definitions, ".simps" as default *)
       Parse.thms1
     --| @{keyword ")"})
-  -- Scan.option (@{keyword with_memory} |-- Parse.position Parse.name) (* e.g. dp_consistency_rbt *)
+  -- Scan.option (@{keyword with_memory} |-- Parse.name_position) (* e.g. dp_consistency_rbt *)
 
 val instance =
   (Parse.where_ |-- Parse.and_list1 (Parse.name -- (Parse.$$$ "=" |-- Parse.term))
@@ -34,7 +34,7 @@ val dp_fun_part1_parser =
   (Parse.binding --| Parse.$$$ ":") (* scope, e.g., bf\<^sub>T *)
   -- Parse.term (* term to be monadified, e.g., bf *)
   -- Scan.option (@{keyword with_memory}
-    |-- Parse.opt_keyword "default_proof" -- Parse.position Parse.name -- instance
+    |-- Parse.opt_keyword "default_proof" -- Parse.name_position -- instance
     ) (* e.g. dp_consistency_rbt *)
 
 val dp_fun_part2_parser =

@@ -100,7 +100,7 @@ val _ =
 
 val _ = Theory.setup
   (ML_Antiquotation.inline @{binding named_theorems_rev}
-    (Args.context -- Scan.lift (Parse.position Args.name) >>
+    (Args.context -- Scan.lift Args.name_position >>
       (fn (ctxt, name) => ML_Syntax.print_string (check ctxt name))));
 
 end;
