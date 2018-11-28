@@ -7493,3 +7493,18 @@ abstract =
   <a href="http://www.math.lsu.edu/~oxley/survey4.pdf">`What
   is a Matroid?'</a>.</p>
 
+[Graph_Saturation]
+title = Graph Saturation
+author = Sebastiaan J. C. Joosten<>
+topic = Logic/Rewriting, Mathematics/Graph Theory
+date = 2018-11-23
+notify = sjcjoosten@gmail.com
+abstract = 
+  This is an Isabelle/HOL formalisation of graph saturation, closely
+  following a <a href="https://doi.org/10.1016/j.jlamp.2018.06.005">paper by the author</a> on graph saturation.
+  Nine out of ten lemmas of the original paper are proven in this
+  formalisation. The formalisation additionally includes two theorems
+  that show the main premise of the paper: that consistency and
+  entailment are decided through graph saturation. This formalisation
+  does not give executable code, and it did not implement any of the
+  optimisations suggested in the paper.

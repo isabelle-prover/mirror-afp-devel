@@ -9,7 +9,23 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>16 Nov 2018 00:00:00 +0000</pubDate>
+    <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Graph Saturation</title>
+              <link>https://www.isa-afp.org/entries/Graph_Saturation.html</link>
+       <guid>https://www.isa-afp.org/entries/Graph_Saturation.html</guid>
+       <dc:creator> Sebastiaan J. C. Joosten       </dc:creator>
+       <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+This is an Isabelle/HOL formalisation of graph saturation, closely
+following a &lt;a href=&#34;https://doi.org/10.1016/j.jlamp.2018.06.005&#34;&gt;paper by the author&lt;/a&gt; on graph saturation.
+Nine out of ten lemmas of the original paper are proven in this
+formalisation. The formalisation additionally includes two theorems
+that show the main premise of the paper: that consistency and
+entailment are decided through graph saturation. This formalisation
+does not give executable code, and it did not implement any of the
+optimisations suggested in the paper.</description>
+    </item>
     <item>
        <title>Matroids</title>
               <link>https://www.isa-afp.org/entries/Matroids.html</link>
@@ -555,24 +571,6 @@ equivalent to the ones we studied before, which includes an axioms set
 suggested by Scott in the 1970s and another axioms set proposed by
 Freyd and Scedrov in 1990, which we slightly modified to remedy a
 minor technical issue.</description>
-    </item>
-    <item>
-       <title>Monadification, Memoization and Dynamic Programming</title>
-              <link>https://www.isa-afp.org/entries/Monad_Memo_DP.html</link>
-       <guid>https://www.isa-afp.org/entries/Monad_Memo_DP.html</guid>
-       <dc:creator> Simon Wimmer, Shuwei Hu, Tobias Nipkow       </dc:creator>
-       <pubDate>22 May 2018 00:00:00 +0000</pubDate>
-       <description>
-We present a lightweight framework for the automatic verified
-(functional or imperative) memoization of recursive functions. Our
-tool can turn a pure Isabelle/HOL function definition into a
-monadified version in a state monad or the Imperative HOL heap monad,
-and prove a correspondence theorem. We provide a variety of memory
-implementations for the two types of monads. A number of simple
-techniques allow us to achieve bottom-up computation and
-space-efficient memoization. The framework’s utility is demonstrated
-on a number of representative dynamic programming problems. A detailed
-description of our work can be found in the accompanying paper [2].</description>
     </item>
   </channel>
 </rss>
