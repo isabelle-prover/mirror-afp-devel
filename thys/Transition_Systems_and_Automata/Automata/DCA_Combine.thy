@@ -4,39 +4,74 @@ theory DCA_Combine
 imports "DCA" "DGCA"
 begin
 
-  definition dcai :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list) dca" where
-    "dcai AA \<equiv> dca
+  definition dcai :: "('label, 'state\<^sub>1) dca \<Rightarrow> ('label, 'state\<^sub>2) dca \<Rightarrow>
+    ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) dca" where
+    "dcai A B \<equiv> dca
+      (dca.alphabet A \<inter> dca.alphabet B)
+      (dca.initial A, dca.initial B)
+      (\<lambda> a (p, q). (dca.succ A a p, dca.succ B a q))
+      (\<lambda> (p, q). dca.rejecting A p \<or> dca.rejecting B q)"
+
+  lemma dcai_fst[iff]: "infs (P \<circ> fst) (dca.trace (dcai A B) w (p, q)) \<longleftrightarrow> infs P (dca.trace A w p)"
+  proof -
+    let ?t = "dca.trace (dcai A B) w (p, q)"
+    have "infs (P \<circ> fst) ?t \<longleftrightarrow> infs P (smap fst ?t)" by simp
+    also have "smap fst ?t = dca.trace A w p" unfolding dcai_def by (coinduction arbitrary: w p q) (auto)
+    finally show ?thesis by this
+  qed
+  lemma dcai_snd[iff]: "infs (P \<circ> snd) (dca.trace (dcai A B) w (p, q)) \<longleftrightarrow> infs P (dca.trace B w q)"
+  proof -
+    let ?t = "dca.trace (dcai A B) w (p, q)"
+    have "infs (P \<circ> snd) ?t \<longleftrightarrow> infs P (smap snd ?t)" by simp
+    also have "smap snd ?t = dca.trace B w q" unfolding dcai_def by (coinduction arbitrary: w p q) (auto)
+    finally show ?thesis by this
+  qed
+
+  lemma dcai_language: "DCA.language (dcai A B) = DCA.language A \<inter> DCA.language B"
+  proof -
+    have 1: "dca.alphabet (dcai A B) = dca.alphabet A \<inter> dca.alphabet B" unfolding dcai_def by simp
+    have 2: "dca.initial (dcai A B) = (dca.initial A, dca.initial B)" unfolding dcai_def by simp
+    have 3: "dca.rejecting (dcai A B) = (\<lambda> pq. (dca.rejecting A \<circ> fst) pq \<or> (dca.rejecting B \<circ> snd) pq)"
+      unfolding dcai_def by auto
+    have 4: "infs (dca.rejecting (dcai A B)) (DCA.trace (dcai A B) w (p, q)) \<longleftrightarrow>
+      infs (dca.rejecting A) (DCA.trace A w p) \<or> infs (dca.rejecting B) (DCA.trace B w q)" for w p q
+      unfolding 3 by blast
+    show ?thesis unfolding DCA.language_def DCA.run_alt_def 1 2 4 by auto
+  qed
+
+  definition dcail :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list) dca" where
+    "dcail AA \<equiv> dca
       (INTER (set AA) dca.alphabet)
       (map dca.initial AA)
       (\<lambda> a pp. map2 (\<lambda> A p. dca.succ A a p) AA pp)
       (\<lambda> pp. \<exists> k < length AA. dca.rejecting (AA ! k) (pp ! k))"
 
-  lemma dcai_trace_smap:
+  lemma dcail_trace_smap:
     assumes "length pp = length AA" "k < length AA"
-    shows "smap (\<lambda> pp. pp ! k) (dca.trace (dcai AA) w pp) = dca.trace (AA ! k) w (pp ! k)"
-    using assms unfolding dcai_def by (coinduction arbitrary: w pp) (force)
+    shows "smap (\<lambda> pp. pp ! k) (dca.trace (dcail AA) w pp) = dca.trace (AA ! k) w (pp ! k)"
+    using assms unfolding dcail_def by (coinduction arbitrary: w pp) (force)
 
-  lemma dcai_language: "DCA.language (dcai AA) = INTER (set AA) DCA.language"
+  lemma dcail_language: "DCA.language (dcail AA) = INTER (set AA) DCA.language"
   proof safe
     fix A w
-    assume 1: "w \<in> DCA.language (dcai AA)" "A \<in> set AA"
+    assume 1: "w \<in> DCA.language (dcail AA)" "A \<in> set AA"
     obtain 2:
-      "dca.run (dcai AA) w (dca.initial (dcai AA))"
-      "\<not> infs (dca.rejecting (dcai AA)) (dca.trace (dcai AA) w (dca.initial (dcai AA)))"
+      "dca.run (dcail AA) w (dca.initial (dcail AA))"
+      "\<not> infs (dca.rejecting (dcail AA)) (dca.trace (dcail AA) w (dca.initial (dcail AA)))"
       using 1(1) by rule
     obtain k where 3: "A = AA ! k" "k < length AA" using 1(2) unfolding in_set_conv_nth by auto
-    have 4: "\<not> infs (\<lambda> pp. dca.rejecting A (pp ! k)) (dca.trace (dcai AA) w (map dca.initial AA))"
-      using 2(2) 3 unfolding dcai_def by auto
+    have 4: "\<not> infs (\<lambda> pp. dca.rejecting A (pp ! k)) (dca.trace (dcail AA) w (map dca.initial AA))"
+      using 2(2) 3 unfolding dcail_def by auto
     show "w \<in> DCA.language A"
     proof
       show "dca.run A w (dca.initial A)"
-        using 1(2) 2(1) unfolding DCA.run_alt_def dcai_def by auto
-      have "True \<longleftrightarrow> \<not> infs (\<lambda> pp. dca.rejecting A (pp ! k)) (dca.trace (dcai AA) w (map dca.initial AA))"
+        using 1(2) 2(1) unfolding DCA.run_alt_def dcail_def by auto
+      have "True \<longleftrightarrow> \<not> infs (\<lambda> pp. dca.rejecting A (pp ! k)) (dca.trace (dcail AA) w (map dca.initial AA))"
         using 4 by simp
       also have "\<dots> \<longleftrightarrow> \<not> infs (dca.rejecting A) (smap (\<lambda> pp. pp ! k)
-        (dca.trace (dcai AA) w (map dca.initial AA)))" by (simp add: comp_def)
-      also have "smap (\<lambda> pp. pp ! k) (dca.trace (dcai AA) w (map dca.initial AA)) =
-        dca.trace (AA ! k) w (map dca.initial AA ! k)" using 3(2) by (fastforce intro: dcai_trace_smap)
+        (dca.trace (dcail AA) w (map dca.initial AA)))" by (simp add: comp_def)
+      also have "smap (\<lambda> pp. pp ! k) (dca.trace (dcail AA) w (map dca.initial AA)) =
+        dca.trace (AA ! k) w (map dca.initial AA ! k)" using 3(2) by (fastforce intro: dcail_trace_smap)
       also have "\<dots> = dca.trace A w (dca.initial A)" using 3 by auto
       finally show "\<not> infs (dca.rejecting A) (DCA.trace A w (dca.initial A))" by simp
     qed
@@ -45,61 +80,61 @@ begin
     assume 1: "w \<in> INTER (set AA) DCA.language"
     have 2: "dca.run A w (dca.initial A)" "\<not> infs (dca.rejecting A) (dca.trace A w (dca.initial A))"
       if "A \<in> set AA" for A using 1 that by auto
-    have 3: "\<not> infs (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) (dca.trace (dcai AA) w (map dca.initial AA))"
+    have 3: "\<not> infs (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) (dca.trace (dcail AA) w (map dca.initial AA))"
       if "k < length AA" for k
     proof -
       have "True \<longleftrightarrow> \<not> infs (dca.rejecting (AA ! k)) (dca.trace (AA ! k) w (map dca.initial AA ! k))"
         using 2(2) that by auto
       also have "dca.trace (AA ! k) w (map dca.initial AA ! k) =
-        smap (\<lambda> pp. pp ! k) (dca.trace (dcai AA) w (map dca.initial AA))"
-        using that by (fastforce intro: dcai_trace_smap[symmetric])
+        smap (\<lambda> pp. pp ! k) (dca.trace (dcail AA) w (map dca.initial AA))"
+        using that by (fastforce intro: dcail_trace_smap[symmetric])
       also have "infs (dca.rejecting (AA ! k)) \<dots> \<longleftrightarrow> infs (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k))
-        (dca.trace (dcai AA) w (map dca.initial AA))" by (simp add: comp_def)
+        (dca.trace (dcail AA) w (map dca.initial AA))" by (simp add: comp_def)
       finally show ?thesis by simp
     qed
-    show "w \<in> DCA.language (dcai AA)"
+    show "w \<in> DCA.language (dcail AA)"
     proof
-      show "dca.run (dcai AA) w (dca.initial (dcai AA))"
-        using 2(1) unfolding DCA.run_alt_def dcai_def by auto
-      show "\<not> infs (dca.rejecting (dcai AA)) (dca.trace (dcai AA) w (dca.initial (dcai AA)))"
-        using 3 unfolding dcai_def by auto
+      show "dca.run (dcail AA) w (dca.initial (dcail AA))"
+        using 2(1) unfolding DCA.run_alt_def dcail_def by auto
+      show "\<not> infs (dca.rejecting (dcail AA)) (dca.trace (dcail AA) w (dca.initial (dcail AA)))"
+        using 3 unfolding dcail_def by auto
     qed
   qed
 
-  definition dcau' :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list) dgca" where
-    "dcau' AA \<equiv> dgca
+  definition dcgaul :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list) dgca" where
+    "dcgaul AA \<equiv> dgca
       (UNION (set AA) dca.alphabet)
       (map dca.initial AA)
       (\<lambda> a pp. map2 (\<lambda> A p. dca.succ A a p) AA pp)
       (map (\<lambda> k pp. dca.rejecting (AA ! k) (pp ! k)) [0 ..< length AA])"
 
-  lemma dcau'_trace_smap:
+  lemma dcgaul_trace_smap:
     assumes "length pp = length AA" "k < length AA"
-    shows "smap (\<lambda> pp. pp ! k) (dgca.trace (dcau' AA) w pp) = dca.trace (AA ! k) w (pp ! k)"
-    using assms unfolding dcau'_def by (coinduction arbitrary: w pp) (force)
+    shows "smap (\<lambda> pp. pp ! k) (dgca.trace (dcgaul AA) w pp) = dca.trace (AA ! k) w (pp ! k)"
+    using assms unfolding dcgaul_def by (coinduction arbitrary: w pp) (force)
 
-  lemma dcau'_language:
+  lemma dcgaul_language:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
-    shows "DGCA.language (dcau' AA) = UNION (set AA) DCA.language"
+    shows "DGCA.language (dcgaul AA) = UNION (set AA) DCA.language"
   proof safe
     fix w
-    assume 1: "w \<in> DGCA.language (dcau' AA)"
+    assume 1: "w \<in> DGCA.language (dcgaul AA)"
     obtain k where 2:
-      "dgca.run (dcau' AA) w (dgca.initial (dcau' AA))"
+      "dgca.run (dcgaul AA) w (dgca.initial (dcgaul AA))"
       "k < length AA"
-      "\<not> infs (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) (dgca.trace (dcau' AA) w (dgca.initial (dcau' AA)))"
-      using 1 unfolding dcau'_def by force
+      "\<not> infs (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) (dgca.trace (dcgaul AA) w (dgca.initial (dcgaul AA)))"
+      using 1 unfolding dcgaul_def by force
     show "w \<in> UNION (set AA) DCA.language"
     proof (intro UN_I DCA.language)
       show "AA ! k \<in> set AA" using 2(2) by simp
       show "dca.run (AA ! k) w (dca.initial (AA ! k))"
-        using assms 2(1, 2) unfolding DCA.run_alt_def DGCA.run_alt_def dcau'_def by force
+        using assms 2(1, 2) unfolding DCA.run_alt_def DGCA.run_alt_def dcgaul_def by force
       have "True \<longleftrightarrow> \<not> infs (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k))
-        (dgca.trace (dcau' AA) w (map dca.initial AA))" using 2(3) unfolding dcau'_def by auto
+        (dgca.trace (dcgaul AA) w (map dca.initial AA))" using 2(3) unfolding dcgaul_def by auto
       also have "\<dots> \<longleftrightarrow> \<not> infs (dca.rejecting (AA ! k))
-        (smap (\<lambda> pp. pp ! k) (dgca.trace (dcau' AA) w (map dca.initial AA)))" by (simp add: comp_def)
-      also have "smap (\<lambda> pp. pp ! k) (dgca.trace (dcau' AA) w (map dca.initial AA)) =
-        dca.trace (AA ! k) w (map dca.initial AA ! k)" using 2(2) by (fastforce intro: dcau'_trace_smap)
+        (smap (\<lambda> pp. pp ! k) (dgca.trace (dcgaul AA) w (map dca.initial AA)))" by (simp add: comp_def)
+      also have "smap (\<lambda> pp. pp ! k) (dgca.trace (dcgaul AA) w (map dca.initial AA)) =
+        dca.trace (AA ! k) w (map dca.initial AA ! k)" using 2(2) by (fastforce intro: dcgaul_trace_smap)
       also have "\<dots> = dca.trace (AA ! k) w (dca.initial (AA ! k))" using 2(2) by auto
       finally show "\<not> infs (dca.rejecting (AA ! k)) (dca.trace (AA ! k) w (dca.initial (AA ! k)))" by simp
     qed
@@ -109,31 +144,31 @@ begin
     obtain 2: "dca.run A w (dca.initial A)" "\<not> infs (dca.rejecting A) (dca.trace A w (dca.initial A))"
       using 1(2) by rule
     obtain k where 3: "A = AA ! k" "k < length AA" using 1(1) unfolding in_set_conv_nth by auto
-    show "w \<in> DGCA.language (dcau' AA)"
+    show "w \<in> DGCA.language (dcgaul AA)"
     proof (intro DGCA.language bexI cogen)
-      show "dgca.run (dcau' AA) w (dgca.initial (dcau' AA))"
-        using 1(1) 2(1) unfolding DCA.run_alt_def DGCA.run_alt_def dcau'_def by auto
+      show "dgca.run (dcgaul AA) w (dgca.initial (dcgaul AA))"
+        using 1(1) 2(1) unfolding DCA.run_alt_def DGCA.run_alt_def dcgaul_def by auto
       have "True \<longleftrightarrow> \<not> infs (dca.rejecting (AA ! k)) (dca.trace (AA ! k) w (map dca.initial AA ! k))"
         using 2(2) 3 by auto
       also have "dca.trace (AA ! k) w (map dca.initial AA ! k) =
-        smap (\<lambda> pp. pp ! k) (dgca.trace (dcau' AA) w (map dca.initial AA))"
-        using 3(2) by (fastforce intro: dcau'_trace_smap[symmetric])
+        smap (\<lambda> pp. pp ! k) (dgca.trace (dcgaul AA) w (map dca.initial AA))"
+        using 3(2) by (fastforce intro: dcgaul_trace_smap[symmetric])
       also have "\<not> infs (dca.rejecting (AA ! k)) \<dots> \<longleftrightarrow> \<not> infs (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k))
-        (dgca.trace (dcau' AA) w (map dca.initial AA))" by (simp add: comp_def)
-      also have "map dca.initial AA = dgca.initial (dcau' AA)" unfolding dcau'_def by simp
-      finally show "\<not> infs (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) (dgca.trace (dcau' AA) w (dgca.initial (dcau' AA)))"
+        (dgca.trace (dcgaul AA) w (map dca.initial AA))" by (simp add: comp_def)
+      also have "map dca.initial AA = dgca.initial (dcgaul AA)" unfolding dcgaul_def by simp
+      finally show "\<not> infs (\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) (dgca.trace (dcgaul AA) w (dgca.initial (dcgaul AA)))"
         by simp
-      show "(\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) \<in> set (dgca.rejecting (dcau' AA))"
-        unfolding dcau'_def using 3(2) by simp
+      show "(\<lambda> pp. dca.rejecting (AA ! k) (pp ! k)) \<in> set (dgca.rejecting (dcgaul AA))"
+        unfolding dcgaul_def using 3(2) by simp
     qed
   qed
 
-  definition dcau :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list degen) dca" where
-    "dcau = degen \<circ> dcau'"
+  definition dcaul :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list degen) dca" where
+    "dcaul = degen \<circ> dcgaul"
 
-  lemma dcau_language:
+  lemma dcaul_language:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
-    shows "DCA.language (dcau AA) = UNION (set AA) DCA.language"
-    unfolding dcau_def using degen_language dcau'_language[OF assms] by auto
+    shows "DCA.language (dcaul AA) = UNION (set AA) DCA.language"
+    unfolding dcaul_def using degen_language dcgaul_language[OF assms] by auto
 
 end
