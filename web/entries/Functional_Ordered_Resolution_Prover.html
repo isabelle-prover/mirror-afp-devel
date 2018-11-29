@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms - Archive of Formal Proofs
+<title>A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,21 +61,27 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">F</font>ormalization
+  <h1>          <font class="first">A</font>
+  
+          <font class="first">V</font>erified
+  
+          <font class="first">F</font>unctional
+  
+          <font class="first">I</font>mplementation
   
           of
   
-          <font class="first">K</font>nuth–Bendix
+          <font class="first">B</font>achmair
   
-          <font class="first">O</font>rders
+          and
   
-          for
+          <font class="first">G</font>anzinger's
   
-          <font class="first">L</font>ambda-Free
+          <font class="first">O</font>rdered
   
-          <font class="first">H</font>igher-Order
+          <font class="first">R</font>esolution
   
-          <font class="first">T</font>erms
+          <font class="first">P</font>rover
   
 </h1>
   <p>&nbsp;</p>
@@ -84,7 +90,7 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms</td>
+  <td class="data" width="80%">A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover</td>
 </tr>
 
 <tr>
@@ -92,10 +98,9 @@
           Authors:
       </td>
   <td class="data">
-                      Heiko Becker (hbecker /at/ mpi-sws /dot/ org),
-                  Jasmin Christian Blanchette (j /dot/ c /dot/ blanchette /at/ vu /dot/ nl),
-                Uwe Waldmann (uwe /at/ mpi-inf /dot/ mpg /dot/ de) and
-          Daniel Wand (dwand /at/ mpi-inf /dot/ mpg /dot/ de)
+                      Anders Schlichtkrull (andschl /at/ dtu /dot/ dk),
+                Jasmin Christian Blanchette (j /dot/ c /dot/ blanchette /at/ vu /dot/ nl) and
+          Dmitriy Traytel (traytel /at/ inf /dot/ ethz /dot/ ch)
       </td>
 </tr>
 
@@ -103,25 +108,30 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2016-11-12</td>
+  <td class="data">2018-11-23</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
-  <td class="abstract">This Isabelle/HOL formalization defines Knuth–Bendix orders for higher-order terms without lambda-abstraction and proves many useful properties about them. The main order fully coincides with the standard transfinite KBO with subterm coefficients on first-order terms. It appears promising as the basis of a higher-order superposition calculus.</td>
+  <td class="abstract">
+This Isabelle/HOL formalization refines the abstract ordered
+resolution prover  presented in Section 4.3 of Bachmair and
+Ganzinger's "Resolution Theorem Proving" chapter in the
+<i>Handbook of Automated Reasoning</i>. The result is a
+functional implementation of a first-order prover.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Lambda_Free_KBOs-AFP,
-  author  = {Heiko Becker and Jasmin Christian Blanchette and Uwe Waldmann and Daniel Wand},
-  title   = {Formalization of Knuth–Bendix Orders for Lambda-Free Higher-Order Terms},
+        <pre>@article{Functional_Ordered_Resolution_Prover-AFP,
+  author  = {Anders Schlichtkrull and Jasmin Christian Blanchette and Dmitriy Traytel},
+  title   = {A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover},
   journal = {Archive of Formal Proofs},
   month   = nov,
-  year    = 2016,
-  note    = {\url{http://isa-afp.org/entries/Lambda_Free_KBOs.html},
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -133,7 +143,7 @@
 
     
                       <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Lambda_Free_RPOs.html">Lambda_Free_RPOs</a>, <a href="Nested_Multisets_Ordinals.html">Nested_Multisets_Ordinals</a>, <a href="Polynomials.html">Polynomials</a>, <a href="Regular-Sets.html">Regular-Sets</a>      </td></tr>
+          <td class="data"><a href="First_Order_Terms.html">First_Order_Terms</a>, <a href="Nested_Multisets_Ordinals.html">Nested_Multisets_Ordinals</a>, <a href="Open_Induction.html">Open_Induction</a>, <a href="Ordered_Resolution_Prover.html">Ordered_Resolution_Prover</a>, <a href="Polynomial_Factorization.html">Polynomial_Factorization</a>      </td></tr>
           
                     
 
@@ -147,34 +157,23 @@
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Lambda_Free_KBOs/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Lambda_Free_KBOs/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Functional_Ordered_Resolution_Prover/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Functional_Ordered_Resolution_Prover/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Lambda_Free_KBOs/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Functional_Ordered_Resolution_Prover/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Lambda_Free_KBOs-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Functional_Ordered_Resolution_Prover-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2017:
-          <a href="../release/afp-Lambda_Free_KBOs-2017-10-10.tar.gz">
-            afp-Lambda_Free_KBOs-2017-10-10.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016-1:
-          <a href="../release/afp-Lambda_Free_KBOs-2016-12-17.tar.gz">
-            afp-Lambda_Free_KBOs-2016-12-17.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>

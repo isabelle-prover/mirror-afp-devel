@@ -27,6 +27,19 @@ does not give executable code, and it did not implement any of the
 optimisations suggested in the paper.</description>
     </item>
     <item>
+       <title>A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover</title>
+              <link>https://www.isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</link>
+       <guid>https://www.isa-afp.org/entries/Functional_Ordered_Resolution_Prover.html</guid>
+       <dc:creator> Anders Schlichtkrull, Jasmin Christian Blanchette, Dmitriy Traytel       </dc:creator>
+       <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+This Isabelle/HOL formalization refines the abstract ordered
+resolution prover  presented in Section 4.3 of Bachmair and
+Ganzinger&#39;s &#34;Resolution Theorem Proving&#34; chapter in the
+&lt;i&gt;Handbook of Automated Reasoning&lt;/i&gt;. The result is a
+functional implementation of a first-order prover.</description>
+    </item>
+    <item>
        <title>Matroids</title>
               <link>https://www.isa-afp.org/entries/Matroids.html</link>
        <guid>https://www.isa-afp.org/entries/Matroids.html</guid>
@@ -553,24 +566,6 @@ by sequences that fulfill certain properties. Even though the criterion is a
 number theoretic result, the proof makes use only of analytical arguments. We
 also formalize a corollary of the theorem for a specific series fulfilling the
 assumptions of the theorem.</description>
-    </item>
-    <item>
-       <title>Axiom Systems for Category Theory in Free Logic</title>
-              <link>https://www.isa-afp.org/entries/AxiomaticCategoryTheory.html</link>
-       <guid>https://www.isa-afp.org/entries/AxiomaticCategoryTheory.html</guid>
-       <dc:creator> Christoph Benzmüller, Dana Scott       </dc:creator>
-       <pubDate>23 May 2018 00:00:00 +0000</pubDate>
-       <description>
-This document provides a concise overview on the core results of our
-previous work on the exploration of axioms systems for category
-theory. Extending the previous studies
-(http://arxiv.org/abs/1609.01493) we include one further axiomatic
-theory in our experiments. This additional theory has been suggested
-by Mac Lane in 1948. We show that the axioms proposed by Mac Lane are
-equivalent to the ones we studied before, which includes an axioms set
-suggested by Scott in the 1970s and another axioms set proposed by
-Freyd and Scedrov in 1990, which we slightly modified to remedy a
-minor technical issue.</description>
     </item>
   </channel>
 </rss>

@@ -7508,3 +7508,18 @@ abstract =
   entailment are decided through graph saturation. This formalisation
   does not give executable code, and it did not implement any of the
   optimisations suggested in the paper.
+  
+[Functional_Ordered_Resolution_Prover]
+title = A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover
+author = Anders Schlichtkrull <mailto:andschl@dtu.dk>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
+topic = Logic
+date = 2018-11-23
+notify = andschl@dtu.dk,j.c.blanchette@vu.nl,traytel@inf.ethz.ch
+abstract = 
+  This Isabelle/HOL formalization refines the abstract ordered
+  resolution prover  presented in Section 4.3 of Bachmair and
+  Ganzinger's "Resolution Theorem Proving" chapter in the
+  <i>Handbook of Automated Reasoning</i>. The result is a
+  functional implementation of a first-order prover.
+
+  
