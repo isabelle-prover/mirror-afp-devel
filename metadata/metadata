@@ -7522,4 +7522,17 @@ abstract =
   <i>Handbook of Automated Reasoning</i>. The result is a
   functional implementation of a first-order prover.
 
-  
+[Auto2_HOL]
+title = Auto2 Prover
+author = Bohua Zhan <http://lcs.ios.ac.cn/~bzhan/>
+topic = Tools
+date = 2018-11-20
+notify = bzhan@ios.ac.cn
+abstract = 
+  Auto2 is a saturation-based heuristic prover for higher-order logic,
+  implemented as a tactic in Isabelle.  This entry contains the
+  instantiation of auto2 for Isabelle/HOL, along with two basic
+  examples: solutions to some of the Pelletier’s problems, and
+  elementary number theory of primes.
+
+ 
