@@ -40,6 +40,19 @@ Ganzinger&#39;s &#34;Resolution Theorem Proving&#34; chapter in the
 functional implementation of a first-order prover.</description>
     </item>
     <item>
+       <title>Auto2 Prover</title>
+              <link>https://www.isa-afp.org/entries/Auto2_HOL.html</link>
+       <guid>https://www.isa-afp.org/entries/Auto2_HOL.html</guid>
+       <dc:creator> Bohua Zhan       </dc:creator>
+       <pubDate>20 Nov 2018 00:00:00 +0000</pubDate>
+       <description>
+Auto2 is a saturation-based heuristic prover for higher-order logic,
+implemented as a tactic in Isabelle.  This entry contains the
+instantiation of auto2 for Isabelle/HOL, along with two basic
+examples: solutions to some of the Pelletier’s problems, and
+elementary number theory of primes.</description>
+    </item>
+    <item>
        <title>Matroids</title>
               <link>https://www.isa-afp.org/entries/Matroids.html</link>
        <guid>https://www.isa-afp.org/entries/Matroids.html</guid>
@@ -552,20 +565,6 @@ minimum and maximum reachability probabilities can be computed via a
 reduction to MDP model checking, including the case where one wants to
 disregard unrealizable behavior. Further information can be found in
 our ITP paper [2].</description>
-    </item>
-    <item>
-       <title>Irrational Rapidly Convergent Series</title>
-              <link>https://www.isa-afp.org/entries/Irrationality_J_Hancl.html</link>
-       <guid>https://www.isa-afp.org/entries/Irrationality_J_Hancl.html</guid>
-       <dc:creator> Angeliki Koutsoukou-Argyraki, Wenda Li       </dc:creator>
-       <pubDate>23 May 2018 00:00:00 +0000</pubDate>
-       <description>
-We formalize with Isabelle/HOL a proof of a theorem by J. Hancl asserting the
-irrationality of the sum of a series consisting of rational numbers, built up
-by sequences that fulfill certain properties. Even though the criterion is a
-number theoretic result, the proof makes use only of analytical arguments. We
-also formalize a corollary of the theorem for a specific series fulfilling the
-assumptions of the theorem.</description>
     </item>
   </channel>
 </rss>
