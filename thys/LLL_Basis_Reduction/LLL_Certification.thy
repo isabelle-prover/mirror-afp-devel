@@ -524,14 +524,14 @@ proof -
 qed
 end
 
-consts lll_oracle :: "integer list list \<Rightarrow> (integer list list \<times> integer list list \<times> integer list list) option" 
+consts lll_oracle :: "integer \<times> integer \<Rightarrow> integer list list \<Rightarrow> (integer list list \<times> integer list list \<times> integer list list) option" 
 
 definition short_vector_external :: "rat \<Rightarrow> int vec list \<Rightarrow> int vec" where
   "short_vector_external \<alpha> fs = (let sv = short_vector \<alpha>;
     fsi = map (map integer_of_int o list_of_vec) fs;
     n = dim_vec (hd fs);
     m = length fs in 
-  case lll_oracle fsi of 
+  case lll_oracle (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) fsi of 
     None \<Rightarrow> sv fs
   | Some (gsi, u1i, u2i) \<Rightarrow> let 
      u1 = mat_of_rows_list m (map (map int_of_integer) u1i);
@@ -571,7 +571,8 @@ proof (atomize(full), goal_cases)
   next
     case False
     from m0 fs_init len have dim_fs_n: "dim_vec (hd fs_init) = n" by (cases fs_init, auto)
-    let ?ext = "lll_oracle (map (map integer_of_int \<circ> list_of_vec) fs_init)" 
+    let ?ext = "lll_oracle (map_prod integer_of_int integer_of_int (quotient_of \<alpha>)) 
+      (map (map integer_of_int \<circ> list_of_vec) fs_init)" 
     note res = res[unfolded short_vector_external_def Let_def Code.abort_def]
     from res False obtain gsi u1i u2i where ext: "?ext = Some (gsi, u1i, u2i)" by (cases ?ext, auto)
     define u1 where "u1 = mat_of_rows_list m (map (map int_of_integer) u1i)"
@@ -602,8 +603,8 @@ code_printing
   import Prelude (Maybe(Nothing, Just), Integer);
   import External_LLL (external_lll);
 
-  lll_extern :: [[Integer]] -> Maybe ([[Integer]], ([[Integer]], [[Integer]]));
-  lll_extern fs = case external_lll fs of (g,u,v) -> Just (g,(u,v));\<close>
+  lll_extern :: (Integer,Integer) -> [[Integer]] -> Maybe ([[Integer]], ([[Integer]], [[Integer]]));
+  lll_extern alpha fs = case external_lll alpha fs of (g,u,v) -> Just (g,(u,v));\<close>
 
 code_reserved Haskell LLL_Extern External_LLL lll_extern external_lll
 
