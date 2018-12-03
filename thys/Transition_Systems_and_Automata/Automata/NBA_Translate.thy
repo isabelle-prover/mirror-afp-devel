@@ -110,7 +110,7 @@ begin
         f \<leftarrow> op_set_enumerate N;
         ASSERT (dom f = N);
         ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
-        ASSERT (\<forall> p \<in> dom f. \<forall> a \<in> alphabet A. \<forall> q \<in> succ A a p. f q \<noteq> None);
+        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. \<forall> q \<in> succ A a p. f q \<noteq> None);
         T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
         RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T
           ((\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}))
@@ -138,7 +138,7 @@ begin
         f \<leftarrow> op_set_enumerate N;
         ASSERT (dom f = N);
         ASSERT (\<forall> p \<in> initial A. f p \<noteq> None);
-        ASSERT (\<forall> p \<in> dom f. \<forall> a \<in> alphabet A. \<forall> q \<in> succ A a p. f q \<noteq> None);
+        ASSERT (\<forall> a \<in> alphabet A. \<forall> p \<in> dom f. \<forall> q \<in> succ A a p. f q \<noteq> None);
         T \<leftarrow> trans_algo N (alphabet A) (succ A) (\<lambda> x. the (f x));
         RETURN (nbae (alphabet A) ((\<lambda> x. the (f x)) ` initial A) T ((\<lambda> x. the (f x)) ` {p \<in> N. accepting A p}))
       }, do {

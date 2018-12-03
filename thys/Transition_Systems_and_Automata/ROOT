@@ -10,6 +10,7 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
     "Basic/Sequence_Zip"
     "Basic/Sequence_LTL"
     "Basic/Maps"
+    "Basic/Acceptance"
     "Transition_Systems/Transition_System"
     "Transition_Systems/Transition_System_Extra"
     "Transition_Systems/Transition_System_Construction"
@@ -27,5 +28,8 @@ session Transition_Systems_and_Automata (AFP) = "Collections" +
     "Automata/DCA_Combine"
     "Automata/DRA"
     "Automata/DRA_Combine"
+    "Automata/DRA_Implement"
+    "Automata/DRA_Explicit"
+    "Automata/DRA_Translate"
   document_files
     "root.tex"

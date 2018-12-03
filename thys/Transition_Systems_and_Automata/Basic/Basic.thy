@@ -12,6 +12,7 @@ begin
 
   lemmas if_distribs = if_distrib if_apply
 
+  lemmas [simp] = map_prod.id map_prod.comp[symmetric]
   lemma prod_UNIV[iff]: "A \<times> B = UNIV \<longleftrightarrow> A = UNIV \<and> B = UNIV" by auto
 
   lemma infinite_subset[trans]: "infinite A \<Longrightarrow> A \<subseteq> B \<Longrightarrow> infinite B" using infinite_super by this

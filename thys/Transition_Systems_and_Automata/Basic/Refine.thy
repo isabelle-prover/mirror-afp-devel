@@ -161,6 +161,15 @@ begin
   lemma set_filter_param[param]:
     "(Set.filter, Set.filter) \<in> (A \<rightarrow> bool_rel) \<rightarrow> \<langle>A\<rangle> set_rel \<rightarrow> \<langle>A\<rangle> set_rel"
     unfolding Set.filter_def fun_rel_def set_rel_def by blast
+  lemma is_singleton_param[param]:
+    assumes "bijective A"
+    shows "(is_singleton, is_singleton) \<in> \<langle>A\<rangle> set_rel \<rightarrow> bool_rel"
+    using assms unfolding is_singleton_def set_rel_def bijective_def by auto blast+
+  lemma the_elem_param[param]:
+    assumes "is_singleton S" "is_singleton T"
+    assumes "(S, T) \<in> \<langle>A\<rangle> set_rel"
+    shows "(the_elem S, the_elem T) \<in> A"
+    using assms unfolding set_rel_def is_singleton_def by auto
 
   subsection {* Lists *}
 

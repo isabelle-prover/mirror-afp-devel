@@ -25,7 +25,7 @@ begin
     interpretation autoref_syn by this
 
     lemma nba_G_ahs: "nba_G A = \<lparr> g_V = UNIV, g_E = E_of_succ (\<lambda> p. CAST
-      ((\<Union> a \<in> alphabet A. (succ A a p ::: \<langle>S\<rangle> list_set_rel)) ::: \<langle>S\<rangle> ahs_rel bhc)), g_V0 = initial A \<rparr>"
+      ((\<Union> a \<in> alphabet A. succ A a p ::: \<langle>S\<rangle> list_set_rel) ::: \<langle>S\<rangle> ahs_rel bhc)), g_V0 = initial A \<rparr>"
       unfolding nba_G_def successors_alt_def CAST_def id_apply autoref_tag_defs by rule
 
     schematic_goal nbai_Gi:
