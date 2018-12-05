@@ -502,7 +502,7 @@ begin
             obtain f where 3: "\<And> p. p \<in> S \<Longrightarrow> R (f p) n {p} = {}" using 1 by metis
             have 4: "R (Sup (f ` S)) n {p} = {}" if "p \<in> S" for p
             proof (rule 52)
-              show "f p \<le> Sup (f ` S)" using le_cSup_finite assms(1) that by auto
+              show "f p \<le> Sup (f ` S)" using assms(1) that by (auto intro: le_cSup_finite)
               show "R (f p) n {p} = {}" using 3 that by this
             qed
             have "R (Sup (f ` S)) n S = (\<Union> p \<in> S. R (Sup (f ` S)) n {p})" using 50 by this

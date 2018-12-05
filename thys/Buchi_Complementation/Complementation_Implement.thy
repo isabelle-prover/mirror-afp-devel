@@ -640,18 +640,6 @@ begin
 
   subsection {* Phase 5 *}
 
-  (* TODO: find abstract representations for all of these, have them implemented by autoref,
-    we don't want to deal with this intermediate representation by hand on the overall algorithm
-    level, since it's all compositional and can be handled on an operations level,
-    although some things can't be implemented on an operations level since we have to prove
-    at some point that the nondeterminism actually doesn't matter, like with expand_map
-    just keep the 3 step process (abstract, abstract algorithm, implementation) as short and
-    isolated as possible in these cases, use resulting transitive rule as autoref rule, don't
-    do the composition by hand *)
-  (* TODO: this is just a map (or build_map?), can't autoref do this? *)
-  (* TODO: it would be ideal if we could just give a deterministic abstract specification for
-    the whole complement automaton from which autoref can generate the implementation automaton
-    with the correct refinement statement *)
   definition refresh_5 :: "'state items \<Rightarrow> 'state items nres" where
     "refresh_5 f \<equiv> if \<exists> (p, k, c) \<in> map_to_set f. c
       then RETURN f
