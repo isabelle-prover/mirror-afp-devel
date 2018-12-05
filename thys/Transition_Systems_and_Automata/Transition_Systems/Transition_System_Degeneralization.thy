@@ -55,6 +55,57 @@ begin
       also have "snd (degen.target w \<dots>) = k" using Cons 1 by auto
       finally show ?case by this
     qed
+    lemma degen_nodes_fst[simp]: "fst ` degen.nodes = nodes"
+    proof (intro equalityI subsetI)
+      show "p \<in> fst ` degen.nodes" if "p \<in> nodes" for p
+      using that
+      proof induct
+        case (initial p)
+        have 1: "dinitial (p, 0)" using initial unfolding dinitial_def by simp
+        show ?case using 1 by (auto intro: rev_image_eqI)
+      next
+        case (execute p a)
+        obtain k where 1: "(p, k) \<in> degen.nodes" using execute(2) by auto
+        have 2: "denabled a (p, k)" unfolding denabled_def using execute(3) by simp
+        have 3: "execute a p = fst (dexecute a (p, k))" unfolding dexecute_def by simp
+        show ?case using 1 2 3 by auto
+      qed
+      show "p \<in> nodes" if "p \<in> fst ` degen.nodes" for p
+      using that
+      proof
+        fix pk
+        assume "pk \<in> degen.nodes" "p = fst pk"
+        then show "p \<in> nodes"
+          by (induct arbitrary: p) (auto simp: dexecute_def denabled_def dinitial_def)
+      qed
+    qed
+    lemma degen_nodes_snd: "snd ` degen.nodes \<subseteq> insert 0 {0 ..< length condition}"
+    proof (rule subsetI, erule imageE)
+      fix pk k
+      assume "pk \<in> degen.nodes" "k = snd pk"
+      then show "k \<in> insert 0 {0 ..< length condition}"
+      proof (induct arbitrary: k)
+        case (initial p)
+        then show ?case by (auto simp: dinitial_def)
+      next
+        case (execute p a)
+        then show ?case by (cases "length condition = 0") (auto simp: dexecute_def denabled_def)
+      qed
+    qed
+
+    lemma degen_nodes_finite[iff]: "finite degen.nodes \<longleftrightarrow> finite nodes"
+    proof
+      assume 1: "finite degen.nodes"
+      have "nodes \<subseteq> fst ` degen.nodes" by simp
+      also have "finite \<dots>" using 1 by rule
+      finally show "finite nodes" by this
+    next
+      assume 1: "finite nodes"
+      have 2: "finite (snd ` degen.nodes)" using finite_subset degen_nodes_snd by auto
+      have "degen.nodes \<subseteq> fst ` degen.nodes \<times> snd ` degen.nodes" using subset_fst_snd by this
+      also have "finite \<dots>" using 1 2 by simp
+      finally show "finite degen.nodes" by this
+    qed
 
     definition dcondition :: "'state degen pred" where
       "dcondition \<equiv> \<lambda> (p, k). k \<ge> length condition \<or> (condition ! k) p"
