@@ -15,8 +15,27 @@ begin
     assumes "length pp = length AA" "k < length AA"
     shows "smap (\<lambda> pp. pp ! k) (dgba.trace (dbgail AA) w pp) = dba.trace (AA ! k) w (pp ! k)"
     using assms unfolding dbgail_def by (coinduction arbitrary: w pp) (force)
+  lemma dbgail_nodes_length:
+    assumes "pp \<in> DGBA.nodes (dbgail AA)"
+    shows "length pp = length AA"
+    using assms unfolding dbgail_def by induct auto
+  lemma dbgail_nodes[intro]:
+    assumes "pp \<in> DGBA.nodes (dbgail AA)" "k < length pp"
+    shows "pp ! k \<in> DBA.nodes (AA ! k)"
+    using assms unfolding dbgail_def by induct auto
 
-  lemma dbgail_language: "DGBA.language (dbgail AA) = INTER (set AA) DBA.language"
+  lemma dbgail_finite[intro]:
+    assumes "list_all (finite \<circ> DBA.nodes) AA"
+    shows "finite (DGBA.nodes (dbgail AA))"
+  proof (rule finite_subset)
+    show "DGBA.nodes (dbgail AA) \<subseteq> listset (map DBA.nodes AA)"
+      by (force simp: listset_member list_all2_conv_all_nth dbgail_nodes_length)
+    have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
+      by (rule listset_finite) (auto simp: list_all_iff)
+    then show "finite (listset (map DBA.nodes AA))" using assms by (simp add: list.pred_map)
+  qed
+
+  lemma dbgail_language[simp]: "DGBA.language (dbgail AA) = INTER (set AA) DBA.language"
   proof safe
     fix w A
     assume 1: "w \<in> DGBA.language (dbgail AA)" "A \<in> set AA"
@@ -69,7 +88,12 @@ begin
   definition dbail :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list degen) dba" where
     "dbail = degen \<circ> dbgail"
 
-  lemma dbail_language: "DBA.language (dbail AA) = INTER (set AA) DBA.language"
+  lemma dbail_finite[intro]:
+    assumes "list_all (finite \<circ> DBA.nodes) AA"
+    shows "finite (DBA.nodes (dbail AA))"
+    using dbgail_finite assms unfolding dbail_def by auto
+
+  lemma dbail_language[simp]: "DBA.language (dbail AA) = INTER (set AA) DBA.language"
     unfolding dbail_def using degen_language dbgail_language by auto
 
   definition dbaul :: "('label, 'state) dba list \<Rightarrow> ('label, 'state list) dba" where
@@ -83,8 +107,29 @@ begin
     assumes "length pp = length AA" "k < length AA"
     shows "smap (\<lambda> pp. pp ! k) (dba.trace (dbaul AA) w pp) = dba.trace (AA ! k) w (pp ! k)"
     using assms unfolding dbaul_def by (coinduction arbitrary: w pp) (force)
+  lemma dbaul_nodes_length:
+    assumes "pp \<in> DBA.nodes (dbaul AA)"
+    shows "length pp = length AA"
+    using assms unfolding dbaul_def by induct auto
+  lemma dbaul_nodes[intro]:
+    assumes "INTER (set AA) dba.alphabet = UNION (set AA) dba.alphabet"
+    assumes "pp \<in> DBA.nodes (dbaul AA)" "k < length pp"
+    shows "pp ! k \<in> DBA.nodes (AA ! k)"
+    using assms(2, 3, 1) unfolding dbaul_def by induct force+
 
-  lemma dbaul_language:
+  lemma dbaul_finite[intro]:
+    assumes "INTER (set AA) dba.alphabet = UNION (set AA) dba.alphabet"
+    assumes "list_all (finite \<circ> DBA.nodes) AA"
+    shows "finite (DBA.nodes (dbaul AA))"
+  proof (rule finite_subset)
+    show "DBA.nodes (dbaul AA) \<subseteq> listset (map DBA.nodes AA)"
+      using assms(1) by (force simp: listset_member list_all2_conv_all_nth dbaul_nodes_length)
+    have "finite (listset (map DBA.nodes AA)) \<longleftrightarrow> list_all finite (map DBA.nodes AA)"
+      by (rule listset_finite) (auto simp: list_all_iff)
+    then show "finite (listset (map DBA.nodes AA))" using assms(2) by (simp add: list.pred_map)
+  qed
+
+  lemma dbaul_language[simp]:
     assumes "INTER (set AA) dba.alphabet = UNION (set AA) dba.alphabet"
     shows "DBA.language (dbaul AA) = UNION (set AA) DBA.language"
   proof safe

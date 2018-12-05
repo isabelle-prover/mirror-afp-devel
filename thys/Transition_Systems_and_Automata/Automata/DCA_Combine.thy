@@ -26,8 +26,29 @@ begin
     also have "smap snd ?t = dca.trace B w q" unfolding dcai_def by (coinduction arbitrary: w p q) (auto)
     finally show ?thesis by this
   qed
+  lemma dcai_nodes_fst[intro]: "fst ` DCA.nodes (dcai A B) \<subseteq> DCA.nodes A"
+  proof (rule subsetI, erule imageE)
+    fix pq p
+    assume "pq \<in> DCA.nodes (dcai A B)" "p = fst pq"
+    then show "p \<in> DCA.nodes A" unfolding dcai_def by (induct arbitrary: p) (auto)
+  qed
+  lemma dcai_nodes_snd[intro]: "snd ` DCA.nodes (dcai A B) \<subseteq> DCA.nodes B"
+  proof (rule subsetI, erule imageE)
+    fix pq q
+    assume "pq \<in> DCA.nodes (dcai A B)" "q = snd pq"
+    then show "q \<in> DCA.nodes B" unfolding dcai_def by (induct arbitrary: q) (auto)
+  qed
 
-  lemma dcai_language: "DCA.language (dcai A B) = DCA.language A \<inter> DCA.language B"
+  lemma dcai_finite[intro]:
+    assumes "finite (DCA.nodes A)" "finite (DCA.nodes B)"
+    shows "finite (DCA.nodes (dcai A B))"
+  proof (rule finite_subset)
+    show "DCA.nodes (dcai A B) \<subseteq> DCA.nodes A \<times> DCA.nodes B"
+      using dcai_nodes_fst dcai_nodes_snd unfolding image_subset_iff by force
+    show "finite (DCA.nodes A \<times> DCA.nodes B)" using assms by simp
+  qed
+
+  lemma dcai_language[simp]: "DCA.language (dcai A B) = DCA.language A \<inter> DCA.language B"
   proof -
     have 1: "dca.alphabet (dcai A B) = dca.alphabet A \<inter> dca.alphabet B" unfolding dcai_def by simp
     have 2: "dca.initial (dcai A B) = (dca.initial A, dca.initial B)" unfolding dcai_def by simp
@@ -50,8 +71,27 @@ begin
     assumes "length pp = length AA" "k < length AA"
     shows "smap (\<lambda> pp. pp ! k) (dca.trace (dcail AA) w pp) = dca.trace (AA ! k) w (pp ! k)"
     using assms unfolding dcail_def by (coinduction arbitrary: w pp) (force)
+  lemma dcail_nodes_length:
+    assumes "pp \<in> DCA.nodes (dcail AA)"
+    shows "length pp = length AA"
+    using assms unfolding dcail_def by induct auto
+  lemma dcail_nodes[intro]:
+    assumes "pp \<in> DCA.nodes (dcail AA)" "k < length pp"
+    shows "pp ! k \<in> DCA.nodes (AA ! k)"
+    using assms unfolding dcail_def by induct auto
 
-  lemma dcail_language: "DCA.language (dcail AA) = INTER (set AA) DCA.language"
+  lemma dcail_finite[intro]:
+    assumes "list_all (finite \<circ> DCA.nodes) AA"
+    shows "finite (DCA.nodes (dcail AA))"
+  proof (rule finite_subset)
+    show "DCA.nodes (dcail AA) \<subseteq> listset (map DCA.nodes AA)"
+      by (force simp: listset_member list_all2_conv_all_nth dcail_nodes_length)
+    have "finite (listset (map DCA.nodes AA)) \<longleftrightarrow> list_all finite (map DCA.nodes AA)"
+      by (rule listset_finite) (auto simp: list_all_iff)
+    then show "finite (listset (map DCA.nodes AA))" using assms by (simp add: list.pred_map)
+  qed
+
+  lemma dcail_language[simp]: "DCA.language (dcail AA) = INTER (set AA) DCA.language"
   proof safe
     fix A w
     assume 1: "w \<in> DCA.language (dcail AA)" "A \<in> set AA"
@@ -112,8 +152,29 @@ begin
     assumes "length pp = length AA" "k < length AA"
     shows "smap (\<lambda> pp. pp ! k) (dgca.trace (dcgaul AA) w pp) = dca.trace (AA ! k) w (pp ! k)"
     using assms unfolding dcgaul_def by (coinduction arbitrary: w pp) (force)
+  lemma dcgaul_nodes_length:
+    assumes "pp \<in> DGCA.nodes (dcgaul AA)"
+    shows "length pp = length AA"
+    using assms unfolding dcgaul_def by induct auto
+  lemma dcgaul_nodes[intro]:
+    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "pp \<in> DGCA.nodes (dcgaul AA)" "k < length pp"
+    shows "pp ! k \<in> DCA.nodes (AA ! k)"
+    using assms(2, 3, 1) unfolding dcgaul_def by induct force+
 
-  lemma dcgaul_language:
+  lemma dcgaul_finite[intro]:
+    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "list_all (finite \<circ> DCA.nodes) AA"
+    shows "finite (DGCA.nodes (dcgaul AA))"
+  proof (rule finite_subset)
+    show "DGCA.nodes (dcgaul AA) \<subseteq> listset (map DCA.nodes AA)"
+      using assms(1) by (force simp: listset_member list_all2_conv_all_nth dcgaul_nodes_length)
+    have "finite (listset (map DCA.nodes AA)) \<longleftrightarrow> list_all finite (map DCA.nodes AA)"
+      by (rule listset_finite) (auto simp: list_all_iff)
+    then show "finite (listset (map DCA.nodes AA))" using assms(2) by (simp add: list.pred_map)
+  qed
+
+  lemma dcgaul_language[simp]:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
     shows "DGCA.language (dcgaul AA) = UNION (set AA) DCA.language"
   proof safe
@@ -166,7 +227,13 @@ begin
   definition dcaul :: "('label, 'state) dca list \<Rightarrow> ('label, 'state list degen) dca" where
     "dcaul = degen \<circ> dcgaul"
 
-  lemma dcaul_language:
+  lemma dcaul_finite[intro]:
+    assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
+    assumes "list_all (finite \<circ> DCA.nodes) AA"
+    shows "finite (DCA.nodes (dcaul AA))"
+    using dcgaul_finite assms unfolding dcaul_def by auto
+
+  lemma dcaul_language[simp]:
     assumes "INTER (set AA) dca.alphabet = UNION (set AA) dca.alphabet"
     shows "DCA.language (dcaul AA) = UNION (set AA) DCA.language"
     unfolding dcaul_def using degen_language dcgaul_language[OF assms] by auto

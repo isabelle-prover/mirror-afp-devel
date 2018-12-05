@@ -7,13 +7,13 @@ begin
   definition from_dba :: "('label, 'state) dba \<Rightarrow> ('label, 'state) dra" where
     "from_dba A \<equiv> dra (dba.alphabet A) (dba.initial A) (dba.succ A) [(dba.accepting A, bot)]"
 
-  lemma from_dba_language: "DRA.language (from_dba A) = DBA.language A"
+  lemma from_dba_language[simp]: "DRA.language (from_dba A) = DBA.language A"
     unfolding DBA.language_def DRA.language_def from_dba_def DBA.run_def DRA.run_def by (auto 0 3)
 
   definition from_dca :: "('label, 'state) dca \<Rightarrow> ('label, 'state) dra" where
     "from_dca A \<equiv> dra (dca.alphabet A) (dca.initial A) (dca.succ A) [(top, dca.rejecting A)]"
 
-  lemma from_dca_language: "DRA.language (from_dca A) = DCA.language A"
+  lemma from_dca_language[simp]: "DRA.language (from_dca A) = DCA.language A"
     unfolding DCA.language_def DRA.language_def from_dca_def DCA.run_def DRA.run_def by (auto 0 3)
 
   definition dbcrai :: "('label, 'state\<^sub>1) dba \<Rightarrow> ('label, 'state\<^sub>2) dca \<Rightarrow> ('label, 'state\<^sub>1 \<times> 'state\<^sub>2) dra" where
@@ -37,8 +37,29 @@ begin
     also have "smap snd ?t = dca.trace B w q" unfolding dbcrai_def by (coinduction arbitrary: w p q) (auto)
     finally show ?thesis by this
   qed
+  lemma dbcrai_nodes_fst[intro]: "fst ` DRA.nodes (dbcrai A B) \<subseteq> DBA.nodes A"
+  proof (rule subsetI, erule imageE)
+    fix pq p
+    assume "pq \<in> DRA.nodes (dbcrai A B)" "p = fst pq"
+    then show "p \<in> DBA.nodes A" unfolding dbcrai_def by (induct arbitrary: p) (auto)
+  qed
+  lemma dbcrai_nodes_snd[intro]: "snd ` DRA.nodes (dbcrai A B) \<subseteq> DCA.nodes B"
+  proof (rule subsetI, erule imageE)
+    fix pq q
+    assume "pq \<in> DRA.nodes (dbcrai A B)" "q = snd pq"
+    then show "q \<in> DCA.nodes B" unfolding dbcrai_def by (induct arbitrary: q) (auto)
+  qed
 
-  lemma dbcrai_language: "DRA.language (dbcrai A B) = DBA.language A \<inter> DCA.language B"
+  lemma dbcrai_finite[intro]:
+    assumes "finite (DBA.nodes A)" "finite (DCA.nodes B)"
+    shows "finite (DRA.nodes (dbcrai A B))"
+  proof (rule finite_subset)
+    show "DRA.nodes (dbcrai A B) \<subseteq> DBA.nodes A \<times> DCA.nodes B"
+      using dbcrai_nodes_fst dbcrai_nodes_snd unfolding image_subset_iff by force
+    show "finite (DBA.nodes A \<times> DCA.nodes B)" using assms by simp
+  qed
+
+  lemma dbcrai_language[simp]: "DRA.language (dbcrai A B) = DBA.language A \<inter> DCA.language B"
   proof -
     have 1: "dra.alphabet (dbcrai A B) = dba.alphabet A \<inter> dca.alphabet B" unfolding dbcrai_def by simp
     have 2: "dra.initial (dbcrai A B) = (dba.initial A, dca.initial B)" unfolding dbcrai_def by simp
@@ -73,8 +94,29 @@ begin
       using assms unfolding draul_def by (coinduction arbitrary: w pp) (force)
     finally show ?thesis by this
   qed
+  lemma draul_nodes_length:
+    assumes "pp \<in> DRA.nodes (draul AA)"
+    shows "length pp = length AA"
+    using assms unfolding draul_def by induct auto
+  lemma draul_nodes[intro]:
+    assumes "INTER (set AA) dra.alphabet = UNION (set AA) dra.alphabet"
+    assumes "pp \<in> DRA.nodes (draul AA)" "k < length pp"
+    shows "pp ! k \<in> DRA.nodes (AA ! k)"
+    using assms(2, 3, 1) unfolding draul_def by induct force+
 
-  lemma draul_language:
+  lemma draul_finite[intro]:
+    assumes "INTER (set AA) dra.alphabet = UNION (set AA) dra.alphabet"
+    assumes "list_all (finite \<circ> DRA.nodes) AA"
+    shows "finite (DRA.nodes (draul AA))"
+  proof (rule finite_subset)
+    show "DRA.nodes (draul AA) \<subseteq> listset (map DRA.nodes AA)"
+      using assms(1) by (force simp: listset_member list_all2_conv_all_nth draul_nodes_length)
+    have "finite (listset (map DRA.nodes AA)) \<longleftrightarrow> list_all finite (map DRA.nodes AA)"
+      by (rule listset_finite) (auto simp: list_all_iff)
+    then show "finite (listset (map DRA.nodes AA))" using assms(2) by (simp add: list.pred_map)
+  qed
+
+  lemma draul_language[simp]:
     assumes "INTER (set AA) dra.alphabet = UNION (set AA) dra.alphabet"
     shows "DRA.language (draul AA) = UNION (set AA) DRA.language"
   proof safe

@@ -61,17 +61,29 @@ begin
   definition degen :: "('label, 'state) dgca \<Rightarrow> ('label, 'state degen) dca" where
     "degen A \<equiv> dca (alphabet A) (The (dinitial A)) (dexecute A) (drejecting A)"
 
-  lemma degen_language: "DCA.language (degen A) = DGCA.language A"
-  proof -
-    have 1: "dca.trace (degen A) = dgca.degen.trace A" unfolding degen_def by simp
-    have 2: "dca.run (degen A) = dgca.degen.run A"
-      unfolding degen_def DCA.run_def DGCA.run_def dgca.denabled_def by (simp add: cond_case_prod_eta)
-    have 3: "dca.initial (degen A) = (dgca.initial A, 0)" unfolding degen_def dgca.dinitial_def by auto
-    have 4: "dca.rejecting (degen A) = drejecting A" unfolding degen_def by simp
-    show ?thesis
-      unfolding DCA.language_def DGCA.language_def 1 2 3 4
-      unfolding dgca.degen_run dgca.degen_infs run_def cogen_def
-      by auto
-  qed
+  lemma degen_simps[simp]:
+    "dca.alphabet (degen A) = alphabet A"
+    "dca.initial (degen A) = (initial A, 0)"
+    "dca.succ (degen A) = dexecute A"
+    "dca.rejecting (degen A) = drejecting A"
+    unfolding degen_def dgca.dinitial_def by auto
+
+  lemma degen_trace[simp]: "dca.trace (degen A) = dgca.degen.trace A" unfolding degen_simps by rule
+  lemma degen_run[simp]: "dca.run (degen A) = dgca.degen.run A"
+    unfolding DCA.run_def degen_simps dgca.denabled_def case_prod_beta' by rule
+  lemma degen_nodes[simp]: "DCA.nodes (degen A) = dgca.degen.nodes TYPE('label) A"
+    unfolding DCA.nodes_def degen_simps
+    unfolding dgca.denabled_def dgca.dinitial_def
+    unfolding prod_eq_iff case_prod_beta' prod.sel
+    by rule
+
+  lemma degen_nodes_finite[iff]: "finite (DCA.nodes (degen A)) \<longleftrightarrow> finite (DGCA.nodes A)" by simp
+
+  lemma degen_language[simp]: "DCA.language (degen A) = DGCA.language A"
+    unfolding DCA.language_def DGCA.language_def degen_simps
+    unfolding degen_trace degen_run
+    unfolding dgca.degen_run dgca.degen_infs cogen_def
+    unfolding ball_simps(10)
+    by rule
 
 end
