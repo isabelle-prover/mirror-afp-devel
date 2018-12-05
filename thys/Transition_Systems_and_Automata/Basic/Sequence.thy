@@ -30,6 +30,28 @@ begin
 
   lemma bind_map[simp]: "map f xs \<bind> g = xs \<bind> g \<circ> f" unfolding List.bind_def by simp
 
+  lemma listset_member: "ys \<in> listset XS \<longleftrightarrow> list_all2 (\<in>) ys XS"
+    by (induct XS arbitrary: ys) (auto simp: set_Cons_def list_all2_Cons2)
+  lemma listset_empty[iff]: "listset XS = {} \<longleftrightarrow> \<not> list_all (\<lambda> A. A \<noteq> {}) XS"
+    by (induct XS) (auto simp: set_Cons_def)
+  lemma listset_finite[iff]:
+    assumes "list_all (\<lambda> A. A \<noteq> {}) XS"
+    shows "finite (listset XS) \<longleftrightarrow> list_all finite XS"
+  using assms
+  proof (induct XS)
+    case Nil
+    show ?case by simp
+  next
+    case (Cons A XS)
+    note [simp] = finite_image_iff finite_cartesian_product_iff
+    have "listset (A # XS) = case_prod Cons ` (A \<times> listset XS)" by (auto simp: set_Cons_def)
+    also have "finite \<dots> \<longleftrightarrow> finite (A \<times> listset XS)" by (simp add: inj_on_def)
+    also have "\<dots> \<longleftrightarrow> finite A \<and> finite (listset XS)" using Cons(2) by simp
+    also have "finite (listset XS) \<longleftrightarrow> list_all finite XS" using Cons by simp
+    also have "finite A \<and> \<dots> \<longleftrightarrow> list_all finite (A # XS)" by simp
+    finally show ?case by this
+  qed
+
   subsection {* Stream Basics *}
 
   declare stream.map_id[simp]
