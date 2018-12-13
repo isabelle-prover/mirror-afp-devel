@@ -7031,6 +7031,25 @@ lemma preprocess'_simps: "preprocess' ((i,h) # t) v = (let s' = preprocess' t v;
 lemmas preprocess'_code = preprocess'.simps(1) preprocess'_simps
 declare preprocess'_code[code]
 
+text \<open>Normalization of constraints helps to identify same polynomials, e.g., 
+  the constraints $x + y \leq 5$ and $-x-y \leq -6$ will be normalized
+  to $x + y \leq 5$ and $x + y \geq 6$, so that only one slack-variable will
+  be introduced for the polynomial $x+y$, and not another one for $-x-y$.\<close>
+
+fun normalize_ns_constraint :: "'a :: lrv ns_constraint \<Rightarrow> 'a ns_constraint" where
+  "normalize_ns_constraint (LEQ_ns l r) = (if coeff l (max_var l) < 0 then GEQ_ns (-l) (-r) else LEQ_ns l r)" 
+| "normalize_ns_constraint (GEQ_ns l r) = (if coeff l (max_var l) < 0 then LEQ_ns (-l) (-r) else GEQ_ns l r)" 
+
+lemma normalize_ns_constraint[simp]: "v \<Turnstile>\<^sub>n\<^sub>s (normalize_ns_constraint c) \<longleftrightarrow> v \<Turnstile>\<^sub>n\<^sub>s (c :: 'a :: lrv ns_constraint)" 
+  by (cases c, auto; drule scaleRat_leq2[of _ _ "-1"], auto simp: valuate_uminus)
+
+declare normalize_ns_constraint.simps[simp del]
+
+lemma i_satisfies_normalize_ns_constraint[simp]: "Iv \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s (map_prod id normalize_ns_constraint ` cs)
+  \<longleftrightarrow> Iv \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s cs" 
+  by (cases Iv, force)
+
+
 abbreviation max_var:: "QDelta ns_constraint \<Rightarrow> var" where
   "max_var C \<equiv> Abstract_Linear_Poly.max_var (poly C)"
 
@@ -7538,37 +7557,42 @@ lemma preprocess_part_2: assumes "preprocess_part_2 as t = (t',tv)" "\<triangle>
   using preprocess_opt[OF refl assms(1)[unfolded preprocess_part_2_def] assms(2)] by auto
 
 definition preprocess :: "('i,QDelta) i_ns_constraint list \<Rightarrow> _ \<times> _ \<times> (_ \<Rightarrow> (var,QDelta)mapping) \<times> 'i list" where
-  "preprocess l = (case preprocess_part_1 l of (t,as,ui) \<Rightarrow> case preprocess_part_2 as t of (t,tv) \<Rightarrow> (t,as,tv,ui))"
+  "preprocess l = (case preprocess_part_1 (map (map_prod id normalize_ns_constraint) l) of 
+     (t,as,ui) \<Rightarrow> case preprocess_part_2 as t of (t,tv) \<Rightarrow> (t,as,tv,ui))"
 
 interpretation PreprocessDefault: Preprocess preprocess
 proof
   fix cs trans_v ui t' as v I
   assume id: "preprocess cs = (t',as,trans_v, ui)"
-  then obtain t where part1: "preprocess_part_1 cs = (t,as,ui)"
-    unfolding preprocess_def by (auto split: prod.splits)
-  from id[unfolded preprocess_def part1 split]
+  define ncs where "ncs = map (map_prod id normalize_ns_constraint) cs" 
+  have ncs: "fst ` set ncs = fst ` set cs" "\<And> Iv. Iv \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set ncs \<longleftrightarrow> Iv \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs"
+    unfolding ncs_def by force auto
+  from id obtain t where part1: "preprocess_part_1 ncs = (t,as,ui)"
+    unfolding preprocess_def by (auto simp: ncs_def split: prod.splits)
+  from id[unfolded preprocess_def part1 split ncs_def[symmetric]]
   have part_2: "preprocess_part_2 as t = (t',trans_v)" 
     by (auto split: prod.splits)
   have norm: "\<triangle> t"
     using lvars_distinct
-    using lvars_tableau_ge_start[of cs "start_fresh_variable cs"]
-    using vars_tableau_vars_constraints[of cs "start_fresh_variable cs"]
-    using start_fresh_variable_fresh[of cs] part1
-    using rhs_no_zero_tableau_start[of cs "start_fresh_variable cs"]
+    using lvars_tableau_ge_start[of ncs "start_fresh_variable ncs"]
+    using vars_tableau_vars_constraints[of ncs "start_fresh_variable ncs"]
+    using start_fresh_variable_fresh[of ncs] part1
+    using rhs_no_zero_tableau_start[of ncs "start_fresh_variable ncs"]
     by (force simp: Let_def normalized_tableau_def preprocess_part_1_def)
   note part_2 = preprocess_part_2[OF part_2 norm]
   show "\<triangle> t'" by fact
-  have unsat: "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> I \<inter> set ui = {} \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" for v 
+  have unsat: "(I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t \<Longrightarrow> I \<inter> set ui = {} \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set ncs" for v 
     using part1[unfolded preprocess_part_1_def Let_def, simplified] i_preprocess'_sat[of I] by blast
-  with part_2(2,3) show "I \<inter> set ui = {} \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t' \<Longrightarrow> (I,\<langle>trans_v v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" by auto
+  with part_2(2,3) show "I \<inter> set ui = {} \<Longrightarrow> (I,\<langle>v\<rangle>) \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<Longrightarrow> \<langle>v\<rangle> \<Turnstile>\<^sub>t t' \<Longrightarrow> (I,\<langle>trans_v v\<rangle>) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs" 
+    by (auto simp: ncs)
   from part1[unfolded preprocess_part_1_def Let_def] obtain var where
-    as: "as = Atoms (preprocess' cs var)" and ui: "ui = UnsatIndices (preprocess' cs var)" by auto
+    as: "as = Atoms (preprocess' ncs var)" and ui: "ui = UnsatIndices (preprocess' ncs var)" by auto
   note min_defs = distinct_indices_atoms_def distinct_indices_ns_def
-  have min1: "(distinct_indices_ns cs \<longrightarrow> (\<forall> k a. (k,a) \<in> set as \<longrightarrow> (\<exists> v p. a = qdelta_constraint_to_atom p v \<and> (k,p) \<in> set cs
-    \<and> (\<not> is_monom (poly p) \<longrightarrow> Poly_Mapping (preprocess' cs var) (poly p) = Some v)  ))) 
-    \<and> fst ` set as \<union> set ui \<subseteq> fst ` set cs" 
+  have min1: "(distinct_indices_ns ncs \<longrightarrow> (\<forall> k a. (k,a) \<in> set as \<longrightarrow> (\<exists> v p. a = qdelta_constraint_to_atom p v \<and> (k,p) \<in> set ncs
+    \<and> (\<not> is_monom (poly p) \<longrightarrow> Poly_Mapping (preprocess' ncs var) (poly p) = Some v)  ))) 
+    \<and> fst ` set as \<union> set ui \<subseteq> fst ` set ncs" 
     unfolding as ui
-  proof (induct cs var rule: preprocess'.induct)
+  proof (induct ncs var rule: preprocess'.induct)
     case (2 i h t v)
     hence sub: "fst ` set (Atoms (preprocess' t v)) \<union> set (UnsatIndices (preprocess' t v)) \<subseteq> fst ` set t" by auto
     show ?case 
@@ -7598,20 +7622,31 @@ proof
       qed
     qed
   qed (auto simp: min_defs)
-  then show "fst ` set as \<union> set ui \<subseteq> fst ` set cs" by auto 
+  then show "fst ` set as \<union> set ui \<subseteq> fst ` set cs" by (auto simp: ncs)
   {
     assume mini: "distinct_indices_ns cs" 
+    have mini: "distinct_indices_ns ncs" unfolding distinct_indices_ns_def
+    proof (intro impI allI, goal_cases)
+      case (1 n1 n2 i)
+      from 1(1) obtain c1 where c1: "(i,c1) \<in> set cs" and n1: "n1 = normalize_ns_constraint c1" 
+        unfolding ncs_def by auto
+      from 1(2) obtain c2 where c2: "(i,c2) \<in> set cs" and n2: "n2 = normalize_ns_constraint c2" 
+        unfolding ncs_def by auto
+      from mini[unfolded distinct_indices_ns_def, rule_format, OF c1 c2]
+      show ?case unfolding n1 n2 
+        by (cases c1; cases c2; auto simp: normalize_ns_constraint.simps)
+    qed
     note min = min1[THEN conjunct1, rule_format, OF this]
     show "distinct_indices_atoms as" 
       unfolding distinct_indices_atoms_def
     proof (intro allI impI)
       fix i a b 
       assume a: "(i,a) \<in> set as" and b: "(i,b) \<in> set as" 
-      from min[OF a] obtain v p where aa: "a = qdelta_constraint_to_atom p v" "(i, p) \<in> set cs" 
-        "\<not> is_monom (poly p) \<Longrightarrow> Poly_Mapping (preprocess' cs var) (poly p) = Some v"
+      from min[OF a] obtain v p where aa: "a = qdelta_constraint_to_atom p v" "(i, p) \<in> set ncs" 
+        "\<not> is_monom (poly p) \<Longrightarrow> Poly_Mapping (preprocess' ncs var) (poly p) = Some v"
         by auto
-      from min[OF b] obtain w q where bb: "b = qdelta_constraint_to_atom q w" "(i, q) \<in> set cs" 
-        "\<not> is_monom (poly q) \<Longrightarrow> Poly_Mapping (preprocess' cs var) (poly q) = Some w"
+      from min[OF b] obtain w q where bb: "b = qdelta_constraint_to_atom q w" "(i, q) \<in> set ncs" 
+        "\<not> is_monom (poly q) \<Longrightarrow> Poly_Mapping (preprocess' ncs var) (poly q) = Some w"
         by auto
       from mini[unfolded distinct_indices_ns_def, rule_format, OF aa(2) bb(2)]
       have *: "poly p = poly q" "ns_constraint_const p = ns_constraint_const q" by auto
@@ -7626,10 +7661,12 @@ proof
     qed 
   }
   show "i \<in> set ui \<Longrightarrow> \<nexists>v. ({i}, v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s  set cs" for i 
-    using preprocess'_unsat_indices[of i cs] part1 unfolding preprocess_part_1_def Let_def by auto
+    using preprocess'_unsat_indices[of i ncs] part1 unfolding preprocess_part_1_def Let_def 
+    by (auto simp: ncs)
   fix v
   assume "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set cs"
-  from preprocess'_unsat[OF this _  start_fresh_variable_fresh, of cs]
+  hence "(I,v) \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s set ncs" unfolding ncs .
+  from preprocess'_unsat[OF this _  start_fresh_variable_fresh, of ncs]
   have "\<exists>v'. (I,v') \<Turnstile>\<^sub>i\<^sub>a\<^sub>s set as \<and> v' \<Turnstile>\<^sub>t t"
     using part1
     unfolding preprocess_part_1_def Let_def by auto
