@@ -7032,17 +7032,41 @@ lemmas preprocess'_code = preprocess'.simps(1) preprocess'_simps
 declare preprocess'_code[code]
 
 text \<open>Normalization of constraints helps to identify same polynomials, e.g., 
-  the constraints $x + y \leq 5$ and $-x-y \leq -6$ will be normalized
+  the constraints $x + y \leq 5$ and $-2x-2y \leq -12$ will be normalized
   to $x + y \leq 5$ and $x + y \geq 6$, so that only one slack-variable will
-  be introduced for the polynomial $x+y$, and not another one for $-x-y$.\<close>
+  be introduced for the polynomial $x+y$, and not another one for $-2x-2y$.
+  Normalization will take care that the max-var of the polynomial in the constraint
+  will have coefficient 1 (if the polynomial is non-zero)\<close>
 
 fun normalize_ns_constraint :: "'a :: lrv ns_constraint \<Rightarrow> 'a ns_constraint" where
-  "normalize_ns_constraint (LEQ_ns l r) = (if coeff l (max_var l) < 0 then GEQ_ns (-l) (-r) else LEQ_ns l r)" 
-| "normalize_ns_constraint (GEQ_ns l r) = (if coeff l (max_var l) < 0 then LEQ_ns (-l) (-r) else GEQ_ns l r)" 
+  "normalize_ns_constraint (LEQ_ns l r) = (let v = max_var l; c = coeff l v in 
+     if c = 0 then LEQ_ns l r else 
+     let ic = inverse c in if c < 0 then GEQ_ns (ic *R l) (scaleRat ic r) else LEQ_ns (ic *R l) (scaleRat ic r))" 
+| "normalize_ns_constraint (GEQ_ns l r) = (let v = max_var l; c = coeff l v in 
+     if c = 0 then GEQ_ns l r else 
+     let ic = inverse c in if c < 0 then LEQ_ns (ic *R l) (scaleRat ic r) else GEQ_ns (ic *R l) (scaleRat ic r))" 
 
 lemma normalize_ns_constraint[simp]: "v \<Turnstile>\<^sub>n\<^sub>s (normalize_ns_constraint c) \<longleftrightarrow> v \<Turnstile>\<^sub>n\<^sub>s (c :: 'a :: lrv ns_constraint)" 
-  by (cases c, auto; drule scaleRat_leq2[of _ _ "-1"], auto simp: valuate_uminus)
-
+proof -
+  let ?c = "coeff (poly c) (max_var (poly c))" 
+  consider (0) "?c = 0" | (pos) "?c > 0" | (neg) "?c < 0" by linarith
+  thus ?thesis
+  proof cases
+    case 0
+    thus ?thesis by (cases c, auto)
+  next
+    case pos
+    from pos have id: "a /R ?c \<le> b /R ?c \<longleftrightarrow> (a :: 'a) \<le> b" for a b 
+      using scaleRat_leq1 by fastforce
+    show ?thesis using pos id by (cases c, auto simp: Let_def valuate_scaleRat id)
+  next
+    case neg
+    from neg have id: "a /R ?c \<le> b /R ?c \<longleftrightarrow> (a :: 'a) \<ge> b" for a b 
+      using scaleRat_leq2 by fastforce
+    show ?thesis using neg id by (cases c, auto simp: Let_def valuate_scaleRat id)
+  qed
+qed
+    
 declare normalize_ns_constraint.simps[simp del]
 
 lemma i_satisfies_normalize_ns_constraint[simp]: "Iv \<Turnstile>\<^sub>i\<^sub>n\<^sub>s\<^sub>s (map_prod id normalize_ns_constraint ` cs)
@@ -7634,7 +7658,7 @@ proof
         unfolding ncs_def by auto
       from mini[unfolded distinct_indices_ns_def, rule_format, OF c1 c2]
       show ?case unfolding n1 n2 
-        by (cases c1; cases c2; auto simp: normalize_ns_constraint.simps)
+        by (cases c1; cases c2; auto simp: normalize_ns_constraint.simps Let_def)
     qed
     note min = min1[THEN conjunct1, rule_format, OF this]
     show "distinct_indices_atoms as" 
