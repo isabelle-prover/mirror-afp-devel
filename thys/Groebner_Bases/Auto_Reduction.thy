@@ -14,14 +14,14 @@ begin
 lemma is_red_monic: "is_red B (monic p) \<longleftrightarrow> is_red B p"
   unfolding is_red_adds_iff keys_monic ..
 
-lemma red_monic_set [simp]: "red (monic_set B) = red B"
+lemma red_image_monic [simp]: "red (monic ` B) = red B"
 proof (rule, rule)
   fix p q
-  show "red (monic_set B) p q \<longleftrightarrow> red B p q"
+  show "red (monic ` B) p q \<longleftrightarrow> red B p q"
   proof
-    assume "red (monic_set B) p q"
-    then obtain f t where "f \<in> monic_set B" and *: "red_single p q f t" by (rule red_setE)
-    from this(1) obtain g where "g \<in> B" and "f = monic g" unfolding monic_set_def ..
+    assume "red (monic ` B) p q"
+    then obtain f t where "f \<in> monic ` B" and *: "red_single p q f t" by (rule red_setE)
+    from this(1) obtain g where "g \<in> B" and "f = monic g" ..
     from * have "f \<noteq> 0" by (simp add: red_single_def)
     hence "g \<noteq> 0" by (simp add: monic_0_iff \<open>f = monic g\<close>)
     hence "lc g \<noteq> 0" by (rule lc_not_0)
@@ -37,8 +37,8 @@ proof (rule, rule)
     from * have "f \<noteq> 0" by (simp add: red_single_def)
     hence "lc f \<noteq> 0" by (rule lc_not_0)
     hence "1 / lc f \<noteq> 0" by simp
-    from \<open>f \<in> B\<close> have "monic f \<in> monic_set B" by (simp add: monic_set_def)
-    thus "red (monic_set B) p q"
+    from \<open>f \<in> B\<close> have "monic f \<in> monic ` B" by (rule imageI)
+    thus "red (monic ` B) p q"
     proof (rule red_setI)
       from * \<open>1 / lc f \<noteq> 0\<close> show "red_single p q (monic f) t" unfolding monic_def
         by (rule red_single_mult_const)
@@ -46,7 +46,7 @@ proof (rule, rule)
   qed
 qed
 
-lemma is_red_monic_set [simp]: "is_red (monic_set B) p \<longleftrightarrow> is_red B p"
+lemma is_red_image_monic [simp]: "is_red (monic ` B) p \<longleftrightarrow> is_red B p"
   by (simp add: is_red_def)
 
 subsection \<open>Minimal Bases and Auto-reduced Bases\<close>
@@ -63,22 +63,21 @@ lemma is_auto_reducedD:
   using assms unfolding is_auto_reduced_def by auto
 
 text \<open>The converse of the following lemma is only true if @{term B} is minimal!\<close>
-lemma monic_set_is_auto_reduced:
+lemma image_monic_is_auto_reduced:
   assumes "is_auto_reduced B"
-  shows "is_auto_reduced (monic_set B)"
+  shows "is_auto_reduced (monic ` B)"
   unfolding is_auto_reduced_def
 proof
   fix b
-  assume "b \<in> monic_set B"
-  then obtain b' where b_def: "b = monic b'" and "b' \<in> B" unfolding monic_set_def ..
+  assume "b \<in> monic ` B"
+  then obtain b' where b_def: "b = monic b'" and "b' \<in> B" ..
   from assms \<open>b' \<in> B\<close> have nred: "\<not> is_red (B - {b'}) b'" by (rule is_auto_reducedD)
-  show "\<not> is_red ((monic_set B) - {b}) b"
+  show "\<not> is_red ((monic ` B) - {b}) b"
   proof
-    assume red: "is_red ((monic_set B) - {b}) b"
-    have "(monic_set B) - {b} \<subseteq> monic_set (B - {b'})"
-      unfolding monic_set_def remove_def b_def by auto
-    with red have "is_red (monic_set (B - {b'})) b" by (rule is_red_subset)
-    hence "is_red (B - {b'}) b'" unfolding b_def is_red_monic_set is_red_monic .
+    assume red: "is_red ((monic ` B) - {b}) b"
+    have "(monic ` B) - {b} \<subseteq> monic ` (B - {b'})" unfolding b_def by auto
+    with red have "is_red (monic ` (B - {b'})) b" by (rule is_red_subset)
+    hence "is_red (B - {b'}) b'" unfolding b_def is_red_monic is_red_image_monic .
     with nred show False ..
   qed
 qed
@@ -754,33 +753,33 @@ subsection \<open>Auto-Reduction and Monicity\<close>
 definition comp_red_monic_basis :: "('t \<Rightarrow>\<^sub>0 'b) list \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::field) list" where
   "comp_red_monic_basis xs = map monic (comp_red_basis xs)"
 
-lemma set_comp_red_monic_basis: "set (comp_red_monic_basis xs) = monic_set (set (comp_red_basis xs))"
-  unfolding comp_red_monic_basis_def monic_set_def by simp
+lemma set_comp_red_monic_basis: "set (comp_red_monic_basis xs) = monic ` (set (comp_red_basis xs))"
+  by (simp add: comp_red_monic_basis_def)
 
 lemma comp_red_monic_basis_nonzero:
   assumes "p \<in> set (comp_red_monic_basis xs)"
   shows "p \<noteq> 0"
 proof -
   from assms obtain p' where p_def: "p = monic p'" and p': "p' \<in> set (comp_red_basis xs)"
-    unfolding set_comp_red_monic_basis monic_set_def ..
+    unfolding set_comp_red_monic_basis ..
   from p' have "p' \<noteq> 0" by (rule comp_red_basis_nonzero)
   thus ?thesis unfolding p_def monic_0_iff .
 qed
 
 lemma comp_red_monic_basis_is_monic_set: "is_monic_set (set (comp_red_monic_basis xs))"
-  unfolding set_comp_red_monic_basis by (rule monic_set_is_monic_set)
+  unfolding set_comp_red_monic_basis by (rule image_monic_is_monic_set)
 
 lemma pmdl_comp_red_monic_basis_subset: "pmdl (set (comp_red_monic_basis xs)) \<subseteq> pmdl (set xs)"
-  unfolding set_comp_red_monic_basis monic_set_pmdl by (fact pmdl_comp_red_basis_subset)
+  unfolding set_comp_red_monic_basis pmdl_image_monic by (fact pmdl_comp_red_basis_subset)
 
 lemma comp_red_monic_basis_is_auto_reduced: "is_auto_reduced (set (comp_red_monic_basis xs))"
-  unfolding set_comp_red_monic_basis by (rule monic_set_is_auto_reduced, rule comp_red_basis_is_auto_reduced)
+  unfolding set_comp_red_monic_basis by (rule image_monic_is_auto_reduced, rule comp_red_basis_is_auto_reduced)
 
 lemma comp_red_monic_basis_dgrad_p_set_le:
   assumes "dickson_grading d"
   shows "dgrad_p_set_le d (set (comp_red_monic_basis xs)) (set xs)"
 proof -
-  have "dgrad_p_set_le d (monic_set (set (comp_red_basis xs))) (set (comp_red_basis xs))"
+  have "dgrad_p_set_le d (monic ` (set (comp_red_basis xs))) (set (comp_red_basis xs))"
     by (simp add: dgrad_p_set_le_def, fact dgrad_set_le_refl)
   also from assms have "dgrad_p_set_le d ... (set xs)" by (rule comp_red_basis_dgrad_p_set_le)
   finally show ?thesis by (simp add: set_comp_red_monic_basis)

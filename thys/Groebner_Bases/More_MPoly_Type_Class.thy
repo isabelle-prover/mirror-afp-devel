@@ -272,9 +272,6 @@ subsubsection \<open>Monicity\<close>
   
 definition monic :: "('t \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::field)" where
   "monic p = monom_mult (1 / lc p) 0 p"
-
-definition monic_set :: "('t \<Rightarrow>\<^sub>0 'b) set \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::field) set" where
-  "monic_set = image monic"
   
 definition is_monic_set :: "('t \<Rightarrow>\<^sub>0 'b::field) set \<Rightarrow> bool" where
   "is_monic_set B \<equiv> (\<forall>b\<in>B. b \<noteq> 0 \<longrightarrow> lc b = 1)"
@@ -372,42 +369,42 @@ lemma is_monic_setD:
   shows "lc b = 1"
   using assms unfolding is_monic_set_def by auto
 
-lemma Keys_monic_set [simp]: "Keys (monic_set A) = Keys A"
-  by (simp add: Keys_def monic_set_def)
+lemma Keys_image_monic [simp]: "Keys (monic ` A) = Keys A"
+  by (simp add: Keys_def)
     
-lemma monic_set_is_monic_set: "is_monic_set (monic_set A)"
+lemma image_monic_is_monic_set: "is_monic_set (monic ` A)"
 proof (rule is_monic_setI)
   fix p
-  assume pin: "p \<in> monic_set A" and "p \<noteq> 0"
-  from pin obtain p' where p_def: "p = monic p'" and "p' \<in> A" unfolding monic_set_def ..
+  assume pin: "p \<in> monic ` A" and "p \<noteq> 0"
+  from pin obtain p' where p_def: "p = monic p'" and "p' \<in> A" ..
   from \<open>p \<noteq> 0\<close> have "p' \<noteq> 0" unfolding p_def monic_0_iff .
   thus "lc p = 1" unfolding p_def by (rule lc_monic)
 qed
   
-lemma monic_set_pmdl [simp]: "pmdl (monic_set B) = pmdl B"
+lemma pmdl_image_monic [simp]: "pmdl (monic ` B) = pmdl B"
 proof
-  show "pmdl (monic_set B) \<subseteq> pmdl B"
+  show "pmdl (monic ` B) \<subseteq> pmdl B"
   proof
     fix p
-    assume "p \<in> pmdl (monic_set B)"
+    assume "p \<in> pmdl (monic ` B)"
     thus "p \<in> pmdl B"
     proof (induct p rule: pmdl_induct)
       case base: module_0
       show ?case by (fact pmdl.module_0)
     next
       case ind: (module_plus a b c t)
-      from ind(3) obtain b' where b_def: "b = monic b'" and "b' \<in> B" unfolding monic_set_def ..
+      from ind(3) obtain b' where b_def: "b = monic b'" and "b' \<in> B" ..
       have eq: "b = monom_mult (1 / lc b') 0 b'" by (simp only: b_def monic_def)
       show ?case unfolding eq monom_mult_assoc
         by (rule pmdl.module_closed_plus, fact, rule monom_mult_in_pmdl, fact)
     qed
   qed
 next
-  show "pmdl B \<subseteq> pmdl (monic_set B)"
+  show "pmdl B \<subseteq> pmdl (monic ` B)"
   proof
     fix p
     assume "p \<in> pmdl B"
-    thus "p \<in> pmdl (monic_set B)"
+    thus "p \<in> pmdl (monic ` B)"
     proof (induct p rule: pmdl_induct)
       case base: module_0
       show ?case by (fact pmdl.module_0)
@@ -420,8 +417,8 @@ next
       next
         case False
         let ?b = "monic b"
-        from ind(3) have "?b \<in> monic_set B" unfolding monic_set_def by (rule imageI)
-        have "a + monom_mult c t (monom_mult (lc b) 0 ?b) \<in> pmdl (monic_set B)"
+        from ind(3) have "?b \<in> monic ` B" by (rule imageI)
+        have "a + monom_mult c t (monom_mult (lc b) 0 ?b) \<in> pmdl (monic ` B)"
           unfolding monom_mult_assoc
           by (rule pmdl.module_closed_plus, fact, rule monom_mult_in_pmdl, fact)
         thus ?thesis unfolding mult_lc_monic[OF False] .

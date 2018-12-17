@@ -4,7 +4,7 @@ theory Reduced_GB
   imports Groebner_Bases Auto_Reduction
 begin
 
-lemma (in gd_term) monic_set_GB: "is_Groebner_basis (monic_set G) \<longleftrightarrow> is_Groebner_basis G"
+lemma (in gd_term) GB_image_monic: "is_Groebner_basis (monic ` G) \<longleftrightarrow> is_Groebner_basis G"
   by (simp add: GB_alt_1)
   
 subsection \<open>Definition and Uniqueness of Reduced Gr\"obner Bases\<close>
@@ -333,12 +333,12 @@ subsubsection \<open>Computing Reduced Gr\"obner Bases\<close>
 lemma comp_red_monic_basis_pmdl:
   assumes "is_Groebner_basis (set xs)"
   shows "pmdl (set (comp_red_monic_basis xs)) = pmdl (set xs)"
-  unfolding set_comp_red_monic_basis monic_set_pmdl comp_red_basis_pmdl[OF assms] ..
+  unfolding set_comp_red_monic_basis pmdl_image_monic comp_red_basis_pmdl[OF assms] ..
     
 lemma comp_red_monic_basis_GB:
   assumes "is_Groebner_basis (set xs)"
   shows "is_Groebner_basis (set (comp_red_monic_basis xs))"
-  unfolding set_comp_red_monic_basis monic_set_GB using assms by (rule comp_red_basis_GB)
+  unfolding set_comp_red_monic_basis GB_image_monic using assms by (rule comp_red_basis_GB)
     
 lemma comp_red_monic_basis_is_reduced_GB:
   assumes "is_Groebner_basis (set xs)"
