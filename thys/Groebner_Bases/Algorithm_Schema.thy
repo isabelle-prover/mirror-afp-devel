@@ -14,21 +14,17 @@ text \<open>This theory formalizes a general algorithm schema for computing Gr\"
 
 subsection \<open>@{term processed}\<close>
 
-definition "swap p = (snd p, fst p)"
-definition minus_pairs (infixl "-\<^sub>p" 65) where "minus_pairs A B = A - (B \<union> swap ` B)"
-definition Int_pairs (infixl "\<inter>\<^sub>p" 65) where "Int_pairs A B = A \<inter> (B \<union> swap ` B)"
-definition in_pair (infix "\<in>\<^sub>p" 50) where "in_pair p A \<longleftrightarrow> (p \<in> A \<union> swap ` A)"
+definition minus_pairs (infixl "-\<^sub>p" 65) where "minus_pairs A B = A - (B \<union> prod.swap ` B)"
+definition Int_pairs (infixl "\<inter>\<^sub>p" 65) where "Int_pairs A B = A \<inter> (B \<union> prod.swap ` B)"
+definition in_pair (infix "\<in>\<^sub>p" 50) where "in_pair p A \<longleftrightarrow> (p \<in> A \<union> prod.swap ` A)"
 definition subset_pairs (infix "\<subseteq>\<^sub>p" 50) where "subset_pairs A B \<longleftrightarrow> (\<forall>x. x \<in>\<^sub>p A \<longrightarrow> x \<in>\<^sub>p B)"
 abbreviation not_in_pair (infix "\<notin>\<^sub>p" 50) where "not_in_pair p A \<equiv> \<not> p \<in>\<^sub>p A"
 
-lemma swap_alt: "swap (a, b) = (b, a)"
-  by (simp add: swap_def)
-
-lemma in_pair_alt: "p \<in>\<^sub>p A \<longleftrightarrow> (p \<in> A \<or> swap p \<in> A)"
-  by (metis (mono_tags, lifting) UnCI UnE image_iff in_pair_def prod.collapse swap_alt)
+lemma in_pair_alt: "p \<in>\<^sub>p A \<longleftrightarrow> (p \<in> A \<or> prod.swap p \<in> A)"
+  by (metis (mono_tags, lifting) UnCI UnE image_iff in_pair_def prod.collapse swap_simp)
 
 lemma in_pair_iff: "(a, b) \<in>\<^sub>p A \<longleftrightarrow> ((a, b) \<in> A \<or> (b, a) \<in> A)"
-  by (simp add: in_pair_alt swap_alt)
+  by (simp add: in_pair_alt)
 
 lemma in_pair_minus_pairs [simp]: "p \<in>\<^sub>p A -\<^sub>p B \<longleftrightarrow> (p \<in>\<^sub>p A \<and> p \<notin>\<^sub>p B)"
   by (metis Diff_iff in_pair_def in_pair_iff minus_pairs_def prod.collapse)
@@ -37,7 +33,7 @@ lemma in_minus_pairs [simp]: "p \<in> A -\<^sub>p B \<longleftrightarrow> (p \<i
   by (metis Diff_iff in_pair_def minus_pairs_def)
 
 lemma in_pair_Int_pairs [simp]: "p \<in>\<^sub>p A \<inter>\<^sub>p B \<longleftrightarrow> (p \<in>\<^sub>p A \<and> p \<in>\<^sub>p B)"
-  by (metis (no_types, hide_lams) Int_iff Int_pairs_def in_pair_alt in_pair_def old.prod.exhaust swap_alt)
+  by (metis (no_types, hide_lams) Int_iff Int_pairs_def in_pair_alt in_pair_def old.prod.exhaust swap_simp)
 
 lemma in_pair_Un [simp]: "p \<in>\<^sub>p A \<union> B \<longleftrightarrow> (p \<in>\<^sub>p A \<or> p \<in>\<^sub>p B)"
   by (metis (mono_tags, lifting) UnE UnI1 UnI2 image_Un in_pair_def)
