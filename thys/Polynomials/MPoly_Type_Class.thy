@@ -1267,6 +1267,8 @@ proof
   qed
 qed (fact keys_mult_scalar_monomial_right_subset)
 
+end (* term_powerprod *)
+
 subsection \<open>Sums and Products\<close>
 
 lemma sum_poly_mapping_eq_zeroI:
@@ -1362,6 +1364,21 @@ next
                    simp add: lookup_add lookup_single \<open>lookup p t = 0\<close> ** step(3))
   qed
 
+lemma monomial_sum: "monomial (sum f C) a = (\<Sum>c\<in>C. monomial (f c) a)"
+  by (rule fun_sum_commute, simp_all add: single_add)
+
+lemma monomial_Sum_any:
+  assumes "finite {c. f c \<noteq> 0}"
+  shows "monomial (Sum_any f) a = (\<Sum>c. monomial (f c) a)"
+proof -
+  have "{c. monomial (f c) a \<noteq> 0} \<subseteq> {c. f c \<noteq> 0}" by (rule, auto)
+  with assms show ?thesis
+    by (simp add: Groups_Big_Fun.comm_monoid_add_class.Sum_any.expand_superset monomial_sum)
+qed
+
+context term_powerprod
+begin
+
 lemma proj_sum: "proj_poly k (sum f A) = (\<Sum>a\<in>A. proj_poly k (f a))"
   using proj_zero proj_plus by (rule fun_sum_commute)
 
@@ -1382,18 +1399,6 @@ lemma fun_mult_scalar_commute_canc:
   assumes "\<And>x y. f (x + y) = f x + f y" and "\<And>c t. f (monom_mult c t p) = monom_mult c t (f p)"
   shows "f (q \<odot> p) = q \<odot> (f (p::'t \<Rightarrow>\<^sub>0 'b::{semiring_0,cancel_comm_monoid_add}))"
   by (simp add: mult_scalar_sum_monomials assms(2)[symmetric], rule fun_sum_commute_canc, fact)
-
-lemma monomial_sum: "monomial (sum f C) a = (\<Sum>c\<in>C. monomial (f c) a)"
-  by (rule fun_sum_commute, simp_all add: single_add)
-
-lemma monomial_Sum_any:
-  assumes "finite {c. f c \<noteq> 0}"
-  shows "monomial (Sum_any f) a = (\<Sum>c. monomial (f c) a)"
-proof -
-  have "{c. monomial (f c) a \<noteq> 0} \<subseteq> {c. f c \<noteq> 0}" by (rule, auto)
-  with assms show ?thesis
-    by (simp add: Groups_Big_Fun.comm_monoid_add_class.Sum_any.expand_superset monomial_sum)
-qed
 
 lemma monom_mult_sum_left: "monom_mult (sum f C) t p = (\<Sum>c\<in>C. monom_mult (f c) t p)"
   by (rule fun_sum_commute, simp_all add: monom_mult_dist_left)
