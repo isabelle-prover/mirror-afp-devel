@@ -1138,6 +1138,59 @@ lemma lookup_mult_scalar:
   "lookup (p \<odot> q) v = lookup (p * (proj_poly (component_of_term v) q)) (pp_of_term v)"
   unfolding mult_scalar_def by (rule lookup_lift_poly_fun_homogenous, simp)
 
+lemma lookup_mult_scalar_explicit:
+  "lookup (p \<odot> q) u = (\<Sum>t\<in>keys p. lookup p t * (\<Sum>v\<in>keys q. lookup q v when u = t \<oplus> v))"
+proof -
+  let ?f = "\<lambda>t s. lookup (proj_poly (component_of_term u) q) s when pp_of_term u = t + s"
+  note lookup_mult_scalar
+  also have "lookup (p * proj_poly (component_of_term u) q) (pp_of_term u) =
+              (\<Sum>t. lookup p t * (Sum_any (?f t)))"
+    by (fact lookup_mult)
+  also from finite_keys have "\<dots> = (\<Sum>t\<in>keys p. lookup p t * (Sum_any (?f t)))"
+    by (rule Sum_any.expand_superset) (auto dest: mult_not_zero)
+  also from refl have "\<dots> = (\<Sum>t\<in>keys p. lookup p t * (\<Sum>v\<in>keys q. lookup q v when u = t \<oplus> v))"
+  proof (rule sum.cong)
+    fix t
+    assume "t \<in> keys p"
+    from finite_keys have "Sum_any (?f t) = (\<Sum>s\<in>keys (proj_poly (component_of_term u) q). ?f t s)"
+      by (rule Sum_any.expand_superset) auto
+    also have "\<dots> = (\<Sum>v\<in>{x \<in> keys q. component_of_term x = component_of_term u}. ?f t (pp_of_term v))"
+      unfolding keys_proj_poly
+    proof (intro sum.reindex[simplified o_def] inj_onI)
+      fix v1 v2
+      assume "v1 \<in> {x \<in> keys q. component_of_term x = component_of_term u}"
+        and "v2 \<in> {x \<in> keys q. component_of_term x = component_of_term u}"
+      hence "component_of_term v1 = component_of_term v2" by simp
+      moreover assume "pp_of_term v1 = pp_of_term v2"
+      ultimately show "v1 = v2" by (metis term_of_pair_pair)
+    qed
+    also from finite_keys have "\<dots> = (\<Sum>v\<in>keys q. lookup q v when u = t \<oplus> v)"
+    proof (intro sum.mono_neutral_cong_left ballI)
+      fix v
+      assume "v \<in> keys q - {x \<in> keys q. component_of_term x = component_of_term u}"
+      hence "u \<noteq> t \<oplus> v" by (auto simp: component_of_term_splus)
+      thus "(lookup q v when u = t \<oplus> v) = 0" by simp
+    next
+      fix v
+      assume "v \<in> {x \<in> keys q. component_of_term x = component_of_term u}"
+      hence eq[symmetric]: "component_of_term v = component_of_term u" by simp
+      have "u = t \<oplus> v \<longleftrightarrow> pp_of_term u = t + pp_of_term v"
+      proof
+        assume "pp_of_term u = t + pp_of_term v"
+        hence "pp_of_term u = pp_of_term (t \<oplus> v)" by (simp only: pp_of_term_splus)
+        moreover have "component_of_term u = component_of_term (t \<oplus> v)"
+          by (simp only: eq component_of_term_splus)
+        ultimately show "u = t \<oplus> v" by (metis term_of_pair_pair)
+      qed (simp add: pp_of_term_splus)
+      thus "?f t (pp_of_term v) = (lookup q v when u = t \<oplus> v)"
+        by (simp add: lookup_proj_poly eq term_of_pair_pair)
+    qed auto
+    finally show "lookup p t * (Sum_any (?f t)) = lookup p t * (\<Sum>v\<in>keys q. lookup q v when u = t \<oplus> v)"
+      by (simp only:)
+  qed
+  finally show ?thesis .
+qed
+
 lemma proj_mult_scalar [term_simps]: "proj_poly k (p \<odot> q) = p * (proj_poly k q)"
   unfolding mult_scalar_def by (rule proj_lift_poly_fun_homogenous, simp)
 
@@ -1839,5 +1892,6 @@ lemmas times_rec_left = punit.mult_scalar_rec_left[simplified]
 lemmas times_rec_right = punit.mult_scalar_rec_right[simplified]
 lemmas in_keys_timesE = punit.in_keys_mult_scalarE[simplified]
 lemmas punit_monom_mult_monomial = punit.monom_mult_monomial[simplified]
+lemmas lookup_times = punit.lookup_mult_scalar_explicit[simplified]
 
 end (* theory *)

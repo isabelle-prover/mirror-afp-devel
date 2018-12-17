@@ -318,6 +318,41 @@ next
   qed
 qed
 
+lemma except_Diff_singleton: "except p (keys p - {t}) = Poly_Mapping.single t (lookup p t)"
+  by (rule poly_mapping_eqI) (simp add: lookup_single lookup_except when_def)
+
+lemma except_Un_plus_Int: "except p (U \<union> V) + except p (U \<inter> V) = except p U + except p V"
+  by (rule poly_mapping_eqI) (simp add: lookup_except lookup_add)
+
+corollary except_Int:
+  assumes "keys p \<subseteq> U \<union> V"
+  shows "except p (U \<inter> V) = except p U + except p V"
+proof -
+  from assms have "except p (U \<union> V) = 0" by (rule except_eq_zeroI)
+  hence "except p (U \<inter> V) = except p (U \<union> V) + except p (U \<inter> V)" by simp
+  also have "\<dots> = except p U + except p V" by (fact except_Un_plus_Int)
+  finally show ?thesis .
+qed
+
+lemma except_keys_Int [simp]: "except p (keys p \<inter> U) = except p U"
+  by (rule poly_mapping_eqI) (simp add: lookup_except)
+
+lemma except_Int_keys [simp]: "except p (U \<inter> keys p) = except p U"
+  by (simp only: Int_commute[of U] except_keys_Int)
+
+lemma except_keys_Diff: "except p (keys p - U) = except p (- U)"
+proof -
+  have "except p (keys p - U) = except p (keys p \<inter> (- U))" by (simp only: Diff_eq)
+  also have "\<dots> = except p (- U)" by simp
+  finally show ?thesis .
+qed
+
+lemma except_decomp: "p = except p U + except p (- U)"
+  by (rule poly_mapping_eqI) (simp add: lookup_except lookup_add)
+
+corollary except_Compl: "except p (- U) = p - except p U"
+  by (metis add_diff_cancel_left' except_decomp)
+
 subsection \<open>'Divisibility' on Additive Structures\<close>
 
 context plus begin

@@ -210,8 +210,33 @@ subsubsection \<open>\<open>max_list\<close>\<close>
 fun (in ord) max_list :: "'a list \<Rightarrow> 'a" where
   "max_list (x # xs) = (case xs of [] \<Rightarrow> x | _ \<Rightarrow> max x (max_list xs))"
 
-lemma (in linorder) max_list_Max: "xs \<noteq> [] \<Longrightarrow> max_list xs = Max (set xs)"
+context linorder
+begin
+
+lemma max_list_Max: "xs \<noteq> [] \<Longrightarrow> max_list xs = Max (set xs)"
   by (induct xs rule: induct_list012, auto)
+
+lemma max_list_ge:
+  assumes "x \<in> set xs"
+  shows "x \<le> max_list xs"
+proof -
+  from assms have "xs \<noteq> []" by auto
+  from finite_set assms have "x \<le> Max (set xs)" by (rule Max_ge)
+  also from \<open>xs \<noteq> []\<close> have "Max (set xs) = max_list xs" by (rule max_list_Max[symmetric])
+  finally show ?thesis .
+qed
+
+lemma max_list_boundedI:
+  assumes "xs \<noteq> []" and "\<And>x. x \<in> set xs \<Longrightarrow> x \<le> a"
+  shows "max_list xs \<le> a"
+proof -
+  from assms(1) have "set xs \<noteq> {}" by simp
+  from assms(1) have "max_list xs = Max (set xs)" by (rule max_list_Max)
+  also from finite_set \<open>set xs \<noteq> {}\<close> assms(2) have "\<dots> \<le> a" by (rule Max.boundedI)
+  finally show ?thesis .
+qed
+
+end
 
 subsubsection \<open>\<open>insort_wrt\<close>\<close>
 

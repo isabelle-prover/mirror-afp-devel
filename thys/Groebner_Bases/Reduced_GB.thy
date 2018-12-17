@@ -485,6 +485,62 @@ proof -
   with G show ?thesis by simp
 qed
 
+lemma reduced_GB_unique:
+  assumes "finite G" and "is_reduced_GB G" and "pmdl G = pmdl F"
+  shows "reduced_GB F = G"
+proof -
+  from assms have "finite G \<and> is_reduced_GB G \<and> pmdl G = pmdl F" by simp
+  thus ?thesis unfolding reduced_GB_def
+  proof (rule the_equality)
+    fix G'
+    assume "finite G' \<and> is_reduced_GB G' \<and> pmdl G' = pmdl F"
+    hence "is_reduced_GB G'" and eq: "pmdl G' = pmdl F" by simp_all
+    note this(1)
+    moreover note assms(2)
+    moreover have "pmdl G' = pmdl G" by (simp only: assms(3) eq)
+    ultimately show "G' = G" by (rule is_reduced_GB_unique)
+  qed
+qed
+
+lemma is_reduced_GB_empty: "is_reduced_GB {}"
+  by (simp add: is_reduced_GB_def is_Groebner_basis_empty is_monic_set_def is_auto_reduced_def)
+
+lemma is_reduced_GB_singleton: "is_reduced_GB {f} \<longleftrightarrow> lc f = 1"
+proof
+  assume "is_reduced_GB {f}"
+  hence "is_monic_set {f}" and "f \<noteq> 0" by (rule reduced_GB_D3, rule reduced_GB_D4) simp
+  from this(1) _ this(2) show "lc f = 1" by (rule is_monic_setD) simp
+next
+  assume "lc f = 1"
+  moreover from this have "f \<noteq> 0" by auto
+  ultimately show "is_reduced_GB {f}"
+    by (simp add: is_reduced_GB_def is_Groebner_basis_singleton is_monic_set_def is_auto_reduced_def
+        not_is_red_empty)
+qed
+
+lemma reduced_GB_empty: "reduced_GB {} = {}"
+  using finite.emptyI is_reduced_GB_empty refl by (rule reduced_GB_unique)
+
+lemma reduced_GB_singleton: "reduced_GB {f} = (if f = 0 then {} else {monic f})"
+proof (cases "f = 0")
+  case True
+  from finite.emptyI is_reduced_GB_empty have "reduced_GB {f} = {}"
+    by (rule reduced_GB_unique) (simp add: True flip: pmdl.module_minus_singleton_zero[of "{0}"])
+  with True show ?thesis by simp
+next
+  case False
+  have "reduced_GB {f} = {monic f}"
+  proof (rule reduced_GB_unique)
+    from False have "lc f \<noteq> 0" by (rule lc_not_0)
+    thus "is_reduced_GB {monic f}" by (simp add: is_reduced_GB_singleton monic_def)
+  next
+    have "pmdl {monic f} = pmdl (monic ` {f})" by simp
+    also have "\<dots> = pmdl {f}" by (fact pmdl_image_monic)
+    finally show "pmdl {monic f} = pmdl {f}" .
+  qed simp
+  with False show ?thesis by simp
+qed
+
 lemma ex_unique_reduced_GB_finite: "finite F \<Longrightarrow> (\<exists>!G. finite G \<and> is_reduced_GB G \<and> pmdl G = pmdl F)"
   by (rule ex_unique_reduced_GB_dgrad_p_set', rule dickson_grading_dgrad_dummy,
       erule finite_imp_finite_component_Keys, erule dgrad_p_set_exhaust_expl)

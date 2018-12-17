@@ -1546,6 +1546,57 @@ proof -
   qed
 qed
 
+lemma is_red_monom_mult:
+  assumes "is_red F (monom_mult c 0 p)"
+  shows "is_red F p"
+proof -
+  from assms obtain f u where "f \<in> F" and "u \<in> keys (monom_mult c 0 p)" and "f \<noteq> 0"
+    and a: "lt f adds\<^sub>t u" by (rule is_red_addsE)
+  from this(2) keys_monom_mult_subset have "u \<in> (\<oplus>) 0 ` keys p" ..
+  hence "u \<in> keys p" by (auto simp: splus_zero)
+  with \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> show ?thesis using a by (rule is_red_addsI)
+qed
+
+corollary is_irred_monom_mult: "\<not> is_red F p \<Longrightarrow> \<not> is_red F (monom_mult c 0 p)"
+  by (auto dest: is_red_monom_mult)
+
+lemma is_red_uminus: "is_red F (- p) \<longleftrightarrow> is_red F p"
+  by (auto elim!: is_red_addsE simp: keys_uminus intro: is_red_addsI)
+
+lemma is_red_plus:
+  assumes "is_red F (p + q)"
+  shows "is_red F p \<or> is_red F q"
+proof -
+  from assms obtain f u where "f \<in> F" and "u \<in> keys (p + q)" and "f \<noteq> 0"
+    and a: "lt f adds\<^sub>t u" by (rule is_red_addsE)
+  from this(2) keys_add_subset have "u \<in> keys p \<union> keys q" ..
+  thus ?thesis
+  proof
+    assume "u \<in> keys p"
+    with \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> have "is_red F p" using a by (rule is_red_addsI)
+    thus ?thesis ..
+  next
+    assume "u \<in> keys q"
+    with \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> have "is_red F q" using a by (rule is_red_addsI)
+    thus ?thesis ..
+  qed
+qed
+
+lemma is_irred_plus: "\<not> is_red F p \<Longrightarrow> \<not> is_red F q \<Longrightarrow> \<not> is_red F (p + q)"
+  by (auto dest: is_red_plus)
+
+lemma is_red_minus:
+  assumes "is_red F (p - q)"
+  shows "is_red F p \<or> is_red F q"
+proof -
+  from assms have "is_red F (p + (- q))" by simp
+  hence "is_red F p \<or> is_red F (- q)" by (rule is_red_plus)
+  thus ?thesis by (simp only: is_red_uminus)
+qed
+
+lemma is_irred_minus: "\<not> is_red F p \<Longrightarrow> \<not> is_red F q \<Longrightarrow> \<not> is_red F (p - q)"
+  by (auto dest: is_red_minus)
+
 end (* ordered_term *)
 
 subsection \<open>Well-foundedness and Termination\<close>
