@@ -191,12 +191,9 @@ qed
 
 subsection \<open>Lexicographic Term Order\<close>
 
-context wellorder
-begin
+lift_definition lex_pp :: "('a, 'b) pp \<Rightarrow> ('a::linorder, 'b::{zero,linorder}) pp \<Rightarrow> bool" is lex_pm .
 
-lift_definition lex_pp :: "('a, 'b) pp \<Rightarrow> ('a, 'b::{zero,order}) pp \<Rightarrow> bool" is lex_pm .
-
-lift_definition lex_pp_strict :: "('a, 'b) pp \<Rightarrow> ('a, 'b::{zero,order}) pp \<Rightarrow> bool" is lex_pm_strict .
+lift_definition lex_pp_strict :: "('a, 'b) pp \<Rightarrow> ('a::linorder, 'b::{zero,linorder}) pp \<Rightarrow> bool" is lex_pm_strict .
 
 lemma lex_pp_alt: "lex_pp s t = (s = t \<or> (\<exists>x. lookup_pp s x < lookup_pp t x \<and> (\<forall>y<x. lookup_pp s y = lookup_pp t y)))"
   by (transfer, fact lex_pm_alt)
@@ -204,38 +201,34 @@ lemma lex_pp_alt: "lex_pp s t = (s = t \<or> (\<exists>x. lookup_pp s x < lookup
 lemma lex_pp_refl: "lex_pp s s"
   by (transfer, fact lex_pm_refl)
 
-lemma lex_pp_antisym:
-  assumes "lex_pp s t" and "lex_pp t s"
-  shows "s = t"
-  using assms by (transfer, intro lex_pm_antisym)
+lemma lex_pp_antisym: "lex_pp s t \<Longrightarrow> lex_pp t s \<Longrightarrow> s = t"
+  by (transfer, intro lex_pm_antisym)
 
 lemma lex_pp_trans: "lex_pp s t \<Longrightarrow> lex_pp t u \<Longrightarrow> lex_pp s u"
   by (transfer, rule lex_pm_trans)
 
-lemma lex_pp_lin: "lex_pp s t \<or> lex_pp t s" for s t::"('a, 'b::{ordered_comm_monoid_add, linorder}) pp"
+lemma lex_pp_lin: "lex_pp s t \<or> lex_pp t s"
   by (transfer, fact lex_pm_lin)
 
-lemma lex_pp_lin': "\<not> lex_pp t s \<Longrightarrow> lex_pp s t" for s t::"('a, 'b::{ordered_comm_monoid_add, linorder}) pp"
+lemma lex_pp_lin': "\<not> lex_pp t s \<Longrightarrow> lex_pp s t"
   using lex_pp_lin by blast \<comment>\<open>Better suited for \<open>auto\<close>.\<close>
 
 corollary lex_pp_strict_alt [code]:
-  "lex_pp_strict s t = (\<not> lex_pp t s)" for s t::"('a, 'b::{ordered_comm_monoid_add, linorder}) pp"
+  "lex_pp_strict s t = (\<not> lex_pp t s)" for s t::"(_, _::ordered_comm_monoid_add) pp"
   by (transfer, fact lex_pm_strict_alt)
 
-lemma lex_pp_zero_min: "lex_pp 0 s" for s::"('a, 'b::add_linorder_min) pp"
+lemma lex_pp_zero_min: "lex_pp 0 s" for s::"(_, _::add_linorder_min) pp"
   by (transfer, fact lex_pm_zero_min)
 
-lemma lex_pp_plus_monotone:
-  "lex_pp (s + u) (t + u)" if "lex_pp s t" for s t::"('a, 'b::ordered_cancel_comm_monoid_add) pp"
-  using that by (transfer, intro lex_pm_plus_monotone)
+lemma lex_pp_plus_monotone: "lex_pp s t \<Longrightarrow> lex_pp (s + u) (t + u)"
+  for s t::"(_, _::{ordered_comm_monoid_add, ordered_ab_semigroup_add_imp_le}) pp"
+  by (transfer, intro lex_pm_plus_monotone)
 
-lemma lex_pp_plus_monotone':
-  "lex_pp (u + s) (u + t)" if "lex_pp s t" for s t::"('a, 'b::ordered_cancel_comm_monoid_add) pp"
-  unfolding add.commute[of u] using that by (rule lex_pp_plus_monotone)
+lemma lex_pp_plus_monotone': "lex_pp s t \<Longrightarrow> lex_pp (u + s) (u + t)"
+  for s t::"(_, _::{ordered_comm_monoid_add, ordered_ab_semigroup_add_imp_le}) pp"
+  unfolding add.commute[of u] by (rule lex_pp_plus_monotone)
 
-end (* wellorder *)
-
-instantiation pp :: (wellorder, "{ordered_comm_monoid_add, linorder}") linorder
+instantiation pp :: (linorder, "{ordered_comm_monoid_add, linorder}") linorder
 begin
 
 definition less_eq_pp :: "('a, 'b) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool"
@@ -269,18 +262,17 @@ lemma deg_pp_single: "deg_pp (single_pp x k) = k"
 
 subsection \<open>Degree-Lexicographic Term Order\<close>
 
-context wellorder
-begin
+lift_definition dlex_pp :: "('a::linorder, 'b::{ordered_comm_monoid_add,linorder}) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool"
+  is dlex_pm .
 
-lift_definition dlex_pp :: "('a, 'b::ordered_comm_monoid_add) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool" is dlex_pm .
-
-lift_definition dlex_pp_strict :: "('a, 'b::ordered_comm_monoid_add) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool" is dlex_pm_strict .
+lift_definition dlex_pp_strict :: "('a::linorder, 'b::{ordered_comm_monoid_add,linorder}) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool"
+  is dlex_pm_strict .
 
 lemma dlex_pp_alt: "dlex_pp s t \<longleftrightarrow> (deg_pp s < deg_pp t \<or> (deg_pp s = deg_pp t \<and> lex_pp s t))"
-  by (transfer, simp only: dlex_pm_def, transfer, simp add: dord_fun_def Let_def)
+  by transfer (simp only: dlex_pm_def dord_pm_alt)
 
 lemma dlex_pp_refl: "dlex_pp s s"
-  by (transfer, fact dlex_pm_refl)
+  by (transfer) (fact dlex_pm_refl)
 
 lemma dlex_pp_antisym: "dlex_pp s t \<Longrightarrow> dlex_pp t s \<Longrightarrow> s = t"
   by (transfer, elim dlex_pm_antisym)
@@ -289,31 +281,29 @@ lemma dlex_pp_trans: "dlex_pp s t \<Longrightarrow> dlex_pp t u \<Longrightarrow
   by (transfer, rule dlex_pm_trans)
 
 lemma dlex_pp_lin: "dlex_pp s t \<or> dlex_pp t s"
-  for s t::"('a, 'b::{ordered_comm_monoid_add, linorder}) pp"
   by (transfer, fact dlex_pm_lin)
 
-corollary dlex_pp_strict_alt [code]:
-  "dlex_pp_strict s t = (\<not> dlex_pp t s)" for s t::"('a, 'b::{ordered_comm_monoid_add, linorder}) pp"
+corollary dlex_pp_strict_alt [code]: "dlex_pp_strict s t = (\<not> dlex_pp t s)"
   by (transfer, fact dlex_pm_strict_alt)
 
 lemma dlex_pp_zero_min: "dlex_pp 0 s"
-  for s t::"('a, 'b::add_linorder_min) pp"
+  for s t::"(_, _::add_linorder_min) pp"
   by (transfer, fact dlex_pm_zero_min)
 
 lemma dlex_pp_plus_monotone: "dlex_pp s t \<Longrightarrow> dlex_pp (s + u) (t + u)"
-  for s t::"('a, 'b::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}) pp"
+  for s t::"(_, _::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}) pp"
   by (transfer, rule dlex_pm_plus_monotone)
 
 subsection \<open>Degree-Reverse-Lexicographic Term Order\<close>
 
-lift_definition drlex_pp :: "('a, 'b::ordered_comm_monoid_add) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool"
+lift_definition drlex_pp :: "('a::linorder, 'b::{ordered_comm_monoid_add,linorder}) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool"
   is drlex_pm .
 
-lift_definition drlex_pp_strict :: "('a, 'b::ordered_comm_monoid_add) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool"
+lift_definition drlex_pp_strict :: "('a::linorder, 'b::{ordered_comm_monoid_add,linorder}) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool"
   is drlex_pm_strict .
 
 lemma drlex_pp_alt: "drlex_pp s t \<longleftrightarrow> (deg_pp s < deg_pp t \<or> (deg_pp s = deg_pp t \<and> lex_pp t s))"
-  by (transfer, simp only: drlex_pm_def, transfer, simp add: dord_fun_def Let_def)
+  by transfer (simp only: drlex_pm_def dord_pm_alt)
 
 lemma drlex_pp_refl: "drlex_pp s s"
   by (transfer, fact drlex_pm_refl)
@@ -325,21 +315,17 @@ lemma drlex_pp_trans: "drlex_pp s t \<Longrightarrow> drlex_pp t u \<Longrightar
   by (transfer, rule drlex_pm_trans)
 
 lemma drlex_pp_lin: "drlex_pp s t \<or> drlex_pp t s"
-  for s t::"('a, 'b::{ordered_comm_monoid_add, linorder}) pp"
   by (transfer, fact drlex_pm_lin)
 
-corollary drlex_pp_strict_alt [code]:
-  "drlex_pp_strict s t = (\<not> drlex_pp t s)" for s t::"('a, 'b::{ordered_comm_monoid_add, linorder}) pp"
+corollary drlex_pp_strict_alt [code]: "drlex_pp_strict s t = (\<not> drlex_pp t s)"
   by (transfer, fact drlex_pm_strict_alt)
 
 lemma drlex_pp_zero_min: "drlex_pp 0 s"
-  for s t::"('a, 'b::add_linorder_min) pp"
+  for s t::"(_, _::add_linorder_min) pp"
   by (transfer, fact drlex_pm_zero_min)
 
 lemma drlex_pp_plus_monotone: "drlex_pp s t \<Longrightarrow> drlex_pp (s + u) (t + u)"
-  for s t::"('a, 'b::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}) pp"
+  for s t::"(_, _::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}) pp"
   by (transfer, rule drlex_pm_plus_monotone)
-
-end (* wellorder *)
 
 end (* theory *)

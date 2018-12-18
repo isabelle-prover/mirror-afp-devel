@@ -2490,50 +2490,40 @@ qed
 
 subsubsection \<open>Lexicographic Term Order\<close>
 
-context wellorder
-begin
+definition lex_pm :: "('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a::linorder \<Rightarrow>\<^sub>0 'b::{zero,linorder}) \<Rightarrow> bool"
+  where "lex_pm = (\<le>)"
 
-lemma neq_poly_mapping_alt:
-  assumes "s \<noteq> (t::'a \<Rightarrow>\<^sub>0 'b::zero)"
-  obtains x where "lookup s x \<noteq> lookup t x" and "\<And>y. lookup s y \<noteq> lookup t y \<Longrightarrow> x \<le> y"
-  using assms unfolding poly_mapping_eq_iff by (rule neq_fun_alt, auto)
-
-lift_definition lex_pm::"('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::{zero,order}) \<Rightarrow> bool" is lex_fun .
-
-definition "lex_pm_strict s t \<longleftrightarrow> lex_pm s t \<and> \<not> lex_pm t s"
+definition lex_pm_strict :: "('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a::linorder \<Rightarrow>\<^sub>0 'b::{zero,linorder}) \<Rightarrow> bool"
+  where "lex_pm_strict = (<)"
 
 lemma lex_pm_alt: "lex_pm s t = (s = t \<or> (\<exists>x. lookup s x < lookup t x \<and> (\<forall>y<x. lookup s y = lookup t y)))"
-  by (simp only: lex_pm.rep_eq lex_fun_alt poly_mapping_eq_iff)
+  unfolding lex_pm_def by (metis less_eq_poly_mapping.rep_eq less_funE less_funI poly_mapping_eq_iff)
 
 lemma lex_pm_refl: "lex_pm s s"
-  by (simp only: lex_pm.rep_eq lex_fun_refl)
+  by (simp add: lex_pm_def)
 
-lemma lex_pm_antisym:
-  assumes "lex_pm s t" and "lex_pm t s"
-  shows "s = t"
-  using assms by (simp only: lex_pm.rep_eq poly_mapping_eq_iff, elim lex_fun_antisym)
+lemma lex_pm_antisym: "lex_pm s t \<Longrightarrow> lex_pm t s \<Longrightarrow> s = t"
+  by (simp add: lex_pm_def)
 
-lemma lex_pm_trans:
-  assumes "lex_pm s t" and "lex_pm t u"
-  shows "lex_pm s u"
-  using assms by (simp only: lex_pm.rep_eq, elim lex_fun_trans[of "lookup s" "lookup t"])
+lemma lex_pm_trans: "lex_pm s t \<Longrightarrow> lex_pm t u \<Longrightarrow> lex_pm s u"
+  by (simp add: lex_pm_def)
 
-lemma lex_pm_lin: "lex_pm s t \<or> lex_pm t s" for s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder}"
-  by (simp only: lex_pm.rep_eq, fact lex_fun_lin)
+lemma lex_pm_lin: "lex_pm s t \<or> lex_pm t s"
+  by (simp add: lex_pm_def linear)
 
-corollary lex_pm_strict_alt [code]:
-  "lex_pm_strict s t = (\<not> lex_pm t s)" for s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder}"
-  unfolding lex_pm_strict_def using lex_pm_lin by auto
+corollary lex_pm_strict_alt [code]: "lex_pm_strict s t = (\<not> lex_pm t s)"
+  by (auto simp: lex_pm_strict_def lex_pm_def)
 
-lemma lex_pm_zero_min: "lex_pm 0 s" for s::"'a \<Rightarrow>\<^sub>0 'b::add_linorder_min"
-  by (simp only: lex_pm.rep_eq lookup_zero_fun, fact lex_fun_zero_min)
+lemma lex_pm_zero_min: "lex_pm 0 s" for s::"_ \<Rightarrow>\<^sub>0 _::add_linorder_min"
+proof (rule ccontr)
+  assume "\<not> lex_pm 0 s"
+  hence "lex_pm_strict s 0" by (simp add: lex_pm_strict_alt)
+  thus False by (simp add: lex_pm_strict_def less_poly_mapping.rep_eq less_fun_def)
+qed
 
-lemma lex_pm_plus_monotone:
-  "lex_pm (s + u) (t + u)" if "lex_pm s t"
-for s t::"'a \<Rightarrow>\<^sub>0 'b::ordered_cancel_comm_monoid_add"
-  using that by (simp only: lex_pm.rep_eq lookup_plus_fun, elim lex_fun_plus_monotone)
-
-end (* wellorder *)
+lemma lex_pm_plus_monotone: "lex_pm s t \<Longrightarrow> lex_pm (s + u) (t + u)"
+  for s t::"_ \<Rightarrow>\<^sub>0 _::{ordered_comm_monoid_add, ordered_ab_semigroup_add_imp_le}"
+  by (simp add: lex_pm_def add_right_mono)
 
 subsubsection \<open>Degree\<close>
 
@@ -2570,7 +2560,10 @@ context linorder
 begin
 
 lift_definition dord_pm::"(('a \<Rightarrow>\<^sub>0 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
-  is dord_fun by (metis local.dord_fun_def) 
+  is dord_fun by (metis local.dord_fun_def)
+
+lemma dord_pm_alt: "dord_pm ord = (\<lambda>x y. deg_pm x < deg_pm y \<or> (deg_pm x = deg_pm y \<and> ord x y))"
+  by (intro ext) (transfer, simp add: dord_fun_def Let_def)
 
 lemma dord_pm_degD:
   assumes "dord_pm ord s t"
@@ -2620,7 +2613,7 @@ lemma dord_pm_zero_min: "dord_pm ord 0 s"
 
 lemma dord_pm_plus_monotone:
   fixes s t u ::"'a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, ordered_ab_semigroup_add_imp_le}"
-  assumes "dord_pm ord s t" and ord_monotone: "ord s t \<Longrightarrow> ord (s + u) (t + u)"
+  assumes "ord s t \<Longrightarrow> ord (s + u) (t + u)" and "dord_pm ord s t"
   shows "dord_pm ord (s + u) (t + u)"
   using assms
   by (simp only: dord_pm.rep_eq lookup_plus_fun, intro dord_fun_plus_monotone,
@@ -2634,96 +2627,62 @@ end (* linorder *)
 
 subsubsection \<open>Degree-Lexicographic Term Order\<close>
 
-context wellorder
-begin
-
-definition dlex_pm::"('a \<Rightarrow>\<^sub>0 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
+definition dlex_pm::"('a::linorder \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add,linorder}) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
   where "dlex_pm \<equiv> dord_pm lex_pm"
 
 definition "dlex_pm_strict s t \<longleftrightarrow> dlex_pm s t \<and> \<not> dlex_pm t s"
 
-lemma dlex_pm_iff: "dlex_pm s t \<longleftrightarrow> dlex_fun (lookup s) (lookup t)"
-  by (simp add: dlex_pm_def dlex_fun_def dord_fun_def dord_pm_def lex_pm.rep_eq lookup_inverse)
-
 lemma dlex_pm_refl: "dlex_pm s s"
-  by (simp only: dlex_pm_iff, fact dlex_fun_refl)
+  unfolding dlex_pm_def using lex_pm_refl by (rule dord_pm_refl)
 
-lemma dlex_pm_antisym:
-  assumes "dlex_pm s t" and "dlex_pm t s"
-  shows "s = t"
-  using assms by (simp only: dlex_pm_iff poly_mapping_eq_iff, elim dlex_fun_antisym)
+lemma dlex_pm_antisym: "dlex_pm s t \<Longrightarrow> dlex_pm t s \<Longrightarrow> s = t"
+  unfolding dlex_pm_def using lex_pm_antisym by (rule dord_pm_antisym)
 
-lemma dlex_pm_trans:
-  assumes "dlex_pm s t" and "dlex_pm t u"
-  shows "dlex_pm s u"
-  using assms by (simp only: dlex_pm_iff, elim dlex_fun_trans[of "lookup s" "lookup t"])
+lemma dlex_pm_trans: "dlex_pm s t \<Longrightarrow> dlex_pm t u \<Longrightarrow> dlex_pm s u"
+  unfolding dlex_pm_def using lex_pm_trans by (rule dord_pm_trans)
 
 lemma dlex_pm_lin: "dlex_pm s t \<or> dlex_pm t s"
-  for s t::"('a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder})"
-  by (simp only: dlex_pm_iff, fact dlex_fun_lin)
+  unfolding dlex_pm_def using lex_pm_lin by (rule dord_pm_lin)
 
-corollary dlex_pm_strict_alt [code]:
-  "dlex_pm_strict s t = (\<not> dlex_pm t s)" for s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder}"
+corollary dlex_pm_strict_alt [code]: "dlex_pm_strict s t = (\<not> dlex_pm t s)"
   unfolding dlex_pm_strict_def using dlex_pm_lin by auto
 
 lemma dlex_pm_zero_min: "dlex_pm 0 s"
-  for s t::"('a \<Rightarrow>\<^sub>0 'b::add_linorder_min)"
-  by (simp only: dlex_pm_iff lookup_zero_fun, rule dlex_fun_zero_min, simp add: keys_eq_supp[symmetric])
+  for s t::"(_ \<Rightarrow>\<^sub>0 _::add_linorder_min)"
+  unfolding dlex_pm_def using lex_pm_refl by (rule dord_pm_zero_min)
 
-lemma dlex_pm_plus_monotone:
-  fixes s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}"
-  assumes "dlex_pm s t"
-  shows "dlex_pm (s + u) (t + u)"
-  using assms
-  by (simp only: dlex_pm_iff lookup_plus_fun, intro dlex_fun_plus_monotone,
-      simp_all add: keys_eq_supp[symmetric])
+lemma dlex_pm_plus_monotone: "dlex_pm s t \<Longrightarrow> dlex_pm (s + u) (t + u)"
+  for s t::"_ \<Rightarrow>\<^sub>0 _::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}"
+  unfolding dlex_pm_def using lex_pm_plus_monotone by (rule dord_pm_plus_monotone)
 
 subsubsection \<open>Degree-Reverse-Lexicographic Term Order\<close>
 
-abbreviation rlex_pm::"('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::{zero,order}) \<Rightarrow> bool" where
-  "rlex_pm s t \<equiv> lex_pm t s"
-
-definition drlex_pm::"('a \<Rightarrow>\<^sub>0 'b::ordered_comm_monoid_add) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
-  where "drlex_pm \<equiv> dord_pm rlex_pm"
+definition drlex_pm::"('a::linorder \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add,linorder}) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> bool"
+  where "drlex_pm \<equiv> dord_pm (\<lambda>s t. lex_pm t s)"
 
 definition "drlex_pm_strict s t \<longleftrightarrow> drlex_pm s t \<and> \<not> drlex_pm t s"
 
-lemma drlex_pm_iff: "drlex_pm s t \<longleftrightarrow> drlex_fun (lookup s) (lookup t)"
-  by (simp add: drlex_pm_def drlex_fun_def dord_fun_def dord_pm_def lex_pm.rep_eq lookup_inverse)
-
 lemma drlex_pm_refl: "drlex_pm s s"
-  by (simp only: drlex_pm_iff, fact drlex_fun_refl)
+  unfolding drlex_pm_def using lex_pm_refl by (rule dord_pm_refl)
 
-lemma drlex_pm_antisym:
-  assumes "drlex_pm s t" and "drlex_pm t s"
-  shows "s = t"
-  using assms by (simp only: drlex_pm_iff poly_mapping_eq_iff, elim drlex_fun_antisym)
+lemma drlex_pm_antisym: "drlex_pm s t \<Longrightarrow> drlex_pm t s \<Longrightarrow> s = t"
+  unfolding drlex_pm_def using lex_pm_antisym by (rule dord_pm_antisym)
 
-lemma drlex_pm_trans:
-  assumes "drlex_pm s t" and "drlex_pm t u"
-  shows "drlex_pm s u"
-  using assms by (simp only: drlex_pm_iff, elim drlex_fun_trans[of "lookup s" "lookup t"])
+lemma drlex_pm_trans: "drlex_pm s t \<Longrightarrow> drlex_pm t u \<Longrightarrow> drlex_pm s u"
+  unfolding drlex_pm_def using lex_pm_trans by (rule dord_pm_trans)
 
 lemma drlex_pm_lin: "drlex_pm s t \<or> drlex_pm t s"
-  for s t::"('a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder})"
-  by (simp only: drlex_pm_iff, fact drlex_fun_lin)
+  unfolding drlex_pm_def using lex_pm_lin by (rule dord_pm_lin)
 
-corollary drlex_pm_strict_alt [code]:
-  "drlex_pm_strict s t = (\<not> drlex_pm t s)" for s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_comm_monoid_add, linorder}"
+corollary drlex_pm_strict_alt [code]: "drlex_pm_strict s t = (\<not> drlex_pm t s)"
   unfolding drlex_pm_strict_def using drlex_pm_lin by auto
 
 lemma drlex_pm_zero_min: "drlex_pm 0 s"
-  for s t::"('a \<Rightarrow>\<^sub>0 'b::add_linorder_min)"
-  by (simp only: drlex_pm_iff lookup_zero_fun, rule drlex_fun_zero_min, simp add: keys_eq_supp[symmetric])
+  for s t::"(_ \<Rightarrow>\<^sub>0 _::add_linorder_min)"
+  unfolding drlex_pm_def using lex_pm_refl by (rule dord_pm_zero_min)
 
-lemma drlex_pm_plus_monotone:
-  fixes s t::"'a \<Rightarrow>\<^sub>0 'b::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}"
-  assumes "drlex_pm s t"
-  shows "drlex_pm (s + u) (t + u)"
-  using assms
-  by (simp only: drlex_pm_iff lookup_plus_fun, intro drlex_fun_plus_monotone,
-      simp_all add: keys_eq_supp[symmetric])
-
-end (* wellorder *)
+lemma drlex_pm_plus_monotone: "drlex_pm s t \<Longrightarrow> drlex_pm (s + u) (t + u)"
+  for s t::"_ \<Rightarrow>\<^sub>0 _::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}"
+  unfolding drlex_pm_def using lex_pm_plus_monotone by (rule dord_pm_plus_monotone)
 
 end (* theory *)
