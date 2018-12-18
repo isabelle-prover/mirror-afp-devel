@@ -815,7 +815,7 @@ qed
 
 subsection \<open>Integral domains\<close>
 
-instance poly_mapping :: ("{ordered_cancel_comm_monoid_add, linorder}", ring_no_zero_divisors) ring_no_zero_divisors
+instance poly_mapping :: ("{ordered_cancel_comm_monoid_add, linorder}", semiring_no_zero_divisors) semiring_no_zero_divisors
   text \<open>The @{class "linorder"} constraint is a pragmatic device for the proof --- maybe it can be dropped\<close>
 proof
   fix f g :: "'a \<Rightarrow>\<^sub>0 'b"
@@ -882,6 +882,9 @@ proof
       by (auto simp add: fun_eq_iff)
   qed
 qed
+
+instance poly_mapping :: ("{ordered_cancel_comm_monoid_add, linorder}", ring_no_zero_divisors) ring_no_zero_divisors
+  ..
 
 instance poly_mapping :: ("{ordered_cancel_comm_monoid_add, linorder}", ring_1_no_zero_divisors) ring_1_no_zero_divisors
   ..
