@@ -22,17 +22,17 @@ lemma trdsp_in_pmdl: "trdsp bs (p, q) \<in> pmdl (insert (fst p) (insert (fst q)
 proof (rule pmdl_closed_trd)
   have "spoly (fst p) (fst q) \<in> pmdl {fst p, fst q}"
   proof (rule pmdl_closed_spoly)
-    show "fst p \<in> pmdl {fst p, fst q}" by (rule pmdl.generator_in_module, simp)
+    show "fst p \<in> pmdl {fst p, fst q}" by (rule pmdl.span_base, simp)
   next
-    show "fst q \<in> pmdl {fst p, fst q}" by (rule pmdl.generator_in_module, simp)
+    show "fst q \<in> pmdl {fst p, fst q}" by (rule pmdl.span_base, simp)
   qed
   also have "... \<subseteq> pmdl (insert (fst p) (insert (fst q) (set bs)))"
-    by (rule pmdl.module_mono, simp)
+    by (rule pmdl.span_mono, simp)
   finally show "spoly (fst p) (fst q) \<in> pmdl (insert (fst p) (insert (fst q) (set bs)))" .
 next
   have "set bs \<subseteq> insert (fst p) (insert (fst q) (set bs))" by blast
   also have "... \<subseteq> pmdl (insert (fst p) (insert (fst q) (set bs)))"
-    by (fact pmdl.generator_subset_module)
+    by (fact pmdl.span_superset)
   finally show "set bs \<subseteq> pmdl (insert (fst p) (insert (fst q) (set bs)))" .
 qed
 
@@ -173,7 +173,7 @@ proof
   have "h \<in> pmdl (insert (fst p) (insert (fst q) (set (map fst bs))))" unfolding h
     by (fact trdsp_in_pmdl)
   also have "... \<subseteq> pmdl (args_to_set ([], bs, ps))"
-  proof (rule pmdl.module_mono, intro insert_subsetI)
+  proof (rule pmdl.span_mono, intro insert_subsetI)
     from \<open>(p, q) \<in> set ps\<close> have "fst p \<in> fst ` fst ` set ps" by force
     thus "fst p \<in> args_to_set ([], bs, ps)" by (auto simp add: args_to_set_alt)
   next

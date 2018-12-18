@@ -54,7 +54,7 @@ lemma in_idealE_rep_dgrad_p_set:
   obtains r where "keys r \<subseteq> B" and "Poly_Mapping.range r \<subseteq> punit.dgrad_p_set d m" and "p = ideal.rep r"
 proof -
   from assms obtain A q where "finite A" and "A \<subseteq> B" and 0: "\<And>b. q b \<in> punit.dgrad_p_set d m"
-    and p: "p = (\<Sum>a\<in>A. q a * a)" by (rule punit.in_moduleE_dgrad_p_set[simplified], blast)
+    and p: "p = (\<Sum>a\<in>A. q a * a)" by (rule punit.in_pmdlE_dgrad_p_set[simplified], blast)
   define r where "r = Abs_poly_mapping (\<lambda>k. q k when k \<in> A)"
   have 1: "lookup r = (\<lambda>k. q k when k \<in> A)" unfolding r_def
     by (rule Abs_poly_mapping_inverse, simp add: \<open>finite A\<close>)
@@ -237,9 +237,9 @@ proof -
   hence eq: "pm_of_idx_pm fs (vectorize_poly r) = pm_of_idx_pm ?fs (vectorize_poly r)"
     by (simp only: pm_of_idx_pm_take)
   have "rep_list r \<in> ideal (keys (pm_of_idx_pm fs (vectorize_poly r)))"
-    unfolding rep_list_def by (rule ideal.rep_in_module)
+    unfolding rep_list_def by (rule ideal.rep_in_span)
   also have "... = ideal (keys (pm_of_idx_pm ?fs (vectorize_poly r)))" by (simp only: eq)
-  also from keys_pm_of_idx_pm_subset have "... \<subseteq> ideal (set ?fs)" by (rule ideal.module_mono)
+  also from keys_pm_of_idx_pm_subset have "... \<subseteq> ideal (set ?fs)" by (rule ideal.span_mono)
   finally show ?thesis .
 qed
 
@@ -250,8 +250,8 @@ corollary rep_list_subset_ideal_sig_inv_set:
 lemma rep_list_in_ideal: "rep_list r \<in> ideal (set fs)"
 proof -
   have "rep_list r \<in> ideal (keys (pm_of_idx_pm fs (vectorize_poly r)))"
-    unfolding rep_list_def by (rule ideal.rep_in_module)
-  also from keys_pm_of_idx_pm_subset have "... \<subseteq> ideal (set fs)" by (rule ideal.module_mono)
+    unfolding rep_list_def by (rule ideal.rep_in_span)
+  also from keys_pm_of_idx_pm_subset have "... \<subseteq> ideal (set fs)" by (rule ideal.span_mono)
   finally show ?thesis .
 qed
 
@@ -263,7 +263,7 @@ lemma in_idealE_rep_list:
   obtains r where "p = rep_list r" and "r \<in> sig_inv_set"
 proof -
   from assms obtain r0 where r0: "keys r0 \<subseteq> set fs" and p: "p = ideal.rep r0"
-    by (rule ideal.in_moduleE_rep)
+    by (rule ideal.spanE_rep)
   show ?thesis
   proof
     show "p = rep_list (atomize_poly (idx_pm_of_pm fs r0))"
@@ -1777,7 +1777,7 @@ next
   from assms(3) have G_sub: "G \<subseteq> sig_inv_set' j" by (simp add: dgrad_sig_set'_def)
   assume "f \<in> ideal (rep_list ` G)"
   also from rep_list_subset_ideal_sig_inv_set[OF G_sub] have "... \<subseteq> ideal (set (take j fs))"
-    by (rule ideal.module_subset_moduleI)
+    by (rule ideal.span_subset_spanI)
   finally have "f \<in> ideal (set (take j fs))" .
   with assms(2) \<open>f \<in> punit_dgrad_max_set d\<close> obtain r where "r \<in> dgrad_sig_set d"
     and "r \<in> dgrad_sig_set' j d" and f: "f = rep_list r"
@@ -1810,7 +1810,7 @@ next
   fix f::"'a \<Rightarrow>\<^sub>0 'b"
   assume "f \<in> punit_dgrad_max_set d"
   assume "f \<in> ideal (rep_list ` G)"
-  also from rep_list_subset_ideal have "... \<subseteq> ideal (set fs)" by (rule ideal.module_subset_moduleI)
+  also from rep_list_subset_ideal have "... \<subseteq> ideal (set fs)" by (rule ideal.span_subset_spanI)
   finally have "f \<in> ideal (set fs)" .
   with assms(2) \<open>f \<in> punit_dgrad_max_set d\<close> obtain r where "r \<in> dgrad_sig_set d" and f: "f = rep_list r"
     by (rule in_idealE_rep_list_dgrad_sig_set)
@@ -7209,7 +7209,7 @@ proof -
       with assms(1) \<open>j < length fs\<close>
       have "rep_list (monomial 1 (term_of_pair (0, j))) \<in> ideal (rep_list ` set bs)"
         by (rule rb_aux_inv_D9)
-      also have "... \<subseteq> ideal (rep_list ` set (p' # bs))" by (rule ideal.module_mono, fastforce)
+      also have "... \<subseteq> ideal (rep_list ` set (p' # bs))" by (rule ideal.span_mono, fastforce)
       finally show ?thesis .
     qed
   qed
@@ -7703,10 +7703,10 @@ lemma ideal_rb_aux:
   "ideal (set (map rep_list (fst (fst (rb_aux (([], Koszul_syz_sigs fs, map Inr [0..<length fs]), z)))))) =
    ideal (set fs)" (is "ideal ?l = ideal ?r")
 proof
-  show "ideal ?l \<subseteq> ideal ?r" by (rule ideal.module_subset_moduleI, auto simp: rep_list_in_ideal)
+  show "ideal ?l \<subseteq> ideal ?r" by (rule ideal.span_subset_spanI, auto simp: rep_list_in_ideal)
 next
   show "ideal ?r \<subseteq> ideal ?l"
-  proof (rule ideal.module_subset_moduleI, rule subsetI)
+  proof (rule ideal.span_subset_spanI, rule subsetI)
     fix f
     assume "f \<in> set fs"
     then obtain j where "j < length fs" and f: "f = fs ! j" by (metis in_set_conv_nth)
@@ -8273,7 +8273,7 @@ proof -
       have "fs ! j \<in> ideal (rep_list ` set (filter (\<lambda>b. component_of_term (lt b) < Suc j) bs))"
         by (rule rb_aux_inv2_D2)
       also have "... \<subseteq> ideal (rep_list ` set (filter (\<lambda>b. component_of_term (lt b) < Suc j) (p' # bs)))"
-        by (intro ideal.module_mono image_mono, fastforce)
+        by (intro ideal.span_mono image_mono, fastforce)
       finally show ?thesis .
     qed
   next
@@ -8305,7 +8305,7 @@ lemma rb_aux_inv2_ideal_subset:
   assumes "rb_aux_inv2 (bs, ss, ps)" and "\<And>p0. p0 \<in> set ps \<Longrightarrow> j \<le> component_of_term (sig_of_pair p0)"
   shows "ideal (set (take j fs)) \<subseteq> ideal (rep_list ` set (filter (\<lambda>b. component_of_term (lt b) < j) bs))"
           (is "ideal ?B \<subseteq> ideal ?A")
-proof (intro ideal.module_subset_moduleI subsetI)
+proof (intro ideal.span_subset_spanI subsetI)
   fix f
   assume "f \<in> ?B"
   then obtain i where "i < length (take j fs)" and "f = (take j fs) ! i"
@@ -8324,7 +8324,7 @@ proof (intro ideal.module_subset_moduleI subsetI)
     qed
   qed
   also have "... \<subseteq> ideal ?A"
-    by (intro ideal.module_mono image_mono, auto dest: order_less_le_trans[OF _ \<open>Suc i \<le> j\<close>])
+    by (intro ideal.span_mono image_mono, auto dest: order_less_le_trans[OF _ \<open>Suc i \<le> j\<close>])
   finally show "f \<in> ideal ?A" .
 qed
 
@@ -8468,8 +8468,8 @@ proof
   finally have "- (q * fs ! j) =
                           (\<Sum>k\<in>set (take j fs). lookup (pm_of_idx_pm fs (vectorize_poly p')) k * k)"
     by (simp add: add_eq_0_iff)
-  hence "- (q * fs ! j) \<in> ideal (set (take j fs))" by (simp add: ideal.sum_in_moduleI)
-  hence "- (- (q * fs ! j)) \<in> ideal (set (take j fs))" by (rule ideal.module_closed_uminus)
+  hence "- (q * fs ! j) \<in> ideal (set (take j fs))" by (simp add: ideal.sum_in_spanI)
+  hence "- (- (q * fs ! j)) \<in> ideal (set (take j fs))" by (rule ideal.span_neg)
   hence "q * fs ! j \<in> ideal (set (take j fs))" by simp
   with assms(2) \<open>j < length fs\<close> have "q \<in> ideal (set (take j fs))" by (rule is_regular_sequenceD)
   also from assms(3) 1 have "... \<subseteq> ideal (rep_list ` set ?bs)"
@@ -9230,7 +9230,7 @@ proof -
   moreover have "distinct fs1" and "0 \<notin> set fs1" by (simp_all add: fs1_def)
   ultimately have "ideal (set (gb_sig rword_strict fs)) = ideal (set fs1)" and ?thesis4
     unfolding gb_sig_def gb_sig_z_def fst_conv fs1_def Let_def by (rule rb_spp_aux)+
-  thus ?thesis2 and ?thesis4 by (simp_all add: fs1_def ideal.module_minus_singleton_zero)
+  thus ?thesis2 and ?thesis4 by (simp_all add: fs1_def ideal.span_Diff_zero)
 
   from assms dg \<open>distinct fs1\<close> \<open>0 \<notin> set fs1\<close> hg show ?thesis1
     unfolding gb_sig_def gb_sig_z_def fst_conv fs1_def Let_def by (rule rb_spp_aux)

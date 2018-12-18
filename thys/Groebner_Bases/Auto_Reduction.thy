@@ -499,20 +499,20 @@ next
   also have "... = pmdl (set (?b # xs @ ys))" by simp
   also from a have "... = pmdl (insert ?b (set (a # xs @ ys) - {a}))" by auto
   also have "... \<subseteq> pmdl (set (a # xs @ ys))"
-  proof (rule pmdl.replace_module)
+  proof (rule pmdl.replace_span)
     have "a - (trd (xs @ ys) a) \<in> pmdl (set (xs @ ys))" by (rule trd_in_pmdl)
     have "a - (trd (xs @ ys) a) \<in> pmdl (set (a # xs @ ys))"
     proof
-      show "pmdl (set (xs @ ys)) \<subseteq> pmdl (set (a # xs @ ys))" by (rule pmdl.module_mono, auto)
+      show "pmdl (set (xs @ ys)) \<subseteq> pmdl (set (a # xs @ ys))" by (rule pmdl.span_mono) auto
     qed fact
-    hence "- (a - (trd (xs @ ys) a)) \<in> pmdl (set (a # xs @ ys))" by (rule pmdl.module_closed_uminus)
+    hence "- (a - (trd (xs @ ys) a)) \<in> pmdl (set (a # xs @ ys))" by (rule pmdl.span_neg)
     hence "(trd (xs @ ys) a) - a \<in> pmdl (set (a # xs @ ys))" by simp
     hence "((trd (xs @ ys) a) - a) + a \<in> pmdl (set (a # xs @ ys))"
-    proof (rule pmdl.module_closed_plus)
+    proof (rule pmdl.span_add)
       show "a \<in> pmdl (set (a # xs @ ys))"
       proof
         show "a \<in> set (a # xs @ ys)" by simp
-      qed (rule pmdl.generator_subset_module)
+      qed (rule pmdl.span_superset)
     qed
     thus "trd (xs @ ys) a \<in> pmdl (set (a # xs @ ys))" by simp
   qed
@@ -658,7 +658,7 @@ proof
     thus "pmdl (set (comp_red_basis_aux (comp_min_basis xs) [])) \<subseteq> pmdl (set (comp_min_basis xs))"
       by simp
   qed
-  also from comp_min_basis_subset have "... \<subseteq> pmdl (set xs)" by (rule pmdl.module_mono)
+  also from comp_min_basis_subset have "... \<subseteq> pmdl (set xs)" by (rule pmdl.span_mono)
   finally show "f \<in> pmdl (set xs)" .
 qed
 

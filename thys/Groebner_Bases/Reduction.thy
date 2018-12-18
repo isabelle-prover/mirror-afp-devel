@@ -953,7 +953,7 @@ lemma srtc_in_pmdl:
   using assms unfolding relation.srtc_def
 proof (induct rule: rtranclp.induct)
   fix p
-  show "p - p \<in> pmdl F" by (simp add: pmdl.module_0)
+  show "p - p \<in> pmdl F" by (simp add: pmdl.span_zero)
 next
   fix p r q
   assume pr_in: "p - r \<in> pmdl F" and red: "red F r q \<or> red F q r"
@@ -974,7 +974,7 @@ next
   qed
   hence eq: "p - q = (p - r) + monom_mult c t f" by simp
   show "p - q \<in> pmdl F" unfolding eq
-    by (rule pmdl.module_closed_plus, fact, rule monom_mult_in_pmdl, fact)
+    by (rule pmdl.span_add, fact, rule monom_mult_in_pmdl, fact)
 qed
 
 lemma in_pmdl_srtc:
@@ -1051,10 +1051,10 @@ proof -
   have "q - p \<in> pmdl A"
   proof
     have "p - q \<in> pmdl B" by (rule red_diff_in_pmdl, fact)
-    hence "- (p - q) \<in> pmdl B" by (rule pmdl.module_closed_uminus)
+    hence "- (p - q) \<in> pmdl B" by (rule pmdl.span_neg)
     thus "q - p \<in> pmdl B" by simp
   qed fact
-  from pmdl.module_closed_plus[OF this \<open>p \<in> pmdl A\<close>] show ?thesis by simp
+  from pmdl.span_add[OF this \<open>p \<in> pmdl A\<close>] show ?thesis by simp
 qed
 
 subsection \<open>More Properties of @{const red}, @{const red_single} and @{const is_red}\<close>
@@ -1924,7 +1924,7 @@ proof (rule is_full_pmdlI)
     show ?case
     proof (cases "p = 0")
       case True
-      show ?thesis by (simp add: True pmdl.module_0)
+      show ?thesis by (simp add: True pmdl.span_zero)
     next
       case False
       hence "lt p \<in> keys p" by (rule lt_in_keys)
@@ -1950,7 +1950,7 @@ proof (rule is_full_pmdlI)
       qed
       ultimately have "q \<in> pmdl B" by (rule less.hyps)
       have "q + monom_mult (lookup p ((lp p) \<oplus> lt b) / lc b) (lp p) b \<in> pmdl B"
-        by (rule pmdl.module_closed_plus, fact, rule pmdl_closed_monom_mult, rule pmdl.generator_in_module, fact)
+        by (rule pmdl.span_add, fact, rule pmdl_closed_monom_mult, rule pmdl.span_base, fact)
       thus ?thesis by (simp add: q_def)
     qed
   qed
@@ -2245,9 +2245,9 @@ lemma pmdl_closed_trd:
   assumes "p \<in> pmdl B" and "set fs \<subseteq> pmdl B"
   shows "(trd fs p) \<in> pmdl B"
 proof -
-  from assms(2) have "pmdl (set fs) \<subseteq> pmdl B" by (rule pmdl.module_subset_moduleI)
+  from assms(2) have "pmdl (set fs) \<subseteq> pmdl B" by (rule pmdl.span_subset_spanI)
   with trd_in_pmdl have "p - trd fs p \<in> pmdl B" ..
-  with assms(1) have "p - (p - trd fs p) \<in> pmdl B" by (rule pmdl.module_closed_minus)
+  with assms(1) have "p - (p - trd fs p) \<in> pmdl B" by (rule pmdl.span_diff)
   thus ?thesis by simp
 qed
 

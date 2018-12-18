@@ -58,14 +58,14 @@ proof
   have lca: "lc a = 1" by (rule reduced_GB_lc, fact Ared, fact \<open>a \<in> A\<close>)
   have AGB: "is_Groebner_basis A" by (rule reduced_GB_D1, fact Ared)
       
-  from \<open>a \<in> A\<close> pmdl.generator_subset_module have "a \<in> pmdl A" ..
+  from \<open>a \<in> A\<close> have "a \<in> pmdl A" by (rule pmdl.span_base)
   also have "... = pmdl B" using id_eq by simp
   finally have "a \<in> pmdl B" .
 
   from BGB this \<open>a \<noteq> 0\<close> obtain b where "b \<in> B" and "b \<noteq> 0" and baddsa: "lt b adds\<^sub>t lt a"
     by (rule GB_adds_lt)
   from Bmon this(1) this(2) have lcb: "lc b = 1" by (rule is_monic_setD)
-  from \<open>b \<in> B\<close> pmdl.generator_subset_module have "b \<in> pmdl B" ..
+  from \<open>b \<in> B\<close> have "b \<in> pmdl B" by (rule pmdl.span_base)
   also have "... = pmdl A" using id_eq by simp
   finally have "b \<in> pmdl A" .
       
@@ -94,7 +94,7 @@ proof
   proof (rule ccontr)
     let ?c = "a - b"
     assume "?c \<noteq> 0"
-    have "?c \<in> pmdl A" by (rule pmdl.module_closed_minus, fact+)
+    have "?c \<in> pmdl A" by (rule pmdl.span_diff, fact+)
     also have "... = pmdl B" using id_eq by simp
     finally have "?c \<in> pmdl B" .
         
@@ -160,9 +160,9 @@ proof -
     let ?c = "a - b"
     assume "a \<in> A" and "b \<in> B" and "a \<noteq> 0" and "b \<noteq> 0" and "?c \<noteq> 0" and "lt ?c \<in> keys b" and "lt ?c \<prec>\<^sub>t lt b"
   
-    from \<open>a \<in> A\<close> have "a \<in> pmdl B" by (simp only: id_eq[symmetric], rule pmdl.generator_in_module)
-    moreover from \<open>b \<in> B\<close> have "b \<in> pmdl B" by (rule pmdl.generator_in_module)
-    ultimately have "?c \<in> pmdl B" by (rule pmdl.module_closed_minus)
+    from \<open>a \<in> A\<close> have "a \<in> pmdl B" by (simp only: id_eq[symmetric], rule pmdl.span_base)
+    moreover from \<open>b \<in> B\<close> have "b \<in> pmdl B" by (rule pmdl.span_base)
+    ultimately have "?c \<in> pmdl B" by (rule pmdl.span_diff)
     from BGB this \<open>?c \<noteq> 0\<close> obtain b'
       where "b' \<in> B" and "b' \<noteq> 0" and b'addsc: "lt b' adds\<^sub>t lt ?c" by (rule GB_adds_lt)
   
@@ -220,7 +220,7 @@ proof (rule is_reduced_GB_unique)
       from this(1) have "f \<in> B" and "f \<noteq> b" by simp_all
 
       from assms(1) \<open>f \<in> B\<close> have "f \<noteq> 0" by (rule is_minimal_basisD1)
-      from \<open>f \<in> B\<close> have "f \<in> pmdl B" by (rule pmdl.generator_in_module)
+      from \<open>f \<in> B\<close> have "f \<in> pmdl B" by (rule pmdl.span_base)
       hence "f \<in> pmdl G" by (simp only: assms(5))
       from \<open>is_Groebner_basis G\<close> this \<open>f \<noteq> 0\<close> obtain g where "g \<in> G" and "g \<noteq> 0" and "lt g adds\<^sub>t lt f"
         by (rule GB_adds_lt)
@@ -235,7 +235,7 @@ proof (rule is_reduced_GB_unique)
       with \<open>f \<in> B - {b}\<close> \<open>is_red {f} b\<close> have red: "is_red (G - {b}) b"
         by (meson Diff_iff is_red_singletonD)
 
-      from \<open>b \<in> B\<close> have "b \<in> pmdl B" by (rule pmdl.generator_in_module)
+      from \<open>b \<in> B\<close> have "b \<in> pmdl B" by (rule pmdl.span_base)
       hence "b \<in> pmdl G" by (simp only: assms(5))
       from \<open>is_Groebner_basis G\<close> this \<open>b \<noteq> 0\<close> obtain g' where "g' \<in> G" and "g' \<noteq> 0" and "lt g' adds\<^sub>t lt b"
         by (rule GB_adds_lt)
@@ -262,7 +262,7 @@ lemma comp_min_basis_pmdl:
   shows "pmdl (set (comp_min_basis xs)) = pmdl (set xs)" (is "pmdl (set ?ys) = _")
   using finite_set
 proof (rule pmdl_eqI_adds_lt_finite)
-  from comp_min_basis_subset show *: "pmdl (set ?ys) \<subseteq> pmdl (set xs)" by (rule pmdl.module_mono)
+  from comp_min_basis_subset show *: "pmdl (set ?ys) \<subseteq> pmdl (set xs)" by (rule pmdl.span_mono)
 next
   fix f
   assume "f \<in> pmdl (set xs)" and "f \<noteq> 0"
@@ -300,7 +300,7 @@ proof (rule, fact pmdl_comp_red_basis_subset, rule)
   show "f \<in> pmdl (set (comp_red_basis xs))"
   proof (cases "f = 0")
     case True
-    show ?thesis unfolding True by (rule pmdl.module_0)
+    show ?thesis unfolding True by (rule pmdl.span_zero)
   next
     case False
     let ?xs = "comp_red_basis xs"
@@ -525,7 +525,7 @@ lemma reduced_GB_singleton: "reduced_GB {f} = (if f = 0 then {} else {monic f})"
 proof (cases "f = 0")
   case True
   from finite.emptyI is_reduced_GB_empty have "reduced_GB {f} = {}"
-    by (rule reduced_GB_unique) (simp add: True flip: pmdl.module_minus_singleton_zero[of "{0}"])
+    by (rule reduced_GB_unique) (simp add: True flip: pmdl.span_Diff_zero[of "{0}"])
   with True show ?thesis by simp
 next
   case False
@@ -607,7 +607,7 @@ proof -
       also have "... = ideal F"
       proof (simp only: \<open>ideal F = UNIV\<close> ideal_eq_UNIV_iff_contains_one)
         have "1 \<in> {1}" ..
-        with module_struct_times show "1 \<in> ideal {1}" by (rule module_struct.generator_in_module)
+        with module_times show "1 \<in> ideal {1}" by (rule module.span_base)
       qed
       also have "... = punit.pmdl F" by simp
       finally show "punit.pmdl {1} = punit.pmdl F" .
@@ -615,7 +615,7 @@ proof -
   next
     assume "punit.reduced_GB F = {1}"
     hence "1 \<in> punit.reduced_GB F" by simp
-    hence "1 \<in> punit.pmdl (punit.reduced_GB F)" by (rule punit.pmdl.generator_in_module)
+    hence "1 \<in> punit.pmdl (punit.reduced_GB F)" by (rule punit.pmdl.span_base)
     also from assms(1) fin assms(2) have "... = punit.pmdl F" by (rule punit.reduced_GB_pmdl_dgrad_p_set)
     finally show "ideal F = UNIV" by (simp add: ideal_eq_UNIV_iff_contains_one)
   qed

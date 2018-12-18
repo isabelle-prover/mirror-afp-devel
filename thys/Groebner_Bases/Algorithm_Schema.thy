@@ -1254,9 +1254,9 @@ proof -
   show ?thesis
   proof (simp add: eq, rule)
     show "pmdl (fst ` (set gs \<union> set bs) \<union> fst ` set hs) \<subseteq> pmdl (fst ` (set gs \<union> set bs))"
-    proof (rule pmdl.module_subset_moduleI, simp only: Un_subset_iff, rule)
+    proof (rule pmdl.span_subset_spanI, simp only: Un_subset_iff, rule)
       show "fst ` (set gs \<union> set bs) \<subseteq> pmdl (fst ` (set gs \<union> set bs))"
-        by (fact pmdl.generator_subset_module)
+        by (fact pmdl.span_superset)
     next
       from sel assms(4) have "sps \<noteq> []" and "set sps \<subseteq> set ps"
         unfolding assms(7) by (rule sel_specD1, rule sel_specD2)
@@ -1267,7 +1267,7 @@ proof -
     qed
   next
     show "pmdl (fst ` (set gs \<union> set bs)) \<subseteq> pmdl (fst ` (set gs \<union> set bs) \<union> fst ` set hs)"
-      by (rule pmdl.module_mono, blast)
+      by (rule pmdl.span_mono, blast)
   qed
 qed
 
@@ -2814,7 +2814,7 @@ next
     qed
     also have "... = pmdl (insert (fst b) (fst ` set gs))" by simp
     also from Cons have "... = pmdl (insert (fst b) (fst ` set bs))"
-      unfolding gs fst_conv fst_set_add_indices by (rule pmdl.module_insert_cong)
+      unfolding gs fst_conv fst_set_add_indices by (rule pmdl.span_insert_cong)
     finally show "pmdl (fst ` set (gb_schema_aux sel ap ab compl gs (count_rem_components (b # gs), Suc n, data'')
                               (ab gs [] [b] (Suc n, data'')) (ap gs [] [] [b] (Suc n, data'')))) =
                   pmdl (insert (fst b0) (fst ` set bs))" by (simp add: b_def)
@@ -4245,7 +4245,7 @@ proof (rule compl_pmdlI)
   from assms gb un have "fst ` set ?res \<subseteq> pmdl (args_to_set (gs, bs, sps))"
     by (rule rcp_specD5)
   also have "... \<subseteq> pmdl (args_to_set (gs, bs, ps))"
-    by (rule pmdl.module_mono, rule args_to_set_subset3, fact \<open>set sps \<subseteq> set ps\<close>)
+    by (rule pmdl.span_mono, rule args_to_set_subset3, fact \<open>set sps \<subseteq> set ps\<close>)
   finally show "fst ` set ?res \<subseteq> pmdl (args_to_set (gs, bs, ps))" .
 qed
 

@@ -491,11 +491,11 @@ lemma pmdl_closed_spoly:
 proof (cases "component_of_term (lt p) = component_of_term (lt q)")
   case True
   show ?thesis
-    by (simp add: spoly_def True Let_def, rule pmdl.module_closed_minus,
+    by (simp add: spoly_def True Let_def, rule pmdl.span_diff,
         (rule pmdl_closed_monom_mult, fact)+)
 next
   case False
-  show ?thesis by (simp add: spoly_def False pmdl.module_0)
+  show ?thesis by (simp add: spoly_def False pmdl.span_zero)
 qed
 
 subsection \<open>Buchberger's Theorem\<close>
@@ -779,7 +779,7 @@ proof -
         (punit.monom_mult (- (1 / punit.lc q) / punit.lc p) 0 (punit.tail q * punit.tail p))"
     unfolding punit_mult_scalar[symmetric] using \<open>p \<noteq> 0\<close> by (rule punit.red_mult_scalar_lt)
   hence "(punit.red {p})\<^sup>*\<^sup>* (snd (punit.crit_pair p q)) s"
-    by (simp add: punit.crit_pair_def \<open>?l - ?lq = ?lt\<close> s_def times_monomial_left[symmetric] ac_simps)
+    by (simp add: punit.crit_pair_def \<open>?l - ?lq = ?lt\<close> s_def mult.commute flip: times_monomial_left)
   moreover from \<open>p \<in> F\<close> have "{p} \<subseteq> F" by simp
   ultimately have 2: "(punit.red F)\<^sup>*\<^sup>* (snd (punit.crit_pair p q)) s" by (rule punit.red_rtrancl_subset)
 
@@ -940,11 +940,10 @@ lemma pmdl_eqI_adds_lt_dgrad_p_set:
   shows "pmdl G = pmdl B"
 proof
   show "pmdl B \<subseteq> pmdl G"
-  proof (rule pmdl.module_subset_moduleI, rule)
+  proof (rule pmdl.span_subset_spanI, rule)
     fix p
     assume "p \<in> B"
-    hence "p \<in> pmdl B" and "p \<in> dgrad_p_set d m"
-      by (rule pmdl.generator_in_module, rule, intro assms(3))
+    hence "p \<in> pmdl B" and "p \<in> dgrad_p_set d m" by (rule pmdl.span_base, rule, intro assms(3))
     with assms(1, 2, 4) _ have "(red G)\<^sup>*\<^sup>* p 0"
     proof (rule is_red_implies_0_red_dgrad_p_set)
       fix f
@@ -1037,7 +1036,7 @@ lemma weak_GB_is_strong_GB_dgrad_p_set:
 proof (rule Buchberger_criterion_dgrad_p_set)
   fix p q
   assume "p \<in> G" and "q \<in> G"
-  hence "p \<in> pmdl G" and "q \<in> pmdl G" by (auto intro: pmdl.generator_in_module)
+  hence "p \<in> pmdl G" and "q \<in> pmdl G" by (auto intro: pmdl.span_base)
   hence "spoly p q \<in> pmdl G" by (rule pmdl_closed_spoly)
   thus "(red G)\<^sup>*\<^sup>* (spoly p q) 0"
   proof (rule assms(3))
@@ -1159,7 +1158,7 @@ lemma GB_insert:
   assumes "is_Groebner_basis G" and "f \<in> pmdl G"
   shows "is_Groebner_basis (insert f G)"
   using assms unfolding GB_alt_1
-  by (metis insert_subset pmdl.module_insert red_rtrancl_subset subsetI)
+  by (metis insert_subset pmdl.span_insert_idI red_rtrancl_subset subsetI)
 
 lemma GB_subset:
   assumes "is_Groebner_basis G" and "G \<subseteq> G'" and "pmdl G' = pmdl G"
@@ -1202,7 +1201,7 @@ proof -
     fix f
     assume f1: "f \<in> (pmdl ?G')" and "f \<noteq> 0"
       and a1: "\<forall>f\<in>pmdl G. f \<noteq> 0 \<longrightarrow> (\<exists>g\<in>G. g \<noteq> 0 \<and> lt g adds\<^sub>t lt f)"
-    from f1 pmdl.replace_module[OF q, of p] have "f \<in> pmdl G" ..
+    from f1 pmdl.replace_span[OF q, of p] have "f \<in> pmdl G" ..
     from a1[rule_format, OF this \<open>f \<noteq> 0\<close>] obtain g where "g \<in> G" and "g \<noteq> 0" and "lt g adds\<^sub>t lt f" by auto
     show "\<exists>g\<in>?G'. g \<noteq> 0 \<and> lt g adds\<^sub>t lt f"
     proof (cases "g = p")
@@ -1232,7 +1231,7 @@ lemma GB_replace_lt_adds_stable_pmdl_dgrad_p_set:
   assumes "dickson_grading d" and "G \<subseteq> dgrad_p_set d m"
   assumes isGB: "is_Groebner_basis G" and "q \<noteq> 0" and "q \<in> pmdl G" and "lt q adds\<^sub>t lt p"
   shows "pmdl (insert q (G - {p})) = pmdl G" (is "pmdl ?G' = pmdl G")
-proof (rule, rule pmdl.replace_module, fact, rule)
+proof (rule, rule pmdl.replace_span, fact, rule)
   fix f
   assume "f \<in> pmdl G"
   note assms(1)
@@ -1247,9 +1246,9 @@ proof (rule, rule pmdl.replace_module, fact, rule)
     with irredh show False ..
   qed
   have "f - h \<in> pmdl ?G'" by (rule red_rtranclp_diff_in_pmdl, rule ftoh)
-  have "f - h \<in> pmdl G" by (rule, fact, rule pmdl.replace_module, fact)
-  from pmdl.module_closed_minus[OF this \<open>f \<in> pmdl G\<close>] have "-h \<in> pmdl G" by simp
-  from pmdl.module_closed_uminus[OF this] have "h \<in> pmdl G" by simp
+  have "f - h \<in> pmdl G" by (rule, fact, rule pmdl.replace_span, fact)
+  from pmdl.span_diff[OF this \<open>f \<in> pmdl G\<close>] have "-h \<in> pmdl G" by simp
+  from pmdl.span_neg[OF this] have "h \<in> pmdl G" by simp
   with isGB \<open>\<not> is_red G h\<close> have "h = 0" using GB_imp_reducibility by auto
   with ftoh have "(red ?G')\<^sup>*\<^sup>* f 0" by simp
   thus "f \<in> pmdl ?G'" by (simp add: red_rtranclp_0_in_pmdl)
@@ -1268,12 +1267,12 @@ proof -
     assume f1: "f \<in> (pmdl ?G')" and "f \<noteq> 0"
       and a1: "\<forall>f\<in>pmdl G. f \<noteq> 0 \<longrightarrow> is_red G f"
     have "q \<in> pmdl G"
-    proof (rule pmdl_closed_red, rule pmdl.module_mono)
-      from pmdl.generator_subset_module \<open>p \<in> G\<close> show "p \<in> pmdl G" ..
+    proof (rule pmdl_closed_red, rule pmdl.span_mono)
+      from pmdl.span_superset \<open>p \<in> G\<close> show "p \<in> pmdl G" ..
     next
       show "G - {p} \<subseteq> G" by (rule Diff_subset)
     qed (rule q)
-    from f1 pmdl.replace_module[OF this, of p] have "f \<in> pmdl G" ..
+    from f1 pmdl.replace_span[OF this, of p] have "f \<in> pmdl G" ..
     have "is_red G f" by (rule a1[rule_format], fact+)
     show "is_red ?G' f" by (rule replace_red_stable_is_red, fact+)
   qed
@@ -1284,11 +1283,11 @@ lemma GB_replace_red_stable_pmdl_dgrad_p_set:
   assumes isGB: "is_Groebner_basis G" and "p \<in> G" and ptoq: "red (G - {p}) p q"
   shows "pmdl (insert q (G - {p})) = pmdl G" (is "pmdl ?G' = _")
 proof -
-  from \<open>p \<in> G\<close> pmdl.generator_subset_module have "p \<in> pmdl G" ..
+  from \<open>p \<in> G\<close> pmdl.span_superset have "p \<in> pmdl G" ..
   have "q \<in> pmdl G"
-    by (rule pmdl_closed_red, rule pmdl.module_mono, rule Diff_subset, rule \<open>p \<in> pmdl G\<close>, rule ptoq)
+    by (rule pmdl_closed_red, rule pmdl.span_mono, rule Diff_subset, rule \<open>p \<in> pmdl G\<close>, rule ptoq)
   show ?thesis
-  proof (rule, rule pmdl.replace_module, fact, rule)
+  proof (rule, rule pmdl.replace_span, fact, rule)
     fix f
     assume "f \<in> pmdl G"
     note assms(1)
@@ -1303,9 +1302,9 @@ proof -
       with irredh show False ..
     qed
     have "f - h \<in> pmdl ?G'" by (rule red_rtranclp_diff_in_pmdl, rule ftoh)
-    have "f - h \<in> pmdl G" by (rule, fact, rule pmdl.replace_module, fact)
-    from pmdl.module_closed_minus[OF this \<open>f \<in> pmdl G\<close>] have "-h \<in> pmdl G" by simp
-    from pmdl.module_closed_uminus[OF this] have "h \<in> pmdl G" by simp
+    have "f - h \<in> pmdl G" by (rule, fact, rule pmdl.replace_span, fact)
+    from pmdl.span_diff[OF this \<open>f \<in> pmdl G\<close>] have "-h \<in> pmdl G" by simp
+    from pmdl.span_neg[OF this] have "h \<in> pmdl G" by simp
     with isGB \<open>\<not> is_red G h\<close> have "h = 0" using GB_imp_reducibility by auto
     with ftoh have "(red ?G')\<^sup>*\<^sup>* f 0" by simp
     thus "f \<in> pmdl ?G'" by (simp add: red_rtranclp_0_in_pmdl)
@@ -1337,7 +1336,7 @@ next
         with \<open>y \<noteq> p\<close> have "y \<in> G - {p}" (is "_ \<in> ?G'") by blast
         hence "insert y (G - {p}) = ?G'" by auto
         with step(3) have "is_Groebner_basis ?G'" by simp
-        from \<open>y \<in> ?G'\<close> pmdl.generator_subset_module have "y \<in> pmdl ?G'" ..
+        from \<open>y \<in> ?G'\<close> pmdl.span_superset have "y \<in> pmdl ?G'" ..
         have "z \<in> pmdl ?G'" by (rule pmdl_closed_red, rule subset_refl, fact+)
         show "is_Groebner_basis (insert z ?G')" by (rule GB_insert, fact+)
       next
@@ -1378,9 +1377,9 @@ next
       case True
       with \<open>y \<noteq> p\<close> have "y \<in> G - {p}" (is "_ \<in> ?G'") by blast
       hence eq: "insert y ?G' = ?G'" by auto
-      from \<open>y \<in> ?G'\<close> pmdl.generator_subset_module have "y \<in> pmdl ?G'" ..
+      from \<open>y \<in> ?G'\<close> have "y \<in> pmdl ?G'" by (rule pmdl.span_base)
       have "z \<in> pmdl ?G'" by (rule pmdl_closed_red, rule subset_refl, fact+)
-      hence "pmdl (insert z ?G') = pmdl ?G'" by (rule pmdl.module_insert)
+      hence "pmdl (insert z ?G') = pmdl ?G'" by (rule pmdl.span_insert_idI)
       also from step(3) have "... = pmdl G" by (simp only: eq)
       finally show ?thesis .
     next
@@ -1484,7 +1483,7 @@ proof -
     qed fact
   qed
   have sub1: "pmdl G \<subseteq> pmdl F"
-  proof (rule pmdl.module_subset_moduleI, rule)
+  proof (rule pmdl.span_subset_spanI, rule)
     fix g
     assume "g \<in> G"
     from G[OF this] show "g \<in> pmdl F" ..
@@ -1509,10 +1508,10 @@ proof -
     show "pmdl G = pmdl F"
     proof
       show "pmdl F \<subseteq> pmdl G"
-      proof (rule pmdl.module_subset_moduleI, rule)
+      proof (rule pmdl.span_subset_spanI, rule)
         fix f
         assume "f \<in> F"
-        hence "f \<in> pmdl F" by (rule pmdl.generator_in_module)
+        hence "f \<in> pmdl F" by (rule pmdl.span_base)
         from \<open>f \<in> F\<close> assms(3) have "f \<in> dgrad_p_set d m" ..
         with assms(1) sub2 sub1 _ \<open>f \<in> pmdl F\<close> have "(red G)\<^sup>*\<^sup>* f 0"
         proof (rule is_red_implies_0_red_dgrad_p_set)

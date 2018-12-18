@@ -415,7 +415,7 @@ lemma sym_preproc_addnew_pmdl:
     (is "pmdl (set gs \<union> ?l) = ?r")
 proof
   have "set gs \<subseteq> set gs \<union> set fs" by simp
-  also have "... \<subseteq> ?r" by (fact pmdl.generator_subset_module)
+  also have "... \<subseteq> ?r" by (fact pmdl.span_superset)
   finally have "set gs \<subseteq> ?r" .
   moreover have "?l \<subseteq> ?r"
   proof
@@ -425,7 +425,7 @@ proof
     proof (rule in_snd_sym_preproc_addnewE)
       assume "p \<in> set fs"
       hence "p \<in> set gs \<union> set fs" by simp
-      thus ?thesis by (rule pmdl.generator_in_module)
+      thus ?thesis by (rule pmdl.span_base)
     next
       fix g s
       assume "g \<in> set gs" and p: "p = monom_mult 1 s g"
@@ -434,10 +434,10 @@ proof
     qed
   qed
   ultimately have "set gs \<union> ?l \<subseteq> ?r" by blast
-  thus "pmdl (set gs \<union> ?l) \<subseteq> ?r" by (rule pmdl.module_subset_moduleI)
+  thus "pmdl (set gs \<union> ?l) \<subseteq> ?r" by (rule pmdl.span_subset_spanI)
 next
   from snd_sym_preproc_addnew_superset have "set gs \<union> set fs \<subseteq> set gs \<union> ?l" by blast
-  thus "?r \<subseteq> pmdl (set gs \<union> ?l)" by (rule pmdl.module_mono)
+  thus "?r \<subseteq> pmdl (set gs \<union> ?l)" by (rule pmdl.span_mono)
 qed
 
 lemma Keys_snd_sym_preproc_addnew:
@@ -1130,10 +1130,9 @@ proof -
   from assms(3) obtain f where "f \<in> B" and "red_single p q f 0" by (rule lin_redE)
   hence q: "q = p - monom_mult (lookup p (lt f) / lc f) 0 f" by (simp add: red_single_def term_simps)
   have "q - p \<in> phull B"
-    by (simp add: q, rule phull.module_closed_uminus, rule phull.module_closed_smult, rule phull.generator_in_module,
-        fact \<open>f \<in> B\<close>)
+    by (simp add: q, rule phull.span_neg, rule phull.span_scale, rule phull.span_base, fact \<open>f \<in> B\<close>)
   with assms(1) have "q - p \<in> phull A" ..
-  from this assms(2) have "(q - p) + p \<in> phull A" by (rule phull.module_closed_plus)
+  from this assms(2) have "(q - p) + p \<in> phull A" by (rule phull.span_add)
   thus ?thesis by simp
 qed
 
@@ -1181,14 +1180,14 @@ proof -
   define A where "A = F \<union> set (Macaulay_red (Keys_to_list fs) fs)"
 
   have phull_A: "phull A \<subseteq> phull (set fs)"
-  proof (rule phull.module_subset_moduleI, simp add: A_def, rule)
-    have "F \<subseteq> phull F" by (rule phull.generator_subset_module)
-    also from assms(2) have "... \<subseteq> phull (set fs)" by (rule phull.module_mono)
+  proof (rule phull.span_subset_spanI, simp add: A_def, rule)
+    have "F \<subseteq> phull F" by (rule phull.span_superset)
+    also from assms(2) have "... \<subseteq> phull (set fs)" by (rule phull.span_mono)
     finally show "F \<subseteq> phull (set fs)" .
   next
     have "set (Macaulay_red (Keys_to_list fs) fs) \<subseteq> set (Macaulay_list fs)"
       by (auto simp add: set_Macaulay_red)
-    also have "... \<subseteq> phull (set (Macaulay_list fs))" by (rule phull.generator_subset_module)
+    also have "... \<subseteq> phull (set (Macaulay_list fs))" by (rule phull.span_superset)
     also have "... = phull (set fs)" by (rule phull_Macaulay_list)
     finally show "set (Macaulay_red (Keys_to_list fs) fs) \<subseteq> phull (set fs)" .
   qed
@@ -1534,18 +1533,18 @@ proof -
           set (Macaulay_list (snd (sym_preproc (map fst bs) (pdata_pairs_to_list ps))))"
     by (auto simp add: f4_red_aux_def Let_def fst_sym_preproc set_Macaulay_red)
   also have "... \<subseteq> pmdl (set (Macaulay_list (snd (sym_preproc (map fst bs) (pdata_pairs_to_list ps)))))"
-    by (fact pmdl.generator_subset_module)
+    by (fact pmdl.span_superset)
   also have "... = pmdl (set (snd (sym_preproc (map fst bs) (pdata_pairs_to_list ps))))"
     by (fact pmdl_Macaulay_list)
   also have "... \<subseteq> pmdl (set (map fst bs) \<union>
                         set (snd (sym_preproc (map fst bs) (pdata_pairs_to_list ps))))"
-    by (rule pmdl.module_mono, blast)
+    by (rule pmdl.span_mono, blast)
   also have "... = pmdl (set (map fst bs) \<union> set (pdata_pairs_to_list ps))"
     by (fact snd_sym_preproc_pmdl)
   also have "... \<subseteq> pmdl (args_to_set ([], bs, ps))"
-  proof (rule pmdl.module_subset_moduleI, simp only: Un_subset_iff, rule conjI)
+  proof (rule pmdl.span_subset_spanI, simp only: Un_subset_iff, rule conjI)
     have "set (map fst bs) \<subseteq> args_to_set ([], bs, ps)" by (auto simp add: args_to_set_def)
-    also have "... \<subseteq> pmdl (args_to_set ([], bs, ps))" by (rule pmdl.generator_subset_module)
+    also have "... \<subseteq> pmdl (args_to_set ([], bs, ps))" by (rule pmdl.span_superset)
     finally show "set (map fst bs) \<subseteq> pmdl (args_to_set ([], bs, ps))" .
   next
     show "set (pdata_pairs_to_list ps) \<subseteq> pmdl (args_to_set ([], bs, ps))"
@@ -1557,7 +1556,7 @@ proof -
         by (rule in_pdata_pairs_to_listE)
       from this(1) have "f \<in> fst ` set ps \<union> snd ` set ps" by force
       hence "fst f \<in> args_to_set ([], bs, ps)" by (auto simp add: args_to_set_alt)
-      hence "fst f \<in> pmdl (args_to_set ([], bs, ps))" by (rule pmdl.generator_in_module)
+      hence "fst f \<in> pmdl (args_to_set ([], bs, ps))" by (rule pmdl.span_base)
       thus "p \<in> pmdl (args_to_set ([], bs, ps))" unfolding p by (rule pmdl_closed_monom_mult)
     qed
   qed
@@ -1571,7 +1570,7 @@ lemma f4_red_aux_phull_reducible:
 proof -
   define fs where "fs = snd (sym_preproc (map fst bs) (pdata_pairs_to_list ps))"
   have "set (pdata_pairs_to_list ps) \<subseteq> set fs" unfolding fs_def by (fact snd_sym_preproc_superset)
-  hence "phull (set (pdata_pairs_to_list ps)) \<subseteq> phull (set fs)" by (rule phull.module_mono)
+  hence "phull (set (pdata_pairs_to_list ps)) \<subseteq> phull (set fs)" by (rule phull.span_mono)
   with assms(2) have f_in: "f \<in> phull (set fs)" ..
   have eq: "(set fs) \<union> set (f4_red_aux bs ps) = (set fs) \<union> set (Macaulay_red (Keys_to_list fs) fs)"
     by (simp add: f4_red_aux_def fs_def Let_def fst_sym_preproc)
@@ -1635,10 +1634,10 @@ proof (rule f4_red_aux_phull_reducible)
   from assms(2) have "?p \<in> set (pdata_pairs_to_list ps)" and "?q \<in> set (pdata_pairs_to_list ps)"
     by (rule in_pdata_pairs_to_listI1, rule in_pdata_pairs_to_listI2)
   hence "?p \<in> phull (set (pdata_pairs_to_list ps))" and "?q \<in> phull (set (pdata_pairs_to_list ps))"
-    by (auto intro: phull.generator_in_module)
-  hence "?p - ?q \<in> phull (set (pdata_pairs_to_list ps))" by (rule phull.module_closed_minus)
+    by (auto intro: phull.span_base)
+  hence "?p - ?q \<in> phull (set (pdata_pairs_to_list ps))" by (rule phull.span_diff)
   thus "spoly (fst p) (fst q) \<in> phull (set (pdata_pairs_to_list ps))"
-    by (simp add: spoly_def Let_def phull.module_0 lc_def split: if_split)
+    by (simp add: spoly_def Let_def phull.span_zero lc_def split: if_split)
 qed
 
 definition f4_red :: "('t, 'b::field, 'c::default, 'd) complT"

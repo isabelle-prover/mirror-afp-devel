@@ -220,13 +220,13 @@ proof (rule dgrad_p_setI)
   with assms show "d (pp_of_term v) \<le> m" by (simp add: decr_grading_term_le)
 qed
 
-lemma (in gd_term) in_moduleE_dgrad_p_set:
+lemma (in gd_term) in_pmdlE_dgrad_p_set:
   assumes "hom_grading d" and "B \<subseteq> dgrad_p_set d m" and "p \<in> dgrad_p_set d m" and "p \<in> pmdl B"
   obtains A q where "finite A" and "A \<subseteq> B" and "\<And>b. q b \<in> punit.dgrad_p_set d m"
     and "p = (\<Sum>b\<in>A. q b \<odot> b)"
 proof -
   from assms(4) obtain A q0 where "finite A" and "A \<subseteq> B" and p: "p = (\<Sum>b\<in>A. q0 b \<odot> b)"
-    by (rule pmdl.in_moduleE)
+    by (rule pmdl.spanE)
   define q where "q = (\<lambda>b. punit.decr_grading_p d m (q0 b))"
   from \<open>finite A\<close> \<open>A \<subseteq> B\<close> show ?thesis
   proof

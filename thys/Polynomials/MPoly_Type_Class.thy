@@ -6,7 +6,7 @@ theory MPoly_Type_Class
   imports
     Utils
     Power_Products
-    Module_Type_Class
+    More_Modules
 begin
 
 text \<open>This theory views @{typ "'a \<Rightarrow>\<^sub>0 'b"} as multivariate polynomials, where type class constraints
@@ -1497,59 +1497,56 @@ qed
 
 subsection \<open>Submodules\<close>
 
-sublocale pmdl: module_struct mult_scalar
+sublocale pmdl: module mult_scalar
   apply standard
-  subgoal by (rule poly_mapping_eqI_proj, simp)
+  subgoal by (rule poly_mapping_eqI_proj, simp add: algebra_simps proj_plus)
+  subgoal by (rule poly_mapping_eqI_proj, simp add: algebra_simps proj_plus)
   subgoal by (rule poly_mapping_eqI_proj, simp add: ac_simps)
-  subgoal by (rule poly_mapping_eqI_proj, simp add: algebra_simps proj_plus)
-  subgoal by (rule poly_mapping_eqI_proj, simp add: algebra_simps proj_plus)
+  subgoal by (rule poly_mapping_eqI_proj, simp)
   done
 
-lemmas [simp del] = pmdl.smult_one pmdl.smult_zero_left pmdl.smult_zero_right
-  pmdl.smult_minus_mult_left pmdl.smult_minus_mult_right pmdl.minus_smult_minus
+lemmas [simp del] = pmdl.scale_one pmdl.scale_zero_left pmdl.scale_zero_right pmdl.scale_scale
+  pmdl.scale_minus_left pmdl.scale_minus_right pmdl.span_eq_iff
 
-lemmas [ac_simps del] = pmdl.smult_assoc
+lemmas [algebra_simps del] = pmdl.scale_left_distrib pmdl.scale_right_distrib
+  pmdl.scale_left_diff_distrib pmdl.scale_right_diff_distrib
 
-lemmas [algebra_simps del] = pmdl.smult_distrib_right pmdl.smult_distrib_left
-  pmdl.smult_right_diff_distrib pmdl.smult_left_diff_distrib
-
-abbreviation "pmdl \<equiv> pmdl.module"
-
-lemma monom_mult_in_pmdl:
-  assumes "b \<in> B"
-  shows "monom_mult c t b \<in> pmdl B"
-  unfolding mult_scalar_monomial[symmetric] using assms by (rule pmdl.smult_in_module)
+abbreviation "pmdl \<equiv> pmdl.span"
 
 lemma pmdl_closed_monom_mult:
   assumes "p \<in> pmdl B"
   shows "monom_mult c t p \<in> pmdl B"
-  unfolding mult_scalar_monomial[symmetric] using assms by (rule pmdl.module_closed_smult)
+  unfolding mult_scalar_monomial[symmetric] using assms by (rule pmdl.span_scale)
+
+lemma monom_mult_in_pmdl: "b \<in> B \<Longrightarrow> monom_mult c t b \<in> pmdl B"
+  by (intro pmdl_closed_monom_mult pmdl.span_base)
 
 lemma pmdl_induct [consumes 1, case_names module_0 module_plus]:
   assumes "p \<in> pmdl B" and "P 0"
     and "\<And>a p c t. a \<in> pmdl B \<Longrightarrow> P a \<Longrightarrow> p \<in> B \<Longrightarrow> c \<noteq> 0 \<Longrightarrow> P (a + monom_mult c t p)"
   shows "P p"
   using assms(1)
-proof (induct p)
-  case module_0
+proof (induct p rule: pmdl.span_induct')
+  case base
   from assms(2) show ?case .
 next
-  case ind: (module_plus a b q)
+  case (step a q b)
   from this(1) this(2) show ?case
   proof (induct q arbitrary: a rule: poly_mapping_except_induct)
     case 1
     thus ?case by simp
   next
     case step: (2 q0 t)
-    from this(4) have "a \<in> pmdl B" by (simp only: pmdl.module_def)
-    from this step(5) \<open>b \<in> B\<close> have "P (a + monomial (lookup q0 t) t \<odot> b)" unfolding mult_scalar_monomial
+    from this(4) step(5) \<open>b \<in> B\<close> have "P (a + monomial (lookup q0 t) t \<odot> b)"
+      unfolding mult_scalar_monomial
     proof (rule assms(3))
       from step(2) show "lookup q0 t \<noteq> 0" by simp
     qed
     with _ have "P ((a + monomial (lookup q0 t) t \<odot> b) + except q0 {t} \<odot> b)"
     proof (rule step(3))
-      from step(4) \<open>b \<in> B\<close> show "a + monomial (lookup q0 t) t \<odot> b \<in> pmdl B"
-        by (rule pmdl.module_plus)
+      from \<open>b \<in> B\<close> have "b \<in> pmdl B" by (rule pmdl.span_base)
+      hence "monomial (lookup q0 t) t \<odot> b \<in> pmdl B" by (rule pmdl.span_scale)
+      with step(4) show "a + monomial (lookup q0 t) t \<odot> b \<in> pmdl B" by (rule pmdl.span_add)
     qed
     hence "P (a + (monomial (lookup q0 t) t + except q0 {t}) \<odot> b)" by (simp add: algebra_simps)
     thus ?case by (simp only: plus_except[of q0 t, symmetric])
@@ -1587,7 +1584,7 @@ proof
   qed
 next
   show "component_of_term ` Keys B \<subseteq> component_of_term ` Keys (pmdl B)"
-    by (rule image_mono, rule Keys_mono, fact pmdl.generator_subset_module)
+    by (rule image_mono, rule Keys_mono, fact pmdl.span_superset)
 qed
 
 lemma pmdl_idI:
@@ -1611,12 +1608,12 @@ proof
       qed
     qed
   qed
-qed (fact pmdl.generator_subset_module)
+qed (fact pmdl.span_superset)
 
 definition full_pmdl :: "'k set \<Rightarrow> ('t \<Rightarrow>\<^sub>0 'b::zero) set"
   where "full_pmdl K = {p. component_of_term ` keys p \<subseteq> K}"
 
-definition is_full_pmdl :: "('t \<Rightarrow>\<^sub>0 'b::ring_1) set \<Rightarrow> bool"
+definition is_full_pmdl :: "('t \<Rightarrow>\<^sub>0 'b::comm_ring_1) set \<Rightarrow> bool"
   where "is_full_pmdl B \<longleftrightarrow> (\<forall>p. component_of_term ` keys p \<subseteq> component_of_term ` Keys B \<longrightarrow> p \<in> pmdl B)"
 
 lemma full_pmdl_iff: "p \<in> full_pmdl K \<longleftrightarrow> component_of_term ` keys p \<subseteq> K"
@@ -1719,7 +1716,7 @@ proof -
 qed
 
 lemma is_full_pmdl_pmdl: "is_full_pmdl (pmdl B) \<longleftrightarrow> is_full_pmdl B"
-  by (simp only: is_full_pmdl_def pmdl.module_idem components_pmdl)
+  by (simp only: is_full_pmdl_def pmdl.span_span components_pmdl)
 
 lemma is_full_pmdl_subset:
   assumes "is_full_pmdl B1" and "is_full_pmdl B2"
@@ -1750,49 +1747,45 @@ next
   with assms(2, 1) show "pmdl B2 \<subseteq> pmdl B1" by (rule is_full_pmdl_subset)
 qed
 
-sublocale phull: module_struct "\<lambda>c. monom_mult c 0"
+sublocale phull: module "\<lambda>c. monom_mult c 0"
   apply standard
-  subgoal by (rule poly_mapping_eqI_proj, simp)
-  subgoal by (simp add: monom_mult_assoc) 
-  subgoal by (simp only: monom_mult_dist_left)
   subgoal by (simp only: monom_mult_dist_right)
+  subgoal by (simp only: monom_mult_dist_left)
+  subgoal by (simp add: monom_mult_assoc)
+  subgoal by (rule poly_mapping_eqI_proj, simp)
   done
 
-lemmas [simp del] = phull.smult_one phull.smult_zero_left phull.smult_zero_right
-  phull.smult_minus_mult_left phull.smult_minus_mult_right phull.minus_smult_minus
+lemmas [simp del] = phull.scale_one phull.scale_zero_left phull.scale_zero_right phull.scale_scale
+  phull.scale_minus_left phull.scale_minus_right phull.span_eq_iff
 
-lemmas [ac_simps del] = phull.smult_assoc
+lemmas [algebra_simps del] = phull.scale_left_distrib phull.scale_right_distrib
+  phull.scale_left_diff_distrib phull.scale_right_diff_distrib
 
-lemmas [algebra_simps del] = phull.smult_distrib_right phull.smult_distrib_left
-  phull.smult_right_diff_distrib phull.smult_left_diff_distrib
-
-abbreviation "phull \<equiv> phull.module"
+abbreviation "phull \<equiv> phull.span"
 
 text \<open>@{term \<open>phull B\<close>} is a module over the coefficient ring @{typ 'b}, whereas @{term \<open>pmdl B\<close>} is
   a module over the (scalar) polynomial ring @{typ \<open>'a \<Rightarrow>\<^sub>0 'b\<close>}. Nevertheless, both modules are sets
   of @{emph \<open>vector-polynomials\<close>} of type @{typ \<open>'t \<Rightarrow>\<^sub>0 'b\<close>}.\<close>
 
-lemma mult_scalar_in_phull:
-  assumes "b \<in> B"
-  shows "monomial c 0 \<odot> b \<in> phull B"
-  unfolding mult_scalar_monomial using assms by (rule phull.smult_in_module)
-
 lemma phull_closed_mult_scalar:
   assumes "p \<in> phull B"
   shows "monomial c 0 \<odot> p \<in> phull B"
-  unfolding mult_scalar_monomial using assms by (rule phull.module_closed_smult)
+  unfolding mult_scalar_monomial using assms by (intro phull.span_scale)
+
+lemma mult_scalar_in_phull: "b \<in> B \<Longrightarrow> monomial c 0 \<odot> b \<in> phull B"
+  by (intro phull_closed_mult_scalar phull.span_base)
 
 lemma phull_subset_module: "phull B \<subseteq> pmdl B"
 proof
   fix p
   assume "p \<in> phull B"
   thus "p \<in> pmdl B"
-  proof (induct p rule: phull.module_induct)
-    case module_0
-    show ?case by (fact pmdl.module_0)
+  proof (induct p rule: phull.span_induct')
+    case base
+    show ?case by (fact pmdl.span_zero)
   next
-    case (module_plus a c p)
-    show ?case by (rule pmdl.module_closed_plus, fact, rule monom_mult_in_pmdl, fact)
+    case (step a c p)
+    show ?case by (rule pmdl.span_add, fact, rule monom_mult_in_pmdl, fact)
   qed
 qed
 
@@ -1804,7 +1797,7 @@ proof
   finally show "component_of_term ` Keys (phull B) \<subseteq> component_of_term ` Keys B" .
 next
   show "component_of_term ` Keys B \<subseteq> component_of_term ` Keys (phull B)"
-    by (rule image_mono, rule Keys_mono, fact phull.generator_subset_module)
+    by (rule image_mono, rule Keys_mono, fact phull.span_superset)
 qed
 
 end (* term_powerprod *)

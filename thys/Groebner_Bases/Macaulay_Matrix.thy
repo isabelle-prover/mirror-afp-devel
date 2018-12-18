@@ -793,7 +793,7 @@ proof
   from v have "v \<in> carrier_vec (length ps)" by (simp only: dim_row_polys_to_mat)
   with x q1 have q: "q = (\<Sum>(c, p)\<leftarrow>zip (list_of_vec v) ps. monom_mult c 0 p)"
     by (simp add: vec_times_polys_to_mat[OF assms])
-  show "q \<in> ?h" unfolding q by (rule in_phull_listI)
+  show "q \<in> ?h" unfolding q by (rule phull.span_listI)
 qed
 
 lemma phull_subset_row_space:
@@ -804,7 +804,7 @@ proof
   fix q
   assume "q \<in> ?h"
   then obtain cs where l: "length cs = length ps" and q: "q = (\<Sum>(c, p)\<leftarrow>zip cs ps. monom_mult c 0 p)"
-    by (rule in_phull_listE)
+    by (rule phull.span_listE)
   let ?v = "vec_of_list cs"
   from l have *: "?v \<in> carrier_vec (length ps)" by (simp only: carrier_dim_vec dim_vec_of_list)
   let ?q = "?v \<^sub>v* polys_to_mat ts ps"
@@ -845,11 +845,11 @@ lemma pmdl_row_echelon:
     (is "?l = ?r")
 proof
   show "?l \<subseteq> ?r"
-    by (rule pmdl.module_subset_moduleI, rule subset_trans, rule phull.generator_subset_module,
+    by (rule pmdl.span_subset_spanI, rule subset_trans, rule phull.span_superset,
       simp only: phull_row_echelon[OF assms] phull_subset_module)
 next
   show "?r \<subseteq> ?l"
-    by (rule pmdl.module_subset_moduleI, rule subset_trans, rule phull.generator_subset_module,
+    by (rule pmdl.span_subset_spanI, rule subset_trans, rule phull.span_superset,
         simp only: phull_row_echelon[OF assms, symmetric] phull_subset_module)
 qed
 
@@ -1110,7 +1110,7 @@ proof -
     by (simp add: set_Keys_to_list)
   have "phull (set (Macaulay_list ps)) =
           phull (set (mat_to_polys (Keys_to_list ps) (row_echelon (Macaulay_mat ps))))"
-    by (simp only: set_Macaulay_list phull.module_minus_singleton_zero)
+    by (simp only: set_Macaulay_list phull.span_Diff_zero)
   also have "... = phull (set ps)"
     by (simp only: Macaulay_mat_def phull_row_echelon[OF * distinct_Keys_to_list])
   finally show ?thesis .
@@ -1122,7 +1122,7 @@ proof -
     by (simp add: set_Keys_to_list)
   have "pmdl (set (Macaulay_list ps)) =
           pmdl (set (mat_to_polys (Keys_to_list ps) (row_echelon (Macaulay_mat ps))))"
-    by (simp only: set_Macaulay_list pmdl.module_minus_singleton_zero)
+    by (simp only: set_Macaulay_list pmdl.span_Diff_zero)
   also have "... = pmdl (set ps)"
     by (simp only: Macaulay_mat_def pmdl_row_echelon[OF * distinct_Keys_to_list])
   finally show ?thesis .

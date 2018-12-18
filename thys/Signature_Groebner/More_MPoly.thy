@@ -229,7 +229,7 @@ end (* gd_term *)
 
 subsection \<open>Regular Sequences\<close>
 
-definition is_regular_sequence :: "('a::comm_powerprod \<Rightarrow>\<^sub>0 'b::ring_1) list \<Rightarrow> bool"
+definition is_regular_sequence :: "('a::comm_powerprod \<Rightarrow>\<^sub>0 'b::comm_ring_1) list \<Rightarrow> bool"
   where "is_regular_sequence fs \<longleftrightarrow> (\<forall>j<length fs. \<forall>q. q * fs ! j \<in> ideal (set (take j fs)) \<longrightarrow>
                                                       q \<in> ideal (set (take j fs)))"
 
@@ -298,7 +298,7 @@ proof (induct fs rule: rev_induct)
 next
   case (snoc f fs)
   have "set (removeAll 0 fs) = set fs - {0}" by simp
-  also have "ideal ... = ideal (set fs)" by (fact ideal.module_minus_singleton_zero)
+  also have "ideal ... = ideal (set fs)" by (fact ideal.span_Diff_zero)
   finally have eq: "ideal (set (removeAll 0 fs)) = ideal (set fs)" .
   from snoc(2) have *: "is_regular_sequence fs" by (rule is_regular_sequence_snocD)
   show ?case

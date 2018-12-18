@@ -11,10 +11,54 @@ text \<open>Some further general properties of (ordered) multivariate polynomial
 
 subsection \<open>Modules and Linear Hulls\<close>
 
-context term_powerprod
+context module
 begin
 
-lemma monomial_1_in_pmdlI:
+lemma span_listE:
+  assumes "p \<in> span (set bs)"
+  obtains qs where "length qs = length bs" and "p = sum_list (map2 (*s) qs bs)"
+proof -
+  have "finite (set bs)" ..
+  from this assms obtain q where p: "p = (\<Sum>b\<in>set bs. (q b) *s b)" by (rule span_finiteE)
+  let ?qs = "map_dup q (\<lambda>_. 0) bs"
+  show ?thesis
+  proof
+    show "length ?qs = length bs" by simp
+  next
+    let ?zs = "zip (map q (remdups bs)) (remdups bs)"
+    have *: "distinct ?zs" by (rule distinct_zipI2, rule distinct_remdups)
+    have inj: "inj_on (\<lambda>b. (q b, b)) (set bs)" by (rule, simp)
+    have "p = (\<Sum>(q, b)\<leftarrow>?zs. q *s b)"
+      by (simp add: sum_list_distinct_conv_sum_set[OF *] set_zip_map1 p comm_monoid_add_class.sum.reindex[OF inj])
+    also have "... = (\<Sum>(q, b)\<leftarrow>(filter (\<lambda>(q, b). q \<noteq> 0) ?zs). q *s b)"
+      by (rule monoid_add_class.sum_list_map_filter[symmetric], auto)
+    also have "... = (\<Sum>(q, b)\<leftarrow>(filter (\<lambda>(q, b). q \<noteq> 0) (zip ?qs bs)). q *s b)"
+      by (simp only: filter_zip_map_dup_const)
+    also have "... = (\<Sum>(q, b)\<leftarrow>zip ?qs bs. q *s b)"
+      by (rule monoid_add_class.sum_list_map_filter, auto)
+    finally show "p = (\<Sum>(q, b)\<leftarrow>zip ?qs bs. q *s b)" .
+  qed
+qed
+
+lemma span_listI: "sum_list (map2 (*s) qs bs) \<in> span (set bs)"
+proof (induct qs arbitrary: bs)
+  case Nil
+  show ?case by (simp add: span_zero)
+next
+  case step: (Cons q qs)
+  show ?case
+  proof (simp add: zip_Cons1 span_zero split: list.split, intro allI impI)
+    fix a as
+    have "sum_list (map2 (*s) qs as) \<in> span (insert a (set as))" (is "?x \<in> ?A")
+      by (rule, fact step, rule span_mono, auto)
+    moreover have "a \<in> ?A" by (rule span_base) simp
+    ultimately show "q *s a + ?x \<in> ?A" by (intro span_add span_scale)
+  qed
+qed
+
+end
+
+lemma (in term_powerprod) monomial_1_in_pmdlI:
   assumes "(f::_ \<Rightarrow>\<^sub>0 'b::field) \<in> pmdl F" and "keys f = {t}"
   shows "monomial 1 t \<in> pmdl F"
 proof -
@@ -27,91 +71,6 @@ proof -
   also from assms(1) have "... \<in> pmdl F" by (rule pmdl_closed_monom_mult)
   finally show ?thesis .
 qed
-
-lemma in_pmdl_listE:
-  assumes "p \<in> pmdl (set bs)"
-  obtains qs where "length qs = length bs" and "p = (\<Sum>(q, b)\<leftarrow>zip qs bs. q \<odot> b)"
-proof -
-  have "finite (set bs)" ..
-  from this assms obtain q where p: "p = (\<Sum>b\<in>set bs. (q b) \<odot> b)" by (rule pmdl.in_module_finiteE)
-  let ?qs = "map_dup q (\<lambda>_. 0) bs"
-  show ?thesis
-  proof
-    show "length ?qs = length bs" by simp
-  next
-    let ?zs = "zip (map q (remdups bs)) (remdups bs)"
-    have *: "distinct ?zs" by (rule distinct_zipI2, rule distinct_remdups)
-    have inj: "inj_on (\<lambda>b. (q b, b)) (set bs)" by (rule, simp)
-    have "p = (\<Sum>(q, b)\<leftarrow>?zs. q \<odot> b)"
-      by (simp add: sum_list_distinct_conv_sum_set[OF *] set_zip_map1 p comm_monoid_add_class.sum.reindex[OF inj])
-    also have "... = (\<Sum>(q, b)\<leftarrow>(filter (\<lambda>(q, b). q \<noteq> 0) ?zs). q \<odot> b)"
-      by (rule monoid_add_class.sum_list_map_filter[symmetric], auto)
-    also have "... = (\<Sum>(q, b)\<leftarrow>(filter (\<lambda>(q, b). q \<noteq> 0) (zip ?qs bs)). q \<odot> b)"
-      by (simp only: filter_zip_map_dup_const)
-    also have "... = (\<Sum>(q, b)\<leftarrow>zip ?qs bs. q \<odot> b)"
-      by (rule monoid_add_class.sum_list_map_filter, auto)
-    finally show "p = (\<Sum>(q, b)\<leftarrow>zip ?qs bs. q \<odot> b)" .
-  qed
-qed
-
-lemma in_pmdl_listI: "(\<Sum>(q, b)\<leftarrow>zip qs bs. q \<odot> b) \<in> pmdl (set bs)"
-proof (induct qs arbitrary: bs)
-  case Nil
-  show ?case by (simp add: pmdl.module_0)
-next
-  case step: (Cons q qs)
-  show ?case
-  proof (simp add: zip_Cons1 pmdl.module_0 split: list.split, intro allI impI)
-    fix a as
-    have "(\<Sum>(x, y)\<leftarrow>zip qs as. x \<odot> y) \<in> pmdl (insert a (set as))" (is "?x \<in> ?A")
-      by (rule, fact step, rule pmdl.module_mono, auto)
-    show "q \<odot> a + ?x \<in> ?A" by (rule pmdl.module_closed_plus, rule pmdl.smult_in_module, simp, fact)
-  qed
-qed
-
-lemma in_phull_listE:
-  assumes "p \<in> phull (set bs)"
-  obtains cs where "length cs = length bs" and "p = (\<Sum>(c, b)\<leftarrow>zip cs bs. monom_mult c 0 b)"
-proof -
-  have "finite (set bs)" ..
-  from this assms obtain c where p: "p = (\<Sum>b\<in>set bs. monom_mult (c b) 0 b)"
-    by (rule phull.in_module_finiteE)
-  let ?cs = "map_dup c (\<lambda>_. 0) bs"
-  show ?thesis
-  proof
-    show "length ?cs = length bs" by simp
-  next
-    let ?zs = "zip (map c (remdups bs)) (remdups bs)"
-    have *: "distinct ?zs" by (rule distinct_zipI2, rule distinct_remdups)
-    have inj: "inj_on (\<lambda>x. (c x, x)) (set bs)" by (rule, simp)
-    have "p = (\<Sum>(q, b)\<leftarrow>?zs. monom_mult q 0 b)"
-      by (simp add: sum_list_distinct_conv_sum_set[OF *] set_zip_map1 p comm_monoid_add_class.sum.reindex[OF inj])
-    also have "... = (\<Sum>(q, b)\<leftarrow>(filter (\<lambda>(c, b). c \<noteq> 0) ?zs). monom_mult q 0 b)"
-      by (rule monoid_add_class.sum_list_map_filter[symmetric], auto)
-    also have "... = (\<Sum>(q, b)\<leftarrow>(filter (\<lambda>(c, b). c \<noteq> 0) (zip ?cs bs)). monom_mult q 0 b)"
-      by (simp only: filter_zip_map_dup_const)
-    also have "... = (\<Sum>(q, b)\<leftarrow>zip ?cs bs. monom_mult q 0 b)"
-      by (rule monoid_add_class.sum_list_map_filter, auto)
-    finally show "p = (\<Sum>(q, b)\<leftarrow>zip ?cs bs. monom_mult q 0 b)" .
-  qed
-qed
-
-lemma in_phull_listI: "(\<Sum>(c, b)\<leftarrow>zip cs bs. monom_mult c 0 b) \<in> phull (set bs)"
-proof (induct cs arbitrary: bs)
-  case Nil
-  show ?case by (simp add: phull.module_0)
-next
-  case step: (Cons c cs)
-  show ?case
-  proof (simp add: zip_Cons1 phull.module_0 split: list.split, intro allI impI)
-    fix a and as::"('t \<Rightarrow>\<^sub>0 'b) list"
-    have "(\<Sum>(x, y)\<leftarrow>zip cs as. monom_mult x 0 y) \<in> phull (insert a (set as))" (is "?x \<in> ?A")
-      by (rule, fact step, rule phull.module_mono, auto)
-    show "monom_mult c 0 a + ?x \<in> ?A" by (rule phull.module_closed_plus, rule phull.smult_in_module, simp, fact)
-  qed
-qed
-
-end (* term_powerprod *)
   
 subsection \<open>Ordered Polynomials\<close>
   
@@ -390,13 +349,13 @@ proof
     thus "p \<in> pmdl B"
     proof (induct p rule: pmdl_induct)
       case base: module_0
-      show ?case by (fact pmdl.module_0)
+      show ?case by (fact pmdl.span_zero)
     next
       case ind: (module_plus a b c t)
       from ind(3) obtain b' where b_def: "b = monic b'" and "b' \<in> B" ..
       have eq: "b = monom_mult (1 / lc b') 0 b'" by (simp only: b_def monic_def)
       show ?case unfolding eq monom_mult_assoc
-        by (rule pmdl.module_closed_plus, fact, rule monom_mult_in_pmdl, fact)
+        by (rule pmdl.span_add, fact, rule monom_mult_in_pmdl, fact)
     qed
   qed
 next
@@ -407,7 +366,7 @@ next
     thus "p \<in> pmdl (monic ` B)"
     proof (induct p rule: pmdl_induct)
       case base: module_0
-      show ?case by (fact pmdl.module_0)
+      show ?case by (fact pmdl.span_zero)
     next
       case ind: (module_plus a b c t)
       show ?case
@@ -420,7 +379,7 @@ next
         from ind(3) have "?b \<in> monic ` B" by (rule imageI)
         have "a + monom_mult c t (monom_mult (lc b) 0 ?b) \<in> pmdl (monic ` B)"
           unfolding monom_mult_assoc
-          by (rule pmdl.module_closed_plus, fact, rule monom_mult_in_pmdl, fact)
+          by (rule pmdl.span_add, fact, rule monom_mult_in_pmdl, fact)
         thus ?thesis unfolding mult_lc_monic[OF False] .
       qed
     qed
