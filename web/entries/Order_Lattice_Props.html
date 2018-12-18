@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Binary Multirelations - Archive of Formal Proofs
+<title>Properties of Orderings and Lattices - Archive of Formal Proofs
 </title>
 <link rel="stylesheet" type="text/css" href="../front.css">
 <link rel="icon" href="../images/favicon.ico" type="image/icon">
@@ -61,9 +61,15 @@
 <td width="80%" valign="top">
 <div align="center">
   <p>&nbsp;</p>
-  <h1>          <font class="first">B</font>inary
+  <h1>          <font class="first">P</font>roperties
   
-          <font class="first">M</font>ultirelations
+          of
+  
+          <font class="first">O</font>rderings
+  
+          and
+  
+          <font class="first">L</font>attices
   
 </h1>
   <p>&nbsp;</p>
@@ -72,16 +78,15 @@
 <tbody>
 <tr>
   <td class="datahead" width="20%">Title:</td>
-  <td class="data" width="80%">Binary Multirelations</td>
+  <td class="data" width="80%">Properties of Orderings and Lattices</td>
 </tr>
 
 <tr>
   <td class="datahead">
-          Authors:
+          Author:
       </td>
   <td class="data">
-                    <a href="http://www.sci.kagoshima-u.ac.jp/~furusawa/">Hitoshi Furusawa</a> and
-          <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
+              <a href="http://staffwww.dcs.shef.ac.uk/people/G.Struth/">Georg Struth</a>
       </td>
 </tr>
 
@@ -89,32 +94,33 @@
 
 <tr>
   <td class="datahead">Submission date:</td>
-  <td class="data">2015-06-11</td>
+  <td class="data">2018-12-11</td>
 </tr>
 
 <tr>
   <td class="datahead" valign="top">Abstract:</td>
   <td class="abstract">
-Binary multirelations associate elements of a set with its subsets; hence
-they are binary relations from a set to its power set. Applications include
-alternating automata, models and logics for games, program semantics with
-dual demonic and angelic nondeterministic choices and concurrent dynamic
-logics. This proof document supports an arXiv article that formalises the
-basic algebra of multirelations and proposes axiom systems for them,
-ranging from weak bi-monoids to weak bi-quantales.</td>
+These components add further fundamental order and lattice-theoretic
+concepts and properties to Isabelle's libraries.  They follow by
+and large the introductory sections of the Compendium of Continuous
+Lattices,  covering directed and filtered sets, down-closed and
+up-closed sets, ideals and filters, Galois connections, closure and
+co-closure operators. Some emphasis is on duality and morphisms
+between structures, as in the Compendium.  To this end, three ad-hoc
+approaches to duality are compared.</td>
 </tr>
 
 
 <tr>
   <td class="datahead" valign="top">BibTeX:</td>
   <td class="formatted">
-        <pre>@article{Multirelations-AFP,
-  author  = {Hitoshi Furusawa and Georg Struth},
-  title   = {Binary Multirelations},
+        <pre>@article{Order_Lattice_Props-AFP,
+  author  = {Georg Struth},
+  title   = {Properties of Orderings and Lattices},
   journal = {Archive of Formal Proofs},
-  month   = jun,
-  year    = 2015,
-  note    = {\url{http://isa-afp.org/entries/Multirelations.html},
+  month   = dec,
+  year    = 2018,
+  note    = {\url{http://isa-afp.org/entries/Order_Lattice_Props.html},
             Formal proof development},
   ISSN    = {2150-914x},
 }</pre>
@@ -125,10 +131,10 @@ ranging from weak bi-monoids to weak bi-quantales.</td>
         <td class="data"><a href="http://isa-afp.org/LICENSE">BSD License</a></td></tr>
 
     
-                      <tr><td class="datahead">Depends on:</td>
-          <td class="data"><a href="Kleene_Algebra.html">Kleene_Algebra</a>      </td></tr>
-          
                     
+                      <tr><td class="datahead">Used by:</td>
+          <td class="data"><a href="Quantales.html">Quantales</a>, <a href="Transformer_Semantics.html">Transformer_Semantics</a>      </td></tr>
+          
 
         
   </tbody>
@@ -140,44 +146,23 @@ ranging from weak bi-monoids to weak bi-quantales.</td>
   <tbody>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Multirelations/outline.pdf">Proof outline</a><br>
-      <a href="../browser_info/current/AFP/Multirelations/document.pdf">Proof document</a>
+      <a href="../browser_info/current/AFP/Order_Lattice_Props/outline.pdf">Proof outline</a><br>
+      <a href="../browser_info/current/AFP/Order_Lattice_Props/document.pdf">Proof document</a>
     </td>
     </tr>
     <tr>
     <td class="links">
-      <a href="../browser_info/current/AFP/Multirelations/index.html">Browse theories</a>
+      <a href="../browser_info/current/AFP/Order_Lattice_Props/index.html">Browse theories</a>
       </td></tr>
     <tr>
     <td class="links">
-      <a href="../release/afp-Multirelations-current.tar.gz">Download this entry</a>
+      <a href="../release/afp-Order_Lattice_Props-current.tar.gz">Download this entry</a>
     </td>
     </tr>
 
 
     <tr><td class="links">Older releases:
-          <ul>
-                        <li>Isabelle 2017:
-          <a href="../release/afp-Multirelations-2017-10-10.tar.gz">
-            afp-Multirelations-2017-10-10.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016-1:
-          <a href="../release/afp-Multirelations-2016-12-17.tar.gz">
-            afp-Multirelations-2016-12-17.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2016:
-          <a href="../release/afp-Multirelations-2016-02-22.tar.gz">
-            afp-Multirelations-2016-02-22.tar.gz
-          </a>
-          </li>
-                                <li>Isabelle 2015:
-          <a href="../release/afp-Multirelations-2015-06-13.tar.gz">
-            afp-Multirelations-2015-06-13.tar.gz
-          </a>
-          </li>
-                    </ul>
+        None
         </td></tr>
 
   </tbody>

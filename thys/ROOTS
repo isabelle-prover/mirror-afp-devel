@@ -287,6 +287,7 @@ OpSets
 Optics
 Optimal_BST
 Orbit_Stabiliser
+Order_Lattice_Props
 Ordered_Resolution_Prover
 Ordinal
 Ordinals_and_Cardinals
@@ -333,6 +334,7 @@ PseudoHoops
 Psi_Calculi
 Ptolemys_Theorem
 QR_Decomposition
+Quantales
 Quaternions
 Quick_Sort_Cost
 RIPEMD-160-SPARK
@@ -417,6 +419,7 @@ Taylor_Models
 Timed_Automata
 Topology
 TortoiseHare
+Transformer_Semantics
 Transition_Systems_and_Automata
 Transitive-Closure
 Transitive-Closure-II

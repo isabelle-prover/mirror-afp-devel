@@ -7535,4 +7535,47 @@ abstract =
   examples: solutions to some of the Pelletier’s problems, and
   elementary number theory of primes.
 
- 
+[Order_Lattice_Props]
+title = Properties of Orderings and Lattices
+author = Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
+topic = Mathematics/Algebra
+date = 2018-12-11
+notify = g.struth@sheffield.ac.uk
+abstract = 
+  These components add further fundamental order and lattice-theoretic
+  concepts and properties to Isabelle's libraries.  They follow by
+  and large the introductory sections of the Compendium of Continuous
+  Lattices,  covering directed and filtered sets, down-closed and
+  up-closed sets, ideals and filters, Galois connections, closure and
+  co-closure operators. Some emphasis is on duality and morphisms
+  between structures, as in the Compendium.  To this end, three ad-hoc
+  approaches to duality are compared.
+
+[Quantales]
+title = Quantales
+author = Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
+topic = Mathematics/Algebra
+date = 2018-12-11
+notify = g.struth@sheffield.ac.uk
+abstract = 
+  These mathematical components formalise basic properties of quantales,
+  together with some important models, constructions, and concepts,
+  including quantic nuclei and conuclei.
+
+[Transformer_Semantics]
+title = Transformer Semantics
+author = Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
+topic = Mathematics/Algebra, Computer Science/Programming Languages/Misc
+date = 2018-12-11
+notify = g.struth@sheffield.ac.uk
+abstract = 
+  These mathematical components formalise predicate transformer
+  semantics for programs, yet currently only for partial correctness and
+  in the absence of faults.  A first part for isotone (or monotone),
+  Sup-preserving and Inf-preserving transformers follows Back and von
+  Wright's approach, with additional emphasis on the quantalic
+  structure of algebras of transformers.  The second part develops
+  Sup-preserving and Inf-preserving predicate transformers from the
+  powerset monad, via its Kleisli category and Eilenberg-Moore algebras,
+  with emphasis on adjunctions and dualities, as well as isomorphisms
+  between relations, state transformers and predicate transformers.

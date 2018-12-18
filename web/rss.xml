@@ -9,7 +9,52 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>23 Nov 2018 00:00:00 +0000</pubDate>
+    <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Transformer Semantics</title>
+              <link>https://www.isa-afp.org/entries/Transformer_Semantics.html</link>
+       <guid>https://www.isa-afp.org/entries/Transformer_Semantics.html</guid>
+       <dc:creator> Georg Struth       </dc:creator>
+       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+These mathematical components formalise predicate transformer
+semantics for programs, yet currently only for partial correctness and
+in the absence of faults.  A first part for isotone (or monotone),
+Sup-preserving and Inf-preserving transformers follows Back and von
+Wright&#39;s approach, with additional emphasis on the quantalic
+structure of algebras of transformers.  The second part develops
+Sup-preserving and Inf-preserving predicate transformers from the
+powerset monad, via its Kleisli category and Eilenberg-Moore algebras,
+with emphasis on adjunctions and dualities, as well as isomorphisms
+between relations, state transformers and predicate transformers.</description>
+    </item>
+    <item>
+       <title>Quantales</title>
+              <link>https://www.isa-afp.org/entries/Quantales.html</link>
+       <guid>https://www.isa-afp.org/entries/Quantales.html</guid>
+       <dc:creator> Georg Struth       </dc:creator>
+       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+These mathematical components formalise basic properties of quantales,
+together with some important models, constructions, and concepts,
+including quantic nuclei and conuclei.</description>
+    </item>
+    <item>
+       <title>Properties of Orderings and Lattices</title>
+              <link>https://www.isa-afp.org/entries/Order_Lattice_Props.html</link>
+       <guid>https://www.isa-afp.org/entries/Order_Lattice_Props.html</guid>
+       <dc:creator> Georg Struth       </dc:creator>
+       <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+These components add further fundamental order and lattice-theoretic
+concepts and properties to Isabelle&#39;s libraries.  They follow by
+and large the introductory sections of the Compendium of Continuous
+Lattices,  covering directed and filtered sets, down-closed and
+up-closed sets, ideals and filters, Galois connections, closure and
+co-closure operators. Some emphasis is on duality and morphisms
+between structures, as in the Compendium.  To this end, three ad-hoc
+approaches to duality are compared.</description>
+    </item>
     <item>
        <title>Graph Saturation</title>
               <link>https://www.isa-afp.org/entries/Graph_Saturation.html</link>
@@ -514,57 +559,6 @@ systems with actions, trace theory, as well as basics on finite,
 infinite, and lazy sequences. We also provide a basic framework for
 static analysis on concurrent systems with respect to the ample set
 condition.</description>
-    </item>
-    <item>
-       <title>Optimal Binary Search Trees</title>
-              <link>https://www.isa-afp.org/entries/Optimal_BST.html</link>
-       <guid>https://www.isa-afp.org/entries/Optimal_BST.html</guid>
-       <dc:creator> Tobias Nipkow, Dániel Somogyi       </dc:creator>
-       <pubDate>27 May 2018 00:00:00 +0000</pubDate>
-       <description>
-This article formalizes recursive algorithms for the construction
-of optimal binary search trees given fixed access frequencies.
-We follow Knuth (1971), Yao (1980) and Mehlhorn (1984).
-The algorithms are memoized with the help of the AFP article
-&lt;a href=&#34;Monad_Memo_DP.html&#34;&gt;Monadification, Memoization and Dynamic Programming&lt;/a&gt;,
-thus yielding dynamic programming algorithms.</description>
-    </item>
-    <item>
-       <title>Hidden Markov Models</title>
-              <link>https://www.isa-afp.org/entries/Hidden_Markov_Models.html</link>
-       <guid>https://www.isa-afp.org/entries/Hidden_Markov_Models.html</guid>
-       <dc:creator> Simon Wimmer       </dc:creator>
-       <pubDate>25 May 2018 00:00:00 +0000</pubDate>
-       <description>
-This entry contains a formalization of hidden Markov models [3] based
-on Johannes Hölzl&#39;s formalization of discrete time Markov chains
-[1]. The basic definitions are provided and the correctness of two
-main (dynamic programming) algorithms for hidden Markov models is
-proved: the forward algorithm for computing the likelihood of an
-observed sequence, and the Viterbi algorithm for decoding the most
-probable hidden state sequence. The Viterbi algorithm is made
-executable including memoization.  Hidden markov models have various
-applications in natural language processing. For an introduction see
-Jurafsky and Martin [2].</description>
-    </item>
-    <item>
-       <title>Probabilistic Timed Automata</title>
-              <link>https://www.isa-afp.org/entries/Probabilistic_Timed_Automata.html</link>
-       <guid>https://www.isa-afp.org/entries/Probabilistic_Timed_Automata.html</guid>
-       <dc:creator> Simon Wimmer, Johannes Hölzl       </dc:creator>
-       <pubDate>24 May 2018 00:00:00 +0000</pubDate>
-       <description>
-We present a formalization of probabilistic timed automata (PTA) for
-which we try to follow the formula MDP + TA = PTA as far as possible:
-our work starts from our existing formalizations of Markov decision
-processes (MDP) and timed automata (TA) and combines them modularly.
-We prove the fundamental result for probabilistic timed automata: the
-region construction that is known from timed automata carries over to
-the probabilistic setting. In particular, this allows us to prove that
-minimum and maximum reachability probabilities can be computed via a
-reduction to MDP model checking, including the case where one wants to
-disregard unrealizable behavior. Further information can be found in
-our ITP paper [2].</description>
     </item>
   </channel>
 </rss>
