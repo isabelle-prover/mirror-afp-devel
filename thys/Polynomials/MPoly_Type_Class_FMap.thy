@@ -53,10 +53,15 @@ lemma compute_adds_pp[code]:
 text\<open>Computing @{term lex} as below is certainly not the most efficient way, but it works.\<close>
 
 lemma lex_pm_iff: "lex_pm s t = (\<forall>x. lookup s x \<le> lookup t x \<or> (\<exists>y<x. lookup s y \<noteq> lookup t y))"
-  by (simp only: lex_pm.rep_eq lex_fun_def poly_mapping_eq_iff)
+proof -
+  have "lex_pm s t = (\<not> lex_pm_strict t s)" by (simp add: lex_pm_strict_alt)
+  also have "\<dots> = (\<forall>x. lookup s x \<le> lookup t x \<or> (\<exists>y<x. lookup s y \<noteq> lookup t y))"
+    by (simp add: lex_pm_strict_def less_poly_mapping_def less_fun_def) (metis leD leI)
+  finally show ?thesis .
+qed
 
 lemma compute_lex_pp[code]:
-  "(lex_pm (Pm_fmap xs) (Pm_fmap (ys::('a::wellorder, 'b::ordered_comm_monoid_add) fmap))) =
+  "(lex_pm (Pm_fmap xs) (Pm_fmap (ys::(_, _::ordered_comm_monoid_add) fmap))) =
     (let zs = xs ++\<^sub>f ys in
       fmpred (\<lambda>x v.
         lookup0 xs x \<le> lookup0 ys x \<or>
