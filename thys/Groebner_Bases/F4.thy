@@ -1128,7 +1128,8 @@ lemma phull_closed_lin_red:
   shows "q \<in> phull A"
 proof -
   from assms(3) obtain f where "f \<in> B" and "red_single p q f 0" by (rule lin_redE)
-  hence q: "q = p - monom_mult (lookup p (lt f) / lc f) 0 f" by (simp add: red_single_def term_simps)
+  hence q: "q = p - (lookup p (lt f) / lc f) \<cdot> f"
+    by (simp add: red_single_def term_simps map_scale_eq_monom_mult)
   have "q - p \<in> phull B"
     by (simp add: q, rule phull.span_neg, rule phull.span_scale, rule phull.span_base, fact \<open>f \<in> B\<close>)
   with assms(1) have "q - p \<in> phull A" ..

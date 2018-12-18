@@ -1546,19 +1546,18 @@ proof -
   qed
 qed
 
-lemma is_red_monom_mult:
-  assumes "is_red F (monom_mult c 0 p)"
+lemma is_red_map_scale:
+  assumes "is_red F (c \<cdot> p)"
   shows "is_red F p"
 proof -
-  from assms obtain f u where "f \<in> F" and "u \<in> keys (monom_mult c 0 p)" and "f \<noteq> 0"
+  from assms obtain f u where "f \<in> F" and "u \<in> keys (c \<cdot> p)" and "f \<noteq> 0"
     and a: "lt f adds\<^sub>t u" by (rule is_red_addsE)
-  from this(2) keys_monom_mult_subset have "u \<in> (\<oplus>) 0 ` keys p" ..
-  hence "u \<in> keys p" by (auto simp: splus_zero)
+  from this(2) keys_map_scale_subset have "u \<in> keys p" ..
   with \<open>f \<in> F\<close> \<open>f \<noteq> 0\<close> show ?thesis using a by (rule is_red_addsI)
 qed
 
-corollary is_irred_monom_mult: "\<not> is_red F p \<Longrightarrow> \<not> is_red F (monom_mult c 0 p)"
-  by (auto dest: is_red_monom_mult)
+corollary is_irred_map_scale: "\<not> is_red F p \<Longrightarrow> \<not> is_red F (c \<cdot> p)"
+  by (auto dest: is_red_map_scale)
 
 lemma is_red_uminus: "is_red F (- p) \<longleftrightarrow> is_red F p"
   by (auto elim!: is_red_addsE simp: keys_uminus intro: is_red_addsI)

@@ -1747,13 +1747,105 @@ next
   with assms(2, 1) show "pmdl B2 \<subseteq> pmdl B1" by (rule is_full_pmdl_subset)
 qed
 
-sublocale phull: module "\<lambda>c. monom_mult c 0"
+end (* term_powerprod *)
+
+definition map_scale :: "'b \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b) \<Rightarrow> ('a \<Rightarrow>\<^sub>0 'b::mult_zero)" (infixr "\<cdot>" 71)
+  where "map_scale c = Poly_Mapping.map ((*) c)"
+
+text \<open>If the polynomial mapping \<open>p\<close> is interpreted as a power-product, then @{term "c \<cdot> p"}
+  corresponds to exponentiation; if it is interpreted as a (vector-) polynomial, then @{term "c \<cdot> p"}
+  corresponds to multiplication by scalar from the coefficient type.\<close>
+
+lemma lookup_map_scale [simp]: "lookup (c \<cdot> p) = (\<lambda>x. c * lookup p x)"
+  by (auto simp: map_scale_def map.rep_eq when_def)
+
+lemma map_scale_single [simp]: "k \<cdot> Poly_Mapping.single x l = Poly_Mapping.single x (k * l)"
+  by (simp add: map_scale_def)
+
+lemma map_scale_zero_left [simp]: "0 \<cdot> t = 0"
+  by (rule poly_mapping_eqI) simp
+
+lemma map_scale_zero_right [simp]: "k \<cdot> 0 = 0"
+  by (rule poly_mapping_eqI) simp
+
+lemma keys_map_scale_subset: "keys (k \<cdot> t) \<subseteq> keys t"
+proof
+  fix x
+  assume "x \<in> keys (k \<cdot> t)"
+  hence "lookup (k \<cdot> t) x \<noteq> 0" by (simp del: lookup_map_scale)
+  thus "x \<in> keys t" using mult_not_zero by force
+qed
+
+lemma keys_map_scale: "keys ((k::'b::semiring_no_zero_divisors) \<cdot> t) = (if k = 0 then {} else keys t)"
+proof (split if_split, intro conjI impI)
+  assume "k = 0"
+  thus "keys (k \<cdot> t) = {}" by simp
+next
+  assume "k \<noteq> 0"
+  show "keys (k \<cdot> t) = keys t"
+  proof
+    show "keys t \<subseteq> keys (k \<cdot> t)" by rule (simp add: \<open>k \<noteq> 0\<close> flip: lookup_not_eq_zero_eq_in_keys)
+  qed (fact keys_map_scale_subset)
+qed
+
+lemma map_scale_one_left [simp]: "(1::'b::{mult_zero,monoid_mult}) \<cdot> t = t"
+  by (rule poly_mapping_eqI) simp
+
+lemma map_scale_assoc [ac_simps]: "c \<cdot> d \<cdot> t = (c * d) \<cdot> (t::_ \<Rightarrow>\<^sub>0 _::{semigroup_mult,zero})"
+  by (rule poly_mapping_eqI) (simp add: ac_simps)
+
+lemma map_scale_distrib_left [algebra_simps]: "(k::'b::semiring_0) \<cdot> (s + t) = k \<cdot> s + k \<cdot> t"
+  by (rule poly_mapping_eqI) (simp add: lookup_add distrib_left)
+
+lemma map_scale_distrib_right [algebra_simps]: "(k + (l::'b::semiring_0)) \<cdot> t = k \<cdot> t + l \<cdot> t"
+  by (rule poly_mapping_eqI) (simp add: lookup_add distrib_right)
+
+lemma map_scale_Suc: "(Suc k) \<cdot> t = k \<cdot> t + t"
+  by (rule poly_mapping_eqI) (simp add: lookup_add distrib_right)
+
+lemma map_scale_uminus_left: "(- k::'b::ring) \<cdot> p = - (k \<cdot> p)"
+  by (rule poly_mapping_eqI) auto
+
+lemma map_scale_uminus_right: "(k::'b::ring) \<cdot> (- p) = - (k \<cdot> p)"
+  by (rule poly_mapping_eqI) auto
+
+lemma map_scale_uminus_uminus [simp]: "(- k::'b::ring) \<cdot> (- p) = k \<cdot> p"
+  by (simp add: map_scale_uminus_left map_scale_uminus_right)
+
+lemma map_scale_minus_distrib_left [algebra_simps]:
+  "(k::'b::comm_semiring_1_cancel) \<cdot> (p - q) = k \<cdot> p - k \<cdot> q"
+  by (rule poly_mapping_eqI) (auto simp add: lookup_minus right_diff_distrib')
+
+lemma map_scale_minus_distrib_right [algebra_simps]:
+  "(k - (l::'b::comm_semiring_1_cancel)) \<cdot> f = k \<cdot> f - l \<cdot> f"
+  by (rule poly_mapping_eqI) (auto simp add: lookup_minus left_diff_distrib')
+
+lemma map_scale_sum_distrib_left: "(k::'b::semiring_0) \<cdot> (sum f A) = (\<Sum>a\<in>A. k \<cdot> f a)"
+  by (induct A rule: infinite_finite_induct) (simp_all add: map_scale_distrib_left)
+
+lemma map_scale_sum_distrib_right: "(sum (f::_ \<Rightarrow> 'b::semiring_0) A) \<cdot> p = (\<Sum>a\<in>A. f a \<cdot> p)"
+  by (induct A rule: infinite_finite_induct) (simp_all add: map_scale_distrib_right)
+
+lemma deg_pm_map_scale: "deg_pm (k \<cdot> t) = (k::'b::semiring_0) * deg_pm t"
+proof -
+  from keys_map_scale_subset finite_keys have "deg_pm (k \<cdot> t) = sum (lookup (k \<cdot> t)) (keys t)"
+    by (rule deg_pm_superset)
+  also have "\<dots> = k * sum (lookup t) (keys t)" by (simp add: sum_distrib_left)
+  also from subset_refl finite_keys have "sum (lookup t) (keys t) = deg_pm t"
+    by (rule deg_pm_superset[symmetric])
+  finally show ?thesis .
+qed
+
+interpretation phull: module map_scale
   apply standard
-  subgoal by (simp only: monom_mult_dist_right)
-  subgoal by (simp only: monom_mult_dist_left)
-  subgoal by (simp add: monom_mult_assoc)
-  subgoal by (rule poly_mapping_eqI_proj, simp)
+  subgoal by (fact map_scale_distrib_left)
+  subgoal by (fact map_scale_distrib_right)
+  subgoal by (fact map_scale_assoc)
+  subgoal by (fact map_scale_one_left)
   done
+
+text \<open>Since the following lemmas are proved for more general ring-types above, we do not need to
+  have them in the simpset.\<close>
 
 lemmas [simp del] = phull.scale_one phull.scale_zero_left phull.scale_zero_right phull.scale_scale
   phull.scale_minus_left phull.scale_minus_right phull.span_eq_iff
@@ -1763,14 +1855,21 @@ lemmas [algebra_simps del] = phull.scale_left_distrib phull.scale_right_distrib
 
 abbreviation "phull \<equiv> phull.span"
 
-text \<open>@{term \<open>phull B\<close>} is a module over the coefficient ring @{typ 'b}, whereas @{term \<open>pmdl B\<close>} is
-  a module over the (scalar) polynomial ring @{typ \<open>'a \<Rightarrow>\<^sub>0 'b\<close>}. Nevertheless, both modules are sets
-  of @{emph \<open>vector-polynomials\<close>} of type @{typ \<open>'t \<Rightarrow>\<^sub>0 'b\<close>}.\<close>
+text \<open>@{term \<open>phull B\<close>} is a module over the coefficient ring @{typ 'b}, whereas
+  @{term \<open>term_powerprod.pmdl B\<close>} is a module over the (scalar) polynomial ring @{typ \<open>'a \<Rightarrow>\<^sub>0 'b\<close>}.
+  Nevertheless, both modules can be sets of @{emph \<open>vector-polynomials\<close>} of type @{typ \<open>'t \<Rightarrow>\<^sub>0 'b\<close>}.\<close>
 
-lemma phull_closed_mult_scalar:
-  assumes "p \<in> phull B"
-  shows "monomial c 0 \<odot> p \<in> phull B"
-  unfolding mult_scalar_monomial using assms by (intro phull.span_scale)
+context term_powerprod
+begin
+
+lemma map_scale_eq_monom_mult: "c \<cdot> p = monom_mult c 0 p"
+  by (rule poly_mapping_eqI) (simp only: lookup_map_scale lookup_monom_mult_zero)
+
+lemma map_scale_eq_mult_scalar: "c \<cdot> p = monomial c 0 \<odot> p"
+  by (simp only: map_scale_eq_monom_mult mult_scalar_monomial)
+
+lemma phull_closed_mult_scalar: "p \<in> phull B \<Longrightarrow> monomial c 0 \<odot> p \<in> phull B"
+  unfolding map_scale_eq_mult_scalar[symmetric] by (rule phull.span_scale)
 
 lemma mult_scalar_in_phull: "b \<in> B \<Longrightarrow> monomial c 0 \<odot> b \<in> phull B"
   by (intro phull_closed_mult_scalar phull.span_base)
@@ -1785,7 +1884,9 @@ proof
     show ?case by (fact pmdl.span_zero)
   next
     case (step a c p)
-    show ?case by (rule pmdl.span_add, fact, rule monom_mult_in_pmdl, fact)
+    from step(3) have "p \<in> pmdl B" by (rule pmdl.span_base)
+    hence "c \<cdot> p \<in> pmdl B" unfolding map_scale_eq_monom_mult by (rule pmdl_closed_monom_mult)
+    with step(2) show ?case by (rule pmdl.span_add)
   qed
 qed
 
@@ -1800,7 +1901,7 @@ next
     by (rule image_mono, rule Keys_mono, fact phull.span_superset)
 qed
 
-end (* term_powerprod *)
+end
 
 subsection \<open>Interpretations\<close>
 
@@ -1886,5 +1987,6 @@ lemmas times_rec_right = punit.mult_scalar_rec_right[simplified]
 lemmas in_keys_timesE = punit.in_keys_mult_scalarE[simplified]
 lemmas punit_monom_mult_monomial = punit.monom_mult_monomial[simplified]
 lemmas lookup_times = punit.lookup_mult_scalar_explicit[simplified]
+lemmas map_scale_eq_times = punit.map_scale_eq_mult_scalar[simplified]
 
 end (* theory *)

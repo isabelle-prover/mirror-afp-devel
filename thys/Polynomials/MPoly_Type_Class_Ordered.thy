@@ -650,6 +650,9 @@ next
   with assms show ?thesis by (simp add: lt_monom_mult term_simps)
 qed
 
+corollary lt_map_scale: "c \<noteq> (0::'b::semiring_no_zero_divisors) \<Longrightarrow> lt (c \<cdot> p) = lt p"
+  by (simp add: map_scale_eq_monom_mult lt_monom_mult_zero)
+
 lemma lc_monom_mult [simp]: "lc (monom_mult c t p) = (c::'b::semiring_no_zero_divisors) * lc p"
 proof (cases "c = 0")
   case True
@@ -665,6 +668,9 @@ next
     with \<open>c \<noteq> 0\<close> show ?thesis by (simp add: lc_def lt_monom_mult lookup_monom_mult_plus)
   qed
 qed
+
+corollary lc_map_scale [simp]: "lc (c \<cdot> p) = (c::'b::semiring_no_zero_divisors) * lc p"
+  by (simp add: map_scale_eq_monom_mult)
 
 lemma (in ordered_term) lt_mult_scalar_monomial_right:
   assumes "c \<noteq> (0::'b::semiring_no_zero_divisors)" and "p \<noteq> 0"
@@ -987,6 +993,9 @@ proof (intro tt_eqI, rule keys_monom_multI, rule tt_in_keys, fact, fact)
   show "t \<oplus> tt p \<preceq>\<^sub>t u" unfolding u add.commute[of t] by (rule splus_mono, rule tt_min_keys, fact)
 qed
 
+lemma tt_map_scale: "c \<noteq> (0::'b::semiring_no_zero_divisors) \<Longrightarrow> tt (c \<cdot> p) = tt p"
+  by (cases "p = 0") (simp_all add: map_scale_eq_monom_mult tt_monom_mult term_simps)
+
 lemma tc_monom_mult [simp]: "tc (monom_mult c t p) = (c::'b::semiring_no_zero_divisors) * tc p"
 proof (cases "c = 0")
   case True
@@ -1002,6 +1011,9 @@ next
     with \<open>c \<noteq> 0\<close> show ?thesis by (simp add: tc_def tt_monom_mult lookup_monom_mult_plus)
   qed
 qed
+
+corollary tc_map_scale [simp]: "tc (c \<cdot> p) = (c::'b::semiring_no_zero_divisors) * tc p"
+  by (simp add: map_scale_eq_monom_mult)
 
 lemma in_keys_monom_mult_ge:
   assumes "v \<in> keys (monom_mult c t p)"

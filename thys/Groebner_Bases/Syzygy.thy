@@ -315,18 +315,15 @@ lemma represents_mult_scalar:
   unfolding punit.mult_scalar_monomial[symmetric] punit_mult_scalar using assms
   by (rule pmdl.represents_scale)
 
-lemma syzygy_module_closed_monom_mult:
-  assumes "s \<in> pmdl.syzygy_module B"
-  shows "punit.monom_mult c 0 s \<in> pmdl.syzygy_module B"
-  unfolding punit.mult_scalar_monomial[symmetric] punit_mult_scalar using assms
-  by (rule pmdl.syzygy_module_closed_times_monomial)
+lemma syzygy_module_closed_map_scale: "s \<in> pmdl.syzygy_module B \<Longrightarrow> c \<cdot> s \<in> pmdl.syzygy_module B"
+  unfolding map_scale_eq_times by (rule pmdl.syzygy_module_closed_times_monomial)
 
-lemma phull_syzygy_module: "punit.phull (pmdl.syzygy_module B) = pmdl.syzygy_module B"
-  unfolding punit.phull.span_eq_iff
-  apply (rule punit.phull.subspaceI)
+lemma phull_syzygy_module: "phull (pmdl.syzygy_module B) = pmdl.syzygy_module B"
+  unfolding phull.span_eq_iff
+  apply (rule phull.subspaceI)
   subgoal by (fact pmdl.zero_in_syzygy_module)
   subgoal by (fact pmdl.syzygy_module_closed_plus)
-  subgoal by (fact syzygy_module_closed_monom_mult)
+  subgoal by (fact syzygy_module_closed_map_scale)
   done
 
 end (* term_powerprod *)
@@ -1144,12 +1141,13 @@ proof -
     and s: "s = atomize_poly (idx_pm_of_pm bs s')" by (rule syzygy_module_listE)
   show ?thesis unfolding s
   proof (rule syzygy_module_listI)
-    from s' show "(MPoly_Type_Class.punit.monom_mult (monomial c t) 0) s' \<in> pmdl.syzygy_module (set bs)"
-      by (rule syzygy_module_closed_monom_mult)
+    from s' show "(monomial c t) \<cdot> s' \<in> pmdl.syzygy_module (set bs)"
+      by (rule syzygy_module_closed_map_scale)
   next
     show "monom_mult c t (atomize_poly (idx_pm_of_pm bs s')) =
-          atomize_poly (idx_pm_of_pm bs (MPoly_Type_Class.punit.monom_mult (monomial c t) 0 s'))"
-      by (simp add: monom_mult_atomize punit_monom_mult_monomial_idx_pm_of_pm)
+          atomize_poly (idx_pm_of_pm bs ((monomial c t) \<cdot> s'))"
+      by (simp add: monom_mult_atomize punit_monom_mult_monomial_idx_pm_of_pm
+            MPoly_Type_Class.punit.map_scale_eq_monom_mult)
   qed
 qed
 
