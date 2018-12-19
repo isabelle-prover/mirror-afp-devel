@@ -245,6 +245,24 @@ abstract =
   different game-based proofs from the literature. This formalisation
   continues the work described in the author's ESOP 2016 paper.</p>
 
+[Constructive_Cryptography]
+title = Constructive Cryptography in HOL
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de/>, S. Reza Sefidgar
+topic = Security, Probability Theory
+date = 2018-12-17
+notify = mail@andreas-lochbihler.de, reza.sefidgar@inf.ethz.ch
+abstract =
+  Inspired by Abstract Cryptography, we extend CryptHOL, a framework for
+  formalizing game-based proofs, with an abstract model of Random
+  Systems and provide proof rules about their composition and equality.
+  This foundation facilitates the formalization of Constructive
+  Cryptography proofs, where the security of a cryptographic scheme is
+  realized as a special form of construction in which a complex random
+  system is built from simpler ones. This is a first step towards a
+  fully-featured compositional framework, similar to Universal
+  Composability framework, that supports formalization of
+  simulation-based proofs.
+
 [Probabilistic_While]
 title = Probabilistic while loop
 author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
@@ -7499,7 +7517,7 @@ author = Sebastiaan J. C. Joosten<>
 topic = Logic/Rewriting, Mathematics/Graph Theory
 date = 2018-11-23
 notify = sjcjoosten@gmail.com
-abstract = 
+abstract =
   This is an Isabelle/HOL formalisation of graph saturation, closely
   following a <a href="https://doi.org/10.1016/j.jlamp.2018.06.005">paper by the author</a> on graph saturation.
   Nine out of ten lemmas of the original paper are proven in this
@@ -7508,14 +7526,14 @@ abstract =
   entailment are decided through graph saturation. This formalisation
   does not give executable code, and it did not implement any of the
   optimisations suggested in the paper.
-  
+
 [Functional_Ordered_Resolution_Prover]
 title = A Verified Functional Implementation of Bachmair and Ganzinger's Ordered Resolution Prover
 author = Anders Schlichtkrull <mailto:andschl@dtu.dk>, Jasmin Christian Blanchette <mailto:j.c.blanchette@vu.nl>, Dmitriy Traytel <mailto:traytel@inf.ethz.ch>
 topic = Logic
 date = 2018-11-23
 notify = andschl@dtu.dk,j.c.blanchette@vu.nl,traytel@inf.ethz.ch
-abstract = 
+abstract =
   This Isabelle/HOL formalization refines the abstract ordered
   resolution prover  presented in Section 4.3 of Bachmair and
   Ganzinger's "Resolution Theorem Proving" chapter in the
@@ -7528,7 +7546,7 @@ author = Bohua Zhan <http://lcs.ios.ac.cn/~bzhan/>
 topic = Tools
 date = 2018-11-20
 notify = bzhan@ios.ac.cn
-abstract = 
+abstract =
   Auto2 is a saturation-based heuristic prover for higher-order logic,
   implemented as a tactic in Isabelle.  This entry contains the
   instantiation of auto2 for Isabelle/HOL, along with two basic
@@ -7541,7 +7559,7 @@ author = Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
 topic = Mathematics/Algebra
 date = 2018-12-11
 notify = g.struth@sheffield.ac.uk
-abstract = 
+abstract =
   These components add further fundamental order and lattice-theoretic
   concepts and properties to Isabelle's libraries.  They follow by
   and large the introductory sections of the Compendium of Continuous
@@ -7557,7 +7575,7 @@ author = Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
 topic = Mathematics/Algebra
 date = 2018-12-11
 notify = g.struth@sheffield.ac.uk
-abstract = 
+abstract =
   These mathematical components formalise basic properties of quantales,
   together with some important models, constructions, and concepts,
   including quantic nuclei and conuclei.
@@ -7568,7 +7586,7 @@ author = Georg Struth <http://staffwww.dcs.shef.ac.uk/people/G.Struth/>
 topic = Mathematics/Algebra, Computer Science/Programming Languages/Misc
 date = 2018-12-11
 notify = g.struth@sheffield.ac.uk
-abstract = 
+abstract =
   These mathematical components formalise predicate transformer
   semantics for programs, yet currently only for partial correctness and
   in the absence of faults.  A first part for isotone (or monotone),

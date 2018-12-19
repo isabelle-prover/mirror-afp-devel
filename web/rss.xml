@@ -9,7 +9,25 @@
       and larger scientific developments, mechanically checked
       in the theorem prover Isabelle.
     </description>
-    <pubDate>11 Dec 2018 00:00:00 +0000</pubDate>
+    <pubDate>17 Dec 2018 00:00:00 +0000</pubDate>
+    <item>
+       <title>Constructive Cryptography in HOL</title>
+              <link>https://www.isa-afp.org/entries/Constructive_Cryptography.html</link>
+       <guid>https://www.isa-afp.org/entries/Constructive_Cryptography.html</guid>
+       <dc:creator> Andreas Lochbihler, S. Reza Sefidgar       </dc:creator>
+       <pubDate>17 Dec 2018 00:00:00 +0000</pubDate>
+       <description>
+Inspired by Abstract Cryptography, we extend CryptHOL, a framework for
+formalizing game-based proofs, with an abstract model of Random
+Systems and provide proof rules about their composition and equality.
+This foundation facilitates the formalization of Constructive
+Cryptography proofs, where the security of a cryptographic scheme is
+realized as a special form of construction in which a complex random
+system is built from simpler ones. This is a first step towards a
+fully-featured compositional framework, similar to Universal
+Composability framework, that supports formalization of
+simulation-based proofs.</description>
+    </item>
     <item>
        <title>Transformer Semantics</title>
               <link>https://www.isa-afp.org/entries/Transformer_Semantics.html</link>
@@ -545,20 +563,6 @@ a multiplicative subset (i.e. a submonoid of R seen as a
 multiplicative monoid). This localization is itself a commutative ring
 and we build the natural homomorphism of rings from R to its
 localization.</description>
-    </item>
-    <item>
-       <title>Partial Order Reduction</title>
-              <link>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</link>
-       <guid>https://www.isa-afp.org/entries/Partial_Order_Reduction.html</guid>
-       <dc:creator> Julian Brunner       </dc:creator>
-       <pubDate>05 Jun 2018 00:00:00 +0000</pubDate>
-       <description>
-This entry provides a formalization of the abstract theory of ample
-set partial order reduction. The formalization includes transition
-systems with actions, trace theory, as well as basics on finite,
-infinite, and lazy sequences. We also provide a basic framework for
-static analysis on concurrent systems with respect to the ample set
-condition.</description>
     </item>
   </channel>
 </rss>
