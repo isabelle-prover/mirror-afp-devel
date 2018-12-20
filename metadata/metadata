@@ -247,8 +247,8 @@ abstract =
 
 [Constructive_Cryptography]
 title = Constructive Cryptography in HOL
-author = Andreas Lochbihler <http://www.andreas-lochbihler.de/>, S. Reza Sefidgar
-topic = Security, Probability Theory
+author = Andreas Lochbihler <http://www.andreas-lochbihler.de/>, S. Reza Sefidgar<>
+topic = Computer Science/Security, Mathematics/Probability Theory
 date = 2018-12-17
 notify = mail@andreas-lochbihler.de, reza.sefidgar@inf.ethz.ch
 abstract =
