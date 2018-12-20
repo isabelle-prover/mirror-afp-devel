@@ -38,7 +38,8 @@ chapter{* Part ... *}
 
 theory  Isabelle_code_target
 imports Main
-  keywords "lazy_code_printing" "apply_code_printing" "apply_code_printing_reflect"
+keywords "attach"
+  and "lazy_code_printing" "apply_code_printing" "apply_code_printing_reflect"
            :: thy_decl
 begin
 
@@ -157,7 +158,7 @@ datatype code_printing = Code_printing of
       string * (bstring * string option) list,
       (string * string) * (bstring * unit option) list,
       (xstring * string) * (bstring * unit option) list,
-      bstring * (bstring * (string * string list) option) list)
+      bstring * (bstring * (string * Code_Symbol.T list) option) list)
       Code_Symbol.attr
       list
 
@@ -173,7 +174,7 @@ val () =
   Outer_Syntax.command @{command_keyword lazy_code_printing} "declare dedicated printing for code symbols"
     (Isabelle_Code_Target.parse_symbol_pragmas (Code_Printer.parse_const_syntax) (Code_Printer.parse_tyco_syntax)
       Parse.string (Parse.minus >> K ()) (Parse.minus >> K ())
-      (Parse.text -- Scan.optional (@{keyword "attach"} |-- Scan.repeat1 Parse.term) [])
+      (Parse.text -- Scan.optional (@{keyword "attach"} |-- Scan.repeat1 Parse.term >> map Code_Symbol.Constant) [])
       >> (fn code =>
             Toplevel.theory (Data_code.map (Symtab.map_default (code_empty, []) (fn l => Code_printing code :: l)))))
 
