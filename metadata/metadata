@@ -182,7 +182,7 @@ abstract =
 [Game_Based_Crypto]
 title = Game-based cryptography in HOL
 author = Andreas Lochbihler <http://www.andreas-lochbihler.de>, S. Reza Sefidgar <>, Bhargav Bhatt <mailto:bhargav.bhatt@inf.ethz.ch>
-topic = Computer Science/Security
+topic = Computer Science/Security/Cryptography
 date = 2017-05-05
 notify = mail@andreas-lochbihler.de
 abstract =
@@ -211,7 +211,7 @@ extra-history =
 [CryptHOL]
 title = CryptHOL
 author = Andreas Lochbihler <http://www.andreas-lochbihler.de>
-topic = Computer Science/Security, Computer Science/Functional Programming, Mathematics/Probability Theory
+topic = Computer Science/Security/Cryptography, Computer Science/Functional Programming, Mathematics/Probability Theory
 date = 2017-05-05
 notify = mail@andreas-lochbihler.de
 abstract =
