@@ -25,7 +25,7 @@ class Tree(object):
     def add_to_topic(self, topic, entry):
         if len(topic) > 0:
             if topic[0] not in self.subtopics:
-                terminal.warn(u"In entry {0}: unknown (sub)topic {1}".format(entry, topic))
+                terminal.error(u"In entry {0}: unknown (sub)topic {1}".format(entry, topic), abort=True)
             else:
                 self.subtopics[topic[0]].add_to_topic(topic[1:], entry)
         else:
