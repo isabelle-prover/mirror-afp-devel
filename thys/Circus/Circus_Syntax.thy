@@ -1,5 +1,5 @@
 
-section {* Circus syntax *}
+section \<open>Circus syntax\<close>
 
 theory Circus_Syntax
 imports Denotational_Semantics
@@ -26,13 +26,13 @@ syntax
   "_synt_assign" :: "id \<Rightarrow> 'a \<Rightarrow> 'b relation"  ("_ := _")
 
 
-ML {*
+ML \<open>
 structure VARs_Data = Proof_Data
 (
   type T = {State_vars: string list, Alpha_vars: string list}
   fun init _ : T = {State_vars = [], Alpha_vars = []}
 )
-*}
+\<close>
 
 nonterminal circus_action and circus_schema
 
@@ -40,7 +40,7 @@ syntax
   "_circus_action" :: "'a => circus_action"  ("_")   (* FIXME unused!? *)
   "_circus_schema" :: "'a => circus_schema"  ("_")
 
-parse_translation {*
+parse_translation \<open>
   let
     fun antiquote_tr ctxt =
       let
@@ -88,10 +88,10 @@ parse_translation {*
             Abs ("A", dummyT, Abs ("A'", dummyT, antiquote_tr ctxt (Term.incr_boundvars 2 t)))
       | quote_tr _ ts = raise TERM ("quote_tr", ts);
   in [(@{syntax_const "_circus_schema"}, quote_tr)] end
-*}
+\<close>
 
 
-ML {*
+ML \<open>
 fun get_fields (SOME ({fields, parent, ...}: Record.info)) thy =
   (case parent of
        SOME ( _,y) => fields @ get_fields (Record.get_info thy y) thy
@@ -368,6 +368,6 @@ val _ =
           Toplevel.theory (circus_process_cmd a b c d e f g h)));
 
 end;
-*}
+\<close>
 
 end

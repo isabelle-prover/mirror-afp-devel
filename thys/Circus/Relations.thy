@@ -1,22 +1,22 @@
-section{* Predicates and relations *}
+section\<open>Predicates and relations\<close>
 
 theory Relations
 imports Var
 begin
 default_sort type
 
-text {* Unifying Theories of Programming (UTP) is a semantic framework based on 
+text \<open>Unifying Theories of Programming (UTP) is a semantic framework based on 
 an alphabetized relational calculus. An alphabetized predicate is a pair (alphabet, predicate) 
-where the free variables appearing in the predicate are all in the alphabet. *}
+where the free variables appearing in the predicate are all in the alphabet.\<close>
 
-text {* An alphabetized relation is an alphabetized predicate where the alphabet is
+text \<open>An alphabetized relation is an alphabetized predicate where the alphabet is
 composed of input (undecorated) and output (dashed) variables. In this case the
-predicate describes a relation between input and output variables. *}
+predicate describes a relation between input and output variables.\<close>
 
-subsection{* Definitions *}
+subsection\<open>Definitions\<close>
 
-text {* In this section, the definitions of predicates, relations and 
-standard operators are given.*}
+text \<open>In this section, the definitions of predicates, relations and 
+standard operators are given.\<close>
 
 type_synonym '\<alpha> "alphabet"  = "'\<alpha>"
 type_synonym '\<alpha> predicate = "'\<alpha> alphabet \<Rightarrow> bool"
@@ -96,15 +96,15 @@ lemmas utp_defs = true_def false_def conj_def disj_def not_def impl_def iff_def
                   ex_def all_def cond_def comp_def Assign_def
 
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 
 
-text {* All useful proved lemmas over predicates and relations are presented here.
+text \<open>All useful proved lemmas over predicates and relations are presented here.
 First, we introduce the most important lemmas that will be used by automatic tools to simplify
-proofs. In the second part, other lemmas are proved using these basic ones.*}
+proofs. In the second part, other lemmas are proved using these basic ones.\<close>
 
 
-subsubsection {* Setup of automated tools *}
+subsubsection \<open>Setup of automated tools\<close>
 
 lemma true_intro: "true x" by (simp add: utp_defs)
 lemma false_elim: "false x \<Longrightarrow> C" by (simp add: utp_defs)
@@ -179,7 +179,7 @@ lemma split_cond_asm:
 lemmas cond_splits = split_cond split_cond_asm
 
 
-subsubsection {* Misc lemmas *}
+subsubsection \<open>Misc lemmas\<close>
 
 lemma cond_idem:"(P \<triangleleft> b \<triangleright> P) = P"
   by (rule ext) (auto split: cond_splits)

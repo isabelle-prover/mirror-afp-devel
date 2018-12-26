@@ -1,19 +1,19 @@
-section{* Designs *}
+section\<open>Designs\<close>
 
 theory Designs
 imports Relations
 begin
 
-text {* In UTP, in order to explicitly record the termination of a program, 
+text \<open>In UTP, in order to explicitly record the termination of a program, 
 a subset of alphabetized relations is introduced. These relations are called 
 designs and their alphabet should contain the special boolean observational variable ok. 
-It is used to record the start and termination of a program. *}
+It is used to record the start and termination of a program.\<close>
 
-subsection{* Definitions *}
+subsection\<open>Definitions\<close>
 
-text {* In the following, the definitions of designs alphabets, designs and 
+text \<open>In the following, the definitions of designs alphabets, designs and 
 healthiness (well-formedness) conditions are given. The healthiness conditions of
-designs are defined by $H1$, $H2$, $H3$ and $H4$.*}
+designs are defined by $H1$, $H2$, $H3$ and $H4$.\<close>
 
 record alpha_d = ok::bool
 
@@ -65,10 +65,10 @@ where "OKAY' \<equiv> \<lambda> (A, A') . ok A'"
 lemmas design_defs = design_def skip_d_def J_def Healthy_def H1_def H2_def H3_def
                      H4_def \<sigma>f_def \<sigma>t_def OKAY_def OKAY'_def
 
-subsection{* Proofs *}
+subsection\<open>Proofs\<close>
 
-text {* Proof of theorems and properties of designs and their healthiness conditions 
-are given in the following.*}
+text \<open>Proof of theorems and properties of designs and their healthiness conditions 
+are given in the following.\<close>
 
 lemma t_comp_lz_d: "(true;;(P \<turnstile> Q)) = true"
   apply (auto simp: fun_eq_iff design_defs)

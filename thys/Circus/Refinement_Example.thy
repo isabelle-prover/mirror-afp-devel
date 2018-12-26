@@ -1,14 +1,14 @@
-section {* Concrete example *}
+section \<open>Concrete example\<close>
 
 theory Refinement_Example
 imports Refinement
 begin
 
-text {* In this section, we present a concrete example ofthe use of our environment.
+text \<open>In this section, we present a concrete example ofthe use of our environment.
 We define two Circus processes FIG and DFIG, using our syntax. we give the proof of refinement 
-(simulation) of the first processby the second one using the simulation function $Sim$.*}
+(simulation) of the first processby the second one using the simulation function $Sim$.\<close>
 
-subsection {* Process definitions *}
+subsection \<open>Process definitions\<close>
 
 circus_process FIG =
   alphabet = [v::nat, x::nat]
@@ -38,10 +38,10 @@ definition Sim where
   "Sim A = FIG_alphabet.make (DFIG_alphabet.v A) (DFIG_alphabet.x A)
    ({a. a < (DFIG_alphabet.max A) \<and> a \<notin> (DFIG_alphabet.retidS A)})"
 
-subsection {* Simulation proofs *}
+subsection \<open>Simulation proofs\<close>
 
-text {* For the simulation proof, we give first proofs for simulation over the schema expressions.
-The proof is then given over the main actions of the processes.*}
+text \<open>For the simulation proof, we give first proofs for simulation over the schema expressions.
+The proof is then given over the main actions of the processes.\<close>
 
 lemma SimInit: "(Schema FIG.Init) \<preceq>Sim (Schema DFIG.Init)"
   apply (auto simp: Sim_def Pre_def design_defs DFIG.Init_def FIG.Init_def rp_defs  alpha_rp.defs

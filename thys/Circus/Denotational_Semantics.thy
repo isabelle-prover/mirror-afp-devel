@@ -1,14 +1,14 @@
-section {* Denotational semantics of Circus actions *}
+section \<open>Denotational semantics of Circus actions\<close>
 
 theory Denotational_Semantics 
 imports Circus_Actions Var_list
 begin
 
-text {* In this section, we introduce the definitions of Circus actions denotational semantics.
+text \<open>In this section, we introduce the definitions of Circus actions denotational semantics.
 We provide the proof of well-formedness of every action. We also provide proofs concerning 
-the monotonicity of operators over actions.*}
+the monotonicity of operators over actions.\<close>
 
-subsection {* Skip *}
+subsection \<open>Skip\<close>
 
 definition Skip :: "('\<theta>::ev_eq,'\<sigma>) action" where
 "Skip \<equiv> action_of 
@@ -81,7 +81,7 @@ apply (clarsimp split: cond_splits)+
 done
 
 
-subsection {* Stop *}
+subsection \<open>Stop\<close>
 
 definition Stop :: "('\<theta>::ev_eq,'\<sigma>) action"
 where "Stop \<equiv> action_of (R (true \<turnstile> \<lambda>(A, A'). tr A' = tr A \<and> wait A'))"
@@ -152,7 +152,7 @@ apply (rule_tac x="zs@zsa" in exI, simp)
 apply (auto simp add: prefix_def)
 done
 
-subsection {* Chaos *}
+subsection \<open>Chaos\<close>
 
 definition Chaos :: "('\<theta>::ev_eq,'\<sigma>) action"
 where "Chaos \<equiv> action_of (R(false \<turnstile> true))"
@@ -168,7 +168,7 @@ lemma relation_of_Chaos: "relation_of Chaos = (R(false \<turnstile> true))"
 by (simp add: Chaos_def action_of_inverse Chaos_is_CSP)
 
 
-subsection {* State update actions*}
+subsection \<open>State update actions\<close>
 
 definition Pre ::"'\<sigma> relation  \<Rightarrow> '\<sigma> predicate"
 where "Pre sc \<equiv> \<lambda>A. \<exists> A'. sc (A, A')"
@@ -310,7 +310,7 @@ done
 
 
 
-subsection {* Sequential composition *}
+subsection \<open>Sequential composition\<close>
 
 definition 
 Seq::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl "`;`" 24)
@@ -351,7 +351,7 @@ lemma Skip_absorb: "(Skip `;` Skip) = Skip"
 by (auto simp: Skip_comp_absorb relation_of_inject[symmetric] relation_of_Seq)
 
 
-subsection {* Internal choice *}
+subsection \<open>Internal choice\<close>
 
 definition 
 Ndet::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl "\<sqinter>" 18) 
@@ -371,7 +371,7 @@ by (simp add: Ndet_def action_of_inverse Ndet_is_CSP)
 lemma mono_Ndet: "mono ((\<sqinter>) P)"
 by (auto simp: mono_def less_eq_action ref_def relation_of_Ndet)
 
-subsection {* External choice *}
+subsection \<open>External choice\<close>
 
 definition
 Det::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" (infixl "\<box>" 18)
@@ -408,7 +408,7 @@ by (auto simp: mono_def less_eq_action ref_def relation_of_Det design_defs rp_de
                                      relation_of_spec_t_f[simplified])
 
 
-subsection {* Reactive design assignment *}
+subsection \<open>Reactive design assignment\<close>
 
 
 definition 
@@ -432,7 +432,7 @@ by (simp add: rd_assign_def  action_of_inverse rd_assign_is_CSP)
 
 
 
-subsection {* Local state external choice *}
+subsection \<open>Local state external choice\<close>
 
 definition
 Loc::"'\<sigma> \<Rightarrow> ('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> '\<sigma> \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action" 
@@ -442,7 +442,7 @@ where "(loc s1 \<bullet> P) \<boxplus> (loc s2 \<bullet> Q) \<equiv>
 
 
 
-subsection {* Schema expression *}
+subsection \<open>Schema expression\<close>
 
 
 definition Schema :: "'\<sigma> relation \<Rightarrow> ('\<theta>::ev_eq,'\<sigma>) action" where
@@ -480,7 +480,7 @@ done
 
 
 
-subsection {* Parallel composition *}
+subsection \<open>Parallel composition\<close>
 
 type_synonym '\<sigma> local_state = "('\<sigma> \<times> ('\<sigma>  \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>))"
 
@@ -585,7 +585,7 @@ lemma mono_Par: "mono (\<lambda>Q. P \<lbrakk> ns1 | cs | ns2 \<rbrakk> Q)"
 done
 
 
-subsection {* Local parallel block *}
+subsection \<open>Local parallel block\<close>
 
 definition
 ParLoc::"'\<sigma> \<Rightarrow> ('\<sigma> \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> ('\<theta>::ev_eq, '\<sigma>) action \<Rightarrow> '\<theta> set \<Rightarrow> '\<sigma> \<Rightarrow> ('\<sigma> \<Rightarrow> '\<sigma> \<Rightarrow> '\<sigma>) \<Rightarrow> ('\<theta>,'\<sigma>) action \<Rightarrow> ('\<theta>,'\<sigma>) action"
@@ -595,7 +595,7 @@ where
 
 
 
-subsection {* Assignment *}
+subsection \<open>Assignment\<close>
 
 definition ASSIGN::"('v, '\<sigma>) var_list \<Rightarrow> ('\<sigma> \<Rightarrow> 'v) \<Rightarrow> ('\<theta>::ev_eq, '\<sigma>) action" where
 "ASSIGN x e \<equiv> action_of (R (true \<turnstile> (\<lambda> (S, S'). tr S' = tr S \<and> \<not>wait S' \<and> 
@@ -636,7 +636,7 @@ apply (auto simp add: prefix_def)
 done
 
 
-subsection {* Variable scope *}
+subsection \<open>Variable scope\<close>
 
 definition Var::"('v, '\<sigma>) var_list \<Rightarrow>('\<theta>, '\<sigma>) action \<Rightarrow> ('\<theta>::ev_eq,'\<sigma>) action" where
 "Var v A \<equiv> action_of(
@@ -762,7 +762,7 @@ apply (auto split: cond_splits)
 done
 
 
-subsection {* Guarded action *}
+subsection \<open>Guarded action\<close>
 
 definition Guard::"'\<sigma> predicate \<Rightarrow> ('\<theta>::ev_eq, '\<sigma>) action \<Rightarrow> ('\<theta>, '\<sigma>) action" ("_ `&` _")
 where "g `&` P \<equiv> action_of(R (((g o more o fst) \<longrightarrow> \<not> ((relation_of P)\<^sup>f\<^sub>f)) \<turnstile> 
@@ -853,7 +853,7 @@ apply (rule)+
 apply (simp add: impl_def) defer
 oops
 
-subsection {* Prefixed action *}
+subsection \<open>Prefixed action\<close>
 
 definition do where
 "do e \<equiv> (\<lambda>(A, A'). tr A = tr A' \<and> (e (more A)) \<notin> (ref A')) \<triangleleft> wait o snd \<triangleright> 
@@ -956,7 +956,7 @@ by (auto simp: mono_def less_eq_action ref_def relation_of_oPrefix)
 lemma mono_Prefix0 : "mono(Prefix0 c)"
 by (auto simp: mono_def less_eq_action ref_def relation_of_Prefix0)
 
-subsection {* Hiding *}
+subsection \<open>Hiding\<close>
 
 definition Hide::"('\<theta>::ev_eq, '\<sigma>) action \<Rightarrow> '\<theta> set \<Rightarrow> ('\<theta>, '\<sigma>) action" (infixl "\\" 18) where
 "P \\ cs \<equiv> action_of(R(\<lambda>(S, S'). \<exists> s. (diff_tr S' S) = (tr_filter (s - (tr S)) cs) &
@@ -1011,37 +1011,37 @@ lemma relation_of_Hide:
 lemma mono_Hide : "mono(\<lambda> P. P \\ cs)"
 by (auto simp: mono_def less_eq_action ref_def prefix_def utp_defs relation_of_Hide rp_defs)
 
-subsection {* Recursion *}
+subsection \<open>Recursion\<close>
 
-text {* To represent the recursion operator "@{text \<mu>}" over actions, we use the
+text \<open>To represent the recursion operator "\<open>\<mu>\<close>" over actions, we use the
 universal least fix-point operator "@{const lfp}" defined in the HOL library for lattices. 
 The operator "@{const lfp}" is inherited from the "Complete Lattice class" under some conditions. 
-All theorems defined over this operator can be reused. *}
+All theorems defined over this operator can be reused.\<close>
 
-text {* In the @{theory Circus.Circus_Actions} theory, we presented the proof that Circus actions 
+text \<open>In the @{theory Circus.Circus_Actions} theory, we presented the proof that Circus actions 
 form a complete lattice. The Knaster-Tarski Theorem (in its simplest formulation) states 
 that any monotone function on a complete lattice has a least fixed-point. 
 This is a consequence of the basic boundary properties of the complete lattice operations. 
 Instantiating the complete lattice class allows one to inherit these properties with the 
 definition of the least fixed-point for monotonic functions over Circus actions.
- *}
+\<close>
 
 syntax "_MU"::"[idt, idt \<Rightarrow> ('\<theta>, '\<sigma>) action] \<Rightarrow> ('\<theta>, '\<sigma>) action"  ("\<mu> _ \<bullet> _")
 translations "_MU X P" == "CONST lfp (\<lambda> X. P)"
 
 
 (*<*)
-text{* Instead fo the following: *}
+text\<open>Instead fo the following:\<close>
 lemma is_action_REP_Mu:
   shows "is_CSP_process (relation_of (lfp P))"
 oops 
 
-text{* ... we refer to the proof of @{thm Sup_is_action} and its 
+text\<open>... we refer to the proof of @{thm Sup_is_action} and its 
 analogue who capture the essence of this proof at the level of the
-type instantiation. *}
+type instantiation.\<close>
 
-text{* Monotonicity: STATUS: probably critical.  Does not seem to be necessary for 
-parameterless Circus. *}
+text\<open>Monotonicity: STATUS: probably critical.  Does not seem to be necessary for 
+parameterless Circus.\<close>
 lemma mono_Mu:
   assumes A : "mono P"
   and     B : "\<And> X. mono (P X)"

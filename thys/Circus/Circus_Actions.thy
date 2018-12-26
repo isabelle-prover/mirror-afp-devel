@@ -1,17 +1,17 @@
-section {* Circus actions *}
+section \<open>Circus actions\<close>
 
 theory Circus_Actions
 imports HOLCF CSP_Processes
 begin
 
-text {* In this section, we introduce definitions for Circus actions with 
-some useful theorems and lemmas. *}
+text \<open>In this section, we introduce definitions for Circus actions with 
+some useful theorems and lemmas.\<close>
 
 default_sort type
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
-text {* The Circus actions type is defined as the set of all the CSP healthy reactive processes. *}
+text \<open>The Circus actions type is defined as the set of all the CSP healthy reactive processes.\<close>
 
 typedef ('\<theta>::"ev_eq",'\<sigma>)  "action" = "{p::('\<theta>,'\<sigma>) relation_rp. is_CSP_process p}"
     morphisms relation_of action_of
@@ -23,12 +23,12 @@ qed
 
 print_theorems
 
-text {* The type-definition introduces a new type by stating a set. In our case, 
+text \<open>The type-definition introduces a new type by stating a set. In our case, 
  it is the set of reactive processes that satisfy the healthiness-conditions
  for CSP-processes, isomorphic to the new type.
  Technically, this construct introduces two constants (morphisms) definitions $relation\_of$
  and $action\_of$ as well as the usual axioms expressing the bijection @{thm relation_of_inverse}
- and @{thm action_of_inverse}.*}
+ and @{thm action_of_inverse}.\<close>
 
 lemma relation_of_CSP: "is_CSP_process (relation_of x)"
 proof -
@@ -45,9 +45,9 @@ by (rule CSP_is_CSP2[OF relation_of_CSP])
 lemma relation_of_R: "(relation_of x) is R healthy"
 by (rule CSP_is_R[OF relation_of_CSP])
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 
-text {* In the following, Circus actions are proved to be an instance of the $Complete\_Lattice$ class. *}
+text \<open>In the following, Circus actions are proved to be an instance of the $Complete\_Lattice$ class.\<close>
 
 lemma relation_of_spec_f_f: 
 "\<forall>a b. (relation_of y \<longrightarrow> relation_of x) (a, b) \<Longrightarrow>
@@ -471,7 +471,7 @@ proof
       show ?thesis
         using *
         apply (auto simp add: Inf_action)
-        using `A \<noteq> {}`
+        using \<open>A \<noteq> {}\<close>
         apply (simp add: less_eq_action Inf_action ref_def)
         apply (subst (asm) action_of_inverse)
         apply (subst (asm) ex_in_conv[symmetric])

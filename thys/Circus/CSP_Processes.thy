@@ -1,16 +1,16 @@
-section {* CSP processes *}
+section \<open>CSP processes\<close>
 
 theory CSP_Processes
 imports Reactive_Processes
 begin
 
-text {* A CSP process is a UTP reactive process that satisfies two additional
+text \<open>A CSP process is a UTP reactive process that satisfies two additional
 healthiness conditions called $CSP1$ and $CSP2$. A reactive process that satisfies 
-$CSP1$ and $CSP2$ is said to be CSP healthy.*}
+$CSP1$ and $CSP2$ is said to be CSP healthy.\<close>
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
-text {* We introduce here the definitions of the CSP healthiness conditions.*}
+text \<open>We introduce here the definitions of the CSP healthiness conditions.\<close>
 
 definition CSP1::"(('\<theta>,'\<sigma>) alphabet_rp) Healthiness_condition"
 where "CSP1 (P)  \<equiv>  P \<or> (\<lambda>(A, A'). \<not>ok A \<and> tr A \<le> tr A')"
@@ -38,9 +38,9 @@ lemma is_CSP_processE2 [elim?]:
   using assms unfolding is_CSP_process_def by (simp add: Healthy_def')
 
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 
-text {* Theorems and lemmas relative to CSP processes are introduced here.*}
+text \<open>Theorems and lemmas relative to CSP processes are introduced here.\<close>
 
 lemma CSP1_CSP2_commute: "CSP1 o CSP2 = CSP2 o CSP1"
 by (auto simp: csp_defs fun_eq_iff)
@@ -357,9 +357,9 @@ lemma CSP_meet:
   using A B
 by (simp add: is_CSP_process_def CSP1_meet CSP2_meet R_meet)
 
-subsection {* CSP processes and reactive designs *}
+subsection \<open>CSP processes and reactive designs\<close>
 
-text {* In this section, we prove the relation between CSP processes and reactive designs. *}
+text \<open>In this section, we prove the relation between CSP processes and reactive designs.\<close>
 
 lemma rd_is_CSP1: "(R (r \<turnstile> p)) is CSP1 healthy"
 by (auto simp: csp_defs design_defs rp_defs fun_eq_iff split: cond_splits elim: prefixE)

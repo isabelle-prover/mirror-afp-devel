@@ -1,4 +1,4 @@
-section{* Reactive processes *}
+section\<open>Reactive processes\<close>
 
 theory Reactive_Processes
 imports Designs "HOL-Library.Sublist"
@@ -6,19 +6,19 @@ imports Designs "HOL-Library.Sublist"
 begin
 
 
-text {* Following the way of UTP to describe reactive processes, more observational
+text \<open>Following the way of UTP to describe reactive processes, more observational
 variables are needed to record the interaction with the environment. Three observational 
 variables are defined for this subset of relations: $wait$, $tr$ and $ref$.
 The boolean variable $wait$ records if the process is waiting for an interaction
 or has terminated. $tr$ records the list (trace) of interactions the process has
 performed so far. The variable $ref$ contains the set of interactions (events) the
-process may refuse to perform. *}
+process may refuse to perform.\<close>
 
-text {* In this section, we introduce first some preliminary notions, useful for 
+text \<open>In this section, we introduce first some preliminary notions, useful for 
  trace manipulations. The definitions of reactive process alphabets and healthiness 
-conditions are also given. Finally, proved lemmas and theorems are listed.*}
+conditions are also given. Finally, proved lemmas and theorems are listed.\<close>
 
-subsection {* Preliminaries *}
+subsection \<open>Preliminaries\<close>
 
 type_synonym '\<alpha> trace = "'\<alpha> list"
 
@@ -156,7 +156,7 @@ done
 qed
 end
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
 (* isabelle 2013 *)
 
@@ -169,9 +169,9 @@ by (auto simp: prefix_def)
 
 (* end isabelle 2013 *)
 
-text {* The definitions of reactive process alphabets and healthiness conditions are given
+text \<open>The definitions of reactive process alphabets and healthiness conditions are given
 in the following. The healthiness conditions of reactive processes are defined by 
-$R1$, $R2$, $R3$ and their composition $R$.*}
+$R1$, $R2$, $R3$ and their composition $R$.\<close>
 
 type_synonym '\<theta> refusal = "'\<theta> set"
   
@@ -180,9 +180,9 @@ record '\<theta> alpha_rp  = alpha_d +
                          tr  :: "'\<theta> trace"
                          ref :: "'\<theta> refusal"
 
-text{* Note that we define here the class of UTP alphabets that contain
+text\<open>Note that we define here the class of UTP alphabets that contain
 $wait$, $tr$ and $ref$, or, in other words, we define here the class of reactive process
-alphabets. *}
+alphabets.\<close>
 
 type_synonym ('\<theta>,'\<sigma>) alphabet_rp  = "('\<theta>,'\<sigma>) alpha_rp_scheme alphabet"
 type_synonym ('\<theta>,'\<sigma>) relation_rp  = "('\<theta>,'\<sigma>) alphabet_rp relation"
@@ -218,7 +218,7 @@ where "R  \<equiv> R3 o R2 o R1"
 
 lemmas rp_defs = R1_def R2_def \<Pi>rea_def R3_def R_def spec_def
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 
 lemma tr_filter_empty [simp]: "tr_filter l {} = l"
 by (induct l) (auto simp: filter_chan_set_def)

@@ -1,15 +1,15 @@
-section {* Refinement and Simulation *}
+section \<open>Refinement and Simulation\<close>
 
 theory Refinement
 imports Denotational_Semantics Circus_Syntax 
 begin
 
 
-subsection {* Definitions *}
+subsection \<open>Definitions\<close>
 
-text {* In the following, data (state) simulation and functional backwards simulation
+text \<open>In the following, data (state) simulation and functional backwards simulation
  are defined. The simulation is defined as a function $S$, that corresponds to a state 
- abstraction function.*}
+ abstraction function.\<close>
 
 definition "Simul S b = extend (make (ok b) (wait b) (tr b) (ref b)) (S (more b))"
 
@@ -18,12 +18,12 @@ Simulation::"('\<theta>::ev_eq,'\<sigma>) action \<Rightarrow> ('\<sigma>1 \<Rig
 where
 "A \<preceq>S B \<equiv> \<forall> a b. (relation_of B) (a, b) \<longrightarrow> (relation_of A) (Simul S a, Simul S b)"
 
-subsection {* Proofs *}
+subsection \<open>Proofs\<close>
 
-text {* In order to simplify refinement proofs, some general refinement laws are 
+text \<open>In order to simplify refinement proofs, some general refinement laws are 
 defined to deal with the refinement of Circus actions at operators level and not at UTP level. 
 Using these laws, and exploiting the advantages of a shallow embedding, the automated proof of
-refinement becomes surprisingly simple. *}
+refinement becomes surprisingly simple.\<close>
 
 lemma Stop_Sim: "Stop \<preceq>S Stop"
 by (auto simp: Simulation_def relation_of_Stop rp_defs design_defs Simul_def alpha_rp.defs 
